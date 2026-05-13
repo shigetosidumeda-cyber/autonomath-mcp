@@ -3,9 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>jpcite cost saving calculator — 普通 AI vs jpcite MCP 定量比較</title>
-<meta name="description" content="Claude Sonnet 4.5 / GPT-5 公式 token 単価 + web search 課金 vs jpcite ¥3/req の side-by-side calculator。 Wave 48 v2 canonical 数字に完全一致。">
+<title>jpcite API fee delta calculator — stated baseline comparison</title>
+<meta name="description" content="Stated baseline に基づく external provider token + web search API fee と jpcite ¥3/req の差額 calculator。売上・利益・業務効果は含みません。">
 <link rel="canonical" href="https://jpcite.com/tools/cost_saving_calculator.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/tools/cost_saving_calculator.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/tools/cost_saving_calculator.html">
 <style>
   :root{--bg:#fff;--text:#0f172a;--muted:#475569;--border:#e2e8f0;--accent:#0ea5e9;--ok:#16a34a;--warn:#b45309}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN","ヒラギノ角ゴ ProN W3","Yu Gothic Medium",sans-serif;margin:0;background:#f8fafc;color:var(--text);line-height:1.65}
@@ -32,8 +34,8 @@
 </head>
 <body>
 <main>
-  <h1>jpcite cost saving calculator</h1>
-  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>token + web search 課金</strong> と jpcite MCP ¥3/req の差を即時計算します。 数値ソースは Anthropic / OpenAI 2026-05-12 時点の公式 pricing。 canonical: <a href="/docs/canonical/cost_saving_examples/">/docs/canonical/cost_saving_examples</a> § C / § E。</p>
+  <h1>jpcite API fee delta calculator</h1>
+  <p class="muted">外部 provider の <strong>token + web search API fee</strong> と jpcite MCP ¥3/req の差額を、明示した baseline 条件だけで計算します。既定 baseline は Claude Sonnet 4.5、Anthropic web search、USD/JPY=150、下表の token/search 回数です。売上・利益・労務削減・専門判断の価値は含みません。詳細な前提は <a href="/tools/cost_saving_examples.md">cost saving examples</a> を参照。</p>
 
   <section class="card">
     <h2>1. 前提パラメータ</h2>
@@ -69,8 +71,8 @@
   </section>
 
   <section class="card">
-    <h2>2. 6 use case side-by-side</h2>
-    <p class="muted">canonical doc § C と完全一致するよう、 use case ごとの token / search / jpcite req 数を固定。 上の前提を変えると全 use case の数字が連動。</p>
+    <h2>2. 6 use case API fee delta</h2>
+    <p class="muted">use case ごとの token / search / jpcite req 数を固定した baseline 比較です。上の provider 単価・為替・jpcite unit price を変えると、API fee delta だけが再計算されます。</p>
     <div style="overflow-x:auto">
     <table id="cases-tbl">
       <thead>
@@ -81,9 +83,9 @@
           <th class="num">output tok</th>
           <th class="num">searches</th>
           <th class="num">jpcite req</th>
-          <th class="num">純 LLM 合計</th>
-          <th class="num">jpcite 合計</th>
-          <th class="num">節約額</th>
+          <th class="num">external API fee</th>
+          <th class="num">jpcite fee</th>
+          <th class="num">API fee delta</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -100,7 +102,7 @@
   </section>
 
   <section class="card">
-    <h2>3. 月次 / 年次 スケール (任意 use case を N 回)</h2>
+    <h2>3. 月次 / 年次 reference (任意 use case を N 回)</h2>
     <div class="row">
       <div>
         <label for="scale-case">対象 use case</label>
@@ -112,7 +114,7 @@
       </div>
     </div>
     <p class="total" id="scale-out">—</p>
-    <small class="note">本 calculator は API 料金差分のみ。 hallucination 起因の取りこぼし損失 / 顧問契約解除リスクは含まない (canonical § 14 page 表で別途試算)。 8 業法 fence の価値は金額化していない。</small>
+    <small class="note">本 calculator は stated baseline の API 料金差額のみです。実請求額は provider、model、cache、tool 設定、為替、prompt に依存します。業務効果、売上、利益、専門判断の価値は含みません。</small>
   </section>
 
   <section class="card">
@@ -121,12 +123,12 @@
       <li>Anthropic Pricing: <a href="https://www.anthropic.com/pricing">https://www.anthropic.com/pricing</a> (Messages API + web_search_20250305 tool)</li>
       <li>OpenAI Pricing: <a href="https://openai.com/api/pricing/">https://openai.com/api/pricing/</a> + <a href="https://platform.openai.com/docs/pricing">platform.openai.com/docs/pricing</a> (Responses API built-in web search)</li>
       <li>jpcite pricing: <a href="/pricing">/pricing</a> (¥3/req 税別、 anonymous 3 req/day per IP)</li>
-      <li>canonical doc (v2): <a href="/docs/canonical/cost_saving_examples/">cost_saving_examples</a></li>
+      <li>前提メモ: <a href="/tools/cost_saving_examples.md">cost_saving_examples</a></li>
     </ul>
   </section>
 </main>
 <script>
-// canonical USE_CASES — must match docs/canonical/cost_saving_examples.md § C
+// USE_CASES mirror the public cost-saving examples memo.
 const USE_CASES = [
   { id: 1, name: "M&A DD (法人 1 社 許認可+採択+処分, multi-turn 検証込)",  in_tok: 120000, out_tok: 20000, search: 25, req: 4 },
   { id: 2, name: "補助金 1 件 要件+一次 URL+排他抽出 (multi-program 比較)", in_tok:  80000, out_tok: 15000, search: 18, req: 2 },
@@ -220,8 +222,8 @@ function render() {
   const jp1   = jpciteCostJpy(uc, p);
   const monthPure = pure1 * n, monthJp = jp1 * n, monthSv = monthPure - monthJp;
   document.getElementById("scale-out").innerHTML =
-    `月 ${n} case 純 LLM = <span class="pure">${fmt(monthPure)}</span> / jpcite = ${fmt(monthJp)} / ` +
-    `<span class="saving">月節約 ${fmt(monthSv)}</span> / <span class="saving">年節約 ${fmt(monthSv * 12)}</span>`;
+    `月 ${n} case external API fee = <span class="pure">${fmt(monthPure)}</span> / jpcite fee = ${fmt(monthJp)} / ` +
+    `<span class="saving">月次 API fee delta ${fmt(monthSv)}</span> / <span class="saving">年換算 reference ${fmt(monthSv * 12)}</span>`;
 }
 
 ["model","search","fx","jpcite","scale-case","scale-n"].forEach((id) => {
@@ -230,7 +232,7 @@ function render() {
 });
 render();
 
-// Wave 49 G1 funnel: emit step_complete when user interacts with the
+// calculator funnel: emit step_complete when user interacts with the
 // calculator (any input change). Decouples completion semantics from the
 // RUM collector — collector listens for `jpcite:funnel:complete`.
 (function () {
@@ -248,7 +250,7 @@ render();
   });
 })();
 </script>
-<!-- Wave 49 G1 funnel beacon: emits step=`calc_engaged` for /tools/cost_saving_calculator -->
+<!-- calculator funnel beacon: emits step=`calc_engaged` for /tools/cost_saving_calculator -->
 <script src="/assets/rum_funnel_collector.js" defer></script>
 </body>
 </html>

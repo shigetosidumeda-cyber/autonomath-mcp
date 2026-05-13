@@ -49,13 +49,13 @@ def _bootstrap_db(db_path: str) -> None:
         conn.executescript(
             """
             CREATE TABLE IF NOT EXISTS am_source (
-                source_id TEXT PRIMARY KEY,
-                url       TEXT
+                id         TEXT PRIMARY KEY,
+                source_url TEXT
             );
             CREATE TABLE IF NOT EXISTS am_entity_facts (
-                fact_id    TEXT PRIMARY KEY,
+                id         TEXT PRIMARY KEY,
+                source_url TEXT,
                 source_id  TEXT,
-                confidence REAL,
                 created_at TEXT
             );
             """
@@ -71,22 +71,27 @@ def _seed_one(
     fact_id: str,
     *,
     source_url: str = "https://elaws.e-gov.go.jp/test/anchor",
-    confidence: float = 0.9,
+    fact_source_url: str | None = None,
     with_metadata: bool = False,
 ) -> None:
     conn = sqlite3.connect(db_path)
     try:
         conn.execute(
-            "INSERT OR REPLACE INTO am_source(source_id, url) VALUES (?, ?)",
+            "INSERT OR REPLACE INTO am_source(id, source_url) VALUES (?, ?)",
             (f"src_{fact_id}", source_url),
         )
         conn.execute(
             """
             INSERT OR REPLACE INTO am_entity_facts
-                (fact_id, source_id, confidence, created_at)
+                (id, source_url, source_id, created_at)
             VALUES (?, ?, ?, ?)
             """,
-            (fact_id, f"src_{fact_id}", confidence, "2026-05-12T00:00:00.000Z"),
+            (
+                fact_id,
+                fact_source_url,
+                f"src_{fact_id}",
+                "2026-05-12T00:00:00.000Z",
+            ),
         )
         if with_metadata:
             conn.execute(
@@ -209,8 +214,18 @@ def test_attach_extracts_top_level_and_list(tmp_db: str) -> None:
 
 
 def test_etl_v2_backfills_missing_metadata(tmp_db: str, monkeypatch: pytest.MonkeyPatch) -> None:
-    _seed_one(tmp_db, "F-1", with_metadata=False, confidence=0.7)
-    _seed_one(tmp_db, "F-2", with_metadata=False, confidence=0.95)
+    _seed_one(
+        tmp_db,
+        "F-1",
+        with_metadata=False,
+        fact_source_url="https://example.test/fact-row-source",
+    )
+    _seed_one(
+        tmp_db,
+        "F-2",
+        with_metadata=False,
+        source_url="https://example.test/source-table-source",
+    )
     monkeypatch.setenv("AUTONOMATH_DB_PATH", tmp_db)
     monkeypatch.delenv("AUTONOMATH_FACT_SIGN_PRIVATE_KEY", raising=False)
     mod = _import_etl()
@@ -223,12 +238,19 @@ def test_etl_v2_backfills_missing_metadata(tmp_db: str, monkeypatch: pytest.Monk
             "SELECT COUNT(*) FROM am_fact_metadata WHERE fact_id IN ('F-1','F-2')"
         ).fetchone()[0]
         assert n == 2
-        # confidence band stored
+        # Current EAV has no confidence column; ETL must store NULL bands cleanly.
         row = conn.execute(
-            "SELECT confidence_lower, confidence_upper FROM am_fact_metadata WHERE fact_id='F-1'"
+            "SELECT source_doc, confidence_lower, confidence_upper "
+            "FROM am_fact_metadata WHERE fact_id='F-1'"
         ).fetchone()
-        assert row[0] == pytest.approx(0.65)
-        assert row[1] == pytest.approx(0.75)
+        assert row[0] == "https://example.test/fact-row-source"
+        assert row[1] is None
+        assert row[2] is None
+        # When f.source_url is NULL, source_doc falls back to am_source.source_url.
+        row = conn.execute(
+            "SELECT source_doc FROM am_fact_metadata WHERE fact_id='F-2'"
+        ).fetchone()
+        assert row[0] == "https://example.test/source-table-source"
         # attestation log appended one row per UPSERT
         n_log = conn.execute(
             "SELECT COUNT(*) FROM am_fact_attestation_log WHERE fact_id IN ('F-1','F-2')"

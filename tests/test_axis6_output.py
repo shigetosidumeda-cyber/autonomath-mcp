@@ -121,15 +121,22 @@ def test_excel_render_5_sheet_workbook() -> None:
     }
     blob, sheet_count = _render_xlsx(
         "P-001", substrate,
-        include_roi=True, include_calendar=True, note="test note",
+        include_value_estimate=True, include_calendar=True, note="test note",
     )
     assert blob[:2] == b"PK"
     assert sheet_count == 5
     from openpyxl import load_workbook  # type: ignore[import-untyped]
     wb = load_workbook(io.BytesIO(blob))
     assert set(wb.sheetnames) == {
-        "制度サマリ", "必要書類chk", "ROI", "期限calendar", "補足連絡先"
+        "制度サマリ", "必要書類chk", "金額目安", "期限calendar", "補足連絡先"
     }
+
+
+def test_excel_request_accepts_legacy_include_roi_alias() -> None:
+    from jpintel_mcp.api.excel_template import ExcelEstimateRequest
+
+    body = ExcelEstimateRequest.model_validate({"include_roi": False})
+    assert body.include_value_estimate is False
 
 
 def test_excel_template_seed_exists_and_opens() -> None:

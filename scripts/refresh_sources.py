@@ -14,9 +14,9 @@ scope for this ticket; what this script does is **truthfully** bump
 4. On 2xx — update ``source_fetched_at`` + ``source_last_check_status``.
 5. On final-URL redirect to a different host — log to ``source_redirects``
    for manual review. We never auto-overwrite ``source_url``.
-6. On 4xx/5xx — bump ``source_fail_count``; quarantine (``excluded=1``,
-   ``tier='X'``) after the third persistent failure and note it in
-   ``source_failures``.
+6. On HTTP failure, transport failure, or unsafe URL refusal — bump
+   ``source_fail_count``; quarantine (``excluded=1``, ``tier='X'``) after
+   the third persistent failure and note it in ``source_failures``.
 
 The script is idempotent and safe to re-run. ``--dry-run`` performs no
 writes; it still emits the report so CI can preview a change set.
@@ -31,13 +31,15 @@ from __future__ import annotations
 import argparse
 import asyncio
 import datetime as dt
+import ipaddress
 import json
 import os
+import socket
 import sqlite3
 import sys
 import time
 import urllib.robotparser
-from collections import Counter, defaultdict
+from collections import Counter, OrderedDict, defaultdict
 from typing import Any
 from urllib.parse import urlparse
 
@@ -51,6 +53,158 @@ USER_AGENT = "AutonoMath-LivenessBot/0.1 (+https://jpcite.com/bot)"
 REQUEST_TIMEOUT = 15.0
 MAX_REDIRECTS = 5
 QUARANTINE_THRESHOLD = 3
+FAILURE_OUTCOMES: frozenset[str] = frozenset({"fail", "error", "unsafe_url"})
+
+# ---------------------------------------------------------------------------
+# URL safety guard (R2 P2 hardening, 2026-05-13)
+# ---------------------------------------------------------------------------
+#
+# ``programs.source_url`` is operator-curated, but a single bad ingest row
+# pointing at ``file:///etc/passwd`` or ``http://169.254.169.254/latest/`` would
+# let this cron exfiltrate cloud-instance metadata or read local files via
+# ``httpx``. The scheme guard requires explicit ``https://`` (no
+# ``http://``, no ``file://``, no ``ftp://``, no scheme-less hosts). The
+# DNS-rebind guard resolves the host BEFORE we issue any HEAD/GET, and
+# rejects it if any A/AAAA answer falls inside an RFC 1918 / 6890 /
+# loopback / link-local / multicast / reserved range.
+#
+# A refused URL never reaches the network. It is still a source-liveness
+# failure: the row cannot be safely checked, so it advances the same
+# 3-strike ``source_fail_count`` path as transport/HTTP failures.
+
+# Maps host -> (is_safe, reason, cached_at). TTL-bounded so a host that
+# drift-rebinds to an internal IP after our first check does NOT stay
+# "safe" forever — re-resolve after _DNS_RESOLVE_TTL_SEC. LRU-bounded at
+# _DNS_RESOLVE_CACHE_MAX entries so a long-running scan over tens of
+# thousands of unique hosts cannot grow the cache unbounded. Oldest
+# entry is dropped on overflow via OrderedDict.move_to_end on access.
+_DNS_RESOLVE_TTL_SEC: float = 300.0  # 5 minutes
+_DNS_RESOLVE_CACHE_MAX: int = 10_000
+_DNS_RESOLVE_CACHE: "OrderedDict[str, tuple[bool, str | None, float]]" = OrderedDict()
+
+
+def _url_scheme_is_safe(url: str) -> bool:
+    """Return True iff `url` parses to scheme == 'https'.
+
+    Anything else (``http``, ``file``, ``ftp``, ``data``, ``javascript``,
+    empty) is rejected up front. ``programs.source_url`` rows are required
+    to point at HTTPS endpoints — non-HTTPS data sources risk on-path
+    tampering and have no place in our liveness scan.
+    """
+    try:
+        parsed = urlparse(url)
+    except (ValueError, TypeError):
+        return False
+    return parsed.scheme == "https" and bool(parsed.hostname)
+
+
+def _is_private_or_reserved_ip(addr: str) -> bool:
+    """Return True iff `addr` is inside any non-publicly-routable range.
+
+    Covers loopback (127/8 + ::1), RFC1918 (10/8, 172.16/12, 192.168/16),
+    link-local (169.254/16 + fe80::/10), unique-local (fc00::/7),
+    multicast (224/4 + ff00::/8), reserved, and the canonical AWS IMDS
+    address ``169.254.169.254``. ``ipaddress.IPv*Address`` already covers
+    all of these via its ``is_*`` properties.
+    """
+    try:
+        ip = ipaddress.ip_address(addr)
+    except ValueError:
+        # Unparseable as a numeric IP — treat as private for safety; the
+        # caller will be the one to convert a hostname into IPs and pass
+        # those in, so we should never see a non-IP literal here.
+        return True
+    return bool(
+        ip.is_private
+        or ip.is_loopback
+        or ip.is_link_local
+        or ip.is_multicast
+        or ip.is_reserved
+        or ip.is_unspecified
+    )
+
+
+def _cache_store(host: str, verdict: tuple[bool, str | None]) -> tuple[bool, str | None]:
+    """Insert ``verdict`` for ``host`` with the current timestamp.
+
+    LRU bound: when the cache is at capacity, drop the oldest entry
+    (``popitem(last=False)``) before the new insert. ``move_to_end`` keeps
+    the most-recently-written entry at the tail so eviction always targets
+    the staleest write.
+    """
+    now = time.time()
+    if host in _DNS_RESOLVE_CACHE:
+        _DNS_RESOLVE_CACHE.move_to_end(host)
+    _DNS_RESOLVE_CACHE[host] = (verdict[0], verdict[1], now)
+    while len(_DNS_RESOLVE_CACHE) > _DNS_RESOLVE_CACHE_MAX:
+        _DNS_RESOLVE_CACHE.popitem(last=False)
+    return verdict
+
+
+def _resolve_host_safely(host: str) -> tuple[bool, str | None]:
+    """Resolve `host` and return ``(is_safe, reason)``.
+
+    ``is_safe`` is True iff EVERY A/AAAA answer is publicly routable.
+    Any answer falling inside an RFC 1918 / 6890 range — including the
+    AWS IMDS ``169.254.169.254`` — flips the verdict to False.
+
+    Cached with a 5-minute TTL and a 10,000-entry LRU bound. Entries
+    older than ``_DNS_RESOLVE_TTL_SEC`` are re-resolved on next access
+    so a host that drift-rebinds to an internal IP after the first
+    check does NOT stay "safe" forever. DNS failures (NXDOMAIN,
+    timeout) are treated as unsafe — we err on the side of NOT fetching.
+    """
+    cached = _DNS_RESOLVE_CACHE.get(host)
+    if cached is not None:
+        is_safe, reason, cached_at = cached
+        if time.time() - cached_at <= _DNS_RESOLVE_TTL_SEC:
+            _DNS_RESOLVE_CACHE.move_to_end(host)
+            return is_safe, reason
+        # Stale — fall through to re-resolve and overwrite.
+        del _DNS_RESOLVE_CACHE[host]
+
+    try:
+        infos = socket.getaddrinfo(host, None)
+    except (socket.gaierror, OSError) as exc:
+        return _cache_store(host, (False, f"dns:{type(exc).__name__}"))
+
+    if not infos:
+        return _cache_store(host, (False, "dns:no_answers"))
+
+    for info in infos:
+        sockaddr = info[4]
+        addr = sockaddr[0]
+        # IPv6 sockaddr may carry a zone suffix like 'fe80::1%eth0' — strip
+        # it before passing to ipaddress.
+        if "%" in addr:
+            addr = addr.split("%", 1)[0]
+        if _is_private_or_reserved_ip(addr):
+            return _cache_store(host, (False, f"dns:private:{addr}"))
+
+    return _cache_store(host, (True, None))
+
+
+def is_url_safe(url: str) -> tuple[bool, str | None]:
+    """Return ``(is_safe, reason)`` for `url`.
+
+    The two-stage gate is:
+      1. Scheme must be HTTPS (no http://, no file://, no scheme-less).
+      2. The host must resolve, and every A/AAAA answer must be a
+         publicly routable address. Any private / loopback / link-local /
+         multicast / reserved / IMDS address fails the gate.
+
+    Caller is expected to record a liveness failure on a False verdict, NOT
+    to fall through to a HEAD/GET. The reason string is opaque to the
+    caller; it shows up in the run report so an operator can fix the bad
+    ``programs.source_url`` row directly.
+    """
+    if not _url_scheme_is_safe(url):
+        return False, "scheme_not_https"
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").strip().lower()
+    if not host:
+        return False, "no_host"
+    return _resolve_host_safely(host)
 
 # Tier scope is now S,A,B,C by default — Tier X is the quarantine tier per
 # CLAUDE.md and is intentionally excluded from every search path, this scan
@@ -328,6 +482,34 @@ async def handle_row(
     parsed = urlparse(url)
     host = (parsed.hostname or "").lower() or "(no-host)"
 
+    # R2 P2 (2026-05-13): refuse to probe non-HTTPS URLs or hosts that
+    # resolve to a private / loopback / link-local / IMDS address. The
+    # check runs in a thread pool because socket.getaddrinfo is blocking
+    # and we're inside the async loop. A refused row is a liveness failure:
+    # we do not fetch it, but it still advances the 3-strike quarantine
+    # counter because the source cannot be safely checked.
+    safe, reason = await asyncio.to_thread(is_url_safe, url)
+    if not safe:
+        stats["unsafe_url"] += 1
+        new_fail_count = row["source_fail_count"] + 1
+        quarantined = new_fail_count >= QUARANTINE_THRESHOLD
+        if quarantined:
+            stats["quarantined"] += 1
+        changes.append(
+            {
+                "unified_id": unified_id,
+                "url": url,
+                "host": host,
+                "outcome": "unsafe_url",
+                "status": None,
+                "final_url": None,
+                "error": reason,
+                "fail_count_after": new_fail_count,
+                "quarantined": quarantined,
+            }
+        )
+        return
+
     async with global_sem:
         per_host[host] += 1
 
@@ -351,6 +533,10 @@ async def handle_row(
 
     if status is None:
         stats["error"] += 1
+        new_fail_count = row["source_fail_count"] + 1
+        quarantined = new_fail_count >= QUARANTINE_THRESHOLD
+        if quarantined:
+            stats["quarantined"] += 1
         outcome = "error"
         changes.append(
             {
@@ -361,7 +547,8 @@ async def handle_row(
                 "status": None,
                 "final_url": None,
                 "error": error,
-                "fail_count_after": row["source_fail_count"] + 1,
+                "fail_count_after": new_fail_count,
+                "quarantined": quarantined,
             }
         )
         return
@@ -431,7 +618,7 @@ def commit_changes(
                 written["would_update_fetched_at"] += 1
             if ch.get("redirected_host"):
                 written["would_log_redirect"] += 1
-            if ch["outcome"] == "fail":
+            if ch["outcome"] in FAILURE_OUTCOMES:
                 written["would_increment_fail"] += 1
                 if ch.get("quarantined"):
                     written["would_quarantine"] += 1
@@ -459,9 +646,12 @@ def commit_changes(
             )
             written["log_redirect"] += 1
 
-        if outcome == "fail":
+        if outcome in FAILURE_OUTCOMES:
             new_count = ch["fail_count_after"]
-            action = "increment_fail_count"
+            reason = ch.get("error") or (
+                f"http_{status}" if status is not None else "unknown"
+            )
+            action = f"increment_fail_count:{outcome}:{reason}"
             if ch.get("quarantined"):
                 cur.execute(
                     "UPDATE programs SET excluded=1, tier='X', "
@@ -471,7 +661,7 @@ def commit_changes(
                     (status, new_count, uid),
                 )
                 written["quarantine"] += 1
-                action = "quarantined"
+                action = f"quarantined_after_{QUARANTINE_THRESHOLD}:{outcome}:{reason}"
             else:
                 cur.execute(
                     "UPDATE programs SET source_last_check_status=?, "
@@ -485,23 +675,6 @@ def commit_changes(
                 "VALUES (?, ?, ?, ?)",
                 (uid, ch["url"], status, action),
             )
-
-        if outcome == "error":
-            # Treat transport errors like a soft-fail — bump counter but do
-            # not quarantine on a single error. Revisit if flaky networks
-            # cause thrashing.
-            cur.execute(
-                "UPDATE programs SET source_last_check_status=?, "
-                "source_fail_count=? WHERE unified_id=?",
-                (status, ch["fail_count_after"], uid),
-            )
-            cur.execute(
-                "INSERT INTO source_failures "
-                "(unified_id, source_url, status_code, action) "
-                "VALUES (?, ?, ?, ?)",
-                (uid, ch["url"], None, "error_increment"),
-            )
-            written["error_increment"] += 1
 
     con.commit()
     return written
@@ -553,6 +726,7 @@ async def run_async(
                     f"redirect={stats['redirect_host_changed']} "
                     f"fail={stats['fail']} "
                     f"error={stats['error']} "
+                    f"unsafe_url={stats['unsafe_url']} "
                     f"quarantined={stats['quarantined']}",
                     flush=True,
                 )
@@ -578,7 +752,7 @@ def build_report(
     elapsed = time.monotonic() - started_at
     host_fail: Counter[str] = Counter()
     for ch in changes:
-        if ch["outcome"] in ("fail", "error"):
+        if ch["outcome"] in FAILURE_OUTCOMES:
             host_fail[ch["host"]] += 1
 
     quarantined_ids = [ch["unified_id"] for ch in changes if ch.get("quarantined")]
@@ -596,7 +770,7 @@ def build_report(
         outcome = ch["outcome"]
         if outcome in ("ok", "ok_redirected"):
             per_tier_ok[tier] += 1
-        elif outcome in ("fail", "error", "redirect_unresolved"):
+        elif outcome in FAILURE_OUTCOMES or outcome == "redirect_unresolved":
             per_tier_dead[tier] += 1
 
     per_tier = {

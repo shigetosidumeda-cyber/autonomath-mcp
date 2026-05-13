@@ -104,10 +104,14 @@ def _normalize_houjin(raw: str) -> str | None:
     return s
 
 
+def _fy_window(fiscal_year: int) -> tuple[str, str]:
+    return f"{fiscal_year:04d}-04-01", f"{fiscal_year + 1:04d}-04-01"
+
+
 def _build_workpaper(
     conn: sqlite3.Connection, houjin_id: str, fiscal_year: int
 ) -> dict[str, Any] | None:
-    fy_start = f"{fiscal_year:04d}-04-01"
+    fy_start, fy_stop = _fy_window(fiscal_year)
     fy_end = f"{fiscal_year + 1:04d}-03-31"
 
     # --- houjin_meta ----------------------------------------------------
@@ -116,7 +120,7 @@ def _build_workpaper(
             """
             SELECT houjin_bangou, normalized_name, address_normalized,
                    prefecture, municipality, corporation_type,
-                   jsic_major, total_adoptions, total_received_yen
+                   total_adoptions, total_received_yen
               FROM jpi_houjin_master
              WHERE houjin_bangou = ? LIMIT 1
             """,
@@ -134,7 +138,7 @@ def _build_workpaper(
         "prefecture": meta_row["prefecture"],
         "municipality": meta_row["municipality"],
         "corporation_type": meta_row["corporation_type"],
-        "jsic_major": meta_row["jsic_major"],
+        "jsic_major": None,
         "total_adoptions": meta_row["total_adoptions"],
         "total_received_yen": meta_row["total_received_yen"],
     }
@@ -142,38 +146,55 @@ def _build_workpaper(
     # --- fy_adoptions ---------------------------------------------------
     adoptions: list[dict[str, Any]] = []
     with contextlib.suppress(sqlite3.Error):
+        rows = conn.execute(
+            """
+            SELECT program_id, program_name_raw, company_name_raw, announced_at,
+                   amount_granted_yen
+              FROM jpi_adoption_records
+             WHERE houjin_bangou = ?
+               AND announced_at >= ?
+               AND announced_at < ?
+             ORDER BY announced_at DESC LIMIT 50
+            """,
+            (houjin_id, fy_start, fy_stop),
+        ).fetchall()
         adoptions = [
-            dict(r)
-            for r in conn.execute(
-                """
-                SELECT program_id, program_name, applicant_name, award_date,
-                       amount_yen, fiscal_year, announce_date
-                  FROM jpi_adoption_records
-                 WHERE applicant_houjin_bangou = ?
-                   AND ((award_date BETWEEN ? AND ?)
-                        OR (announce_date BETWEEN ? AND ?))
-                 ORDER BY COALESCE(award_date, announce_date) DESC LIMIT 50
-                """,
-                (houjin_id, fy_start, fy_end, fy_start, fy_end),
-            ).fetchall()
+            {
+                "program_id": r["program_id"],
+                "program_name": r["program_name_raw"],
+                "applicant_name": r["company_name_raw"],
+                "award_date": r["announced_at"],
+                "amount_yen": r["amount_granted_yen"],
+                "fiscal_year": fiscal_year,
+                "announce_date": r["announced_at"],
+            }
+            for r in rows
         ]
 
     # --- fy_enforcement -------------------------------------------------
     enforcement: list[dict[str, Any]] = []
     with contextlib.suppress(sqlite3.Error):
+        rows = conn.execute(
+            """
+            SELECT enforcement_id, enforcement_kind, issuance_date, amount_yen,
+                   reason_summary, source_url
+              FROM am_enforcement_detail
+             WHERE houjin_bangou = ?
+               AND issuance_date BETWEEN ? AND ?
+             ORDER BY issuance_date DESC LIMIT 30
+            """,
+            (houjin_id, fy_start, fy_end),
+        ).fetchall()
         enforcement = [
-            dict(r)
-            for r in conn.execute(
-                """
-                SELECT detail_id, enforcement_kind, enforcement_date, amount_yen,
-                       summary, source_url
-                  FROM am_enforcement_detail
-                 WHERE houjin_bangou = ?
-                   AND enforcement_date BETWEEN ? AND ?
-                 ORDER BY enforcement_date DESC LIMIT 30
-                """,
-                (houjin_id, fy_start, fy_end),
-            ).fetchall()
+            {
+                "detail_id": r["enforcement_id"],
+                "enforcement_kind": r["enforcement_kind"],
+                "enforcement_date": r["issuance_date"],
+                "amount_yen": r["amount_yen"],
+                "summary": r["reason_summary"],
+                "source_url": r["source_url"],
+            }
+            for r in rows
         ]
 
     # --- jurisdiction ---------------------------------------------------
@@ -193,7 +214,7 @@ def _build_workpaper(
             jurisdiction["invoice_prefecture"] = inv["prefecture"]
         op = conn.execute(
             "SELECT prefecture FROM jpi_adoption_records "
-            "WHERE applicant_houjin_bangou = ? AND prefecture IS NOT NULL "
+            "WHERE houjin_bangou = ? AND prefecture IS NOT NULL "
             "GROUP BY prefecture ORDER BY COUNT(*) DESC LIMIT 1",
             (houjin_id,),
         ).fetchone()
@@ -216,10 +237,11 @@ def _build_workpaper(
                            detected_at, source_url
                       FROM am_amendment_diff
                      WHERE entity_id IN ({placeholders})
-                       AND substr(detected_at, 1, 10) BETWEEN ? AND ?
+                       AND detected_at >= ?
+                       AND detected_at < ?
                      ORDER BY detected_at DESC LIMIT 60
                     """,
-                    (*active_pids, fy_start, fy_end),
+                    (*active_pids, fy_start, fy_stop),
                 ).fetchall()
             ]
 
@@ -328,15 +350,17 @@ def post_audit_workpaper(
             },
         )
 
-    # log_usage: 5 units composition.
-    with contextlib.suppress(Exception):
+    # log_usage: 5 units composition. Anonymous calls remain unmetered;
+    # authenticated calls must leave a usage row instead of silently underbilling.
+    if ctx.key_hash is not None:
         log_usage(
-            request,
+            conn,
             ctx,
-            endpoint_short="audit_workpaper",
+            "audit_workpaper",
+            request=request,
             quantity=5,
-            elapsed_ms=int((time.perf_counter() - t0) * 1000),
-            db_conn=conn,
+            latency_ms=int((time.perf_counter() - t0) * 1000),
+            strict_metering=ctx.metered,
         )
     return JSONResponse(content=body)
 
@@ -437,15 +461,7 @@ def get_audit_workpaper_schema(
     ctx: ApiContextDep,
     conn: DbDep,
 ) -> JSONResponse:
-    t0 = time.perf_counter()
-    # log_usage: 0 units — discovery surface, not a billed compose.
-    with contextlib.suppress(Exception):
-        log_usage(
-            request,
-            ctx,
-            endpoint_short="audit_workpaper_schema",
-            quantity=0,
-            elapsed_ms=int((time.perf_counter() - t0) * 1000),
-            db_conn=conn,
-        )
+    # Intentionally not metered: log_usage() clamps quantity < 1 to 1, while
+    # this discovery surface is documented as 0 units.
+    _ = (request, ctx, conn)
     return JSONResponse(content=_WORKPAPER_SCHEMA)

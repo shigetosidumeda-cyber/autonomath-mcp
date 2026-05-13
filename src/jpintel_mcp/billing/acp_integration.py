@@ -49,22 +49,20 @@ call on our side. Same posture as `billing.py` / `credit_pack.py`.
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import os
 import secrets
 import sqlite3
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any
+from urllib.parse import urlparse
 
 import stripe
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.billing.keys import issue_key
 from jpintel_mcp.config import settings
-
-if TYPE_CHECKING:
-    pass
-
 
 logger = logging.getLogger("jpintel.billing.acp")
 
@@ -283,59 +281,83 @@ def confirm_acp_session(
 
     token_hash = hashlib.sha256(agent_token.encode("utf-8")).hexdigest()
 
-    row = conn.execute(
-        """
-        SELECT id, agent_id, email, status, expires_at
-        FROM acp_session_bind
-        WHERE agent_token_hash = ? AND stripe_session_id = ?
-        """,
-        (token_hash, session_id),
-    ).fetchone()
-    if row is None:
-        raise PermissionError("acp_session_not_found")
-    bind_id, agent_id, email, status_str, expires_at_iso = row
-    if status_str == "confirmed":
-        raise PermissionError("acp_session_already_confirmed")
-    if status_str == "expired":
-        raise PermissionError("acp_session_expired")
+    txn_started = False
+    try:
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+            txn_started = True
 
-    expires_dt = datetime.fromisoformat(expires_at_iso)
-    if expires_dt.tzinfo is None:
-        expires_dt = expires_dt.replace(tzinfo=UTC)
-    if datetime.now(UTC) > expires_dt:
-        conn.execute(
-            "UPDATE acp_session_bind SET status='expired' WHERE id = ?", (bind_id,)
+        row = conn.execute(
+            """
+            SELECT id, status, expires_at
+            FROM acp_session_bind
+            WHERE agent_token_hash = ? AND stripe_session_id = ?
+            """,
+            (token_hash, session_id),
+        ).fetchone()
+        if row is None:
+            raise PermissionError("acp_session_not_found")
+        bind_id, status_str, expires_at_iso = row
+        if status_str == "confirmed":
+            raise PermissionError("acp_session_already_confirmed")
+        if status_str == "expired":
+            raise PermissionError("acp_session_expired")
+
+        expires_dt = datetime.fromisoformat(expires_at_iso)
+        if expires_dt.tzinfo is None:
+            expires_dt = expires_dt.replace(tzinfo=UTC)
+        if datetime.now(UTC) > expires_dt:
+            conn.execute(
+                "UPDATE acp_session_bind SET status='expired' WHERE id = ?",
+                (bind_id,),
+            )
+            conn.commit()
+            txn_started = False
+            raise PermissionError("acp_session_expired")
+
+        # Verify the Stripe-side session is paid + has a subscription. This
+        # happens while the row is locked so a replay cannot pass the pending
+        # status check and mint a second raw key.
+        session = stripe.checkout.Session.retrieve(session_id, expand=["subscription"])
+        payment_status = (
+            session["payment_status"] if isinstance(session, dict) else session.payment_status
         )
+        if payment_status != "paid":
+            raise PermissionError(f"acp_session_not_paid: {payment_status}")
+
+        customer_id = str(session["customer"] if isinstance(session, dict) else session.customer)
+        subscription = session["subscription"] if isinstance(session, dict) else session.subscription
+        subscription_id = str(
+            subscription["id"]
+            if isinstance(subscription, dict)
+            else getattr(subscription, "id", subscription)
+        )
+
+        # Issue the metered API key. tier='paid' per the metered-only contract.
+        raw_key = issue_key(
+            conn,
+            customer_id=customer_id,
+            tier="paid",
+            stripe_subscription_id=subscription_id,
+        )
+
+        cur = conn.execute(
+            """
+            UPDATE acp_session_bind
+            SET status='confirmed', confirmed_at = datetime('now')
+            WHERE id = ? AND status='pending'
+            """,
+            (bind_id,),
+        )
+        if cur.rowcount != 1:
+            raise PermissionError("acp_session_already_confirmed")
         conn.commit()
-        raise PermissionError("acp_session_expired")
-
-    # Verify the Stripe-side session is paid + has a subscription.
-    session = stripe.checkout.Session.retrieve(session_id, expand=["subscription"])
-    payment_status = (
-        session["payment_status"] if isinstance(session, dict) else session.payment_status
-    )
-    if payment_status != "paid":
-        raise PermissionError(f"acp_session_not_paid: {payment_status}")
-
-    customer_id = str(session["customer"] if isinstance(session, dict) else session.customer)
-    subscription = session["subscription"] if isinstance(session, dict) else session.subscription
-    subscription_id = str(
-        subscription["id"] if isinstance(subscription, dict) else getattr(subscription, "id", subscription)
-    )
-
-    # Issue the metered API key. tier='paid' per the metered-only contract.
-    raw_key = issue_key(
-        conn,
-        customer_id=customer_id,
-        tier="paid",
-        stripe_subscription_id=subscription_id,
-    )
-
-    conn.execute(
-        "UPDATE acp_session_bind SET status='confirmed', confirmed_at = datetime('now') WHERE id = ?",
-        (bind_id,),
-    )
-    conn.commit()
+        txn_started = False
+    except Exception:
+        if txn_started:
+            with contextlib.suppress(Exception):
+                conn.rollback()
+        raise
 
     return AcpConfirmResponse(
         api_key=raw_key,
@@ -366,6 +388,10 @@ def create_acp_portal_link(
         "STRIPE_PORTAL_RETURN_URL", "https://jpcite.com/dashboard.html#billing"
     )
     effective_return = return_url or fallback_return
+    parsed_return = urlparse(effective_return)
+    allowed_hosts = {"jpcite.com", "www.jpcite.com", "api.jpcite.com"}
+    if parsed_return.scheme != "https" or parsed_return.hostname not in allowed_hosts:
+        raise ValueError("portal_return_url_not_allowed")
 
     portal = stripe.billing_portal.Session.create(
         customer=customer_id,

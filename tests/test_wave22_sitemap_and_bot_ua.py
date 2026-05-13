@@ -9,11 +9,10 @@ Background
 ==========
 
 1. **Sitemap correction (companion-Markdown).** Wave 17 generated companion
-   ``.md`` URLs by enumerating every ``.html`` page (theoretical ceiling
-   ~10,264). Wave 22 swapped the generator to ``--scan-md-only`` which walks
-   the *actual* ``.md`` inventory on disk: 2,286 cases + 2,200 laws + 300
-   enforcement = **4,786 URLs**. This test guards the count from regressing
-   back to the inflated number.
+   ``.md`` URLs by enumerating every ``.html`` page. Wave 22 swapped the
+   generator to ``--scan-md-only`` which walks the *actual* ``.md`` inventory
+   on disk. Wave 46 also added the small root/press/legal/security companion
+   surface, so this test counts the same public inventory as the generator.
 
 2. **Sitemap shard registration.** ``scripts/sitemap_gen.py``'s
    ``KNOWN_BASENAMES`` must include ``sitemap-companion-md.xml`` so the
@@ -68,12 +67,30 @@ def _count_md_files(category_dir: Path) -> int:
     )
 
 
+def _count_root_companion_md_files() -> int:
+    """Count root/press/legal/security .md files included by the generator."""
+    include_globs = (
+        "*.html.md",
+        "press/*.md",
+        "legal/*.md",
+        "security/*.md",
+    )
+    exclude_names = {"README.md", "BRAND.md", "index.md"}
+    paths = {
+        p
+        for pattern in include_globs
+        for p in SITE_DIR.glob(pattern)
+        if p.is_file() and p.name not in exclude_names
+    }
+    return len(paths)
+
+
 def test_companion_md_sitemap_matches_disk_inventory() -> None:
     """sitemap-companion-md.xml URL count must match the on-disk .md count.
 
-    The Wave 22 correction shifted from HTML-derived URLs (~10,264) to the
-    actual .md inventory (~4,786). This test guards against silently
-    regenerating from the HTML side or losing .md files on disk.
+    The Wave 22 correction shifted from HTML-derived URLs to the actual .md
+    inventory. Wave 46 added public root/press/legal/security .md surfaces, so
+    the expected count mirrors scripts/generate_sitemap_companion_md.py.
     """
     assert SITEMAP_COMPANION_MD_PATH.is_file(), (
         f"missing {SITEMAP_COMPANION_MD_PATH}"
@@ -84,20 +101,20 @@ def test_companion_md_sitemap_matches_disk_inventory() -> None:
     cases_count = _count_md_files(SITE_DIR / "cases")
     laws_count = _count_md_files(SITE_DIR / "laws")
     enforcement_count = _count_md_files(SITE_DIR / "enforcement")
-    disk_count = cases_count + laws_count + enforcement_count
+    root_count = _count_root_companion_md_files()
+    disk_count = cases_count + laws_count + enforcement_count + root_count
 
-    # Allow a small +/- delta in case generation lags by one cron tick.
     assert sitemap_count == disk_count, (
         f"sitemap-companion-md.xml has {sitemap_count} URLs but disk has "
         f"{disk_count} .md files (cases={cases_count}, laws={laws_count}, "
-        f"enforcement={enforcement_count})"
+        f"enforcement={enforcement_count}, root={root_count})"
     )
 
-    # Hard floor — we never want this to silently regress to zero or to the
-    # inflated 10,264 theoretical number.
-    assert 4000 <= sitemap_count <= 6000, (
+    # Hard floor — we never want this to silently regress to zero or to a
+    # partial category subset.
+    assert 10000 <= sitemap_count <= 11000, (
         f"sitemap-companion-md.xml URL count {sitemap_count} outside the "
-        "expected 4,000-6,000 band (Wave 22 target ≈ 4,786)"
+        "expected 10,000-11,000 band"
     )
 
 
@@ -124,7 +141,7 @@ def test_companion_md_sitemap_referenced_from_index() -> None:
     index_xml = SITEMAP_INDEX_PATH.read_text(encoding="utf-8")
     assert "sitemap-companion-md.xml" in index_xml, (
         "sitemap-index.xml does not reference sitemap-companion-md.xml — "
-        "AI crawlers will not discover the 4,786 .md companion URLs"
+        "AI crawlers will not discover the companion .md URLs"
     )
 
 

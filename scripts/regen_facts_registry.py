@@ -98,6 +98,7 @@ _LEGACY_BRAND_SUBSTRINGS = (
     "税務会計AI",
     "zeimu-kaikei",
 )
+_PUBLIC_FACT_BLOCKLIST = frozenset({"prod_branch", "prod_git_sha", "fly_app_name"})
 
 
 def _has_banned_host(url: str | None) -> bool:
@@ -145,9 +146,7 @@ def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
     return row is not None
 
 
-def _query_iter(
-    conn: sqlite3.Connection, sql: str, params: tuple = ()
-) -> Iterable[sqlite3.Row]:
+def _query_iter(conn: sqlite3.Connection, sql: str, params: tuple = ()) -> Iterable[sqlite3.Row]:
     try:
         cur = conn.execute(sql, params)
     except sqlite3.Error:
@@ -382,9 +381,7 @@ def harvest_cases(jpi: sqlite3.Connection | None, auto: sqlite3.Connection | Non
             )
 
 
-def harvest_enforcement(
-    jpi: sqlite3.Connection | None, auto: sqlite3.Connection | None
-):
+def harvest_enforcement(jpi: sqlite3.Connection | None, auto: sqlite3.Connection | None):
     """jpintel.enforcement_cases SOT; autonomath fallback only when jpintel yields 0."""
     seen: set[str] = set()
     jpi_yielded = 0
@@ -452,9 +449,7 @@ def harvest_enforcement(
 # ------------------------------------------------------------------
 
 
-def build_records(
-    jpi: sqlite3.Connection | None, auto: sqlite3.Connection | None
-) -> list[dict]:
+def build_records(jpi: sqlite3.Connection | None, auto: sqlite3.Connection | None) -> list[dict]:
     out: list[dict] = []
     for fn in (harvest_programs, harvest_laws, harvest_cases, harvest_enforcement):
         for (
@@ -543,9 +538,7 @@ def write_atomic(path: Path, payload: dict, bulk_keys: tuple[str, ...] = ()) -> 
         if needle in body:
             body = body.replace(needle, compact, 1)
     body += "\n"
-    fd, tmp_name = tempfile.mkstemp(
-        prefix=path.stem + ".", suffix=".tmp", dir=str(path.parent)
-    )
+    fd, tmp_name = tempfile.mkstemp(prefix=path.stem + ".", suffix=".tmp", dir=str(path.parent))
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
             fh.write(body)
@@ -567,6 +560,23 @@ def load_existing_core(path: Path) -> dict:
         return {}
 
 
+def _public_light_facts(facts: object) -> list[dict]:
+    if not isinstance(facts, list):
+        return []
+    public: list[dict] = []
+    for fact in facts:
+        if not isinstance(fact, dict):
+            continue
+        if fact.get("publishable") is False:
+            continue
+        if str(fact.get("category") or "").lower() == "internal":
+            continue
+        if fact.get("key") in _PUBLIC_FACT_BLOCKLIST:
+            continue
+        public.append(fact)
+    return public
+
+
 def emit_light(
     records: list[dict],
     existing: dict,
@@ -580,7 +590,10 @@ def emit_light(
     payload["snapshot_at"] = snapshot_at
     if existing.get("snapshot_git_sha"):
         payload["snapshot_git_sha"] = existing["snapshot_git_sha"]
-    for k in ("guards", "facts", "do_not_provide", "data_quality_publishable_false"):
+    if "guards" in existing:
+        payload["guards"] = existing["guards"]
+    payload["facts"] = _public_light_facts(existing.get("facts", []))
+    for k in ("do_not_provide", "data_quality_publishable_false"):
         if k in existing:
             payload[k] = existing[k]
     # NEW — lightweight index. Keep field set minimal so file stays ~1 MB
@@ -624,9 +637,7 @@ def main() -> int:
     jpi = _connect_ro(args.jpintel_db)
     auto = _connect_ro(args.autonomath_db)
     if jpi is None and auto is None:
-        msg = (
-            f"both source DBs unavailable: {args.jpintel_db} / {args.autonomath_db}"
-        )
+        msg = f"both source DBs unavailable: {args.jpintel_db} / {args.autonomath_db}"
         if args.smoke:
             print(f"warning (smoke): {msg}; emitting empty index", file=sys.stderr)
         else:

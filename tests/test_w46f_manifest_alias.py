@@ -76,6 +76,24 @@ def test_manifest_payload_nonempty() -> None:
     )
 
 
+def test_active_manifest_entries_target_autonomath() -> None:
+    """Every active boot entry must be a first-line autonomath migration."""
+    active_entries = [
+        ln.strip()
+        for ln in JPCITE_MANIFEST.read_text(encoding="utf-8").splitlines()
+        if ln.strip() and not ln.lstrip().startswith("#")
+    ]
+    assert active_entries, "preferred jpcite boot manifest has no active entries"
+    for entry in active_entries:
+        migration = MIGRATIONS_DIR / entry
+        assert migration.is_file(), f"manifest entry missing SQL file: {entry}"
+        first_line = migration.read_text(encoding="utf-8").splitlines()[0].strip()
+        assert first_line == "-- target_db: autonomath", (
+            f"{entry} is active in the boot manifest but first line is "
+            f"{first_line!r}, expected '-- target_db: autonomath'"
+        )
+
+
 def test_entrypoint_dual_read_block_present() -> None:
     """The dual-candidate loop must be wired in entrypoint.sh."""
     src = ENTRYPOINT.read_text(encoding="utf-8")

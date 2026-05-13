@@ -9,8 +9,8 @@ Two endpoints:
 * ``GET /v1/me/benchmark_vs_industry``
   Query: ?industry_jsic&size_band&prefecture&window_days=90
   Authenticated only — frames the caller's recent usage against the same
-  cohort baseline + emits a ``leakage_programs`` list so a downstream
-  LLM can immediately ask "which 取りこぼし 制度 should I look at next?".
+  cohort baseline + emits candidate program labels so a downstream
+  LLM can immediately ask "which 制度 should I look at next?".
 
 Both wrap the pure implementation in
 ``jpintel_mcp.mcp.autonomath_tools.benchmark_tools`` so the REST and MCP
@@ -75,9 +75,8 @@ class CohortAverageBody(BaseModel):
         "業種 (JSIC 大分類 / 中分類) × 規模 (small / medium / large) × 地域 "
         "(都道府県) のコホートに対し、平均採択額 / 採択件数 / 制度hit数 "
         "(distinct_programs) / outlier 法人 (top 10% by populated 交付額) を "
-        "返します。case_studies (jpintel.db, 2,286 採択事例) と "
-        "jpi_adoption_records (autonomath.db, 201,845 V4-absorbed METI/MAFF "
-        "採択結果) を Python merge し、ATTACH/cross-DB JOIN は使いません。\n\n"
+        "返します。jpcite の採択事例データと公開採択結果データを照合し、"
+        "出典付きの集計として返します。\n\n"
         "**¥3/req single billing unit.** NO LLM. §52 / §47条の2 / 行政書士法 §1 "
         "disclaimer envelope on every result — output is information retrieval, "
         "not 申請代理 / 税務助言 / 経営判断."
@@ -138,21 +137,19 @@ def cohort_average(
     description=(
         "認証された API キーの直近 ``window_days`` (default 90) 日の usage_events "
         "を引き、同じ業種 × 規模 × 地域 cohort の平均採択額・distinct programs "
-        "と並べて返します。``leakage_programs`` は cohort が利用している program "
+        "と並べて返します。``missed_candidate_programs`` は cohort が利用している program "
         "ラベル集合のうち、呼び出し元が program touch endpoint を踏んでいない "
         "もの — 取りこぼし制度の候補です。\n\n"
-        "認証は X-API-Key / Bearer のみ。匿名は 401。usage_events は呼び出し元の "
-        "key_hash + parent/child tree (migration 086) のみを参照し、他顧客の "
-        "usage を露出しません。"
+        "認証は X-API-Key / Bearer のみ。匿名は 401。集計は呼び出し元アカウントの"
+        "利用履歴だけを参照し、他顧客の利用履歴は露出しません。"
     ),
     responses={
         **COMMON_ERROR_RESPONSES,
         200: {
             "description": (
-                "{ cohort, me, leakage_programs, axes_applied, sparsity_notes, "
-                "_disclaimer }. ``me.my_program_touches_known`` is False because "
-                "usage_events stores params_digest (hashed) — endpoint-level "
-                "touches only."
+                "{ cohort, me, missed_candidate_programs, axes_applied, "
+                "sparsity_notes, _disclaimer }. ``me.my_program_touches_known`` "
+                "may be False when only endpoint-level touches are available."
             ),
         },
     },

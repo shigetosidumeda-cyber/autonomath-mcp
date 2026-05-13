@@ -18,6 +18,7 @@ import pathlib
 import re
 import sqlite3
 import sys
+from contextlib import suppress
 
 import pytest
 
@@ -29,18 +30,13 @@ if str(_REPO_SRC) not in sys.path:
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIGRATION_PATH = REPO_ROOT / "scripts" / "migrations" / "260_vec_e5_small_384.sql"
-ROLLBACK_PATH = (
-    REPO_ROOT / "scripts" / "migrations" / "260_vec_e5_small_384_rollback.sql"
-)
+ROLLBACK_PATH = REPO_ROOT / "scripts" / "migrations" / "260_vec_e5_small_384_rollback.sql"
 ETL_PATH = REPO_ROOT / "scripts" / "etl" / "build_e5_embeddings_v2.py"
 REST_API_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "semantic_search_v2.py"
 MCP_TOOL_PATH = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" /
-    "semantic_search_v2.py"
+    REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "semantic_search_v2.py"
 )
-BOOT_MANIFEST = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+BOOT_MANIFEST = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 
 @pytest.fixture
@@ -62,10 +58,8 @@ def vec_e5_schema(tmp_path):
             s = stmt.strip()
             if not s or "USING vec0" in s:
                 continue
-            try:
+            with suppress(sqlite3.OperationalError):
                 conn.execute(s)
-            except sqlite3.OperationalError:
-                pass
         conn.commit()
     yield conn
     conn.close()
@@ -105,8 +99,7 @@ def test_reranker_score_cache_table(vec_e5_schema):
 def test_embed_log_table(vec_e5_schema):
     conn = vec_e5_schema
     row = conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' "
-        "AND name='am_entities_vec_e5_embed_log'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='am_entities_vec_e5_embed_log'"
     ).fetchone()
     assert row
     schema = conn.execute(
@@ -250,9 +243,15 @@ def test_sentence_transformers_is_allowed():
     assert "sentence_transformers" in rest_src
 
 
-def test_boot_manifest_contains_migration_260():
+def test_boot_manifest_keeps_vec0_migration_manual():
     manifest = BOOT_MANIFEST.read_text(encoding="utf-8")
-    assert "260_vec_e5_small_384.sql" in manifest
+    active_entries = [
+        line.strip()
+        for line in manifest.splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+    assert "260_vec_e5_small_384.sql" not in active_entries
+    assert "vec0" in MIGRATION_PATH.read_text(encoding="utf-8")
 
 
 def test_etl_dry_run_handles_missing_model(tmp_path, monkeypatch):

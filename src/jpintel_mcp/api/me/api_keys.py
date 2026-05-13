@@ -48,7 +48,7 @@ docstring sentinels alone) so the regex hit count is non-zero.
 from __future__ import annotations
 
 import logging
-from typing import Annotated, Literal
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
@@ -341,7 +341,7 @@ def get_scopes(ctx: ApiContextDep, conn: DbDep) -> ScopeListResponse:
 # ---------------------------------------------------------------------------
 
 
-def require_scope(scope: ScopeLiteral) -> Annotated[None, "Depends"]:
+def require_scope(scope: ScopeLiteral):
     """Return a FastAPI dependency that enforces ``scope`` membership.
 
     Usage::
@@ -357,28 +357,21 @@ def require_scope(scope: ScopeLiteral) -> Annotated[None, "Depends"]:
     pre-Wave-18 key) carries the full scope set, so existing tokens keep
     authenticating against every endpoint without change.
 
-    On a scope-mismatch the response is the canonical envelope:
+    The dependency constrains authenticated keys only. Anonymous/public
+    requests keep flowing to the route's existing auth, tier, or validation
+    gates so adding scope checks does not turn validation errors or public
+    discovery routes into premature 401s.
+
+    On an authenticated scope-mismatch the response is the canonical envelope:
 
         {"error": {"code": "auth_required",
                    "message": "scope 'write:webhooks' missing",
                    "docs_url": "https://jpcite.com/docs/errors.html#auth_required",
                    "required_scope": "write:webhooks"}}
     """
-    from fastapi import Depends
-
     def _check(ctx: ApiContextDep, conn: DbDep) -> None:
         if ctx.key_hash is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail={
-                    "error": {
-                        "code": "auth_required",
-                        "message": f"this endpoint requires scope '{scope}'",
-                        "docs_url": "https://jpcite.com/docs/errors.html#auth_required",
-                        "required_scope": scope,
-                    }
-                },
-            )
+            return
         try:
             row = conn.execute(
                 "SELECT scope_json FROM api_keys WHERE key_hash = ?",
@@ -409,7 +402,7 @@ def require_scope(scope: ScopeLiteral) -> Annotated[None, "Depends"]:
                 },
             )
 
-    return Depends(_check)  # type: ignore[return-value]
+    return _check
 
 
 __all__ = [

@@ -56,7 +56,7 @@ jobs:
       - name: Install package
         run: pip install -e .
 
-      - name: Run B/C verify pass (HEAD→GET→SHA256 + verified_at bump)
+      - name: Run B/C liveness pass
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_TIER: ${{ github.event.inputs.tier }}
@@ -65,7 +65,7 @@ jobs:
         run: |
           set -euo pipefail
           TIER="${INPUT_TIER:-B,C}"
-          ARGS=(--tier "${TIER}" --enrich)
+          ARGS=(--tier "${TIER}")
           if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
             ARGS+=(--dry-run)
           fi

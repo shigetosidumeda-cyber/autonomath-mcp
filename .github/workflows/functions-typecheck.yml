@@ -1,0 +1,68 @@
+name: functions-typecheck
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "functions/**/*.ts"
+      - "functions/package-lock.json"
+      - "functions/package.json"
+      - "functions/tsconfig.json"
+      - ".github/workflows/functions-typecheck.yml"
+      - "tests/test_functions_typecheck.py"
+  pull_request:
+    branches: ["**"]
+    paths:
+      - "functions/**/*.ts"
+      - "functions/package-lock.json"
+      - "functions/package.json"
+      - "functions/tsconfig.json"
+      - ".github/workflows/functions-typecheck.yml"
+      - "tests/test_functions_typecheck.py"
+  workflow_dispatch:
+
+concurrency:
+  group: functions-typecheck-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  functions-typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install functions TypeScript tooling
+        run: npm ci --prefix functions
+
+      - name: Typecheck Cloudflare Pages functions
+        run: npm run --prefix functions typecheck
+
+  static-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest
+        run: python -m pip install pytest
+
+      - name: Verify functions typecheck wiring
+        run: pytest tests/test_functions_typecheck.py -q

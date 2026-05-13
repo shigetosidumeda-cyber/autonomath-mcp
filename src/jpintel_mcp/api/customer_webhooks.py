@@ -62,7 +62,7 @@ from typing import Annotated, Any, Literal
 from urllib.parse import urlparse
 
 import httpx
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.api._audit_log import log_event
@@ -71,6 +71,8 @@ from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends r
     DbDep,
     require_metered_api_key,
 )
+from jpintel_mcp.api.me.api_keys import require_scope
+from jpintel_mcp.utils.webhook_safety import SafeWebhookTransport, is_safe_webhook
 
 logger = logging.getLogger("jpintel.customer_webhooks")
 
@@ -136,7 +138,24 @@ def _is_internal_host(host: str) -> bool:
 
 
 def _validate_webhook_url(url: str) -> None:
-    """Raise HTTPException(400) on unsafe URLs. https-only, no internal hosts."""
+    """Raise HTTPException(400) on unsafe URLs. https-only, no internal hosts.
+
+    Two-tier validation:
+      1. **Cheap literal checks** (length / scheme / non-empty host / IP-literal
+         RFC1918) — these short-circuit malformed input fast and reuse
+         ``_is_internal_host`` for backwards compatibility.
+      2. **DNS-rebind defence at REGISTER time** — call
+         ``is_safe_webhook`` (the shared helper used by the dispatcher cron
+         and POST /test). This re-resolves the hostname and rejects any URL
+         whose DNS A/AAAA records point at RFC1918 / loopback / link-local /
+         multicast / reserved / unspecified space. Without this step a
+         customer can submit ``https://internal.example.com`` that resolves
+         to 10.0.0.5 at register-time and the row would be stored as
+         "active" until the dispatcher's fire-time check fires (R2 P1-4).
+
+    Reject with HTTP 400 and a detail prefixed ``webhook_target_unsafe:``
+    so callers can fast-fail without re-running the DNS resolver.
+    """
     if len(url) > 2048:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
@@ -163,6 +182,17 @@ def _validate_webhook_url(url: str) -> None:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             "url host resolves to a private/internal address",
+        )
+    # DNS-rebind defence at REGISTER time. _is_internal_host above only
+    # flags IP literals; hostnames that resolve into RFC1918 / loopback
+    # space slip through unless we resolve them here. Reuse the shared
+    # helper so register / update / test-delivery / dispatcher cron all
+    # share one definition of "safe".
+    safe, reason = is_safe_webhook(url)
+    if not safe:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"webhook_target_unsafe: {reason}",
         )
 
 
@@ -226,6 +256,19 @@ class WebhookResponse(BaseModel):
     # secret_last4 instead.
     secret_hmac: str | None = None
     secret_last4: str
+
+
+class UpdateRequest(BaseModel):
+    """Partial update for a registered webhook.
+
+    Both fields are optional; only the supplied keys are mutated. The
+    secret_hmac is intentionally NOT rotatable here — the customer
+    re-registers (DELETE + POST) to receive a fresh secret, matching
+    Stripe's webhook-endpoint posture.
+    """
+
+    url: Annotated[str, Field(max_length=2048)] | None = None
+    event_types: list[EventTypeLiteral] | None = None
 
 
 class DeleteResponse(BaseModel):
@@ -343,6 +386,7 @@ def _check_test_rate(
     "",
     response_model=WebhookResponse,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(require_scope("write:webhooks"))],
 )
 def register_webhook(
     payload: RegisterRequest,
@@ -452,7 +496,86 @@ def list_webhooks(
     return [_row_to_response(dict(r)) for r in rows]
 
 
-@router.delete("/{webhook_id}", response_model=DeleteResponse)
+@router.patch(
+    "/{webhook_id}",
+    response_model=WebhookResponse,
+    dependencies=[Depends(require_scope("write:webhooks"))],
+)
+def update_webhook(
+    webhook_id: int,
+    payload: UpdateRequest,
+    ctx: ApiContextDep,
+    conn: DbDep,
+) -> WebhookResponse:
+    """Partial update of a registered webhook.
+
+    Mutable fields: ``url`` + ``event_types`` (subset of EVENT_TYPES). The
+    secret_hmac is NOT rotatable — re-register for a fresh secret.
+
+    Same DNS-rebind gate as POST /v1/me/webhooks: ``_validate_webhook_url``
+    rejects with 400 ``webhook_target_unsafe`` when the new URL resolves to
+    RFC1918 / loopback / link-local space. Without this, the dispatcher
+    cron's fire-time check would be the first line of defence — leaving an
+    unsafe row stored on disk until dispatch.
+    """
+    if ctx.key_hash is None:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            "webhooks require an authenticated API key",
+        )
+    require_metered_api_key(ctx, "customer webhooks")
+
+    row = conn.execute(
+        "SELECT id, url, event_types_json, secret_hmac, status, failure_count, "
+        "last_delivery_at, created_at FROM customer_webhooks "
+        "WHERE id = ? AND api_key_hash = ?",
+        (webhook_id, ctx.key_hash),
+    ).fetchone()
+    if row is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "webhook not found")
+
+    new_url = payload.url if payload.url is not None else row["url"]
+    if payload.url is not None:
+        _validate_webhook_url(payload.url)
+
+    if payload.event_types is not None:
+        new_event_types_json = json.dumps(list(payload.event_types), ensure_ascii=False)
+    else:
+        new_event_types_json = row["event_types_json"]
+
+    now = datetime.now(UTC).isoformat()
+    conn.execute(
+        "UPDATE customer_webhooks SET url = ?, event_types_json = ?, "
+        "updated_at = ? WHERE id = ? AND api_key_hash = ?",
+        (new_url, new_event_types_json, now, webhook_id, ctx.key_hash),
+    )
+    updated = conn.execute(
+        "SELECT id, url, event_types_json, secret_hmac, status, failure_count, "
+        "last_delivery_at, created_at FROM customer_webhooks WHERE id = ?",
+        (webhook_id,),
+    ).fetchone()
+
+    try:
+        log_event(
+            conn,
+            event_type="webhook_update",
+            key_hash=ctx.key_hash,
+            customer_id=ctx.customer_id,
+            request=None,
+            webhook_id=webhook_id,
+            url_host=urlparse(new_url).hostname,
+        )
+    except Exception:  # pragma: no cover — audit must not block hot path
+        logger.warning("webhook_update audit failed", exc_info=True)
+
+    return _row_to_response(dict(updated))
+
+
+@router.delete(
+    "/{webhook_id}",
+    response_model=DeleteResponse,
+    dependencies=[Depends(require_scope("write:webhooks"))],
+)
 def delete_webhook(
     webhook_id: int,
     ctx: ApiContextDep,
@@ -499,7 +622,11 @@ def delete_webhook(
     return DeleteResponse(ok=True, id=webhook_id)
 
 
-@router.post("/{webhook_id}/test", response_model=TestDeliveryResponse)
+@router.post(
+    "/{webhook_id}/test",
+    response_model=TestDeliveryResponse,
+    dependencies=[Depends(require_scope("write:webhooks"))],
+)
 def test_delivery(
     webhook_id: int,
     request: Request,
@@ -544,6 +671,19 @@ def test_delivery(
             headers={"Retry-After": str(_TEST_RATE_WINDOW_S)},
         )
 
+    # DNS-rebind defence: re-validate the registered URL at fire time. A
+    # customer can register https://internal.example.com which resolved to a
+    # public IP at register-time but resolves to an RFC1918 / loopback /
+    # link-local address now. Reuse the dispatcher's `is_safe_webhook` helper
+    # (DNS resolution + private-IP rejection) so the test-delivery surface and
+    # the cron dispatcher reject the same set of targets.
+    safe, reason = is_safe_webhook(row["url"])
+    if not safe:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"webhook_target_unsafe: {reason}",
+        )
+
     now_iso = datetime.now(UTC).isoformat()
     test_payload = {
         "event_type": "test.ping",
@@ -576,18 +716,11 @@ def test_delivery(
     status_code: int | None = None
     error: str | None = None
     try:
-        with httpx.Client(timeout=_HTTPX_TIMEOUT) as client:
+        with httpx.Client(timeout=_HTTPX_TIMEOUT, transport=SafeWebhookTransport()) as client:
             r = client.post(row["url"], content=payload_bytes, headers=headers)
             status_code = r.status_code
             if r.status_code >= 300:
-                # Capture a SHORT body excerpt for debugging (most webhook
-                # consumers return JSON < 1KB on errors). Truncate hard.
-                body_excerpt = (r.text or "")[:256]
-                error = (
-                    f"http_{r.status_code}: {body_excerpt}"
-                    if body_excerpt
-                    else f"http_{r.status_code}"
-                )
+                error = f"http_{r.status_code}"
     except httpx.TimeoutException:
         error = "timeout"
     except httpx.HTTPError as exc:

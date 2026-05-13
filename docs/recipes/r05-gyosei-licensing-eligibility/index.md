@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 許認可業務 (建設業 / 産廃 / 在留資格 / 古物商 / 飲食店 / 風営) を月 5-30 件回す行政書士。法人番号 1 件入力で「必要書類リスト + 過去 5 年行政処分 history + 業法 fence + 関連補助金候補」を 1 envelope で 5 分以内に取得する。事前リサーチを 1 案件 3-6 時間 → 30 分 に短縮し、案件受任後の手戻り (許可取得後に「補助金を知らなかった」発覚 / 業者の過去処分見落とし) を防ぐ。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - `X-Client-Tag` (案件別計上、契約番号と連動)
 - 法人番号 (13 桁) or 個人事業主の T + 13 桁
 - 許認可種別 (`license_construction` / `license_waste` / `visa_engineer` / etc.)
@@ -108,7 +108,7 @@ console.log(d.packet);
 - `search_certifications` (経営事項審査 / 監理技術者 等)
 - `get_corp_360` (法人 360 度ビュー)
 - `check_exclusions` (排他ルール 181 件チェック)
-- `pack_construction` (Wave 23、建設業 industry pack)
+- `pack_construction` (公開版 23、建設業 industry pack)
 
 ## 関連 recipe
 - [r06-sharoushi-grant-match](../r06-sharoushi-grant-match/) — 社労士助成金マッチ
@@ -119,7 +119,6 @@ console.log(d.packet);
 - 1 案件 6 units × ¥3 = ¥18 / 案件
 - 月 25 案件 = ¥450 / 月、税込 ¥495
 - 月 50 案件 (大手事務所) = ¥900 / 月、税込 ¥990
-- 節約 (純 LLM vs jpcite ¥3/req): 月 25 案件で、純 LLM は約 ¥1,500/月 (1 案件 cycle ¥60 = source 4,000 + tool 3) に対し jpcite は ¥450/月 (150 req × ¥3) → 節約 約 ¥1,050/月 / 案件あたり ¥42 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0
@@ -127,7 +126,7 @@ console.log(d.packet);
 - 顧客 (依頼者) への提供は事実通知に留め、法的判断は別途行政書士
 
 ## 業法 fence
-- 行政書士法 §1 — 申請書面作成は行政書士独占、本 recipe は scaffold + 一次 URL まで
+- 行政書士法 §1 — 申請書面作成は行政書士独占、本 recipe は 項目整理 + 一次 URL まで
 - 行政書士法 §13 / §14 — 懲戒対象を回避するため過去処分歴の見落とし防止を支援
 - 弁護士法 §72 — 法的紛争予測は弁護士、本 recipe は事実列挙
 - 司法書士法 §3 — 登記関連は司法書士、本 recipe は登記簿補完情報まで

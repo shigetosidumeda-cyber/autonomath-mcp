@@ -10,7 +10,7 @@ name: dispatch-webhooks-cron
 # Each successful HTTP 2xx delivery emits one Stripe usage_record at
 # ¥3/req. Failed deliveries (timeout, 4xx, 5xx) and retries do NOT bill.
 #
-# Cadence: every 10 minutes (workflow runs at :05 / :15 / :25 / ... ).
+# Cadence: every 10 minutes (workflow runs at :07 / :17 / :27 / ... ).
 # 5 minutes is the GitHub Actions practical floor and the Fly billing
 # concern. 10 minutes balances delivery latency against thundering-herd
 # risk on the autonomath-api machine.
@@ -21,20 +21,26 @@ name: dispatch-webhooks-cron
 # Required Fly machine secrets:
 #   STRIPE_SECRET_KEY    For the usage_record POST on successful delivery.
 #   SENTRY_DSN           Optional. Hard failures emit a Sentry breadcrumb.
+#
+# Production mutation safety:
+#   Manual runs default to --dry-run. Scheduled/manual live dispatch requires
+#   PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; otherwise the Fly SSH
+#   command forces --dry-run.
 
 on:
   schedule:
-    # */10 = every 10 minutes. NOTE: GitHub Actions cron has up to 15-min
+    # Every 10 minutes, offset from :00/:30 same-day and :05/:35 backfill.
+    # NOTE: GitHub Actions cron has up to 15-min
     # scheduling jitter under load, so this is a "best-effort 10-min" not
     # a hard SLA. For sub-minute delivery use the in-process bg worker
     # (api/_bg_task_worker.py) — this cron is the durable retry layer.
-    - cron: "*/10 * * * *"
+    - cron: "7,17,27,37,47,57 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
         description: "Run with --dry-run (no HTTP POST, no Stripe usage record)"
         required: false
-        default: "false"
+        default: "true"
         type: choice
         options:
           - "true"
@@ -61,11 +67,21 @@ jobs:
       - name: Dispatch pending webhooks
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
         run: |
           set -euo pipefail
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN unset; skipping dispatch-webhooks-cron."
+            exit 0
+          fi
           FLAGS=""
-          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="--dry-run"
+          elif [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" != "I_ACK_PROD_DB_MUTATION" ]; then
+            echo "::warning::Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
+            FLAGS="--dry-run"
+          fi
           flyctl ssh console -a autonomath-api -C \
             "/opt/venv/bin/python /app/scripts/cron/dispatch_webhooks.py ${FLAGS}"
 

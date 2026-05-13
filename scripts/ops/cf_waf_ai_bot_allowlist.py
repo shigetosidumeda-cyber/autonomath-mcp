@@ -118,7 +118,9 @@ def desired_rule() -> dict[str, Any]:
     }
 
 
-def cf_request(method: str, path: str, token: str, body: dict[str, Any] | None = None) -> dict[str, Any] | None:
+def cf_request(
+    method: str, path: str, token: str, body: dict[str, Any] | None = None
+) -> dict[str, Any] | None:
     data = None if body is None else json.dumps(body).encode("utf-8")
     request = urllib.request.Request(
         f"{API_BASE}{path}",
@@ -149,7 +151,15 @@ def get_entrypoint(zone_id: str, token: str) -> dict[str, Any] | None:
 
 
 def clean_existing_rule(rule: dict[str, Any]) -> dict[str, Any]:
-    allowed = {"ref", "description", "expression", "action", "action_parameters", "enabled", "logging"}
+    allowed = {
+        "ref",
+        "description",
+        "expression",
+        "action",
+        "action_parameters",
+        "enabled",
+        "logging",
+    }
     return {k: v for k, v in rule.items() if k in allowed}
 
 
@@ -188,7 +198,9 @@ def apply(zone_id: str, token: str) -> None:
     }
     data = cf_request("PUT", f"/zones/{zone_id}/rulesets/{entry['id']}", token, body)
     rid = data["result"]["id"] if data else entry["id"]
-    print(f"[OK] updated firewall_custom ruleset id={rid} ({RULE_REF} present, rules={len(merged)})")
+    print(
+        f"[OK] updated firewall_custom ruleset id={rid} ({RULE_REF} present, rules={len(merged)})"
+    )
 
 
 def main(argv: list[str]) -> int:

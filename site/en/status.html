@@ -256,7 +256,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -347,10 +347,10 @@
       2. Add "active" to the new state (ok / warn / down).
       3. Update "Last updated" below.
       4. Publish the updated static page.
-    Default = ok. Keep this English copy in sync with site/status.html.
+    Current = down. Keep this English copy in sync with site/status.html and site/status/status.json.
   -->
 
- <section class="state ok active" aria-label="operational">
+ <section class="state ok" aria-label="operational">
  <span class="dot" aria-hidden="true">🟢</span>
  <div>
  <h2>Operational</h2>
@@ -366,7 +366,7 @@
  </div>
  </section>
 
- <section class="state down" aria-label="down">
+ <section class="state down active" aria-label="down">
  <span class="dot" aria-hidden="true">🔴</span>
  <div>
  <h2>Down (fallback mode)</h2>
@@ -376,7 +376,7 @@
 
  <p class="updated">
  Last updated:
- <code>2026-05-07 (static fallback status)</code>
+ <code>2026-05-12T10:25:15+09:00 (status.json)</code>
  </p>
 
  <p class="fallback-note">

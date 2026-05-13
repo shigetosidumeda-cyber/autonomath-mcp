@@ -1,49 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Static page sitemap for the jpcite site/ surface.
-  Generated: 2026-04-23; canonical domain is https://jpcite.com.
-  Updated 2026-04-25: legal pages (privacy/tos/tokushoho) added per audit
-  a30f4c848bdd242a6 — tokushoho is a Japanese e-commerce legal requirement
-  (特定商取引法) and must be discoverable. priority=0.3, changefreq=yearly.
-  Updated 2026-04-26: privacy/tos/tokushoho switched from noindex to
-  index,follow (legal discoverability); EN privacy + EN tos added with
-  hreflang pairs; audience URLs delegated entirely to sitemap-audiences.xml
-  (single canonical shard).
-  Updated 2026-04-26 (later): EN /en/products.html, /en/widget.html, and
-  /en/alerts.html added with hreflang pairs to JP; reciprocal EN hreflang
-  also added on the JP /products.html, /widget.html, /alerts.html entries.
-  /en/widget/demo.html and /en/dashboard.html stay out of the sitemap
-  (demo.html and dashboard.html are noindex).
-  Updated 2026-04-26: EN /en/notifications.html, /en/advisors.html, and
-  /en/facts.html added with hreflang pairs to JP; reciprocal EN hreflang
-  also added on the JP /notifications.html, /advisors.html, /facts.html entries.
-  Updated 2026-04-26: EN /en/confidence.html added with hreflang
-  pair to JP; reciprocal EN hreflang added on JP /confidence.html.
-  /alerts-unsubscribe.html and /en/alerts-unsubscribe.html stay out of the
-  sitemap (both noindex,nofollow — confirmation surface only).
-  Updated 2026-04-26: EN /en/partners.html and
-  /en/prompts.html added with hreflang pairs to JP; reciprocal EN hreflang
-  also added on the JP /partners.html and /prompts.html entries.
-  Updated 2026-04-26: /compare.html and /en/compare.html added
-  with hreflang pairs (neutral 6-service / 13-axis comparison page).
-  /sources.html and /en/sources.html already present; /facts.html JP/EN
-  also already present. /humans.txt already present.
-  Updated 2026-04-29: /status/ live status page added (trust
-  signal for prospect evaluation). Distinct from /status.html which is the
-  static fallback served on DNS flip during incidents — that one stays
-  noindex. The new /status/index.html polls /v1/am/health/deep + PyPI from
-  the browser; index,follow so it can rank for "jpcite status" queries.
+  Static page sitemap for jpcite.com.
+  Lists indexable public pages, selected English mirrors, and related
+  discovery resources.
 
-  Excluded by design:
-    - /en/tokushoho.html (noindex — JP-only legal surface with EN pointer)
-    - /dashboard.html, /en/dashboard.html (noindex,nofollow, login-only)
-    - /widget/demo.html, /en/widget/demo.html (noindex, demo surface)
-    - /success.html (noindex,nofollow, post-checkout)
-    - /alerts-unsubscribe.html, /en/alerts-unsubscribe.html (noindex,nofollow, confirmation)
-    - /status.html (noindex, follow — not intended to rank)
+  Excludes noindex login, demo, checkout, unsubscribe, static fallback status,
+  and JP-only legal pointer pages.
 
-  xhtml:link hreflang pairs: JP primary, EN mirror at /en/, x-default → JP.
-  See docs/i18n_strategy.md for the lightweight EN surface policy.
+  Hreflang policy: JP primary, selected EN mirrors, x-default to JP.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -140,15 +104,6 @@
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms.txt"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/llms.en.txt"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/llms.txt"/>
-  </url>
-  <url>
-    <loc>https://jpcite.com/en/llms.txt</loc>
-    <lastmod>2026-04-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/llms.txt"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/llms.txt"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/llms.txt"/>
   </url>
   <url>
@@ -417,24 +372,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/stats"/>
   </url>
   <url>
-    <loc>https://jpcite.com/en/status</loc>
-    <lastmod>2026-04-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/status"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/status"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/status"/>
-  </url>
-  <url>
-    <loc>https://jpcite.com/en/go</loc>
-    <lastmod>2026-04-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/go"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/go"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/go"/>
-  </url>
-  <url>
     <loc>https://jpcite.com/confidence</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -489,18 +426,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/facts"/>
   </url>
   <url>
-    <!-- Live status page: trust signal for prospects evaluating reliability.
-         Distinct from /status.html (the static fallback served when DNS
-         is flipped to the Pages mirror during an incident). The /status/
-         directory page polls /v1/am/health/deep + PyPI from the browser
-         every 30s. Index,follow so it can rank for "jpcite status"
-         queries. Added 2026-04-29. -->
-    <loc>https://jpcite.com/status/</loc>
-    <lastmod>2026-04-29</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://jpcite.com/sources</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -539,8 +464,8 @@
   <!--
     Per-competitor /compare/{slug}/ landing pages — 2026-04-29 launch.
     Honest, hand-curated comparison vs 10 alternative JP institutional-data
-    sources. Generated by scripts/generate_compare_pages.py from
-    docs/compare_matrix.csv. JP-only at launch (no /en/ siblings yet).
+    sources. Maintained from the public comparison matrix. JP-only at launch
+    (no /en/ siblings yet).
   -->
   <url>
     <loc>https://jpcite.com/compare/tdb/</loc>
@@ -703,9 +628,8 @@
   </url>
   <!--
     Trust-signal trio (2026-04-29): public roadmap, live data
-    freshness dashboard, and source citation transparency. All three
-    expose internal state externally for credibility (anti-aggregator
-    differentiator). JP-only at launch (no /en/ siblings yet).
+    freshness dashboard, and source citation transparency. These pages
+    publish service health, source transparency, and freshness signals.
   -->
   <url>
     <loc>https://jpcite.com/data-freshness</loc>

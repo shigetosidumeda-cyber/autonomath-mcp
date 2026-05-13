@@ -145,6 +145,7 @@ from jpintel_mcp.api.middleware import (
     CostCapMiddleware,
     CustomerCapMiddleware,
     DeprecationWarningMiddleware,
+    EdgeHeaderSanitizationMiddleware,
     EnvelopeAdapterMiddleware,
     HostDeprecationMiddleware,
     IdempotencyMiddleware,
@@ -372,6 +373,19 @@ _FORBIDDEN_AUDIT_SEAL_VALUES: frozenset[str] = frozenset(
         "",
     }
 )
+# Forbidden JPCITE_SESSION_SECRET values. Pairs with `auth_google._mint_session_jwt`
+# and `me.login_verify` which fall back to the documented dev placeholder when
+# the env var is unset; without this gate the fallback ships to production
+# and HS256-signed jpcite_session cookies become trivially forgeable (R2
+# audit P0-1, 2026-05-13).
+_FORBIDDEN_SESSION_SECRETS: frozenset[str] = frozenset(
+    {
+        "dev-secret-do-not-use-in-prod-please-set-env",
+        "dev-secret",
+        "change-me",
+        "",
+    }
+)
 
 
 def _audit_seal_rotation_keys(raw: str) -> list[str]:
@@ -425,6 +439,8 @@ def _assert_production_secrets() -> None:
       * `JPINTEL_ENV` not in {"prod", "production"} → no-op.
       * API_KEY_SALT ∈ _FORBIDDEN_SALTS → SystemExit("[BOOT FAIL] API_KEY_SALT ...").
       * len(API_KEY_SALT) < 32 → SystemExit("[BOOT FAIL] API_KEY_SALT ≥32 chars ...").
+      * JPCITE_SESSION_SECRET unset / placeholder / <32 chars →
+        SystemExit("[BOOT FAIL] JPCITE_SESSION_SECRET ...").
       * JPINTEL_AUDIT_SEAL_KEYS set but empty/short/placeholder →
         SystemExit("[BOOT FAIL] JPINTEL_AUDIT_SEAL_KEYS ...").
       * AUDIT_SEAL_SECRET placeholder/missing AND no valid
@@ -445,6 +461,14 @@ def _assert_production_secrets() -> None:
     The function reads from the live `settings` module so tests can
     reload+rebind it via `monkeypatch.setattr(main, "settings", ...)`.
     """
+    # R2 P2: x402 mock-proof check runs FIRST and uses its own independent
+    # env resolution (raw JPCITE_ENV / JPINTEL_ENV via os.environ) so the
+    # known drift between settings.env (AliasChoices: JPCITE_ENV → JPINTEL_ENV)
+    # and the middleware's `_mock_proof_enabled()` (raw os.environ) cannot
+    # silently bypass this guard.
+    _assert_x402_mock_proof_disabled_in_production()
+    _assert_fail_open_flags_disabled_in_production()
+
     env_label = (getattr(settings, "env", "") or "").lower()
     if env_label not in {"prod", "production"}:
         return
@@ -458,6 +482,23 @@ def _assert_production_secrets() -> None:
     if len(salt) < 32:
         raise SystemExit(
             f"[BOOT FAIL] API_KEY_SALT must be ≥32 chars in production (got {len(salt)})."
+        )
+
+    # R2 audit P0-1: HS256-signed jpcite_session cookie secret. Two surfaces
+    # (`auth_google._mint_session_jwt`, `me.login_verify`) fall back to a
+    # documented dev placeholder when the env var is unset; without this gate
+    # production sessions become trivially forgeable.
+    session_secret = (os.getenv("JPCITE_SESSION_SECRET", "") or "").strip()
+    if session_secret in _FORBIDDEN_SESSION_SECRETS:
+        raise SystemExit(
+            "[BOOT FAIL] JPCITE_SESSION_SECRET is unset or set to a forbidden "
+            f"placeholder ({session_secret!r}). Set a unique ≥32-char value via "
+            "`fly secrets set JPCITE_SESSION_SECRET=...`."
+        )
+    if len(session_secret) < 32:
+        raise SystemExit(
+            "[BOOT FAIL] JPCITE_SESSION_SECRET must be ≥32 chars in production "
+            f"(got {len(session_secret)})."
         )
 
     audit_secret = getattr(settings, "audit_seal_secret", "") or ""
@@ -504,8 +545,9 @@ def _assert_production_secrets() -> None:
         and not os.getenv(_appi_spam_secret_name, "").strip()
     ):
         raise SystemExit(
-            "[BOOT FAIL] APPI browser spam-protect secret must be set in "
-            "production when APPI intake is enabled. Set the require-spam "
+            "[BOOT FAIL] APPI browser spam-protect secret "
+            f"({_appi_spam_secret_name}) must be set in production when APPI "
+            "intake is enabled. Set the require-spam "
             "flag to 0 to opt out (honor system + manual review). See "
             "docs/runbook/privacy_router_activation.md."
         )
@@ -520,6 +562,73 @@ def _assert_production_secrets() -> None:
         raise SystemExit(
             "[BOOT FAIL] STRIPE_SECRET_KEY must be a live-mode Stripe key in production."
         )
+
+
+def _assert_x402_mock_proof_disabled_in_production() -> None:
+    """Fail closed if the x402 mock-proof gate could resolve True in prod.
+
+    R2 P2 hardening. The middleware in ``api/x402_payment.py`` synthesises a
+    deterministic ``txn_hash`` from the proof string when the caller omits
+    the header, gated by ``_mock_proof_enabled()``. That helper resolves the
+    "is this dev/test/ci?" question by reading ``JPCITE_ENV`` /
+    ``JPINTEL_ENV`` directly from ``os.environ`` — independently of the
+    ``settings.env`` AliasChoices binding used by the rest of this boot
+    gate. The two surfaces can therefore drift: if an operator sets
+    ``JPINTEL_ENV=production`` on Fly but leaves a stale ``JPCITE_ENV=dev``
+    (or vice-versa), and ``JPCITE_X402_MOCK_PROOF_ENABLED=1`` is set, the
+    mock path silently re-activates against the live Stripe key.
+
+    Contract: production NEVER accepts mock proofs. We fail closed if EITHER
+    of the two env vars indicates production AND ``_mock_proof_enabled()``
+    returns True. Called separately so it runs even when ``settings.env``
+    differs from ``JPINTEL_ENV`` due to the drift this guard is designed to
+    catch.
+    """
+    jpcite_env = (os.getenv("JPCITE_ENV", "") or "").strip().lower()
+    jpintel_env = (os.getenv("JPINTEL_ENV", "") or "").strip().lower()
+    prod_labels = {"prod", "production"}
+    if jpcite_env not in prod_labels and jpintel_env not in prod_labels:
+        return
+
+    # Import lazily to avoid pulling x402_payment at module import time.
+    from jpintel_mcp.api.x402_payment import _mock_proof_enabled
+
+    if _mock_proof_enabled():
+        raise SystemExit(
+            "[BOOT FAIL] x402 mock-proof gate resolved to True while a "
+            "production env label is set (JPCITE_ENV=%s / JPINTEL_ENV=%s). "
+            "Production NEVER accepts mock proofs. Unset "
+            "JPCITE_X402_MOCK_PROOF_ENABLED and ensure JPCITE_ENV / "
+            "JPINTEL_ENV are both set to prod/production."
+            % (jpcite_env or "<unset>", jpintel_env or "<unset>")
+        )
+
+
+def _assert_fail_open_flags_disabled_in_production() -> None:
+    """Fail closed when dev/test fail-open flags are set in production."""
+    jpcite_env = (os.getenv("JPCITE_ENV", "") or "").strip().lower()
+    jpintel_env = (os.getenv("JPINTEL_ENV", "") or "").strip().lower()
+    settings_env = (getattr(settings, "env", "") or "").strip().lower()
+    prod_labels = {"prod", "production"}
+    if not ({jpcite_env, jpintel_env, settings_env} & prod_labels):
+        return
+
+    for flag in (
+        "PER_IP_ENDPOINT_LIMIT_DISABLED",
+        "RATE_LIMIT_BURST_DISABLED",
+        "JPCITE_X402_SCHEMA_FAIL_OPEN_DEV",
+    ):
+        if _env_truthy(flag):
+            raise SystemExit(
+                "[BOOT FAIL] %s must not be truthy when a production env "
+                "label is set (JPCITE_ENV=%s / JPINTEL_ENV=%s / settings.env=%s)."
+                % (
+                    flag,
+                    jpcite_env or "<unset>",
+                    jpintel_env or "<unset>",
+                    settings_env or "<unset>",
+                )
+            )
 
 
 def _init_sentry() -> None:
@@ -1043,6 +1152,7 @@ def _sanitize_openapi_public_text(text: str) -> str:
         (r"\bview\b", "dataset"),
         (r"\bviews\b", "datasets"),
         (r"\bMigration\b", "Schema update"),
+        (r"\bmigration\b", "schema update"),
         (r"\bmig(?:ration)?\.?\s*\d+", "schema update"),
         (r"\.sql\b", ""),
         (r"\bwave\s*\d+\b", "current release"),
@@ -1076,7 +1186,119 @@ def _sanitize_openapi_public_text(text: str) -> str:
     # exported committed spec stay byte-compatible.
     text = re.sub(r"\bsource records\b", "public records", text)
     text = re.sub(r"\bsource record\b", "public record", text)
+    # A3-style leak sanitizer: keep aligned with
+    # `scripts/export_openapi.OPENAPI_LEAK_PATTERN_REPLACEMENTS`. The runtime
+    # served spec MUST be byte-identical to the committed export, so the same
+    # denylist runs here.
+    text = _strip_openapi_leak_patterns_runtime(text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
+
+
+# Mirror of scripts/export_openapi.OPENAPI_LEAK_PATTERN_REPLACEMENTS. Kept here
+# in code (rather than imported from scripts/) so the API package has no
+# runtime dependency on the sibling top-level scripts/ folder. Drift between
+# this table and the export-side table is gated by
+# `tests/test_openapi_export.py` (which regenerates and compares byte-for-byte).
+_OPENAPI_LEAK_REPLACEMENTS_RUNTIME: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"\bam_compat_matrix\b"), "compatibility-matrix corpus"),
+    (re.compile(r"\bam_entity_facts\b"), "entity-fact corpus"),
+    (re.compile(r"\bam_entities\b"), "entity corpus"),
+    (re.compile(r"\bam_relation\b"), "relationship graph"),
+    (re.compile(r"\bam_source\b"), "source catalog"),
+    (re.compile(r"\bam_loan_product\b"), "loan-product corpus"),
+    (re.compile(r"\bam_law_article\b"), "law-article corpus"),
+    (re.compile(r"\bam_enforcement_detail\b"), "enforcement-detail corpus"),
+    (re.compile(r"\bam_amount_condition\b"), "amount-condition corpus"),
+    (re.compile(r"\bam_tax_treaty\b"), "tax-treaty corpus"),
+    (re.compile(r"\bam_industry_jsic\b"), "industry-classification corpus"),
+    (re.compile(r"\bam_application_round\b"), "application-round corpus"),
+    (re.compile(r"\bam_amendment_snapshot\b"), "historical amendment snapshot"),
+    (re.compile(r"\bam_amendment_diff\b"), "public change log"),
+    (re.compile(r"\bam_funding_stack_empirical\b"), "funding-stack corpus"),
+    (re.compile(r"\bam_program_eligibility_predicate\b"), "eligibility-predicate corpus"),
+    (re.compile(r"\bam_entity_annotation\b"), "entity annotations"),
+    (re.compile(r"\bam_entity_source\b"), "entity-level source references"),
+    (re.compile(r"\bam_validation_rule\b"), "configured validation rules"),
+    (re.compile(r"\bjpi_[A-Za-z0-9_]+\b"), "public dataset"),
+    (re.compile(r"\bjc_[a-z0-9_]+\b"), "public dataset"),
+    (re.compile(r"\bam_[A-Za-z0-9_]+\b"), "source-derived dataset"),
+    (re.compile(r"\bhoujin_watch\b"), "corporate watch list"),
+    (re.compile(r"\busage_events\b"), "usage tagging"),
+    (re.compile(r"\bapi_keys\b"), "API keys"),
+    (re.compile(r"\bcost_ledger\b"), "cost summary"),
+    (re.compile(r"\bidempotency_cache\b"), "idempotency store"),
+    (re.compile(r"\bclient_profiles\b"), "client profile dataset"),
+    (re.compile(r"\baudit_seal\b"), "audit-seal dataset"),
+    (re.compile(r"\btrust_infrastructure\b"), "trust infrastructure"),
+    (re.compile(r"\bjpintel\.db\b", re.IGNORECASE), "primary corpus database"),
+    (re.compile(r"\bautonomath\.db\b", re.IGNORECASE), "primary corpus database"),
+    (re.compile(r"CLAUDE\.md gotcha", re.IGNORECASE), "known data-quality caveat"),
+    (re.compile(r"\bCLAUDE\.md\b"), ""),
+    (re.compile(r"\bDEEP-\d+\b"), ""),
+    (re.compile(r"\bWave\s+\d+(?:\.\d+)*\b"), ""),
+    (re.compile(r"\bwave\s+\d+\b", re.IGNORECASE), ""),
+    (re.compile(r"\bmigrations?\s+\d+(?:[-/]\d+)+\b", re.IGNORECASE), "schema update"),
+    (re.compile(r"\bmigration\s+\d+\b", re.IGNORECASE), "schema update"),
+    (re.compile(r"\bmig\s+\d+\b", re.IGNORECASE), "schema update"),
+    (re.compile(r"`?scripts/cron/[A-Za-z0-9_./-]+`?"), "scheduled job"),
+    (re.compile(r"`?scripts/etl/[A-Za-z0-9_./-]+`?"), "background ETL"),
+    (re.compile(r"`?scripts/migrations/[A-Za-z0-9_./-]+`?"), "schema update"),
+    (re.compile(r"`?scripts/[A-Za-z0-9_./-]+\.(?:py|sh|sql)`?"), "operator script"),
+)
+
+
+def _strip_openapi_leak_patterns_runtime(text: str) -> str:
+    out = text
+    for pattern, replacement in _OPENAPI_LEAK_REPLACEMENTS_RUNTIME:
+        out = pattern.sub(replacement, out)
+    out = re.sub(r"[ \t]{2,}", " ", out)
+    out = re.sub(r" +([,.;:])", r"\1", out)
+    return out
+
+
+# Mirror of `scripts.export_openapi.EXEMPT_LEAK_WALK_KEYS`. Per E11 audit, the
+# leak walker MUST NOT rewrite spec values that the runtime echoes back —
+# Pydantic `default` literals, response/request `example` payloads, and
+# operation IDs. The served `/v1/openapi.json` and the committed export must
+# stay byte-identical, so the exemption set lives here too.
+_EXEMPT_LEAK_WALK_KEYS_RUNTIME: frozenset[str] = frozenset(
+    {
+        "default",
+        "example",
+        "examples",
+        "operationId",
+    }
+)
+
+
+def _walk_openapi_leak_strings_runtime(node: Any, *, exempt: bool = False) -> None:
+    """Mirror of `scripts.export_openapi.sanitize_openapi_schema_leaks`.
+
+    `_sanitize_openapi_public_schema` only rewrites strings that are direct
+    dict values; this pass also catches strings nested inside lists (enum
+    members, example arrays, policy block strings).
+
+    When descending into a node whose key is in
+    ``_EXEMPT_LEAK_WALK_KEYS_RUNTIME`` we freeze the subtree (no string
+    rewrites occur) so that spec ``default`` / ``example`` literals stay
+    byte-identical to what the runtime actually returns. We still recurse so
+    the rest of the tree is fully walked.
+    """
+    if isinstance(node, dict):
+        for key, value in list(node.items()):
+            child_exempt = exempt or key in _EXEMPT_LEAK_WALK_KEYS_RUNTIME
+            if isinstance(value, str):
+                if not child_exempt:
+                    node[key] = _strip_openapi_leak_patterns_runtime(value)
+            else:
+                _walk_openapi_leak_strings_runtime(value, exempt=child_exempt)
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            if isinstance(value, str):
+                if not exempt:
+                    node[index] = _strip_openapi_leak_patterns_runtime(value)
+            else:
+                _walk_openapi_leak_strings_runtime(value, exempt=exempt)
 
 
 _PUBLIC_OPENAPI_HIDDEN_PATHS: frozenset[str] = frozenset(
@@ -1089,6 +1311,13 @@ _PUBLIC_OPENAPI_HIDDEN_PATHS: frozenset[str] = frozenset(
         "/v1/integrations/line/webhook",
         "/v1/integrations/sheets",
         "/v1/integrations/slack/webhook",
+        "/v1/am/health/deep",
+        "/v1/me/benchmark_vs_industry",
+        "/v1/status/alerts",
+        "/v1/status/all",
+        "/v1/status/six_axis",
+        "/v1/status/six_axis/{axis_id}/{sub_id}",
+        "/v1/wallet/charge",
         "/v1/widget/stripe-webhook",
     }
 )
@@ -1102,8 +1331,17 @@ def _prune_openapi_public_paths(schema: dict[str, Any]) -> None:
         paths.pop(path, None)
 
 
-def _sanitize_openapi_public_schema(node: Any) -> None:
+def _sanitize_openapi_public_schema(node: Any, *, exempt: bool = False) -> None:
+    # `exempt=True` is propagated from a parent dict whose key was in
+    # `_EXEMPT_LEAK_WALK_KEYS_RUNTIME` (default / example / examples /
+    # operationId). In that subtree we skip the text rewrites so spec values
+    # stay byte-identical to the runtime response — but we still recurse so
+    # the non-leak normalizations (tag renames, enum / parameter pruning) keep
+    # applying where they would have.
     if isinstance(node, dict):
+        info = node.get("info")
+        if isinstance(info, dict):
+            info.pop("contact", None)
         tags = node.get("tags")
         if isinstance(tags, list):
             # Operation-level `tags` is a list of strings; root-level
@@ -1162,6 +1400,13 @@ def _sanitize_openapi_public_schema(node: Any) -> None:
             node["enum"] = [item for item in enum_values if item != "internal"]
         properties = node.get("properties")
         if isinstance(properties, dict):
+            contact_schema = properties.get("contact")
+            if (
+                isinstance(contact_schema, dict)
+                and contact_schema.get("default") == "info@bookyou.net"
+            ):
+                contact_schema.pop("default", None)
+                contact_schema.setdefault("description", "Support contact.")
             properties.pop("include_excluded", None)
             required = node.get("required")
             if isinstance(required, list):
@@ -1177,13 +1422,15 @@ def _sanitize_openapi_public_schema(node: Any) -> None:
                 )
             ]
         for key, value in list(node.items()):
+            child_exempt = exempt or key in _EXEMPT_LEAK_WALK_KEYS_RUNTIME
             if isinstance(value, str):
-                node[key] = _sanitize_openapi_public_text(value)
+                if not child_exempt:
+                    node[key] = _sanitize_openapi_public_text(value)
             else:
-                _sanitize_openapi_public_schema(value)
+                _sanitize_openapi_public_schema(value, exempt=child_exempt)
     elif isinstance(node, list):
         for item in node:
-            _sanitize_openapi_public_schema(item)
+            _sanitize_openapi_public_schema(item, exempt=exempt)
 
 
 @asynccontextmanager
@@ -1572,11 +1819,10 @@ def create_app() -> FastAPI:
     # responses return directly and do not create usage_events rows.
     app.add_middleware(IdempotencyMiddleware)
     # Wave 48 — x402 full payment chain (HTTP 402 → proof verify → 200).
-    # Gates 5 canonical endpoints listed in `am_x402_endpoint_config`
-    # (/v1/search, /v1/programs, /v1/cases, /v1/audit_workpaper,
-    # /v1/semantic_search). Pass-through for any path not in the registry,
-    # so non-x402 traffic incurs only a single sqlite SELECT and is
-    # unaffected. Added AFTER IdempotencyMiddleware (Starlette LIFO → runs
+    # Gates canonical x402 endpoints listed in `am_x402_endpoint_config`.
+    # Basic `/v1/programs/search` remains route-owned: anonymous default/
+    # minimal discovery passes through, and `fields=full` is gated by the
+    # route handler. Added AFTER IdempotencyMiddleware (Starlette LIFO → runs
     # BEFORE idempotency) so a 402 challenge response is never cached as
     # an idempotent reply for a later valid proof. Added BEFORE
     # RateLimitMiddleware so a 429'd request never wastes a fresh
@@ -1670,6 +1916,21 @@ def create_app() -> FastAPI:
         max_age=3600,
     )
     app.add_middleware(OriginEnforcementMiddleware)
+    # Defense-in-Depth (2026-05-13): strip CF-* headers from untrusted
+    # requests so a direct-to-origin caller (bypassing Cloudflare) cannot
+    # spoof CF-IPCountry / CF-Connecting-IP / CF-Ray / CF-Visitor /
+    # CF-Worker / CF-JA3-Hash etc. and have a downstream handler trust
+    # them. Trust paths: signed `X-Edge-Auth: v1:<ts>:<hmac>` HMAC (shared
+    # secret `JPCITE_EDGE_AUTH_SECRET`) OR TCP peer in the configured
+    # `JPCITE_CF_TRUSTED_PEER_IPS` allowlist; otherwise strip the entire
+    # CF-* family from `request.scope["headers"]` before any handler runs.
+    # Added LATE in setup so it executes EARLY in LIFO order (before
+    # `anon_limit._ja3_hash` reads `cf-ja3-hash` for fingerprinting, before
+    # any route handler reads `CF-IPCountry`). D2 owns `Fly-Client-IP` /
+    # `X-Forwarded-For` trust separately in `anon_limit._client_ip`; this
+    # middleware hardens the parallel CF-* path. See
+    # api/middleware/edge_header_sanitization.py docstring.
+    app.add_middleware(EdgeHeaderSanitizationMiddleware)
     app.add_middleware(GZipMiddleware, minimum_size=1024, compresslevel=6)
 
     _log = logging.getLogger("jpintel.api")
@@ -2208,9 +2469,6 @@ def create_app() -> FastAPI:
     # /v1/edinet/filings + /v1/edinet/filings/{code}/full — Wave 31 Axis 1c
     # EDINET API v2 daily filings + XBRL body. Anon-quota-gated.
     app.include_router(edinet_router, dependencies=[AnonIpLimitDep])
-    # /v1/pdf_report/generate — Wave 35 Axis 6a per-client monthly PDF report.
-    # Anon-quota-gated; metering inside handler.
-    app.include_router(pdf_report_router, dependencies=[AnonIpLimitDep])
     # /v1/evidence/packets/batch — paid-only bulk composer. It enforces
     # metered API key auth inside the handler and should not burn anonymous
     # quota before returning its auth/cap envelope.
@@ -2718,12 +2976,21 @@ def create_app() -> FastAPI:
     # /v1/me/watches/*. Watches register FREE; ¥3 per HTTP 2xx delivery
     # via the existing customer_webhooks dispatcher.
     app.include_router(me_watches_router)
+    # Wave 43.2.4 Dim D: POST /v1/audit/workpaper — year-end audit
+    # workpaper substrate composition for 税理士/会計士. 1 req = 5 unit
+    # (¥15 / 税込 ¥16.50). Rolls up intel_houjin_full +
+    # apply_eligibility_chain_am + cross_check_jurisdiction +
+    # amendment_alert into 1 call. AnonIpLimitDep mounted so anonymous
+    # probes burn the 3/日 quota (paid keys bypass via require_key).
+    # §52 / §47条の2 / §72 / §1 fenced in _disclaimer envelope.
+    app.include_router(audit_workpaper_v2_router, dependencies=[AnonIpLimitDep])
     # 会計士・監査法人 work-paper bundle at /v1/audit/* (POST workpaper +
     # POST batch_evaluate + GET snapshot_attestation). Authenticated-only
     # (audit firms hold paid keys) — handler-level 401 short-circuits
     # anonymous traffic, but we still mount with AnonIpLimitDep so an
     # unauthenticated probe burns the public quota and not free
-    # compute.
+    # compute. Mounted after the Dim D companion so its v2 payload is not
+    # pre-validated by the legacy workpaper model on the shared path.
     app.include_router(audit_router, dependencies=[AnonIpLimitDep])
     # §17.D public seal verifier (GET /v1/audit/seals/{seal_id}). Mounted
     # WITHOUT AnonIpLimitDep so customers can always verify a seal even
@@ -2735,14 +3002,6 @@ def create_app() -> FastAPI:
     # third-party verification cannot be paywalled. See
     # api/audit_proof.py module docstring.
     _include_experimental_router(app, "jpintel_mcp.api.audit_proof")
-    # Wave 43.2.4 Dim D: POST /v1/audit/workpaper — year-end audit
-    # workpaper substrate composition for 税理士/会計士. 1 req = 5 unit
-    # (¥15 / 税込 ¥16.50). Rolls up intel_houjin_full +
-    # apply_eligibility_chain_am + cross_check_jurisdiction +
-    # amendment_alert into 1 call. AnonIpLimitDep mounted so anonymous
-    # probes burn the 3/日 quota (paid keys bypass via require_key).
-    # §52 / §47条の2 / §72 / §1 fenced in _disclaimer envelope.
-    app.include_router(audit_workpaper_v2_router, dependencies=[AnonIpLimitDep])
     # Wave 43.2.5 Dim E Verification trail: per-fact Ed25519 verify +
     # rule-based explanation paragraph (GET /v1/facts/{fact_id}/verify,
     # GET /v1/facts/{fact_id}/why). Mounted via experimental include so
@@ -2834,8 +3093,8 @@ def create_app() -> FastAPI:
             return JSONResponse(status_code=200, content={"status": "ready"})
         return JSONResponse(status_code=503, content={"status": "starting"})
 
-    # OpenAPI customization: inject `servers`, `securitySchemes`, and rich
-    # info-section metadata (contact / termsOfService / license) so SDK
+    # OpenAPI customization: inject `servers`, `securitySchemes`, and public
+    # info-section metadata (termsOfService / license) so SDK
     # generators and API explorers (Stainless, Mintlify, Postman) get a
     # complete spec. Without `servers` they default to a relative `/`
     # baseURL; without `securitySchemes` they cannot generate auth wiring.
@@ -2867,12 +3126,9 @@ def create_app() -> FastAPI:
         # every operation. Endpoints that accept anonymous traffic still work
         # without the header; this is a hint to tooling, not a hard gate.
         schema["security"] = [{"ApiKeyAuth": []}]
-        # Info-section metadata: contact / ToS / license. Surfaces in
+        # Info-section metadata: ToS / license. Surfaces in
         # generated docs (Stainless, Mintlify, ReDoc) and SDK readmes.
-        schema["info"]["contact"] = {
-            "name": "jpcite Support",
-            "url": "https://jpcite.com/tokushoho.html",
-        }
+        schema["info"].pop("contact", None)
         schema["info"]["termsOfService"] = "https://jpcite.com/tos.html"
         schema["info"]["license"] = {
             "name": "Proprietary - see termsOfService",
@@ -2896,7 +3152,7 @@ def create_app() -> FastAPI:
             {
                 "name": "jpcite",
                 "description": (
-                    "Unified `/v1/am/*` surface over the autonomath.db "
+                    "Unified `/v1/am/*` surface over the jpcite "
                     "entity-fact corpus (税制特例 / 認定 / 法令照会 / 採択統計 / "
                     "行政処分 / 融資 / 共済). Each response carries a "
                     "`_disclaimer` envelope (税理士法 §52 fence)."
@@ -2905,9 +3161,9 @@ def create_app() -> FastAPI:
             {
                 "name": "jpcite-health",
                 "description": (
-                    "Heartbeat / deep-health probes for the jpcite surface. "
-                    "Unbilled and unrate-limited; safe for production uptime "
-                    "monitoring without consuming the anonymous quota."
+                    "Public liveness metadata for availability monitors. "
+                    "Operational probe details are not part of the public API "
+                    "contract."
                 ),
             },
             {
@@ -3087,8 +3343,8 @@ def create_app() -> FastAPI:
             {
                 "name": "client-profiles",
                 "description": (
-                    "顧問先 master records for the 税理士 / 補助金 consultant "
-                    "fan-out cohorts. Sub-API-key parent/child supported."
+                    "顧問先 records for professional workflows. Supports "
+                    "scoped account management and per-client usage views."
                 ),
             },
             {
@@ -3170,14 +3426,14 @@ def create_app() -> FastAPI:
                 "name": "stats",
                 "description": (
                     "Public statistics surface — corpus counts, freshness, "
-                    "tier breakdown. Includes funnel-analytics export."
+                    "and tier breakdown."
                 ),
             },
             {
                 "name": "meta",
                 "description": (
-                    "Spec metadata — server version, build hash, OpenAPI "
-                    "agent projection, source manifests."
+                    "Spec metadata — server version, OpenAPI agent "
+                    "projection, and source manifests."
                 ),
             },
             {
@@ -3203,7 +3459,7 @@ def create_app() -> FastAPI:
                 "name": "funding-stack",
                 "description": (
                     "Funding-stack assembly + complementary-program search. "
-                    "Wave 21 composition tools."
+                    "Composition tools for source-linked program bundles."
                 ),
             },
             {
@@ -3295,6 +3551,10 @@ def create_app() -> FastAPI:
         _normalize_openapi_component_schema_names(schema)
         _prune_openapi_public_paths(schema)
         _sanitize_openapi_public_schema(schema)
+        # Belt-and-suspenders A3-style leak walker (mirror of
+        # `scripts.export_openapi.sanitize_openapi_schema_leaks`). Catches
+        # strings nested in lists (enum / example arrays / policy blocks).
+        _walk_openapi_leak_strings_runtime(schema)
         app.openapi_schema = schema
         return schema
 

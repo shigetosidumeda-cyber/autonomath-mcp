@@ -24,6 +24,12 @@ name: stripe-backfill-30min
 # Required GitHub repository secret
 # ---------------------------------
 #   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+#
+# Production mutation safety
+# --------------------------
+# Manual runs default to --dry-run. Scheduled/manual live enqueue requires
+# PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; otherwise the Fly SSH
+# command forces --dry-run.
 
 on:
   schedule:
@@ -38,7 +44,7 @@ on:
       dry_run:
         description: "Run with --dry-run (no enqueue, just count)"
         required: false
-        default: "false"
+        default: "true"
         type: choice
         options:
           - "true"
@@ -60,6 +66,7 @@ jobs:
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           DRY_RUN_INPUT: ${{ github.event.inputs.dry_run }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
         run: |
           set -euo pipefail
           if [ -z "${FLY_API_TOKEN:-}" ]; then
@@ -69,6 +76,9 @@ jobs:
           DRY_RUN="${DRY_RUN_INPUT:-false}"
           FLAGS=""
           if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          elif [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" != "I_ACK_PROD_DB_MUTATION" ]; then
+            echo "::warning::Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
             FLAGS="${FLAGS} --dry-run"
           fi
           flyctl ssh console -a autonomath-api -C \

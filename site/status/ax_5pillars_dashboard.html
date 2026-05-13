@@ -2,9 +2,9 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <title>jpcite AX 5 Pillars Dashboard | Bookyou株式会社</title>
-  <meta name="description" content="jpcite Agent Experience (AX) 5-pillar live audit dashboard — Access / Context / Tools / Orchestration / Resilience。60 cell の状態と Wave 43.3.x Resilience surface (chaos / DLQ / circuit / SLA / postmortem / backup) を visualise。">
-  <meta name="robots" content="index,follow">
+  <title>jpcite AX 5 Pillars Dashboard</title>
+  <meta name="description" content="jpcite Agent Experience (AX) 5-pillar live audit dashboard — Access / Context / Tools / Orchestration / Resilience。60 cell の状態と resilience health surface を visualise。">
+  <meta name="robots" content="noindex,nofollow">
   <link rel="canonical" href="https://jpcite.com/status/ax_5pillars_dashboard.html">
   <meta property="og:title" content="jpcite AX 5 Pillars Live Dashboard">
   <meta property="og:type" content="website">
@@ -64,7 +64,7 @@
 <main>
   <header>
     <h1>jpcite AX 5 Pillars Live Dashboard</h1>
-    <p class="lead">Biilmann 4 (Access / Context / Tools / Orchestration) + Wave 43.3.x Resilience。60 cell の live audit と Resilience surface visualization。</p>
+    <p class="lead">Biilmann 4 (Access / Context / Tools / Orchestration) + Resilience。60 cell の live audit と resilience health visualization。</p>
   </header>
 
   <p class="meta" id="meta-line">
@@ -77,27 +77,27 @@
 
   <section class="grid pillars" id="pillar-grid" aria-label="Pillar scores"></section>
 
-  <h2 class="section-title">Resilience surface — chaos / DLQ / circuit / SLA / postmortem / backup
+  <h2 class="section-title">Resilience health surface
     <span class="meta"><span>cells 1–12</span></span>
   </h2>
   <div class="resilience-axis" id="resilience-axis"></div>
   <section class="grid cells" id="resilience-cells" aria-label="Resilience cells"></section>
 
-  <h2 class="section-title">4-pillar evidence (Wave 41 base)</h2>
+  <h2 class="section-title">4-pillar evidence</h2>
   <section class="grid cells" id="four-pillar-evidence"></section>
 
   <footer>
-    <p><strong>Data source</strong>: <code>site/status/ax_5pillars.json</code> (refreshed by <code>scripts/ops/audit_runner_ax_5pillars.py</code> on monthly-deep-audit + audit-regression-gate). When the JSON is unreachable the page falls back to the embedded snapshot below.</p>
-    <p><strong>Cells 10–12 backing scripts</strong>: <code>scripts/cron/sla_breach_alert.py</code> (12 metric + Telegram) · <code>scripts/ops/postmortem_auto_v2.py</code> (rule-based draft + PR open) · <code>scripts/cron/verify_backup_daily.py</code> (R2 sha256 + gzip check).</p>
-    <p>Static, JS-light page. <strong>No customer data</strong>. Bookyou株式会社 · jpcite operational transparency.</p>
+    <p><strong>Data source</strong>: <code>/status/ax_5pillars.json</code> (refreshed automatically). When the JSON is unreachable the page uses the bounded embedded snapshot below.</p>
+    <p><strong>Cells 10–12</strong>: SLA alerting, incident draft, and backup verification status are summarized as public health signals.</p>
+    <p>Static, JS-light page. <strong>No customer data</strong>. jpcite operational transparency.</p>
   </footer>
 </main>
 
 <script type="application/json" id="fallback-data">
 {
   "axis": "ax_5pillars",
-  "framework": "Biilmann 4 (Access/Context/Tools/Orchestration) + Wave 43.3.x Resilience",
-  "total_score": 60.0, "max_score": 60.0, "average_score_10": 12.0, "cell_count": 36,
+  "framework": "Biilmann 4 (Access/Context/Tools/Orchestration) + Resilience",
+  "total_score": 60.0, "max_score": 60.0, "average_score": 10.0, "average_score_10": 10.0, "cell_count": 36,
   "verdict": "green",
   "pillars": {
     "Access":        { "score": 12.0, "max": 12.0, "cells": 6, "evidence": [], "missing_items": [] },
@@ -106,7 +106,7 @@
     "Orchestration": { "score": 12.0, "max": 12.0, "cells": 6, "evidence": [], "missing_items": [] },
     "Resilience":    { "score": 12.0, "max": 12.0, "cells": 12, "evidence": [], "missing_items": [] }
   },
-  "generated_at": "2026-05-12T00:00:00+00:00"
+  "generated_at": "2026-05-13T02:08:55+00:00"
 }
 </script>
 
@@ -148,14 +148,14 @@
     pillarGrid.appendChild(card);
   }
 
-  // Resilience axis tiles (chaos score / DLQ depth / circuit open / SLA breach / postmortem queue / backup pass).
+  // Resilience axis tiles for public health signals.
   const resilTiles = [
-    ['chaos score',      'Resilience 8',  data.pillars?.Resilience?.score?.toFixed(2)],
-    ['DLQ depth',        'Resilience 4',  'see analytics/dlq_depth.json'],
-    ['circuit state',    'Resilience 3',  'see analytics/circuit_state.json'],
-    ['SLA breach',       'Resilience 10', 'see status/sla_breach_w43_3_10.json'],
-    ['postmortem queue', 'Resilience 11', 'see analytics/postmortem_queue.json'],
-    ['backup pass',      'Resilience 12', 'see analytics/backup_verify_daily.json'],
+    ['exercise score',       'Resilience 8',  data.pillars?.Resilience?.score?.toFixed(2)],
+    ['queue health',         'Resilience 4',  'summarized in status snapshot'],
+    ['protection state',     'Resilience 3',  'summarized in status snapshot'],
+    ['SLA health',           'Resilience 10', 'summarized in status snapshot'],
+    ['incident readiness',   'Resilience 11', 'summarized in status snapshot'],
+    ['recovery verification','Resilience 12', 'summarized in status snapshot'],
   ];
   const axis = $('resilience-axis');
   for (const [label, srcLabel, value] of resilTiles) {

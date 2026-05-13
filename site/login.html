@@ -17,12 +17,15 @@
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ログイン — jpcite">
+<meta name="twitter:description" content="GitHub / Google / メール マジックリンクで jpcite ダッシュボードへ。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-square.png">
+
 <link rel="canonical" href="https://jpcite.com/login">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/login">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/login">
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -250,11 +253,7 @@
           <span>Google で続ける</span>
         </a>
 
-        <!-- Wave 20 C3: OAuth 2.1 Device Flow (RFC 8628) — the 4th auth method.
-             For headless / agent / CLI / mobile flows that can't open a browser
-             dialog. The button posts to /v1/device/authorize, surfaces the
-             8-digit user_code, and opens https://jpcite.com/device in a new
-             tab where the user enters it. Backend wired via api/device_flow.py. -->
+        <!-- OAuth 2.1 Device Flow (RFC 8628) for clients that cannot open a browser dialog. -->
         <button type="button" id="oauth-device" class="oauth-btn" aria-describedby="oauth-device-hint">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="20" height="20">
             <path fill="currentColor" d="M4 4h16v12H4V4zm0 14h16v2H4v-2zm6-12v8h4V6h-4z"/>
@@ -269,7 +268,7 @@
              style="margin:14px 0 0;padding:14px 16px;border:1px dashed var(--accent);border-radius:8px;background:var(--bg-alt);">
           <p style="margin:0 0 8px;font-size:14px;font-weight:700;">8 桁コードを Device に入力</p>
           <p style="margin:0 0 10px;font-size:13px;color:var(--text-muted);">
-            次のページで以下のコードを入力してください: <a href="https://jpcite.com/device" target="_blank" rel="noopener">https://jpcite.com/device →</a>
+            次のページで以下のコードを入力してください: <a href="https://jpcite.com/go" target="_blank" rel="noopener">https://jpcite.com/go →</a>
           </p>
           <code id="device-user-code"
                 style="display:block;text-align:center;font-size:24px;letter-spacing:0.4em;padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-family:Menlo,Consolas,monospace;">
@@ -322,9 +321,9 @@
   <div class="container footer-inner">
     <p class="footer-copy">© Bookyou株式会社 — jpcite</p>
     <nav class="footer-nav" aria-label="フッターナビゲーション">
-      <a href="/terms.html">利用規約</a>
+      <a href="/tos.html">利用規約</a>
       <a href="/privacy.html">プライバシー</a>
-      <a href="/contact.html">お問い合わせ</a>
+      <a href="/support.html">お問い合わせ</a>
     </nav>
   </div>
 </footer>
@@ -436,7 +435,7 @@
   // 純粋に default redirect = dashboard.html へ遷移する。
 
   /* -------------------------------------------------------------------
-     Wave 20 C3 — OAuth 2.1 Device Flow (RFC 8628) wiring.
+     OAuth 2.1 Device Flow (RFC 8628) wiring.
 
      Flow:
        1. User clicks "デバイス / CLI / agent で続ける".

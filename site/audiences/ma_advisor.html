@@ -25,13 +25,10 @@
 
 <link rel="canonical" href="https://jpcite.com/audiences/ma_advisor">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/audiences/ma_advisor">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/audiences/ma-advisor">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/audiences/ma_advisor">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=20260428a">
 
@@ -111,7 +108,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -202,15 +199,15 @@
 
  <section class="features" aria-labelledby="cost-saving-title">
  <div class="container">
- <h2 id="cost-saving-title" style="margin-bottom:16px;">Cost saving calculator (1 deal × 50 req: 純 LLM vs jpcite ¥3/req)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値は M&amp;A advisor 1 deal × 50 req の想定値 (推定値)。「純 LLM」は外部 web search + token 課金で同じ公開情報 (法人登記・処分歴・採択・業法 fence・事業承継 制度) を fetch した場合、「jpcite ¥3/req」は jpcite MCP 1-call 経路で同じ事実検索を回した場合の差分。詳細仮定は <a href="/docs/canonical/cost_saving_examples.md">docs/canonical/cost_saving_examples.md</a> case 2 を参照。</p>
+ <h2 id="cost-saving-title" style="margin-bottom:16px;">Cost saving calculator (1 deal × 50 req: 純 LLM vs jpcite ¥3/billable unit)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 数値は M&amp;A advisor 1 deal × 50 req の想定値 (推定値)。「純 LLM」は外部 web search + token 課金で同じ公開情報 (法人登記・処分歴・採択・業法 fence・事業承継 制度) を fetch した場合、「jpcite ¥3/billable unit」は jpcite MCP 1-call 経路で同じ事実検索を回した場合の差分。詳細仮定は <a href="//tools/cost_saving_examples.md">/tools/cost_saving_examples.md</a> case 2 を参照。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>
  <tr style="background:var(--bg-subtle,#fafafa);border-bottom:2px solid var(--border);">
  <th style="padding:12px;text-align:left;">task</th>
  <th style="padding:12px;text-align:left;">純 LLM コスト (baseline)</th>
- <th style="padding:12px;text-align:left;">jpcite ¥3/req</th>
+ <th style="padding:12px;text-align:left;">jpcite ¥3/billable unit</th>
  <th style="padding:12px;text-align:left;">節約 ¥/deal</th>
  </tr>
  </thead>
@@ -279,7 +276,7 @@
  <h2 id="cta-title">使い始める</h2>
  <p>tier・seat・年間最低額なし。<strong>¥3/billable unit 完全従量</strong>のみ、anonymous 3 req/日 free per IP。</p>
  <div class="cta-row" style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
- <a class="btn btn-primary" href="../pricing.html?src=audiences_ma_advisor">¥3/req で本格運用 <span aria-hidden="true">&rarr;</span></a>
+ <a class="btn btn-primary" href="../pricing.html?src=audiences_ma_advisor">¥3/billable unit で本格運用 <span aria-hidden="true">&rarr;</span></a>
  <a class="btn btn-secondary" href="../playground.html?src=audiences_ma_advisor">匿名 3 req/日 で試す</a>
  <a class="btn btn-secondary" href="/docs/">ドキュメント</a>
  </div>

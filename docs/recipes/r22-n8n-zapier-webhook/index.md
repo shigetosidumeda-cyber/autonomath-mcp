@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 コードを書かずに n8n / Zapier / Make / IFTTT でワークフロー化したい中小企業のバックオフィス担当 / 経営企画 / 補助金担当者で、jpcite の補助金新規公示・採択公表・行政処分・適格事業者抹消を Slack / Microsoft Teams / Discord / メール / LINE Notify / Google Sheets / Notion 等に流す自動化を 5 分で構築する。Cron トリガー (n8n は ¥0 セルフホスト可、Zapier は月 ¥0-2,500 から、Make は月 ¥0-1,650 から) と HTTP Request ノード / Webhooks ノードの組み合わせで完結。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
 - n8n / Zapier / Make / IFTTT アカウント
 - Cron トリガー or Webhook 受信 endpoint
 - (任意) 通知先 channel (Slack workspace + bot token / Teams webhook URL / Discord webhook URL / LINE Notify token 等)

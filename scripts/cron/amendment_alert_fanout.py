@@ -197,12 +197,23 @@ def _customer_webhook_url(jpintel_db: sqlite3.Connection, api_key_hash: str) -> 
     try:
         row = jpintel_db.execute(
             "SELECT url FROM customer_webhooks "
-            "WHERE api_key_hash = ? AND active = 1 "
+            "WHERE api_key_hash = ? AND status = 'active' "
             "ORDER BY id ASC LIMIT 1",
             (api_key_hash,),
         ).fetchone()
     except sqlite3.OperationalError:
-        return None
+        # Pre-migration/dev DBs may still carry an `active INTEGER` column.
+        # Production migration 080 uses `status TEXT`; keep the fallback narrow
+        # so missing customer_webhooks still degrades to no webhook channel.
+        try:
+            row = jpintel_db.execute(
+                "SELECT url FROM customer_webhooks "
+                "WHERE api_key_hash = ? AND active = 1 "
+                "ORDER BY id ASC LIMIT 1",
+                (api_key_hash,),
+            ).fetchone()
+        except sqlite3.OperationalError:
+            return None
     return row["url"] if row else None
 
 
@@ -277,6 +288,15 @@ def _send_email(to: str, payload: dict[str, Any], dry_run: bool) -> dict[str, An
         return {"skipped": True, "reason": "send_failed", "error": str(exc)}
 
 
+def _email_delivery_ok(outcome: dict[str, Any]) -> bool:
+    """Return True only when an email send should count as delivered."""
+    if outcome.get("ok") is True:
+        return True
+    if outcome.get("skipped"):
+        return outcome.get("reason") == "dry_run"
+    return "error" not in outcome
+
+
 # ---------------------------------------------------------------------------
 # Main entrypoint
 # ---------------------------------------------------------------------------
@@ -298,6 +318,10 @@ def run(*, dry_run: bool = False) -> dict[str, Any]:
         "diffs_total": 0,
         "delivery_attempts": 0,
         "delivery_ok": 0,
+        "delivery_failed": 0,
+        "delivery_no_channel": 0,
+        "cursors_advanced": 0,
+        "cursors_blocked": 0,
     }
 
     try:
@@ -336,25 +360,43 @@ def run(*, dry_run: bool = False) -> dict[str, Any]:
                             "返します。個別判断・税務助言は行いません。"
                         ),
                     }
+                    channels_seen = 0
+                    channels_ok = 0
                     webhook_url = _customer_webhook_url(jpintel_db, sub["api_key_hash"])
                     if webhook_url:
+                        channels_seen += 1
                         summary["delivery_attempts"] += 1
                         outcome = _post_webhook(webhook_url, payload, dry_run)
                         if outcome.get("ok"):
+                            channels_ok += 1
                             summary["delivery_ok"] += 1
+                        else:
+                            summary["delivery_failed"] += 1
                     email_to = _customer_email(jpintel_db, sub["api_key_hash"])
                     if email_to:
+                        channels_seen += 1
                         summary["delivery_attempts"] += 1
                         eo = _send_email(email_to, payload, dry_run)
-                        if eo.get("ok") or eo.get("skipped"):
+                        if _email_delivery_ok(eo):
+                            channels_ok += 1
                             summary["delivery_ok"] += 1
-                # Always advance the cursor — empty diffs still consume the
-                # window (otherwise the same scan re-runs every tick).
-                if not dry_run:
+                        else:
+                            summary["delivery_failed"] += 1
+                    should_advance_cursor = channels_seen > 0 and channels_ok == channels_seen
+                    if not should_advance_cursor:
+                        if channels_seen == 0:
+                            summary["delivery_no_channel"] += 1
+                        summary["cursors_blocked"] += 1
+                else:
+                    # Empty diffs still consume the window; otherwise the same
+                    # no-op scan re-runs every tick.
+                    should_advance_cursor = True
+                if not dry_run and should_advance_cursor:
                     jpintel_db.execute(
                         "UPDATE amendment_alert_subscriptions SET last_fanout_at = ? WHERE id = ?",
                         (run_started_at, sub["id"]),
                     )
+                    summary["cursors_advanced"] += 1
             if not dry_run:
                 jpintel_db.commit()
         finally:

@@ -1,0 +1,90 @@
+name: revalidate-webhook-targets-cron
+
+# Daily revalidation of customer_webhooks DNS targets (DNS-rebind defence).
+#
+# Pairs with scripts/cron/revalidate_webhook_targets.py. Walks every
+# active customer_webhooks row, re-resolves the URL via
+# jpintel_mcp.utils.webhook_safety.is_safe_webhook, and flips
+# status='disabled' + disabled_reason='dns_drift_unsafe: <reason>' on any
+# row whose hostname now resolves to a private/internal address.
+#
+# Distinct from dispatch-webhooks-cron (which only checks at fire time).
+# This cron proactively catches DNS drift before the next event arrives.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN   Fly.io deploy token with ssh access to autonomath-api.
+# Optional GitHub repository secret:
+#   PROD_DB_MUTATION_OPERATOR_ACK   Must equal I_ACK_PROD_DB_MUTATION to
+#                                  allow production DB mutation.
+#
+# Manual run:
+#   gh workflow run revalidate-webhook-targets-cron.yml -f dry_run=true
+
+on:
+  schedule:
+    # 03:30 JST = 18:30 UTC the previous day. Avoids the dispatcher cron
+    # window at :05 / :15 / :25 / ... and lands during low-traffic hours.
+    - cron: "30 18 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (log only, no DB mutation)"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: revalidate-webhook-targets-cron
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  revalidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Revalidate webhook targets
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
+        run: |
+          set -euo pipefail
+          FLAGS="--dry-run"
+          if [ "${DRY_RUN}" != "true" ]; then
+            if [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" = "I_ACK_PROD_DB_MUTATION" ]; then
+              FLAGS=""
+            else
+              echo "::warning::Production DB mutation requested without PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
+            fi
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/revalidate_webhook_targets.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=revalidate-webhook-targets-cron/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.revalidate-webhook-targets-cron\",\"platform\":\"other\",\"message\":\"revalidate-webhook-targets-cron failed: flyctl ssh exited non-zero. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"revalidate-webhook-targets-cron\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

@@ -26,7 +26,8 @@ def test_gate_blocks_unknown_and_proprietary_licenses() -> None:
         INSERT INTO public_rows VALUES
             ('ok', 'gov_standard_v2.0'),
             ('unknown-row', 'unknown'),
-            ('proprietary-row', 'proprietary');
+            ('proprietary-row', 'proprietary'),
+            ('pending-row', 'pending_review');
         """
     )
 
@@ -38,6 +39,7 @@ def test_gate_blocks_unknown_and_proprietary_licenses() -> None:
     assert [issue.code for issue in issues] == ["blocked_license"]
     assert "unknown=1" in issues[0].detail
     assert "proprietary=1" in issues[0].detail
+    assert "pending_review=1" in issues[0].detail
 
 
 def test_gate_fails_closed_when_license_metadata_is_missing() -> None:
@@ -75,10 +77,12 @@ def test_gate_uses_am_source_license_when_rows_have_source_urls() -> None:
         INSERT INTO public_rows VALUES
             ('ok', 'https://example.test/ok'),
             ('blocked', 'https://example.test/blocked'),
+            ('pending', 'https://example.test/pending'),
             ('unmapped', 'https://example.test/unmapped');
         INSERT INTO am_source VALUES
             ('https://example.test/ok', 'pdl_v1.0'),
-            ('https://example.test/blocked', 'unknown');
+            ('https://example.test/blocked', 'unknown'),
+            ('https://example.test/pending', 'pending_review');
         """
     )
 
@@ -89,6 +93,7 @@ def test_gate_uses_am_source_license_when_rows_have_source_urls() -> None:
 
     assert [issue.code for issue in issues] == ["blocked_source_license"]
     assert "unknown=1" in issues[0].detail
+    assert "pending_review=1" in issues[0].detail
     assert "<MISSING>=1" in issues[0].detail
 
 

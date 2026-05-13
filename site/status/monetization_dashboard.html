@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
-<title>Monetization Metrics Dashboard — jpcite</title>
-<meta name="description" content="jpcite の収益化メトリクス (Agent-Sourced Revenue / ARC / Agent Retention / TTFP 等) を表示するエージェント可読ダッシュボード。">
-<meta name="robots" content="index, follow">
+<title>Public Operations Metrics — jpcite</title>
+<meta name="description" content="jpcite の公開運用メトリクスを表示する集計済みダッシュボード。個別の収益・実験・内部運用値は含めません。">
+<meta name="robots" content="noindex,nofollow">
 <link rel="canonical" href="https://jpcite.com/status/monetization_dashboard.html">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/status/monetization_dashboard.html">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/monetization_dashboard.html">
@@ -109,38 +109,33 @@
 </head>
 <body>
 <div class="container">
-  <p><a class="brand" href="/">jpcite</a> / <a href="/status/">status</a> / monetization</p>
-  <h1>Monetization Metrics Dashboard</h1>
+  <p><a class="brand" href="/">jpcite</a> / <a href="/status/">status</a> / public operations</p>
+  <h1>Public Operations Metrics</h1>
   <p class="lead">
-    AI エージェント時代の収益化 12 KPI (新 8 + 従来 4) を毎日 aggregate。
-    <code>scripts/cron/track_monetization_metrics_daily.py</code> 由来。
+    公開して差し支えない運用品質の集計値だけを毎日 aggregate。
+    収益、実験、内部テーブル、個別顧客に関する値はこの JSON に出しません。
   </p>
 
   <p class="meta" id="captured-at">読込中…</p>
 
-  <h2>新 8 KPI (Agent Economy)</h2>
+  <h2>公開運用指標</h2>
   <div class="kpi-grid" id="kpi-grid-new"></div>
 
-  <h2>従来 4 KPI (Legacy proxies)</h2>
-  <div class="kpi-grid" id="kpi-grid-legacy"></div>
-
-  <h2>Anti-pattern Violations</h2>
+  <h2>Quality Warnings</h2>
   <div class="kpi-card" id="violations">
     <p>読込中…</p>
   </div>
 
   <h2>KPI 定義</h2>
   <div class="legend">
-    <p>各 KPI の数式は memory <code>feedback_agent_new_kpis_8</code> 参照。</p>
+    <p>各 KPI の定義は公開メトリクス向けに要約しています。</p>
     <ul>
-      <li><strong>ASR (24h, JPY)</strong> — エージェント UA リクエスト × ¥3.30</li>
-      <li><strong>ARC (rows)</strong> — last 30d req × 365/30 (rolling-annualized)</li>
-      <li><strong>Cost-to-Serve (JPY/call)</strong> — sum(cost_ledger.amount_jpy) / req count, 30d</li>
-      <li><strong>Agent Retention (D30)</strong> — api_keys active D30 ago AND today (fraction)</li>
-      <li><strong>TTFP (seconds)</strong> — median seconds from api_key issue → first usage</li>
-      <li><strong>Spending Variance (p90/p50)</strong> — req count per api_key, 7d</li>
-      <li><strong>AI Mention Share</strong> — aeo_citation_bench weekly avg cite rate</li>
-      <li><strong>Justification Strength (0-100)</strong> — desc length + source url coverage on S+A programs</li>
+      <li><strong>Activity rows</strong> — 公開可能な範囲で丸めた request activity index</li>
+      <li><strong>Agent Retention (D30)</strong> — authenticated callers active D30 ago and today (fraction)</li>
+      <li><strong>TTFU (seconds)</strong> — median seconds from credential issue to first usage</li>
+      <li><strong>Usage Variance (p90/p50)</strong> — 7d request-count concentration</li>
+      <li><strong>AI Mention Share</strong> — weekly average citation rate</li>
+      <li><strong>Justification Strength (0-100)</strong> — description and source URL coverage</li>
     </ul>
   </div>
 
@@ -151,8 +146,7 @@
       <thead>
         <tr>
           <th>日時 (UTC)</th>
-          <th>ASR 24h ¥</th>
-          <th>ARC rows</th>
+          <th>Activity rows</th>
           <th>Retention D30</th>
           <th>TTFP s</th>
           <th>Variance</th>
@@ -165,8 +159,7 @@
 
   <p class="footer">
     Source: <a href="/status/monetization_dashboard.json">monetization_dashboard.json</a>
-    | Cron: <a href="https://github.com/bookyou-jp/jpcite/blob/main/scripts/cron/track_monetization_metrics_daily.py">track_monetization_metrics_daily.py</a>
-    | Memory: <code>feedback_agent_new_kpis_8</code>
+    | Refreshed automatically
   </p>
 </div>
 
@@ -204,7 +197,7 @@
     data = null;
   }
   if (!data || !data.latest) {
-    document.getElementById("captured-at").textContent = "データなし — cron が初回実行されていない可能性があります。";
+    document.getElementById("captured-at").textContent = "データなし — 初回更新前の可能性があります。";
     return;
   }
 
@@ -213,20 +206,12 @@
     "最新計測: " + (m.captured_at || data.generated_at) + " (UTC)";
 
   var gridNew = document.getElementById("kpi-grid-new");
-  gridNew.appendChild(card("Agent-Sourced Revenue (24h)", fmt(m.asr_24h_jpy, { kind: "jpy" }), "", "agent UA × ¥3.30"));
-  gridNew.appendChild(card("ARC (annualized)", fmt(m.arc_rows), "rows/year", "last 30d × 365/30"));
-  gridNew.appendChild(card("Cost-to-Serve / call", fmt(m.cost_to_serve_jpy, { kind: "jpy" }), "", "cost_ledger / req count"));
+  gridNew.appendChild(card("Activity rows", fmt(m.arc_rows), "rows", "rounded public activity index"));
   gridNew.appendChild(card("Agent Retention D30", fmt(m.agent_retention_d30, { kind: "pct" }), "", "D30 cohort still active"));
-  gridNew.appendChild(card("Time-to-First-Payment", fmt(m.ttfp_seconds), "s", "median issue → first req"));
-  gridNew.appendChild(card("Spending Variance (p90/p50)", fmt(m.spending_variance_p90_p50, { kind: "ratio" }), "x", "high = unusual concentration"));
-  gridNew.appendChild(card("AI Mention Share", fmt(m.ai_mention_share, { kind: "pct" }), "", "aeo_citation_bench weekly avg"));
-  gridNew.appendChild(card("Justification Strength", fmt(m.justification_strength), "/100", "desc + source on S+A"));
-
-  var gridLegacy = document.getElementById("kpi-grid-legacy");
-  gridLegacy.appendChild(card("MRR", fmt(m.mrr_jpy, { kind: "jpy" }), "", "last 30d revenue"));
-  gridLegacy.appendChild(card("ARR", fmt(m.arr_jpy, { kind: "jpy" }), "", "MRR × 12"));
-  gridLegacy.appendChild(card("Churn D30 proxy", fmt(m.churn_d30_proxy, { kind: "pct" }), "", "1 - retention"));
-  gridLegacy.appendChild(card("LTV / CAC proxy", fmt(m.ltv_cac_proxy, { kind: "ratio" }), "x", "organic only, CAC = ¥1 sentinel"));
+  gridNew.appendChild(card("Time-to-first authenticated use", fmt(m.ttfp_seconds), "s", "median issue → first req"));
+  gridNew.appendChild(card("Usage variance (p90/p50)", fmt(m.spending_variance_p90_p50, { kind: "ratio" }), "x", "high = unusual concentration"));
+  gridNew.appendChild(card("AI Mention Share", fmt(m.ai_mention_share, { kind: "pct" }), "", "weekly avg citation rate"));
+  gridNew.appendChild(card("Justification Strength", fmt(m.justification_strength), "/100", "description + source coverage"));
 
   var vbox = document.getElementById("violations");
   vbox.innerHTML = "";
@@ -234,12 +219,12 @@
   if (v.length === 0) {
     var ok = el("p");
     ok.appendChild(el("span", "ok", "OK"));
-    ok.appendChild(document.createTextNode(" — anti-pattern 違反なし (10 件 zero violations)"));
+    ok.appendChild(document.createTextNode(" — no public quality warnings"));
     vbox.appendChild(ok);
   } else {
     var warn = el("p");
     warn.appendChild(el("span", "warn", "WARN"));
-    warn.appendChild(document.createTextNode(" — " + v.length + " violations: " + v.join(", ")));
+    warn.appendChild(document.createTextNode(" — " + v.length + " warning(s): " + v.join(", ")));
     vbox.appendChild(warn);
   }
 
@@ -248,7 +233,6 @@
     var tr = document.createElement("tr");
     [
       (row.captured_at || "").replace(/T/, " ").replace(/Z$/, ""),
-      fmt(row.asr_24h_jpy, { kind: "jpy" }),
       fmt(row.arc_rows),
       fmt(row.agent_retention_d30, { kind: "pct" }),
       fmt(row.ttfp_seconds),

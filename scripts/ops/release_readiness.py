@@ -436,11 +436,13 @@ def run_checks(repo_root: Path) -> list[Check]:
 def build_report(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     checks = run_checks(repo_root)
     failing = [check for check in checks if check.status == "FAIL"]
+    ok = not failing
     return {
         "scope": "release readiness; local files only; no network; no mutation",
         "generated_at": _utc_now(),
         "repo_root": str(repo_root),
-        "ok": not failing,
+        "ok": ok,
+        "overall_status": "PASS" if ok else "FAIL",
         "summary": {
             "pass": sum(1 for check in checks if check.status == "PASS"),
             "fail": len(failing),
@@ -458,6 +460,11 @@ def main(argv: list[str] | None = None) -> int:
         "--warn-only",
         action="store_true",
         help="Always exit 0 after printing JSON, even when checks fail.",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print the release-readiness report as JSON. This is the default output format.",
     )
     args = parser.parse_args(argv)
 

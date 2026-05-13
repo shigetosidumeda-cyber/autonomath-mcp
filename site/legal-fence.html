@@ -29,8 +29,6 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="/styles.css?v=20260504a">
 
 <script type="application/ld+json">
@@ -117,7 +115,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -160,11 +158,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -313,7 +311,7 @@
  <li>制度の必要書類 checklist (<code>bundle_application_kit</code>)</li>
  <li>応募要領 PDF への一次資料 link 集約</li>
  <li>類似採択事例の参照</li>
- <li>scaffold (項目見出し) の生成</li>
+ <li>項目整理 (項目見出し) の生成</li>
  </ul>
  <h3>jpcite が <span class="lf-dont">やらない</span></h3>
  <ul>
@@ -358,17 +356,17 @@
  </ul>
  <h3>jpcite が <span class="lf-dont">やらない</span></h3>
  <ul>
- <li>36協定 (時間外労働・休日労働に関する協定届) の生成 — <code>render_36_kyotei_am</code> + <code>get_36_kyotei_metadata_am</code> は <code>AUTONOMATH_36_KYOTEI_ENABLED</code> gate で default off</li>
+ <li>36協定 (時間外労働・休日労働に関する協定届) の生成 — 公開提供していません。関連する出力は下書き扱いで、社労士確認必須の注意書きを付与します。</li>
  <li>就業規則作成・改定</li>
  <li>助成金申請代行</li>
  <li>労働社会保険諸法令に基づく申告書類の作成</li>
  </ul>
  <p><strong>違反通報先</strong>: 全国社会保険労務士会連合会 <a href="https://www.shakaihokenroumushi.jp/" rel="noopener">https://www.shakaihokenroumushi.jp/</a></p>
- <p><strong>36協定 gate</strong>: <code>AUTONOMATH_36_KYOTEI_ENABLED = False</code> (default)。 仮に gate ON でも、render response は draft 扱いで「社労士確認必須」 disclaimer を必ず付与します。</p>
+ <p><strong>36協定の扱い</strong>: 36協定書面の生成機能は公開提供していません。関連する出力は下書き扱いで、「社労士確認必須」の注意書きを必ず付与します。</p>
  </div>
 
  <h2 id="disclaimer">7. API response の <code>_disclaimer</code> field 仕様</h2>
- <p>業法に該当する 11 sensitive tool branch では、API response 末尾に <code>_disclaimer</code> field を自動付与します (Wave 30 disclaimer hardening 済)。</p>
+ <p>業法に該当する 11 sensitive tool branch では、API response 末尾に <code>_disclaimer</code> field を自動付与します (disclaimer hardening 済)。</p>
  <h3>統一文体</h3>
  <pre><code>{
   "_disclaimer": {
@@ -384,24 +382,24 @@
  <h3>表記の統一</h3>
  <p><em>「本 response は情報検索の結果です。 個別具体的な {税務 / 法律 / 申請 / 監査 / 登記 / 労務} 判断は {税理士 / 弁護士 / 行政書士 / 公認会計士 / 司法書士 / 社労士} にご相談ください。 ({業法 §条文} に基づく業務範囲外)。 出典: {source_url}」</em></p>
 
- <h2 id="mapping">8. MCP tool ごとの sensitive 業法 マッピング</h2>
+ <h2 id="mapping">8. Sensitive 業法 マッピング</h2>
  <table>
- <thead><tr><th>MCP Tool</th><th>Sensitive 業法</th><th><code>_disclaimer</code> 対象</th></tr></thead>
+ <thead><tr><th>対象領域</th><th>Sensitive 業法</th><th><code>_disclaimer</code> 対象</th></tr></thead>
  <tbody>
- <tr><td><code>get_am_tax_rule</code></td><td>税理士法 §52</td><td>○</td></tr>
- <tr><td><code>search_tax_incentives</code></td><td>税理士法 §52</td><td>○</td></tr>
- <tr><td><code>compose_audit_workpaper</code></td><td>§52 + 公認会計士法 §47-2</td><td>○</td></tr>
- <tr><td><code>prepare_kessan_briefing</code></td><td>税理士法 §52</td><td>○</td></tr>
- <tr><td><code>match_due_diligence_questions</code></td><td>§52 + 弁護士法 §72</td><td>○</td></tr>
- <tr><td><code>cross_check_jurisdiction</code></td><td>§52 + §72 + 司法書士法 §3</td><td>○</td></tr>
- <tr><td><code>bundle_application_kit</code></td><td>行政書士法 §1</td><td>○</td></tr>
- <tr><td><code>render_36_kyotei_am</code> (gated off)</td><td>社労士法 §27 + 労基法 §36</td><td>○ (gate ON 時)</td></tr>
- <tr><td><code>pack_construction</code></td><td>§52 + §47-2</td><td>○</td></tr>
- <tr><td><code>pack_manufacturing</code></td><td>§52 + §47-2</td><td>○</td></tr>
- <tr><td><code>pack_real_estate</code></td><td>§52 + §47-2</td><td>○</td></tr>
+ <tr><td>税務公開情報の検索</td><td>税理士法 §52</td><td>○</td></tr>
+ <tr><td>税制優遇・控除候補の確認</td><td>税理士法 §52</td><td>○</td></tr>
+ <tr><td>監査・DD 用の公開情報整理</td><td>§52 + 公認会計士法 §47-2</td><td>○</td></tr>
+ <tr><td>決算前確認の根拠整理</td><td>税理士法 §52</td><td>○</td></tr>
+ <tr><td>DD 質問候補</td><td>§52 + 弁護士法 §72</td><td>○</td></tr>
+ <tr><td>管轄・登記関連の確認</td><td>§52 + §72 + 司法書士法 §3</td><td>○</td></tr>
+ <tr><td>申請前の必要情報整理</td><td>行政書士法 §1</td><td>○</td></tr>
+ <tr><td>36協定関連の下書き扱い情報</td><td>社労士法 §27 + 労基法 §36</td><td>○</td></tr>
+ <tr><td>建設業向け公開情報整理</td><td>§52 + §47-2</td><td>○</td></tr>
+ <tr><td>製造業向け公開情報整理</td><td>§52 + §47-2</td><td>○</td></tr>
+ <tr><td>不動産業向け公開情報整理</td><td>§52 + §47-2</td><td>○</td></tr>
  </tbody>
  </table>
- <p>これらは CI で継続確認し、「全 sensitive branch の response が <code>_disclaimer</code> を含む」ことを検証します。</p>
+ <p>これらの対象領域では、response に <code>_disclaimer</code> を含めることを継続確認します。</p>
 
  <p class="lf-foot">本 page の各業法引用は e-Gov 法令データ (CC BY 4.0) と各業法主管団体の公開情報を一次資料とします。 jpcite が「やる/やらない」境界線に関する記述は、<a href="/tos.html">利用規約</a> §7 (免責) と整合します。 関連 page: <a href="/trust/purchasing.html">法人購買 1-screen</a> · <a href="/security/">Security Overview</a> · <a href="/data-licensing.html">データソース・ライセンス</a> · <a href="/.well-known/trust.json">trust.json</a></p>
 

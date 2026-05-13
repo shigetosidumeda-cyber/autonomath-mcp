@@ -28,8 +28,6 @@
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=20260428a">
 
@@ -75,7 +73,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -118,11 +116,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -236,8 +234,8 @@
 
  <section class="features" aria-labelledby="cost-title">
  <div class="container">
- <h2 id="cost-title" style="margin-bottom:16px;">1 案件あたりの cost saving (純 LLM vs jpcite ¥3/req)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 不動産業特化コンサル / 顧問 8 社 想定。 「純 LLM」は外部公的制度根拠なしの汎用 LLM で hallucination 裏取り + JSIC K 一次資料探索 + 通達引用整形まで含めた工数 (不動産業コンサル時給 ¥8,000/h)。 詳細は <a href="../../docs/canonical/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <h2 id="cost-title" style="margin-bottom:16px;">1 案件あたりの cost saving (純 LLM vs jpcite ¥3/billable unit)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 不動産業特化コンサル / 顧問 8 社 想定。 「純 LLM」は外部公的制度根拠なしの汎用 LLM で hallucination 裏取り + JSIC K 一次資料探索 + 通達引用整形まで含めた工数 (不動産業コンサル時給 ¥8,000/h)。 詳細は <a href="/tools/cost_saving_examples.md">canonical cost saving examples</a>。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>

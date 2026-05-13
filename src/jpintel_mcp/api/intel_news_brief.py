@@ -66,6 +66,50 @@ class NewsBriefRequest(BaseModel):
     max_items: int = Field(5, ge=1, le=20)
 
 
+# R3 P0-1: hard-cap to ONE text axis per call. Each axis is bound to a
+# narrow allow-list of am_entity_facts.field_name values, which lets us use
+# the composite (field_name, field_value_text) index (migration 290) instead
+# of a 5-column LIKE-OR full-table scan.
+_AXIS_FIELD_NAMES: dict[str, tuple[str, ...]] = {
+    "program": (
+        "adoption.program_name",
+        "adoption.program_hint",
+        "program.program_kind",
+        "program.category",
+        "program.notes",
+        "qa.program_name_hint",
+        "enforcement.program_name_hint",
+    ),
+    "law": (
+        "law.category",
+        "law.summary",
+        "law.legal_basis",
+        "law_ref.0.name",
+        "law_ref.1.name",
+        "law.law_ref.0.name",
+        "legal_basis.0.law_name",
+    ),
+    "industry": (
+        "industry_name",
+        "jsic_name_major",
+        "jsic_name_medium",
+        "corp.industry_raw",
+        "corp.jsic_major",
+        "enforcement.industry",
+    ),
+}
+
+# houjin is the only axis stored verbatim (13-digit corp number); it gets
+# equality match against the canonical field_name bucket.
+_HOUJIN_FIELD_NAMES: tuple[str, ...] = (
+    "houjin_bangou",
+    "corp.houjin_bangou",
+)
+
+# Independent of payload.max_items, never read more than this from disk.
+_HARD_ROW_CAP = 50
+
+
 def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
     try:
         return (
@@ -125,6 +169,50 @@ def _fact_summary(row: dict[str, Any]) -> str:
     return f"{field}: {value}" if value else field
 
 
+def _resolve_axis(payload: NewsBriefRequest) -> tuple[str, str]:
+    """Return (axis_label, raw_value). Raises 422 on 0 or 2+ axes set.
+
+    R3 P0-1: index-friendly queries require a single text axis per call.
+    The legacy 5-column LIKE-OR with leading wildcards over am_entity_facts
+    (6.12M rows, 8.29 GB DB) was the root cause of the 5-15s p99 — it forced
+    a full-table scan because no single index could satisfy any LIKE-OR
+    branch. Hard-capping to one axis lets us bind to the new composite
+    index (field_name, field_value_text) added in migration 290.
+    """
+    axes: list[tuple[str, str]] = []
+    if payload.program:
+        axes.append(("program", payload.program.strip()))
+    if payload.law:
+        axes.append(("law", payload.law.strip()))
+    if payload.industry:
+        axes.append(("industry", payload.industry.strip()))
+    houjin_norm = _normalize_houjin(payload.houjin)
+    if houjin_norm:
+        axes.append(("houjin", houjin_norm))
+
+    if not axes:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "missing_query",
+                "message": "exactly one of program, law, houjin, or industry is required",
+            },
+        )
+    if len(axes) > 1:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "too_many_axes",
+                "message": (
+                    "specify exactly one of program, law, houjin, or industry; "
+                    "multi-axis queries are not supported (perf cap, R3 P0-1)"
+                ),
+                "axes_supplied": [label for label, _ in axes],
+            },
+        )
+    return axes[0]
+
+
 def _fetch_fact_rows(
     conn: sqlite3.Connection, payload: NewsBriefRequest, known_gaps: list[str]
 ) -> list[dict[str, Any]]:
@@ -132,11 +220,19 @@ def _fetch_fact_rows(
         known_gaps.append("am_entity_facts table is not available")
         return []
 
+    axis_label, axis_value = _resolve_axis(payload)
+
     cols = _columns(conn, "am_entity_facts")
+    if "field_name" not in cols or "field_value_text" not in cols:
+        known_gaps.append(
+            "am_entity_facts is missing field_name/field_value_text columns"
+        )
+        return []
+
     select = {
         "entity_id": "entity_id" if "entity_id" in cols else "NULL",
-        "field_name": "field_name" if "field_name" in cols else "NULL",
-        "field_value_text": "field_value_text" if "field_value_text" in cols else "NULL",
+        "field_name": "field_name",
+        "field_value_text": "field_value_text",
         "field_value_numeric": ("field_value_numeric" if "field_value_numeric" in cols else "NULL"),
         "field_value_json": "field_value_json" if "field_value_json" in cols else "NULL",
         "source_url": "source_url" if "source_url" in cols else "NULL",
@@ -147,51 +243,39 @@ def _fetch_fact_rows(
         ),
     }
 
-    clauses: list[str] = []
-    params: list[Any] = []
-    searchable = [
-        col
-        for col in ("entity_id", "field_name", "field_value_text", "field_value_json", "source_url")
-        if col in cols
-    ]
-    for _label, value in (
-        ("program", payload.program),
-        ("law", payload.law),
-        ("industry", payload.industry),
-    ):
-        if not value or not searchable:
-            continue
-        term = f"%{value.strip()}%"
-        clauses.append("(" + " OR ".join(f"{col} LIKE ?" for col in searchable) + ")")
-        params.extend([term] * len(searchable))
+    # R3 P0-1 query shape: WHERE field_name IN (...) AND field_value_text
+    # {= ? | LIKE ?} backed by composite index
+    # idx_am_entity_facts_field_name_value (migration 290). SQLite seeks
+    # directly to each named field_name bucket and applies the value
+    # predicate within it; what used to be a 6.12M-row full-table scan with
+    # 5 columns LIKE-OR collapses to a per-bucket walk.
+    if axis_label == "houjin":
+        field_names = _HOUJIN_FIELD_NAMES
+        placeholders = ",".join("?" for _ in field_names)
+        where = f"field_name IN ({placeholders}) AND field_value_text = ?"
+        params: list[Any] = [*field_names, axis_value]
+    else:
+        field_names = _AXIS_FIELD_NAMES[axis_label]
+        placeholders = ",".join("?" for _ in field_names)
+        where = f"field_name IN ({placeholders}) AND field_value_text LIKE ?"
+        params = [*field_names, f"%{axis_value}%"]
 
-    houjin = _normalize_houjin(payload.houjin)
-    if houjin and searchable:
-        candidates = [houjin, f"houjin:{houjin}"]
-        clauses.append(
-            "("
-            + " OR ".join(f"{col} IN ({','.join('?' for _ in candidates)})" for col in searchable)
-            + ")"
-        )
-        params.extend(candidates * len(searchable))
-
-    if not clauses:
-        raise HTTPException(
-            status_code=422,
-            detail={
-                "error": "missing_query",
-                "message": "one of program, law, houjin, or industry is required",
-            },
-        )
-
+    order_col = (
+        "fetched_at"
+        if "fetched_at" in cols
+        else ("created_at" if "created_at" in cols else "id")
+    )
     sql = (
         "SELECT "
         + ", ".join(f"{expr} AS {alias}" for alias, expr in select.items())
         + " FROM am_entity_facts WHERE "
-        + " OR ".join(clauses)
-        + " ORDER BY fetched_at DESC NULLS LAST LIMIT ?"
+        + where
+        + f" ORDER BY {order_col} DESC LIMIT ?"
     )
-    params.append(int(payload.max_items) * 6)
+    # R3 guard: hard-cap rows independent of `max_items*6` multiplier.
+    # `_HARD_ROW_CAP` (= 50) saturates well below any pathological
+    # large-payload surface; even max_items=20 (* 6 = 120) clips down to 50.
+    params.append(min(int(payload.max_items) * 6, _HARD_ROW_CAP))
     try:
         return [dict(row) for row in conn.execute(sql, params).fetchall()]
     except sqlite3.Error as exc:

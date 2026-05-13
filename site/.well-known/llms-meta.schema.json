@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jpcite.com/.well-known/llms-meta.schema.json",
+  "title": "jpcite llms-meta",
+  "type": "object",
+  "required": [
+    "$schema",
+    "spec",
+    "publisher",
+    "canonical",
+    "generated_at",
+    "total_files",
+    "total_section_anchors",
+    "files",
+    "discovery_surfaces",
+    "consumption_notes"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://jpcite.com/.well-known/llms-meta.schema.json"
+    },
+    "spec": {
+      "type": "string"
+    },
+    "spec_status": {
+      "type": "string"
+    },
+    "spec_reference": {
+      "type": "string",
+      "format": "uri"
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "publisher_legal_entity": {
+      "type": "string"
+    },
+    "publisher_invoice_id": {
+      "type": "string"
+    },
+    "canonical": {
+      "type": "string",
+      "format": "uri"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generator": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "total_files": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "total_section_anchors": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/file_meta"
+      }
+    },
+    "discovery_surfaces": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/discovery_surface"
+      }
+    },
+    "consumption_notes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "file_meta": {
+      "type": "object",
+      "required": [
+        "file",
+        "lang",
+        "size_bytes",
+        "line_count",
+        "content_hash_sha256",
+        "last_modified",
+        "sections",
+        "anchors_total",
+        "section_anchors"
+      ],
+      "properties": {
+        "file": {
+          "type": "string",
+          "pattern": "^/llms(?:-full)?(?:\\.en)?\\.txt$"
+        },
+        "lang": {
+          "type": "string",
+          "enum": ["ja", "en"]
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "line_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "content_hash_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "last_modified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sections": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "anchors_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "section_anchors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/anchor"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "anchor": {
+      "type": "object",
+      "required": ["level", "text", "anchor", "line", "kind"],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "text": {
+          "type": "string"
+        },
+        "anchor": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["heading", "link_target"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "discovery_surface": {
+      "type": "object",
+      "required": [
+        "file",
+        "kind",
+        "size_bytes",
+        "content_hash_sha256",
+        "last_modified"
+      ],
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "content_hash_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "last_modified": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

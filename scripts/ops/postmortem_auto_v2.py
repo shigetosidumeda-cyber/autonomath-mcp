@@ -23,13 +23,14 @@ Usage:
 
 Output exit codes: 0 ok / 1 misuse / 2 detection-failed.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -47,13 +48,14 @@ SLA_BREACH_CRITICAL_COUNT = 3  # 3+ concurrent SLA breaches triggers incident
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _today_jst_date() -> str:
     # JST date label for postmortem filename.
     from datetime import timedelta
-    return (datetime.now(timezone.utc) + timedelta(hours=9)).strftime("%Y-%m-%d")
+
+    return (datetime.now(UTC) + timedelta(hours=9)).strftime("%Y-%m-%d")
 
 
 def _load(rel: str) -> dict[str, Any] | None:
@@ -76,40 +78,50 @@ def detect_incidents() -> list[dict[str, Any]]:
     status = _load("site/status/status.json") or {}
     h5xx_rate = status.get("healthz_5xx_rate_5m")
     if isinstance(h5xx_rate, (int, float)) and h5xx_rate > HEALTHZ_5XX_RATE_MAX:
-        incidents.append({
-            "kind": "healthz5xx",
-            "severity": "P1" if h5xx_rate < 0.05 else "P0",
-            "detected_at": _now_iso(),
-            "signal": f"healthz 5xx rate {h5xx_rate:.3%} > {HEALTHZ_5XX_RATE_MAX:.2%} (5min window)",
-            "evidence": {"healthz_5xx_rate_5m": h5xx_rate,
-                         "uptime_24h_pct": status.get("uptime_24h_pct")},
-        })
+        incidents.append(
+            {
+                "kind": "healthz5xx",
+                "severity": "P1" if h5xx_rate < 0.05 else "P0",
+                "detected_at": _now_iso(),
+                "signal": f"healthz 5xx rate {h5xx_rate:.3%} > {HEALTHZ_5XX_RATE_MAX:.2%} (5min window)",
+                "evidence": {
+                    "healthz_5xx_rate_5m": h5xx_rate,
+                    "uptime_24h_pct": status.get("uptime_24h_pct"),
+                },
+            }
+        )
 
     # Axis 2: cron 24h success rate below threshold.
     cron = _load("analytics/cron_health_24h.json") or {}
     cron_rate = cron.get("success_rate_24h")
     if isinstance(cron_rate, (int, float)) and cron_rate < CRON_FAIL_THRESHOLD:
-        incidents.append({
-            "kind": "cronfail",
-            "severity": "P1" if cron_rate >= 0.50 else "P0",
-            "detected_at": _now_iso(),
-            "signal": f"cron success_rate_24h={cron_rate:.2%} < {CRON_FAIL_THRESHOLD:.0%}",
-            "evidence": {"success_rate_24h": cron_rate,
-                         "failed_jobs": cron.get("failed_jobs", [])[:10]},
-        })
+        incidents.append(
+            {
+                "kind": "cronfail",
+                "severity": "P1" if cron_rate >= 0.50 else "P0",
+                "detected_at": _now_iso(),
+                "signal": f"cron success_rate_24h={cron_rate:.2%} < {CRON_FAIL_THRESHOLD:.0%}",
+                "evidence": {
+                    "success_rate_24h": cron_rate,
+                    "failed_jobs": cron.get("failed_jobs", [])[:10],
+                },
+            }
+        )
 
     # Axis 3: SLA breach count (uses cell 10 sidecar).
     sla = _load("site/status/sla_breach_w43_3_10.json") or {}
     breach_count = sla.get("breach_count", 0)
     if isinstance(breach_count, int) and breach_count >= SLA_BREACH_CRITICAL_COUNT:
         breaches = [m["id"] for m in (sla.get("metrics") or []) if m.get("breach")]
-        incidents.append({
-            "kind": "slacluster",
-            "severity": "P1" if breach_count < 6 else "P0",
-            "detected_at": _now_iso(),
-            "signal": f"{breach_count} concurrent SLA breaches ≥ {SLA_BREACH_CRITICAL_COUNT}",
-            "evidence": {"breach_count": breach_count, "breach_ids": breaches[:12]},
-        })
+        incidents.append(
+            {
+                "kind": "slacluster",
+                "severity": "P1" if breach_count < 6 else "P0",
+                "detected_at": _now_iso(),
+                "signal": f"{breach_count} concurrent SLA breaches ≥ {SLA_BREACH_CRITICAL_COUNT}",
+                "evidence": {"breach_count": breach_count, "breach_ids": breaches[:12]},
+            }
+        )
 
     return incidents
 
@@ -143,12 +155,12 @@ def render_md(incident: dict[str, Any], date_label: str) -> str:
         "",
         "## Timeline (UTC)",
         "",
-        f"| Time | Event |",
-        f"| --- | --- |",
+        "| Time | Event |",
+        "| --- | --- |",
         f"| {detected_at} | Auto-detector tripped: {signal} |",
-        f"| TBD | Operator acknowledged |",
-        f"| TBD | Mitigation applied |",
-        f"| TBD | Incident closed |",
+        "| TBD | Operator acknowledged |",
+        "| TBD | Mitigation applied |",
+        "| TBD | Incident closed |",
         "",
         "## Evidence",
         "",
@@ -229,7 +241,9 @@ def open_draft_pr(path: Path, incident: dict[str, Any], *, dry_run: bool) -> str
     try:
         result = subprocess.run(
             ["gh", "pr", "create", "--draft", "--title", title, "--body", body],
-            capture_output=True, text=True, timeout=30,
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
         if result.returncode == 0:
             return f"ok:{result.stdout.strip()[:200]}"
@@ -240,8 +254,11 @@ def open_draft_pr(path: Path, incident: dict[str, Any], *, dry_run: bool) -> str
 
 def _parse(argv: list[str] | None) -> argparse.Namespace:
     ap = argparse.ArgumentParser(description="Wave 43.3.10 cell 11 auto postmortem v2")
-    ap.add_argument("--kind", default="auto",
-                    help="detection kind: auto|healthz5xx|cronfail|slacluster (auto = run all detectors)")
+    ap.add_argument(
+        "--kind",
+        default="auto",
+        help="detection kind: auto|healthz5xx|cronfail|slacluster (auto = run all detectors)",
+    )
     ap.add_argument("--force", action="store_true", help="overwrite existing draft")
     ap.add_argument("--dry-run", action="store_true", help="render but skip PR open")
     ap.add_argument("--no-pr", action="store_true", help="skip PR open even when not dry-run")
@@ -273,10 +290,19 @@ def run(argv: list[str] | None = None) -> int:
         drafted_paths.append(str(path.relative_to(REPO_ROOT)))
         if not args.no_pr:
             pr_results.append(open_draft_pr(path, inc, dry_run=args.dry_run))
-    print(json.dumps({"detected": len(all_incidents), "drafted": len(drafted_paths),
-                      "files": drafted_paths, "pr_results": pr_results,
-                      "kind": args.kind, "dry_run": args.dry_run},
-                     ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "detected": len(all_incidents),
+                "drafted": len(drafted_paths),
+                "files": drafted_paths,
+                "pr_results": pr_results,
+                "kind": args.kind,
+                "dry_run": args.dry_run,
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

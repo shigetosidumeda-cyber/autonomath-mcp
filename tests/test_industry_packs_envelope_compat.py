@@ -57,11 +57,17 @@ if not _AM_DB.exists() or not _JPI_DB.exists() or not _GRAPH.exists():
     )
 
 os.environ["AUTONOMATH_DB_PATH"] = str(_AM_DB)
+os.environ["JPCITE_AUTONOMATH_DB_PATH"] = str(_AM_DB)
 os.environ["AUTONOMATH_GRAPH_DB_PATH"] = str(_GRAPH)
+os.environ["JPCITE_AUTONOMATH_GRAPH_DB_PATH"] = str(_GRAPH)
 _PRIOR_JPINTEL_DB_PATH = os.environ.get("JPINTEL_DB_PATH")
+_PRIOR_JPCITE_DB_PATH = os.environ.get("JPCITE_DB_PATH")
 os.environ["JPINTEL_DB_PATH"] = str(_JPI_DB)
+os.environ["JPCITE_DB_PATH"] = str(_JPI_DB)
 os.environ.setdefault("AUTONOMATH_ENABLED", "1")
+os.environ.setdefault("JPCITE_ENABLED", "1")
 os.environ.setdefault("AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1")
+os.environ.setdefault("JPCITE_INDUSTRY_PACKS_ENABLED", "1")
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -73,6 +79,10 @@ def _restore_jpintel_db_path_after_module():
         os.environ.pop("JPINTEL_DB_PATH", None)
     else:
         os.environ["JPINTEL_DB_PATH"] = _PRIOR_JPINTEL_DB_PATH
+    if _PRIOR_JPCITE_DB_PATH is None:
+        os.environ.pop("JPCITE_DB_PATH", None)
+    else:
+        os.environ["JPCITE_DB_PATH"] = _PRIOR_JPCITE_DB_PATH
     try:
         from jpintel_mcp.config import settings as _live_settings
 
@@ -87,6 +97,7 @@ def _restore_jpintel_db_path_after_module():
 @pytest.fixture(autouse=True)
 def _use_production_jpintel_db(_reset_anon_rate_limit):
     os.environ["JPINTEL_DB_PATH"] = str(_JPI_DB)
+    os.environ["JPCITE_DB_PATH"] = str(_JPI_DB)
     try:
         from jpintel_mcp.config import settings as _live_settings
 

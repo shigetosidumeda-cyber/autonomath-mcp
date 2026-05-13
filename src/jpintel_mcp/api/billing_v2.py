@@ -23,14 +23,22 @@ caller has any key, so they cannot be metered).
 
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
+import json
 import logging
+import os
+import secrets
 import sqlite3
+import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import APIRouter, Header, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
+from jpintel_mcp.api.deps import ApiContextDep  # noqa: TC001 (FastAPI dependency alias)
 from jpintel_mcp.billing.acp_integration import (
     ACP_PROTOCOL_VERSION,
     AcpCheckoutRequest,
@@ -41,17 +49,28 @@ from jpintel_mcp.billing.acp_integration import (
     confirm_acp_session,
     create_acp_checkout,
     create_acp_portal_link,
+)
+from jpintel_mcp.billing.acp_integration import (
     discovery_manifest as acp_discovery_manifest,
 )
-from jpintel_mcp.billing.keys import issue_key
+from jpintel_mcp.billing.keys import issue_trial_key
 from jpintel_mcp.config import settings
+from jpintel_mcp.db.session import connect as connect_jpintel
 
 logger = logging.getLogger("jpintel.billing.v2")
 
 router = APIRouter(prefix="/v1/billing", tags=["billing-v2"])
 
+_X402_ORIGIN_SECRET_ENV = "JPCITE_X402_ORIGIN_SECRET"
+_X402_ORIGIN_SECRET_HEADER = "X-JPCITE-X402-Origin-Secret"
+_X402_QUOTE_SECRET_ENV = "JPCITE_X402_QUOTE_SECRET"
+_X402_ADDRESS_ENV = "JPCITE_X402_ADDRESS"
+_X402_CHAIN_ID = "8453"
+_X402_USDC_BASE = "0x833589fcD6eDb6E08f4c7C32D4f71b54bdA02913".lower()
+
 
 # -------- shared db connect ----------------------------------------------
+
 
 def _autonomath_db_path() -> Path:
     """Resolve the autonomath.db path with env override.
@@ -136,7 +155,9 @@ async def acp_confirm(body: AcpConfirmRequest) -> AcpConfirmResponse:
 
 
 class AcpPortalRequest(BaseModel):
-    customer_id: str = Field(..., min_length=4, max_length=120)
+    # Kept optional for wire compatibility; ignored for security. The Stripe
+    # customer is derived from the authenticated API key.
+    customer_id: str | None = Field(default=None, min_length=4, max_length=120)
     return_url: str | None = Field(default=None, max_length=500)
 
 
@@ -145,11 +166,18 @@ class AcpPortalRequest(BaseModel):
     response_model=AcpPortalResponse,
     summary="Mint Stripe portal link bound to JP locale (Wave 21 D3)",
 )
-async def acp_portal_link(body: AcpPortalRequest) -> AcpPortalResponse:
-    """Mint a Stripe portal session in JP locale for an existing customer."""
+async def acp_portal_link(body: AcpPortalRequest, ctx: ApiContextDep) -> AcpPortalResponse:
+    """Mint a Stripe portal session for the authenticated Stripe customer."""
     if not settings.stripe_secret_key:
         raise HTTPException(status_code=503, detail="stripe_not_configured")
-    return create_acp_portal_link(customer_id=body.customer_id, return_url=body.return_url)
+    if ctx.key_hash is None:
+        raise HTTPException(status_code=401, detail="auth_required")
+    if not ctx.customer_id:
+        raise HTTPException(status_code=402, detail="stripe_customer_required")
+    try:
+        return create_acp_portal_link(customer_id=ctx.customer_id, return_url=body.return_url)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 # -------- x402 origin-side bridge ----------------------------------------
@@ -158,8 +186,8 @@ async def acp_portal_link(body: AcpPortalRequest) -> AcpPortalResponse:
 class X402IssueKeyRequest(BaseModel):
     """Payload from `functions/x402_handler.ts` after USDC settlement verify."""
 
-    tx_hash: str = Field(..., min_length=10, max_length=80)
-    quote_id: str = Field(..., min_length=10, max_length=200)
+    tx_hash: str = Field(..., min_length=66, max_length=66)
+    quote_id: str = Field(..., min_length=10, max_length=1024)
     agent_id: str = Field(..., min_length=1, max_length=200)
 
 
@@ -167,6 +195,195 @@ class X402IssueKeyResponse(BaseModel):
     api_key: str
     expires_at: str
     metering: dict[str, Any]
+
+
+def _require_x402_origin_auth(header_value: str | None) -> None:
+    expected = os.environ.get(_X402_ORIGIN_SECRET_ENV, "").strip()
+    if not expected:
+        logger.error("x402 issue_key blocked: %s is unset", _X402_ORIGIN_SECRET_ENV)
+        raise HTTPException(status_code=503, detail="x402_origin_unavailable")
+    if not header_value or not secrets.compare_digest(header_value, expected):
+        raise HTTPException(status_code=403, detail="x402_origin_auth_failed")
+
+
+def _normalize_evm_address(value: Any) -> str:
+    raw = str(value or "").lower()
+    if len(raw) == 42 and raw.startswith("0x") and all(c in "0123456789abcdef" for c in raw[2:]):
+        return raw
+    return ""
+
+
+# -------- strict x402 quote payload model --------------------------------
+#
+# R2 P1-2 audit hardening (2026-05-13): the inner JSON-decoded payload of
+# `quote_id` is now parsed through a Pydantic v2 model that rejects
+# whitespace-padded numerics, oversized integers, leading-zero strings, and
+# any extra / missing keys. The edge (`functions/x402_handler.ts`, owned by
+# A5/D7) emits a single shape with exactly 8 keys — `v, u, r, p, a, e, c, t`
+# — and the prior `int(str(payload.get(...)))` parse path silently accepted
+# `" 1 "`, `"-1"`, `"007"`, and `2**128`. Strict typing closes that surface.
+#
+# Wire naming note: the audit brief documents the protocol-version key as
+# `n` (nonce). The edge ships it as `v` (version), and the edge is the
+# write-side authority (see top-of-file DO NOT EDIT pin). We keep the
+# wire-level key `v` and enforce the brief's `int (≥0, ≤2**63-1)` constraint
+# on it; the semantic role (small monotonic protocol marker) is identical.
+
+# Maximum signed 64-bit positive integer — matches the brief's constraint
+# and a typical underlying storage bound.
+_X402_INT64_MAX = 2**63 - 1
+# Cap on micro-USDC amount — 10**12 micro-USDC == 1_000_000 USDC.
+_X402_AMOUNT_MAX = 10**12
+_X402_EVM_HEX_REGEX = r"^0x[0-9a-fA-F]{40}$"
+
+
+def _strict_digit_string_to_int(value: Any) -> int:
+    """Validator helper: accept an int OR a strict-digit JSON string.
+
+    The edge `functions/x402_handler.ts` emits `u` as `String(microUsdc)`
+    (the QuoteIdPayload TypeScript interface declares `u: string`). The
+    audit brief mandates that `u` is logically an integer. We bridge that
+    by:
+      - accepting `int` values verbatim (`bool` is explicitly rejected even
+        though it is an `int` subclass in Python);
+      - accepting a `str` only if it matches `^[1-9][0-9]*$` (no leading
+        zeros, no signs, no whitespace, no scientific notation, no empty).
+
+    Anything else raises `ValueError`, which Pydantic surfaces as a
+    `ValidationError` that `_decode_quote_payload` maps to 422
+    `invalid_quote_id`. Note that the `_X402_AMOUNT_MAX` (`10**12`) and
+    `ge=1` bounds on the `u` field still apply on top of this coercion.
+    """
+    if isinstance(value, bool):
+        # `bool` is an `int` subclass in Python; explicitly reject so a
+        # quote with `"u": true` cannot slip through as `1`.
+        raise ValueError("u_must_not_be_bool")
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        # Strict-digit only — no leading/trailing whitespace, no signs,
+        # no leading zeros (rejects "007"), no empty string, no Unicode
+        # digit shenanigans (rejects "٣" U+0663 ARABIC-INDIC DIGIT THREE).
+        if not value or not value.isascii() or not value.isdigit():
+            raise ValueError("u_must_be_strict_digits")
+        if len(value) > 1 and value[0] == "0":
+            raise ValueError("u_must_not_have_leading_zero")
+        return int(value)
+    raise ValueError("u_must_be_int_or_digit_string")
+
+
+class X402QuotePayload(BaseModel):
+    """Strictly-typed inner payload decoded from the x402 `quote_id`.
+
+    The edge signs the base64url-encoded JSON of this exact shape. Any
+    deviation — extra keys, missing keys, whitespace inside numerics,
+    leading-zero strings, oversize ints, negative ints — must yield a
+    422 from `_verify_x402_quote`.
+
+    `model_config.extra = "forbid"` rejects extra keys; Pydantic v2 rejects
+    missing keys by default; `strict=True` blocks the silent `int(" 1 ")`
+    coercion path that the legacy code allowed. `u` keeps a digit-string
+    bridge via `_strict_digit_string_to_int` because the edge emits it as
+    `String(microUsdc)` — see field validator below.
+    """
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    v: int = Field(ge=0, le=_X402_INT64_MAX)
+    a: str = Field(min_length=1, max_length=64)
+    p: str = Field(pattern=_X402_EVM_HEX_REGEX)
+    r: str = Field(pattern=_X402_EVM_HEX_REGEX)
+    t: str = Field(pattern=_X402_EVM_HEX_REGEX)
+    c: Literal["8453"]
+    u: int = Field(ge=1, le=_X402_AMOUNT_MAX)
+    e: int = Field(ge=0, le=_X402_INT64_MAX)
+
+    @field_validator("u", mode="before")
+    @classmethod
+    def _coerce_u_from_digit_string(cls, value: Any) -> int:
+        """Bridge edge's `String(microUsdc)` wire form to a strict int.
+
+        Pydantic v2 with `strict=True` rejects `"3000"` for an `int` field
+        by default. The edge declares `u: string`, so we explicitly accept
+        a `[1-9][0-9]*` digit string (no signs, no whitespace, no leading
+        zeros) here, and reject everything else.
+        """
+        return _strict_digit_string_to_int(value)
+
+
+def _decode_quote_payload(encoded: str) -> X402QuotePayload:
+    """Decode and strictly validate the inner 8-key quote payload.
+
+    Raises HTTPException(422, invalid_quote_id) on any decode or schema
+    failure — base64, JSON, top-level shape, missing/extra keys, type
+    coercion, range bounds, or regex mismatches.
+    """
+    try:
+        padded = encoded + ("=" * ((4 - len(encoded) % 4) % 4))
+        raw = base64.urlsafe_b64decode(padded.encode("ascii"))
+        parsed = json.loads(raw.decode("utf-8"))
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail="invalid_quote_id") from exc
+    if not isinstance(parsed, dict):
+        raise HTTPException(status_code=422, detail="invalid_quote_id")
+    try:
+        return X402QuotePayload.model_validate(parsed)
+    except ValidationError as exc:
+        raise HTTPException(status_code=422, detail="invalid_quote_id") from exc
+
+
+def _verify_x402_quote(body: X402IssueKeyRequest) -> dict[str, Any]:
+    if not (
+        body.tx_hash.startswith("0x")
+        and len(body.tx_hash) == 66
+        and all(c in "0123456789abcdefABCDEF" for c in body.tx_hash[2:])
+    ):
+        raise HTTPException(status_code=422, detail="invalid_tx_hash")
+
+    quote_secret = os.environ.get(_X402_QUOTE_SECRET_ENV, "").strip()
+    recipient = _normalize_evm_address(os.environ.get(_X402_ADDRESS_ENV, ""))
+    if not quote_secret or not recipient:
+        raise HTTPException(status_code=503, detail="x402_origin_unavailable")
+
+    parts = body.quote_id.split(".")
+    if len(parts) != 2 or not parts[0] or not parts[1]:
+        raise HTTPException(status_code=422, detail="invalid_quote_id")
+    expected_sig = hmac.new(
+        quote_secret.encode("utf-8"),
+        parts[0].encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()[:32]
+    if not hmac.compare_digest(parts[1], expected_sig):
+        raise HTTPException(status_code=422, detail="invalid_quote_id")
+
+    payload = _decode_quote_payload(parts[0])
+
+    # The schema already guarantees these are well-shaped EVM hex strings —
+    # we just lowercase to match `_X402_USDC_BASE` (which is `.lower()`-ed
+    # at module import) and the env-derived recipient (normalized through
+    # `_normalize_evm_address`, also lowercase).
+    payer = payload.p.lower()
+    token = payload.t.lower()
+    signed_recipient = payload.r.lower()
+    agent_id = payload.a
+
+    if (
+        payload.v != 1
+        or payload.c != _X402_CHAIN_ID
+        or token != _X402_USDC_BASE
+        or signed_recipient != recipient
+        or agent_id != body.agent_id.strip()[:200]
+    ):
+        raise HTTPException(status_code=422, detail="invalid_quote_id")
+    if payload.e < int(time.time()):
+        raise HTTPException(status_code=422, detail="expired_quote_id")
+
+    return {
+        "agent_id": agent_id,
+        "payer_address": payer,
+        "amount_usdc_micro": payload.u,
+        "expires_at_unix": payload.e,
+    }
 
 
 @router.get("/x402/discovery", summary="x402 origin-side discovery (mirrors edge)")
@@ -204,8 +421,15 @@ async def x402_discovery() -> dict[str, Any]:
     response_model=X402IssueKeyResponse,
     status_code=status.HTTP_200_OK,
     summary="Origin-side bridge: x402 settled tx -> metered API key",
+    include_in_schema=False,
 )
-async def x402_issue_key(body: X402IssueKeyRequest) -> X402IssueKeyResponse:
+async def x402_issue_key(
+    body: X402IssueKeyRequest,
+    x402_origin_secret: str | None = Header(
+        default=None,
+        alias=_X402_ORIGIN_SECRET_HEADER,
+    ),
+) -> X402IssueKeyResponse:
     """Bridge from CF Pages x402 handler to the metered key issuance path.
 
     Called by the edge after `functions/x402_handler.ts` verifies the USDC
@@ -213,13 +437,18 @@ async def x402_issue_key(body: X402IssueKeyRequest) -> X402IssueKeyResponse:
       - tx_hash settled with status==0x1
       - tx_hash not previously redeemed (KV nonce cache)
       - quote_id signature valid + not expired
-    We trust those edge-side gates; this endpoint records the binding +
-    issues the metered key. Re-entry on the same tx_hash returns the same
-    key (idempotent via the unique index below).
+    The origin still requires a shared edge/origin secret before a short-lived
+    one-request bearer can be minted. x402 must never create a reusable paid
+    key without a Stripe subscription. Re-entry on the same tx_hash returns
+    409 so the raw key is never revealed twice and concurrent calls cannot
+    mint duplicates.
     """
     from datetime import UTC, datetime, timedelta
 
-    with _connect_autonomath() as conn:
+    _require_x402_origin_auth(x402_origin_secret)
+    quote = _verify_x402_quote(body)
+
+    with connect_jpintel() as conn:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS x402_tx_bind (
@@ -232,45 +461,58 @@ async def x402_issue_key(body: X402IssueKeyRequest) -> X402IssueKeyResponse:
             )
             """
         )
-        existing = conn.execute(
-            "SELECT api_key_hash FROM x402_tx_bind WHERE tx_hash = ?",
-            (body.tx_hash,),
-        ).fetchone()
-        if existing and existing["api_key_hash"]:
-            # Idempotent: same tx => same key (the raw key was already
-            # revealed once on the first call; second caller gets a 409 so
-            # they cannot harvest a second key from the same on-chain tx).
-            raise HTTPException(status_code=409, detail="tx_already_redeemed")
+        try:
+            conn.execute("BEGIN IMMEDIATE")
+            conn.execute(
+                """
+                INSERT INTO x402_tx_bind (tx_hash, agent_id, quote_id, api_key_hash)
+                VALUES (?, ?, ?, NULL)
+                """,
+                (body.tx_hash, quote["agent_id"], body.quote_id),
+            )
+        except sqlite3.IntegrityError as exc:
+            conn.rollback()
+            existing = conn.execute(
+                "SELECT api_key_hash FROM x402_tx_bind WHERE tx_hash = ?",
+                (body.tx_hash,),
+            ).fetchone()
+            if existing and existing["api_key_hash"]:
+                # The raw key was already revealed once on the first call.
+                raise HTTPException(status_code=409, detail="tx_already_redeemed") from exc
+            # A concurrent origin request reserved the transaction but has
+            # not completed key issuance yet. Do not mint a second key.
+            raise HTTPException(status_code=409, detail="tx_redemption_in_progress") from exc
 
-        customer_id = f"x402_{body.agent_id[:50]}"
-        raw_key = issue_key(
-            conn,
-            customer_id=customer_id,
-            tier="paid",
-            stripe_subscription_id=None,
-        )
-        # Hash for at-rest tracking (we never persist the raw key).
-        import hashlib
+        customer_id = f"x402_{quote['agent_id'][:50]}"
+        try:
+            raw_key, key_hash = issue_trial_key(
+                conn,
+                trial_email=f"{customer_id}@x402.local",
+                duration_days=1,
+                request_cap=1,
+            )
+            conn.execute(
+                """
+                UPDATE x402_tx_bind
+                SET api_key_hash = ?
+                WHERE tx_hash = ? AND api_key_hash IS NULL
+                """,
+                (key_hash, body.tx_hash),
+            )
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
 
-        key_hash = hashlib.sha256(raw_key.encode("utf-8")).hexdigest()
-        conn.execute(
-            """
-            INSERT INTO x402_tx_bind (tx_hash, agent_id, quote_id, api_key_hash)
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT(tx_hash) DO UPDATE SET api_key_hash = excluded.api_key_hash
-            """,
-            (body.tx_hash, body.agent_id, body.quote_id, key_hash),
-        )
-        conn.commit()
-
-    expires_at = datetime.now(UTC) + timedelta(days=30)
+    expires_at = datetime.now(UTC) + timedelta(days=1)
     return X402IssueKeyResponse(
         api_key=raw_key,
         expires_at=expires_at.isoformat(),
         metering={
             "unit_price_jpy": 3,
             "approx_unit_price_usdc": "0.02",
-            "model": "metered_per_request",
+            "model": "x402_one_request",
+            "request_cap": 1,
         },
     )
 

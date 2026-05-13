@@ -346,6 +346,60 @@ def test_publish_statistics_estat_round_trip(mock_dbs):
     assert manifest["hf_repo_id"] == "bookyou/statistics-estat"
 
 
+def test_publish_statistics_estat_drops_pending_and_unknown_licenses(mock_dbs):
+    jpintel, autonomath, output_root, blacklist = mock_dbs
+    conn = sqlite3.connect(autonomath)
+    conn.executescript(
+        """
+        INSERT INTO am_entities (
+            canonical_id, record_kind, source_topic, source_record_index,
+            primary_name, confidence, source_url, source_url_domain, fetched_at,
+            raw_json
+        ) VALUES
+            ('statistic:test:pending', 'statistic', '18_estat_industry_distribution',
+             1, 'pending e-Stat row', 0.98,
+             'https://www.e-stat.go.jp/stat-search/file-download?statInfId=pending',
+             'e-stat.go.jp', '2026-04-23T04:52:26Z', '{"sample": "pending"}'),
+            ('statistic:test:unknown', 'statistic', '18_estat_industry_distribution',
+             2, 'unknown e-Stat row', 0.98,
+             'https://www.e-stat.go.jp/stat-search/file-download?statInfId=unknown',
+             'e-stat.go.jp', '2026-04-23T04:52:26Z', '{"sample": "unknown"}');
+        INSERT INTO am_source (source_url, domain, license)
+        VALUES
+            ('https://www.e-stat.go.jp/stat-search/file-download?statInfId=pending',
+             'e-stat.go.jp', 'pending_review'),
+            ('https://www.e-stat.go.jp/stat-search/file-download?statInfId=unknown',
+             'e-stat.go.jp', 'unknown');
+        """
+    )
+    conn.commit()
+    conn.close()
+
+    rc = publish.main(
+        [
+            "--dataset",
+            "statistics-estat",
+            "--jpintel-db",
+            str(jpintel),
+            "--autonomath-db",
+            str(autonomath),
+            "--output-root",
+            str(output_root),
+            "--blacklist-csv",
+            str(blacklist),
+            "--limit",
+            "10",
+            "--dry-run",
+            "--skip-safety-gate",
+        ]
+    )
+
+    assert rc == 0
+    df, _infos, _manifest = _read_round_trip(output_root / "statistics-estat")
+    assert set(df["entity_id"]) == {"statistic:test:000:abc"}
+    assert set(df["license"]) == {"gov_standard_v2.0"}
+
+
 def test_publish_corp_enforcement_unions_both_dbs(mock_dbs):
     jpintel, autonomath, output_root, blacklist = mock_dbs
     rc = publish.main(

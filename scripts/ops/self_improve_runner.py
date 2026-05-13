@@ -149,9 +149,7 @@ def compute_axis_deltas(
         delta = round(cur - base, 3)
         if delta < -REGRESSION_THRESHOLD:
             regressed = True
-        deltas.append(
-            {"axis": axis, "baseline": base, "current": cur, "delta": delta}
-        )
+        deltas.append({"axis": axis, "baseline": base, "current": cur, "delta": delta})
     return (deltas, regressed)
 
 
@@ -210,9 +208,7 @@ def emit_pr_body(
         ]
     )
     if not auto_merge:
-        lines.append(
-            "Operator review required — see logs and rerun with `--execute` once green."
-        )
+        lines.append("Operator review required — see logs and rerun with `--execute` once green.")
     out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
@@ -267,9 +263,7 @@ def main(argv: list[str] | None = None) -> int:
         "auto_merge_eligible": auto_merge,
     }
     sidecar_path = args.out_dir / f"self_improve_{date_part}.json"
-    sidecar_path.write_text(
-        json.dumps(combined, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    sidecar_path.write_text(json.dumps(combined, ensure_ascii=False, indent=2), encoding="utf-8")
 
     pr_body_path = args.out_dir / f"self_improve_{date_part}_pr_body.md"
     emit_pr_body(orchestrator_payload, deltas, regressed, auto_merge, pr_body_path)

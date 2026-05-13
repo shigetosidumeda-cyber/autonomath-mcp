@@ -2,38 +2,26 @@
   "generated_at": "2026-05-11T22:37:55Z",
   "latest": {
     "captured_at": "2026-05-11T22:37:55Z",
-    "asr_24h_jpy": 0,
     "arc_rows": 0,
-    "cost_to_serve_jpy": 0,
     "agent_retention_d30": 0.0,
     "ttfp_seconds": 0,
     "spending_variance_p90_p50": 0.0,
     "ai_mention_share": 0.0,
     "justification_strength": 85,
-    "mrr_jpy": 0,
-    "arr_jpy": 0,
-    "churn_d30_proxy": 1.0,
-    "ltv_cac_proxy": 0.0,
     "anti_pattern_violations": [],
-    "notes": "wave42-monetization-guide-integration"
+    "notes": "public-operations-summary"
   },
   "history": [
     {
       "captured_at": "2026-05-11T22:37:55Z",
-      "asr_24h_jpy": 0,
       "arc_rows": 0,
-      "cost_to_serve_jpy": 0,
       "agent_retention_d30": 0.0,
       "ttfp_seconds": 0,
       "spending_variance_p90_p50": 0.0,
       "ai_mention_share": 0.0,
       "justification_strength": 85,
-      "mrr_jpy": 0,
-      "arr_jpy": 0,
-      "churn_d30_proxy": 1.0,
-      "ltv_cac_proxy": 0.0,
       "anti_pattern_violations": [],
-      "notes": "wave42-monetization-guide-integration"
+      "notes": "public-operations-summary"
     }
   ]
 }

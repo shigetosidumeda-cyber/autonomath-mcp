@@ -8,14 +8,21 @@ _TMP_DIR = tempfile.mkdtemp(prefix="jpintel-test-")
 _DB_PATH = os.path.join(_TMP_DIR, "jpintel.db")
 _REPO_ROOT = os.path.dirname(os.path.dirname(__file__))
 _AUTONOMATH_DB_PATH = os.environ.get(
-    "AUTONOMATH_DB_PATH",
-    os.path.join(_REPO_ROOT, "autonomath.db"),
+    "JPCITE_AUTONOMATH_DB_PATH",
+    os.environ.get(
+        "AUTONOMATH_DB_PATH",
+        os.path.join(_REPO_ROOT, "autonomath.db"),
+    ),
 )
 _AUTONOMATH_GRAPH_DB_PATH = os.environ.get(
-    "AUTONOMATH_GRAPH_DB_PATH",
-    os.path.join(_REPO_ROOT, "graph.sqlite"),
+    "JPCITE_AUTONOMATH_GRAPH_DB_PATH",
+    os.environ.get(
+        "AUTONOMATH_GRAPH_DB_PATH",
+        os.path.join(_REPO_ROOT, "graph.sqlite"),
+    ),
 )
 os.environ["JPINTEL_DB_PATH"] = _DB_PATH
+os.environ["JPCITE_DB_PATH"] = _DB_PATH
 os.environ["API_KEY_SALT"] = "test-salt"
 os.environ["RATE_LIMIT_FREE_PER_DAY"] = "100"
 # D9 burst throttle (api/middleware/rate_limit.py) is per-second and shared
@@ -36,6 +43,7 @@ os.environ.setdefault("RATE_LIMIT_BURST_DISABLED", "1")
 # real env on Fly.io, where it is intentionally off until each surface is
 # launch-cleared. Test-session-only.
 os.environ.setdefault("AUTONOMATH_EXPERIMENTAL_API_ENABLED", "1")
+os.environ.setdefault("JPCITE_EXPERIMENTAL_API_ENABLED", "1")
 # Wave 21-23 default-ON gates: source already defaults these to ON
 # (`composition_tools.py:_ENABLED`, `wave22_tools.py:_ENABLED`,
 # `industry_packs.py:_ENABLED` all read `os.environ.get(..., "1")`), but
@@ -43,13 +51,24 @@ os.environ.setdefault("AUTONOMATH_EXPERIMENTAL_API_ENABLED", "1")
 # overrides obvious. Re-pinning to "1" is a no-op when source default is
 # already "1"; if a future config change flips a default to "0", these
 # lines keep the test surface stable instead of silently regressing.
+#
+# Wave 47.A flip (2026-05-13): we now mirror each AUTONOMATH_* setdefault
+# with its JPCITE_* canonical counterpart so the `_jpcite_env_bridge.get_flag`
+# helper finds the canonical key first and does NOT emit a DeprecationWarning
+# during normal test runs. Operators who explicitly set ONLY the legacy key
+# (no JPCITE_ mirror) still see the warning — that is the desired signal that
+# tells them to flip to the canonical name. Both names continue to work.
 os.environ.setdefault("AUTONOMATH_COMPOSITION_ENABLED", "1")
+os.environ.setdefault("JPCITE_COMPOSITION_ENABLED", "1")
 os.environ.setdefault("AUTONOMATH_WAVE22_ENABLED", "1")
+os.environ.setdefault("JPCITE_WAVE22_ENABLED", "1")
 os.environ.setdefault("AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1")
+os.environ.setdefault("JPCITE_INDUSTRY_PACKS_ENABLED", "1")
 # Snapshot tool (DEEP-22) — config.py defaults autonomath_snapshot_enabled
 # to True; mirror at env-var layer so any os.getenv-style reader (e.g.
 # autonomath_tools.snapshot_tool) sees a truthy value under TestClient.
 os.environ.setdefault("AUTONOMATH_SNAPSHOT_ENABLED", "1")
+os.environ.setdefault("JPCITE_SNAPSHOT_ENABLED", "1")
 # AUTONOMATH_REASONING_ENABLED + AUTONOMATH_36_KYOTEI_ENABLED stay OFF
 # by default (production posture per CLAUDE.md "broken-tool gates" /
 # 36協定 launch gate). Tests that need them set them locally.
@@ -70,7 +89,12 @@ from fastapi.testclient import TestClient  # noqa: E402
 
 def _restore_autonomath_paths() -> None:
     os.environ["AUTONOMATH_DB_PATH"] = _AUTONOMATH_DB_PATH
+    # Mirror the canonical JPCITE_* name so `get_flag` finds it first and
+    # the legacy-fallback DeprecationWarning does not fire during tests.
+    # Both names continue to resolve to the same path.
+    os.environ["JPCITE_AUTONOMATH_DB_PATH"] = _AUTONOMATH_DB_PATH
     os.environ["AUTONOMATH_GRAPH_DB_PATH"] = _AUTONOMATH_GRAPH_DB_PATH
+    os.environ["JPCITE_AUTONOMATH_GRAPH_DB_PATH"] = _AUTONOMATH_GRAPH_DB_PATH
     try:
         from jpintel_mcp.config import settings
 
@@ -446,6 +470,7 @@ def _reset_anon_rate_limit(jpintel_seeded_db: Path):
     # specialized fixture DB. Reset both before every test so API auth,
     # funnel, feedback, and anon quota checks all hit the seeded integration DB.
     os.environ["JPINTEL_DB_PATH"] = str(jpintel_seeded_db)
+    os.environ["JPCITE_DB_PATH"] = str(jpintel_seeded_db)
     try:
         from jpintel_mcp.config import settings
 

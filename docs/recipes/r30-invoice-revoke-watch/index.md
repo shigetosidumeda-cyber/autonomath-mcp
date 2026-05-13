@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 EC / 卸売 / 商社 / メーカー / 飲食店チェーン 等の経理担当者・税理士事務所の所員が、仕入先 100-10,000 社の適格事業者登録が抹消 / 廃業 / 取消 / 名称変更されないか毎週検知して、消費税仕入税額控除のリスクを抑える運用。月次の `bulk_invoice_verify` (r11) より頻度を上げて週次 / 日次の `invoice_revoke_watch` を回し、抹消検知の翌営業日に支払保留 + 税区分修正を行う運用が想定読者。期末決算前 (3 月 / 12 月) の年次総点検では 10,000-50,000 社規模を 1 batch で sweep する用途にも対応。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - 仕入先の登録番号 CSV (T + 13 桁、freee / マネーフォワード / 弥生会計から export)
 - 週次 cron (n8n / GitHub Actions / Fly cron / Cloud Functions / Lambda 等)
 - (推奨) `Idempotency-Key` ヘッダー (週次 batch の冪等性確保)
@@ -122,7 +122,7 @@ fs.writeFileSync("revoke_alert.json", JSON.stringify(revoked, null, 2));
 - 月 4 週 = ¥1,200 / 月、税込 ¥1,320
 - 仕入先 1,000 社 = ¥3,000 / 週 × 4 = ¥12,000 / 月、税込 ¥13,200
 - 期末年次総点検 (10,000 社) = ¥30,000 / 期末、税込 ¥33,000
-- 節約 (純 LLM vs jpcite ¥3/req): 仕入先 1,000 社 × 月 4 週 で、純 LLM は約 ¥40,000/月 (1 batch cycle ¥10,000 = 1,000 社 × NTA fetch + diff) に対し jpcite は ¥12,000/月 (4,000 req × ¥3) → 節約 約 ¥28,000/月 / 社あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
+- 節約 (純 LLM vs jpcite 標準従量料金): 仕入先 1,000 社 × 月 4 週 で、純 LLM は約 ¥40,000/月 (1 batch cycle ¥10,000 = 1,000 社 × NTA fetch + diff) に対し jpcite は ¥12,000/月 (4,000 req × ¥3) → 節約 約 ¥28,000/月 / 社あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
 
 ## 商業利用条件
 - PDL v1.0 (NTA 公開データ、出典明記必須) + CC-BY-4.0 (jpcite 編集物)

@@ -70,6 +70,14 @@ interface RumFunnelBeacon {
   ts?: unknown;
 }
 
+interface ValidRumFunnelBeacon {
+  session_id: string;
+  page: string;
+  step: string;
+  event: string;
+  ts: number;
+}
+
 const ALLOWED_STEPS = new Set([
   "landing",
   "free",
@@ -88,6 +96,9 @@ const BOT_RE =
   /(bot|spider|crawler|gptbot|claudebot|perplexity|amazonbot|googlebot|bingbot|chatgpt|oai-searchbot|bytespider|ahrefs|semrush|diffbot|cohere-ai|youbot|mistralai|applebot|facebookexternalhit|twitterbot|yandex|baiduspider)/i;
 
 const ORIGIN_RE = /^https?:\/\/([a-z0-9-]+\.)?jpcite\.com(:\d+)?$/i;
+const MAX_BODY_BYTES = 4096;
+
+type LimitedTextResult = { ok: true; text: string } | { ok: false };
 
 interface Env {
   // R2 bucket binding (configured in Cloudflare Pages dashboard).
@@ -96,15 +107,67 @@ interface Env {
   CF_RUM_R2?: R2Bucket;
 }
 
+function isAllowedBrowserOrigin(origin: string | null): boolean {
+  return !origin || ORIGIN_RE.test(origin);
+}
+
 function corsHeaders(origin: string | null): HeadersInit {
-  const allowed = origin && ORIGIN_RE.test(origin) ? origin : "";
-  return {
-    "Access-Control-Allow-Origin": allowed,
+  const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin",
   };
+  if (origin && ORIGIN_RE.test(origin)) {
+    headers["Access-Control-Allow-Origin"] = origin;
+  }
+  return headers;
+}
+
+function contentLengthExceeds(headers: Headers, maxBytes: number): boolean {
+  const value = headers.get("content-length");
+  if (!value) return false;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > maxBytes;
+}
+
+async function readRequestTextLimited(
+  request: Request,
+  maxBytes: number,
+): Promise<LimitedTextResult> {
+  if (contentLengthExceeds(request.headers, maxBytes)) {
+    return { ok: false };
+  }
+  if (!request.body) {
+    return { ok: true, text: "" };
+  }
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      try {
+        await reader.cancel();
+      } catch {
+        // Best effort; the response will be rejected either way.
+      }
+      return { ok: false };
+    }
+    chunks.push(value);
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return { ok: true, text: new TextDecoder().decode(bytes) };
 }
 
 function utcDateKey(tsMs: number): string {
@@ -113,7 +176,7 @@ function utcDateKey(tsMs: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-function isValidBeacon(b: RumFunnelBeacon): b is Required<RumFunnelBeacon> {
+function isValidBeacon(b: RumFunnelBeacon): b is ValidRumFunnelBeacon {
   if (!b || typeof b !== "object") return false;
   if (typeof b.session_id !== "string" || !b.session_id) return false;
   if (b.session_id.length > 64) return false;
@@ -125,9 +188,14 @@ function isValidBeacon(b: RumFunnelBeacon): b is Required<RumFunnelBeacon> {
 }
 
 export const onRequestOptions: PagesFunction<Env> = async (ctx) => {
+  const origin = ctx.request.headers.get("Origin");
+  const headers = corsHeaders(origin);
+  if (!isAllowedBrowserOrigin(origin)) {
+    return new Response(null, { status: 403, headers });
+  }
   return new Response(null, {
     status: 204,
-    headers: corsHeaders(ctx.request.headers.get("Origin")),
+    headers,
   });
 };
 
@@ -135,6 +203,9 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
   const { request, env } = ctx;
   const origin = request.headers.get("Origin");
   const headers = corsHeaders(origin);
+  if (!isAllowedBrowserOrigin(origin)) {
+    return new Response("Origin not allowed", { status: 403, headers });
+  }
 
   // Bot guard — defense in depth (collector already filters).
   const ua = request.headers.get("User-Agent") || "";
@@ -143,14 +214,14 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
   }
 
   // Hard cap at 4KB — sendBeacon refuses larger anyway.
-  const cl = parseInt(request.headers.get("Content-Length") || "0", 10);
-  if (cl > 4096) {
+  const bodyRead = await readRequestTextLimited(request, MAX_BODY_BYTES);
+  if (!bodyRead.ok) {
     return new Response("Payload too large", { status: 413, headers });
   }
 
   let body: RumFunnelBeacon;
   try {
-    body = (await request.json()) as RumFunnelBeacon;
+    body = JSON.parse(bodyRead.text) as RumFunnelBeacon;
   } catch (_err) {
     return new Response("Malformed JSON", { status: 400, headers });
   }
@@ -158,9 +229,27 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     return new Response("Invalid beacon shape", { status: 400, headers });
   }
 
-  // Persist to R2 (best effort — drop on bucket missing).
-  if (env.CF_RUM_R2) {
-    const dateKey = utcDateKey(body.ts as number);
+  const persist = persistBeacon(env, body, ua, origin);
+  const waitUntil = (ctx as unknown as { waitUntil?: (promise: Promise<unknown>) => void })
+    .waitUntil;
+  if (typeof waitUntil === "function") {
+    waitUntil.call(ctx, persist);
+  } else {
+    await persist;
+  }
+
+  return new Response(null, { status: 204, headers });
+};
+
+async function persistBeacon(
+  env: Env,
+  body: ValidRumFunnelBeacon,
+  ua: string,
+  origin: string | null,
+): Promise<void> {
+  if (!env.CF_RUM_R2) return;
+  try {
+    const dateKey = utcDateKey(body.ts);
     const objKey = `funnel/${dateKey}/${body.session_id}-${body.ts}.json`;
     const record = {
       session_id: body.session_id,
@@ -172,17 +261,13 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
       origin: origin || null,
       received_at: Date.now(),
     };
-    try {
-      await env.CF_RUM_R2.put(objKey, JSON.stringify(record), {
-        httpMetadata: { contentType: "application/json" },
-      });
-    } catch (_err) {
-      // Swallow — beacon must never break the page.
-    }
+    await env.CF_RUM_R2.put(objKey, JSON.stringify(record), {
+      httpMetadata: { contentType: "application/json" },
+    });
+  } catch (_err) {
+    // Swallow — beacon must never break the page.
   }
-
-  return new Response(null, { status: 204, headers });
-};
+}
 
 async function sha256Short(input: string): Promise<string> {
   if (!input) return "";

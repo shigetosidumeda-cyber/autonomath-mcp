@@ -26,6 +26,7 @@ AUDIT_SCRIPT = REPO_ROOT / "scripts" / "ops" / "audit_runner_ax_4pillars.py"
 def _run_audit(tmp_path: pathlib.Path) -> dict:
     md_out = tmp_path / "audit.md"
     json_out = tmp_path / "audit.json"
+    site_json_out = tmp_path / "site_audit.json"
     result = subprocess.run(
         [
             sys.executable,
@@ -34,6 +35,8 @@ def _run_audit(tmp_path: pathlib.Path) -> dict:
             str(md_out),
             "--out-json",
             str(json_out),
+            "--out-site-json",
+            str(site_json_out),
         ],
         check=True,
         capture_output=True,
@@ -50,6 +53,13 @@ def test_ax_audit_total_score_48(tmp_path: pathlib.Path) -> None:
     assert audit["pillar_max"] == 12.0
 
 
+def test_ax_audit_average_is_normalized_to_10(tmp_path: pathlib.Path) -> None:
+    """The public average is a 0-10 normalized value, not raw 12-point pillar mean."""
+    audit = _run_audit(tmp_path)
+    assert 0.0 <= audit["average_score"] <= 10.0
+    assert audit["average_score"] == round((audit["total_score"] / audit["max_score"]) * 10, 2)
+
+
 def test_ax_audit_pillar_count_4(tmp_path: pathlib.Path) -> None:
     """Still 4 pillars — Access / Context / Tools / Orchestration."""
     audit = _run_audit(tmp_path)
@@ -63,18 +73,40 @@ def test_ax_audit_cells_six_per_pillar(tmp_path: pathlib.Path) -> None:
         assert body["cells"] == 6, f"{name} has {body['cells']} cells; expected 6"
 
 
-def test_ax_audit_perfect_green(tmp_path: pathlib.Path) -> None:
-    """48 / 48 perfect green is the launch gate for Wave 41."""
+def test_ax_audit_honest_green_after_scope_routes_land(tmp_path: pathlib.Path) -> None:
+    """Post-H1 honest green gate.
+
+    The scoped_api_token cell now requires distinct route files to actually
+    import + apply ``require_scope`` (>= 4 callers). With the route wires
+    landed, Access may return to 12 / 12, but only through the AST-backed
+    caller count rather than literal grep.
+
+    The assertion below pins the post-fix state:
+
+      - Access = 12 (route wiring visible)
+      - No scoped_api_token warning remains
+      - Total score is 48 after the independent streamable_http cell closes
+      - Verdict remains green
+    """
     audit = _run_audit(tmp_path)
-    assert audit["total_score"] == 48.0, (
-        f"got {audit['total_score']}; missing items: "
-        + ", ".join(
-            f"{name}: {body['missing_items']}"
-            for name, body in audit["pillars"].items()
-            if body["missing_items"]
-        )
-    )
-    assert audit["verdict"] == "green"
+    access_score = audit["pillars"]["Access"]["score"]
+    assert access_score == 12.0
+    access_evidence = audit["pillars"]["Access"]["evidence"]
+    assert any("scoped_api_token" in e for e in access_evidence), access_evidence
+    access_missing = audit["pillars"]["Access"]["missing_items"]
+    assert not any("scoped_api_token" in m for m in access_missing), access_missing
+    # Other pillars must still be 12/12 — scope wiring must not hide regressions.
+    for name in ("Context", "Tools"):
+        assert (
+            audit["pillars"][name]["score"] == 12.0
+        ), f"{name} regressed: {audit['pillars'][name]}"
+    assert audit["pillars"]["Orchestration"]["score"] == 12.0
+    orchestration_evidence = audit["pillars"]["Orchestration"]["evidence"]
+    assert any("streamable_http" in e for e in orchestration_evidence), orchestration_evidence
+    orchestration_missing = audit["pillars"]["Orchestration"]["missing_items"]
+    assert not any("streamable_http" in m for m in orchestration_missing), orchestration_missing
+    assert audit["total_score"] == 48.0, f"total_score = {audit['total_score']}"
+    assert audit["verdict"] == "green", audit["verdict"]
 
 
 def test_ax_audit_wave41_new_cells_present(tmp_path: pathlib.Path) -> None:

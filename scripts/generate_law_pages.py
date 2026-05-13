@@ -91,7 +91,7 @@ _EGOV_LICENSE_JA = (
 )
 _EGOV_LICENSE_EN = (
     "Statutory text on this page is sourced from e-Gov Houreikensaku "
-    '(Japan Digital Agency, https://laws.e-gov.go.jp/) under Creative '
+    "(Japan Digital Agency, https://laws.e-gov.go.jp/) under Creative "
     "Commons Attribution 4.0 International (CC-BY 4.0). The Japanese "
     "original on e-Gov is the only legally authoritative version; this "
     "page is provided for reference."
@@ -214,9 +214,7 @@ def _load_laws_with_articles(am_db: sqlite3.Connection) -> list[sqlite3.Row]:
     return list(am_db.execute(sql))
 
 
-def _load_articles_for_law(
-    am_db: sqlite3.Connection, canonical_id: str
-) -> list[sqlite3.Row]:
+def _load_articles_for_law(am_db: sqlite3.Connection, canonical_id: str) -> list[sqlite3.Row]:
     sql = """
     SELECT
         article_number,
@@ -311,10 +309,7 @@ def _load_program_slugs(
     for i in range(0, len(program_ids), chunk):
         batch = program_ids[i : i + chunk]
         placeholders = ",".join("?" * len(batch))
-        sql = (
-            "SELECT unified_id, primary_name FROM programs "
-            f"WHERE unified_id IN ({placeholders})"
-        )
+        sql = f"SELECT unified_id, primary_name FROM programs WHERE unified_id IN ({placeholders})"
         try:
             for row in jpintel_db.execute(sql, batch):
                 out[row["unified_id"]] = {
@@ -466,9 +461,7 @@ def _build_jsonld(
     return {k: v for k, v in legislation.items() if v not in (None, "", [])}
 
 
-def _build_breadcrumb_jsonld(
-    domain: str, slug: str, lang: str, law_name: str
-) -> dict[str, Any]:
+def _build_breadcrumb_jsonld(domain: str, slug: str, lang: str, law_name: str) -> dict[str, Any]:
     base = f"https://{domain}"
     if lang == "ja":
         items = [
@@ -642,9 +635,7 @@ def _render_related_programs(
 ) -> str:
     if not refs:
         return ""
-    head = (
-        "関連する公的支援制度" if lang == "ja" else "Related public-support programs"
-    )
+    head = "関連する公的支援制度" if lang == "ja" else "Related public-support programs"
     items: list[str] = []
     seen: set[str] = set()
     for ref in refs:
@@ -662,9 +653,7 @@ def _render_related_programs(
         article = ref.get("article_citation") or ""
         suffix_parts = [p for p in (kind, article) if p]
         suffix = f" ({', '.join(suffix_parts)})" if suffix_parts else ""
-        items.append(
-            f'<li><a href="{_h(href)}">{_h(name)}</a>{_h(suffix)}</li>'
-        )
+        items.append(f'<li><a href="{_h(href)}">{_h(name)}</a>{_h(suffix)}</li>')
         if len(items) >= _RELATED_PROGRAMS_LIMIT:
             break
     if not items:
@@ -727,19 +716,19 @@ def _render_cite_in_ai(law: sqlite3.Row, domain: str, slug: str, lang: str) -> s
         return (
             '<section class="cite-this-section" aria-labelledby="cite-title">'
             '<h2 id="cite-title">Cite this in AI / 引用</h2>'
-            '<p>AI 回答に本法令を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。'
-            '一次資料は e-Gov 法令検索 (CC-BY 4.0)。</p>'
+            "<p>AI 回答に本法令を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。"
+            "一次資料は e-Gov 法令検索 (CC-BY 4.0)。</p>"
             '<pre class="code-block cite-block"><code>'
             f"&gt; {_h(law_name)} "
             f"(出典: https://{_h(short)}、jpcite が e-Gov 一次資料を機械可読化)"
-            '</code></pre>'
+            "</code></pre>"
             '<p class="muted">'
             f'<button type="button" class="copy-cite-btn" data-cite-url="{_h(canonical)}" '
             f"onclick=\"navigator.clipboard&amp;&amp;navigator.clipboard.writeText('{_h(canonical)}')\">"
-            'URL をコピー</button> '
+            "URL をコピー</button> "
             f'<a href="{_h(canonical)}">{_h(canonical)}</a>'
-            '</p>'
-            '</section>'
+            "</p>"
+            "</section>"
         )
     page_path = f"/en/laws/{slug}"
     canonical = f"https://{domain}{page_path}"
@@ -747,19 +736,19 @@ def _render_cite_in_ai(law: sqlite3.Row, domain: str, slug: str, lang: str) -> s
     return (
         '<section class="cite-this-section" aria-labelledby="cite-title">'
         '<h2 id="cite-title">Cite this in AI</h2>'
-        '<p>Canonical jpcite URL to use when an AI answer references this statute. '
-        'Please attribute jpcite. Primary source is e-Gov Houreikensaku (CC-BY 4.0).</p>'
+        "<p>Canonical jpcite URL to use when an AI answer references this statute. "
+        "Please attribute jpcite. Primary source is e-Gov Houreikensaku (CC-BY 4.0).</p>"
         '<pre class="code-block cite-block"><code>'
         f"&gt; {_h(law_name)} "
         f"(source: https://{_h(short)} — machine-readable layer over e-Gov by jpcite)"
-        '</code></pre>'
+        "</code></pre>"
         '<p class="muted">'
         f'<button type="button" class="copy-cite-btn" data-cite-url="{_h(canonical)}" '
         f"onclick=\"navigator.clipboard&amp;&amp;navigator.clipboard.writeText('{_h(canonical)}')\">"
-        'Copy URL</button> '
+        "Copy URL</button> "
         f'<a href="{_h(canonical)}">{_h(canonical)}</a>'
-        '</p>'
-        '</section>'
+        "</p>"
+        "</section>"
     )
 
 
@@ -840,9 +829,9 @@ def _render_page_ja(
     canonical_en_url = f"https://{domain}/en/laws/{slug}"
     legislation_jsonld = _build_jsonld(law, domain, slug, "ja", len(related_refs))
     breadcrumb_jsonld = _build_breadcrumb_jsonld(domain, slug, "ja", law_name)
-    jsonld_text = json.dumps(
-        legislation_jsonld, ensure_ascii=False, separators=(",", ":")
-    ).replace("</", "<\\/")
+    jsonld_text = json.dumps(legislation_jsonld, ensure_ascii=False, separators=(",", ":")).replace(
+        "</", "<\\/"
+    )
     breadcrumb_text = json.dumps(
         breadcrumb_jsonld, ensure_ascii=False, separators=(",", ":")
     ).replace("</", "<\\/")
@@ -899,7 +888,7 @@ def _render_page_ja(
 <main class="law-page">
 <header class="law-header">
 <h1>{_h(law_name)}</h1>
-{f'<p class="law-short">略称: {_h(law["short_name"])}</p>' if law["short_name"] else ''}
+{f'<p class="law-short">略称: {_h(law["short_name"])}</p>' if law["short_name"] else ""}
 {metadata_html}
 </header>
 {toc_html}
@@ -935,16 +924,14 @@ def _render_page_en(
     canonical_ja_url = f"https://{domain}/laws/{slug}"
     legislation_jsonld = _build_jsonld(law, domain, slug, "en", len(related_refs))
     breadcrumb_jsonld = _build_breadcrumb_jsonld(domain, slug, "en", law_name)
-    jsonld_text = json.dumps(
-        legislation_jsonld, ensure_ascii=False, separators=(",", ":")
-    ).replace("</", "<\\/")
+    jsonld_text = json.dumps(legislation_jsonld, ensure_ascii=False, separators=(",", ":")).replace(
+        "</", "<\\/"
+    )
     breadcrumb_text = json.dumps(
         breadcrumb_jsonld, ensure_ascii=False, separators=(",", ":")
     ).replace("</", "<\\/")
 
-    toc_html = _render_toc(
-        [a for a in articles if (a["body_en"] or "").strip()], "en"
-    )
+    toc_html = _render_toc([a for a in articles if (a["body_en"] or "").strip()], "en")
     article_html = _render_articles_en(articles, law["egov_url"])
     related_html = _render_related_programs(related_refs, program_meta, "en")
     metadata_html = _render_metadata_panel(law, "en")
@@ -993,7 +980,7 @@ def _render_page_en(
 <main class="law-page">
 <header class="law-header">
 <h1>{_h(law_name)}</h1>
-{f'<p class="law-short">Short title: {_h(law["short_name"])}</p>' if law["short_name"] else ''}
+{f'<p class="law-short">Short title: {_h(law["short_name"])}</p>' if law["short_name"] else ""}
 {metadata_html}
 <p class="law-translation-disclaimer">{_h(_BODY_EN_DISCLAIMER)}</p>
 </header>
@@ -1019,11 +1006,11 @@ def _render_page_en(
 # -----------------------------------------------------------------------
 
 
-def _write_sitemap(
-    path: Path, urls: list[tuple[str, str]], today_iso: str
-) -> None:
-    parts = ['<?xml version="1.0" encoding="UTF-8"?>',
-             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+def _write_sitemap(path: Path, urls: list[tuple[str, str]], today_iso: str) -> None:
+    parts = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
     for loc, lastmod in urls:
         parts.append("  <url>")
         parts.append(f"    <loc>{_h(loc)}</loc>")
@@ -1040,13 +1027,13 @@ def _write_marker_page(out_dir: Path, reason: str, generated_at: str) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     marker = out_dir / "_unavailable.html"
     body = (
-        "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>"
-        "<meta charset=\"UTF-8\">"
+        '<!DOCTYPE html>\n<html lang="ja">\n<head>'
+        '<meta charset="UTF-8">'
         f"<!-- generated_at = {generated_at} data unavailable -->"
         "<title>法令データ準備中 | jpcite</title>"
         '<meta name="robots" content="noindex">'
         "</head><body>"
-        f'<main><h1>法令データ準備中</h1><p>{_h(reason)}</p></main>'
+        f"<main><h1>法令データ準備中</h1><p>{_h(reason)}</p></main>"
         "</body></html>\n"
     )
     marker.write_text(body, encoding="utf-8")
@@ -1143,9 +1130,7 @@ def main(argv: list[str] | None = None) -> int:
         articles = _load_articles_for_law(am_db, law["canonical_id"])
         lawid = law["e_gov_lawid"] or ""
         related_refs = program_refs_index.get(lawid, [])
-        has_en_articles = any(
-            (a["body_en"] or "").strip() for a in articles
-        )
+        has_en_articles = any((a["body_en"] or "").strip() for a in articles)
 
         ja_html = _render_page_ja(
             law,

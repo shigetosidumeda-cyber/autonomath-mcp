@@ -5,10 +5,10 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>法人購買 (法務部) 向け 1-screen summary — jpcite</title>
-<meta name="description" content="法人購買・法務部 reviewer 用に「実在性 / 規約 / 個人情報 / セキュリティ / SLA / データ source / 法令フェンス」を 1 page に集約。 DPA 締結なし、Solo zero-touch、SOC2 alternative の自己宣言。">
+<meta name="description" content="法人購買・法務部 reviewer 用に「実在性 / 規約 / 個人情報 / セキュリティ / SLA / データ source / 法令フェンス」を 1 page に集約。契約条件、セキュリティ自己評価、公開資料へのリンクをまとめています。">
 
 <meta property="og:title" content="法人購買 (法務部) 向け 1-screen summary — jpcite">
-<meta property="og:description" content="法務 reviewer が確認する 8 区分を 1 page で。 DPA 不要、ToS 約款型。">
+<meta property="og:description" content="法務 reviewer が確認する 8 区分を 1 page で。契約条件、個人情報、セキュリティ、SLA を確認できます。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/trust/purchasing">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -28,8 +28,6 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="/styles.css?v=20260504a">
 
 <script type="application/ld+json">
@@ -185,7 +183,7 @@
  </nav>
 
  <h1>法人購買 (法務部) 向け 1-screen summary</h1>
- <p class="lead">法人購買・法務部 reviewer の稟議 review checklist (実在性 / 規約 / 個人情報 / セキュリティ / SLA / データ source / 法令フェンス / 下請法等関連法令 / AI 利用観点) を 1 page に集約しました。 DPA 個別締結は行いません (約款型 ToS で吸収)。 SOC2 Type II は取得していません (Solo zero-touch、代替表明あり)。</p>
+ <p class="lead">法人購買・法務部 reviewer の稟議 review checklist (実在性 / 規約 / 個人情報 / セキュリティ / SLA / データ source / 法令フェンス / 下請法等関連法令 / AI 利用観点) を 1 page に集約しました。契約条件は公開済みの利用規約・プライバシーポリシー・副処理者一覧を基準に確認できます。SOC2 Type II は未取得のため、代替として公開済みの自己評価資料を提示しています。</p>
 
  <div class="pr-meta">
  <p><strong>運営者</strong>: Bookyou株式会社 (適格請求書発行事業者番号 <code>T8010001213708</code>、令和7年5月12日登録)</p>
@@ -221,7 +219,7 @@
  <tr><td>Backup / DR</td><td>RPO 24h / RTO 4h、R2 weekly + Fly snapshot daily</td><td><a href="/security/#backup">/security/#backup</a></td></tr>
  <tr><td>インシデント通知</td><td>確認後 24 時間以内に email、7 日以内に postmortem</td><td><a href="/security/#incident">/security/#incident</a></td></tr>
  <tr><td>Dependency audit</td><td>pip-audit (週次 GitHub Actions) + bandit + ruff + mypy strict (pre-commit blocking)</td><td><a href="/security/#dependency">/security/#dependency</a></td></tr>
- <tr><td>SOC2 / ISO27001 / Pマーク</td><td>取得なし (Solo zero-touch ops)。代替表明: OpenSSF Best Practices Badge / OWASP ASVS L1 / CSA STAR CAIQ (self-assessment)</td><td><a href="/security/#attestations">/security/#attestations</a></td></tr>
+ <tr><td>SOC2 / ISO27001 / Pマーク</td><td>取得なし。代替表明: OpenSSF Best Practices Badge / OWASP ASVS L1 / CSA STAR CAIQ (self-assessment)</td><td><a href="/security/#attestations">/security/#attestations</a></td></tr>
  </tbody>
  </table>
 
@@ -277,7 +275,7 @@
  <li>弁理士法 §75 (特許 / 実用新案 / 意匠 / 商標 出願代理)</li>
  <li>労働基準法 §36 (時間外労働協定 / 36協定 届出代行)</li>
  </ul>
- <p>API response の <code>_disclaimer</code> field は 11 sensitive tool branch で自動付与 (Wave 30 hardening 済)。</p>
+ <p>API response の <code>_disclaimer</code> field は 11 sensitive tool branch で自動付与 (disclaimer hardening 済)。</p>
 
  <h2 id="related-laws">7. 下請法 + 電帳法 + 電契法</h2>
  <table>
@@ -308,9 +306,9 @@
  <li><strong>機械可読 manifest</strong>: <a href="/.well-known/trust.json">/.well-known/trust.json</a> (1 fetch で本 page の構造化要約を取得可能)</li>
  </ul>
 
- <h2 id="not-offered">10. 個別交渉対象外 (Solo zero-touch 維持のため)</h2>
+ <h2 id="not-offered">10. 標準提供外の項目</h2>
  <ul>
- <li><span class="pr-pill note">対象外</span> DPA (Data Processing Agreement) 個別締結 — privacy.html + 副処理者一覧 + trust/purchasing.html で吸収</li>
+ <li><span class="pr-pill note">対象外</span> 個別データ処理契約の締結 — privacy.html + 副処理者一覧 + trust/purchasing.html で確認可能</li>
  <li><span class="pr-pill note">対象外</span> MSA (Master Service Agreement) 個別交渉 — ToS 約款型のまま</li>
  <li><span class="pr-pill note">対象外</span> Slack Connect / 専用 Teams channel / Zoom kickoff — info@bookyou.net email のみ</li>
  <li><span class="pr-pill note">対象外</span> SOC2 Type II / ISO27001 / Pマーク 取得 — 代替: OpenSSF Best Practices Badge / OWASP ASVS L1 / CSA STAR CAIQ self-assessment + Cloudflare Trust Hub</li>

@@ -20,11 +20,11 @@ edit_uri: ""
 docs_dir: docs
 site_dir: site/docs
 
-# Fail on broken internal links, missing nav entries, ambiguous refs.
-# This is the whole point of the migration: catch the accumulated
+# Fail on broken site links, missing nav entries, ambiguous refs.
+# This catches accumulated
 # [text](link.md) drift that slipped through review.
 #
-# 2026-05-12 Wave 24: temporarily lifted to false. Wave 23 surface (10,164
+# 2026-05-12: temporarily lifted to false while the large
 # laws+enforcement HTML+MD) is propagating; 99 strict-mode warnings in
 # recipes/rXX-*/index.md cross-references (bare-dir form
 # `../r20-continue-cline/` vs file form `../r20-continue-cline/index.md`)
@@ -58,7 +58,7 @@ theme:
     - navigation.sections
     - navigation.top
     - navigation.indexes
-    - navigation.path  # Wave 48 tick#3: breadcrumb path on every docs page (迷子ゼロ fix)
+    - navigation.path
     - toc.follow
     - search.suggest
     - search.highlight
@@ -176,6 +176,7 @@ exclude_docs: |
   SYSTEM_INDEX.md
   en/foreign_investor.md
   integrations/README.md
+  integrations/
   integrations/agent-routing-and-cta-spec.md
   integrations/ai-agent-recommendation-plan.md
   integrations/artifact-catalog.md
@@ -192,9 +193,15 @@ exclude_docs: |
   integrations/use_predicate_for_certainty.md
   integrations/use_predicate_for_savings.md
   integrations/w32-composite-surfaces.md
+  !integrations/bookmarklet.md
+  !integrations/ai-recommendation-template.md
   _internal/
   _internal/health_monitoring_runbook.md
   _internal/dr_backup_runbook.md
+  agents.md
+  audit/
+  billing/
+  canonical/
   compliance/electronic_bookkeeping.md
   cs_templates.md
   disaster_recovery.md
@@ -237,12 +244,7 @@ exclude_docs: |
   pricing/
   publication/
   use_cases/
-  # 2026-05-12 Wave 42: unexclude the two cohort-monetization docs linked from
-  # site/index.html + site/pricing.html. Default `pricing/` + `use_cases/`
-  # exclusion remains for operator-internal drafts in those folders, but
-  # these two are user-facing landing-page link targets and must build.
-  !pricing/justification_2026_05_11.md
-  !use_cases/by_industry_2026_05_11.md
+  compliance/soc2_control_map.md
   partner_referral_mechanism.md
   partnerships/
   real_estate_v5_plan.md
@@ -261,7 +263,15 @@ exclude_docs: |
   roadmap.md
   audit_trail.md
   launch/
+  learn/
+  marketplace/
   mcp/
+  observability/
+  postmortem/
+  quickstart/
+  research/
+  recipes/r15-*/
+  schemas/
   runbook/
   mcp/
   # Operator-only pages that are not relevant to API consumers.
@@ -283,6 +293,7 @@ exclude_docs: |
   i18n_style_guide.md
   real_estate_v5_plan.md
   real_estate_v5_cohort_personas.md
+  ux/
 
 extra:
   generator: false
@@ -305,8 +316,6 @@ nav:
       - 料金: pricing.md
       - FAQ: faq.md
       - 正直な能力と限界: honest_capabilities.md
-      - 業種別 use case (税理士・会計士・行政書士・診断士・M&A・信金): use_cases/by_industry_2026_05_11.md
-      - 課金根拠 (¥3/req 妥当性): pricing/justification_2026_05_11.md
 
   - API:
       - REST: api-reference.md
@@ -318,20 +327,20 @@ nav:
   - 開発者:
       - サンプル: examples.md
       - Prompt Cookbook: prompt_cookbook.md
-      - Cookbook (12 recipes):
-          - 概要: cookbook/index.md
-          - R01 顧問先別 補助金 weekly alert: cookbook/r01-weekly-alert-per-client.md
-          - R02 税法改正 cliff-date weekly digest: cookbook/r02-tax-cliff-digest.md
-          - R03 月次申告 適格事業者 bulk verify: cookbook/r03-monthly-invoice-verify.md
-          - R09 法人 360 view: cookbook/r09-corp-360-view.md
-          - R10 類似採択事例 検索: cookbook/r10-case-studies-search.md
-          - R11 行政処分 watch: cookbook/r11-enforcement-watch.md
-          - R16 Claude Desktop install: cookbook/r16-claude-desktop-install.md
-          - R17 Cursor MCP: cookbook/r17-cursor-mcp.md
-          - R18 ChatGPT Custom GPT: cookbook/r18-chatgpt-custom-gpt.md
-          - R19 Gemini extension: cookbook/r19-gemini-extension.md
-          - R20 OpenAI Agents SDK: cookbook/r20-openai-agents.md
-          - R21 47 都道府県 補助金 heatmap: cookbook/r21-pref-heatmap.md
+      - Recipes:
+          - 概要: recipes/index.md
+          - 税理士 月次レビュー: recipes/r01-tax-firm-monthly-review/index.md
+          - 補助金 締切前チェック: recipes/r02-pre-closing-subsidy-check/index.md
+          - M&A 公的情報DD: recipes/r03-sme-ma-public-dd/index.md
+          - 信金 取引先ウォッチ: recipes/r04-shinkin-borrower-watch/index.md
+          - 行政書士 許認可確認: recipes/r05-gyosei-licensing-eligibility/index.md
+          - 社労士 助成金マッチ: recipes/r06-sharoushi-grant-match/index.md
+          - 診断士 月次伴走: recipes/r07-shindanshi-monthly-companion/index.md
+          - 弁理士 IP補助金監視: recipes/r08-benrishi-ip-grant-monitor/index.md
+          - BPO 補助金トリアージ: recipes/r09-bpo-grant-triage-1000/index.md
+          - 商工会議所 自治体スクリーニング: recipes/r10-cci-municipal-screen/index.md
+          - EC 適格事業者一括確認: recipes/r11-ec-invoice-bulk-verify/index.md
+          - 監査法人 KYCスイープ: recipes/r12-audit-firm-kyc-sweep/index.md
       - AI 推薦条件: recommendation-scenarios.md
       - ダッシュボード: dashboard_guide.md
       - アラート: alerts_guide.md

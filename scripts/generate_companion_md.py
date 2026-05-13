@@ -41,6 +41,7 @@ Output
 from __future__ import annotations
 
 import argparse
+import contextlib
 import html
 import sys
 from datetime import UTC, datetime
@@ -69,8 +70,17 @@ DEFAULT_PAGES: tuple[str, ...] = (
 SKIP_TAGS = {"script", "style", "noscript", "svg", "nav", "footer", "head"}
 # Tags that emit block-level newlines.
 BLOCK_TAGS = {
-    "p", "div", "section", "article", "header", "main", "aside",
-    "ul", "ol", "table", "tr",
+    "p",
+    "div",
+    "section",
+    "article",
+    "header",
+    "main",
+    "aside",
+    "ul",
+    "ol",
+    "table",
+    "tr",
 }
 HEADING_TAGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
 
@@ -228,10 +238,8 @@ def main(argv: list[str] | None = None) -> int:
         # token-budget extracted from frontmatter
         for line in content.splitlines():
             if line.startswith("est_tokens:"):
-                try:
+                with contextlib.suppress(ValueError):
                     total_tokens += int(line.split(":", 1)[1].strip())
-                except ValueError:
-                    pass
                 break
         if args.dry_run:
             print(f"[companion-md] DRY {md_path.relative_to(REPO_ROOT)} ({len(content)} chars)")

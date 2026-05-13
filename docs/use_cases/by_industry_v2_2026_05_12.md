@@ -1,5 +1,7 @@
 # 業種別 jpcite Use Case v2 — AI 単体 vs AI+jpcite 明確化 (2026-05-12)
 
+> **operator-only / public docs excluded**: このファイルは社内検討用の古い計算ノートです。`mkdocs.yml` の `exclude_docs: use_cases/` により公開 docs build から除外されています。公開ページでは request-count、節約額、明示的な前提だけを使い、ROI/ARR/倍率表現は主張として使いません。
+
 ¥3/billable unit (税込 ¥3.30)、3 req/日 anonymous free per IP、tier/seat/年間最低額なし。
 
 本ドキュメントは [by_industry_2026_05_11.md](by_industry_2026_05_11.md) の **rewrite v2**。 旧版の ROI 倍率 (税理士 67-222 倍 / M&A 2,688 倍 等) は「何との比較か」が曖昧で、(1) 紙の手作業比較なのか、(2) 既存 SaaS 比較なのか、(3) 補助金取りこぼし損害との比較なのか混在していた。

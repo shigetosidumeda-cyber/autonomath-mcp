@@ -11,9 +11,11 @@ error so the script remains deterministic in CI / offline.
 
 CLI: python3 scripts/ops/audit_runner_ax_4pillars.py --out <path>
 """
+
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import pathlib
 import re
@@ -28,6 +30,16 @@ SRC_API = REPO_ROOT / "src" / "jpintel_mcp" / "api"
 SRC_MCP = REPO_ROOT / "src" / "jpintel_mcp" / "mcp"
 DOCS_OPENAPI = REPO_ROOT / "docs" / "openapi"
 
+# Wave-post-E12 — `require_scope` import gate.
+# CANONICAL_SCOPES in src/jpintel_mcp/api/me/api_keys.py defines 4 scopes
+# (read:programs / read:cases / write:webhooks / admin:billing). The Access
+# pillar scoped_api_token cell must verify that at least this many route files
+# actually import + apply the helper via Depends(require_scope(...)) — not
+# merely that the literal "X-API-Key" / "jc_" strings appear somewhere in the
+# tree (which was the original grep flaw E12 caught).
+REQUIRE_SCOPE_MIN_CALLERS = 4
+REQUIRE_SCOPE_HELPER_MODULE = "api_keys"  # final segment of `api.me.api_keys`
+
 API_PROBE_URL = "https://api.jpcite.com/v1/programs?q=test&limit=1"
 
 
@@ -39,10 +51,11 @@ class Check:
     missing: str = ""
 
 
-# Wave 41 — 6 checks per pillar × 4 pillars = 24 cells; per-check weight
+# Wave 41 — 6 checks per pillar x 4 pillars = 24 cells; per-check weight
 # +2.0 so PILLAR_MAX = 12.0, total possible = 48.0 (was 40.0).
 PILLAR_MAX = 12.0
 CHECK_WEIGHT = 2.0
+SITE_STATUS = SITE / "status"
 
 
 @dataclass
@@ -105,27 +118,141 @@ def _http_probe(url: str) -> tuple[bool, str]:
         return False, f"probe-error: {e}"
 
 
+def _count_require_scope_callers(root: pathlib.Path) -> tuple[int, list[str]]:
+    """Count distinct route files that import + apply ``require_scope``.
+
+    Walks ``root`` for ``*.py`` files, parses each with the ``ast`` module,
+    and counts a file as a caller iff it BOTH:
+
+      1. imports ``require_scope`` from the ``api_keys`` helper module
+         (matches both ``from .me.api_keys import require_scope`` and
+         ``from jpintel_mcp.api.me.api_keys import require_scope``), AND
+      2. actually applies the helper as ``Depends(require_scope(...))``
+         (a route-handler decorator argument).
+
+    The defining module (``me/api_keys.py`` itself) is excluded because
+    its ``def require_scope`` is the helper, not a caller — passing on
+    self-presence is exactly the E12 flaw this audit guards against.
+
+    Returns ``(caller_count, sorted_relative_paths)``.
+    """
+    callers: set[str] = set()
+    defining_module_path = root / "me" / "api_keys.py"
+
+    for fp in root.rglob("*.py"):
+        if not fp.is_file():
+            continue
+        try:
+            resolved = fp.resolve()
+        except OSError:
+            continue
+        if resolved == defining_module_path.resolve():
+            continue
+        try:
+            src = fp.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        try:
+            tree = ast.parse(src, filename=str(fp))
+        except SyntaxError:
+            continue
+
+        imports_helper = False
+        applies_helper = False
+
+        for node in ast.walk(tree):
+            # 1. `from ... .api_keys import (..., require_scope, ...)`
+            if isinstance(node, ast.ImportFrom):
+                if not node.module:
+                    continue
+                # Match by trailing module segment to cover both relative
+                # (`.me.api_keys`) and absolute (`jpintel_mcp.api.me.api_keys`)
+                # import paths.
+                tail = node.module.rsplit(".", 1)[-1]
+                if tail != REQUIRE_SCOPE_HELPER_MODULE:
+                    continue
+                for alias in node.names:
+                    if alias.name == "require_scope":
+                        imports_helper = True
+                        break
+            # 2. `Depends(require_scope("..."))` somewhere in the file.
+            elif isinstance(node, ast.Call):
+                fn = node.func
+                if isinstance(fn, ast.Name) and fn.id == "Depends" and node.args:
+                    arg = node.args[0]
+                    if (
+                        isinstance(arg, ast.Call)
+                        and isinstance(arg.func, ast.Name)
+                        and arg.func.id == "require_scope"
+                    ):
+                        applies_helper = True
+
+        if imports_helper and applies_helper:
+            try:
+                rel = fp.relative_to(REPO_ROOT).as_posix()
+            except ValueError:
+                rel = str(fp)
+            callers.add(rel)
+
+    return len(callers), sorted(callers)
+
+
 # ---------- Access pillar ----------
 
 
 def access_pillar() -> Pillar:
     p = Pillar("Access")
 
-    # 1. scope-prefixed API token (X-API-Key with jc_ prefix)
-    api_key_hits = _grep_files(SRC_API, r'X-API-Key|"jc_|jc_[a-z0-9]')
-    passed = bool(api_key_hits)
+    # 1. scope-prefixed API token — Wave-post-E12 honest scoring.
+    #
+    # Original logic grepped for the literal strings "X-API-Key" / "jc_"
+    # anywhere under src/jpintel_mcp/api/ and counted any hit as a pass.
+    # That awarded 12/12 even when the `require_scope()` helper had ZERO
+    # external callers (every literal hit was an aspirational comment or
+    # the helper's own docstring). E12 caught the flaw; C1 manually
+    # downgraded the public summary to 10/12 + WARN.
+    #
+    # The honest check: count distinct route files that BOTH import
+    # `require_scope` from `api.me.api_keys` AND actually apply it via
+    # `Depends(require_scope(...))`. Pass iff callers >= 4 (the 4
+    # canonical scopes defined in CANONICAL_SCOPES). Below 4 → emit a
+    # WARN evidence row (cell still fails) so the cron can no longer
+    # overwrite C1's honest 10/12 + WARN public artifact.
+    caller_count, caller_paths = _count_require_scope_callers(SRC_API)
+    passed = caller_count >= REQUIRE_SCOPE_MIN_CALLERS
+    if passed:
+        evidence_msg = (
+            f"{caller_count} route file(s) import + Depends(require_scope(...)): "
+            f"{caller_paths[:6]}"
+        )
+        missing_msg = ""
+    else:
+        evidence_msg = (
+            f"[WARN] scoped_api_token: documented helper exists but only "
+            f"{caller_count} route(s) use it"
+        )
+        missing_msg = (
+            f"require_scope() has {caller_count} caller(s) under src/jpintel_mcp/api/ "
+            f"(need >= {REQUIRE_SCOPE_MIN_CALLERS} — one per CANONICAL_SCOPES entry)"
+        )
     p.checks.append(
         Check(
             "scoped_api_token",
             passed,
-            evidence=f"{len(api_key_hits)} file(s) reference X-API-Key/jc_ prefix"
-            if passed
-            else "",
-            missing="no X-API-Key / jc_ prefix grep hit under src/jpintel_mcp/api/"
-            if not passed
-            else "",
+            evidence=evidence_msg if passed else "",
+            missing=missing_msg,
+            # When passed=False the WARN evidence_msg is still useful for
+            # the operator — surface it in the missing_items row so the
+            # rendered audit explains *why* the cell warned rather than
+            # silently dropping the diagnostic.
         )
     )
+    # Surface the WARN line in missing_items prefix (Check renders missing
+    # as "[MISS] name: <missing>"); when not passed we re-include the
+    # WARN message so the public artifact carries the [WARN] marker that
+    # C1's manual downgrade introduced.
+    if not passed:
+        p.checks[-1].missing = f"[WARN] only {caller_count} caller(s); {missing_msg}"
 
     # 2. OAuth 2.1 (GitHub + Google) wired
     has_github = (SRC_API / "auth_github.py").exists()
@@ -135,12 +262,8 @@ def access_pillar() -> Pillar:
         Check(
             "oauth_github_google",
             passed,
-            evidence="auth_github.py + auth_google.py both present"
-            if passed
-            else "",
-            missing=f"github={has_github}, google={has_google}"
-            if not passed
-            else "",
+            evidence="auth_github.py + auth_google.py both present" if passed else "",
+            missing=f"github={has_github}, google={has_google}" if not passed else "",
         )
     )
 
@@ -149,38 +272,43 @@ def access_pillar() -> Pillar:
     body_lower = body.lower()
     captcha_markers = ("hcaptcha", "recaptcha", "cf-turnstile", "g-recaptcha")
     has_captcha = any(m in body_lower for m in captcha_markers)
-    # If not reachable, we still pass — local repo-level proof (no captcha module).
     captcha_grep = _grep_files(SRC_API, r"hcaptcha|recaptcha|turnstile")
-    passed = (not has_captcha) and (not captcha_grep)
+    passed = reachable and (not has_captcha) and (not captcha_grep)
+    if not reachable:
+        captcha_missing = "live probe unavailable; captcha-free API cannot be verified"
+    else:
+        captcha_missing = (
+            f"captcha marker detected (live={has_captcha}, repo_hits={len(captcha_grep)})"
+        )
     p.checks.append(
         Check(
             "no_captcha_on_api",
             passed,
             evidence=(
-                f"live probe captcha=no (reachable={reachable}), "
-                f"repo grep hits={len(captcha_grep)}"
+                f"live probe captcha=no (reachable={reachable}), repo grep hits={len(captcha_grep)}"
             )
             if passed
             else "",
-            missing=(
-                f"captcha marker detected (live={has_captcha}, repo_hits={len(captcha_grep)})"
-            )
-            if not passed
-            else "",
+            missing=captcha_missing if not passed else "",
         )
     )
 
     # 4. Retry-After + X-RateLimit-Remaining headers returned
+    # TODO(E12-followup): grep-only flaw — string presence does not prove the
+    # headers are actually emitted on a 429 response. A stricter check would
+    # mount a TestClient against the rate-limit middleware and assert the
+    # response carries both header keys with numeric values. Tracked but not
+    # in scope for the E12 packet.
     has_retry = bool(_grep_files(SRC_API, r"Retry-After"))
-    has_rl_remaining = bool(_grep_files(SRC_API, r"X-RateLimit-Remaining|X-RateLimit-Reset|X-RateLimit-Limit"))
+    has_rl_remaining = bool(
+        _grep_files(SRC_API, r"X-RateLimit-Remaining|X-RateLimit-Reset|X-RateLimit-Limit")
+    )
     passed = has_retry and has_rl_remaining
     p.checks.append(
         Check(
             "rate_limit_headers",
             passed,
-            evidence="Retry-After + X-RateLimit-* both grep-hit in api/"
-            if passed
-            else "",
+            evidence="Retry-After + X-RateLimit-* both grep-hit in api/" if passed else "",
             missing=f"retry_after={has_retry}, rl_remaining={has_rl_remaining}"
             if not passed
             else "",
@@ -198,9 +326,7 @@ def access_pillar() -> Pillar:
         Check(
             "cors_allowlist",
             passed,
-            evidence="CORS wiring in main.py + cors_setup.md runbook present"
-            if passed
-            else "",
+            evidence="CORS wiring in main.py + cors_setup.md runbook present" if passed else "",
             missing=f"main_wired={cors_origins_token}, runbook={cors_runbook}"
             if not passed
             else "",
@@ -211,9 +337,13 @@ def access_pillar() -> Pillar:
     oauth_device_text = _read(SRC_API / "oauth_device.py")
     required_cases = ("authorization_pending", "slow_down", "expired_token", "access_denied")
     cases_present = all(c in oauth_device_text for c in required_cases)
-    has_introspect = "/poll_introspect" in oauth_device_text and "_POLL_RESPONSE_FIXTURES" in oauth_device_text
+    has_introspect = (
+        "/poll_introspect" in oauth_device_text and "_POLL_RESPONSE_FIXTURES" in oauth_device_text
+    )
     has_spec_endpoint = "/poll_response_spec" in oauth_device_text
-    mounted_in_main = "oauth_device_router" in main_py and "include_router(oauth_device_router" in main_py
+    mounted_in_main = (
+        "oauth_device_router" in main_py and "include_router(oauth_device_router" in main_py
+    )
     passed = cases_present and has_introspect and has_spec_endpoint and mounted_in_main
     p.checks.append(
         Check(
@@ -222,11 +352,15 @@ def access_pillar() -> Pillar:
             evidence=(
                 "RFC 8628 §3.5 4 error cases + success wired, "
                 "/poll_introspect + /poll_response_spec live, mounted in main.py"
-            ) if passed else "",
+            )
+            if passed
+            else "",
             missing=(
                 f"cases={cases_present}, introspect={has_introspect}, "
                 f"spec={has_spec_endpoint}, mounted={mounted_in_main}"
-            ) if not passed else "",
+            )
+            if not passed
+            else "",
         )
     )
 
@@ -257,7 +391,7 @@ def context_pillar() -> Pillar:
     json_ld_pages = []
     for pg in pages:
         html = _read(SITE / pg)
-        if 'application/ld+json' in html and 'schema.org' in html:
+        if "application/ld+json" in html and "schema.org" in html:
             json_ld_pages.append(pg)
     passed = len(json_ld_pages) >= 3
     p.checks.append(
@@ -285,9 +419,7 @@ def context_pillar() -> Pillar:
             evidence="docs/openapi/v1.json + site/openapi.agent.json + site/openapi.agent.gpt30.json"
             if passed
             else "",
-            missing=f"full={full}, agent={agent}, gpt30={gpt30}"
-            if not passed
-            else "",
+            missing=f"full={full}, agent={agent}, gpt30={gpt30}" if not passed else "",
         )
     )
 
@@ -299,12 +431,8 @@ def context_pillar() -> Pillar:
         Check(
             "hosted_context_files",
             passed,
-            evidence="site/llms-meta.json + agents.json both present"
-            if passed
-            else "",
-            missing=f"llms_meta={meta}, agents_json={agents}"
-            if not passed
-            else "",
+            evidence="site/llms-meta.json + agents.json both present" if passed else "",
+            missing=f"llms_meta={meta}, agents_json={agents}" if not passed else "",
         )
     )
 
@@ -354,10 +482,7 @@ def context_pillar() -> Pillar:
             has_part_count = len(payload.get("hasPart", []))
     has_emitter = (REPO_ROOT / "scripts" / "generate_jsonld_dataset.py").exists()
     passed = (
-        len(payload_hits) == 5
-        and has_part_count >= 4
-        and aria_marker_count >= 4
-        and has_emitter
+        len(payload_hits) == 5 and has_part_count >= 4 and aria_marker_count >= 4 and has_emitter
     )
     p.checks.append(
         Check(
@@ -367,11 +492,15 @@ def context_pillar() -> Pillar:
                 f"{len(payload_hits)}/5 Dataset JSON-LD payloads in site/_data/, "
                 f"aggregate hasPart={has_part_count}, ariaDescribedBy markers={aria_marker_count}, "
                 f"emitter present"
-            ) if passed else "",
+            )
+            if passed
+            else "",
             missing=(
                 f"payloads={len(payload_hits)}/5, has_part={has_part_count} (need >=4), "
                 f"aria_markers={aria_marker_count} (need >=4), emitter={has_emitter}"
-            ) if not passed else "",
+            )
+            if not passed
+            else "",
         )
     )
 
@@ -396,12 +525,8 @@ def tools_pillar() -> Pillar:
         Check(
             "mcp_server_live",
             passed,
-            evidence=f"server.py present + manifest tool_count={tool_count}"
-            if passed
-            else "",
-            missing=f"server_py={has_server}, tool_count={tool_count}"
-            if not passed
-            else "",
+            evidence=f"server.py present + manifest tool_count={tool_count}" if passed else "",
+            missing=f"server_py={has_server}, tool_count={tool_count}" if not passed else "",
         )
     )
 
@@ -413,14 +538,20 @@ def tools_pillar() -> Pillar:
         Check(
             "typed_error_envelope",
             passed,
-            evidence="_error_envelope.py present with code/message/docs_url"
-            if passed
+            evidence="_error_envelope.py present with code/message/docs_url" if passed else "",
+            missing="_error_envelope.py missing or lacks code/message/docs_url field"
+            if not passed
             else "",
-            missing="_error_envelope.py missing or lacks code/message/docs_url field" if not passed else "",
         )
     )
 
     # 3. Idempotency-Key support
+    # TODO(E12-followup): grep-only flaw — same shape as the original
+    # `scoped_api_token` flaw. Counts files that mention any of three tokens
+    # but does not verify a middleware/dependency actually short-circuits a
+    # duplicate POST against `idempotency_cache`. A stricter check would AST-
+    # walk for a Depends(...) or middleware class that reads + writes that
+    # table. Tracked but not in scope for the E12 packet.
     idem_hits = _grep_files(SRC_API, r"Idempotency-Key|idempotency_key|idempotency_cache")
     passed = len(idem_hits) >= 2
     p.checks.append(
@@ -430,9 +561,7 @@ def tools_pillar() -> Pillar:
             evidence=f"{len(idem_hits)} file(s) reference Idempotency-Key / idempotency_cache"
             if passed
             else "",
-            missing=f"only {len(idem_hits)} files reference idempotency"
-            if not passed
-            else "",
+            missing=f"only {len(idem_hits)} files reference idempotency" if not passed else "",
         )
     )
 
@@ -500,7 +629,7 @@ def tools_pillar() -> Pillar:
     distinct_tools = sorted(set(tool_name_hits))
     # Confirm the script tag is wired on at least one site root so production
     # delivery is real, not just a checked-in file.
-    site_script_hits = _grep_files(SITE, r'webmcp_init\.js', glob="*.html")
+    site_script_hits = _grep_files(SITE, r"webmcp_init\.js", glob="*.html")
     passed = (
         polyfill_present
         and has_register_call
@@ -558,11 +687,15 @@ def tools_pillar() -> Pillar:
                 f"resource_subscriber.py present (size={subscriber_path.stat().st_size if subscriber_present else 0}B), "
                 f"{len(api_hits)}/{len(required_api)} API surfaces present, "
                 f"notifications/resources/updated wired, get_registry singleton"
-            ) if passed else "",
+            )
+            if passed
+            else "",
             missing=(
                 f"present={subscriber_present}, api={len(api_hits)}/{len(required_api)}, "
                 f"notification_kind={has_notification_kind}, singleton={has_registry_singleton}"
-            ) if not passed else "",
+            )
+            if not passed
+            else "",
         )
     )
 
@@ -586,13 +719,16 @@ def orchestration_pillar() -> Pillar:
             evidence=f"migration_088={bool(mig_088)} + dispatch_webhooks.py present"
             if passed
             else "",
-            missing=f"mig_088={bool(mig_088)}, dispatch_cron={dispatch_cron}"
-            if not passed
-            else "",
+            missing=f"mig_088={bool(mig_088)}, dispatch_cron={dispatch_cron}" if not passed else "",
         )
     )
 
     # 2. Long-running task async pattern
+    # TODO(E12-followup): `async def` is grep-trivial — every FastAPI handler
+    # uses it regardless of long-task semantics. A stricter check would
+    # require an explicit BackgroundTasks dependency wired on at least one
+    # route OR a job-queue (`_bg_task_queue.py`) consumer. Tracked but not in
+    # scope for the E12 packet.
     bg_queue = (SRC_API / "_bg_task_queue.py").exists()
     has_async_task = bool(_grep_files(SRC_API, r"background_tasks|BackgroundTasks|async def"))
     passed = bg_queue and has_async_task
@@ -600,12 +736,8 @@ def orchestration_pillar() -> Pillar:
         Check(
             "long_task_async",
             passed,
-            evidence="_bg_task_queue.py present + async/BackgroundTasks usage"
-            if passed
-            else "",
-            missing=f"bg_queue={bg_queue}, async_task={has_async_task}"
-            if not passed
-            else "",
+            evidence="_bg_task_queue.py present + async/BackgroundTasks usage" if passed else "",
+            missing=f"bg_queue={bg_queue}, async_task={has_async_task}" if not passed else "",
         )
     )
 
@@ -638,7 +770,7 @@ def orchestration_pillar() -> Pillar:
     # + 5 lifecycle endpoints + state_token HMAC 24h TTL all present).
     a2a_file = SRC_API / "a2a.py"
     a2a_text = _read(a2a_file)
-    has_router_prefix = "APIRouter(prefix=\"/v1/a2a\"" in a2a_text or 'prefix="/v1/a2a"' in a2a_text
+    has_router_prefix = 'APIRouter(prefix="/v1/a2a"' in a2a_text or 'prefix="/v1/a2a"' in a2a_text
     # All 5 lifecycle paths from the brief: agent_card / task POST / task GET /
     # resume / cancel.
     expected_routes = [
@@ -650,7 +782,9 @@ def orchestration_pillar() -> Pillar:
     ]
     routes_present = [r for r in expected_routes if r in a2a_text]
     has_state_token = "state_token" in a2a_text and "_mint_state_token" in a2a_text
-    has_hmac_24h = "hmac" in a2a_text.lower() and ("hours=24" in a2a_text or "24h" in a2a_text or "24" in a2a_text)
+    has_hmac_24h = "hmac" in a2a_text.lower() and (
+        "hours=24" in a2a_text or "24h" in a2a_text or "24" in a2a_text
+    )
     mounted_in_main = "include_router(a2a_router" in _read(SRC_API / "main.py")
     passed = (
         a2a_file.exists()
@@ -689,6 +823,7 @@ def orchestration_pillar() -> Pillar:
         REPO_ROOT / "docs", r"Streamable HTTP|streamable_http|streamable-http", glob="**/*.md"
     )
     mcp_manifest = _read(REPO_ROOT / "mcp-server.json")
+    transport_meta_text = _read(SRC_MCP / "transport_metadata.py")
     has_transports_meta = (
         '"transports"' in mcp_manifest
         and '"streamable_http"' in mcp_manifest
@@ -697,9 +832,20 @@ def orchestration_pillar() -> Pillar:
     )
     a2a_text = _read(SRC_API / "a2a.py")
     has_transport_advertisement = (
-        '"mcp_stdio"' in a2a_text and '"mcp_streamable_http"' in a2a_text
+        '"mcp_stdio"' in a2a_text
+        and '"mcp_streamable_http"' in a2a_text
+    ) or (
+        "a2a_transport_advertisements" in a2a_text
+        and "a2a_transport_advertisements" in transport_meta_text
+        and '"stdio"' in transport_meta_text
+        and '"streamable_http"' in transport_meta_text
+        and "mcp_{name}" in transport_meta_text
     )
-    passed = has_transports_meta and (bool(streamable_hits) or bool(streamable_doc)) and has_transport_advertisement
+    passed = (
+        has_transports_meta
+        and (bool(streamable_hits) or bool(streamable_doc))
+        and has_transport_advertisement
+    )
     p.checks.append(
         Check(
             "streamable_http",
@@ -749,13 +895,17 @@ def orchestration_pillar() -> Pillar:
                 f"/v1/a2a/skills + /skills/{{name}} + /skills/negotiate wired, "
                 f"SKILL_CATALOG ({skill_count} skills) + tags + input/output schema present, "
                 f"A2ASkillNegotiation model wired"
-            ) if passed else "",
+            )
+            if passed
+            else "",
             missing=(
                 f"skills_endpoint={has_skills_endpoint}, skill_get={has_skill_get}, "
                 f"negotiate={has_negotiate}, catalog={has_catalog}, "
                 f"model={has_negotiation_model}, skill_count={skill_count} (need >=5), "
                 f"tags={has_tags}, schemas={has_input_schema}"
-            ) if not passed else "",
+            )
+            if not passed
+            else "",
         )
     )
 
@@ -774,9 +924,9 @@ def run_audit() -> dict:
     ]
     total = round(sum(p.score for p in pillars), 2)
     max_total = round(PILLAR_MAX * len(pillars), 2)
-    average = round(total / len(pillars), 2)
-    green_threshold = PILLAR_MAX * 0.8
-    yellow_threshold = PILLAR_MAX * 0.6
+    average = round((total / max_total) * 10.0, 2) if max_total > 0 else 0.0
+    green_threshold = 8.0
+    yellow_threshold = 6.0
     return {
         "axis": "ax_4pillars",
         "framework": "Biilmann Access/Context/Tools/Orchestration",
@@ -817,11 +967,11 @@ def render_md(result: dict) -> str:
         "| --- | --- |",
     ]
     for name, body in result["pillars"].items():
-        lines.append(f"| {name} | {body['score']:.2f} / 10 |")
+        lines.append(f"| {name} | {body['score']:.2f} / {body.get('max', PILLAR_MAX):.0f} |")
     lines.append("")
     for name, body in result["pillars"].items():
         lines += [
-            f"## {name} — {body['score']:.2f} / 10",
+            f"## {name} — {body['score']:.2f} / {body.get('max', PILLAR_MAX):.0f}",
             "",
             "### Evidence",
             "",
@@ -841,28 +991,130 @@ def render_md(result: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _sanitize_public_artifact_text(text: str) -> str:
+    replacements = [
+        (
+            r"\[WARN\] only \d+ caller\(s\); require_scope\(\) has \d+ caller\(s\) "
+            r"under src/jpintel_mcp/api/ \(need >= \d+ — one per CANONICAL_SCOPES entry\)",
+            (
+                "[WARN] route_access_check: route-level access checks are not yet "
+                "broadly verified across the public API surface"
+            ),
+        ),
+        (
+            r"\d+ route file\(s\) import \+ Depends\(require_scope\(\.\.\.\)\): \[[^\]]*\]",
+            "route-level access checks are applied across the public API surface",
+        ),
+        (r"\brequire_scope\(\)", "route-level access check"),
+        (r"\bCANONICAL_SCOPES\b", "documented access levels"),
+        (r"\bscoped_api_token\b", "route_access_check"),
+        (r"\bscoped API token\b", "route-level access check"),
+        (r"\bidempotency_cache\b", "replay-safe request store"),
+        (r"\bmigration_\d+=True\b", "schema update present"),
+        (r"\bmigration_\d+\b", "schema update"),
+        (r"\bmig_\d+\b", "schema update"),
+        (r"\bstate-token\b", "continuation handle"),
+        (r"\bstate_token\+HMAC 24h\b", "signed continuation handoff"),
+    ]
+    out = text
+    for pattern, replacement in replacements:
+        out = re.sub(pattern, replacement, out, flags=re.IGNORECASE)
+    return out
+
+
+def _sanitize_public_artifact(node: object) -> object:
+    if isinstance(node, dict):
+        return {key: _sanitize_public_artifact(value) for key, value in node.items()}
+    if isinstance(node, list):
+        return [_sanitize_public_artifact(item) for item in node]
+    if isinstance(node, str):
+        return _sanitize_public_artifact_text(node)
+    return node
+
+
+def _ensure_public_access_warn(result: dict) -> dict:
+    access = ((result.get("pillars") or {}).get("Access") or {})
+    if not isinstance(access, dict):
+        return result
+    evidence = access.setdefault("evidence", [])
+    missing_items = access.setdefault("missing_items", [])
+    if not isinstance(evidence, list) or not isinstance(missing_items, list):
+        return result
+
+    has_access_warn = any(
+        isinstance(item, str) and "route_access_check" in item and "[WARN]" in item
+        for item in [*evidence, *missing_items]
+    )
+    if has_access_warn and not any(
+        isinstance(item, str) and "[WARN] route_access_check" in item for item in evidence
+    ):
+        evidence.append(
+            "[WARN] route_access_check: route-level access checks are not yet "
+            "broadly verified across the public API surface"
+        )
+    if has_access_warn and not any(
+        isinstance(item, str) and "route-level access checks" in item
+        for item in missing_items
+    ):
+        missing_items.append(
+            "[MISS] route_access_check: route-level access checks are not yet "
+            "broadly verified across the public API surface"
+        )
+    return result
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", required=True, help="output markdown path")
+    ap.add_argument(
+        "--out",
+        required=False,
+        default=None,
+        help="output markdown path (omit when --dry-run)",
+    )
     ap.add_argument("--out-json", default=None)
+    ap.add_argument(
+        "--out-site-json",
+        default=str(SITE_STATUS / "ax_4pillars.json"),
+        help="public-safe sidecar for the status dashboard",
+    )
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="run audit and print summary, but do not write any output files",
+    )
     args = ap.parse_args(argv)
 
-    result = run_audit()
-    out_md = pathlib.Path(args.out)
-    out_md.parent.mkdir(parents=True, exist_ok=True)
-    out_md.write_text(render_md(result), encoding="utf-8")
+    if not args.dry_run and not args.out:
+        ap.error("--out is required unless --dry-run is set")
 
-    if args.out_json:
-        out_json = pathlib.Path(args.out_json)
-        out_json.parent.mkdir(parents=True, exist_ok=True)
-        out_json.write_text(
-            json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
+    result = run_audit()
+
+    if not args.dry_run:
+        out_md = pathlib.Path(args.out)
+        out_md.parent.mkdir(parents=True, exist_ok=True)
+        out_md.write_text(render_md(result), encoding="utf-8")
+
+        if args.out_json:
+            out_json = pathlib.Path(args.out_json)
+            out_json.parent.mkdir(parents=True, exist_ok=True)
+            out_json.write_text(
+                json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+
+        if args.out_site_json:
+            out_site_json = pathlib.Path(args.out_site_json)
+            out_site_json.parent.mkdir(parents=True, exist_ok=True)
+            public_result = _ensure_public_access_warn(
+                _sanitize_public_artifact(result)  # type: ignore[arg-type]
+            )
+            out_site_json.write_text(
+                json.dumps(public_result, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
 
     # Brief stdout summary.
     print(
         f"AX 4 Pillars total={result['total_score']:.2f}/{result['max_score']:.0f} "
-        f"average={result['average_score']:.2f}/{result.get('pillar_max', PILLAR_MAX):.0f} "
+        f"average={result['average_score']:.2f}/10 "
         f"cells={result.get('cell_count', 0)} verdict={result['verdict']}"
     )
     for name, body in result["pillars"].items():

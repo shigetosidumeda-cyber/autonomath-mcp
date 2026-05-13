@@ -131,8 +131,8 @@
         50
       ],
       "openapi_paths_public": [
-        170,
-        230
+        290,
+        330
       ],
       "mcp_tools": [
         130,
@@ -246,14 +246,6 @@
       "as_of": "2026-05-11"
     },
     {
-      "key": "backup_rpo_minutes",
-      "value": 15,
-      "unit": "min",
-      "source": "fly volume snapshot",
-      "category": "sla",
-      "publishable": false
-    },
-    {
       "key": "backup_rto_hours",
       "value": 4,
       "unit": "hr",
@@ -333,30 +325,6 @@
       "category": "sla",
       "publishable": true,
       "as_of": "2026-05-11"
-    },
-    {
-      "key": "prod_branch",
-      "value": "main",
-      "unit": "name",
-      "source": "git",
-      "category": "internal",
-      "publishable": false
-    },
-    {
-      "key": "prod_git_sha",
-      "value": "d4216ffb",
-      "unit": "id",
-      "source": "git",
-      "category": "internal",
-      "publishable": false
-    },
-    {
-      "key": "fly_app_name",
-      "value": "autonomath-api",
-      "unit": "name",
-      "source": "fly.toml",
-      "category": "internal",
-      "publishable": false
     },
     {
       "key": "pypi_package_name",

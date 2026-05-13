@@ -1,0 +1,77 @@
+{
+  "audit": "agent_journey_6step",
+  "generated_at": "2026-05-12T12:50:59.693127+00:00",
+  "overall_score": 9.86,
+  "verdict": "green",
+  "steps": [
+    {
+      "step": 1,
+      "name": "discovery",
+      "score": 9.17,
+      "findings": [
+        "discovery surface presence: 8/8",
+        "AI bot welcome: 6/6 UAs in robots.txt",
+        "MCP registry visibility: 2/3 hints"
+      ],
+      "failure_patterns": []
+    },
+    {
+      "step": 2,
+      "name": "evaluation",
+      "score": 10.0,
+      "findings": [
+        "evaluation docs presence: 7/7",
+        "8業法 fence coverage: 8/8",
+        "recipes: 31 (target ≥ 30)"
+      ],
+      "failure_patterns": []
+    },
+    {
+      "step": 3,
+      "name": "authentication",
+      "score": 10.0,
+      "findings": [
+        "auth surface files: 3/3",
+        "magic-link flow detected: True",
+        "jc_-prefixed token format detected: True",
+        "oauth surfaces wired (google + github): 2.0/2"
+      ],
+      "failure_patterns": []
+    },
+    {
+      "step": 4,
+      "name": "execution",
+      "score": 10.0,
+      "findings": [
+        "openapi paths: full=300 slim_gpt30=34 (floor 180)",
+        "error envelope + idempotency files: 2/2",
+        "Idempotency-Key references in api/: 12"
+      ],
+      "failure_patterns": []
+    },
+    {
+      "step": 5,
+      "name": "recovery",
+      "score": 10.0,
+      "findings": [
+        "'retry_after': 22 file(s) in api/+mcp/",
+        "'docs_url': 4 file(s) in api/+mcp/",
+        "'error_code': 4 file(s) in api/+mcp/",
+        "failure-pattern penalty: -0.0"
+      ],
+      "failure_patterns": []
+    },
+    {
+      "step": 6,
+      "name": "completion",
+      "score": 10.0,
+      "findings": [
+        "'corpus_snapshot_id': 61 file(s) in src/",
+        "'content_hash': 11 file(s) in src/",
+        "idempotency_cache migration: ['122_usage_events_billing_idempotency.sql', '205_stripe_event_idempotency_rollback.sql', '205_stripe_event_idempotency.sql', '087_idempotency_cache.sql']",
+        "failure-pattern penalty: -0.0"
+      ],
+      "failure_patterns": []
+    }
+  ]
+}

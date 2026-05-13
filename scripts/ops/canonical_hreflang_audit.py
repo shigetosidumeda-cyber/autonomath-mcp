@@ -32,7 +32,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -195,10 +194,7 @@ def has_en_peer(rel_path: Path) -> bool:
     parts = rel_path.parts
     if not parts:
         return False
-    if parts[0] == "en":
-        peer = Path(*parts[1:])
-    else:
-        peer = Path("en", *parts)
+    peer = Path(*parts[1:]) if parts[0] == "en" else Path("en", *parts)
     return (SITE_ROOT / peer).is_file()
 
 
@@ -332,10 +328,7 @@ def audit_one(rel_path: Path, sitemap_locs: dict[str, Path]) -> list[dict[str, A
                 got=parser.hreflang["en"],
                 expected=en_canonical,
             )
-        if (
-            "x-default" in parser.hreflang
-            and parser.hreflang["x-default"] != ja_canonical
-        ):
+        if "x-default" in parser.hreflang and parser.hreflang["x-default"] != ja_canonical:
             push(
                 "HREFLANG_XDEFAULT_MISMATCH",
                 got=parser.hreflang["x-default"],
@@ -357,9 +350,7 @@ def audit_one(rel_path: Path, sitemap_locs: dict[str, Path]) -> list[dict[str, A
     for key, val in parser.hreflang.items():
         for legacy in LEGACY_BRANDS:
             if legacy in val:
-                push(
-                    "LEGACY_BRAND_IN_HREFLANG", hreflang=key, value=val, brand=legacy
-                )
+                push("LEGACY_BRAND_IN_HREFLANG", hreflang=key, value=val, brand=legacy)
 
     # sitemap loc cross-check (only relevant if a sitemap mentions a URL whose
     # path matches this file). Accept trailing-slash vs non-slash equivalence
@@ -417,8 +408,7 @@ def main() -> int:
     ap.add_argument(
         "--include-record-pages",
         action="store_true",
-        help="Include per-record pages (cases/laws/enforcement) in audit. "
-        "Default: included.",
+        help="Include per-record pages (cases/laws/enforcement) in audit. Default: included.",
     )
     args = ap.parse_args()
 
@@ -441,7 +431,7 @@ def main() -> int:
     for v in all_violations:
         by_code.setdefault(v["code"], []).append(v)
 
-    print(f"\n=== canonical_hreflang_audit summary ===")
+    print("\n=== canonical_hreflang_audit summary ===")
     print(f"scanned : {len(files)} pages")
     print(f"violations : {len(all_violations)} total across {len(by_code)} codes")
     for code in sorted(by_code):

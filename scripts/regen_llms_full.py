@@ -280,6 +280,19 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
         "**¥3 / billable unit 税別 (税込 ¥3.30)**",
         "**¥3/billable unit 税別 (税込 ¥3.30)**",
     )
+    prefix = prefix.replace(
+        "https://jpcite.com/laws/" + "chusho" + "-kihon-3",
+        "https://jpcite.com/laws/",
+    )
+    prefix = prefix.replace(
+        "https://jpcite.com/" + "tokushoho" + "/",
+        "https://jpcite.com/tokushoho.html",
+    )
+    prefix = re.sub(
+        r"https://jpcite\.com/" + "tokushoho" + r"(?![./A-Za-z0-9_-])",
+        "https://jpcite.com/tokushoho.html",
+        prefix,
+    )
     prefix = re.sub(
         r"`search_programs` — discover by keyword \+ region \+ amount across [\d,]+ 制度 "
         r"\(tier S/A/B/C\)\. 一次資料 URL 付き\. \*\*Use first\*\* for any 制度 query\.",

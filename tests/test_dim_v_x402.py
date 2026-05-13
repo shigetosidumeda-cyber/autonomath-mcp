@@ -4,8 +4,8 @@ Closes the Wave 46 dim V storage gap: migration 282 adds
 ``am_x402_endpoint_config`` (config table, 1 row per x402-gated endpoint)
 and ``am_x402_payment_log`` (append-only on-chain audit) per
 ``feedback_agent_x402_protocol.md``. Pairs with
-``scripts/etl/seed_x402_endpoints.py`` (5-endpoint seed: search /
-programs / cases / audit_workpaper / semantic_search). The existing
+``scripts/etl/seed_x402_endpoints.py`` (canonical endpoint seed plus
+retired route cleanup). The existing
 inline-CREATE ``x402_tx_bind`` table in ``src/jpintel_mcp/api/billing_v2.py``
 is NOT modified by this migration; the Dim V additions are purely
 additive.
@@ -17,7 +17,7 @@ Case bundles
   3. CHECK constraints reject malformed rows (endpoint_path missing leading
      slash, required_amount_usdc <= 0, amount > 100 cap, expires TTL out of
      range, payer_address not 0x..., txn_hash wrong length, 402 id length).
-  4. Seeder upserts 5 canonical endpoints and is idempotent across re-runs.
+  4. Seeder upserts canonical endpoints and is idempotent across re-runs.
   5. Helper view ``v_x402_endpoint_enabled`` excludes disabled rows.
   6. ``--force`` upserts repriced amount; ``noop`` when unchanged.
   7. Boot manifest registration (jpcite + autonomath mirror).
@@ -332,27 +332,30 @@ def _run_seed(db: pathlib.Path, *extra: str) -> dict:
     return json.loads(last_line)
 
 
-def test_seed_inserts_5_endpoints(tmp_path: pathlib.Path) -> None:
+def test_seed_inserts_canonical_endpoints(tmp_path: pathlib.Path) -> None:
     db = _fresh_db(tmp_path)
     rep = _run_seed(db)
     actions = {e["endpoint_path"]: e["action"] for e in rep["endpoints"]}
     expected = {
-        "/v1/audit_workpaper",
-        "/v1/cases",
-        "/v1/programs",
-        "/v1/search",
-        "/v1/semantic_search",
+        "/v1/audit/workpaper",
+        "/v1/case-studies/search",
+        "/v1/programs/prescreen",
+        "/v1/search/semantic",
+        "/v1/programs/search",
     }
     assert set(actions) == expected
     for path, act in actions.items():
-        assert act == "inserted", f"{path} should be inserted on first run"
+        if path == "/v1/programs/search":
+            assert act == "retired_absent"
+        else:
+            assert act == "inserted", f"{path} should be inserted on first run"
 
     conn = sqlite3.connect(str(db))
     try:
         n = conn.execute("SELECT COUNT(*) FROM am_x402_endpoint_config").fetchone()[0]
     finally:
         conn.close()
-    assert n == 5
+    assert n == 4
 
 
 def test_seed_is_idempotent(tmp_path: pathlib.Path) -> None:
@@ -360,7 +363,10 @@ def test_seed_is_idempotent(tmp_path: pathlib.Path) -> None:
     _run_seed(db)
     rep2 = _run_seed(db)
     for e in rep2["endpoints"]:
-        assert e["action"] == "noop", f"{e['endpoint_path']} should be noop on re-run"
+        if e["endpoint_path"] == "/v1/programs/search":
+            assert e["action"] == "retired_absent"
+        else:
+            assert e["action"] == "noop", f"{e['endpoint_path']} should be noop on re-run"
 
 
 def test_seed_dry_run_writes_nothing(tmp_path: pathlib.Path) -> None:
@@ -375,6 +381,34 @@ def test_seed_dry_run_writes_nothing(tmp_path: pathlib.Path) -> None:
     assert n == 0
 
 
+def test_seed_disables_retired_programs_search_row(tmp_path: pathlib.Path) -> None:
+    db = _fresh_db(tmp_path)
+    conn = sqlite3.connect(str(db))
+    try:
+        conn.execute(
+            "INSERT INTO am_x402_endpoint_config "
+            "(endpoint_path, required_amount_usdc, enabled) VALUES (?, ?, 1)",
+            ("/v1/programs/search", 0.002),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    rep = _run_seed(db)
+    actions = {e["endpoint_path"]: e["action"] for e in rep["endpoints"]}
+    assert actions["/v1/programs/search"] == "retired_disabled"
+
+    conn = sqlite3.connect(str(db))
+    try:
+        enabled = conn.execute(
+            "SELECT enabled FROM am_x402_endpoint_config WHERE endpoint_path = ?",
+            ("/v1/programs/search",),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert enabled == 0
+
+
 # ---------------------------------------------------------------------------
 # 5. Helper view excludes disabled rows
 # ---------------------------------------------------------------------------
@@ -387,14 +421,14 @@ def test_view_excludes_disabled(tmp_path: pathlib.Path) -> None:
     try:
         conn.execute(
             "UPDATE am_x402_endpoint_config SET enabled = 0 WHERE endpoint_path = ?",
-            ("/v1/cases",),
+            ("/v1/case-studies/search",),
         )
         conn.commit()
         paths = {r[0] for r in conn.execute("SELECT endpoint_path FROM v_x402_endpoint_enabled")}
     finally:
         conn.close()
-    assert "/v1/cases" not in paths
-    assert "/v1/search" in paths
+    assert "/v1/case-studies/search" not in paths
+    assert "/v1/search/semantic" in paths
 
 
 # ---------------------------------------------------------------------------
@@ -410,7 +444,7 @@ def test_force_upserts_when_price_changes(tmp_path: pathlib.Path) -> None:
     try:
         conn.execute(
             "UPDATE am_x402_endpoint_config SET required_amount_usdc = ? WHERE endpoint_path = ?",
-            (0.999, "/v1/search"),
+            (0.999, "/v1/search/semantic"),
         )
         conn.commit()
     finally:
@@ -418,11 +452,11 @@ def test_force_upserts_when_price_changes(tmp_path: pathlib.Path) -> None:
     # Without --force, drift stays (noop).
     rep_noop = _run_seed(db)
     by_path = {e["endpoint_path"]: e["action"] for e in rep_noop["endpoints"]}
-    assert by_path["/v1/search"] == "noop"
+    assert by_path["/v1/search/semantic"] == "noop"
     # With --force, drift reverts to canonical 0.001 (updated).
     rep_force = _run_seed(db, "--force")
     by_path_force = {e["endpoint_path"]: e["action"] for e in rep_force["endpoints"]}
-    assert by_path_force["/v1/search"] == "updated"
+    assert by_path_force["/v1/search/semantic"] == "updated"
 
 
 # ---------------------------------------------------------------------------

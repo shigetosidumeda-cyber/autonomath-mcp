@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Search — jpcite</title>
+<meta name="description" content="jpcite の公開ページ、API ドキュメント、制度・法令・行政処分ページを検索します。">
+<meta name="robots" content="index, follow">
+<meta property="og:url" content="https://jpcite.com/search">
+<link rel="canonical" href="https://jpcite.com/search">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/search">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/search">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css?v=20260430a">
+<style>
+  .search-page { padding: 48px 0 72px; }
+  .search-box { display: flex; gap: 8px; margin: 20px 0 24px; max-width: 720px; }
+  .search-box input { flex: 1; min-width: 0; padding: 12px 14px; border: 1px solid var(--border); border-radius: 6px; font: inherit; }
+  .search-box button { padding: 12px 18px; border: 0; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; }
+  .result-list { display: grid; gap: 12px; padding: 0; list-style: none; }
+  .result { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; background: var(--bg); }
+  .result a { font-weight: 700; color: var(--accent); }
+  .result p { margin: 6px 0 0; color: var(--text-muted); font-size: 14px; }
+  .quick-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+  .quick-links a { border: 1px solid var(--border); border-radius: 999px; padding: 7px 11px; text-decoration: none; color: var(--text); background: var(--bg-alt); font-size: 14px; }
+</style>
+</head>
+<body>
+<main class="container search-page">
+  <p><a href="/">jpcite</a> / search</p>
+  <h1>Search</h1>
+  <p class="muted">公開ページと API ドキュメントから、制度・法令・法人情報・行政処分に関する入口を探します。</p>
+  <form class="search-box" id="search-form" role="search">
+    <input id="q" name="q" type="search" autocomplete="off" placeholder="補助金、法人番号、税制、行政処分..." aria-label="検索語">
+    <button type="submit">検索</button>
+  </form>
+  <ul class="result-list" id="results" aria-live="polite"></ul>
+  <nav class="quick-links" aria-label="主要ページ">
+    <a href="/programs/">補助金</a>
+    <a href="/laws/">法令</a>
+    <a href="/enforcement/">行政処分</a>
+    <a href="/cases/">採択事例</a>
+    <a href="/docs/api-reference/">API reference</a>
+    <a href="/audiences/">業種別</a>
+  </nav>
+</main>
+<script>
+(function () {
+  "use strict";
+  var form = document.getElementById("search-form");
+  var input = document.getElementById("q");
+  var results = document.getElementById("results");
+  var params = new URLSearchParams(window.location.search);
+  var initial = params.get("q") || "";
+  if (initial) input.value = initial;
+
+  var fallback = [
+    { title: "補助金・制度検索", url: "/programs/", text: "公開制度ページと API の入口。" },
+    { title: "法令検索", url: "/laws/", text: "法令・条文・関連制度の入口。" },
+    { title: "行政処分検索", url: "/enforcement/", text: "公開行政処分ページの入口。" },
+    { title: "API reference", url: "/docs/api-reference/", text: "REST API endpoint と schema。" },
+    { title: "業種別の使い方", url: "/audiences/", text: "士業・金融・開発者向けの利用例。" }
+  ];
+
+  function render(items) {
+    results.innerHTML = "";
+    items.slice(0, 10).forEach(function (item) {
+      var li = document.createElement("li");
+      li.className = "result";
+      var a = document.createElement("a");
+      a.href = item.url || item.location || "/docs/";
+      a.textContent = item.title || item.name || a.href;
+      var p = document.createElement("p");
+      p.textContent = item.text || item.summary || item.description || "";
+      li.appendChild(a);
+      li.appendChild(p);
+      results.appendChild(li);
+    });
+  }
+
+  function runSearch(q) {
+    q = (q || "").trim().toLowerCase();
+    if (!q) {
+      render(fallback);
+      return;
+    }
+    fetch("/docs/search/search_index.json", { credentials: "omit" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        var docs = (data && data.docs) || [];
+        var hits = docs.filter(function (d) {
+          return [d.title, d.text, d.location].join(" ").toLowerCase().indexOf(q) !== -1;
+        }).map(function (d) {
+          return { title: d.title, url: "/docs/" + (d.location || ""), text: d.text };
+        });
+        render(hits.length ? hits : fallback);
+      })
+      .catch(function () { render(fallback); });
+  }
+
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var q = input.value || "";
+    history.replaceState(null, "", "/search?q=" + encodeURIComponent(q));
+    runSearch(q);
+  });
+  runSearch(initial);
+})();
+</script>
+</body>
+</html>

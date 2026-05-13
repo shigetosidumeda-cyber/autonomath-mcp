@@ -29,7 +29,16 @@ from typing import TYPE_CHECKING, Annotated, Any, Literal, cast
 from urllib.parse import urlparse
 
 import stripe
-from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request, Response, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    Header,
+    HTTPException,
+    Request,
+    Response,
+    status,
+)
 from pydantic import BaseModel
 
 from jpintel_mcp.api._advisory_lock import LockNotAcquired, advisory_lock
@@ -41,6 +50,7 @@ from jpintel_mcp.api.deps import (  # noqa: TC001 (runtime for FastAPI Depends r
     DbDep,
 )
 from jpintel_mcp.api.funnel_events import record_server_funnel_event
+from jpintel_mcp.api.me.api_keys import require_scope
 from jpintel_mcp.billing.credit_pack import (
     CREDIT_PACK_METADATA_KIND,
     CreditPackPurchaseRequest,
@@ -72,6 +82,22 @@ if TYPE_CHECKING:
 logger = logging.getLogger("jpintel.billing")
 
 router = APIRouter(prefix="/v1/billing", tags=["billing"])
+
+# R2 P2 hardening (2026-05-13): explicit tolerance + idempotency cache size cap.
+# `STRIPE_WEBHOOK_TOLERANCE_SECONDS` is the single source of truth for the
+# replay-window passed to `stripe.Webhook.construct_event(..., tolerance=...)`
+# below. Stripe SDK default is 300s (5 min). Do NOT lower this without
+# coordinating with DD-02 contract tests (`tests/test_stripe_webhook_tolerance.py`).
+STRIPE_WEBHOOK_TOLERANCE_SECONDS = 300
+
+# `STRIPE_WEBHOOK_EVENTS_MAX_ROWS` caps the `stripe_webhook_events` dedup
+# table so the lazy cleanup branch in the webhook handler can trim aged rows.
+# Stripe retries each event for up to 3 days; keeping a 30-day rolling window
+# is enough to absorb that worst case with margin. The cleanup is sampled at
+# ~1/256 webhook calls (event_id hex prefix == "00") so the hot path stays
+# allocation-free on every delivery.
+STRIPE_WEBHOOK_EVENTS_MAX_ROWS = 100_000
+STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS = 30
 
 
 def _credit_pack_db_path() -> Path:
@@ -967,7 +993,10 @@ class PortalRequest(BaseModel):
     customer_id: str | None = None
 
 
-@router.post("/portal")
+@router.post(
+    "/portal",
+    dependencies=[Depends(require_scope("admin:billing"))],
+)
 def create_portal(
     payload: PortalRequest,
     ctx: ApiContextDep,
@@ -1249,7 +1278,10 @@ async def webhook(
             body,
             stripe_signature or "",
             settings.stripe_webhook_secret,
-            tolerance=300,
+            # tolerance LOCKED at 300 — see STRIPE_WEBHOOK_TOLERANCE_SECONDS
+            # SOT + DD-02 contract test
+            # (tests/test_stripe_webhook_tolerance.py).
+            tolerance=STRIPE_WEBHOOK_TOLERANCE_SECONDS,
         )
     except stripe.SignatureVerificationError:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "bad signature") from None
@@ -1331,6 +1363,26 @@ async def webhook(
                 " VALUES (?, ?, ?, datetime('now'))",
                 (event_id, etype, 1 if event_livemode else 0),
             )
+            # ---- Idempotency cache size cap (R2 P2 hardening, 2026-05-13) ---
+            # Lazy sweep: trim rows older than the retention window OR over
+            # the size cap. Sampled at ~1/256 events (event_id first hex
+            # byte == "00") so the hot path stays cheap. Errors are
+            # suppressed — cleanup MUST NOT break webhook idempotency.
+            if event_id.endswith("00"):
+                with contextlib.suppress(Exception):
+                    conn.execute(
+                        "DELETE FROM stripe_webhook_events"
+                        " WHERE received_at < datetime('now', ?)",
+                        (f"-{STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS} days",),
+                    )
+                    conn.execute(
+                        "DELETE FROM stripe_webhook_events"
+                        " WHERE event_id NOT IN ("
+                        "  SELECT event_id FROM stripe_webhook_events"
+                        "  ORDER BY received_at DESC LIMIT ?"
+                        ")",
+                        (STRIPE_WEBHOOK_EVENTS_MAX_ROWS,),
+                    )
         except Exception as begin_exc:
             # If BEGIN fails (already in a transaction) or the INSERT
             # races a concurrent delivery to the unique event_id, fall

@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 Cursor 0.42 以降 (MCP 対応) を使う agent dev / 補助金 SaaS 開発者 / 税務会計プロダクト開発者で、コード中に出現する法人番号・補助金 ID・適格事業者番号 (T + 13 桁) をエディタ離脱なしに jpcite で即座に lookup したい層。`.cursor/mcp.json` を repo に commit して所内で同一ツール構成を共有する運用、または `~/.cursor/mcp.json` で個人 global 設定にする 2 通り。Cursor chat から `@jpcite search_programs q=...` で MCP tool 呼出を直接トリガーできる。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
 - Cursor 0.42+ (MCP support、Settings > MCP パネルが存在する版)
 - `Settings > MCP` 編集権限
 - `uvx` (Astral uv) を事前 install: `curl -LsSf https://astral.sh/uv/install.sh | sh` 後シェル再起動

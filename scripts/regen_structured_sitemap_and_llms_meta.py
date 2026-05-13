@@ -92,12 +92,14 @@ def _extract_urls_from_shard(path: Path) -> list[tuple[str, str, str, str]]:
         lastmod_el = url_el.find("lastmod")
         cf_el = url_el.find("changefreq")
         pr_el = url_el.find("priority")
-        out.append((
-            loc_el.text.strip(),
-            (lastmod_el.text.strip() if lastmod_el is not None and lastmod_el.text else TODAY),
-            (cf_el.text.strip() if cf_el is not None and cf_el.text else "monthly"),
-            (pr_el.text.strip() if pr_el is not None and pr_el.text else "0.5"),
-        ))
+        out.append(
+            (
+                loc_el.text.strip(),
+                (lastmod_el.text.strip() if lastmod_el is not None and lastmod_el.text else TODAY),
+                (cf_el.text.strip() if cf_el is not None and cf_el.text else "monthly"),
+                (pr_el.text.strip() if pr_el is not None and pr_el.text else "0.5"),
+            )
+        )
     return out
 
 
@@ -126,13 +128,15 @@ def _enumerate_anchors(text: str) -> tuple[list[dict], int, int]:
             slug_src = title.replace("`", "").replace("/", "-").replace(":", "")
             slug = re.sub(r"\s+", "-", slug_src.strip()).lower()
             slug = re.sub(r"-+", "-", slug).strip("-")
-            anchors.append({
-                "level": level,
-                "text": title,
-                "anchor": slug,
-                "line": ix,
-                "kind": "heading",
-            })
+            anchors.append(
+                {
+                    "level": level,
+                    "text": title,
+                    "anchor": slug,
+                    "line": ix,
+                    "kind": "heading",
+                }
+            )
             if level == 2:
                 h2_count += 1
             continue
@@ -146,14 +150,16 @@ def _enumerate_anchors(text: str) -> tuple[list[dict], int, int]:
             slug_src = label.replace("`", "").replace("/", "-").replace(":", "")
             slug = re.sub(r"\s+", "-", slug_src.strip()).lower()
             slug = re.sub(r"-+", "-", slug).strip("-")
-            anchors.append({
-                "level": 0,
-                "text": label,
-                "anchor": slug,
-                "href": href,
-                "line": ix,
-                "kind": "link_target",
-            })
+            anchors.append(
+                {
+                    "level": 0,
+                    "text": label,
+                    "anchor": slug,
+                    "href": href,
+                    "line": ix,
+                    "kind": "link_target",
+                }
+            )
     return anchors, h2_count, len(anchors)
 
 
@@ -208,7 +214,9 @@ def build_structured_sitemap() -> tuple[str, int]:
         urls.extend(_extract_urls_from_shard(shard))
     # Append curated root pages with JSON-LD.
     for path, cf, pr in STRUCTURED_ROOT_PAGES:
-        urls.append((f"{BASE_URL}{path}", TODAY, cf, f"{pr:.1f}" if isinstance(pr, float) else str(pr)))
+        urls.append(
+            (f"{BASE_URL}{path}", TODAY, cf, f"{pr:.1f}" if isinstance(pr, float) else str(pr))
+        )
 
     # Deterministic ordering: stable by loc to make diffs review-friendly.
     urls.sort(key=lambda r: r[0])
@@ -219,8 +227,8 @@ def build_structured_sitemap() -> tuple[str, int]:
         "  sitemap-structured.xml — Schema.org JSON-LD bearing URLs only.",
         "  AI agent 'golden route' shard. Aggregates per-row sitemaps (cases /",
         "  laws / enforcement-cases) plus curated root pages that carry",
-        "  application/ld+json. Regenerate via scripts/regen_structured_sitemap_and_llms_meta.py.",
-        f"  Generated: {TODAY}",
+        "  application/ld+json for structured-data discovery.",
+        f"  Updated: {TODAY}",
         f"  URL count: {len(urls)}",
         "-->",
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
@@ -307,7 +315,10 @@ def main() -> int:
     )
 
     print(f"sitemap-structured.xml: {url_count} URLs", file=sys.stderr)
-    print(f"llms-meta.json: {anchor_count} section_anchors across {meta['total_files']} files", file=sys.stderr)
+    print(
+        f"llms-meta.json: {anchor_count} section_anchors across {meta['total_files']} files",
+        file=sys.stderr,
+    )
     return 0
 
 

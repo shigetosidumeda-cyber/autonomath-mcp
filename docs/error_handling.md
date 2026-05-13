@@ -161,13 +161,13 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 
 ### Bug / abnormal (5xx)
 
-#### `internal`
+#### `server_error`
 - HTTP: 500
 - 想定外のエラー。問い合わせ時は `request_id` を共有してください。
 
-#### `internal_error`
+#### `unexpected_error`
 - HTTP: 500
-- `internal` と同等の互換コード。問い合わせ時は `request_id` を共有してください。
+- サーバー側で処理を完了できなかった場合の互換コード。問い合わせ時は `request_id` を共有してください。
 
 ---
 

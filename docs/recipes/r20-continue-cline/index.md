@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 VSCode / JetBrains で Continue 拡張または Cline (旧 Claude Dev) を使う agent dev / OSS SaaS 開発者 / 税務会計プロダクト開発者で、IDE 内で jpcite MCP server を 1 つの tool として登録し、コード review・補助金マッチング・適格事業者検証等を agent 経由で実行したい層。Continue は VSCode + JetBrains 両対応、Cline は VSCode 拡張で auto-approve mode + checkpoint 機能を持つ。両拡張とも MCP 標準準拠で `mcpServers` config を共有可能。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
 - Continue 0.9+ (MCP support、Settings > MCP servers パネル) または Cline 1.4+
 - VSCode 1.85+ または JetBrains 2024.1+
 - `uvx` (Astral uv) 事前 install: `curl -LsSf https://astral.sh/uv/install.sh | sh` 後シェル再起動

@@ -58,6 +58,7 @@ import json
 import logging
 import os
 import secrets
+import threading
 import time
 import urllib.parse
 import urllib.request
@@ -81,6 +82,16 @@ router = APIRouter(prefix="/v1/auth/google", tags=["auth"])
 _GOOGLE_AUTHORIZE = "https://accounts.google.com/o/oauth2/v2/auth"
 _GOOGLE_TOKEN = "https://oauth2.googleapis.com/token"
 _GOOGLE_USERINFO = "https://openidconnect.googleapis.com/v1/userinfo"
+
+# Google's published JWKS for id_token signing. v3 (JWK format) — has been
+# stable since 2020; rotates roughly every 1-2 weeks. We cache by kid with a
+# 1h TTL (well below the rotation cadence so a key rotation surfaces within
+# an hour of new key publication, but long enough that a per-request fetch
+# is never required in steady state). On cache miss we refresh once and only
+# fail closed if the refresh ALSO does not contain the requested kid.
+_GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs"
+_JWKS_CACHE_TTL_SECONDS = 3600  # 1h floor per task spec
+_JWKS_FETCH_TIMEOUT_SECONDS = 5  # bound the upstream wait; we have cache fallback
 
 # OpenID Connect minimum scopes for sign-in. ``openid`` triggers id_token
 # issuance; ``email`` + ``profile`` add the email + name claims. We do
@@ -231,32 +242,248 @@ def _exchange_code(code: str, client_id: str, client_secret: str) -> dict[str, A
         return cast("dict[str, Any]", _parse_json_payload(resp.read()))
 
 
-def _decode_id_token_payload(id_token: str) -> dict[str, Any]:
-    """Decode the id_token payload segment (JWS middle segment).
+def _b64url_decode(segment: str) -> bytes:
+    """Decode a base64url segment with implicit padding."""
+    pad = "=" * (-len(segment) % 4)
+    return base64.urlsafe_b64decode(segment + pad)
 
-    We trust the TLS-fetched token endpoint (cert-pinned by urllib +
-    Python's CA bundle) for authenticity and do NOT independently
-    verify the JWS signature against Google's JWKS here — the id_token
-    arrived over HTTPS direct from Google's token endpoint in response
-    to our authenticated code exchange, so the channel itself
-    authenticates it (RFC 8417 §10.1 / Google OAuth guide explicitly
-    allows this short-path when the token was obtained directly from
-    Google rather than relayed).
 
-    We DO validate the ``aud`` claim against our client_id and the
-    ``iss`` against accounts.google.com / https://accounts.google.com
-    to defend against the rare case where TLS itself is bypassed.
+# ---------------------------------------------------------------------------
+# JWKS cache + RSA signature verification (R2 P1-1)
+# ---------------------------------------------------------------------------
+#
+# Module-level cache. Each entry is {"jwk": <jwk dict>, "fetched_at": <unix>}.
+# Keyed by JWS `kid` so a token signed with a still-current rotated-out key
+# is verifiable until the cache TTL expires; once it does, the next call
+# refreshes from Google's certs endpoint. A second-level lock guards the
+# fetch path so a thundering-herd of concurrent callbacks does not fan out
+# N parallel JWKS GETs.
+
+_jwks_cache: dict[str, dict[str, Any]] = {}
+_jwks_cache_lock = threading.Lock()
+
+
+def _reset_jwks_cache_for_tests() -> None:
+    """Test-only hook to drop the cache between cases."""
+    with _jwks_cache_lock:
+        _jwks_cache.clear()
+
+
+def _fetch_google_jwks() -> list[dict[str, Any]]:
+    """Fetch Google's JWKS from the published v3 certs endpoint.
+
+    Raises on network/parse failure. Caller decides whether to fail closed
+    or fall back to a cached entry.
     """
+    req = urllib.request.Request(
+        _GOOGLE_JWKS_URL,
+        headers={
+            "Accept": "application/json",
+            "User-Agent": "jpcite-oauth/1.0",
+        },
+    )
+    with urllib.request.urlopen(  # nosec B310 — operator-config https endpoint
+        req, timeout=_JWKS_FETCH_TIMEOUT_SECONDS
+    ) as resp:
+        body = resp.read()
+    parsed = json.loads(body.decode("utf-8"))
+    if not isinstance(parsed, dict) or not isinstance(parsed.get("keys"), list):
+        raise ValueError("jwks payload missing 'keys' array")
+    keys = parsed["keys"]
+    for jwk in keys:
+        if not isinstance(jwk, dict) or "kid" not in jwk:
+            raise ValueError("jwks key entry missing 'kid'")
+    return cast("list[dict[str, Any]]", keys)
+
+
+def _refresh_jwks_cache() -> None:
+    """Pull the live JWKS and replace the in-memory cache.
+
+    Best-effort: on failure leaves the cache untouched so a later request
+    can still verify against the previous keyset. Concurrent callers
+    serialise on `_jwks_cache_lock`.
+    """
+    now = int(time.time())
+    keys = _fetch_google_jwks()
+    with _jwks_cache_lock:
+        for jwk in keys:
+            kid = jwk["kid"]
+            _jwks_cache[kid] = {"jwk": jwk, "fetched_at": now}
+
+
+def _lookup_jwk(kid: str) -> dict[str, Any] | None:
+    """Return the cached JWK for ``kid``, refreshing once on miss.
+
+    Returns None if the kid is unknown both before AND after a refresh, OR
+    if the refresh itself fails (network/parse error) AND there is no
+    cached entry. A cached but TTL-expired entry is returned IF the
+    refresh attempt fails — preferring an old-but-known key over a hard
+    fail keeps the surface available during a brief Google outage; we
+    re-attempt the refresh on every subsequent miss.
+    """
+    now = int(time.time())
+    with _jwks_cache_lock:
+        entry = _jwks_cache.get(kid)
+    fresh = entry is not None and (now - entry["fetched_at"]) < _JWKS_CACHE_TTL_SECONDS
+    if fresh:
+        assert entry is not None  # narrowed by `fresh`
+        return cast("dict[str, Any]", entry["jwk"])
+
+    # Cache miss OR TTL expired — try refreshing.
     try:
-        _header_b64, payload_b64, _sig_b64 = id_token.split(".")
+        _refresh_jwks_cache()
+    except Exception as exc:  # noqa: BLE001 — broad fetch error tolerated
+        logger.warning(
+            "google_oauth.jwks_refresh_failed: %s (cached=%s)",
+            type(exc).__name__,
+            entry is not None,
+        )
+        # Fall back to the stale cache IF we have one for this kid.
+        if entry is not None:
+            return cast("dict[str, Any]", entry["jwk"])
+        return None
+
+    with _jwks_cache_lock:
+        refreshed = _jwks_cache.get(kid)
+    if refreshed is None:
+        return None
+    return cast("dict[str, Any]", refreshed["jwk"])
+
+
+def _verify_id_token_signature(id_token: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Verify the id_token JWS signature against Google's JWKS.
+
+    Returns (header_dict, payload_dict) on success. Raises HTTPException
+    with a 4xx/5xx mapping on every failure mode the spec calls out:
+
+      * malformed JWS structure  → 502
+      * unsupported `alg` / missing `kid`  → 400
+      * unknown kid + JWKS unreachable + no cached key  → 502
+      * RSA verify fails (forged token)  → 400
+
+    The crypto path uses the `cryptography` library — already a
+    transitive dependency through `fernet` / `ed25519` use elsewhere in
+    the API. `google-auth` is not a declared dep on the production
+    wheel, so we build the RSA public key directly from the JWK n/e
+    integers (RFC 7518 §6.3.1).
+    """
+    # Local imports keep the module's import cost low for paths that
+    # never hit the OAuth callback (e.g. the main /v1/programs path).
+    from cryptography.exceptions import InvalidSignature
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import padding
+    from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
+
+    try:
+        header_b64, payload_b64, sig_b64 = id_token.split(".")
     except ValueError as exc:
         raise HTTPException(
             status.HTTP_502_BAD_GATEWAY,
             "google id_token malformed (not three segments)",
         ) from exc
-    pad = "=" * (-len(payload_b64) % 4)
+
     try:
-        payload_bytes = base64.urlsafe_b64decode(payload_b64 + pad)
+        header_bytes = _b64url_decode(header_b64)
+        header = json.loads(header_bytes.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            f"google id_token header decode failed: {type(exc).__name__}",
+        ) from exc
+    if not isinstance(header, dict):
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "google id_token header is not a JSON object",
+        )
+
+    alg = header.get("alg")
+    # Google currently signs id_tokens with RS256. We accept the RS family
+    # (RS256/RS384/RS512) so a future rotation does not require a code
+    # change, but explicitly reject `none` and any HS* (symmetric — the
+    # client_secret would be required, but treating it as a verification
+    # key is the classic "alg=HS256 against an RSA public key" forgery).
+    _rsa_hash_for_alg = {
+        "RS256": hashes.SHA256,
+        "RS384": hashes.SHA384,
+        "RS512": hashes.SHA512,
+    }
+    hash_cls = _rsa_hash_for_alg.get(str(alg)) if isinstance(alg, str) else None
+    if hash_cls is None:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"google id_token alg not accepted: {alg!r}",
+        )
+
+    kid = header.get("kid")
+    if not isinstance(kid, str) or not kid:
+        # No kid → cannot pick the right verification key. Forged tokens
+        # that drop kid (in the hope the server picks the first cached
+        # key) MUST be rejected.
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "google id_token missing kid header",
+        )
+
+    jwk = _lookup_jwk(kid)
+    if jwk is None:
+        # Either Google rotated to a kid we have not seen AND the JWKS
+        # endpoint is unreachable, OR the token was signed with a kid
+        # that does not exist (forgery). Both must fail closed — never
+        # accept a token we cannot verify.
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "google id_token kid not in JWKS (refresh failed or forged)",
+        )
+
+    if jwk.get("kty") != "RSA":
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"google id_token kty not supported: {jwk.get('kty')!r}",
+        )
+
+    try:
+        n_bytes = _b64url_decode(str(jwk["n"]))
+        e_bytes = _b64url_decode(str(jwk["e"]))
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            f"google jwks entry malformed: {type(exc).__name__}",
+        ) from exc
+
+    n_int = int.from_bytes(n_bytes, "big")
+    e_int = int.from_bytes(e_bytes, "big")
+    public_key = RSAPublicNumbers(e_int, n_int).public_key()
+
+    signing_input = f"{header_b64}.{payload_b64}".encode("ascii")
+    try:
+        signature = _b64url_decode(sig_b64)
+    except ValueError as exc:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "google id_token signature segment is not valid base64url",
+        ) from exc
+
+    try:
+        public_key.verify(
+            signature,
+            signing_input,
+            padding.PKCS1v15(),
+            hash_cls(),
+        )
+    except InvalidSignature as exc:
+        # The token's signature does not match the published key for its
+        # `kid`. This is the explicit forgery path — refuse to mint a
+        # session cookie regardless of how plausible the claims look.
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "google id_token signature invalid",
+        ) from exc
+
+    # Signature OK — decode the payload. (We only reach this branch
+    # after the JWS bytes were authenticated, so JSON-shape errors
+    # below are upstream-bug 502s rather than caller-input 400s.)
+    try:
+        payload_bytes = _b64url_decode(payload_b64)
         payload = json.loads(payload_bytes.decode("utf-8"))
     except (ValueError, UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise HTTPException(
@@ -268,7 +495,34 @@ def _decode_id_token_payload(id_token: str) -> dict[str, Any]:
             status.HTTP_502_BAD_GATEWAY,
             "google id_token payload is not a JSON object",
         )
-    return cast("dict[str, Any]", payload)
+    return cast("dict[str, Any]", header), cast("dict[str, Any]", payload)
+
+
+def _decode_id_token_payload(id_token: str) -> dict[str, Any]:
+    """Verify + decode the id_token payload (JWS).
+
+    R2 P1-1 hardening (2026-05-13): this used to be a bare base64 decode
+    that trusted the TLS channel. An attacker who could inject an
+    id_token along any path other than the direct token-exchange leg
+    (e.g. MITM on a misconfigured deployment, a future relayed flow, a
+    log-replay) could forge arbitrary claims because only `aud`/`iss`/
+    `exp`/`email_verified` were checked.
+
+    The implementation now:
+
+      1. Splits the JWS into header/payload/signature segments.
+      2. Looks up the JWK for the header's `kid` from the cached + on-
+         demand-refreshed Google certs endpoint (1h TTL).
+      3. Verifies the RS256/RS384/RS512 signature with PKCS#1 v1.5 against
+         the published RSA public key.
+      4. Hard-rejects if the kid is missing, the JWKS is unreachable AND
+         no cached key matches, or the signature does not validate.
+
+    The caller still performs the `aud`/`iss`/`exp`/`email_verified`
+    claim checks — those defences in depth are preserved verbatim.
+    """
+    _header, payload = _verify_id_token_signature(id_token)
+    return payload
 
 
 def _parse_json_payload(raw: bytes) -> Any:
@@ -396,8 +650,9 @@ async def google_oauth_callback(
             "google did not return id_token (re-consent required)",
         )
 
-    # Decode id_token payload (channel-authenticated via TLS to Google's
-    # token endpoint — see _decode_id_token_payload docstring).
+    # Verify id_token JWS signature against Google's JWKS (R2 P1-1
+    # hardening) and decode the payload — see _decode_id_token_payload
+    # docstring for the full verification contract.
     payload = _decode_id_token_payload(id_token)
 
     # Defence-in-depth: validate aud + iss + exp + email_verified.

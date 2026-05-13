@@ -32,6 +32,7 @@ Exit codes
 0 always (audit is observational; threshold gates live in
 `audit-regression-gate.yml`). Failing scores surface in the markdown.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -40,7 +41,7 @@ import pathlib
 import re
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 SITE = REPO_ROOT / "site"
@@ -62,8 +63,12 @@ DISCOVERY_REQUIRED = [
     REPO_ROOT / "README.md",
 ]
 AI_BOT_WELCOME_UAS = [
-    "GPTBot", "ChatGPT-User", "ClaudeBot", "Claude-User",
-    "PerplexityBot", "Google-Extended",
+    "GPTBot",
+    "ChatGPT-User",
+    "ClaudeBot",
+    "Claude-User",
+    "PerplexityBot",
+    "Google-Extended",
 ]
 MCP_REGISTRY_HINTS = ("mcp.so", "smithery.ai", "directory.llmstxt.org")
 
@@ -196,33 +201,23 @@ def step1_discovery() -> StepScore:
         if p.exists() and p.stat().st_size > 0:
             present += 1
         else:
-            failure.append(
-                f"agent cannot locate jpcite via {p.relative_to(REPO_ROOT)}"
-            )
+            failure.append(f"agent cannot locate jpcite via {p.relative_to(REPO_ROOT)}")
     presence_pts = (present / len(DISCOVERY_REQUIRED)) * 5.0
-    findings.append(
-        f"discovery surface presence: {present}/{len(DISCOVERY_REQUIRED)}"
-    )
+    findings.append(f"discovery surface presence: {present}/{len(DISCOVERY_REQUIRED)}")
 
     robots = _read(SITE / "robots.txt")
     welcomed = sum(1 for ua in AI_BOT_WELCOME_UAS if f"User-agent: {ua}" in robots)
     welcome_pts = (welcomed / len(AI_BOT_WELCOME_UAS)) * 2.5
-    findings.append(
-        f"AI bot welcome: {welcomed}/{len(AI_BOT_WELCOME_UAS)} UAs in robots.txt"
-    )
+    findings.append(f"AI bot welcome: {welcomed}/{len(AI_BOT_WELCOME_UAS)} UAs in robots.txt")
     if welcomed < len(AI_BOT_WELCOME_UAS):
-        failure.append(
-            "robots.txt does not explicitly Allow all major AI crawlers"
-        )
+        failure.append("robots.txt does not explicitly Allow all major AI crawlers")
 
     registry_hits = 0
     for hint in MCP_REGISTRY_HINTS:
         if _grep_repo(hint, [DOCS / "_internal", REPO_ROOT / "README.md"]):
             registry_hits += 1
     registry_pts = (registry_hits / len(MCP_REGISTRY_HINTS)) * 2.5
-    findings.append(
-        f"MCP registry visibility: {registry_hits}/{len(MCP_REGISTRY_HINTS)} hints"
-    )
+    findings.append(f"MCP registry visibility: {registry_hits}/{len(MCP_REGISTRY_HINTS)} hints")
 
     total = round(presence_pts + welcome_pts + registry_pts, 2)
     return StepScore(1, "discovery", min(10.0, total), findings, failure)
@@ -239,19 +234,13 @@ def step2_evaluation() -> StepScore:
             if files:
                 present += 1
             else:
-                failure.append(
-                    f"agent cannot evaluate fit: {p.relative_to(REPO_ROOT)} dir empty"
-                )
+                failure.append(f"agent cannot evaluate fit: {p.relative_to(REPO_ROOT)} dir empty")
         elif p.exists() and p.stat().st_size > 0:
             present += 1
         else:
-            failure.append(
-                f"agent cannot evaluate fit: {p.relative_to(REPO_ROOT)} missing"
-            )
+            failure.append(f"agent cannot evaluate fit: {p.relative_to(REPO_ROOT)} missing")
     presence_pts = (present / len(EVALUATION_REQUIRED)) * 5.0
-    findings.append(
-        f"evaluation docs presence: {present}/{len(EVALUATION_REQUIRED)}"
-    )
+    findings.append(f"evaluation docs presence: {present}/{len(EVALUATION_REQUIRED)}")
 
     fence_path = DATA / "fence_registry.json"
     fence_present = 0
@@ -267,18 +256,15 @@ def step2_evaluation() -> StepScore:
         if law in fence_blob:
             fence_present += 1
         else:
-            failure.append(
-                f"fence_registry missing 8業法 entry: {law}"
-            )
+            failure.append(f"fence_registry missing 8業法 entry: {law}")
     fence_pts = (fence_present / len(EIGHT_BUSINESS_LAW_FENCES)) * 3.0
-    findings.append(
-        f"8業法 fence coverage: {fence_present}/{len(EIGHT_BUSINESS_LAW_FENCES)}"
-    )
+    findings.append(f"8業法 fence coverage: {fence_present}/{len(EIGHT_BUSINESS_LAW_FENCES)}")
 
     recipe_dir = DOCS / "recipes"
     recipe_count = (
         sum(1 for p in recipe_dir.rglob("*.md") if p.stat().st_size > 0)
-        if recipe_dir.exists() else 0
+        if recipe_dir.exists()
+        else 0
     )
     recipe_pts = min(2.0, recipe_count / 15.0)  # 30 recipes target → 2.0
     findings.append(f"recipes: {recipe_count} (target ≥ 30)")
@@ -297,9 +283,7 @@ def step3_authentication() -> StepScore:
         else:
             failure.append(f"missing auth surface: {p.relative_to(REPO_ROOT)}")
     surface_pts = (present / len(AUTH_SURFACES_REQUIRED)) * 4.0
-    findings.append(
-        f"auth surface files: {present}/{len(AUTH_SURFACES_REQUIRED)}"
-    )
+    findings.append(f"auth surface files: {present}/{len(AUTH_SURFACES_REQUIRED)}")
 
     signup_src = _read(SRC / "api" / "signup.py")
     magic_link_seen = bool(re.search(r"magic[-_ ]?link", signup_src, re.IGNORECASE))
@@ -351,29 +335,23 @@ def step4_execution() -> StepScore:
     else:
         failure.append("site/openapi.agent.json (slim gpt30 profile) missing")
     findings.append(
-        f"openapi paths: full={path_count} slim_gpt30={slim_count} "
-        f"(floor {OPENAPI_PATHS_FLOOR})"
+        f"openapi paths: full={path_count} slim_gpt30={slim_count} (floor {OPENAPI_PATHS_FLOOR})"
     )
     if path_count >= OPENAPI_PATHS_FLOOR:
         path_pts = 5.0
     else:
         path_pts = max(0.0, (path_count / OPENAPI_PATHS_FLOOR) * 5.0)
-        failure.append(
-            f"openapi path count below floor: {path_count} < {OPENAPI_PATHS_FLOOR}"
-        )
+        failure.append(f"openapi path count below floor: {path_count} < {OPENAPI_PATHS_FLOOR}")
 
     envelope_present = 0
     for p in ERROR_ENVELOPE_REQUIRED:
         if p.exists() and p.stat().st_size > 0:
             envelope_present += 1
         else:
-            failure.append(
-                f"agent cannot execute reliably: {p.relative_to(REPO_ROOT)} missing"
-            )
+            failure.append(f"agent cannot execute reliably: {p.relative_to(REPO_ROOT)} missing")
     env_pts = (envelope_present / len(ERROR_ENVELOPE_REQUIRED)) * 3.0
     findings.append(
-        f"error envelope + idempotency files: {envelope_present}/"
-        f"{len(ERROR_ENVELOPE_REQUIRED)}"
+        f"error envelope + idempotency files: {envelope_present}/{len(ERROR_ENVELOPE_REQUIRED)}"
     )
 
     # Idempotency-Key header wired in middleware?
@@ -398,18 +376,14 @@ def step5_recovery() -> StepScore:
             base_pts += 10.0 / len(RECOVERY_REQUIRED_TOKENS)
             findings.append(f"'{token}': {hits} file(s) in api/+mcp/")
         else:
-            failure.append(
-                f"agent cannot self-recover: '{token}' absent from api/+mcp/"
-            )
+            failure.append(f"agent cannot self-recover: '{token}' absent from api/+mcp/")
             findings.append(f"'{token}': 0 file(s) — recovery hint missing")
 
     # Step 5 rule from spec: each detected failure deducts 1 point.
     penalty = float(len(failure))
     score = max(0.0, base_pts - penalty)
     findings.append(f"failure-pattern penalty: -{penalty:.1f}")
-    return StepScore(
-        5, "recovery", round(score, 2), findings, failure
-    )
+    return StepScore(5, "recovery", round(score, 2), findings, failure)
 
 
 def step6_completion() -> StepScore:
@@ -422,9 +396,7 @@ def step6_completion() -> StepScore:
             base_pts += 4.0
             findings.append(f"'{token}': {hits} file(s) in src/")
         else:
-            failure.append(
-                f"agent cannot verify completion: '{token}' absent from src/"
-            )
+            failure.append(f"agent cannot verify completion: '{token}' absent from src/")
             findings.append(f"'{token}': 0 file(s) — completion proof missing")
 
     # idempotency_cache table is the durable proof. Bonus 2 pts if migration present.
@@ -439,9 +411,7 @@ def step6_completion() -> StepScore:
     penalty = float(len(failure))
     score = max(0.0, base_pts - penalty)
     findings.append(f"failure-pattern penalty: -{penalty:.1f}")
-    return StepScore(
-        6, "completion", round(min(10.0, score), 2), findings, failure
-    )
+    return StepScore(6, "completion", round(min(10.0, score), 2), findings, failure)
 
 
 # ---------------------------------------------------------------------------
@@ -465,7 +435,7 @@ def run_audit() -> dict:
     verdict = "green" if avg >= 8.5 else ("yellow" if avg >= 6.5 else "red")
     return {
         "audit": "agent_journey_6step",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "overall_score": round(avg, 2),
         "verdict": verdict,
         "steps": [
@@ -487,18 +457,14 @@ def render_md(result: dict) -> str:
         "",
         "Wave 17 AX runner. ax_smart_guide §3.3 + §7. NO network, NO LLM call.",
         "",
-        (
-            f"**Overall**: {result['overall_score']:.2f} / 10 "
-            f"({result['verdict'].upper()})"
-        ),
+        (f"**Overall**: {result['overall_score']:.2f} / 10 ({result['verdict'].upper()})"),
         "",
         "| step | name | score | failure patterns |",
         "| ---: | --- | ---: | ---: |",
     ]
     for s in result["steps"]:
         lines.append(
-            f"| {s['step']} | {s['name']} | {s['score']:.2f} | "
-            f"{len(s['failure_patterns'])} |"
+            f"| {s['step']} | {s['name']} | {s['score']:.2f} | {len(s['failure_patterns'])} |"
         )
     lines.append("")
     for s in result["steps"]:
@@ -527,16 +493,16 @@ def render_md(result: dict) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    today = datetime.now(timezone.utc).strftime("%Y_%m_%d")
-    default_md = (
-        REPO_ROOT / "docs" / "audit" / f"agent_journey_6step_audit_{today}.md"
-    )
+    today = datetime.now(UTC).strftime("%Y_%m_%d")
+    default_md = REPO_ROOT / "docs" / "audit" / f"agent_journey_6step_audit_{today}.md"
     ap.add_argument(
-        "--out", default=str(default_md),
+        "--out",
+        default=str(default_md),
         help="output markdown path",
     )
     ap.add_argument(
-        "--out-json", default=None,
+        "--out-json",
+        default=None,
         help="optional json output path",
     )
     args = ap.parse_args(argv)
@@ -552,10 +518,7 @@ def main(argv: list[str] | None = None) -> int:
         oj.parent.mkdir(parents=True, exist_ok=True)
         oj.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"[agent_journey_audit] wrote {oj}")
-    print(
-        f"[agent_journey_audit] overall = {result['overall_score']:.2f} "
-        f"({result['verdict']})"
-    )
+    print(f"[agent_journey_audit] overall = {result['overall_score']:.2f} ({result['verdict']})")
     return 0
 
 

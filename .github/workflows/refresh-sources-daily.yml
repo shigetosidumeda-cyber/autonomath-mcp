@@ -55,14 +55,14 @@ jobs:
       - name: Install package
         run: pip install -e .
 
-      - name: Run S/A verify pass (HEAD→GET→SHA256 + verified_at bump)
+      - name: Run S/A liveness pass
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
           INPUT_MAX_ROWS: ${{ github.event.inputs.max_rows }}
         run: |
           set -euo pipefail
-          ARGS=(--tier "S,A" --enrich)
+          ARGS=(--tier "S,A")
           if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
             ARGS+=(--dry-run)
           fi

@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>AEO Dashboard (12-LLM Citation Bench) — jpcite</title>
-<meta name="description" content="jpcite の AEO (Answer Engine Optimization) ベンチ。12 LLM × 4 metric (citation_rate / top_share / verified_share / fallback) を週次 trend で公開。Wave 41 grow 後の citation_bench_production スナップショット。">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://jpcite.com/status/aeo_dashboard">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/aeo_dashboard">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/aeo_dashboard">
+<meta name="description" content="jpcite の AEO (Answer Engine Optimization) ベンチ。12 LLM × 4 metric (citation_rate / top_share / verified_share / fallback) を週次 trend で公開する citation bench スナップショット。">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://jpcite.com/status/aeo_dashboard.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/aeo_dashboard.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/aeo_dashboard.html">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -17,14 +17,13 @@
 <!-- JSON-LD: agent-readable dataset descriptor.  The "@type": "Dataset"
      pattern lets ClaudeBot / GPTBot / PerplexityBot consume the snapshot
      URL directly without scraping the HTML table.  Conforms to the AX 4
-     pillars (Access / Context / Tools / Orchestration) — see memory
-     `feedback_ax_4_pillars`. -->
+     pillars (Access / Context / Tools / Orchestration). -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite AEO Citation Bench (12 LLM × 4 metric)",
-  "description": "12 LLM surfaces × 520 questions × 4 metrics (citation_rate / top_share / verified_share / fallback) — measures how often each LLM cites jpcite as a primary source for Japanese public-program questions. Updated weekly via tools/offline/citation_bench_production.py.",
+  "description": "12 LLM surfaces × 520 questions × 4 metrics (citation_rate / top_share / verified_share / fallback) — measures how often each LLM cites jpcite as a primary source for Japanese public-program questions. Updated weekly from the public citation bench snapshot.",
   "creator": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
@@ -47,12 +46,12 @@
     {
       "@type": "DataDownload",
       "encodingFormat": "application/json",
-      "contentUrl": "https://jpcite.com/status/aeo_bench_w41.json"
+      "contentUrl": "https://jpcite.com/status/aeo_bench.json"
     },
     {
       "@type": "DataDownload",
       "encodingFormat": "application/x-ndjson",
-      "contentUrl": "https://jpcite.com/analytics/citation_bench_production_w41.jsonl"
+      "contentUrl": "https://jpcite.com/status/aeo_bench.json"
     }
   ],
   "variableMeasured": [
@@ -169,9 +168,9 @@
   <p class="lead">
     12 LLM × 520 question × 4 metric の Answer Engine Optimization (AEO) スナップショット。
     jpcite を <strong>citation_rate</strong> / <strong>top_share</strong> /
-    <strong>verified_share</strong> で計測し、Wave 41 grow (12 LLM) と Wave 21 baseline (8 LLM)
+    <strong>verified_share</strong> で計測し、current set (12 LLM) と baseline set (8 LLM)
     を週次 trend で公開。データソース:
-    <code>/status/aeo_bench_w41.json</code> (offline bench → snapshot)。
+    <code>/status/aeo_bench.json</code> (public bench snapshot)。
     JSON-LD で agent 直読可能。
   </p>
 
@@ -194,15 +193,15 @@
     <div class="headline-card">
       <div class="label">total calls</div>
       <div class="value" id="hl-calls">—</div>
-      <div class="target">W21=4,160 / W41=6,240</div>
+      <div class="target">baseline=4,160 / current=6,240</div>
     </div>
   </div>
 
   <div class="section" id="heatmap-section">
     <h2>12 LLM × 4 metric heatmap</h2>
     <p class="sub">
-      濃い青ほど高スコア。<span class="baseline-marker">W21 baseline</span> = Wave 21 で着地した
-      8 surface、<span class="grow-marker">W41 grow</span> = Wave 41 Agent E で追加した
+      濃い青ほど高スコア。<span class="baseline-marker">baseline</span> =
+      8 surface、<span class="grow-marker">current</span> =
       4 latest pin (Claude Opus 4.7 latest / Gemini 2.5 Flash latest / GPT-5 latest / DeepSeek V4)。
       <code>fallback</code> 列は <code>-latest</code> alias が未公開で dated id に切り戻った件数。
     </p>
@@ -232,9 +231,9 @@
   </div>
 
   <div class="section" id="trend-section">
-    <h2>週次 trend (W17 → W41)</h2>
+    <h2>Trend</h2>
     <p class="sub">
-      W17 AEO bench → W18 → W19 → W21 production-bench (8 LLM) → W41 production-bench (12 LLM)。
+      Earlier AEO bench snapshots are compared with the current production bench (12 LLM).
       各 cell は当該週の全 surface 集計 citation_rate / top_share / verified_share。空欄は
       bench 未実施または snapshot 未配置。
     </p>
@@ -258,14 +257,11 @@
   <div class="section">
     <h2>採取手法</h2>
     <p class="sub">
-      Bench は <code>tools/offline/citation_bench_production.py</code> から operator session
-      経由で実行 (本番 LLM API 直叩きは <code>src/</code> / <code>scripts/cron/</code> / <code>scripts/etl/</code>
-      / <code>tests/</code> で全面禁止)。メトリクスは <code>tools/offline/</code> で local
-      session 経由のみ採取し、<code>analytics/citation_bench_production_w{N}.jsonl</code>
-      に snapshot される。
+      Bench は管理された評価セッションで実行し、公開ページでは集計済みメトリクスのみ表示します。
+      本番サービスから外部 LLM API を直接呼び出して評価する設計ではありません。
     </p>
     <p class="sub">
-      W41 で <code>-latest</code> alias を 4 surface 追加: <code>claude-opus-4-7-latest</code> /
+      Current set includes 4 <code>-latest</code> aliases: <code>claude-opus-4-7-latest</code> /
       <code>gemini-2-5-flash-latest</code> / <code>gpt-5-latest</code> / <code>deepseek-v4</code>。
       未公開時は同 adapter 経由で dated model id に切り戻し、<code>latest_fallback_used=true</code>
       flag を row に記録。
@@ -282,23 +278,22 @@
 </div>
 
 <script>
-/* AEO 12-LLM heatmap renderer.  Reads `/status/aeo_bench_w41.json`
-   (produced by `tools/offline/citation_bench_production.py --wave 41
-   --aggregate-only`) and renders the 12-surface × 4-metric heatmap +
-   the W17 → W41 trend table.  Falls back to static placeholder rows
+/* AEO 12-LLM heatmap renderer.  Reads `/status/aeo_bench.json`
+   and renders the 12-surface × 4-metric heatmap +
+   the public trend table.  Falls back to static placeholder rows
    when the snapshot is missing so the page never appears broken
    during a fresh-deploy gap. */
 (function () {
   'use strict';
 
-  // W21 baseline surfaces — render with the `baseline` marker.
+  // Baseline surfaces — render with the `baseline` marker.
   var BASELINE = [
     'claude-opus-4-7', 'claude-sonnet-4-6', 'claude-haiku-4-5',
     'gpt-5', 'gemini-2-flash', 'mistral-large-2',
     'deepseek-v3.1', 'qwen2.5-72b-instruct'
   ];
 
-  // W41 grow surfaces — render with the `grow` marker.
+  // Current surfaces — render with the `grow` marker.
   var GROW = [
     'claude-opus-4-7-latest', 'gemini-2-5-flash-latest',
     'gpt-5-latest', 'deepseek-v4'
@@ -333,12 +328,12 @@
     document.getElementById('hl-top').textContent = pct(t);
     document.getElementById('hl-verified').textContent = pct(v);
     document.getElementById('hl-calls').textContent = (snap.total_calls || 0).toLocaleString();
-    document.getElementById('hl-citation-badge').className = badge(snap.gates_w41.citation_rate);
-    document.getElementById('hl-citation-badge').textContent = snap.gates_w41.citation_rate;
-    document.getElementById('hl-top-badge').className = badge(snap.gates_w41.top_share);
-    document.getElementById('hl-top-badge').textContent = snap.gates_w41.top_share;
-    document.getElementById('hl-verified-badge').className = badge(snap.gates_w41.verified_share);
-    document.getElementById('hl-verified-badge').textContent = snap.gates_w41.verified_share;
+    document.getElementById('hl-citation-badge').className = badge(snap.gates_current.citation_rate);
+    document.getElementById('hl-citation-badge').textContent = snap.gates_current.citation_rate;
+    document.getElementById('hl-top-badge').className = badge(snap.gates_current.top_share);
+    document.getElementById('hl-top-badge').textContent = snap.gates_current.top_share;
+    document.getElementById('hl-verified-badge').className = badge(snap.gates_current.verified_share);
+    document.getElementById('hl-verified-badge').textContent = snap.gates_current.verified_share;
   }
 
   function renderHeatmap(snap) {
@@ -349,7 +344,7 @@
       var s = bs[surface] || {calls: 0, fallback: 0, citation_rate: 0, top_share: 0, verified_share: 0};
       var tr = document.createElement('tr');
       tr.innerHTML =
-        '<td class="surface">' + surface + ' <span class="' + marker + '-marker">' + (marker === 'baseline' ? 'W21' : 'W41 +') + '</span></td>' +
+        '<td class="surface">' + surface + ' <span class="' + marker + '-marker">' + (marker === 'baseline' ? 'baseline' : 'current') + '</span></td>' +
         '<td class="calls">' + (s.calls || 0).toLocaleString() + '</td>' +
         '<td class="calls">' + (s.fallback || 0) + '</td>' +
         '<td class="metric ' + heatClass(s.citation_rate) + '">' + pct(s.citation_rate) + '</td>' +
@@ -362,16 +357,13 @@
   }
 
   function renderTrend(snap) {
-    // Static W17→W41 trend snapshot.  Numbers are pulled from the
-    // committed analytics/{aeo_citation_bench_w17,w18,w19}.jsonl plus the
-    // current W41 snap.  W21 8-surface row is computed from the committed
-    // analytics/citation_bench_production_w21.jsonl placeholder.
+    // Static public trend snapshot.
     var rows = [
-      {week: 'W17 (AEO offline)', surfaces: 5, calls: 500, c: null, t: null, v: null, note: 'pre-grow'},
-      {week: 'W18 (AEO offline)', surfaces: 5, calls: 500, c: null, t: null, v: null, note: 'pre-grow'},
-      {week: 'W19 (AEO offline)', surfaces: 5, calls: 500, c: null, t: null, v: null, note: 'pre-grow'},
-      {week: 'W21 (8 LLM bench)', surfaces: 8, calls: 4160, c: null, t: null, v: null, note: 'production-bench'},
-      {week: 'W41 (12 LLM bench)', surfaces: 12, calls: snap.total_calls || 6240,
+      {week: 'early offline bench 1', surfaces: 5, calls: 500, c: null, t: null, v: null, note: 'offline'},
+      {week: 'early offline bench 2', surfaces: 5, calls: 500, c: null, t: null, v: null, note: 'offline'},
+      {week: 'early offline bench 3', surfaces: 5, calls: 500, c: null, t: null, v: null, note: 'offline'},
+      {week: 'baseline production bench', surfaces: 8, calls: 4160, c: null, t: null, v: null, note: 'production-bench'},
+      {week: 'current production bench', surfaces: 12, calls: snap.total_calls || 6240,
         c: snap.headline.citation_rate, t: snap.headline.top_share, v: snap.headline.verified_share,
         note: 'production-bench + 4 latest pins'}
     ];
@@ -397,7 +389,7 @@
       '<tr><td colspan="6" class="empty-state">' + msg + '</td></tr>';
   }
 
-  fetch('/status/aeo_bench_w41.json', {cache: 'no-cache'})
+  fetch('/status/aeo_bench.json', {cache: 'no-cache'})
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
@@ -409,7 +401,7 @@
     })
     .catch(function (err) {
       renderEmpty(
-        'bench を実行してください: <code>python3 tools/offline/citation_bench_production.py --wave 41</code> ' +
+        'bench snapshot is not available. ' +
         '<br>error: ' + (err && err.message ? err.message : 'unknown')
       );
     });

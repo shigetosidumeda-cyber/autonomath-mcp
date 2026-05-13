@@ -10,16 +10,23 @@ name: same-day-push-cron
 #
 # Cadence: every 30 minutes. GitHub Actions schedule jitter is up to 15
 # minutes; the in-DB idempotency log absorbs duplicate ticks safely.
+#
+# Production mutation safety:
+#   Manual runs default to --dry-run. Scheduled/manual live mutation requires
+#   PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; otherwise the Fly SSH
+#   command forces --dry-run.
 
 on:
   schedule:
-    - cron: "*/30 * * * *"
+    # Offset from high-contention :00/:30 slots and from dispatch/stripe/sweep
+    # jobs in this deployment lane.
+    - cron: "2,32 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
         description: "Run with --dry-run (no email, no billing)"
         required: false
-        default: "false"
+        default: "true"
         type: choice
         options:
           - "true"
@@ -50,6 +57,7 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           DRY_RUN_INPUT: ${{ github.event.inputs.dry_run }}
           WINDOW_MIN_INPUT: ${{ github.event.inputs.window_minutes }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
         run: |
           set -euo pipefail
           if [ -z "${FLY_API_TOKEN:-}" ]; then
@@ -59,7 +67,12 @@ jobs:
           DRY_RUN="${DRY_RUN_INPUT:-false}"
           WINDOW_MIN="${WINDOW_MIN_INPUT:-30}"
           FLAGS="--window-minutes ${WINDOW_MIN}"
-          if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="${FLAGS} --dry-run"
+          elif [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" != "I_ACK_PROD_DB_MUTATION" ]; then
+            echo "::warning::Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
+            FLAGS="${FLAGS} --dry-run"
+          fi
           flyctl ssh console -a autonomath-api -C \
             "/opt/venv/bin/python /app/scripts/cron/same_day_push.py ${FLAGS}"
 

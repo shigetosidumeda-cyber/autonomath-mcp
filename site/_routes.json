@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "include": [
+    "/api",
+    "/api/*",
+    "/x402",
+    "/x402/*",
+    "/webhook/*",
+    "/artifacts/*",
+    "/dpa_issue",
+    "/ab_assign",
+    "/*.md"
+  ],
+  "exclude": []
+}

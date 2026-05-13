@@ -4,7 +4,7 @@
       "command": "uvx",
       "args": ["autonomath-mcp"],
       "env": {
-        "JPCITE_API_KEY": "sk_paid_xxxxxxxxxxxx_OR_leave_empty_for_anon_3req_per_day"
+        "JPCITE_API_KEY": "YOUR_JPCITE_API_KEY_OR_LEAVE_EMPTY_FOR_ANON_3REQ_PER_DAY"
       }
     }
   }

@@ -1,0 +1,72 @@
+{
+  "axis": "ax_anti_patterns",
+  "anti_pattern_count_target": 0,
+  "total_violations": 0,
+  "verdict": "green",
+  "anti_patterns": [
+    {
+      "name": "separate_agent_site_path",
+      "description": "Avoid maintaining a parallel agent-only site (site/agent/, site/ai/ etc.). One canonical site benefits both humans and agents.",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    },
+    {
+      "name": "aria_overuse",
+      "description": "role='button' on a non-<button> element when a native <button> would suffice (WebAIM: ARIA-heavy sites score worse on a11y).",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    },
+    {
+      "name": "jsonld_html_divergence",
+      "description": "Schema.org JSON-LD price/availability must match visible HTML body (search-engine penalty + agent-trust loss).",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    },
+    {
+      "name": "captcha_on_api",
+      "description": "API endpoints must not require CAPTCHA. Use scoped tokens + rate limits instead.",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    },
+    {
+      "name": "vague_mcp_descriptions",
+      "description": "MCP tool-level description (function docstring of @mcp.tool / @server.tool) must be specific and >= 50 chars; vague placeholders like 'データを取得' are AX-hostile. Parameter Field descriptions are out of scope.",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    },
+    {
+      "name": "browser_only_oauth",
+      "description": "Must offer at least one non-browser auth path (API token / device-code / client-credentials).",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    },
+    {
+      "name": "server_side_session_state",
+      "description": "Server-side session-ID cookie state is hard for agent HTTP clients. Prefer stateless token auth.",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    },
+    {
+      "name": "js_required_content",
+      "description": "Initial HTML must carry main content; retrieval crawlers do not execute JS. Hydrate, do not bootstrap.",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    },
+    {
+      "name": "partially_humanized_ai",
+      "description": "TOAST research: partially-humanized AI is least trusted. Be clearly AI, no mascot / persona / first-person voice.",
+      "violation_count": 0,
+      "passed": true,
+      "violations": []
+    }
+  ],
+  "generated_at": "2026-05-12T09:25:37.774444+00:00"
+}

@@ -27,31 +27,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
-<title>Artifacts - jpcite</title>
+<title>Evidence Artifacts - jpcite</title>
 <meta name="description" content="jpcite artifact 一覧と pack_id ルックアップ。 overview / programs / laws / cases / enforcement / amendments / provenance の 7 section を SSR で表示します。">
 <meta name="robots" content="index, follow">
 
-<link rel="canonical" href="https://jpcite.com/artifacts">
+<link rel="canonical" href="https://jpcite.com/artifact">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 
-<meta property="og:title" content="Artifacts - jpcite">
+<meta property="og:title" content="Evidence Artifacts - jpcite">
 <meta property="og:description" content="jpcite artifact 一覧と pack_id ルックアップ。 7 section の構成 (overview / programs / laws / cases / enforcement / amendments / provenance) を一目で確認できます。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/artifacts">
+<meta property="og:url" content="https://jpcite.com/artifact">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Artifacts - jpcite">
+<meta name="twitter:title" content="Evidence Artifacts - jpcite">
 <meta name="twitter:description" content="jpcite artifact 一覧と pack_id ルックアップ。7 section の構成を一目で確認。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/artifacts">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/artifacts">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/artifact">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/artifact">
 
 <script type="application/ld+json">
 {
@@ -59,7 +59,7 @@
   "@type": "CollectionPage",
   "name": "jpcite Artifacts",
   "description": "Artifact list and pack_id lookup for the 7-section artifact viewer (overview / programs / laws / cases / enforcement / amendments / provenance).",
-  "url": "https://jpcite.com/artifacts",
+  "url": "https://jpcite.com/artifact",
   "author": {"@type": "Organization", "name": "Bookyou株式会社", "url": "https://jpcite.com"},
   "publisher": {"@type": "Organization", "name": "jpcite", "url": "https://jpcite.com"}
 }
@@ -70,7 +70,7 @@
   "@type": "BreadcrumbList",
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "jpcite", "item": "https://jpcite.com/"},
-    {"@type": "ListItem", "position": 2, "name": "Artifacts", "item": "https://jpcite.com/artifacts"}
+    {"@type": "ListItem", "position": 2, "name": "Artifacts", "item": "https://jpcite.com/artifact"}
   ]
 }
 </script>
@@ -81,7 +81,7 @@
   "@type": "Dataset",
   "name": "jpcite Artifact Packs (7-section evidence)",
   "description": "pack_id 単位で overview / programs / laws / cases / enforcement / amendments / provenance の 7 section を SSR 描画する evidence artifact データセット。source_url + fetched_at 付き。",
-  "url": "https://jpcite.com/artifacts",
+  "url": "https://jpcite.com/artifact",
   "creator": {"@id": "https://jpcite.com/#publisher"},
   "provider": {"@id": "https://jpcite.com/#publisher"},
   "license": "https://jpcite.com/tos",
@@ -89,7 +89,7 @@
   "inLanguage": "ja",
   "keywords": ["artifact", "evidence packet", "provenance", "7 section", "pack_id"],
   "distribution": [
-    {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/artifacts"},
+    {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/artifact"},
     {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://api.jpcite.com/v1/artifacts/{pack_id}"}
   ],
   "variableMeasured": [
@@ -143,7 +143,7 @@
 </head>
 <body>
 
-<header class="site"><a href="/">jpcite</a> &rsaquo; <span>Artifacts</span></header>
+<header class="site"><a href="/">jpcite</a> &rsaquo; <span>Evidence Artifacts</span></header>
 
 <main>
   <h1>Artifacts</h1>
@@ -170,10 +170,10 @@
   <section class="list" aria-labelledby="list-heading">
     <h2 id="list-heading" style="margin-top:0;border-bottom:none;font-size:15px;">既知の artifact (demo)</h2>
     <ul>
-      <li><a href="/artifacts/demo-pack-0001">demo-pack-0001</a><span class="meta">— 会社フォルダ作成パック demo</span></li>
-      <li><a href="/artifacts/demo-pack-0002">demo-pack-0002</a><span class="meta">— 制度コホート demo (製造業)</span></li>
-      <li><a href="/artifacts/demo-pack-0003">demo-pack-0003</a><span class="meta">— 制度コホート demo (建設業)</span></li>
-      <li><a href="/artifacts/demo-pack-0004">demo-pack-0004</a><span class="meta">— 制度コホート demo (不動産業)</span></li>
+      <li><a href="/artifact.html?pack_id=demo-pack-0001" data-pack-id="demo-pack-0001">demo-pack-0001</a><span class="meta">— 会社フォルダ作成パック demo</span></li>
+      <li><a href="/artifact.html?pack_id=demo-pack-0002" data-pack-id="demo-pack-0002">demo-pack-0002</a><span class="meta">— 制度コホート demo (製造業)</span></li>
+      <li><a href="/artifact.html?pack_id=demo-pack-0003" data-pack-id="demo-pack-0003">demo-pack-0003</a><span class="meta">— 制度コホート demo (建設業)</span></li>
+      <li><a href="/artifact.html?pack_id=demo-pack-0004" data-pack-id="demo-pack-0004">demo-pack-0004</a><span class="meta">— 制度コホート demo (不動産業)</span></li>
     </ul>
   </section>
 
@@ -234,7 +234,7 @@
         <h3>採択事例 - 製造業 設備投資 (preview)</h3>
         <div class="row">case_id: demo-case-001 · 業種: 製造業</div>
         <div class="row">採択年: 2025 · 金額: ¥12,000,000</div>
-        <a class="src" href="#" rel="noopener">一次資料 ↗</a>
+        <a class="src" href="/sources.html">出典一覧</a>
       </div>
     </div>
   </section>
@@ -264,7 +264,7 @@
         <h3>IT導入補助金 2026 通常枠 採択要件 改定 (preview)</h3>
         <div class="row">detected_at: 2026-04-01 · effective_from: 2026-05-01</div>
         <div>売上要件が ¥10,000 → ¥30,000 に引き上げ。 (preview)</div>
-        <a class="src" href="#" rel="noopener">一次資料 ↗</a>
+        <a class="src" href="https://www.it-hojo.jp/2026/" target="_blank" rel="noopener">一次資料 ↗</a>
       </div>
     </div>
   </section>
@@ -278,7 +278,7 @@
 </main>
 
 <footer class="site">
-  発行: <a href="/about" rel="noopener">Bookyou株式会社</a> (T8010001213708) &middot;
+  発行: <a href="/about.html" rel="noopener">Bookyou株式会社</a> (T8010001213708) &middot;
   本 artifact viewer は一次資料の取得時点情報を機械的に集約するもので、税理士法・弁護士法・行政書士法の業法に抵触する助言ではありません。最終判断は士業へ。
 </footer>
 
@@ -322,6 +322,14 @@
       err.classList.remove("show");
       err.textContent = "";
     }
+  });
+  document.querySelectorAll("[data-pack-id]").forEach(function (link) {
+    link.addEventListener("click", function (e) {
+      var packId = link.getAttribute("data-pack-id");
+      if (!packId || !PACK_ID_RE.test(packId)) return;
+      e.preventDefault();
+      window.location.href = "/artifacts/" + encodeURIComponent(packId);
+    });
   });
 })();
 </script>

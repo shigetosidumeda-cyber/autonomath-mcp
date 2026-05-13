@@ -96,7 +96,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -139,11 +139,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -234,7 +234,7 @@
 <p><em>without_jpcite</em> 条件は素の質問文のみを LLM に投げる closed-book 評価。<em>with_jpcite</em> 条件は同じ質問の前に、jpcite REST API <code>/v1/search</code> から取得した上位 5 件の <code>(primary_name, source_url)</code> をコンテキストとして付与してから投げます。プロンプト本体は両条件で同一。</p>
 
 <h3>4. オペレータは LLM を呼ばない</h3>
-<p>jpcite 運営 (Bookyou株式会社) は <strong>顧客の代わりに LLM API を呼びません</strong>。顧客が <code>benchmarks/jcrb_v1/run.py</code> を自分のハードウェアで実行し、結果サマリ JSON を <code>benchmarks/jcrb_v1/submissions/</code> に PR / POST で送る — 運営 cron <code>scripts/cron/jcrb_publish_results.py</code> はそれを集約してこのページに publish するだけです。これは <em>jpcite の本業務 (¥3/billable unit メータリング) と同じ no request-time LLM call 原則</em>に従います。</p>
+<p>jpcite 運営 (Bookyou株式会社) は <strong>顧客の代わりに LLM API を呼びません</strong>。顧客が <code>benchmarks/jcrb_v1/run.py</code> を自分のハードウェアで実行し、結果サマリ JSON を <code>benchmarks/jcrb_v1/submissions/</code> に PR / POST で送る — 運営側の scheduled benchmark publisher がそれを集約してこのページに publish するだけです。これは <em>jpcite の本業務 (¥3/billable unit メータリング) と同じ no request-time LLM call 原則</em>に従います。</p>
 
 <h2>再現手順 (Reproduce)</h2>
 

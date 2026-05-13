@@ -74,6 +74,7 @@ import os
 import sqlite3
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
@@ -86,6 +87,9 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
 logger = logging.getLogger("autonomath.cron.meta_analysis_daily")
+
+
+_ROW_COUNT_LIMIT = 100_000
 
 
 # Pinned (table, ts_column, wave) tuples. Order = display order in the
@@ -110,6 +114,22 @@ _TABLES: list[tuple[str, str | None, str]] = [
 ]
 
 
+def _sqlite_readonly_uri(path: Path) -> str:
+    """Return a SQLite file URI that cannot create or write the DB file."""
+    return f"file:{urllib.parse.quote(path.resolve().as_posix(), safe='/')}?mode=ro"
+
+
+def _open_autonomath_ro(path: Path) -> sqlite3.Connection:
+    conn = sqlite3.connect(_sqlite_readonly_uri(path), uri=True)
+    conn.execute("PRAGMA query_only = 1")
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _quote_ident(name: str) -> str:
+    return '"' + name.replace('"', '""') + '"'
+
+
 def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
     row = conn.execute(
         "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)
@@ -119,13 +139,76 @@ def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
 
 def _column_exists(conn: sqlite3.Connection, table: str, column: str) -> bool:
     try:
-        for row in conn.execute(f"PRAGMA table_info({table})"):
+        for row in conn.execute(f"PRAGMA table_info({_quote_ident(table)})"):
             # PRAGMA returns: cid, name, type, notnull, dflt_value, pk
             if str(row[1]) == column:
                 return True
     except sqlite3.OperationalError:
         return False
     return False
+
+
+def _sqlite_stat1_row_estimate(conn: sqlite3.Connection, table: str) -> int | None:
+    """Return ANALYZE's table row estimate without scanning the table."""
+    try:
+        row = conn.execute(
+            "SELECT stat FROM sqlite_stat1 WHERE tbl=? ORDER BY idx IS NOT NULL LIMIT 1",
+            (table,),
+        ).fetchone()
+    except sqlite3.OperationalError:
+        return None
+    if not row or row[0] is None:
+        return None
+    first = str(row[0]).split(maxsplit=1)[0]
+    try:
+        return int(first)
+    except ValueError:
+        return None
+
+
+def _bounded_row_count(
+    conn: sqlite3.Connection,
+    table: str,
+    *,
+    limit: int = _ROW_COUNT_LIMIT,
+) -> tuple[int, str]:
+    """Return exact counts for small tables, otherwise a stat1 estimate/lower bound."""
+    row = conn.execute(
+        f"SELECT COUNT(*) FROM (SELECT 1 FROM {_quote_ident(table)} LIMIT ?)",
+        (limit + 1,),
+    ).fetchone()
+    bounded = int(row[0]) if row else 0
+    if bounded <= limit:
+        return bounded, "exact"
+
+    estimate = _sqlite_stat1_row_estimate(conn, table)
+    if estimate is not None and estimate >= bounded:
+        return estimate, "estimated"
+    return bounded, "lower_bound"
+
+
+def _plan_uses_index(conn: sqlite3.Connection, sql: str) -> bool:
+    plan_rows = conn.execute(f"EXPLAIN QUERY PLAN {sql}").fetchall()
+    plan_text = " ".join(str(row[-1]).upper() for row in plan_rows)
+    return "USING INDEX" in plan_text or "USING COVERING INDEX" in plan_text
+
+
+def _latest_ts_indexed(
+    conn: sqlite3.Connection,
+    table: str,
+    column: str,
+) -> tuple[str | None, str]:
+    """Return latest timestamp only when ORDER BY can use an existing index."""
+    q_table = _quote_ident(table)
+    q_column = _quote_ident(column)
+    sql = (
+        f"SELECT {q_column} FROM {q_table} "
+        f"WHERE {q_column} IS NOT NULL ORDER BY {q_column} DESC LIMIT 1"
+    )
+    if not _plan_uses_index(conn, sql):
+        return None, "unindexed"
+    row = conn.execute(sql).fetchone()
+    return (str(row[0]) if row and row[0] is not None else None), "indexed"
 
 
 def _gather_one(conn: sqlite3.Connection, table: str, ts_column: str | None) -> dict[str, Any]:
@@ -137,7 +220,9 @@ def _gather_one(conn: sqlite3.Connection, table: str, ts_column: str | None) -> 
             "table": ...,
             "exists": bool,
             "row_count": int | None,
+            "row_count_kind": "exact" | "estimated" | "lower_bound" | None,
             "last_ts": str | None,
+            "last_ts_kind": "indexed" | "unindexed" | None,
             "ts_column": str | None,
             "status": "ok" | "missing" | "no_ts" | "error",
             "error": str | None,
@@ -147,7 +232,9 @@ def _gather_one(conn: sqlite3.Connection, table: str, ts_column: str | None) -> 
         "table": table,
         "exists": False,
         "row_count": None,
+        "row_count_kind": None,
         "last_ts": None,
+        "last_ts_kind": None,
         "ts_column": ts_column,
         "status": "missing",
         "error": None,
@@ -156,8 +243,9 @@ def _gather_one(conn: sqlite3.Connection, table: str, ts_column: str | None) -> 
         return out
     out["exists"] = True
     try:
-        row = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
-        out["row_count"] = int(row[0]) if row else 0
+        row_count, row_count_kind = _bounded_row_count(conn, table)
+        out["row_count"] = row_count
+        out["row_count_kind"] = row_count_kind
     except sqlite3.OperationalError as exc:
         out["status"] = "error"
         out["error"] = str(exc)
@@ -173,8 +261,9 @@ def _gather_one(conn: sqlite3.Connection, table: str, ts_column: str | None) -> 
         return out
 
     try:
-        row = conn.execute(f"SELECT MAX({ts_column}) FROM {table}").fetchone()
-        out["last_ts"] = str(row[0]) if row and row[0] is not None else None
+        last_ts, last_ts_kind = _latest_ts_indexed(conn, table, ts_column)
+        out["last_ts"] = last_ts
+        out["last_ts_kind"] = last_ts_kind
     except sqlite3.OperationalError as exc:
         out["status"] = "error"
         out["error"] = str(exc)
@@ -223,6 +312,11 @@ def _annotate_deltas(
     baseline = yesterday_indexed is None
     for s in today_stats:
         prior = (yesterday_indexed or {}).get(s["table"])
+        prior_kind = prior.get("row_count_kind", "exact") if prior else "exact"
+        if s.get("row_count_kind") != "exact" or prior_kind != "exact":
+            s["row_count_delta"] = None
+            s["row_count_prior"] = prior.get("row_count") if prior else None
+            continue
         if prior is None or prior.get("row_count") is None:
             s["row_count_delta"] = None
             s["row_count_prior"] = None
@@ -321,6 +415,15 @@ def _render_markdown(
             )
         elif status == "error":
             note = (s.get("error") or "")[:80]
+        if status == "ok" and s.get("last_ts_kind") == "unindexed":
+            note = f"{note}; " if note else ""
+            note += f"skipped unindexed {s['ts_column']} latest-timestamp scan"
+        if s.get("row_count_kind") == "estimated":
+            note = f"{note}; " if note else ""
+            note += "row count estimated from sqlite_stat1"
+        elif s.get("row_count_kind") == "lower_bound":
+            note = f"{note}; " if note else ""
+            note += f"row count lower bound >= {_fmt_int(s['row_count'])}"
         lines.append(f"| {wave} | {table} | {rows} | {delta} | {last_ts} | {status} | {note} |")
     lines.append("")
     lines.append("## Notes")
@@ -492,8 +595,7 @@ def main(argv: list[str] | None = None) -> int:
     else:
         today = datetime.now(UTC).date()
 
-    am_conn = sqlite3.connect(str(am_db))
-    am_conn.row_factory = sqlite3.Row
+    am_conn = _open_autonomath_ro(am_db)
     try:
         stats = _gather_all(am_conn)
     finally:

@@ -27,7 +27,7 @@
 /admin/*  /404  404
 
 # Machine-readable API discovery. Keep common guessed static paths alive for
-# LLM crawlers, Custom GPT importers, and SDK generators; the canonical OpenAPI
+# LLM crawlers, Custom GPT importers, and SDK clients; the canonical OpenAPI
 # contract is also served by the API process at https://api.jpcite.com/v1/openapi.json.
 # The jpcite.com aliases rewrite to the static OpenAPI copy so AI importers
 # can still discover the contract if the API process is temporarily unavailable.
@@ -46,7 +46,7 @@
 /getting-started.html  /docs/getting-started/  301
 /getting-started       /docs/getting-started/  301
 
-# 2026-05-12 Wave 42: cohort-monetization docs were linked from site/index.html
+# 2026-05-12 public documentation update: monetization-docs docs were linked from site/index.html
 # + site/pricing.html with a literal `.md` suffix (mkdocs Material renders the
 # canonical URL as a trailing-slash directory, not a `.md` file path). The
 # pages-deploy-main.yml workflow also strips `*.md` from the CF Pages upload
@@ -54,10 +54,10 @@
 # HTML links have been updated to the trailing-slash form; these redirects
 # keep any cached external citations (mail blasts, partner pages, Zenn/note
 # inbound) alive. Same pattern as /getting-started above.
-/docs/use_cases/by_industry_2026_05_11.md  /docs/use_cases/by_industry_2026_05_11/  301
-/docs/use_cases/by_industry_2026_05_11.html  /docs/use_cases/by_industry_2026_05_11/  301
-/docs/pricing/justification_2026_05_11.md  /docs/pricing/justification_2026_05_11/  301
-/docs/pricing/justification_2026_05_11.html  /docs/pricing/justification_2026_05_11/  301
+/docs/use_cases/by_industry_2026_05_11.md  /audiences/  301
+/docs/use_cases/by_industry_2026_05_11.html  /audiences/  301
+/docs/pricing/justification_2026_05_11.md  /docs/pricing/  301
+/docs/pricing/justification_2026_05_11.html  /docs/pricing/  301
 
 # Per-program SEO pages live at /programs/{slug}-{sha1-6}.html (NOT
 # /programs/UNI-xxx.html — UNI ids are unified_id only, the static
@@ -69,7 +69,7 @@
 # /programs/UNI-xxxxxxxxxx[.html] pattern (old emails, blog posts, AI
 # agent guess-the-URL) and bounces it to /programs/share.html, which
 # resolves the id via /v1/programs/batch and renders a real card. The
-# `UNI-` literal prefix in the source path means only UNI-shaped legacy
+# `UNI-` literal segment in the source path means only UNI-shaped legacy
 # requests get rewritten — slug-shaped /programs/{slug}-hash.html static
 # files match an actual file on disk first and CF Pages serves them
 # directly (file-system match wins over _redirects rules).
@@ -109,7 +109,7 @@
 # /api → REST API reference. Common guess from people who heard "API"
 # before finding the docs index. /docs/api-reference/ is the canonical home.
 #
-# NOTE (Wave 24, 2026-05-12): /api/* paths are now handled by the
+# NOTE (2026-05-12): /api/* paths are now handled by the
 # functions/api_proxy.ts Pages Function which proxies to api.jpcite.com/v1/*.
 # CF Pages Functions take precedence over _redirects rules, so this 301 is
 # effectively dead for /api/<anything>. We keep the bare `/api` 301 as a
@@ -169,7 +169,7 @@
 #
 # `site/_templates/*.html` are Jinja2 source files (program.html, qa.html,
 # cross.html, prefecture.html, news_post.html, industry_program.html,
-# prefecture_index.html). They are read by scripts/generate_*_pages.py and
+# prefecture_index.html). They are consumed by the publishing process and
 # rendered into final HTML at /programs/*, /qa/*/*.html, /prefectures/*,
 # /industries/*, /news/*. The raw .html files contain unrendered `{{ var }}`
 # placeholders — if they leaked to the public domain, search engines would
@@ -189,12 +189,12 @@
 /sitemap-structured.xml  /sitemap-index.xml  301
 
 # ─────────────────────────────────────────────────────────────────────────
-# Retired low-signal generated pages; redirect legacy inbound URLs to canonical hubs.
+# Retired low-signal pages; redirect legacy inbound URLs to canonical hubs.
 # ─────────────────────────────────────────────────────────────────────────
 
 # Programs: tier B/C SSG pages were retired. Do not add a broad
 # `/programs/*` fallback here: Cloudflare Pages redirect rules can intercept
-# generated /programs/{slug}.html assets before the static file is served.
+# /programs/{slug}.html assets before the static file is served.
 # Legacy UNI-shaped URLs are handled above by the explicit /programs/UNI-*
 # rules; other retired program URLs should miss normally instead of shadowing
 # live static pages.
@@ -203,12 +203,13 @@
 # /cross/{pref}/{program}.html → bounce to the prefecture hub
 # /cross/{pref}/. Bare /cross/{pref} resolves natively via CF .html
 # stripping + the new /cross/{pref}/index.html.
+# 2026-05-13 redirect audit: removed dead `/cross → /cross/ 301` (no
+# `site/cross/index.html` on disk; only per-prefecture index.html files).
 /cross/:pref/:slug.html  /cross/:pref/  302
 /cross/:pref/:slug       /cross/:pref/  302
-/cross                   /cross/        301
 
 # QA: retired pages must not be handled with `/qa/*`; that pattern also matches
-# live generated /qa/{topic}/{slug}.html citation pages.
+# live /qa/{topic}/{slug}.html citation pages.
 
 # Industries: retired per-program-per-JSIC pages
 # /industries/{jsic}/{slug}/index.html → /industries/{jsic}/.
@@ -221,18 +222,16 @@
 /openapi.public.json /openapi/v1.json 301
 /.well-known/mcp /.well-known/mcp.json 301
 /mcp /.well-known/mcp.json 301
-/facts_registry.json /.well-known/facts_registry.json 301
-/fence.md /.well-known/fence.md 301
-/.well-known/facts_registry.json /facts_registry.json 200
+# 2026-05-13 redirect audit: removed dead /fence.md → /.well-known/fence.md 301
+# (target missing on disk) and the /facts_registry.json ↔ /.well-known/facts_registry.json
+# self-loop pair (both targets missing — only site/data/facts_registry.json exists,
+# which is intentionally namespaced and not surfaced under that public path).
+/search /search.html 200
 
-# v3.2 (2026-05-11 GEO guard fix) — /connect/* explicit 200 rewrite 削除。
-# 真因は GEO readiness guard の禁止 regex `^/[^\s]+\s+/[^\s]*\.html` (loop-prone
-# rule) に hit していたこと。CF Pages の pretty URL default (`.html` 自動 fallback)
-# で `/connect/claude-code` → `site/connect/claude-code.html` が serve される
-# ので explicit rewrite は不要。404 の真因は別 (mkdocs nav warning + CF secret 空)
-# で既に解消済 (commit 9e93ceef + secret set 2026-05-11T04:14)。
+# v3.2 (2026-05-11) — /connect/* relies on Cloudflare Pages pretty URL fallback.
+# Explicit rewrites are intentionally omitted to avoid routing loops.
 
-# v4 (Wave 24, 2026-05-12) — CDN routing optimization
+# v4 (2026-05-12) — CDN routing optimization
 # /api/* paths are handled by functions/api_proxy.ts (Pages Function);
 # the function takes precedence over a 301 redirect would because it
 # does an at-edge fetch + CORS injection + rate-limit-hint emission.

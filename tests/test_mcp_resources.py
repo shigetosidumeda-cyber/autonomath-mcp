@@ -95,7 +95,9 @@ def fresh_mcp_saburoku_on(monkeypatch):
 @pytest.fixture
 def fresh_mcp_disabled(monkeypatch):
     monkeypatch.setenv("AUTONOMATH_ENABLED", "0")
+    monkeypatch.setenv("JPCITE_ENABLED", "0")
     monkeypatch.delenv("AUTONOMATH_36_KYOTEI_ENABLED", raising=False)
+    monkeypatch.delenv("JPCITE_36_KYOTEI_ENABLED", raising=False)
     _purge_modules()
     from jpintel_mcp.mcp.server import mcp  # noqa: E402
 

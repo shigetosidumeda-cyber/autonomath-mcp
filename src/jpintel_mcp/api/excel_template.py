@@ -9,7 +9,7 @@ Sheets
 ------
 1. 制度サマリ  — overview + 採択率 + 上限額 + 出典 URL
 2. 必要書類 chk  — checklist row per likely required document
-3. 金額 / 採択率 ROI — historical adoption × 単価 → ROI table
+3. 金額目安 — historical adoption × 上限額から作る確認用 estimate
 4. 期限 calendar — 12 ヶ月 deadline calendar with the program's
    ``application_round`` rows
 5. 補足 / 連絡先 — fence summary + Bookyou株式会社 contact
@@ -35,7 +35,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request, status
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -64,7 +64,11 @@ _excel_rate_state: dict[str, float] = {}
 class ExcelEstimateRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    include_roi: bool = Field(True, description="Include ROI sheet")
+    include_value_estimate: bool = Field(
+        True,
+        description="Include value-estimate sheet",
+        validation_alias=AliasChoices("include_value_estimate", "include_roi"),
+    )
     include_calendar: bool = Field(True, description="Include 12-month deadline calendar")
     note: str | None = Field(None, max_length=500)
 
@@ -156,7 +160,7 @@ def _render_xlsx(
     program_id: str,
     substrate: dict[str, Any],
     *,
-    include_roi: bool,
+    include_value_estimate: bool,
     include_calendar: bool,
     note: str | None,
 ) -> tuple[bytes, int]:
@@ -210,8 +214,8 @@ def _render_xlsx(
     s2.column_dimensions["B"].width = 18
     s2.column_dimensions["C"].width = 32
 
-    if include_roi:
-        s3 = wb.create_sheet("ROI")
+    if include_value_estimate:
+        s3 = wb.create_sheet("金額目安")
         s3.append(["指標", "値"])
         max_amt = p.get("max_amount_yen") or 0
         adoption_n = (substrate.get("adoption_stats") or {}).get("count", 0)
@@ -222,9 +226,9 @@ def _render_xlsx(
             est_own = int(max_amt * 0.5)
             s3.append(["推定 補助額 (50% 補助率)", est_grant])
             s3.append(["推定 自己負担額", est_own])
-            s3.append(["ROI (粗利5年回収前提)", f"{round(est_grant / max(est_own, 1), 2)}x"])
+            s3.append(["補助額 / 自己負担額", f"{round(est_grant / max(est_own, 1), 2)}x"])
         else:
-            s3.append(["注記", "上限額が未確定のため ROI 試算なし"])
+            s3.append(["注記", "上限額が未確定のため金額目安なし"])
         for cell in s3[1]:
             cell.fill = header_fill
             cell.font = header_font
@@ -344,7 +348,7 @@ async def application_estimate(
     blob, sheet_count = _render_xlsx(
         program_id,
         substrate,
-        include_roi=body.include_roi,
+        include_value_estimate=body.include_value_estimate,
         include_calendar=body.include_calendar,
         note=body.note,
     )

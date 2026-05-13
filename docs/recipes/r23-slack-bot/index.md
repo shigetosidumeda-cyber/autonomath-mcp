@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 社内 Slack workspace を持つ士業事務所 (税理士 / 行政書士 / 中小企業診断士)、補助金 SaaS スタートアップ、信用金庫 / 商工会 / 商工会議所の渉外担当部、コンサル会社、地銀の中小企業支援部、で「補助金 watch」「適格事業者 alert」「行政処分 watch」channel を作り、顧問先 / 取引先 / 会員企業 50-500 社の差分通知を毎朝 9 時 (or 任意 cadence) に配信する運用。Slack 内で URL クリックで一次資料へ遷移、bot reply で詳細問合せも可能化。GitHub Actions / Fly cron / n8n / Cloud Functions の cron 経由で `chat.postMessage` を呼ぶ構成。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - Slack workspace
 - Slack App 作成権限 + Bot token (`xoxb-...`)
 - 配信先 channel (`#grant-watch` 等) + bot を channel に invite 済

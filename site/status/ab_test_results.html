@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>A/B Test Results - jpcite</title>
-<meta name="description" content="jpcite の A/B test infrastructure 結果。CF Pages Function ab_assign.ts による cookie bucket 割当 + Stripe webhook conversion trace。95% 信頼 two-proportion z-test 結果を集約。">
-<meta name="robots" content="index, follow">
+<meta name="description" content="jpcite の A/B test aggregate 結果。公開 assignment と集計済み completion events から 95% 信頼 two-proportion z-test 結果を表示。">
+<meta name="robots" content="noindex,nofollow">
 <link rel="canonical" href="https://jpcite.com/status/ab_test_results.html">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/status/ab_test_results.html">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/ab_test_results.html">
@@ -77,8 +77,8 @@
 
   <h1>A/B Test Results</h1>
   <p class="lead">
-    CF Pages Function <code>/ab/assign</code> による cookie bucket 割当 +
-    Stripe webhook の <code>POST /ab/conversion</code> trace で集約した
+    公開 assignment endpoint による cookie group 割当と
+    集計済み completion events から算出した
     95% 信頼 two-proportion z-test の結果です。
     cookie <code>jpcite_ab_bucket</code> は 30 日永続。
     underpowered (n &lt; 30) は黄色表示で慎重に扱ってください。
@@ -87,7 +87,7 @@
 
   <section class="section">
     <h2>Active tests</h2>
-    <p class="sub">各 test の (バケット A vs B) conversion rate と p-value。winner=&quot;none&quot; は 95% 信頼で差がない、または underpowered。</p>
+    <p class="sub">各 test の (バケット A vs B) completion rate と p-value。winner=&quot;none&quot; は 95% 信頼で差がない、または underpowered。</p>
     <table>
       <thead>
         <tr>
@@ -107,13 +107,13 @@
   </section>
 
   <section class="section">
-    <h2>Operator how-to</h2>
-    <p class="sub">新しい A/B テストを追加する手順 (solo + zero-touch ops)</p>
+    <h2>Public process</h2>
+    <p class="sub">新しい A/B テストを追加する公開運用手順</p>
     <ol style="font-size: 13px; line-height: 1.8;">
-      <li><code>functions/ab_assign.ts</code> の <code>KNOWN_TESTS</code> に test_id を追加 (例: <code>"hero_v2"</code>)。</li>
-      <li>landing ページ側で <code>fetch('/ab/assign?test=hero_v2')</code> し、返却 bucket で variant を出し分け。</li>
-      <li>Stripe webhook で <code>POST /ab/conversion</code> に <code>{ test_id, event, value }</code> を送る (cookie は自動)。</li>
-      <li><code>scripts/ops/ab_test_results.py</code> を cron で毎日実行 (本ページが自動更新)。</li>
+      <li>公開 assignment endpoint に対象 test_id を登録します。</li>
+      <li>公開ページ側で割当結果を読み、返却 group で variant を出し分けます。</li>
+      <li>completion event を集計し、公開結果 JSON に反映します。</li>
+      <li>集計済みの公開結果 JSON を毎日更新し、本ページに反映します。</li>
       <li>95% 信頼で winner が出たら旧 variant をリポジトリから削除し、新 variant 一本化。</li>
     </ol>
   </section>
@@ -124,8 +124,8 @@
     <table>
       <tbody>
         <tr><td>aggregated results</td><td><code>/status/ab_test_results.json</code></td></tr>
-        <tr><td>warehouse (raw events)</td><td><code>analytics/ab_conversions/*.jsonl</code> (operator-only)</td></tr>
-        <tr><td>CF Pages Function</td><td><code>/ab/assign</code> · <code>/ab/conversion</code></td></tr>
+        <tr><td>event source</td><td>aggregated completion events</td></tr>
+        <tr><td>assignment</td><td>public assignment endpoint</td></tr>
       </tbody>
     </table>
   </section>
@@ -140,7 +140,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite A/B test results (95% confidence z-test)",
-  "description": "Conversion-rate two-proportion z-test results for active A/B tests on jpcite. Updated daily. Cookie-based bucket assignment via CF Pages Function ab_assign.ts; Stripe webhook drives conversion events.",
+  "description": "Completion-rate two-proportion z-test results for active A/B tests on jpcite. Updated daily from aggregated public assignment and completion events.",
   "url": "https://jpcite.com/status/ab_test_results.html",
   "license": "https://creativecommons.org/licenses/by/4.0/",
   "publisher": {
@@ -152,7 +152,7 @@
   "distribution": [
     {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://jpcite.com/status/ab_test_results.json"}
   ],
-  "keywords": ["ab test", "conversion rate", "two-proportion z-test", "jpcite", "experimentation"]
+  "keywords": ["ab test", "completion rate", "two-proportion z-test", "jpcite", "experimentation"]
 }
 </script>
 

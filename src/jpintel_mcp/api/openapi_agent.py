@@ -1192,6 +1192,7 @@ def build_agent_openapi_schema(full_schema: dict[str, Any]) -> dict[str, Any]:
     schema["security"] = []
     info = schema.setdefault("info", {})
     info["title"] = "jpcite Agent Evidence API"
+    info.pop("contact", None)
     description = (
         "Agent-safe OpenAPI subset for evidence prefetch before answer "
         "generation. jpcite returns source-linked facts, source_url, "

@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 銀行 / 信用金庫 / 監査法人 / 大手会計事務所 / 商工会連合会 / 損害保険会社 / 大手企業のコンプライアンス部署で、対象業種 (建設 / 金融 / 食品衛生 / 産廃 / 運送 / 介護 / 医療等) の行政処分 (営業停止 / 業務改善命令 / 是正勧告 / 免許取消) を RSS feed + Slack channel 配信で常時監視する用途。リスク早期把握 (融資審査の与信再評価 / 監査契約の独立性影響 / 取引先の信用毀損リスク) を目的とし、専任の 1 担当が毎日 5 分以内に新規処分を縦覧できる運用を設計する。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - RSS reader (Feedly / Inoreader / Slack RSS app / Microsoft Teams RSS connector 等)
 - 監視業種フィルタ (JSIC 中分類 or キーワード)
 - (任意) Slack workspace + RSS app installed

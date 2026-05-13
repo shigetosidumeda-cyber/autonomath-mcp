@@ -6,7 +6,10 @@
 #   2. R2 bootstrap: download autonomath.db if missing/SHA mismatch.
 #   3. Run migrate.py (idempotent migrations on jpintel.db).
 #   4. Run schema_guard.py and autonomath self-heal migrations.
-#   5. exec CMD.
+#   5. [optional, R3 P1-5] Background warmup the semantic-search v2
+#      cross-encoder reranker so the first real /v1/search/semantic
+#      request lands on a warm HF cache.
+#   6. exec CMD.
 # ------------------------------------------------------------------
 set -euo pipefail
 
@@ -738,6 +741,37 @@ else
   log "[W48.x402] seed_x402_endpoints.py absent — skipping x402 prod seed (dev build?)"
 fi
 
-# 5. Hand off to CMD.
+# 5. R3 P1-5: optional semantic-search v2 cross-encoder warmup (non-blocking).
+#
+# The cross-encoder reranker used by POST /v1/search/semantic has a cold-load
+# timeout (RERANKER_COLD_LOAD_TIMEOUT_MS default 2000 ms). On a freshly-booted
+# machine where the HF cache or torch kernel weights are not yet resident,
+# the first call can exceed this budget — tripping the circuit and forcing
+# the first real request to fall back to RRF-only order.
+#
+# This optional warmup primes the cache *before* CMD takes over by loading
+# the model and running a single dummy `.predict([("warmup", "warmup")])`.
+# It is intentionally:
+#   - Best-effort: failures (missing model, no cache dir, sentence_transformers
+#     absent) log a notice but do NOT fail boot. The runtime circuit-breaker
+#     still gracefully degrades to RRF order if the cold load is slow.
+#   - Backgrounded: we do NOT block CMD on warmup. Fly's 60s grace window must
+#     stay reserved for the API listening on its port.
+#   - Opt-out: set SEMANTIC_RERANKER_WARMUP=0 to skip entirely.
+#
+# Per `feedback_no_quick_check_on_huge_sqlite`: warmup must not be on the
+# critical boot path — the API must come up first.
+if [ "${SEMANTIC_RERANKER_WARMUP:-1}" = "1" ] && [ -f /app/scripts/ops/warmup_semantic_reranker.py ]; then
+  log "[R3-P1-5] launching background semantic-search reranker warmup"
+  (
+    python /app/scripts/ops/warmup_semantic_reranker.py 2>&1 \
+      | sed 's/^/[entrypoint:warmup] /' \
+      || true
+  ) &
+else
+  log "[R3-P1-5] semantic-search reranker warmup skipped (SEMANTIC_RERANKER_WARMUP=${SEMANTIC_RERANKER_WARMUP:-1} or script missing)"
+fi
+
+# 6. Hand off to CMD.
 log "starting server: $*"
 exec "$@"

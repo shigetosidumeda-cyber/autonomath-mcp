@@ -30,8 +30,6 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script type="application/ld+json">
@@ -64,8 +62,7 @@
     }
   ],
   "sameAs": [
-    "https://www.bookyou.net/",
-    "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
+    "https://www.bookyou.net/"
   ]
 }
 </script>
@@ -120,7 +117,7 @@
       "name": "バグ報告 / 機能要望はどこに送ればいいですか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "GitHub Issues (https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues) もしくは info@bookyou.net まで。 セキュリティに関する報告のみ非公開でお願いします (詳細は SECURITY.md)。"
+        "text": "info@bookyou.net までお送りください。 セキュリティに関する報告のみ非公開でお願いします (詳細は security/)。"
       }
     },
     {
@@ -237,7 +234,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -280,11 +277,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -343,8 +340,8 @@
 
  <h1>サポート</h1>
  <p class="lead">
- jpcite はセルフサービス中心の API / MCP サービスです。
- サポートは下記 4 経路 (FAQ / メール / GitHub Issues / Status) で受け付けています。
+	 jpcite はセルフサービス中心の API / MCP サービスです。
+	 サポートは下記 4 経路 (FAQ / メール / 稼働状況 / ドキュメント) で受け付けています。
  個別導入会議、専用チャット、個別契約交渉は提供していません。法人購買・法的方針は <a href="trust/purchasing.html">法人購買</a> と <a href="legal-fence.html">法的姿勢</a> に公開しています。
  </p>
 
@@ -360,14 +357,14 @@
  <p>障害情報・メンテナンス予定はそのページに更新します。</p>
  </div>
  <div class="card">
- <h3>Issue tracker</h3>
- <p>バグ・機能要望: <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues" rel="noopener">GitHub Issues</a></p>
+	 <h3>バグ報告・機能要望</h3>
+	 <p>バグ・機能要望: <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
  <p>セキュリティ報告のみ非公開で <a href="security/">security/</a> 経由でお願いします。</p>
  </div>
  <div class="card">
  <h3>ドキュメント</h3>
  <p><a href="/docs/getting-started/">5 分クイックスタート</a></p>
- <p><a href="/docs/cookbook/">Cookbook (12 レシピ)</a></p>
+	 <p><a href="/docs/prompt_cookbook/">Cookbook (12 レシピ)</a></p>
  <p><a href="/docs/api-reference/">API リファレンス</a></p>
  </div>
  </div>
@@ -441,7 +438,7 @@
  <details>
  <summary>電話 / Slack Connect / Zoom サポートは利用できますか?</summary>
  <p>
- 提供していません。サポートはメール (<a href="mailto:info@bookyou.net">info@bookyou.net</a>) と <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp/issues" rel="noopener">GitHub Issues</a> に限定しています。
+	 提供していません。サポートはメール (<a href="mailto:info@bookyou.net">info@bookyou.net</a>) に限定しています。
  個別導入会議、専用チャット、個別契約交渉は受け付けていません。
  法人購買・法的方針は <a href="trust/purchasing.html">法人購買</a> と <a href="legal-fence.html">法的姿勢</a> をご覧ください。
  </p>

@@ -307,7 +307,7 @@ def test_workflow_yaml_syntax() -> None:
     on_key = True if True in doc else "on"
     assert on_key in doc
     schedule = doc[on_key]["schedule"]
-    assert any(item.get("cron") == "0 21 * * *" for item in schedule)
+    assert any(item.get("cron") == "52 21 * * *" for item in schedule)
     assert "aggregate" in doc["jobs"]
     assert "on-failure" in doc["jobs"]
 

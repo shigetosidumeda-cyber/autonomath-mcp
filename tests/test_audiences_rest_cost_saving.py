@@ -19,6 +19,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parent.parent
 AUDIENCES_DIR = REPO_ROOT / "site" / "audiences"
 CANONICAL_DOC = REPO_ROOT / "docs" / "canonical" / "cost_saving_examples.md"
+STYLES_SRC = REPO_ROOT / "site" / "styles.src.css"
 
 # 14 pages this tick covers (excluding tick#3 landed: cpa_firm, shindanshi, ma_advisor)
 TICK4_PAGES = [
@@ -91,6 +92,13 @@ def pages() -> dict[str, str]:
     return result
 
 
+@pytest.fixture(scope="module")
+def styles_src() -> str:
+    """Load source CSS where site-wide color variables are maintained."""
+    assert STYLES_SRC.exists(), f"styles source missing: {STYLES_SRC}"
+    return STYLES_SRC.read_text(encoding="utf-8")
+
+
 def test_canonical_doc_exists(canonical_text: str) -> None:
     assert "jpcite Cost Saving Examples" in canonical_text
     assert "¥3/billable unit" in canonical_text
@@ -137,6 +145,58 @@ def test_page_expected_saving_in_body(pages: dict[str, str], name: str) -> None:
     expected = EXPECTED_SAVINGS[name]
     formatted = f"¥{expected:,}"
     assert formatted in body, f"{name}: expected {formatted} in body"
+
+
+def test_index_cost_saving_explanation_is_readable(pages: dict[str, str]) -> None:
+    """audiences/index.html must explain the average cost-saving table plainly.
+
+    This guards the short baseline note and caveat copy, not the numeric table
+    already covered by test_page_expected_saving_in_body.
+    """
+    body = pages["index.html"]
+    start = body.find('aria-labelledby="cost-title"')
+    end = body.find("</section>", start)
+    assert start != -1 and end != -1, "index.html: cost-saving section missing"
+    section = body[start:end]
+
+    required_phrases = [
+        "baseline 注記",
+        "API token 代だけではなく",
+        "汎用 LLM 回答を一次 URL で確認し",
+        "根拠を整える人間の確認工数込み",
+        "算出式は <strong>工数 × 時給</strong>",
+        "jpcite は <strong>req 数 × ¥3</strong>",
+        "token + web search の API 料金だけで比較した低い試算",
+        "推定値",
+        "実 case は工数 / hourly rate / req 数で変動する",
+        "API token-only baseline は 2026-05-12 時点",
+        "誇大広告意図なし",
+    ]
+    for phrase in required_phrases:
+        assert phrase in section, f"index.html: missing readable explanation phrase: {phrase}"
+
+
+def test_index_cost_saving_uses_bg_subtle_token(pages: dict[str, str]) -> None:
+    """The index cost-saving table should use --bg-subtle instead of hardcoding
+    only a light-mode table background."""
+    body = pages["index.html"]
+    start = body.find('aria-labelledby="cost-title"')
+    end = body.find("</section>", start)
+    assert start != -1 and end != -1, "index.html: cost-saving section missing"
+    section = body[start:end]
+    assert "var(--bg-subtle,#fafafa)" in section
+
+
+def test_bg_subtle_has_dark_mode_variable(styles_src: str) -> None:
+    """--bg-subtle must have both light and dark definitions in source CSS."""
+    assert re.search(r":root\s*\{[^}]*--bg-subtle:\s*#fafafa;", styles_src, re.S)
+    dark_media = re.search(
+        r"@media\s*\(\s*prefers-color-scheme:\s*dark\s*\)\s*\{(?P<body>.*?)\n\s*\}",
+        styles_src,
+        re.S,
+    )
+    assert dark_media, "styles.src.css: missing dark-mode media block"
+    assert "--bg-subtle: #161b22;" in dark_media.group("body")
 
 
 @pytest.mark.parametrize("name", TICK4_PAGES)

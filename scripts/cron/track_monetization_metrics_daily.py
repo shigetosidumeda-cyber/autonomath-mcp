@@ -355,10 +355,29 @@ def _write_jsonl(metrics: dict[str, Any]) -> None:
         fh.write(json.dumps(metrics, ensure_ascii=False) + "\n")
 
 
+PUBLIC_SIDECAR_KEYS = (
+    "captured_at",
+    "arc_rows",
+    "agent_retention_d30",
+    "ttfp_seconds",
+    "spending_variance_p90_p50",
+    "ai_mention_share",
+    "justification_strength",
+    "anti_pattern_violations",
+)
+
+
+def _public_sidecar_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
+    public = {key: metrics.get(key) for key in PUBLIC_SIDECAR_KEYS if key in metrics}
+    public["notes"] = "public-operations-summary"
+    return public
+
+
 def _write_sidecar(metrics: dict[str, Any]) -> None:
     SITE_STATUS.mkdir(parents=True, exist_ok=True)
     # Sidecar carries history of last 30 days for the static dashboard to
-    # render sparklines. Read existing file, append today's, trim.
+    # render sparklines. The public sidecar intentionally omits revenue,
+    # cost, experiment, and customer-proxy metrics.
     history: list[dict[str, Any]] = []
     if SIDECAR.exists():
         try:
@@ -367,11 +386,13 @@ def _write_sidecar(metrics: dict[str, Any]) -> None:
                 history = existing.get("history", [])
         except (json.JSONDecodeError, OSError):
             history = []
-    history.append(metrics)
+    public_metrics = _public_sidecar_metrics(metrics)
+    history = [_public_sidecar_metrics(row) for row in history if isinstance(row, dict)]
+    history.append(public_metrics)
     history = history[-30:]
     SIDECAR.write_text(
         json.dumps(
-            {"generated_at": _now_iso(), "latest": metrics, "history": history},
+            {"generated_at": _now_iso(), "latest": public_metrics, "history": history},
             ensure_ascii=False,
             indent=2,
         ),

@@ -30,8 +30,6 @@
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="stylesheet" href="../styles.css?v=20260428a">
 
@@ -87,7 +85,7 @@
   "mainEntity": [
     {"@type": "Question", "name": "商業登記書類を jpcite が作成してくれますか?", "acceptedAnswer": {"@type": "Answer", "text": "いいえ。jpcite は事実検索のみで、書類は一切作成しません。登記申請書類の作成・提出は司法書士法 §3 司法書士独占業務であり、有資格者の専権事項です。jpcite は商業登記情報・enforcement 履歴・jurisdiction 不一致等の事実 surface と一次 URL 提供に留まります。"}},
     {"@type": "Question", "name": "成年後見業務支援は可能ですか?", "acceptedAnswer": {"@type": "Answer", "text": "成年後見・任意後見・関連補助金等の制度情報の検索と一次 URL 引用は可能です。後見人選任申立書面の作成や後見人候補者の判断は jpcite では一切行いません。司法書士本人の業務範囲です。"}},
-    {"@type": "Question", "name": "反社チェックの代替になりますか?", "acceptedAnswer": {"@type": "Answer", "text": "法人の行政処分履歴 (am_enforcement_detail の fine / grant_refund / subsidy_exclude) の事実検索は可能ですが、個人信用情報や反社データベースは一切扱いません (APPI 配慮)。反社チェック相当の判断は司法書士本人が責任を持って行ってください。"}},
+    {"@type": "Question", "name": "反社チェックの代替になりますか?", "acceptedAnswer": {"@type": "Answer", "text": "法人の行政処分履歴や補助金除外情報の事実検索は可能ですが、個人信用情報や反社データベースは一切扱いません (APPI 配慮)。反社チェック相当の判断は司法書士本人が責任を持って行ってください。"}},
     {"@type": "Question", "name": "pricing は?", "acceptedAnswer": {"@type": "Answer", "text": "¥3 / 課金単位 完全従量 (税込 ¥3.30)。anonymous は IP ベースで 3 req/日 free、JST 翌日 00:00 リセット。tier・seat・年間最低額は一切ありません。"}},
     {"@type": "Question", "name": "他の sensitive cohort (税理士・公認会計士・補助金 consultant) との違いは?", "acceptedAnswer": {"@type": "Answer", "text": "各 cohort 専用の persona prompt と tool routing が分かれています。司法書士向けは登記・供託・簡裁訴訟代理 (司法書士法 §3) を fence、税理士向けは税務代理・税務相談 (税理士法 §52) を fence、公認会計士向けは監査・会計参与 (公認会計士法 §47条の2) を fence、補助金 consultant 向けは行政書士法 §1 業務範囲を fence します。"}}
   ]
@@ -102,7 +100,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -145,11 +143,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -241,14 +239,14 @@ check_enforcement_am({"houjin_bangou": "1234567890123"})</code></pre>
  <h3>2. 不動産登記前 cross_check_jurisdiction</h3>
  <p>本店 (法務局) vs 営業所 (NTA invoice) vs 不動産所在地 の 3 軸不一致検出、登記申請先確定手前の sanity check。</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>example query</strong>: 「法人 X の本店 vs 営業所 vs 不動産所在地 jurisdiction 確認」</p>
- <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>cross_check_jurisdiction</code> (Wave 22)</p>
+ <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>cross_check_jurisdiction</code></p>
  <pre style="background:var(--bg-code,#f5f5f5);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3)
 cross_check_jurisdiction({"houjin_bangou": "1234567890123"})</code></pre>
  </article>
 
  <article class="use-case" style="margin-bottom:32px;padding:20px;border:1px solid var(--border);border-radius:8px;">
  <h3>3. 簡裁訴訟代理前 法人実態 verify</h3>
- <p>相手方 (140 万円以下) の与信・反社相当・倒産 signal (am_amendment_snapshot 受給途絶) を時系列で確認。訴額判定と代理可否は司法書士本人判断。</p>
+ <p>相手方 (140 万円以下) の公開情報、行政処分、補助金除外情報などを時系列で確認。訴額判定と代理可否は司法書士本人判断。</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>example query</strong>: 「法人 X の 直近 与信 + 倒産 risk + 反社チェック 相当」</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>shihoshoshi_dd_pack_am</code> (新 tool)</p>
  <pre style="background:var(--bg-code,#f5f5f5);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3)
@@ -312,7 +310,7 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
 
  <details style="margin-bottom:12px;padding:16px;border:1px solid var(--border);border-radius:6px;">
  <summary style="font-weight:600;cursor:pointer;">Q3. 反社チェックの代替になりますか?</summary>
- <p style="margin-top:12px;line-height:1.8;">法人の行政処分履歴 (<code>am_enforcement_detail</code> の fine / grant_refund / subsidy_exclude) の事実検索は可能ですが、個人信用情報や反社データベースは一切扱いません (APPI 配慮)。反社チェック相当の判断は司法書士本人が責任を持って行ってください。</p>
+ <p style="margin-top:12px;line-height:1.8;">法人の行政処分履歴や補助金除外情報の事実検索は可能ですが、個人信用情報や反社データベースは一切扱いません (APPI 配慮)。反社チェック相当の判断は司法書士本人が責任を持って行ってください。</p>
  </details>
 
  <details style="margin-bottom:12px;padding:16px;border:1px solid var(--border);border-radius:6px;">
@@ -347,8 +345,8 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
 
  <section class="features" aria-labelledby="cost-title">
  <div class="container">
- <h2 id="cost-title" style="margin-bottom:16px;">1 件あたりの cost saving (純 LLM vs jpcite ¥3/req)</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 司法書士 / 商業登記 1 件 想定。 「純 LLM」は外部公的記録なしの汎用 LLM で hallucination 裏取り + houjin 360° 手動探索 + jurisdiction cross-check まで含めた工数 (士業時給 ¥10,000/h)。 詳細は <a href="../../docs/canonical/cost_saving_examples.md">canonical cost saving examples</a>。</p>
+ <h2 id="cost-title" style="margin-bottom:16px;">1 件あたりの cost saving (純 LLM vs jpcite ¥3/billable unit)</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: 司法書士 / 商業登記 1 件 想定。 「純 LLM」は外部公的記録なしの汎用 LLM で hallucination 裏取り + houjin 360° 手動探索 + jurisdiction cross-check まで含めた工数 (士業時給 ¥10,000/h)。 詳細は <a href="/tools/cost_saving_examples.md">canonical cost saving examples</a>。</p>
  <div style="overflow-x:auto;">
  <table style="width:100%;border-collapse:collapse;font-size:14px;">
  <thead>

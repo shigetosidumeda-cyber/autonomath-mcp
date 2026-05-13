@@ -1464,13 +1464,11 @@ class TemplateRenderResponse(BaseModel):
 
 
 class DeepHealthResponse(BaseModel):
-    """``GET /v1/am/health/deep`` — 10-check aggregate + Sentry probe.
+    """Service health summary for availability monitoring.
 
-    ``sentry_active`` (read-only) reflects whether ``_init_sentry`` succeeded
-    at lifespan startup. False when Sentry is not configured or the production
-    runtime gate was not satisfied. Aggregate ``status`` is
-    intentionally unaffected because error reporting availability is
-    separate from data/API health.
+    ``sentry_active`` reports whether error monitoring was initialized at API
+    startup. Aggregate ``status`` is intentionally unaffected because error
+    reporting availability is separate from data/API health.
     """
 
     model_config = _ALLOW_EXTRA

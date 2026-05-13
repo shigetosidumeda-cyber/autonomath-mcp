@@ -125,6 +125,20 @@
 254_law_guideline.sql
 262_fact_signature_v2.sql
 
+# 2026-05-12 Wave 46.B — jpcite brand alias view layer (jc_* over am_*).
+# 135 read-only CREATE VIEW IF NOT EXISTS jc_<name> AS SELECT * FROM
+# am_<name>. Non-destructive: am_* tables remain SOT, jc_* are query-time
+# aliases for gradual rename of operator/ETL/REST/MCP code. FTS5/vec0
+# virtual tables excluded (cannot wrap with a plain view without losing
+# MATCH/vec_search capability). Pure additive (CREATE VIEW IF NOT EXISTS
+# only); boot-time safe; idempotent on every boot. Re-enabled 2026-05-13
+# after E10 finding: first-line `-- target_db: autonomath` header added
+# to 269_create_jpcite_views.sql so entrypoint.sh §4 head-1 grep accepts
+# the file for autonomath self-heal. Acceptance suite tests/test_jpcite_
+# views.py (9 cases) + tests/test_migration_header_consistency.py (this
+# audit's CI gate) cover the regression surface.
+269_create_jpcite_views.sql
+
 # 2026-05-12 Wave 47 — Dim K (rule_tree_branching) storage layer.
 # am_rule_trees (catalogue, versioned tree definitions) + am_rule_tree_eval_log
 # (audit trail, input_hash + result_path) + v_rule_trees_latest helper view.
@@ -372,3 +386,27 @@
 # additive (CREATE TABLE/INDEX/VIEW IF NOT EXISTS); boot-time safe;
 # idempotent on every boot.
 283_ax_layer3.sql
+
+# 2026-05-12 Wave 49 tick#7 — Dim N Phase 1 k=10 strict parallel view.
+# Adds v_anon_cohort_outcomes_k10_strict on top of the existing
+# am_aggregated_outcome_view (mig 274 substrate, k=5 floor preserved).
+# Destruction-free by construction: the k=5 view v_anon_cohort_outcomes_
+# latest from mig 274 is NEVER dropped, altered, or relaxed; routers
+# opting into stricter privacy read the new k=10 view, legacy callers
+# continue to read the k=5 view unchanged. Pure additive (CREATE VIEW
+# IF NOT EXISTS only; no DROP/DELETE/ALTER on existing objects). NO LLM
+# SDK; pure SQLite. boot-time safe; idempotent on every boot. Without
+# this manifest entry, entrypoint.sh schema_guard ignores 288 even
+# though the SQL file is present (PR #189 merged into main as
+# e59486eb), preventing the strict view from being materialized in
+# prod — this hot-fix unblocks that path.
+288_dim_n_k10_strict.sql
+
+# 2026-05-13 Wave 46 dim 19 D-final — audit_workpaper v2 cache substrate.
+# Adds am_audit_workpaper (per houjin_bangou + fiscal_year denormalized
+# deterministic workpaper snapshot) and am_audit_workpaper_run_log for
+# scripts/etl/build_audit_workpaper_v2.py. Pure additive
+# (CREATE TABLE/INDEX IF NOT EXISTS); boot-time safe; idempotent on every
+# boot. NO LLM SDK/API; cache is populated by deterministic SQLite
+# projection and preserves live REST/MCP compose billing behavior.
+289_audit_workpaper_v2.sql

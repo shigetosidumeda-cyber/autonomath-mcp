@@ -5,8 +5,8 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>ステータス / Status — jpcite</title>
-<meta name="description" content="jpcite のリアルタイム稼働状況。API、ランディング、MCP サーバ、DB、Stripe 決済の現在の状態を表示します。">
-<meta name="robots" content="index, follow">
+<meta name="description" content="jpcite の公開稼働状況。API、サイト、MCP、billing、data freshness の粗い状態を表示します。">
+<meta name="robots" content="noindex,nofollow">
 <link rel="canonical" href="https://jpcite.com/status/">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/status/">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/">
@@ -310,7 +310,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -353,11 +353,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -422,15 +422,15 @@
 
  <h1>jpcite ステータス / jpcite Status</h1>
  <p class="lead">
- 現在の稼働状況をブラウザから直接 API ヘルスチェックを呼び出して表示しています。30 秒ごとに自動更新。<br>
- Live status — this page calls the API health endpoint directly from your browser. Auto-refreshes every 30 seconds.
+ 公開用に redacted した status snapshot を表示しています。30 秒ごとに自動更新。<br>
+ Public status snapshot — this page reads the redacted status JSON. Auto-refreshes every 30 seconds.
  </p>
 
  <section class="overall" id="overall" aria-live="polite" aria-atomic="true">
  <span class="dot" aria-hidden="true"></span>
  <div>
  <p class="label" id="overall-label">確認中… / Checking…</p>
- <p class="meta" id="overall-meta">API ヘルスチェックを実行中です。 / Probing the API health endpoint.</p>
+ <p class="meta" id="overall-meta">公開 status snapshot を確認中です。 / Reading the public status snapshot.</p>
  </div>
  </section>
 
@@ -482,17 +482,17 @@
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
- <tr id="row-db-programs" data-key="programs_data_store">
+ <tr id="row-db-programs" data-key="program-corpus">
  <td>Programs data</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
- <tr id="row-db-am" data-key="entity_data_store">
+ <tr id="row-db-am" data-key="entity-corpus">
  <td>Entity data</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
- <tr id="row-freshness" data-key="am_entities_freshness">
+ <tr id="row-freshness" data-key="data-freshness">
  <td>データ鮮度 / Data freshness</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
@@ -502,12 +502,12 @@
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
- <tr id="row-wal" data-key="wal_mode">
- <td>SQLite 書込ログモード</td>
+ <tr id="row-wal" data-key="write-health">
+ <td>書込経路 / Write path</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  </tr>
- <tr id="row-static" data-key="static_files_present">
+ <tr id="row-static" data-key="static-resources">
  <td>静的リソース / Static files</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
@@ -522,7 +522,7 @@
 
  <h2>5-component スナップショット / 5-component snapshot</h2>
  <p class="lead" style="margin-top:-4px;">
- <code>scripts/ops/status_probe.py</code> が 5 分 cron で焼いた静的 JSON
+ 自動プローブが定期更新した静的 JSON
  (<a href="/status/status.json"><code>/status/status.json</code></a>) と
  SVG バッジ (<a href="/status/badge.svg"><code>/status/badge.svg</code></a>) を表示します。
  </p>
@@ -537,31 +537,31 @@
  </thead>
  <tbody id="probe-components-body">
  <tr id="probe-row-api" data-key="api">
- <td>api (healthz + deep)</td>
+ <td>api</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  <td class="detail">—</td>
  </tr>
  <tr id="probe-row-mcp" data-key="mcp">
- <td>mcp (manifest + tools)</td>
+ <td>mcp</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  <td class="detail">—</td>
  </tr>
  <tr id="probe-row-billing" data-key="billing">
- <td>billing (Stripe 24h)</td>
+ <td>billing</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  <td class="detail">—</td>
  </tr>
  <tr id="probe-row-data-freshness" data-key="data-freshness">
- <td>data-freshness (4 dataset)</td>
+ <td>data-freshness</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  <td class="detail">—</td>
  </tr>
  <tr id="probe-row-dashboard" data-key="dashboard">
- <td>dashboard (#billing + magic-link)</td>
+ <td>dashboard</td>
  <td class="status-cell"><span class="swatch" aria-hidden="true"></span><span class="status-text">未確認</span></td>
  <td class="detail">—</td>
  <td class="detail">—</td>
@@ -569,7 +569,7 @@
  </tbody>
  </table>
  <p class="meta-row" id="probe-meta">
- <span>cron snapshot: <code id="probe-snapshot-at">—</code></span>
+ <span>status snapshot: <code id="probe-snapshot-at">—</code></span>
  <span>overall: <code id="probe-overall">—</code></span>
  <span><img src="/status/badge.svg" alt="status badge" id="probe-badge" style="vertical-align:middle;height:20px;border-radius:3px;" loading="lazy" decoding="async"></span>
  </p>
@@ -593,17 +593,15 @@
 
  <p class="honest-note">
  本ページの稼働率は契約上の SLA ではなく <em>best-effort</em> 運用上の目安です。
- 数値はリアルタイム実測 (本ページがブラウザから API を直接叩いて表示) のみで、過去の集計値はまだ表示していません。
- 将来的にインシデント履歴 / 24 時間稼働率 / RSS フィードを追加予定です。<br>
+ 数値は公開用に丸めた snapshot で、内部ヘルスチェックの詳細値は表示しません。<br>
  Uptime numbers shown here are best-effort operational measurements, not a contractual SLA.
- Values are live-probed (your browser calls the API directly); historical aggregates are not yet displayed.
- Planned: incident history, 24h uptime rollup, and RSS feed.
+ Values are redacted public snapshots; internal health details are not exposed here.
  </p>
 
  <p class="links">
  <a href="/">← ホームへ戻る / Back to home</a>
  <a href="/docs/sla/">SLA 方針 / SLA policy</a>
- <a href="https://api.jpcite.com/v1/am/health/deep" rel="noopener">生 JSON で取得 (詳細ヘルスチェック)</a>
+ <a href="/status/status.json">公開 status JSON / Public status JSON</a>
  </p>
 
 </main>
@@ -627,41 +625,15 @@
 <script>
 /*
  * Status page — vanilla JS, no dependencies.
- *
- * Probes:
- *   1. https://api.jpcite.com/v1/am/health/deep — REST + DB + freshness.
- *   2. PyPI JSON endpoint — MCP package liveness.
- *
- * Refresh cadence: 30s. Reload-on-visibility (avoids polling while the
- * tab is hidden — saves Fly bandwidth).
- *
- * Failure modes:
- *   - fetch() throws (network down / CORS reject) → mark API + DB rows as
- *     "down" with the thrown message in the detail column.
- *   - JSON parse fails → mark "warn" (the endpoint returned but with an
- *     unexpected shape). Treat shape-drift as a soft signal, not an outage.
- *   - PyPI 5xx → mark MCP indicator "warn" (registry transient blips
- *     should not flip the page red — the package is still installed
- *     locally for existing users).
- *
- * No external deps, no analytics, no eval(). CSP-safe (no inline event
- * handlers; everything wired via addEventListener after DOMContentLoaded).
+ * Reads the redacted public status snapshot only.
  */
 (function () {
   "use strict";
 
-  var API_HEALTH = "https://api.jpcite.com/v1/am/health/deep";
-  var PYPI_PROJECT = "https://pypi.org/pypi/autonomath-mcp/json";
-  // status.json は status-probe-cron.yml (5 分 cron) が焼く 5-component の
-  // 静的スナップショット。 ブラウザを開いた瞬間に「最後の cron 結果」が
-  // 表示でき、 そこから live probe で再描画する 2 段構成にしている。
-  // 初期表示までの latency が API ヘルスチェック分縮むので、 ぱっと開いて
-  // ぱっと閉じるオペレーション (status を眺めるだけのユーザー) でも
-  // 正しい値が読める。
   var STATUS_JSON = "/status/status.json";
   var REFRESH_MS = 30 * 1000;
 
-  // Map a deep-health subcheck status string to our 3-state label.
+  // Map a public status string to our 3-state label.
   function normStatus(s) {
     if (s === "ok") return "ok";
     if (s === "warn" || s === "degraded") return "warn";
@@ -731,148 +703,35 @@
     return "未確認";
   }
 
-  // Reset rows to pending while a refresh is in flight (UX: don't show stale).
+  function detailCategory(s) {
+    if (s === "ok") return "公開プローブ正常 / public probe ok";
+    if (s === "warn") return "公開プローブ限定運用 / public probe degraded";
+    if (s === "down") return "公開プローブ到達不可 / public probe unavailable";
+    return "未確認 / pending";
+  }
+
+  // Public-safe error category whitelist. The status snapshot may carry
+  // operator-internal category strings; this helper folds anything outside
+  // the coarse public whitelist into a generic "unavailable" label so that
+  // the live page never surfaces raw error strings, exception class names,
+  // or operator stack-trace fragments.
+  function publicErrorCategory(s) {
+    if (s === "timeout") return "応答超過 / timeout";
+    if (s === "network") return "ネットワーク到達不可 / network";
+    if (s === "external_dependency_unavailable") return "外部依存停止 / dependency";
+    if (s === "rate_limited") return "レート制限 / rate-limited";
+    if (s === "maintenance") return "計画停止 / maintenance";
+    if (!s) return "";
+    return "公開プローブ到達不可 / unavailable";
+  }
+
+  // Reset rows to pending while a refresh is in flight.
   function setPending() {
     paintIndicator("ind-api", "", "確認中…");
     paintIndicator("ind-mcp", "", "確認中…");
   }
 
-  function probeApi() {
-    return fetch(API_HEALTH, {
-      method: "GET",
-      mode: "cors",
-      credentials: "omit",
-      cache: "no-store",
-    }).then(function (r) {
-      if (!r.ok) {
-        return r.text().then(function (txt) {
-          throw new Error("HTTP " + r.status + " — " + (txt || "no body").slice(0, 120));
-        });
-      }
-      return r.json();
-    });
-  }
-
-  function probePypi() {
-    return fetch(PYPI_PROJECT, {
-      method: "GET",
-      mode: "cors",
-      credentials: "omit",
-      cache: "no-store",
-    }).then(function (r) {
-      if (!r.ok) throw new Error("HTTP " + r.status);
-      return r.json();
-    });
-  }
-
-  function applyApiResult(data) {
-    if (!data || typeof data !== "object" || !data.checks) {
-      paintIndicator("ind-api", "warn", "応答形状が想定外 / unexpected shape");
-      paintOverall("warn", "限定運用 / Degraded", "API は応答していますが、レスポンスが想定外です。");
-      paintRow("row-rest", "warn", "限定運用", "応答形状不明");
-      return;
-    }
-    var top = normStatus(data.status);
-    paintIndicator("ind-api", top, labelOf(top));
-    paintRow("row-rest", top, labelOfShort(top),
-      "version=" + (data.version || "?") + " · status=" + (data.status || "?"));
-
-    // Per-check rows.
-    var programsKey = ["db", "jp" + "intel", "reachable"].join("_");
-    var entityFactsKey = "db_entity_facts_reachable";
-    var legacyEntityFactsKey = ["db", "autonomath", "reachable"].join("_");
-    var keys = [programsKey, entityFactsKey,
-                "am_entities_freshness", "license_coverage",
-                "wal_mode", "static_files_present"];
-    var rowMap = {};
-    rowMap[programsKey] = "row-db-programs";
-    rowMap[entityFactsKey] = "row-db-am";
-    rowMap.am_entities_freshness = "row-freshness";
-    rowMap.license_coverage = "row-license";
-    rowMap.wal_mode = "row-wal";
-    rowMap.static_files_present = "row-static";
-    var anyDown = false, anyWarn = false;
-    for (var i = 0; i < keys.length; i++) {
-      var k = keys[i];
-      var c = data.checks[k];
-      if (!c && k === entityFactsKey) {
-        c = data.checks[legacyEntityFactsKey];
-      }
-      if (!c) {
-        paintRow(rowMap[k], "warn", "未報告", "deep-health に含まれない");
-        anyWarn = true;
-        continue;
-      }
-      var s = normStatus(c.status);
-      if (s === "down") anyDown = true;
-      if (s === "warn") anyWarn = true;
-      paintRow(rowMap[k], s, labelOfShort(s), c.details || "—");
-    }
-
-    // Stripe row stays as a fixed external pointer — we cannot probe Stripe
-    // from the browser without spending a cap-burning request, so we link out.
-    paintRow("row-stripe", "ok", "外部 / external", "外部依存 — stripestatus.com");
-
-    // Roll up the overall banner from per-check signals + top-level status.
-    var overallS = top;
-    if (anyDown) overallS = "down";
-    else if (anyWarn && top === "ok") overallS = "warn";
-    var ts = fmtTimestamp(data.evaluated_at_jst || data.timestamp_utc);
-    var msg;
-    if (overallS === "ok") {
-      msg = "全システム正常稼働中。 / All systems operational.";
-    } else if (overallS === "warn") {
-      msg = "一部の指標で軽微な逸脱があります。詳細はコンポーネント表をご確認ください。";
-    } else {
-      msg = "API またはバックエンドに障害があります。詳細はコンポーネント表をご確認ください。";
-    }
-    paintOverall(overallS, labelOf(overallS), msg + " (" + ts + ")");
-
-    var lc = document.getElementById("last-checked");
-    if (lc) lc.textContent = ts;
-    var av = document.getElementById("api-version");
-    if (av) av.textContent = data.version || "—";
-  }
-
-  function applyApiError(err) {
-    var msg = err && err.message ? err.message : String(err);
-    paintIndicator("ind-api", "down", "到達不能 / unreachable");
-    paintRow("row-rest", "down", "停止中", msg.slice(0, 200));
-    paintRow("row-db-programs", "down", "確認不可", "API 不到達");
-    paintRow("row-db-am", "down", "確認不可", "API 不到達");
-    paintRow("row-freshness", "down", "確認不可", "API 不到達");
-    paintRow("row-license", "down", "確認不可", "API 不到達");
-    paintRow("row-wal", "down", "確認不可", "API 不到達");
-    paintRow("row-static", "down", "確認不可", "API 不到達");
-    paintOverall("down", labelOf("down"),
-      "API ヘルスチェックに到達できませんでした (" + msg.slice(0, 120) + ")。");
-    var lc = document.getElementById("last-checked");
-    if (lc) lc.textContent = fmtTimestamp(new Date().toISOString());
-  }
-
-  function applyPypiResult(data) {
-    if (data && data.info && data.info.version) {
-      paintIndicator("ind-mcp", "ok",
-        "v" + data.info.version + " 公開済み / published");
-      paintRow("row-mcp", "ok", "運用中",
-        "jpcite MCP package v" + data.info.version + " published");
-    } else {
-      paintIndicator("ind-mcp", "warn", "応答が想定外");
-      paintRow("row-mcp", "warn", "限定運用", "PyPI レスポンス形状不明");
-    }
-  }
-
-  function applyPypiError(err) {
-    var msg = err && err.message ? err.message : String(err);
-    paintIndicator("ind-mcp", "warn", "PyPI 一時障害 / pypi blip");
-    paintRow("row-mcp", "warn", "限定運用", "PyPI: " + msg.slice(0, 160));
-  }
-
-  // --- 5-component cron snapshot wire ---------------------------------
-  //
-  // status_probe.py の出力 (site/status/status.json) を読み込み、 5 行の
-  // テーブルに描画する。 live probe (API_HEALTH) とは独立した経路で、
-  // cron が止まっても live 側が動いていれば overall は更新される。
+  // --- 5-component status snapshot wire --------------------------------
   function probeStatusJson() {
     return fetch(STATUS_JSON + "?_=" + Date.now(), {
       method: "GET",
@@ -889,6 +748,35 @@
     if (!snap || typeof snap !== "object" || !snap.components) {
       return;
     }
+    var apiStatus = snap.components.api && snap.components.api.status;
+    var mcpStatus = snap.components.mcp && snap.components.mcp.status;
+    paintIndicator("ind-api", normStatus(apiStatus), labelOf(normStatus(apiStatus)));
+    paintIndicator("ind-mcp", normStatus(mcpStatus), labelOf(normStatus(mcpStatus)));
+    paintRow("row-rest", normStatus(apiStatus), labelOfShort(normStatus(apiStatus)), detailCategory(normStatus(apiStatus)));
+    paintRow("row-mcp", normStatus(mcpStatus), labelOfShort(normStatus(mcpStatus)), detailCategory(normStatus(mcpStatus)));
+
+    var freshnessStatus = snap.components["data-freshness"] && snap.components["data-freshness"].status;
+    paintRow("row-db-programs", normStatus(freshnessStatus), labelOfShort(normStatus(freshnessStatus)), "public freshness snapshot");
+    paintRow("row-db-am", normStatus(freshnessStatus), labelOfShort(normStatus(freshnessStatus)), "public freshness snapshot");
+    paintRow("row-freshness", normStatus(freshnessStatus), labelOfShort(normStatus(freshnessStatus)), detailCategory(normStatus(freshnessStatus)));
+    paintRow("row-license", normStatus(freshnessStatus), labelOfShort(normStatus(freshnessStatus)), "public coverage snapshot");
+    paintRow("row-wal", "ok", "非公開", "internal check redacted");
+    paintRow("row-static", "ok", "運用中", "public static assets");
+    paintRow("row-stripe", normStatus(snap.components.billing && snap.components.billing.status), labelOfShort(normStatus(snap.components.billing && snap.components.billing.status)), "public billing snapshot");
+
+    var overallStatus = normStatus(snap.overall || snap.overall_status);
+    var ts = fmtTimestamp(snap.snapshot_at);
+    var msg = overallStatus === "ok"
+      ? "全システム正常稼働中。 / All systems operational."
+      : overallStatus === "warn"
+        ? "一部の公開指標で軽微な逸脱があります。"
+        : "一部の公開指標で障害が検出されています。";
+    paintOverall(overallStatus, labelOf(overallStatus), msg + " (" + ts + ")");
+    var lc = document.getElementById("last-checked");
+    if (lc) lc.textContent = ts;
+    var av = document.getElementById("api-version");
+    if (av) av.textContent = "public";
+
     var rowMap = {
       "api": "probe-row-api",
       "mcp": "probe-row-mcp",
@@ -910,17 +798,9 @@
       if (tds[0]) tds[0].textContent = (c.latency_ms != null) ? String(c.latency_ms) : "—";
       if (tds[1]) {
         var detail = [];
-        if (c.http) detail.push("http=" + c.http);
-        if (c.tools_count != null) detail.push("tools=" + c.tools_count + "/" + (c.tools_expected || "?"));
-        if (c.recurring_workflows != null) detail.push("workflows=" + c.recurring_workflows + "/" + (c.recurring_expected || "?"));
-        if (c.failed_events_24h != null) detail.push("failed_24h=" + c.failed_events_24h);
-        if (c.rate_5xx != null) detail.push("5xx=" + c.rate_5xx);
-        if (c.stub) detail.push("stub");
-        if (c.max_age_days != null) detail.push("max_age_d=" + c.max_age_days);
-        if (c.last_updated_at) detail.push("last_updated=" + c.last_updated_at);
-        if (c.has_billing_anchor != null) detail.push("billing_anchor=" + (c.has_billing_anchor ? "ok" : "miss"));
-        if (c.magic_link_ok != null) detail.push("magic_link=" + (c.magic_link_ok ? "ok" : "miss"));
-        if (c.error) detail.push("err=" + String(c.error).slice(0, 60));
+        detail.push(detailCategory(s));
+        var publicCat = publicErrorCategory(c.error_category);
+        if (publicCat) detail.push(publicCat);
         tds[1].textContent = detail.length ? detail.join(" · ") : "—";
       }
     });
@@ -935,13 +815,11 @@
 
   function applyStatusJsonError(_err) {
     var sa = document.getElementById("probe-snapshot-at");
-    if (sa) sa.textContent = "(cron 不到達)";
+    if (sa) sa.textContent = "(snapshot 不到達)";
   }
 
   function refreshAll() {
     setPending();
-    probeApi().then(applyApiResult).catch(applyApiError);
-    probePypi().then(applyPypiResult).catch(applyPypiError);
     probeStatusJson().then(applyStatusJson).catch(applyStatusJsonError);
   }
 

@@ -67,6 +67,7 @@ _log = logging.getLogger("jpcite.etl.build_explainable_fact_metadata")
 
 CHUNK_SIZE = 50_000  # 9.7 GB footgun — index-walk only
 DEFAULT_VERIFIED_BY = "etl_build_explainable_fact_metadata_v1"
+_COLUMN_CACHE: dict[tuple[str, str, str], bool] = {}
 
 
 def _resolve_db_path() -> str:
@@ -134,25 +135,44 @@ def _canonical_metadata_payload(
     ).encode("utf-8")
 
 
+def _has_column(conn: sqlite3.Connection, table: str, column: str) -> bool:
+    try:
+        db_key = conn.execute("PRAGMA database_list").fetchone()[2]
+    except (sqlite3.OperationalError, TypeError):
+        db_key = str(id(conn))
+    cache_key = (db_key or str(id(conn)), table, column)
+    if cache_key in _COLUMN_CACHE:
+        return _COLUMN_CACHE[cache_key]
+    try:
+        cols = conn.execute(f"PRAGMA table_info({table})").fetchall()
+    except sqlite3.OperationalError:
+        _COLUMN_CACHE[cache_key] = False
+        return False
+    found = any(row[1] == column for row in cols)
+    _COLUMN_CACHE[cache_key] = found
+    return found
+
+
 def _derive_source_doc(fact_id: str, conn: sqlite3.Connection) -> str | None:
     """Look up source_doc anchor for a fact_id.
 
-    Reads from ``am_entity_facts.source_id`` if available, else falls
-    back to the (am_source -> url) chain. Returns None if no anchor.
+    Reads the current EAV schema, where ``am_entity_facts.id`` is the
+    canonical metadata fact_id and source URL comes from the fact row or
+    its source row.
     """
     try:
         cur = conn.execute(
-            "SELECT source_id FROM am_entity_facts WHERE fact_id = ? LIMIT 1",
+            """
+            SELECT COALESCE(f.source_url, s.source_url)
+            FROM am_entity_facts f
+            LEFT JOIN am_source s ON s.id = f.source_id
+            WHERE CAST(f.id AS TEXT) = ?
+            LIMIT 1
+            """,
             (fact_id,),
         )
         row = cur.fetchone()
-        if not row or row[0] is None:
-            return None
-        cur = conn.execute(
-            "SELECT url FROM am_source WHERE source_id = ? LIMIT 1", (row[0],)
-        )
-        srow = cur.fetchone()
-        return srow[0] if srow else None
+        return row[0] if row else None
     except sqlite3.OperationalError:
         return None
 
@@ -160,13 +180,20 @@ def _derive_source_doc(fact_id: str, conn: sqlite3.Connection) -> str | None:
 def _derive_confidence(fact_id: str, conn: sqlite3.Connection) -> tuple[float | None, float | None]:
     """Confidence band (lower, upper) for a fact_id.
 
-    Reads from ``am_entity_facts.confidence`` (single point estimate).
-    Widens to ±0.05 to produce a non-zero band for the Dim O contract.
-    Returns (None, None) when no confidence column data is present.
+    Reads optional ``am_entity_facts.confidence`` when present. Widens to
+    ±0.05 to produce a non-zero band for the Dim O contract. Returns
+    (None, None) when the current schema has no confidence column.
     """
+    if not _has_column(conn, "am_entity_facts", "confidence"):
+        return (None, None)
     try:
         cur = conn.execute(
-            "SELECT confidence FROM am_entity_facts WHERE fact_id = ? LIMIT 1",
+            """
+            SELECT confidence
+            FROM am_entity_facts
+            WHERE CAST(id AS TEXT) = ?
+            LIMIT 1
+            """,
             (fact_id,),
         )
         row = cur.fetchone()

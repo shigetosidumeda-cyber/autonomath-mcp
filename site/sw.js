@@ -1,9 +1,9 @@
-/* jpcite Service Worker (Wave 19 §C5).
+/* jpcite Service Worker (service worker cache policy).
  *
  * Goal: keep llms.txt / llms-full.txt / openapi / mcp manifests + a small set
  * of key /docs/* pages reachable when the agent's network is flaky.
  *
- * Strategy:
+ * Cache policy:
  *   - Pre-cache the static-AI-discovery surface on install
  *   - Stale-while-revalidate for /docs/* pages
  *   - Network-only for /v1/* (API calls must not be served from cache)
@@ -16,8 +16,7 @@
  *
  * Agent benefit: a headless browser running Cline / Cursor / Claude Desktop /
  * Anthropic CLA can fetch llms.txt + key /docs/* from cache when the upstream
- * link is throttled or down. The 100% organic acquisition strategy means we
- * cannot afford to lose any agent fetch to a flaky uplink. */
+ * link is throttled or down. */
 
 const CACHE_VERSION = "jpcite-v19-2026-05-11";
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
@@ -167,7 +166,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 /* Optional message channel: pages can post {type: "PURGE"} to drop caches
- * (useful when the operator updates llms.txt mid-session). */
+ * after public discovery files are updated. */
 self.addEventListener("message", (event) => {
   if (!event.data || event.data.type !== "PURGE") return;
   event.waitUntil(

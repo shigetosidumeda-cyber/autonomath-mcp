@@ -1,4 +1,4 @@
-// dashboard.bundle.js — Wave 15 C7 external JS bundle for /dashboard.
+// dashboard.bundle.js — external dashboard JS bundle for /dashboard.
 // Loaded via <script src="/assets/dashboard.bundle.js" defer> from dashboard.html.
 // 5 IIFE blocks concatenated: (1) quickstart key-slot + copy buttons, (2) magic-link
 // login, (3) saved searches CRUD, (4) webhooks CRUD + delivery log, (5) dashboard v9

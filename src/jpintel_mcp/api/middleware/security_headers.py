@@ -69,19 +69,59 @@ if TYPE_CHECKING:
 
 # Frozen at import time; building the dict on every request would be
 # pure waste (these strings never change at runtime).
+#
+# 2026-05-13 A11 hardening pass (packet A11 in
+# docs/_internal/parallel_agent_task_matrix_2026-05-13.md):
+#
+# - Tightened CSP: added object-src 'none' (no Flash/Acrobat/Java embeds),
+#   form-action 'self' (form POSTs cannot be exfiltrated to evil.com),
+#   img-src 'self' data: (allow data URIs for inline SVG/PNG only),
+#   connect-src 'self' (XHR/fetch limited to api.jpcite.com),
+#   upgrade-insecure-requests (force HTTPS sub-resource fetch even on a
+#   stray http:// reference somewhere in the OpenAPI HTML rendering).
+# - Added Cross-Origin-Opener-Policy: same-origin: blocks window.opener
+#   leak from popup-based phishing. Safe for the API because nothing
+#   here pops to a third party.
+# - Added Cross-Origin-Resource-Policy: same-origin: prevents Spectre-
+#   style side-channel loads of API responses from third-party origins.
+#   The /v1/* JSON surface is accessed from jpcite.com itself via the
+#   CORS-permitted origin allowlist; same-origin CORP is fine there
+#   because the consuming origin is jpcite.com (same-eTLD+1 to
+#   api.jpcite.com → same-site, NOT same-origin). Routes that must serve
+#   truly cross-origin clients (server.json, mcp-server.json discovery
+#   manifests, OpenAPI specs) override this in their per-route handler
+#   if needed; for the bulk JSON surface, same-origin is the correct
+#   default and the operator can relax it intentionally per route.
+# - Added X-Permitted-Cross-Domain-Policies: none: disables legacy
+#   Flash/Acrobat policy-file discovery on this origin.
+# - Expanded Permissions-Policy from 3 → 22 explicit opt-outs. API serves
+#   no UA-feature-using code, so explicitly opt every API out of every
+#   sensitive feature. payment=() prevents an injected card-stealer from
+#   summoning a PaymentRequest dialog.
 _SECURITY_HEADERS: dict[str, str] = {
     # 1 year, includeSubDomains, preload — jpcite.com is HTTPS-only
     # and we want browsers to refuse plain HTTP on the very first hit.
     "Strict-Transport-Security": ("max-age=31536000; includeSubDomains; preload"),
-    # API-first product, no third-party CDN, no inline scripts. style-src
-    # 'unsafe-inline' covers the /v1/subscribers/unsubscribe HTML page
-    # which uses inline <style>. frame-ancestors 'none' blocks clickjacking.
+    # API-first product, no third-party CDN, no inline scripts.
+    # style-src 'unsafe-inline' covers the /v1/subscribers/unsubscribe HTML
+    # page which uses inline <style>; no inline <script> ships from the API
+    # (only JSON / FastAPI's Swagger UI / Stoplight Elements; Swagger UI is
+    # gated to /docs only and gets its assets from same-origin so script-src
+    # 'self' covers it). frame-ancestors 'none' blocks clickjacking.
+    # upgrade-insecure-requests is belt+suspenders to HSTS preload.
     "Content-Security-Policy": (
         "default-src 'self'; "
         "script-src 'self'; "
         "style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:; "
+        "font-src 'self' data:; "
+        "connect-src 'self'; "
+        "form-action 'self'; "
         "frame-ancestors 'none'; "
-        "base-uri 'none'"
+        "frame-src 'none'; "
+        "object-src 'none'; "
+        "base-uri 'none'; "
+        "upgrade-insecure-requests"
     ),
     # Redundant with CSP frame-ancestors but kept for pre-CSP3 browsers.
     "X-Frame-Options": "DENY",
@@ -89,7 +129,31 @@ _SECURITY_HEADERS: dict[str, str] = {
     "Referrer-Policy": "strict-origin-when-cross-origin",
     # We don't use any of these surfaces; explicit empty allowlist
     # hardens against a future content-injection bug re-enabling them.
-    "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+    # 22 features opt-out: accelerometer/ambient-light-sensor/autoplay/
+    # battery/camera/display-capture/document-domain/encrypted-media/
+    # fullscreen/geolocation/gyroscope/magnetometer/microphone/midi/
+    # payment/picture-in-picture/publickey-credentials-get/screen-wake-lock/
+    # sync-xhr/usb/web-share/xr-spatial-tracking.
+    "Permissions-Policy": (
+        "accelerometer=(), ambient-light-sensor=(), autoplay=(), "
+        "battery=(), camera=(), display-capture=(), document-domain=(), "
+        "encrypted-media=(), fullscreen=(), geolocation=(), gyroscope=(), "
+        "magnetometer=(), microphone=(), midi=(), payment=(), "
+        "picture-in-picture=(), publickey-credentials-get=(), "
+        "screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), "
+        "xr-spatial-tracking=()"
+    ),
+    # Cross-origin isolation hardening.
+    # COOP same-origin: severs window.opener cross-origin leak (popup-
+    # phishing defence).
+    "Cross-Origin-Opener-Policy": "same-origin",
+    # CORP same-origin: blocks third-party origins from embedding our
+    # JSON responses as <img>/<script>/<style>/<audio>/etc. Per-route
+    # handlers can override (setdefault semantics in middleware below)
+    # when a manifest must be reachable cross-origin (server.json etc.).
+    "Cross-Origin-Resource-Policy": "same-origin",
+    # Disable legacy Flash/Acrobat cross-domain-policy file discovery.
+    "X-Permitted-Cross-Domain-Policies": "none",
 }
 
 

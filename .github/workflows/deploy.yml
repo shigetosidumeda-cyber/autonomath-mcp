@@ -483,16 +483,34 @@ jobs:
         # Poll after flyctl deploy completes because machine replacement and
         # deep data hydration can finish at different times. A fixed sleep was
         # too fragile for large corpus deploys.
+        #
+        # Cache-propagation gate — see memory `feedback_post_deploy_smoke_propagation`
+        # and the deploy.yml 4-fix pattern. Fly proxy + CF edge + DNS TTL cache
+        # windows take ~60s to drain; the pre-probe "Verify Fly machine state"
+        # step only covers the rolling-restart window, not the edge cache. We
+        # therefore (a) sleep 60s before the first /healthz curl so the first
+        # probe lands on the new image, and (b) use --max-time 30 on individual
+        # curls so a single slow edge hop (Fly Tokyo p99 swap ≥ 25s, R4 P1-1
+        # evidence) does not produce a false negative.
         env:
           BASE_URL: https://api.jpcite.com
         run: |
           set -euo pipefail
           echo "== Post-deploy hard gate =="
 
+          # 60s propagation sleep — see feedback_post_deploy_smoke_propagation
+          # + deploy.yml 4-fix pattern. Fly p99 machine swap + CF edge cache
+          # together exceed 25s; 60s gives headroom for the first /healthz hit
+          # to land on the new image instead of the previous-deploy cache.
+          echo "Cache-propagation wait: sleep 60 (Fly proxy + CF edge + DNS TTL)"
+          sleep 60
+
           # Probe 1: /healthz must become HTTP 200.
+          # --max-time 30: Fly Tokyo p99 swap ≥ 25s leaves no headroom under
+          # 30s. See feedback_post_deploy_smoke_propagation.
           health_ok=0
           for i in $(seq 1 24); do
-            status=$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 10 "$BASE_URL/healthz" || echo 000)
+            status=$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 30 "$BASE_URL/healthz" || echo 000)
             echo "GET /healthz attempt $i -> $status"
             if [ "$status" = "200" ]; then
               health_ok=1
@@ -507,6 +525,9 @@ jobs:
 
           # Probe 2: /v1/am/health/deep?fail_on_unhealthy=true must return status='ok'.
           # Anything else (degraded / unhealthy / 5xx body) is a hard fail.
+          # deep_health is the structural integrity probe (not a propagation
+          # probe), so --max-time 10 is retained intentionally; it touches the
+          # already-warm app instance.
           deep_ok=0
           for i in $(seq 1 60); do
             if curl -fsS --max-time 10 -o /tmp/deep_health.json \
@@ -534,7 +555,9 @@ jobs:
           # Probe 3: /v1/programs/search must return total>0 for the canonical
           # 補助金 query. total<=0 means the search corpus is empty / FTS index
           # missing — historically the failure mode for an empty seed.
-          status=$(curl -fsS -o /tmp/smoke_search.json -w '%{http_code}' --max-time 20 \
+          # --max-time 30: FTS5 cold-start on the 11k-program corpus can take
+          # >20s after a machine swap; see feedback_post_deploy_smoke_propagation.
+          status=$(curl -fsS -o /tmp/smoke_search.json -w '%{http_code}' --max-time 30 \
             "$BASE_URL/v1/programs/search?q=%E8%A3%9C%E5%8A%A9%E9%87%91&limit=1" || echo 000)
           echo "GET /v1/programs/search -> $status"
           if [ "$status" != "200" ]; then

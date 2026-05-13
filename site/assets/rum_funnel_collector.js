@@ -1,16 +1,16 @@
-// rum_funnel_collector.js — Wave 49 G1 organic funnel beacon.
+// rum_funnel_collector.js — organic funnel beacon.
 //
-// Sibling of `rum.js` (Wave 16 E1, Core Web Vitals). This collector
-// targets the 5-step organic funnel (Wave 49 tick#3 calc wire):
+// Sibling of `rum.js` (Core Web Vitals). This collector targets the
+// public organic funnel:
 //
 //   landing       → user lands on /index.html
 //   free          → user reads /onboarding.html (free 3 req/day intro)
-//   signup        → user reaches /pricing.html and clicks the topup CTA
-//   topup         → completed by Stripe webhook on the server side; this
+//   signup        → user reaches /pricing.html and clicks the metered billing CTA
+//   billing       → completed by Stripe webhook on the server side; this
 //                   file only emits the *visit* and *click* upstream events.
 //   calc_engaged  → user opens /tools/cost_saving_calculator and interacts
 //                   (cost-saving v2 reproducibility surface, organic-only
-//                    monetization moat — Wave 49 tick#3 G1 measurement).
+//                    cost-saving reproducibility surface).
 //
 // Why a separate beacon from rum.js?
 //   - rum.js measures Core Web Vitals (performance / page health).
@@ -19,8 +19,8 @@
 //   - Different POST endpoint (`/api/rum_beacon`) → keeps the existing
 //     `/v1/rum/beacon` aggregator (rum_aggregator.py) untouched.
 //
-// CSP-safe (no inline handlers, no eval). 100% sampling — Wave 49 G1
-// target is only 10 uniq sessions/day, so we cannot afford to sample.
+// CSP-safe (no inline handlers, no eval). 100% sampling because the
+// conversion path is low volume.
 //
 // Page wiring: `<script src="/assets/rum_funnel_collector.js" defer></script>`
 // in the <head> of index.html / onboarding.html / pricing.html.
@@ -30,7 +30,7 @@
 
   // ---- Bot UA filter -----------------------------------------------------
   // Mirrors `rum.js` and `functions/api/rum_beacon.ts` — bot beacons
-  // would inflate session counts and skew Wave 49 G1 acceptance.
+  // would inflate session counts and skew conversion reporting.
   var BOT_RE = /(bot|spider|crawler|gptbot|claudebot|perplexity|amazonbot|googlebot|bingbot|chatgpt|oai-searchbot|bytespider|ahrefs|semrush|diffbot|cohere-ai|youbot|mistralai|applebot|facebookexternalhit|twitterbot|yandex|baiduspider)/i;
   if (BOT_RE.test(navigator.userAgent || "")) return;
 
@@ -56,8 +56,8 @@
     if (p === "/" || p === "/index" || p === "/index.html") return "landing";
     if (p.indexOf("/onboarding") === 0) return "free";
     if (p.indexOf("/pricing") === 0) return "signup";
-    if (p.indexOf("/topup") === 0 || p.indexOf("/checkout") === 0) return "topup";
-    // Wave 49 tick#3: calculator engagement (cost-saving v2 surface).
+    if (p.indexOf("/metered-billing") === 0 || p.indexOf("/checkout") === 0) return "billing";
+    // Calculator engagement (cost-saving v2 surface).
     // Anchored to the canonical tool path so future locales (/en/tools/…)
     // can be added without disturbing the other 4 steps.
     if (p.indexOf("/tools/cost_saving_calculator") === 0) return "calc_engaged";
@@ -126,7 +126,7 @@
 
   // ---- Auto-fire: cta_click --------------------------------------------
   // Any element marked with `data-funnel-cta` (e.g. a "Start free" or
-  // "Topup ¥1,000" button) emits a cta_click beacon when clicked. We use
+  // "Start metered billing" button) emits a cta_click beacon when clicked. We use
   // bubble-phase delegation so dynamically-injected CTAs are caught.
   document.addEventListener("click", function (ev) {
     var t = ev.target;

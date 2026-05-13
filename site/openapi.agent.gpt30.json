@@ -1732,7 +1732,7 @@
               ]
             }
           },
-          "message": "No records matched the supplied filters.",
+          "message": "No rows matched the supplied filters.",
           "request_id": "a3f12c7b9e8d4501"
         },
         "properties": {
@@ -3386,7 +3386,7 @@
           "bundle_id": "pci_example",
           "bundle_kind": "precomputed_intelligence",
           "compression": {
-            "estimate_disclaimer": "Compression estimates compare input context size only. Provider billing can differ because of output, reasoning, short-lived response reuse, search, and tool charges.",
+            "estimate_disclaimer": "Compression estimates compare input context size only. Provider billing can differ because of output, reasoning, cache, search, and tool charges.",
             "estimate_method": "none",
             "estimate_scope": "input_context_only",
             "packet_tokens_estimate": 566,
@@ -4401,7 +4401,7 @@
             "type": "string"
           },
           "eligibility_conditions_json": {
-            "description": "Parsed predicate tree (list / dict of {op, field, value, ...}). None if the record has no machine-readable predicates or if the stored JSON is malformed (never 500s \u2014 see evaluator).",
+            "description": "Parsed predicate tree (list / dict of {op, field, value,...}). None if the record has no machine-readable predicates or if the stored JSON is malformed (never 500s \u2014 see evaluator).",
             "nullable": true,
             "title": "Eligibility Conditions Json"
           },
@@ -4675,10 +4675,6 @@
     }
   },
   "info": {
-    "contact": {
-      "name": "jpcite Support",
-      "url": "https://jpcite.com/tokushoho.html"
-    },
     "description": "Agent-safe OpenAPI subset for evidence prefetch before answer generation. jpcite returns source-linked facts, source_url, fetched timestamps, known gaps, and compatibility rules; it does not call external LLM APIs and does not generate final legal/tax advice. For Japanese company research, client folders, counterparty checks, audit/DD prep, sales/account prep, or public opportunity/risk review, call createCompanyPublicBaseline before general web search, then use web search only for known_gaps, non-public context, or very recent news outside the corpus. Before final answer generation, use queryEvidencePacket or getEvidencePacket to collect source-linked records, decision_insights, and known gaps. For broad, repeated, or cost-sensitive call stacks, call previewCost first; it is a free estimate and does not execute planned calls. For Evidence-to-Expert Handoff, call match_advisors_v1_advisors_match_get after source-linked evidence, caveats, and known gaps are assembled; present advisor matches as candidate reviewers, not final professional judgment or completed referral. Optional token/context fields compare caller-supplied input-context baselines. This spec excludes billing, webhook, OAuth, account-management, and administrative endpoints. Anonymous callers can evaluate within the published daily limit unless an operation marks X-API-Key as required; callers that need higher volume send X-API-Key.",
     "license": {
       "name": "Proprietary - see termsOfService"
@@ -6098,7 +6094,7 @@
     },
     "/v1/citations/verify": {
       "post": {
-        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n  * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n  * Up to 30 seconds wall clock.\n  * Up to 10 citations.\n\nPer citation:\n  * Up to 5 seconds for the URL fetch.\n  * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is not\n    emitted by the current pipeline; callers should still handle it.)\n\nErrors:\n  * 401 if the API key header is missing or invalid.\n  * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n    chars. The validation message identifies the offending index so\n    the developer can fix the call without binary-searching the batch.",
+        "description": "Verify a batch of up to 10 citations against their primary sources.\n\nPer call:\n * 1 billable unit (\u00a53) \u2014 billed regardless of per-citation verdict.\n * Up to 30 seconds wall clock.\n * Up to 10 citations.\n\nPer citation:\n * Up to 5 seconds for the URL fetch.\n * Verdict \u2208 {verified, inferred, stale, unknown}. (``stale`` is not\n emitted by the current pipeline; callers should still handle it.)\n\nErrors:\n * 401 if the API key header is missing or invalid.\n * 422 if more than 10 citations OR if an ``excerpt`` exceeds 500\n chars. The validation message identifies the offending index so\n the developer can fix the call without binary-searching the batch.",
         "operationId": "verifyCitations",
         "parameters": [
           {
@@ -7474,7 +7470,7 @@
     },
     "/v1/funding_stack/check": {
       "post": {
-        "description": "\u8907\u6570\u306e\u5236\u5ea6 (program_ids) \u3092\u4f75\u7528\u3067\u304d\u308b\u304b\u3092 am_compat_matrix \u3068 exclusion_rules \u3067\u5224\u5b9a\u3057\u3001pair \u6bce\u306e verdict \u3068\u5168\u4f53\u96c6\u8a08\u3092\u8fd4\u3059\u3002\n\n* 1 unit = 1 pair \u306a\u306e\u3067\u30013 \u4ef6 = 3 pair = 3 unit (\u00a59 / \u7a0e\u8fbc \u00a59.90)\n* `incompatible` / `requires_review` \u306e pair \u304c 1 \u4ef6\u3067\u3082\u3042\u308c\u3070\u3001all_pairs_status \u306f\u305d\u306e strictness \u306b\u30a8\u30b9\u30ab\u30ec\u30fc\u30b7\u30e7\u30f3\u3059\u308b\n* `next_actions` \u306f pair \u3068 top-level \u306e\u8ffd\u52a0\u30d5\u30a3\u30fc\u30eb\u30c9\u3068\u3057\u3066\u8fd4\u3059 (\u8ab2\u91d1 pair \u6570 / usage quantity \u306b\u306f\u5f71\u97ff\u3057\u306a\u3044)\n* `_disclaimer` \u30d5\u30a3\u30fc\u30eb\u30c9\u306f\u5fc5\u9808 \u2014 \u975e LLM rule engine \u306f curate \u3055\u308c\u305f \u30b3\u30fc\u30d1\u30b9\u306b 100% \u4f9d\u62e0\u3059\u308b\u305f\u3081\u3001\u53ce\u9332\u6f0f\u308c\u3084\u516c\u52df\u56de\u3054\u3068\u306e\u7d30\u5247\u5dee\u3092\u53d6\u308a\u3053\u307c\u3057\u5f97\u308b\u3002\u6700\u7d42\u5224\u65ad\u306f\u5fc5\u305a\u4e00\u6b21\u8cc7\u6599 + \u5c02\u9580\u5bb6\u78ba\u8a8d\u3092\u7d4c\u308b\u3053\u3068\u3002",
+        "description": "\u8907\u6570\u306e\u5236\u5ea6 (program_ids) \u3092\u4f75\u7528\u3067\u304d\u308b\u304b\u3092 compatibility-matrix corpus \u3068 exclusion_rules \u3067\u5224\u5b9a\u3057\u3001pair \u6bce\u306e verdict \u3068\u5168\u4f53\u96c6\u8a08\u3092\u8fd4\u3059\u3002\n\n* 1 unit = 1 pair \u306a\u306e\u3067\u30013 \u4ef6 = 3 pair = 3 unit (\u00a59 / \u7a0e\u8fbc \u00a59.90)\n* `incompatible` / `requires_review` \u306e pair \u304c 1 \u4ef6\u3067\u3082\u3042\u308c\u3070\u3001all_pairs_status \u306f\u305d\u306e strictness \u306b\u30a8\u30b9\u30ab\u30ec\u30fc\u30b7\u30e7\u30f3\u3059\u308b\n* `next_actions` \u306f pair \u3068 top-level \u306e\u8ffd\u52a0\u30d5\u30a3\u30fc\u30eb\u30c9\u3068\u3057\u3066\u8fd4\u3059 (\u8ab2\u91d1 pair \u6570 / usage quantity \u306b\u306f\u5f71\u97ff\u3057\u306a\u3044)\n* `_disclaimer` \u30d5\u30a3\u30fc\u30eb\u30c9\u306f\u5fc5\u9808 \u2014 \u975e LLM rule engine \u306f curate \u3055\u308c\u305f \u30b3\u30fc\u30d1\u30b9\u306b 100% \u4f9d\u62e0\u3059\u308b\u305f\u3081\u3001\u53ce\u9332\u6f0f\u308c\u3084\u516c\u52df\u56de\u3054\u3068\u306e\u7d30\u5247\u5dee\u3092\u53d6\u308a\u3053\u307c\u3057\u5f97\u308b\u3002\u6700\u7d42\u5224\u65ad\u306f\u5fc5\u305a\u4e00\u6b21\u8cc7\u6599 + \u5c02\u9580\u5bb6\u78ba\u8a8d\u3092\u7d4c\u308b\u3053\u3068\u3002",
         "operationId": "checkFundingStack",
         "parameters": [
           {
@@ -7901,7 +7897,7 @@
                   "bundle_id": "pci_example",
                   "bundle_kind": "precomputed_intelligence",
                   "compression": {
-                    "estimate_disclaimer": "Compression estimates compare input context size only. Provider billing can differ because of output, reasoning, short-lived response reuse, search, and tool charges.",
+                    "estimate_disclaimer": "Compression estimates compare input context size only. Provider billing can differ because of output, reasoning, cache, search, and tool charges.",
                     "estimate_method": "none",
                     "estimate_scope": "input_context_only",
                     "packet_tokens_estimate": 566,
@@ -9145,7 +9141,7 @@
     },
     "/v1/programs/search": {
       "get": {
-        "description": "Discover candidate Japanese public-funding programs by free-text + structured filters across **11,601 searchable source-linked records**. Records outside the public publication criteria are excluded from search. Filters include prefecture, authority level, target type, funding purpose, and amount band.\n\n**When to use this endpoint:** the caller has a topic / region / kind in mind ('IT\u5c0e\u5165', '\u6771\u4eac\u90fd', '\u88dc\u52a9\u91d1') and wants candidates. For *judgment* (does this profile fit?), prefer `POST /v1/programs/prescreen`. For exact-id lookup use `GET /v1/programs/{unified_id}`. For up-to-50 ids in one call use `POST /v1/programs/batch`.\n\n**Search behavior:** punctuation and full-width characters are normalized, quoted phrases are preserved, and empty searches without filters return no records. Combine text search with filters when browsing broad topics.\n\nUse `as_of_date=YYYY-MM-DD` to pin the result set to a historical dataset state. `confidence` and `source_fetched_at` are exposed per-record.",
+        "description": "Discover candidate Japanese public-funding programs by free-text + structured filters across **11,601 searchable source-linked records**. Records outside the public publication criteria are excluded from search. Filters include prefecture, authority level, target type, funding purpose, and amount band.\n\n**When to use this endpoint:** the caller has a topic / region / kind in mind ('IT\u5c0e\u5165', '\u6771\u4eac\u90fd', '\u88dc\u52a9\u91d1') and wants candidates. For *judgment* (does this profile fit?), prefer `POST /v1/programs/prescreen`. For exact-id lookup use `GET /v1/programs/{unified_id}`. For up-to-50 ids in one call use `POST /v1/programs/batch`.\n\n**Search behavior:** punctuation and full-width characters are normalized, quoted phrases are preserved, and empty searches without filters return no records. Combine text search with filters when browsing broad topics. `offset` is capped at 1,000 (R3 P0-3 tightening, 2026-05-13); larger values return 422 so clients switch to `?cursor=` keyset pagination or the bulk/export workflows. The response carries `next_cursor`; pass it back as `?cursor=` to resume after the last record with flat p99 even at deep pages.\n\nUse `as_of_date=YYYY-MM-DD` to pin the result set to a historical dataset state. `confidence` and `source_fetched_at` are exposed per-record.",
         "operationId": "searchPrograms",
         "parameters": [
           {
@@ -9177,6 +9173,7 @@
                 ],
                 "type": "string"
               },
+              "maxItems": 4,
               "nullable": true,
               "title": "Tier",
               "type": "array"
@@ -9271,14 +9268,30 @@
             }
           },
           {
+            "description": "Pagination offset. Hard-capped at 1000 (R3 P0-3 tightening, 2026-05-13). Deeper crawls must use ``?cursor=<next_cursor>`` keyset pagination, which has flat p99 vs. offset's quadratic dedupe-partition walk; bulk/export workflows remain available for >cursor walks.",
             "in": "query",
             "name": "offset",
             "required": false,
             "schema": {
               "default": 0,
+              "description": "Pagination offset. Hard-capped at 1000 (R3 P0-3 tightening, 2026-05-13). Deeper crawls must use ``?cursor=<next_cursor>`` keyset pagination, which has flat p99 vs. offset's quadratic dedupe-partition walk; bulk/export workflows remain available for >cursor walks.",
+              "maximum": 1000,
               "minimum": 0,
               "title": "Offset",
               "type": "integer"
+            }
+          },
+          {
+            "description": "Opaque keyset token returned as ``next_cursor`` on the prior page. When set, ``offset`` is ignored and the search resumes at the record immediately after the cursor's anchor. Format is url-safe base64 of a versioned JSON dict; tokens from a different sort path (text search vs fallback matching-fallback) are rejected as 422. Use this instead of ``offset`` for any page > 1k.",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "description": "Opaque keyset token returned as ``next_cursor`` on the prior page. When set, ``offset`` is ignored and the search resumes at the record immediately after the cursor's anchor. Format is url-safe base64 of a versioned JSON dict; tokens from a different sort path (text search vs fallback matching-fallback) are rejected as 422. Use this instead of ``offset`` for any page > 1k.",
+              "maxLength": 512,
+              "nullable": true,
+              "title": "Cursor",
+              "type": "string"
             }
           },
           {
@@ -9363,6 +9376,7 @@
               "application/json": {
                 "example": {
                   "limit": 20,
+                  "next_cursor": "eyJ2IjoxLCJzIjotMC44LCJ1IjoiVU5JLTI2MTEwNTBmOWEiLCJmIjoxfQ",
                   "offset": 0,
                   "results": [
                     {
@@ -10004,7 +10018,7 @@
       "url": "https://api.jpcite.com"
     }
   ],
-  "x-jpcite-source": "scripts/export_openapi.py --profile gpt30",
+  "x-jpcite-source": "public OpenAPI export",
   "x-jpcite-variant": "gpt30-slim",
   "x-openai-isConsequential": false
 }

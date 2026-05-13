@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 都道府県商工会議所連合会 / 単位商工会議所 (会員企業 200-5,000 社規模) の経営支援部・会員支援部で、47 都道府県 + 自市町村 + 隣接市町村の補助金 / 助成金 / 認定制度を月初 sweep して、会員企業に Slack / メール / 月報 / 会員向け web 掲示板で fan-out する運用。マル経推薦・経営革新計画申請・小規模事業者持続化補助金等の単独施策と組み合わせて、会員 LTV 維持 + 新規入会推進の素材も生む。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - `X-Client-Tag` (会員企業別計上 / 部署別請求)
 - 会員企業 法人番号 list (200-5,000 件)
 - 自市町村コード (5 桁 LGCode) + 隣接市町村コード
@@ -126,7 +126,6 @@ const matches = await jpcite.bulk_match_programs({
 - 1 sweep 40 units × ¥3 = ¥120 / 月 (1 市町村)
 - 5 市町村 × 月 = ¥600 / 月、税込 ¥660
 - 会員 1,000 社 マッチ = ¥3,000 / 月、税込 ¥3,300
-- 節約 (純 LLM vs jpcite ¥3/req): 5 市町村 sweep + 会員 1,000 社 マッチ /月で、純 LLM は約 ¥10,000/月 (市町村 cycle ¥500 + 会員 cycle ¥7.5) に対し jpcite は ¥3,600/月 (1,200 req × ¥3) → 節約 約 ¥6,400/月 / 会員あたり ¥6.4 (cf. `docs/canonical/cost_saving_examples.md` case 3 / case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0
@@ -135,6 +134,6 @@ const matches = await jpcite.bulk_match_programs({
 
 ## 業法 fence
 - 商工会議所法 (商工会議所の業務範囲内)
-- 中小企業診断士登録規則 — 経営助言は診断士領域、本 recipe は scaffold + 一次 URL まで
+- 中小企業診断士登録規則 — 経営助言は診断士領域、本 recipe は 項目整理 + 一次 URL まで
 - 行政書士法 §1 — 申請書面作成は行政書士
 - 景表法 §5 — `tier` / `fit_score` は推定値、保証ではない旨を配信末尾に注記推奨

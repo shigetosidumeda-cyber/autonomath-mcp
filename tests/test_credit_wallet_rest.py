@@ -13,7 +13,7 @@ Verifications:
   2. /charge without X-Internal-Token → 403.
   3. /charge with insufficient balance → 402.
   4. /charge crossing 50/80/100 thresholds fires exactly those alerts, once per cycle.
-  5. /topup with immediate_amount records a topup txn and credits balance.
+  5. /topup with immediate_amount records a topup txn and credits balance once.
   6. /transactions filter + pagination works.
   7. LLM SDK import = 0 in the new module.
 """
@@ -23,10 +23,13 @@ from __future__ import annotations
 import importlib.util
 import pathlib
 import sqlite3
+from concurrent.futures import ThreadPoolExecutor
+from typing import TYPE_CHECKING
 
 import pytest
 
-from tests.conftest import TestClient  # re-export
+if TYPE_CHECKING:
+    from tests.conftest import TestClient
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_281 = REPO_ROOT / "scripts" / "migrations" / "281_credit_wallet.sql"
@@ -45,6 +48,40 @@ def wallet_am_db(tmp_path, monkeypatch):
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
     monkeypatch.setenv("METERING_INTERNAL_TOKEN", "test-internal-token-secret")
     return db_path
+
+
+def _sole_wallet_id(db_path: pathlib.Path) -> int:
+    with sqlite3.connect(db_path) as conn:
+        row = conn.execute("SELECT wallet_id FROM am_credit_wallet").fetchone()
+    assert row is not None, "expected wallet row to be created by API call"
+    return int(row[0])
+
+
+def _set_wallet_balance(db_path: pathlib.Path, balance_yen: int) -> None:
+    wallet_id = _sole_wallet_id(db_path)
+    with sqlite3.connect(db_path) as conn:
+        conn.execute(
+            "UPDATE am_credit_wallet SET balance_yen = ? WHERE wallet_id = ?",
+            (balance_yen, wallet_id),
+        )
+
+
+def _seed_wallet_txn(
+    db_path: pathlib.Path,
+    *,
+    amount_yen: int,
+    txn_type: str,
+    note: str,
+    occurred_at: str,
+) -> None:
+    wallet_id = _sole_wallet_id(db_path)
+    with sqlite3.connect(db_path) as conn:
+        conn.execute(
+            "INSERT INTO am_credit_transaction_log "
+            "(wallet_id, amount_yen, txn_type, note, occurred_at) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (wallet_id, amount_yen, txn_type, note, occurred_at),
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -73,6 +110,23 @@ def test_balance_zero_on_first_call(
     assert body["current_cycle_spent_yen"] == 0
 
 
+def test_wallet_schema_missing_returns_generic_503(
+    client: TestClient, paid_key: str, tmp_path, monkeypatch
+) -> None:
+    db_path = tmp_path / "empty_autonomath.db"
+    sqlite3.connect(db_path).close()
+    monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+
+    r = client.get("/v1/wallet/balance", headers={"X-API-Key": paid_key})
+
+    assert r.status_code == 503, r.text
+    assert r.json()["detail"] == "wallet service unavailable"
+    public_text = r.text.lower()
+    assert "migration" not in public_text
+    assert "sqlite" not in public_text
+    assert "am_credit" not in public_text
+
+
 # ---------------------------------------------------------------------------
 # 2. POST /v1/wallet/topup
 # ---------------------------------------------------------------------------
@@ -94,7 +148,9 @@ def test_topup_sets_config_and_credits_immediate(
         "note": "initial pre-pay",
     }
     r = client.post(
-        "/v1/wallet/topup", json=payload, headers={"X-API-Key": paid_key}
+        "/v1/wallet/topup",
+        json=payload,
+        headers={"X-API-Key": paid_key, "Idempotency-Key": "wallet-topup-initial"},
     )
     assert r.status_code == 200, r.text
     body = r.json()
@@ -102,12 +158,102 @@ def test_topup_sets_config_and_credits_immediate(
     assert body["auto_topup_threshold"] == 500
     assert body["auto_topup_amount"] == 3000
     assert body["monthly_budget_yen"] == 10_000
+    assert body["topup_requested_yen"] == 2_500
     assert body["topup_recorded_yen"] == 2_500
+    assert body["idempotent_replay"] is False
+    assert body["_billing_unit"] == 0
 
     # The balance endpoint should reflect the same state.
     r2 = client.get("/v1/wallet/balance", headers={"X-API-Key": paid_key})
     assert r2.status_code == 200
     assert r2.json()["balance_yen"] == 2_500
+    assert r2.json()["_billing_unit"] == 0
+
+    with sqlite3.connect(wallet_am_db) as conn:
+        balance, topups = conn.execute(
+            "SELECT w.balance_yen, COUNT(t.txn_id) "
+            "FROM am_credit_wallet w "
+            "LEFT JOIN am_credit_transaction_log t "
+            "  ON t.wallet_id = w.wallet_id AND t.txn_type = 'topup' "
+            "GROUP BY w.wallet_id"
+        ).fetchone()
+    assert balance == 2_500
+    assert topups == 1
+
+
+def test_topup_immediate_requires_idempotency_key(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    r = client.post(
+        "/v1/wallet/topup",
+        json={"immediate_amount": 2_500},
+        headers={"X-API-Key": paid_key},
+    )
+
+    assert r.status_code == 428, r.text
+    assert r.json()["detail"] == "idempotency_key_required"
+
+
+def test_topup_idempotency_key_dedupes_body_retry(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    payload = {
+        "auto_topup_threshold": 500,
+        "auto_topup_amount": 3000,
+        "monthly_budget_yen": 10_000,
+        "immediate_amount": 2_500,
+        "note": "retryable topup",
+    }
+    headers = {"X-API-Key": paid_key, "Idempotency-Key": "wallet-topup-retry"}
+
+    first = client.post("/v1/wallet/topup", json=payload, headers=headers)
+    second = client.post("/v1/wallet/topup", json=payload, headers=headers)
+
+    assert first.status_code == 200, first.text
+    assert second.status_code == 200, second.text
+    assert first.json()["balance_yen"] == 2_500
+    assert second.json()["balance_yen"] == 2_500
+    assert second.json()["idempotent_replay"] is True
+    assert second.headers["X-Idempotent-Replay"] == "1"
+
+    with sqlite3.connect(wallet_am_db) as conn:
+        balance, topups = conn.execute(
+            "SELECT w.balance_yen, COUNT(t.txn_id) "
+            "FROM am_credit_wallet w "
+            "LEFT JOIN am_credit_transaction_log t "
+            "  ON t.wallet_id = w.wallet_id AND t.txn_type = 'topup' "
+            "GROUP BY w.wallet_id"
+        ).fetchone()
+    assert balance == 2_500
+    assert topups == 1
+
+    txns = client.get(
+        "/v1/wallet/transactions?txn_type=topup",
+        headers={"X-API-Key": paid_key},
+    )
+    assert txns.status_code == 200, txns.text
+    assert txns.json()["transactions"][0]["note"] == "retryable topup"
+    assert "wallet-topup-idem" not in txns.text
+
+
+def test_topup_same_idempotency_key_rejects_changed_payload(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    headers = {"X-API-Key": paid_key, "Idempotency-Key": "wallet-topup-conflict"}
+    first = client.post(
+        "/v1/wallet/topup",
+        json={"immediate_amount": 2_500, "note": "first topup"},
+        headers=headers,
+    )
+    second = client.post(
+        "/v1/wallet/topup",
+        json={"immediate_amount": 3_000, "note": "first topup"},
+        headers=headers,
+    )
+
+    assert first.status_code == 200, first.text
+    assert second.status_code == 409, second.text
+    assert second.json()["detail"] == "idempotency_key_in_use"
 
 
 def test_topup_rejects_negative_amount(
@@ -137,20 +283,17 @@ def test_transactions_filter_and_pagination(
     client: TestClient, paid_key: str, wallet_am_db
 ) -> None:
     headers = {"X-API-Key": paid_key}
-    # Seed three topups to make pagination meaningful.
+    # /topup is config-only, so seed ledger rows directly for pagination coverage.
+    r = client.get("/v1/wallet/balance", headers=headers)
+    assert r.status_code == 200, r.text
     for i, amount in enumerate([1000, 2000, 3000], start=1):
-        r = client.post(
-            "/v1/wallet/topup",
-            json={
-                "auto_topup_threshold": 0,
-                "auto_topup_amount": 0,
-                "monthly_budget_yen": 0,
-                "immediate_amount": amount,
-                "note": f"topup #{i}",
-            },
-            headers=headers,
+        _seed_wallet_txn(
+            wallet_am_db,
+            amount_yen=amount,
+            txn_type="topup",
+            note=f"seed topup #{i}",
+            occurred_at=f"2026-05-12T00:00:0{i}.000Z",
         )
-        assert r.status_code == 200, r.text
 
     # Unfiltered: 3 rows, newest first.
     r = client.get("/v1/wallet/transactions", headers=headers)
@@ -262,6 +405,125 @@ def test_charge_insufficient_balance_returns_402(
     assert r.status_code == 402, r.text
 
 
+def test_charge_idempotency_key_dedupes_body_retry(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    headers = {
+        "X-API-Key": paid_key,
+        "X-Internal-Token": "test-internal-token-secret",
+    }
+    r = client.get("/v1/wallet/balance", headers={"X-API-Key": paid_key})
+    assert r.status_code == 200, r.text
+    _set_wallet_balance(wallet_am_db, 1000)
+
+    payload = {
+        "amount_yen": 75,
+        "note": "retryable charge",
+        "idempotency_key": "wallet-charge-retry-1",
+    }
+    first = client.post("/v1/wallet/charge", json=payload, headers=headers)
+    second = client.post("/v1/wallet/charge", json=payload, headers=headers)
+
+    assert first.status_code == 200, first.text
+    assert second.status_code == 200, second.text
+    assert first.json()["balance_yen"] == 925
+    assert second.json()["balance_yen"] == 925
+    assert second.json()["idempotent_replay"] is True
+    assert second.headers["X-Idempotent-Replay"] == "1"
+
+    with sqlite3.connect(wallet_am_db) as conn:
+        balance, charges = conn.execute(
+            "SELECT w.balance_yen, COUNT(t.txn_id) "
+            "FROM am_credit_wallet w "
+            "LEFT JOIN am_credit_transaction_log t "
+            "  ON t.wallet_id = w.wallet_id AND t.txn_type = 'charge' "
+            "GROUP BY w.wallet_id"
+        ).fetchone()
+    assert balance == 925
+    assert charges == 1
+
+    txns = client.get(
+        "/v1/wallet/transactions?txn_type=charge",
+        headers={"X-API-Key": paid_key},
+    )
+    assert txns.status_code == 200, txns.text
+    assert txns.json()["transactions"][0]["note"] == "retryable charge"
+    assert "wallet-idem" not in txns.text
+
+
+def test_charge_same_idempotency_key_rejects_changed_amount(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    headers = {
+        "X-API-Key": paid_key,
+        "X-Internal-Token": "test-internal-token-secret",
+    }
+    r = client.get("/v1/wallet/balance", headers={"X-API-Key": paid_key})
+    assert r.status_code == 200, r.text
+    _set_wallet_balance(wallet_am_db, 1000)
+
+    first = client.post(
+        "/v1/wallet/charge",
+        json={"amount_yen": 75, "request_id": "charge-request-1"},
+        headers=headers,
+    )
+    second = client.post(
+        "/v1/wallet/charge",
+        json={"amount_yen": 76, "request_id": "charge-request-1"},
+        headers=headers,
+    )
+
+    assert first.status_code == 200, first.text
+    assert second.status_code == 409, second.text
+    assert second.json()["detail"] == "idempotency_key_in_use"
+
+    with sqlite3.connect(wallet_am_db) as conn:
+        balance, charges = conn.execute(
+            "SELECT w.balance_yen, COUNT(t.txn_id) "
+            "FROM am_credit_wallet w "
+            "LEFT JOIN am_credit_transaction_log t "
+            "  ON t.wallet_id = w.wallet_id AND t.txn_type = 'charge' "
+            "GROUP BY w.wallet_id"
+        ).fetchone()
+    assert balance == 925
+    assert charges == 1
+
+
+def test_charge_concurrent_debits_cannot_overspend(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    headers = {
+        "X-API-Key": paid_key,
+        "X-Internal-Token": "test-internal-token-secret",
+    }
+    r = client.get("/v1/wallet/balance", headers={"X-API-Key": paid_key})
+    assert r.status_code == 200, r.text
+    _set_wallet_balance(wallet_am_db, 100)
+
+    def charge_once() -> int:
+        response = client.post(
+            "/v1/wallet/charge",
+            json={"amount_yen": 75},
+            headers=headers,
+        )
+        return response.status_code
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        statuses = sorted(pool.map(lambda _: charge_once(), range(2)))
+
+    assert statuses == [200, 402]
+    with sqlite3.connect(wallet_am_db) as conn:
+        balance, charges = conn.execute(
+            "SELECT w.balance_yen, COUNT(t.txn_id) "
+            "FROM am_credit_wallet w "
+            "LEFT JOIN am_credit_transaction_log t "
+            "  ON t.wallet_id = w.wallet_id AND t.txn_type = 'charge' "
+            "GROUP BY w.wallet_id"
+        ).fetchone()
+    assert balance == 25
+    assert charges == 1
+
+
 def test_charge_alert_trigger_50_80_100(
     client: TestClient, paid_key: str, wallet_am_db
 ) -> None:
@@ -281,7 +543,7 @@ def test_charge_alert_trigger_50_80_100(
             "monthly_budget_yen": 100,
             "immediate_amount": 1000,
         },
-        headers=headers,
+        headers={**headers, "Idempotency-Key": "wallet-alert-prefund"},
     )
     assert r.status_code == 200, r.text
 
@@ -377,3 +639,8 @@ def test_credit_wallet_module_imports_no_llm_sdk() -> None:
     assert "/v1/wallet/transactions" in routes
     assert "/v1/wallet/alerts" in routes
     assert "/v1/wallet/charge" in routes
+
+
+def test_wallet_charge_not_in_public_openapi(client: TestClient, wallet_am_db) -> None:
+    schema = client.app.openapi()
+    assert "/v1/wallet/charge" not in schema["paths"]

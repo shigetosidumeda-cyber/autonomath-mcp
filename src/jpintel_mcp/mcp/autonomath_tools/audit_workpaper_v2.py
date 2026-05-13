@@ -63,6 +63,22 @@ _DISCLAIMER = (
 )
 
 
+def _table_columns(conn: sqlite3.Connection, table: str) -> set[str]:
+    try:
+        rows = conn.execute(f"PRAGMA table_info({table})").fetchall()
+    except sqlite3.Error:
+        return set()
+    return {
+        str(row["name"] if isinstance(row, sqlite3.Row) else row[1]) for row in rows
+    }
+
+
+def _has_tool_registered(name: str) -> bool:
+    tool_manager = getattr(mcp, "_tool_manager", None)
+    tools = getattr(tool_manager, "_tools", None)
+    return isinstance(tools, dict) and name in tools
+
+
 def _resolve_fy_window(fiscal_year: int) -> tuple[str, str]:
     """Map an FY label (e.g. ``2025``) to ISO [start, end] for 4/1–3/31."""
     return (f"{fiscal_year:04d}-04-01", f"{fiscal_year + 1:04d}-03-31")
@@ -82,12 +98,14 @@ def _section_houjin_meta(
     conn: sqlite3.Connection, houjin_id: str
 ) -> dict[str, Any] | None:
     """Min 法人 metadata used by the workpaper cover page."""
+    columns = _table_columns(conn, "jpi_houjin_master")
+    jsic_expr = "jsic_major" if "jsic_major" in columns else "NULL AS jsic_major"
     try:
         row = conn.execute(
-            """
+            f"""
             SELECT houjin_bangou, normalized_name, address_normalized,
                    prefecture, municipality, corporation_type,
-                   jsic_major, total_adoptions, total_received_yen
+                   {jsic_expr}, total_adoptions, total_received_yen
               FROM jpi_houjin_master
              WHERE houjin_bangou = ?
              LIMIT 1
@@ -116,42 +134,70 @@ def _section_fy_adoptions(
     conn: sqlite3.Connection, houjin_id: str, fy_start: str, fy_end: str
 ) -> list[dict[str, Any]]:
     """Adoption records whose award/announcement date sits inside the FY."""
+    columns = _table_columns(conn, "jpi_adoption_records")
+    if "applicant_houjin_bangou" in columns:
+        houjin_col = "applicant_houjin_bangou"
+        program_name_col = "program_name"
+        applicant_name_col = "applicant_name"
+        date_expr = "COALESCE(award_date, announce_date)"
+        amount_col = "amount_yen"
+    else:
+        houjin_col = "houjin_bangou"
+        program_name_col = "program_name_raw"
+        applicant_name_col = "company_name_raw"
+        date_expr = "announced_at"
+        amount_col = "amount_granted_yen"
     try:
         rows = conn.execute(
-            """
-            SELECT program_id, program_name, applicant_name, award_date,
-                   amount_yen, fiscal_year, announce_date
+            f"""
+            SELECT program_id,
+                   {program_name_col} AS program_name,
+                   {applicant_name_col} AS applicant_name,
+                   {date_expr} AS award_date,
+                   {amount_col} AS amount_yen,
+                   {date_expr} AS announce_date
               FROM jpi_adoption_records
-             WHERE applicant_houjin_bangou = ?
-               AND (
-                    (award_date IS NOT NULL AND award_date BETWEEN ? AND ?)
-                 OR (announce_date IS NOT NULL AND announce_date BETWEEN ? AND ?)
-               )
-             ORDER BY COALESCE(award_date, announce_date) DESC
+             WHERE {houjin_col} = ?
+               AND substr({date_expr}, 1, 10) BETWEEN ? AND ?
+             ORDER BY {date_expr} DESC
              LIMIT 50
             """,
-            (houjin_id, fy_start, fy_end, fy_start, fy_end),
+            (houjin_id, fy_start, fy_end),
         ).fetchall()
     except sqlite3.Error as exc:
         logger.debug("workpaper adoption query failed: %s", exc)
         return []
-    return [dict(r) for r in rows]
+    out: list[dict[str, Any]] = []
+    fiscal_year = int(fy_start[:4])
+    for row in rows:
+        item = dict(row)
+        item["fiscal_year"] = fiscal_year
+        out.append(item)
+    return out
 
 
 def _section_fy_enforcement(
     conn: sqlite3.Connection, houjin_id: str, fy_start: str, fy_end: str
 ) -> list[dict[str, Any]]:
     """Enforcement (grant refund / subsidy_exclude / fine) inside FY."""
+    columns = _table_columns(conn, "am_enforcement_detail")
+    detail_col = "detail_id" if "detail_id" in columns else "enforcement_id"
+    date_col = "enforcement_date" if "enforcement_date" in columns else "issuance_date"
+    summary_col = "summary" if "summary" in columns else "reason_summary"
     try:
         rows = conn.execute(
-            """
-            SELECT detail_id, enforcement_kind, enforcement_date, amount_yen,
-                   summary, source_url
+            f"""
+            SELECT {detail_col} AS detail_id,
+                   enforcement_kind,
+                   {date_col} AS enforcement_date,
+                   amount_yen,
+                   {summary_col} AS summary,
+                   source_url
               FROM am_enforcement_detail
              WHERE houjin_bangou = ?
-               AND enforcement_date IS NOT NULL
-               AND enforcement_date BETWEEN ? AND ?
-             ORDER BY enforcement_date DESC
+               AND {date_col} IS NOT NULL
+               AND {date_col} BETWEEN ? AND ?
+             ORDER BY {date_col} DESC
              LIMIT 30
             """,
             (houjin_id, fy_start, fy_end),
@@ -176,6 +222,12 @@ def _section_jurisdiction_mismatch(
         "operational_top_prefecture": None,
         "mismatch": False,
     }
+    adoption_columns = _table_columns(conn, "jpi_adoption_records")
+    houjin_col = (
+        "applicant_houjin_bangou"
+        if "applicant_houjin_bangou" in adoption_columns
+        else "houjin_bangou"
+    )
     try:
         h = conn.execute(
             "SELECT prefecture FROM jpi_houjin_master WHERE houjin_bangou = ? LIMIT 1",
@@ -194,9 +246,9 @@ def _section_jurisdiction_mismatch(
             """
             SELECT prefecture, COUNT(*) AS n
               FROM jpi_adoption_records
-             WHERE applicant_houjin_bangou = ? AND prefecture IS NOT NULL
+             WHERE {houjin_col} = ? AND prefecture IS NOT NULL
              GROUP BY prefecture ORDER BY n DESC LIMIT 1
-            """,
+            """.format(houjin_col=houjin_col),
             (houjin_id,),
         ).fetchone()
         if op:
@@ -350,7 +402,13 @@ def _compose_workpaper_impl(
 # ---------------------------------------------------------------------------
 if _ENABLED and settings.autonomath_enabled:
 
-    @mcp.tool(annotations=_READ_ONLY)
+    _TOOL_NAME = (
+        "compose_audit_workpaper_v2"
+        if _has_tool_registered("compose_audit_workpaper")
+        else "compose_audit_workpaper"
+    )
+
+    @mcp.tool(name=_TOOL_NAME, annotations=_READ_ONLY)
     def compose_audit_workpaper(
         client_houjin_bangou: Annotated[
             str,

@@ -767,11 +767,8 @@ class WidgetKeyIssueResponse(BaseModel):
 def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
     """Create a Stripe Checkout session for the widget plan.
 
-    The actual `widget_keys` row is provisioned later, in the
-    `checkout.session.completed` webhook handler. The Checkout session
-    carries `metadata.autonomath_product = 'widget'` so our webhook
-    knows to look up widget-specific price ids and persist to widget_keys
-    (not api_keys).
+    After successful payment, widget access is provisioned automatically
+    and associated with the allowed origins supplied in this request.
     """
     if not settings.stripe_secret_key:
         raise HTTPException(

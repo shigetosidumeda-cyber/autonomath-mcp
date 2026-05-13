@@ -97,6 +97,52 @@ def _seed_signed_fact(db: pathlib.Path, fact_id: str) -> None:
         conn.close()
 
 
+def _seed_current_eav_fact(
+    db: pathlib.Path,
+    fact_id: str,
+    *,
+    source_url: str = "https://example.test/source-row",
+    fact_source_url: str | None = None,
+) -> None:
+    """Seed current am_entity_facts/am_source schema without confidence."""
+    conn = sqlite3.connect(str(db))
+    try:
+        conn.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS am_source (
+                id         TEXT PRIMARY KEY,
+                source_url TEXT
+            );
+            CREATE TABLE IF NOT EXISTS am_entity_facts (
+                id         TEXT PRIMARY KEY,
+                source_url TEXT,
+                source_id  TEXT,
+                created_at TEXT
+            );
+            """
+        )
+        conn.execute(
+            "INSERT OR REPLACE INTO am_source(id, source_url) VALUES (?, ?)",
+            (f"src_{fact_id}", source_url),
+        )
+        conn.execute(
+            """
+            INSERT OR REPLACE INTO am_entity_facts
+                (id, source_url, source_id, created_at)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                fact_id,
+                fact_source_url,
+                f"src_{fact_id}",
+                "2026-05-12T00:00:00.000Z",
+            ),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
 def _import_etl_module():
     spec = importlib.util.spec_from_file_location(
         "_dim_o_etl_mod", ETL_BUILD
@@ -241,6 +287,29 @@ def test_sig_size_check_min(tmp_path: pathlib.Path) -> None:
 # ---------------------------------------------------------------------------
 
 
+def test_etl_helpers_read_current_eav_schema_without_confidence(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Current EAV uses id/source_url/source_id and may omit confidence."""
+    db = _fresh_db(tmp_path)
+    _seed_current_eav_fact(
+        db,
+        "fact_current_schema",
+        source_url="https://example.test/source-table",
+        fact_source_url=None,
+    )
+    etl = _import_etl_module()
+    conn = sqlite3.connect(str(db))
+    try:
+        assert (
+            etl._derive_source_doc("fact_current_schema", conn)
+            == "https://example.test/source-table"
+        )
+        assert etl._derive_confidence("fact_current_schema", conn) == (None, None)
+    finally:
+        conn.close()
+
+
 def test_etl_run_signs_and_appends(
     tmp_path: pathlib.Path, ed25519_keypair, monkeypatch
 ) -> None:
@@ -248,6 +317,12 @@ def test_etl_run_signs_and_appends(
     _priv, _pub, seed_hex = ed25519_keypair
     db = _fresh_db(tmp_path)
     _seed_signed_fact(db, "fact_alpha")
+    _seed_current_eav_fact(
+        db,
+        "fact_alpha",
+        source_url="https://example.test/source-table",
+        fact_source_url="https://example.test/fact-row",
+    )
 
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db))
     monkeypatch.setenv("AUTONOMATH_FACT_SIGN_PRIVATE_KEY", seed_hex)
@@ -260,7 +335,7 @@ def test_etl_run_signs_and_appends(
     try:
         row = conn.execute(
             "SELECT fact_id, verified_by, length(ed25519_sig), "
-            "confidence_lower, confidence_upper "
+            "source_doc, confidence_lower, confidence_upper "
             "FROM am_fact_metadata WHERE fact_id='fact_alpha'"
         ).fetchone()
         assert row is not None
@@ -268,6 +343,9 @@ def test_etl_run_signs_and_appends(
         assert row[1] == etl.DEFAULT_VERIFIED_BY
         # prefix(8) + raw(64) + suffix(8) = 80 bytes
         assert 64 <= row[2] <= 96
+        assert row[3] == "https://example.test/fact-row"
+        assert row[4] is None
+        assert row[5] is None
 
         # Attestation log has exactly one row.
         log_count = conn.execute(

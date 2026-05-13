@@ -163,8 +163,10 @@ def weekly_db(tmp_path: Path) -> Iterator[Path]:
     """Build a fresh jpintel.db with all required tables for digest tests."""
     db_path = tmp_path / "jpintel.db"
     old_db_path = os.environ.get("JPINTEL_DB_PATH")
+    old_jpcite_db_path = os.environ.get("JPCITE_DB_PATH")
     old_salt = os.environ.get("API_KEY_SALT")
     os.environ["JPINTEL_DB_PATH"] = str(db_path)
+    os.environ["JPCITE_DB_PATH"] = str(db_path)
     os.environ["API_KEY_SALT"] = "test-salt"
 
     conn = sqlite3.connect(str(db_path))
@@ -283,6 +285,10 @@ def weekly_db(tmp_path: Path) -> Iterator[Path]:
             os.environ.pop("JPINTEL_DB_PATH", None)
         else:
             os.environ["JPINTEL_DB_PATH"] = old_db_path
+        if old_jpcite_db_path is None:
+            os.environ.pop("JPCITE_DB_PATH", None)
+        else:
+            os.environ["JPCITE_DB_PATH"] = old_jpcite_db_path
         if old_salt is None:
             os.environ.pop("API_KEY_SALT", None)
         else:

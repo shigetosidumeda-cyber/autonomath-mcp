@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 所員 3-10 名・顧問先 50-300 社 (法人 7 割 / 個人事業 3 割) の中堅税理士事務所。月初の巡回監査前に、各顧問先について「直近 30 日の補助金採択公表」「適格事業者番号の有効性」「行政処分 / 公表事案の有無」「未申請の合致補助金 top3」を一括で取得し、面談時の話題と提案ネタを 5 分で揃えたい所長・科目担当者を主たる対象とする。手動なら 1 社 5 分 × 100 社 = 8 時間/月の事務作業が、本 recipe で 5 分 + 確認 30 分に短縮される。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
 - `X-Client-Tag` ヘッダ (顧問先別計上、`api_keys` 親子発行で子キー fan-out 可)
 - 顧問先の法人番号リスト (CSV / Excel / 弥生・PCA・freee・MF 等の会計 SW export)
 - (任意) `client_profiles` テーブルへ事前登録 (JSIC 業種 + 設立年 + 都道府県) すると `subsidy_matches` の fit_score が +0.1-0.2 改善
@@ -37,7 +37,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 ```
 - `corp_numbers`: 13 桁 法人番号 (国税庁付番)。1 req あたり最大 200 件、超過時は自動 chunk。
 - `months_back`: 採択 / 処分 を遡る月数 (1-12)。月次運用は 1。
-- `client_tag`: 課金行に付与される識別子 (`usage_events.client_tag`、migration 085)。顧問先別請求書発行に使う。
+- `client_tag`: 課金行に付与される識別子。顧問先別請求書発行に使う。
 - `subsidy_top_n`: 1 法人あたりの推奨補助金件数 (1-10、既定 3)。
 
 ## 実行 (curl / Python / TypeScript)
@@ -125,7 +125,7 @@ fs.writeFileSync("monthly_review.json", JSON.stringify(rows, null, 2));
 - `get_corp_360` (法人 360 度ビュー、本 recipe 中核)
 - `check_invoice_status` (適格事業者状況)
 - `list_adoptions` (採択履歴)
-- `apply_eligibility_chain_am` (排他ルールチェック、Wave 21)
+- `apply_eligibility_chain` (排他ルールチェック、公開版 21)
 
 ## 関連 recipe
 - [r02-pre-closing-subsidy-check](../r02-pre-closing-subsidy-check/) — 決算前最終チェック、月次の延長
@@ -136,7 +136,6 @@ fs.writeFileSync("monthly_review.json", JSON.stringify(rows, null, 2));
 - 1 顧問先 18 units (`get_corp_360` 12 + matching 6) × ¥3 = ¥54 / 顧問先 / 月
 - 顧問先 100 社 = ¥5,400 / 月、税込 ¥5,940
 - 年 12 ヶ月 = ¥64,800 / 年、税込 ¥71,280
-- 節約 (純 LLM vs jpcite ¥3/req): 顧問先 100 社 × 月 1 cycle で、純 LLM は約 ¥18,000/月 (source 6,000 tokens + tool 4 call/cycle) に対し jpcite は ¥5,400/月 → 節約 約 ¥12,600/月 / 顧問先あたり ¥126 / 月 (cf. `docs/canonical/cost_saving_examples.md` case 1)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須
@@ -146,5 +145,5 @@ fs.writeFileSync("monthly_review.json", JSON.stringify(rows, null, 2));
 ## 業法 fence
 - 税理士法 §52 (税務代理 / 税務書類作成 / 税務相談は税理士独占)
 - 中小企業診断士登録規則 — 経営助言 / 補助金申請伴走は診断士領域
-- 行政書士法 §1 — 申請書面作成は行政書士、本 recipe は scaffold + 一次 URL まで
+- 行政書士法 §1 — 申請書面作成は行政書士、本 recipe は 項目整理 + 一次 URL まで
 - 景表法 §5 — `fit_score` / `max_amount_jpy` は推定値、保証ではない旨を末尾注記推奨

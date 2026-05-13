@@ -7,6 +7,7 @@ marker discipline.
 
 Pure stdlib. Read-only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,16 +16,26 @@ import pathlib
 import re
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 SITE = REPO_ROOT / "site"
 WELL_KNOWN = SITE / ".well-known"
 
 AI_BOT_UAS = [
-    "GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-User",
-    "Claude-SearchBot", "anthropic-ai", "PerplexityBot", "Google-Extended",
-    "CCBot", "Applebot-Extended", "Meta-ExternalAgent", "Amazonbot",
+    "GPTBot",
+    "ChatGPT-User",
+    "OAI-SearchBot",
+    "ClaudeBot",
+    "Claude-User",
+    "Claude-SearchBot",
+    "anthropic-ai",
+    "PerplexityBot",
+    "Google-Extended",
+    "CCBot",
+    "Applebot-Extended",
+    "Meta-ExternalAgent",
+    "Amazonbot",
     "Bytespider",
 ]
 EMERGING_AI_BOTS = ["cohere-ai", "Diffbot", "YouBot", "xAI-Crawler"]
@@ -143,9 +154,10 @@ def score_schema_dataset_service() -> SubScore:
     findings: list[str] = []
     pts = 10.0
     index = _read(SITE / "index.html")
-    needed = ["SoftwareApplication", "Organization", "WebSite", "Dataset",
-              "WebAPI", "Service"]
-    missing = [t for t in needed if f'"@type": "{t}"' not in index and f'"@type":"{t}"' not in index]
+    needed = ["SoftwareApplication", "Organization", "WebSite", "Dataset", "WebAPI", "Service"]
+    missing = [
+        t for t in needed if f'"@type": "{t}"' not in index and f'"@type":"{t}"' not in index
+    ]
     for t in missing:
         findings.append(f"index.html: Schema.org @type {t} not detected")
         pts -= 1.0
@@ -188,7 +200,7 @@ def run_audit() -> dict:
         "verdict": "green" if avg >= 8.5 else ("yellow" if avg >= 6.5 else "red"),
         "sub_scores": {s.name: round(s.score, 2) for s in subs},
         "findings": [f for s in subs for f in s.findings],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -198,7 +210,8 @@ def render_md(result: dict) -> str:
         "",
         f"**Score**: {result['score']:.2f} / 10 ({result['verdict'].upper()})",
         "",
-        "| sub-axis | score |", "| --- | --- |",
+        "| sub-axis | score |",
+        "| --- | --- |",
     ]
     for k, v in result["sub_scores"].items():
         lines.append(f"| {k} | {v:.2f} |")
@@ -222,8 +235,7 @@ def main(argv: list[str] | None = None) -> int:
         pathlib.Path(args.out_md).write_text(render_md(result))
     if args.out_json:
         pathlib.Path(args.out_json).parent.mkdir(parents=True, exist_ok=True)
-        pathlib.Path(args.out_json).write_text(json.dumps(result, indent=2,
-                                                          ensure_ascii=False))
+        pathlib.Path(args.out_json).write_text(json.dumps(result, indent=2, ensure_ascii=False))
     return 0
 
 

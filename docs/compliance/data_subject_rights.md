@@ -5,7 +5,7 @@ search:
 
 # 個人情報に関する権利行使手続 (Data Subject Rights)
 
-**事業者**: Bookyou株式会社
+**事業者**: jpcite運営事業者
 **対象法**: 個人情報の保護に関する法律 (APPI) 第33条-第39条
 **対象サービス**: jpcite (jpcite.com)
 **最終改訂日**: 2026-04-24
@@ -235,7 +235,7 @@ APPI 第35条第6項および関連法令に基づき、以下の項目は削除
 件名: [data-subject-request] 開示請求 - <あなたの登録email>
 
 本文:
-Bookyou株式会社 御中
+jpcite運営事業者 御中
 
 以下の通り、個人情報の開示を請求します。
 
@@ -254,7 +254,7 @@ Bookyou株式会社 御中
 件名: [data-subject-request] 削除請求 - <あなたの登録email>
 
 本文:
-Bookyou株式会社 御中
+jpcite運営事業者 御中
 
 以下の通り、個人情報の削除を請求します。
 
@@ -278,7 +278,7 @@ Bookyou株式会社 御中
 
 ## 11. 連絡先
 
-**Bookyou株式会社**
+**jpcite運営事業者**
 〒112-0006 東京都文京区小日向2-22-1
 Email: `info@bookyou.net`
 

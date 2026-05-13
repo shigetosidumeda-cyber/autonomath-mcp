@@ -39,7 +39,7 @@
   Visual:
     Time-saving 大カード = main display (真の価値, hero).
     Token saving 副カード = raw token math (small but positive, jpcite cost separate).
-    Token-only ROI = honest red on Opus 4.7 with §52 disclosure tooltip.
+    Token-only net = honest red on Opus 4.7 with §52 disclosure tooltip.
     Combined net summary card = time + token honest sum.
     Pure <canvas> 30-day bar chart (no Chart.js dep) — chart bar = combined per-day net.
 
@@ -56,7 +56,6 @@
 
 <link rel="canonical" href="https://jpcite.com/dashboard/savings">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/dashboard/savings.html?lang=ja">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/dashboard/savings.html?lang=en">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/dashboard/savings.html">
 
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
@@ -164,7 +163,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -207,11 +206,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -288,7 +287,7 @@
      <p class="value">¥<span id="v-cost">—</span></p>
     </div>
     <div class="stat-card negative" id="stat-roi">
-     <p class="label"><span data-i18n="stat_roi">Token-only ROI</span>
+     <p class="label"><span data-i18n="stat_roi">Token-only net</span>
       <span class="tip-wrap"><span class="tip" tabindex="0">?</span><span class="tip-body" data-i18n="tip_roi">honest disclosure: <strong>raw token math では net loss</strong> (Opus 4.7、6,000 q/月で -71% / -¥14,144)。真の価値は audit-grade citation と verify 時間の解放にあります。下のカードの合算 net を参照してください。</span></span>
      </p>
      <p class="value"><span id="v-roi">—</span><span class="unit">%</span></p>
@@ -375,7 +374,7 @@
       stat_tokens: 'Token 節約 (raw, 30d)',
       stat_usd: 'USD 節約 (raw, 30d)',
       stat_cost: 'jpcite コスト (30d)',
-      stat_roi: 'Token-only ROI',
+      stat_roi: 'Token-only net',
       net_label: '合算 net (時間 + token, 30d)',
       net_note: '(time + token saving 合算)。time saving は税理士単価 ¥8,000/h × 0.5 min/query で換算。token saving は raw 直叩き Opus 4.7 単価との差分。個別結果は使用パターン (query 種類・モデル・verify 工程の有無) に強く依存します。',
       chart_title: '過去 30 日の日次差分 (緑 = 節約 / 赤 = 損失)',
@@ -415,7 +414,7 @@
       stat_tokens: 'Tokens saved (raw, 30d)',
       stat_usd: 'USD saved (raw, 30d)',
       stat_cost: 'jpcite cost (30d)',
-      stat_roi: 'Token-only ROI',
+      stat_roi: 'Token-only net',
       net_label: 'Combined net (time + token, 30d)',
       net_note: '(Time + token saving combined.) Time saving converted at ¥8,000/h × 0.5 min/query. Token saving is the delta vs raw direct Opus 4.7 pricing. Individual results depend strongly on usage pattern (query type, model, presence of verify steps).',
       chart_title: 'Past 30 days, daily delta (green = savings / red = loss)',
@@ -620,7 +619,7 @@
     document.getElementById('v-hours').textContent = fmtPct(sum.hours_saved);
     document.getElementById('v-time-jpy').textContent = '¥' + fmtJPY(sum.jpy_time_saved);
 
-    // ----- Sub cards: token raw + jpcite cost + token-only ROI (honest, often negative) -----
+    // ----- Sub cards: token raw + jpcite cost + token-only net (honest, often negative) -----
     document.getElementById('v-tokens').textContent = fmtInt(sum.tokens);
     document.getElementById('v-usd').textContent = fmtUSD(sum.usd);
     document.getElementById('v-cost').textContent = fmtJPY(sum.jpy_cost);
@@ -631,7 +630,7 @@
     document.getElementById('v-roi-delta').textContent = tokenDeltaLabel;
 
     // Token saving cards (raw token math): positive iff raw token saving > 0 (always true).
-    // Token-only ROI card: honest red iff jpcite cost > raw saving (Opus 4.7 default = red).
+    // Token-only net card: honest red iff jpcite cost > raw saving (Opus 4.7 default = red).
     var roiCard = document.getElementById('stat-roi');
     roiCard.classList.remove('positive', 'negative');
     roiCard.classList.add(sum.token_delta >= 0 ? 'positive' : 'negative');

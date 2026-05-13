@@ -13,8 +13,8 @@ name: composed-tools-invocation-daily
 
 on:
   schedule:
-    # 02:45 UTC == 11:45 JST. After session-context-daily (02:30).
-    - cron: "45 2 * * *"
+    # 02:40 UTC == 11:40 JST. After session-context-daily (02:25).
+    - cron: "40 2 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -40,8 +40,32 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Dry-run plan
-        run: python scripts/etl/seed_composed_tools.py --dry-run
-      - name: Run composed-tools re-seed
-        if: ${{ github.event.inputs.dry_run != 'true' }}
-        run: python scripts/etl/seed_composed_tools.py
+
+      - name: Local dry-run probe (no production DB)
+        run: |
+          set -euo pipefail
+          python scripts/etl/seed_composed_tools.py \
+            --dry-run \
+            --db "$RUNNER_TEMP/wave49-g3-nonprod-missing.db"
+
+      - name: Install flyctl
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.dry_run != 'true' }}
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run composed-tools re-seed on Fly production DB
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.dry_run != 'true' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
+        run: |
+          set -euo pipefail
+          FLAGS="--db /data/autonomath.db"
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="--dry-run ${FLAGS}"
+          elif [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" != "I_ACK_PROD_DB_MUTATION" ]; then
+            echo "::warning::Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
+            FLAGS="--dry-run ${FLAGS}"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/etl/seed_composed_tools.py ${FLAGS}"

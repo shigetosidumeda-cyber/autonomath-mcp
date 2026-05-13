@@ -68,12 +68,11 @@ from datetime import UTC, datetime, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from jpintel_mcp.api._license_gate import (
     annotate_attribution,
     assert_no_blocked,
-    filter_redistributable,
 )
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -110,6 +109,66 @@ EXPORT_MIN_INTERVAL_S = 60
 # directly off R2 via the existing ``scripts/cron/export_parquet_corpus.py``
 # pipeline (un-metered, customers with the corpus license get it free).
 EXPORT_MAX_ROWS = 50_000
+
+# List-valued filters expand into SQL IN (?, ?, ...). Cap each list well
+# below SQLite's variable limit so one request cannot generate a huge
+# statement or burn memory in parameter binding.
+EXPORT_MAX_FILTER_LIST_ITEMS = 500
+
+# Per-export column projection cap. The dataset views already top out
+# around 40-50 columns, but a malicious caller could pass an arbitrarily
+# long `columns` list that consumes time inside the
+# `[c for c in columns if c in all_cols]` filter. 200 is comfortably above
+# any real schema and keeps the iteration trivially bounded.
+EXPORT_MAX_COLUMN_LIST_ITEMS = 200
+
+# R3 (2026-05-13). `filter` is a free-form `dict[str, Any]` — without a
+# size cap a caller could pass a 100k-key object that burns CPU inside the
+# `for k, v in filter_obj.items()` loop before the column allow-list ever
+# fires. The 32-key ceiling is generous (real dataset views expose ~40
+# columns, callers filter on at most a handful), and pairs with a depth
+# guard that rejects nested dicts / lists-of-lists outright — A8 caps
+# one-level lists at 500 items, but a `list[list[...]]` would let a
+# caller smuggle 500 × 500 = 250k items past the post-A8 fence.
+EXPORT_MAX_FILTER_DICT_KEYS = 32
+
+# Per-key length cap (chars). Filter keys are user-supplied strings that
+# get echoed into error messages and SQL identifier slots; 64 is generous
+# for any real column name and prevents log/regex amplification attacks.
+EXPORT_MAX_FILTER_KEY_LEN = 64
+
+# XLSX hard cell budget. Excel's spec ceiling is 1,048,576 rows ×
+# 16,384 columns, but at ~80 B / cell the byte cost is the binding
+# constraint, not the spec. 1M cells ≈ 80 MB of in-memory XML before
+# zlib, which is the largest safe single-process slice for the Fly
+# 256 MB VM. Reject xlsx renders whose `rows × columns` exceeds this
+# budget so the call returns 422 instead of OOM-killing the worker.
+# NOTE: above ``EXPORT_XLSX_STREAM_THRESHOLD_ROWS`` rows we switch to
+# openpyxl write_only mode (tempfile-backed zip stream), so the 80 B/
+# cell estimate is a worst-case upper bound — actual peak memory on
+# the streaming path is constant in row count.
+EXPORT_MAX_XLSX_CELLS = 1_000_000
+
+# XLSX is not truly end-to-end streamed in this route: SQLite rows are
+# materialised for the license gate and the final XLSX ZIP is staged as
+# bytes for R2. Keep the XLSX-specific row ceiling lower than the generic
+# CSV/JSON export ceiling so the known materialisation points stay bounded.
+EXPORT_MAX_XLSX_ROWS = 10_000
+
+# R3 streaming threshold (2026-05-13). Above this row count, the XLSX
+# renderer switches from the in-memory hand-rolled-zip fast path to
+# ``openpyxl.Workbook(write_only=True)`` which streams cells row-by-row
+# to a ``BytesIO`` zip stream, never holding the full worksheet XML in
+# memory. 2,000 rows × ~20 cols ≈ 40k cells ≈ 3 MB string — small
+# exports keep the lower-overhead fast path; large exports avoid the
+# 50k × 20 ≈ 80 MB peak that would OOM the 256 MB VM.
+EXPORT_XLSX_STREAM_THRESHOLD_ROWS = 2_000
+
+EXPORT_XLSX_STREAMING_LIMITATION = (
+    "XLSX rows are streamed into the worksheet writer, but /v1/export still "
+    "materializes SQLite rows for the license gate and buffers the final ZIP "
+    "before R2 staging; use csv/json for larger pulls."
+)
 
 # Signed URL TTL. 1h matches typical AI-agent retry-loop budgets
 # (LangGraph default 3600s) and limits the blast radius of a leaked link.
@@ -190,6 +249,63 @@ class ExportRequest(BaseModel):
         description=f"Row cap. Hard maximum is {EXPORT_MAX_ROWS}.",
     )
 
+    @field_validator("filter")
+    @classmethod
+    def _cap_filter_shape(cls, value: dict[str, Any]) -> dict[str, Any]:
+        """R3 missing-guard fix (2026-05-13).
+
+        Bound `filter` so a caller can't burn CPU/memory with an
+        unbounded dict. Three independent fences:
+
+          1. ``len(filter) > EXPORT_MAX_FILTER_DICT_KEYS`` → 422.
+          2. Any key longer than ``EXPORT_MAX_FILTER_KEY_LEN`` chars → 422.
+          3. Any value that is a ``dict`` (nested) or a ``list[list]``
+             (one-level lists OK — A8 caps those at 500 items; nesting
+             would let a caller smuggle 500 × 500 = 250k items).
+        """
+        if len(value) > EXPORT_MAX_FILTER_DICT_KEYS:
+            raise ValueError(
+                f"filter exceeds maximum {EXPORT_MAX_FILTER_DICT_KEYS} keys "
+                f"(got {len(value)})"
+            )
+        for key, filter_value in value.items():
+            if not isinstance(key, str) or len(key) > EXPORT_MAX_FILTER_KEY_LEN:
+                raise ValueError(
+                    f"filter key exceeds maximum {EXPORT_MAX_FILTER_KEY_LEN} chars"
+                )
+            if isinstance(filter_value, dict):
+                raise ValueError(
+                    f"filter.{key} must not be a nested dict (one level only)"
+                )
+            if isinstance(filter_value, list):
+                for item in filter_value:
+                    if isinstance(item, (list, dict)):
+                        raise ValueError(
+                            f"filter.{key} must not contain nested lists or dicts"
+                        )
+        return value
+
+    @field_validator("filter")
+    @classmethod
+    def _cap_filter_lists(cls, value: dict[str, Any]) -> dict[str, Any]:
+        for key, filter_value in value.items():
+            if isinstance(filter_value, list) and len(filter_value) > EXPORT_MAX_FILTER_LIST_ITEMS:
+                raise ValueError(
+                    f"filter.{key} list exceeds maximum "
+                    f"{EXPORT_MAX_FILTER_LIST_ITEMS} items"
+                )
+        return value
+
+    @field_validator("columns")
+    @classmethod
+    def _cap_columns_length(cls, value: list[str] | None) -> list[str] | None:
+        if value is not None and len(value) > EXPORT_MAX_COLUMN_LIST_ITEMS:
+            raise ValueError(
+                f"columns list exceeds maximum "
+                f"{EXPORT_MAX_COLUMN_LIST_ITEMS} items"
+            )
+        return value
+
 
 class ExportResponse(BaseModel):
     """POST /v1/export response body."""
@@ -226,6 +342,21 @@ def _rate_floor_check(key_hash: str) -> None:
             headers={"Retry-After": str(retry_after)},
         )
     _export_rate_state[key_hash] = now
+
+
+def _projected_cap_response(
+    conn: sqlite3.Connection,
+    ctx: Any,
+    units: int,
+) -> Any | None:
+    """Run the same exact multi-unit cap gate used by batch endpoints."""
+    if units <= 0:
+        return None
+    from jpintel_mcp.api.middleware.customer_cap import (
+        projected_monthly_cap_response,
+    )
+
+    return projected_monthly_cap_response(conn, ctx.key_hash, units)
 
 
 def _materialize_rows(
@@ -276,6 +407,17 @@ def _materialize_rows(
     where: list[str] = []
     params: list[Any] = []
     for k, v in filter_obj.items():
+        if isinstance(v, list) and len(v) > EXPORT_MAX_FILTER_LIST_ITEMS:
+            raise HTTPException(
+                422,
+                detail={
+                    "detail": (
+                        f"filter.{k} list exceeds maximum "
+                        f"{EXPORT_MAX_FILTER_LIST_ITEMS} items"
+                    ),
+                    "max_items": EXPORT_MAX_FILTER_LIST_ITEMS,
+                },
+            )
         if k not in all_cols:
             continue
         if isinstance(v, list):
@@ -339,26 +481,89 @@ def _render_json(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
 
 
 def _render_xlsx(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
-    """Render minimal XLSX (single sheet) without requiring openpyxl.
+    """Render single-sheet XLSX.
 
-    XLSX is a ZIP of XML parts. We hand-roll the four required parts so
-    this module has zero new runtime deps. Excel/Numbers/LibreOffice all
-    open the result; charts and styles are intentionally omitted.
+    Two render paths share one entry point:
+
+      * Small exports (``len(rows) <= EXPORT_XLSX_STREAM_THRESHOLD_ROWS``)
+        use the legacy hand-rolled-zip in-memory builder — lowest overhead
+        for the common case (search dumps, ~100-row exports).
+      * Large exports use ``openpyxl.Workbook(write_only=True)`` which
+        streams cells to a ``BytesIO``-backed zip, keeping peak memory
+        roughly constant in row count. R3 risk fix (2026-05-13): the
+        50k row × 20 col case was previously building ~80 MB of
+        ``StringIO`` XML simultaneous with the 30-60 MB compressed zip,
+        which OOM-killed the 256 MB Fly VM.
+
+    Contract (identical across paths):
+
+      * ``assert_no_blocked(rows)`` fires before any byte is written.
+      * ``annotate_attribution`` runs per row and ``_attribution`` is
+        appended to ``columns`` when not already present.
+      * ``EXPORT_MAX_XLSX_CELLS`` guard still 422s before render.
 
     License gate (§24 / §28.9 No-Go #5): rows are funnelled through
-    `assert_no_blocked` before serialization, then `annotate_attribution`
-    per row, matching the CSV path. `filter_redistributable` is also
-    referenced in a defensive belt-and-braces split so any future
-    reviewer trivially audits redistributable vs blocked counts here.
+    ``assert_no_blocked`` before serialization, then
+    ``annotate_attribution`` per row, matching the CSV path.
+    """
+    assert_no_blocked(rows)
+    if "_attribution" not in columns:
+        columns = [*columns, "_attribution"]
+
+    if len(rows) > EXPORT_MAX_XLSX_ROWS:
+        raise HTTPException(
+            422,
+            detail={
+                "detail": (
+                    f"xlsx row budget exceeded: {len(rows):,} > "
+                    f"{EXPORT_MAX_XLSX_ROWS:,}"
+                ),
+                "max_rows": EXPORT_MAX_XLSX_ROWS,
+                "rows": len(rows),
+                "hint": "lower `limit` or use csv/json",
+                "limitation": EXPORT_XLSX_STREAMING_LIMITATION,
+            },
+        )
+
+    # XLSX memory guard. Reject early with 422 instead of OOMing the
+    # worker. Use the integer literal 422 to dodge the starlette
+    # `HTTP_422_UNPROCESSABLE_ENTITY` -> `_CONTENT` rename window.
+    cell_count = len(rows) * len(columns)
+    if cell_count > EXPORT_MAX_XLSX_CELLS:
+        raise HTTPException(
+            422,
+            detail={
+                "detail": (
+                    f"xlsx cell budget exceeded: {cell_count:,} > "
+                    f"{EXPORT_MAX_XLSX_CELLS:,}"
+                ),
+                "max_cells": EXPORT_MAX_XLSX_CELLS,
+                "rows": len(rows),
+                "columns": len(columns),
+                "hint": "lower `limit` or narrow `columns`, or use csv/json",
+            },
+        )
+
+    if len(rows) > EXPORT_XLSX_STREAM_THRESHOLD_ROWS:
+        return _render_xlsx_streaming(columns, rows)
+    return _render_xlsx_inmemory(columns, rows)
+
+
+def _render_xlsx_inmemory(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
+    """Fast in-memory XLSX path for small exports.
+
+    Hand-rolls the four required ZIP parts so this path has zero
+    third-party-deps cost on the import-fast common case. Excel /
+    Numbers / LibreOffice all open the result; charts and styles are
+    intentionally omitted.
+
+    Pre-conditions (enforced by the public ``_render_xlsx`` wrapper):
+      * ``assert_no_blocked(rows)`` has already fired.
+      * ``columns`` already includes ``_attribution`` if needed.
+      * ``EXPORT_MAX_XLSX_CELLS`` guard has already fired.
     """
     import xml.sax.saxutils as _saxutils
     import zipfile
-
-    assert_no_blocked(rows)
-    allowed, _blocked = filter_redistributable(rows)
-    rows = [annotate_attribution(r) for r in allowed]
-    if "_attribution" not in columns:
-        columns = [*columns, "_attribution"]
 
     def _xml_escape(value: Any) -> str:
         if value is None:
@@ -367,20 +572,22 @@ def _render_xlsx(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
             value = json.dumps(value, ensure_ascii=False)
         return _saxutils.escape(str(value))
 
-    # Build the worksheet XML
-    rows_xml: list[str] = []
+    # Build worksheet XML incrementally so XLSX avoids a second full row
+    # list in memory before the zip writer receives the sheet part.
+    sheet_data = io.StringIO()
     header = "".join(f'<c t="inlineStr"><is><t>{_xml_escape(c)}</t></is></c>' for c in columns)
-    rows_xml.append(f"<row r=\"1\">{header}</row>")
-    for i, row in enumerate(rows, start=2):
+    sheet_data.write(f'<row r="1">{header}</row>')
+    for i, raw_row in enumerate(rows, start=2):
+        row = annotate_attribution(raw_row)
         cells = "".join(
             f'<c t="inlineStr"><is><t>{_xml_escape(row.get(c))}</t></is></c>'
             for c in columns
         )
-        rows_xml.append(f'<row r="{i}">{cells}</row>')
+        sheet_data.write(f'<row r="{i}">{cells}</row>')
     sheet_xml = (
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
-        f'<sheetData>{"".join(rows_xml)}</sheetData></worksheet>'
+        f"<sheetData>{sheet_data.getvalue()}</sheetData></worksheet>"
     )
 
     workbook_xml = (
@@ -420,6 +627,48 @@ def _render_xlsx(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
         zf.writestr("xl/workbook.xml", workbook_xml)
         zf.writestr("xl/_rels/workbook.xml.rels", workbook_rels)
         zf.writestr("xl/worksheets/sheet1.xml", sheet_xml)
+    return buf.getvalue()
+
+
+def _render_xlsx_streaming(columns: list[str], rows: list[dict[str, Any]]) -> bytes:
+    """Streaming XLSX path for large exports (>EXPORT_XLSX_STREAM_THRESHOLD_ROWS).
+
+    Uses ``openpyxl.Workbook(write_only=True)`` which writes cells
+    row-by-row to a zip stream — peak memory is one row's worth of
+    string objects plus the zip deflate window, not the full sheet XML.
+
+    Pre-conditions (enforced by the public ``_render_xlsx`` wrapper):
+      * ``assert_no_blocked(rows)`` has already fired.
+      * ``columns`` already includes ``_attribution`` if needed.
+      * ``EXPORT_MAX_XLSX_CELLS`` guard has already fired.
+    """
+    # Local imports keep the small-export path (90% of calls) from
+    # paying openpyxl's ~50 MB import cost up-front.
+    from openpyxl import Workbook  # noqa: PLC0415
+
+    def _safe_cell(v: Any) -> Any:
+        """openpyxl accepts str/int/float/bool/datetime; lists/dicts
+        get JSON-encoded so the cell carries the raw structure."""
+        if v is None or isinstance(v, (str, int, float, bool)):
+            return v
+        if isinstance(v, (list, dict)):
+            return json.dumps(v, ensure_ascii=False)
+        return str(v)
+
+    wb = Workbook(write_only=True)
+    ws = wb.create_sheet(title="export")
+
+    # Header row.
+    ws.append(list(columns))
+
+    # Data rows — write_only streams each `append` straight to the
+    # underlying zip; we never materialise the full sheet in memory.
+    for raw_row in rows:
+        row = annotate_attribution(raw_row)
+        ws.append([_safe_cell(row.get(c)) for c in columns])
+
+    buf = io.BytesIO()
+    wb.save(buf)
     return buf.getvalue()
 
 
@@ -495,6 +744,9 @@ def list_formats() -> dict[str, Any]:
         "formats": list(_SUPPORTED_FORMATS),
         "datasets": list(_EXPORT_DATASETS.keys()),
         "row_cap": EXPORT_MAX_ROWS,
+        "xlsx_row_cap": EXPORT_MAX_XLSX_ROWS,
+        "xlsx_cell_cap": EXPORT_MAX_XLSX_CELLS,
+        "xlsx_streaming_limitation": EXPORT_XLSX_STREAMING_LIMITATION,
         "rate_limit_s": EXPORT_MIN_INTERVAL_S,
         "unit_count_per_export": EXPORT_UNIT_COUNT,
         "url_ttl_s": EXPORT_URL_TTL_S,
@@ -523,6 +775,25 @@ def create_export(
     """
     require_metered_api_key(ctx, "data export")
     assert ctx.key_hash is not None  # narrowed by require_metered_api_key
+
+    cap_response = _projected_cap_response(conn, ctx, EXPORT_UNIT_COUNT)
+    if cap_response is not None:
+        return cap_response
+
+    if body.format == "xlsx" and body.limit > EXPORT_MAX_XLSX_ROWS:
+        raise HTTPException(
+            422,
+            detail={
+                "detail": (
+                    f"xlsx limit exceeds maximum {EXPORT_MAX_XLSX_ROWS} rows "
+                    "for this buffered export route"
+                ),
+                "max_rows": EXPORT_MAX_XLSX_ROWS,
+                "requested_limit": body.limit,
+                "hint": "lower `limit` or use csv/json",
+                "limitation": EXPORT_XLSX_STREAMING_LIMITATION,
+            },
+        )
 
     _rate_floor_check(ctx.key_hash)
 
@@ -596,13 +867,8 @@ def reissue_export_url(
 ) -> ExportResponse:
     """Re-issue a signed URL for a previously created export.
 
-    The blob is not re-materialised and no usage_events row is written —
-    the customer paid for it on POST. The TTL is refreshed from now.
-
-    Implementation note: persistence of the export catalogue is currently
-    derived from the R2 object key, not a database table. A future
-    migration may introduce ``exports`` for richer lookup; the route
-    contract is forward-compatible.
+    The export contents are not regenerated and the request is not charged
+    again. The returned download URL receives a fresh short-lived expiry.
     """
     if not export_id.startswith("exp_"):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "unknown export_id")

@@ -33,7 +33,7 @@
 <body>
 <main>
   <h1>jpcite cost saving calculator</h1>
-  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>token + web search 課金</strong> と jpcite MCP ¥3/req の差を即時計算します。 数値ソースは Anthropic / OpenAI 2026-05-12 時点の公式 pricing。 canonical: <a href="/docs/canonical/cost_saving_examples/">/docs/canonical/cost_saving_examples</a> § C / § E。</p>
+  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>token + web search 課金</strong> と jpcite MCP ¥3/req の差を即時計算します。 数値ソースは Anthropic / OpenAI 2026-05-12 時点の公式 pricing。 詳細な前提は <a href="/tools/cost_saving_examples.md">cost saving examples</a> を参照。</p>
 
   <section class="card">
     <h2>1. 前提パラメータ</h2>
@@ -121,12 +121,12 @@
       <li>Anthropic Pricing: <a href="https://www.anthropic.com/pricing">https://www.anthropic.com/pricing</a> (Messages API + web_search_20250305 tool)</li>
       <li>OpenAI Pricing: <a href="https://openai.com/api/pricing/">https://openai.com/api/pricing/</a> + <a href="https://platform.openai.com/docs/pricing">platform.openai.com/docs/pricing</a> (Responses API built-in web search)</li>
       <li>jpcite pricing: <a href="/pricing">/pricing</a> (¥3/req 税別、 anonymous 3 req/day per IP)</li>
-      <li>canonical doc (v2): <a href="/docs/canonical/cost_saving_examples/">cost_saving_examples</a></li>
+      <li>前提メモ: <a href="/tools/cost_saving_examples.md">cost_saving_examples</a></li>
     </ul>
   </section>
 </main>
 <script>
-// canonical USE_CASES — must match docs/canonical/cost_saving_examples.md § C
+// USE_CASES mirror the public cost-saving examples memo.
 const USE_CASES = [
   { id: 1, name: "M&A DD (法人 1 社 許認可+採択+処分, multi-turn 検証込)",  in_tok: 120000, out_tok: 20000, search: 25, req: 4 },
   { id: 2, name: "補助金 1 件 要件+一次 URL+排他抽出 (multi-program 比較)", in_tok:  80000, out_tok: 15000, search: 18, req: 2 },

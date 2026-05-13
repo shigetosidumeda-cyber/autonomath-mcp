@@ -7,6 +7,7 @@ site/audiences/*.html and site/connect/*.html.
 
 Pure stdlib, no LLM. Read-only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -15,21 +16,30 @@ import pathlib
 import re
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 SITE = REPO_ROOT / "site"
 
 CORE_PAGES = [
-    "index.html", "pricing.html", "dashboard.html", "playground.html",
-    "login.html", "artifact.html", "sources.html",
+    "index.html",
+    "pricing.html",
+    "dashboard.html",
+    "playground.html",
+    "login.html",
+    "artifact.html",
+    "sources.html",
 ]
 EXTENDED = [
-    "audiences/tax-advisor.html", "audiences/admin-scrivener.html",
-    "audiences/subsidy-consultant.html", "audiences/vc.html",
+    "audiences/tax-advisor.html",
+    "audiences/admin-scrivener.html",
+    "audiences/subsidy-consultant.html",
+    "audiences/vc.html",
     "audiences/shinkin.html",
-    "connect/claude-code.html", "connect/cursor.html",
-    "connect/chatgpt.html", "connect/codex.html",
+    "connect/claude-code.html",
+    "connect/cursor.html",
+    "connect/chatgpt.html",
+    "connect/codex.html",
     "status/index.html",
 ]
 
@@ -95,13 +105,16 @@ def score_a11y() -> SubScore:
         if 'lang="ja"' not in html and 'lang="en"' not in html:
             findings.append(f"{p.name}: <html lang> missing")
             pts -= 0.5
-        if 'charset="UTF-8"' not in html and 'charset=utf-8' not in html.lower():
+        if 'charset="UTF-8"' not in html and "charset=utf-8" not in html.lower():
             findings.append(f"{p.name}: <meta charset> missing")
             pts -= 0.3
-        if p.name not in ("artifact.html",):
-            if "skip-link" not in html and "Skip to main" not in html:
-                findings.append(f"{p.name}: skip-link not detected")
-                pts -= 0.2
+        if (
+            p.name not in ("artifact.html",)
+            and "skip-link" not in html
+            and "Skip to main" not in html
+        ):
+            findings.append(f"{p.name}: skip-link not detected")
+            pts -= 0.2
     return SubScore("a11y_wcag22", max(0.0, min(10.0, pts)), findings)
 
 
@@ -174,9 +187,14 @@ def score_seo_meta() -> SubScore:
 
 def run_audit() -> dict:
     subs = [
-        score_landmarks(), score_headings(), score_a11y(),
-        score_contrast_provisional(), score_viewport(),
-        score_cwv_proxy(), score_perf(), score_seo_meta(),
+        score_landmarks(),
+        score_headings(),
+        score_a11y(),
+        score_contrast_provisional(),
+        score_viewport(),
+        score_cwv_proxy(),
+        score_perf(),
+        score_seo_meta(),
     ]
     avg = sum(s.score for s in subs) / len(subs)
     return {
@@ -185,7 +203,7 @@ def run_audit() -> dict:
         "verdict": "green" if avg >= 8.5 else ("yellow" if avg >= 6.5 else "red"),
         "sub_scores": {s.name: round(s.score, 2) for s in subs},
         "findings": [f for s in subs for f in s.findings],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -195,7 +213,8 @@ def render_md(result: dict) -> str:
         "",
         f"**Score**: {result['score']:.2f} / 10 ({result['verdict'].upper()})",
         "",
-        "| sub-axis | score |", "| --- | --- |",
+        "| sub-axis | score |",
+        "| --- | --- |",
     ]
     for k, v in result["sub_scores"].items():
         lines.append(f"| {k} | {v:.2f} |")
@@ -221,8 +240,7 @@ def main(argv: list[str] | None = None) -> int:
         pathlib.Path(args.out_md).write_text(render_md(result))
     if args.out_json:
         pathlib.Path(args.out_json).parent.mkdir(parents=True, exist_ok=True)
-        pathlib.Path(args.out_json).write_text(json.dumps(result, indent=2,
-                                                          ensure_ascii=False))
+        pathlib.Path(args.out_json).write_text(json.dumps(result, indent=2, ensure_ascii=False))
     return 0
 
 

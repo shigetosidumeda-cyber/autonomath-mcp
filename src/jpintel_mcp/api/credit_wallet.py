@@ -18,8 +18,9 @@ This module performs ZERO Anthropic / OpenAI / etc. SDK call (memory
 `feedback_no_operator_llm_api`). It also performs ZERO real money
 transfer — Stripe Portal remains the only path that touches Stripe
 secrets (memory: do not overwrite existing Stripe Portal). ``/topup``
-records the wallet's auto-topup *intent* + an optional in-wallet
-``topup`` ledger row that the cron picks up; it does NOT call Stripe.
+records the wallet's auto-topup *intent* and, when ``immediate_amount`` is
+supplied with an idempotency key, records one positive ``topup`` ledger row
+and increases balance. It does NOT call Stripe.
 ``/charge`` is restricted to internal callers via an
 ``X-Internal-Token`` header check matching
 ``settings.metering_internal_token``; without it, the endpoint returns
@@ -40,8 +41,9 @@ Database
 Wallet data lives in ``autonomath.db`` (the operator-internal mirror)
 to match the migration's ``-- target_db: autonomath`` header. We use a
 short-lived read-write connection per request (5s timeout, WAL-friendly
-journal mode honored by SQLite defaults). The shared ``DbDep`` resolves
-``jpcite.db`` and is used only for ``log_usage`` (usage_events table).
+journal mode honored by SQLite defaults). The shared ``ApiContextDep``
+still resolves ``jpcite.db`` for API-key authentication, but this router
+does not write ``usage_events`` rows.
 
 Spending alerts
 ---------------
@@ -58,16 +60,18 @@ in-progress charge.
 Pricing
 -------
 All five endpoints are operator-internal accounting plumbing and carry
-``_billing_unit: 0`` — they do NOT bill the caller. The actual ``¥3/req``
-deduction comes from upstream metering that calls ``/charge``.
+``_billing_unit: 0`` — they do NOT bill the caller or emit
+``usage_events`` rows. The actual ``¥3/req`` deduction comes from
+upstream metering that calls ``/charge``.
 """
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
+import re
 import sqlite3
-import time
 from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
@@ -78,7 +82,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES
-from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
+from jpintel_mcp.api.deps import ApiContextDep  # noqa: TC001
 
 logger = logging.getLogger("jpintel.api.credit_wallet")
 
@@ -91,6 +95,20 @@ _WALLET_DISCLAIMER = (
     "実際の Stripe 決済は /v1/billing/portal 経由のみ — このルーターは "
     "金銭授受を行いません (LLM-0 + Stripe-bypass discipline)。"
 )
+
+_REQUIRED_WALLET_TABLES = (
+    "am_credit_wallet",
+    "am_credit_transaction_log",
+    "am_credit_spending_alert",
+)
+_IDEMPOTENCY_MARKER_RE = re.compile(
+    r"(?:^|\n)\[wallet-idem:([0-9a-f]{32}):bal=(-?\d+):cycle=(\d{4}-\d{2})\]$"
+)
+_TOPUP_IDEMPOTENCY_MARKER_RE = re.compile(
+    r"(?:^|\n)\[wallet-topup-idem:([0-9a-f]{32}):fp=([0-9a-f]{32}):"
+    r"bal=(-?\d+):cycle=(\d{4}-\d{2})\]$"
+)
+_IDEMPOTENCY_KEY_RE = re.compile(r"^[!-~]{1,255}$")
 
 
 # ---------------------------------------------------------------------------
@@ -127,14 +145,12 @@ def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
 
 def _require_wallet_schema(conn: sqlite3.Connection) -> None:
     """503 if migration 281 hasn't been applied."""
-    if not _table_exists(conn, "am_credit_wallet"):
+    missing = [name for name in _REQUIRED_WALLET_TABLES if not _table_exists(conn, name)]
+    if missing:
+        logger.warning("credit_wallet.schema_missing objects=%s", ",".join(missing))
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=(
-                "credit_wallet schema not provisioned — migration 281 "
-                "(am_credit_wallet) is missing from autonomath.db. Run "
-                "`sqlite3 autonomath.db < scripts/migrations/281_credit_wallet.sql`."
-            ),
+            detail="wallet service unavailable",
         )
 
 
@@ -151,7 +167,7 @@ def _get_or_create_wallet(
     if row is not None:
         return row
     conn.execute(
-        "INSERT INTO am_credit_wallet (owner_token_hash) VALUES (?)",
+        "INSERT OR IGNORE INTO am_credit_wallet (owner_token_hash) VALUES (?)",
         (owner_token_hash,),
     )
     conn.commit()
@@ -227,9 +243,176 @@ def _maybe_fire_alerts(
         except sqlite3.IntegrityError:
             # UNIQUE(wallet_id, threshold_pct, billing_cycle) — already fired this cycle
             continue
-    if fired:
-        conn.commit()
     return fired
+
+
+def _normalise_idempotency_key(raw: str | None) -> str | None:
+    if raw is None:
+        return None
+    key = raw.strip()
+    if not key:
+        return None
+    if not _IDEMPOTENCY_KEY_RE.fullmatch(key):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="invalid_idempotency_key",
+        )
+    return key
+
+
+def _wallet_idempotency_hash(*candidates: str | None) -> str | None:
+    keys = [_normalise_idempotency_key(value) for value in candidates]
+    present = [key for key in keys if key is not None]
+    if not present:
+        return None
+    if len(set(present)) > 1:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="conflicting_idempotency_key",
+        )
+    return hashlib.sha256(present[0].encode("utf-8")).hexdigest()[:32]
+
+
+def _append_idempotency_marker(
+    note: str | None,
+    *,
+    idem_hash: str | None,
+    balance_yen: int,
+    billing_cycle: str,
+) -> str | None:
+    if idem_hash is None:
+        return note
+    marker = f"[wallet-idem:{idem_hash}:bal={balance_yen}:cycle={billing_cycle}]"
+    return f"{note}\n{marker}" if note else marker
+
+
+def _strip_idempotency_marker(note: str | None) -> str | None:
+    if note is None:
+        return None
+    cleaned = _TOPUP_IDEMPOTENCY_MARKER_RE.sub("", note)
+    cleaned = _IDEMPOTENCY_MARKER_RE.sub("", cleaned).rstrip("\n")
+    return cleaned or None
+
+
+def _append_topup_idempotency_marker(
+    note: str | None,
+    *,
+    idem_hash: str | None,
+    payload_hash: str,
+    balance_yen: int,
+    billing_cycle: str,
+) -> str | None:
+    if idem_hash is None:
+        return note
+    marker = (
+        f"[wallet-topup-idem:{idem_hash}:fp={payload_hash}:"
+        f"bal={balance_yen}:cycle={billing_cycle}]"
+    )
+    return f"{note}\n{marker}" if note else marker
+
+
+def _find_idempotent_topup(
+    conn: sqlite3.Connection,
+    *,
+    wallet_id: int,
+    idem_hash: str,
+) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT txn_id, amount_yen, occurred_at, note "
+        "FROM am_credit_transaction_log "
+        "WHERE wallet_id = ? AND txn_type = 'topup' AND note LIKE ? "
+        "ORDER BY txn_id DESC LIMIT 1",
+        (wallet_id, f"%[wallet-topup-idem:{idem_hash}:%"),
+    ).fetchone()
+
+
+def _find_idempotent_charge(
+    conn: sqlite3.Connection,
+    *,
+    wallet_id: int,
+    idem_hash: str,
+) -> sqlite3.Row | None:
+    return conn.execute(
+        "SELECT txn_id, amount_yen, occurred_at, note "
+        "FROM am_credit_transaction_log "
+        "WHERE wallet_id = ? AND txn_type = 'charge' AND note LIKE ? "
+        "ORDER BY txn_id DESC LIMIT 1",
+        (wallet_id, f"%[wallet-idem:{idem_hash}:%"),
+    ).fetchone()
+
+
+def _replay_topup_response(
+    row: sqlite3.Row,
+    *,
+    wallet_id: int,
+    body: "TopupRequest",
+    payload_hash: str,
+) -> JSONResponse:
+    topup_amount = int(body.immediate_amount)
+    if int(row["amount_yen"]) != topup_amount:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="idempotency_key_in_use",
+        )
+
+    match = _TOPUP_IDEMPOTENCY_MARKER_RE.search(row["note"] or "")
+    if match and match.group(2) != payload_hash:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="idempotency_key_in_use",
+        )
+    balance_yen = int(match.group(3)) if match else 0
+    payload = {
+        "wallet_id": wallet_id,
+        "balance_yen": balance_yen,
+        "auto_topup_threshold": int(body.auto_topup_threshold),
+        "auto_topup_amount": int(body.auto_topup_amount),
+        "monthly_budget_yen": int(body.monthly_budget_yen),
+        "enabled": True,
+        "updated_at": row["occurred_at"],
+        "topup_requested_yen": topup_amount,
+        "topup_recorded_yen": topup_amount,
+        "idempotent_replay": True,
+        "_billing_unit": 0,
+        "_disclaimer": _WALLET_DISCLAIMER,
+    }
+    return JSONResponse(
+        content=payload,
+        status_code=200,
+        headers={"X-Idempotent-Replay": "1"},
+    )
+
+
+def _replay_charge_response(
+    row: sqlite3.Row,
+    *,
+    wallet_id: int,
+    charge_amount: int,
+) -> JSONResponse:
+    if int(row["amount_yen"]) != -charge_amount:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="idempotency_key_in_use",
+        )
+
+    match = _IDEMPOTENCY_MARKER_RE.search(row["note"] or "")
+    balance_yen = int(match.group(2)) if match else 0
+    billing_cycle = match.group(3) if match else str(row["occurred_at"])[:7]
+    payload = {
+        "wallet_id": wallet_id,
+        "charge_yen": charge_amount,
+        "balance_yen": balance_yen,
+        "alerts_fired": [],
+        "billing_cycle": billing_cycle,
+        "idempotent_replay": True,
+        "_billing_unit": 0,
+        "_disclaimer": _WALLET_DISCLAIMER,
+    }
+    return JSONResponse(
+        content=payload,
+        status_code=200,
+        headers={"X-Idempotent-Replay": "1"},
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -241,9 +424,8 @@ class TopupRequest(BaseModel):
     """Auto-topup configuration + optional immediate top-up.
 
     All amounts are in JPY (integer). ``immediate_amount > 0`` records a
-    ``topup`` ledger row immediately (i.e. simulating a cron-side
-    auto-topup credit); operator scripts call this after the actual
-    Stripe payment has cleared. This handler does NOT touch Stripe.
+    ``topup`` ledger row and increases balance. This handler does NOT touch
+    Stripe, so callers must provide an idempotency key for immediate credits.
     """
 
     auto_topup_threshold: int = Field(
@@ -265,6 +447,27 @@ class TopupRequest(BaseModel):
         description="Optional one-shot credit (¥) to record now as a topup txn.",
     )
     note: str | None = Field(None, max_length=256, description="Optional ledger note.")
+    idempotency_key: str | None = Field(
+        None,
+        max_length=255,
+        description="Optional retry key; prefer the Idempotency-Key header.",
+    )
+    request_id: str | None = Field(
+        None,
+        max_length=255,
+        description="Optional legacy retry key used when Idempotency-Key is absent.",
+    )
+
+
+def _topup_payload_hash(body: TopupRequest) -> str:
+    payload = (
+        body.auto_topup_threshold,
+        body.auto_topup_amount,
+        body.monthly_budget_yen,
+        body.immediate_amount,
+        body.note or "",
+    )
+    return hashlib.sha256(repr(payload).encode("utf-8")).hexdigest()[:32]
 
 
 class ChargeRequest(BaseModel):
@@ -278,6 +481,16 @@ class ChargeRequest(BaseModel):
         ..., gt=0, le=1_000_000, description="Positive charge amount (¥); signed flip in storage."
     )
     note: str | None = Field(None, max_length=256)
+    idempotency_key: str | None = Field(
+        None,
+        max_length=255,
+        description="Optional retry key; prefer the Idempotency-Key header.",
+    )
+    request_id: str | None = Field(
+        None,
+        max_length=255,
+        description="Optional legacy retry key used when Idempotency-Key is absent.",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -289,15 +502,13 @@ class ChargeRequest(BaseModel):
     "/balance",
     summary="Current wallet balance + auto-topup config",
     description=(
-        "Returns the caller's prepaid credit wallet state from "
-        "``am_credit_wallet`` (migration 281). Creates a zero-balance "
-        "wallet row on first call. ``_billing_unit: 0`` — accounting "
-        "metadata, not metered."
+        "Returns the caller's prepaid credit wallet state. Creates a "
+        "zero-balance wallet row on first call. ``_billing_unit: 0`` — "
+        "accounting metadata, not metered."
     ),
     responses={**COMMON_ERROR_RESPONSES, 200: {"description": "Wallet balance envelope."}},
 )
-def get_wallet_balance(conn: DbDep, ctx: ApiContextDep) -> JSONResponse:
-    t0 = time.perf_counter()
+def get_wallet_balance(ctx: ApiContextDep) -> JSONResponse:
     owner_token_hash = _require_owner_token_hash(ctx)
 
     am = _open_am_rw()
@@ -325,16 +536,6 @@ def get_wallet_balance(conn: DbDep, ctx: ApiContextDep) -> JSONResponse:
         "_disclaimer": _WALLET_DISCLAIMER,
     }
 
-    latency_ms = int((time.perf_counter() - t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "wallet_balance",
-        latency_ms=latency_ms,
-        result_count=1,
-        params={},
-        strict_metering=False,
-    )
     return JSONResponse(content=payload, status_code=200)
 
 
@@ -349,23 +550,60 @@ def get_wallet_balance(conn: DbDep, ctx: ApiContextDep) -> JSONResponse:
     description=(
         "Updates ``auto_topup_threshold`` + ``auto_topup_amount`` + "
         "``monthly_budget_yen`` on the caller's wallet. If "
-        "``immediate_amount > 0`` is supplied, records one ``topup`` "
-        "ledger row + updates balance — operator scripts call this "
-        "post Stripe-settle. **This handler does NOT call Stripe.**"
+        "``immediate_amount > 0`` is supplied with an idempotency key, records "
+        "one ``topup`` ledger row + updates balance. **This handler does NOT "
+        "call Stripe.**"
     ),
     responses={**COMMON_ERROR_RESPONSES, 200: {"description": "Updated wallet snapshot."}},
 )
 def update_wallet_topup(
-    conn: DbDep, ctx: ApiContextDep, body: TopupRequest
+    ctx: ApiContextDep,
+    body: TopupRequest,
+    idempotency_key: Annotated[
+        str | None,
+        Header(alias="Idempotency-Key", description="Required for immediate topup retries."),
+    ] = None,
+    x_idempotency_key: Annotated[
+        str | None,
+        Header(alias="X-Idempotency-Key", description="Optional immediate topup retry key."),
+    ] = None,
 ) -> JSONResponse:
-    t0 = time.perf_counter()
     owner_token_hash = _require_owner_token_hash(ctx)
+    topup_amount = int(body.immediate_amount)
+    idem_hash = _wallet_idempotency_hash(
+        idempotency_key,
+        x_idempotency_key,
+        body.idempotency_key,
+        body.request_id,
+    )
+    if topup_amount > 0 and idem_hash is None:
+        raise HTTPException(
+            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+            detail="idempotency_key_required",
+        )
+    payload_hash = _topup_payload_hash(body) if topup_amount > 0 else None
 
     am = _open_am_rw()
     try:
         _require_wallet_schema(am)
         row = _get_or_create_wallet(am, owner_token_hash)
         wallet_id = int(row["wallet_id"])
+
+        am.execute("BEGIN IMMEDIATE")
+        if topup_amount > 0 and idem_hash is not None and payload_hash is not None:
+            replay_row = _find_idempotent_topup(
+                am,
+                wallet_id=wallet_id,
+                idem_hash=idem_hash,
+            )
+            if replay_row is not None:
+                am.rollback()
+                return _replay_topup_response(
+                    replay_row,
+                    wallet_id=wallet_id,
+                    body=body,
+                    payload_hash=payload_hash,
+                )
 
         am.execute(
             "UPDATE am_credit_wallet SET "
@@ -381,18 +619,13 @@ def update_wallet_topup(
                 wallet_id,
             ),
         )
-        if body.immediate_amount > 0:
-            am.execute(
-                "INSERT INTO am_credit_transaction_log "
-                "(wallet_id, amount_yen, txn_type, note) VALUES (?, ?, 'topup', ?)",
-                (wallet_id, int(body.immediate_amount), body.note),
-            )
+        if topup_amount > 0:
             am.execute(
                 "UPDATE am_credit_wallet SET balance_yen = balance_yen + ?, "
-                "  updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE wallet_id = ?",
-                (int(body.immediate_amount), wallet_id),
+                "  updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') "
+                "WHERE wallet_id = ?",
+                (topup_amount, wallet_id),
             )
-        am.commit()
 
         refreshed = am.execute(
             "SELECT wallet_id, balance_yen, auto_topup_threshold, auto_topup_amount, "
@@ -400,6 +633,31 @@ def update_wallet_topup(
             "WHERE wallet_id = ?",
             (wallet_id,),
         ).fetchone()
+        if refreshed is None:
+            am.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="wallet topup failed",
+            )
+        if topup_amount > 0 and payload_hash is not None:
+            cycle = _current_billing_cycle()
+            stored_note = _append_topup_idempotency_marker(
+                body.note,
+                idem_hash=idem_hash,
+                payload_hash=payload_hash,
+                balance_yen=int(refreshed["balance_yen"]),
+                billing_cycle=cycle,
+            )
+            am.execute(
+                "INSERT INTO am_credit_transaction_log "
+                "(wallet_id, amount_yen, txn_type, note) VALUES (?, ?, 'topup', ?)",
+                (wallet_id, topup_amount, stored_note),
+            )
+        am.commit()
+    except Exception:
+        with suppress(Exception):
+            am.rollback()
+        raise
     finally:
         with suppress(Exception):
             am.close()
@@ -412,26 +670,13 @@ def update_wallet_topup(
         "monthly_budget_yen": int(refreshed["monthly_budget_yen"]),
         "enabled": bool(refreshed["enabled"]),
         "updated_at": refreshed["updated_at"],
-        "topup_recorded_yen": int(body.immediate_amount),
+        "topup_requested_yen": topup_amount,
+        "topup_recorded_yen": topup_amount,
+        "idempotent_replay": False,
         "_billing_unit": 0,
         "_disclaimer": _WALLET_DISCLAIMER,
     }
 
-    latency_ms = int((time.perf_counter() - t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "wallet_topup",
-        latency_ms=latency_ms,
-        result_count=1,
-        params={
-            "auto_topup_threshold": body.auto_topup_threshold,
-            "auto_topup_amount": body.auto_topup_amount,
-            "monthly_budget_yen": body.monthly_budget_yen,
-            "immediate_amount": body.immediate_amount,
-        },
-        strict_metering=False,
-    )
     return JSONResponse(content=payload, status_code=200)
 
 
@@ -444,14 +689,13 @@ def update_wallet_topup(
     "/transactions",
     summary="Paginated transaction ledger (topup/charge/refund)",
     description=(
-        "Returns ``am_credit_transaction_log`` rows for the caller's "
-        "wallet, newest first. Supports ``txn_type`` filter + "
-        "``limit``/``offset`` pagination. ``_billing_unit: 0``."
+        "Returns transaction rows for the caller's wallet, newest first. "
+        "Supports ``txn_type`` filter + ``limit``/``offset`` pagination. "
+        "``_billing_unit: 0``."
     ),
     responses={**COMMON_ERROR_RESPONSES, 200: {"description": "Transaction ledger."}},
 )
 def list_wallet_transactions(
-    conn: DbDep,
     ctx: ApiContextDep,
     txn_type: Annotated[
         Literal["topup", "charge", "refund"] | None,
@@ -460,7 +704,6 @@ def list_wallet_transactions(
     limit: Annotated[int, Query(ge=1, le=200, description="Max rows.")] = 50,
     offset: Annotated[int, Query(ge=0, le=100_000, description="Pagination offset.")] = 0,
 ) -> JSONResponse:
-    t0 = time.perf_counter()
     owner_token_hash = _require_owner_token_hash(ctx)
 
     am = _open_am_rw()
@@ -491,7 +734,7 @@ def list_wallet_transactions(
                 "amount_yen": int(r["amount_yen"]),
                 "txn_type": r["txn_type"],
                 "occurred_at": r["occurred_at"],
-                "note": r["note"],
+                "note": _strip_idempotency_marker(r["note"]),
             }
             for r in cur.fetchall()
         ]
@@ -516,16 +759,6 @@ def list_wallet_transactions(
         "_disclaimer": _WALLET_DISCLAIMER,
     }
 
-    latency_ms = int((time.perf_counter() - t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "wallet_transactions",
-        latency_ms=latency_ms,
-        result_count=len(txns),
-        params={"txn_type": txn_type, "limit": limit, "offset": offset},
-        strict_metering=False,
-    )
     return JSONResponse(content=payload, status_code=200)
 
 
@@ -538,14 +771,12 @@ def list_wallet_transactions(
     "/alerts",
     summary="Spending alert ledger (50/80/100 pct firings)",
     description=(
-        "Returns ``am_credit_spending_alert`` rows for the caller's "
-        "wallet, newest first. Supports ``billing_cycle`` filter "
-        "(YYYY-MM). ``_billing_unit: 0``."
+        "Returns spending alert rows for the caller's wallet, newest first. "
+        "Supports ``billing_cycle`` filter (YYYY-MM). ``_billing_unit: 0``."
     ),
     responses={**COMMON_ERROR_RESPONSES, 200: {"description": "Alert ledger."}},
 )
 def list_wallet_alerts(
-    conn: DbDep,
     ctx: ApiContextDep,
     billing_cycle: Annotated[
         str | None,
@@ -558,7 +789,6 @@ def list_wallet_alerts(
     ] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
 ) -> JSONResponse:
-    t0 = time.perf_counter()
     owner_token_hash = _require_owner_token_hash(ctx)
 
     am = _open_am_rw()
@@ -608,16 +838,6 @@ def list_wallet_alerts(
         "_disclaimer": _WALLET_DISCLAIMER,
     }
 
-    latency_ms = int((time.perf_counter() - t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "wallet_alerts",
-        latency_ms=latency_ms,
-        result_count=len(alerts),
-        params={"billing_cycle": billing_cycle, "limit": limit},
-        strict_metering=False,
-    )
     return JSONResponse(content=payload, status_code=200)
 
 
@@ -633,18 +853,12 @@ def _check_internal_token(x_internal_token: str | None) -> None:
         # Defensive — if the token isn't configured, /charge is permanently locked.
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=(
-                "METERING_INTERNAL_TOKEN env-var not configured; "
-                "/v1/wallet/charge refuses to mint debits without operator auth."
-            ),
+            detail="wallet_charge_unavailable",
         )
     if not x_internal_token or x_internal_token != expected:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=(
-                "X-Internal-Token header missing or invalid. /v1/wallet/charge "
-                "is restricted to the operator metering pipeline."
-            ),
+            detail="wallet_charge_forbidden",
         )
 
 
@@ -663,55 +877,104 @@ def _check_internal_token(x_internal_token: str | None) -> None:
         **COMMON_ERROR_RESPONSES,
         200: {"description": "Charge recorded."},
         402: {"description": "Wallet balance insufficient."},
-        403: {"description": "X-Internal-Token missing or invalid."},
+        403: {"description": "Internal token missing or invalid."},
     },
+    include_in_schema=False,
 )
 def post_wallet_charge(
-    conn: DbDep,
     ctx: ApiContextDep,
     body: ChargeRequest,
     x_internal_token: Annotated[
         str | None,
-        Header(alias="X-Internal-Token", description="Operator metering token."),
+        Header(alias="X-Internal-Token", description="Internal metering token."),
+    ] = None,
+    idempotency_key: Annotated[
+        str | None,
+        Header(alias="Idempotency-Key", description="Optional charge retry key."),
+    ] = None,
+    x_idempotency_key: Annotated[
+        str | None,
+        Header(alias="X-Idempotency-Key", description="Optional charge retry key."),
     ] = None,
 ) -> JSONResponse:
-    t0 = time.perf_counter()
     _check_internal_token(x_internal_token)
     owner_token_hash = _require_owner_token_hash(ctx)
+    idem_hash = _wallet_idempotency_hash(
+        idempotency_key,
+        x_idempotency_key,
+        body.idempotency_key,
+        body.request_id,
+    )
 
     am = _open_am_rw()
     try:
         _require_wallet_schema(am)
         row = _get_or_create_wallet(am, owner_token_hash)
         wallet_id = int(row["wallet_id"])
-        current_balance = int(row["balance_yen"])
-        monthly_budget = int(row["monthly_budget_yen"])
         charge_amount = int(body.amount_yen)
 
-        if current_balance < charge_amount:
+        am.execute("BEGIN IMMEDIATE")
+
+        if idem_hash is not None:
+            replay_row = _find_idempotent_charge(
+                am,
+                wallet_id=wallet_id,
+                idem_hash=idem_hash,
+            )
+            if replay_row is not None:
+                am.rollback()
+                return _replay_charge_response(
+                    replay_row,
+                    wallet_id=wallet_id,
+                    charge_amount=charge_amount,
+                )
+
+        updated = am.execute(
+            "UPDATE am_credit_wallet SET "
+            "  balance_yen = balance_yen - ?, "
+            "  updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') "
+            "WHERE wallet_id = ? AND enabled = 1 AND balance_yen >= ?",
+            (charge_amount, wallet_id, charge_amount),
+        )
+        if updated.rowcount != 1:
+            am.rollback()
             raise HTTPException(
                 status_code=status.HTTP_402_PAYMENT_REQUIRED,
-                detail=(
-                    f"wallet balance insufficient: balance={current_balance}, "
-                    f"charge={charge_amount}. Top up via /v1/billing/portal."
-                ),
+                detail="wallet balance insufficient",
             )
+
+        refreshed = am.execute(
+            "SELECT balance_yen, monthly_budget_yen FROM am_credit_wallet WHERE wallet_id = ?",
+            (wallet_id,),
+        ).fetchone()
+        if refreshed is None:
+            am.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="wallet charge failed",
+            )
+
+        new_balance = int(refreshed["balance_yen"])
+        monthly_budget = int(refreshed["monthly_budget_yen"])
+        cycle = _current_billing_cycle()
+        stored_note = _append_idempotency_marker(
+            body.note,
+            idem_hash=idem_hash,
+            balance_yen=new_balance,
+            billing_cycle=cycle,
+        )
 
         am.execute(
             "INSERT INTO am_credit_transaction_log "
             "(wallet_id, amount_yen, txn_type, note) VALUES (?, ?, 'charge', ?)",
-            (wallet_id, -charge_amount, body.note),
+            (wallet_id, -charge_amount, stored_note),
         )
-        am.execute(
-            "UPDATE am_credit_wallet SET balance_yen = balance_yen - ?, "
-            "  updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE wallet_id = ?",
-            (charge_amount, wallet_id),
-        )
-        am.commit()
-
-        cycle = _current_billing_cycle()
         fired = _maybe_fire_alerts(am, wallet_id, monthly_budget, cycle)
-        new_balance = current_balance - charge_amount
+        am.commit()
+    except Exception:
+        with suppress(Exception):
+            am.rollback()
+        raise
     finally:
         with suppress(Exception):
             am.close()
@@ -721,21 +984,12 @@ def post_wallet_charge(
         "charge_yen": charge_amount,
         "balance_yen": new_balance,
         "alerts_fired": fired,
-        "billing_cycle": _current_billing_cycle(),
+        "billing_cycle": cycle,
+        "idempotent_replay": False,
         "_billing_unit": 0,
         "_disclaimer": _WALLET_DISCLAIMER,
     }
 
-    latency_ms = int((time.perf_counter() - t0) * 1000)
-    log_usage(
-        conn,
-        ctx,
-        "wallet_charge",
-        latency_ms=latency_ms,
-        result_count=1,
-        params={"amount_yen": charge_amount},
-        strict_metering=False,
-    )
     return JSONResponse(content=payload, status_code=200)
 
 

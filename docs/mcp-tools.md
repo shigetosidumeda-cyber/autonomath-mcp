@@ -5,7 +5,7 @@
   "headline": "jpcite MCP Tools",
   "description": "jpcite の MCP ツールは、日本の公的制度・法令・税務公開資料・法人情報を AI クライアントから検索するための出典付きデータ取得レイヤーです。",
   "datePublished": "2026-04-01",
-  "dateModified": "2026-05-07",
+  "dateModified": "2026-05-13",
   "inLanguage": "ja",
   "author": {
     "@type": "Organization",
@@ -29,7 +29,7 @@
 
 # MCP Tools
 
-jpcite は、AI クライアントから日本の公的制度・法人・法令データを検索するための **139 個の MCP ツール**を提供します。補助金・助成金・融資・税制・法令・判例・採択事例・行政処分・入札・適格請求書発行事業者などを、一次資料 URL 付きで取得できます。
+jpcite は、AI クライアントから日本の公的制度・法人・法令データを検索するための **151 個の MCP ツール**を提供します。補助金・助成金・融資・税制・法令・判例・採択事例・行政処分・入札・適格請求書発行事業者などを、一次資料 URL 付きで取得できます。
 
 ChatGPT / Claude / Cursor では、jpcite を回答生成前の evidence retrieval / provenance pre-fetch / GEO source レイヤーとして使います。各ツールは制度名、対象地域、金額、締切、併用ルール、`source_url`、`source_fetched_at` などを構造化して返し、AI クライアントが引用可能な根拠を持って説明できるようにします。
 
@@ -49,7 +49,7 @@ MCP ツールの呼び出しは REST API と同じ課金単位です。匿名枠
 uvx autonomath-mcp
 ```
 
-Claude Desktop 拡張として入れる場合は、公開バンドル `https://jpcite.com/downloads/autonomath-mcp.mcpb` を使えます。MCP サーバー manifest は `https://jpcite.com/mcp-server.json` です。
+Claude Desktop 拡張として入れる場合は、公開バンドル `https://jpcite.com/downloads/autonomath-mcp.mcpb` を使えます。MCP サーバー manifest は `https://jpcite.com/mcp-server.json` です。配布パッケージの既定 transport は `stdio` で、公開 manifest には HTTP 対応クライアント向けに `sse` と `streamable_http` の endpoint metadata も載せています。
 
 Claude Desktop などの MCP クライアントでは、次のように登録します。
 
@@ -152,10 +152,10 @@ await client.call_tool("check_exclusions", {
 | `corpus_snapshot_id` | どのデータスナップショットに基づくか |
 | `unified_id` | jpcite 内で制度や資料を参照するための ID |
 | `decision_insights` | Evidence Packet の AI 向け補助。`why_review`、`next_checks`、`evidence_gaps` を判断材料・次の確認・根拠不足として使う |
-| `next_questions` | `intel_match` の AI 向け補助。顧客へ聞く不足情報を、ヒアリング項目として使う |
-| `eligibility_gaps` | `intel_match` の AI 向け補助。要件未解消、unknown 条件、追加確認が必要な前提を、申請前チェックに使う |
-| `document_readiness` | `intel_match` の AI 向け補助。必要書類の準備状態、未収集書類、最新版確認先を、書類収集リストに使う |
-| `decision_support` | `intel_bundle_optimal`、`intel_houjin_full` などの AI 向け補助。主案 bundle の理由、decision signals、次アクション、法人DD・与信前確認・監視提案を回答骨子に使う |
+| `next_questions` | `match_due_diligence_questions` の AI 向け補助。顧客へ聞く不足情報を、ヒアリング項目として使う |
+| `eligibility_gaps` | `match_due_diligence_questions` の AI 向け補助。要件未解消、unknown 条件、追加確認が必要な前提を、申請前チェックに使う |
+| `document_readiness` | `match_due_diligence_questions` の AI 向け補助。必要書類の準備状態、未収集書類、最新版確認先を、書類収集リストに使う |
+| `decision_support` | `portfolio_optimize_am`、`get_houjin_360_am` などの AI 向け補助。主案 bundle の理由、decision signals、次アクション、法人DD・与信前確認・監視提案を回答骨子に使う |
 | `next_actions` | funding stack/compat などの AI 向け補助。pair verdict や conflict edge を、確認行動、窓口質問、再実行条件に変換して使う |
 | `_disclaimer` | 税務・法律・士業領域に関する注意書き |
 
@@ -177,17 +177,17 @@ JSON Evidence Packet の `decision_insights` は、`records`、`quality`、`veri
 
 ## bundle/optimal decision support
 
-`intel_bundle_optimal` / REST `/v1/intel/bundle/optimal` の `decision_support` は、選ばれた bundle を説明するための補助です。AI クライアントは `why_this_matters`、`decision_insights`、`next_actions` を、主案の理由、runner-up との比較、次の確認事項として回答に使ってください。
+`portfolio_optimize_am` / REST `/v1/intelligence/precomputed/query` の `decision_support` は、選ばれた bundle を説明するための補助です。AI クライアントは `why_this_matters`、`decision_insights`、`next_actions` を、主案の理由、runner-up との比較、次の確認事項として回答に使ってください。
 
-## intel/match actionable fields
+## DD actionable fields
 
-`intel_match` / REST `/v1/intel/match` の `next_questions`、`eligibility_gaps`、`document_readiness` は、候補制度の一覧を「次に何を聞き、何を確認し、何を集めるか」へ変換するための補助です。
+`match_due_diligence_questions` / REST `/v1/intelligence/precomputed/query` の `next_questions`、`eligibility_gaps`、`document_readiness` は、候補制度の一覧を「次に何を聞き、何を確認し、何を集めるか」へ変換するための補助です。
 
 AI クライアントは、`next_questions` を顧客ヒアリング、`eligibility_gaps` を要件確認、`document_readiness` を書類収集と最新版確認に使ってください。これらは公開情報と入力 profile に基づく申請前チェックであり、採択可否や書類完備の保証として表示しないでください。
 
 ## houjin/full decision support
 
-`intel_houjin_full` / REST `/v1/intel/houjin/{houjin_id}/full` の `decision_support` は、法人360のレスポンスを法人DD、与信前確認、監視提案へ変換するための補助です。AI クライアントは、公的リスクの見るべき点、追加DD質問、インボイス・行政処分・採択/調達などの照合メモ、監視対象を短く示す回答骨子として使ってください。
+`get_houjin_360_am` / REST `/v1/artifacts/company_public_baseline` の `decision_support` は、法人360のレスポンスを法人DD、与信前確認、監視提案へ変換するための補助です。AI クライアントは、公的リスクの見るべき点、追加DD質問、インボイス・行政処分・採択/調達などの照合メモ、監視対象を短く示す回答骨子として使ってください。
 
 公的リスクが見つからない場合も、取引安全や融資可否の断定には使わず、確認済み範囲と `known_gaps` を並べて説明してください。
 

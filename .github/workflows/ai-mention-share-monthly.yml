@@ -92,8 +92,6 @@ jobs:
             echo "no AMS delta to commit"
             exit 0
           fi
-          git commit -m "cron(ai-mention-share): monthly snapshot
-
-Wave 43.5 monitoring integration — 12 LLM surfaces × citation_rate /
-top_share / verified_share. Memory: feedback_no_operator_llm_api."
+          git commit -m "cron(ai-mention-share): monthly snapshot" \
+            -m "Wave 43.5 monitoring integration — 12 LLM surfaces × citation_rate / top_share / verified_share. Memory: feedback_no_operator_llm_api."
           git push origin HEAD:main

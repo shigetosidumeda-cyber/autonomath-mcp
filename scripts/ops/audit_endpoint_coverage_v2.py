@@ -49,7 +49,7 @@ import sys
 import urllib.error
 import urllib.request
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -98,6 +98,7 @@ EXPECTED_MIN_PATHS = 218  # Wave 17 lower bound; degraded if below.
 # Loaders
 # ---------------------------------------------------------------------------
 
+
 def load_openapi(path: Path) -> tuple[Path, dict[str, Any]]:
     if not path.exists() and MIRROR_OPENAPI.exists():
         path = MIRROR_OPENAPI
@@ -127,8 +128,7 @@ def summarise(spec: dict[str, Any]) -> dict[str, Any]:
             cohorts[cohort].append(p)
     return {
         "paths_total": len(paths),
-        "paths_by_prefix": dict(sorted(by_prefix.items(),
-                                       key=lambda kv: -kv[1])[:30]),
+        "paths_by_prefix": dict(sorted(by_prefix.items(), key=lambda kv: -kv[1])[:30]),
         "wave_cohorts": {k: sorted(v) for k, v in cohorts.items()},
         "all_paths": sorted(paths),
     }
@@ -138,43 +138,43 @@ def summarise(spec: dict[str, Any]) -> dict[str, Any]:
 # Optional live probe
 # ---------------------------------------------------------------------------
 
-def probe_live(host: str, paths: list[str], timeout: float = 10.0,
-               sample_size: int = 5) -> dict[str, Any]:
+
+def probe_live(
+    host: str, paths: list[str], timeout: float = 10.0, sample_size: int = 5
+) -> dict[str, Any]:
     sampled = paths[:sample_size] if len(paths) > sample_size else paths
     results: list[dict[str, Any]] = []
     fail_count = 0
     for raw in sampled:
         # Skip parametrised paths — they would require synthetic ids.
         if "{" in raw:
-            results.append({"path": raw, "status": "skipped_param",
-                            "http": None})
+            results.append({"path": raw, "status": "skipped_param", "http": None})
             continue
         url = host.rstrip("/") + raw
         try:
-            req = urllib.request.Request(url, headers={
-                "User-Agent": "jpcite-wave38-endpoint-audit/1.0",
-                "Accept": "application/json",
-            })
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": "jpcite-wave38-endpoint-audit/1.0",
+                    "Accept": "application/json",
+                },
+            )
             with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
                 code = resp.getcode()
             ok = 200 <= code < 400
             if not ok:
                 fail_count += 1
-            results.append({"path": raw, "status": "ok" if ok else "fail",
-                            "http": code})
+            results.append({"path": raw, "status": "ok" if ok else "fail", "http": code})
         except urllib.error.HTTPError as exc:
             # 401/403 are operational gates — count as ok-shape; 5xx is fail
             http_code = exc.code
             ok = http_code in (401, 403, 405)
             if not ok:
                 fail_count += 1
-            results.append({"path": raw,
-                            "status": "ok" if ok else "fail",
-                            "http": http_code})
+            results.append({"path": raw, "status": "ok" if ok else "fail", "http": http_code})
         except (urllib.error.URLError, OSError) as exc:
             fail_count += 1
-            results.append({"path": raw, "status": "fail",
-                            "http": None, "error": str(exc)})
+            results.append({"path": raw, "status": "fail", "http": None, "error": str(exc)})
     return {
         "host": host,
         "sampled": len(sampled),
@@ -187,8 +187,8 @@ def probe_live(host: str, paths: list[str], timeout: float = 10.0,
 # Verdict
 # ---------------------------------------------------------------------------
 
-def verdict_for(summary: dict[str, Any],
-                live: dict[str, Any] | None) -> str:
+
+def verdict_for(summary: dict[str, Any], live: dict[str, Any] | None) -> str:
     if summary["paths_total"] < EXPECTED_MIN_PATHS:
         return "fail"
     if live is not None and live["fail_count"] > 0:
@@ -202,15 +202,15 @@ def verdict_for(summary: dict[str, Any],
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--openapi", default=str(DEFAULT_OPENAPI),
-                   help="Path to OpenAPI spec.")
-    p.add_argument("--out-json", required=False,
-                   help="Where to write JSON snapshot.")
-    p.add_argument("--probe-live",
-                   help="Host base (e.g. https://api.jpcite.com); when set,"
-                        " probe live endpoints.")
+    p.add_argument("--openapi", default=str(DEFAULT_OPENAPI), help="Path to OpenAPI spec.")
+    p.add_argument("--out-json", required=False, help="Where to write JSON snapshot.")
+    p.add_argument(
+        "--probe-live",
+        help="Host base (e.g. https://api.jpcite.com); when set, probe live endpoints.",
+    )
     args = p.parse_args(argv)
 
     path, spec = load_openapi(Path(args.openapi))
@@ -222,7 +222,7 @@ def main(argv: list[str] | None = None) -> int:
 
     report = {
         "schema_version": 1,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "openapi_source": str(path.relative_to(REPO_ROOT)),
         "paths_total": summary["paths_total"],
         "paths_by_prefix": summary["paths_by_prefix"],

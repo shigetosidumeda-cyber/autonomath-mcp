@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 Anthropic 公式 CLI `Claude Code` を使う agent dev / 補助金 SaaS 開発者 / 税務会計プロダクト開発者で、CLI チャットから jpcite MCP server を 1 コマンドで登録し、対話 / コード review / 自動化 task で jpcite 139 tool を呼び出せる状態に持っていく。30 秒以内 (uvx install + `claude mcp add` 1 コマンド) で接続完了し、`/mcp` で接続状態 + tools count を目視確認するワークフロー。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
 - Claude Code CLI (Anthropic 公式、`brew install` or `npm i -g @anthropic-ai/claude-code`)
 - `uvx` (Astral uv): `curl -LsSf https://astral.sh/uv/install.sh | sh` 後シェル再起動
 - (任意) repo 別の global vs project 設定

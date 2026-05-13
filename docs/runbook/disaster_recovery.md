@@ -1,6 +1,6 @@
 ---
 title: Disaster Recovery Runbook
-updated: 2026-05-07
+updated: 2026-05-13
 operator_only: true
 category: dr
 ---
@@ -29,6 +29,20 @@ server-side encryption (R2 default), and retained:
 - autonomath: 7 daily + 4 weekly (~11 copies, ~33 GB on R2)
 
 Total cold storage: ~40 GB at $0.045/GB-mo = **~$1.80 / month**.
+
+### 1.1 RTO/RPO deploy gate
+
+The table above is the testable RTO/RPO contract. Do not remove the `RPO` and
+`RTO` headings or the `jpintel.db` / `autonomath.db` rows without updating the
+matching tests.
+
+`scripts/cron/verify_backup_daily.py` is the fail-closed R2 gate for
+`jpintel.db`: production verification must find a recent R2 object, find the
+matching `.sha256` sidecar in the same prefix, download both, match the SHA256,
+and pass gzip validation. `VERIFY_MAX_AGE_HOURS` defaults to `2`, giving the
+hourly `jpintel.db` backup one cron-delay grace window while still enforcing the
+1 h RPO. `--dry-run` is CI/local only and is forbidden when `JPINTEL_ENV=prod`,
+`SENTRY_ENVIRONMENT=production`, or `VERIFY_BACKUP_PROD=1`.
 
 ## 2. Required environment
 

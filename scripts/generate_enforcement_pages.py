@@ -82,14 +82,29 @@ JST = timezone(timedelta(hours=9))
 # Visible HTML hides individual / unverified recipient names. Legal-entity
 # suffixes (Konosu walk allowlist) flip the gate to "show".
 HOUJIN_SUFFIXES = (
-    "株式会社", "（株）", "(株)", "㈱",
-    "有限会社", "（有）", "(有)", "㈲",
-    "合同会社", "合資会社", "合名会社",
-    "医療法人", "学校法人", "社会福祉法人",
-    "一般社団法人", "公益社団法人",
-    "一般財団法人", "公益財団法人",
-    "独立行政法人", "国立大学法人", "公立大学法人",
-    "特殊法人", "認可法人",
+    "株式会社",
+    "（株）",
+    "(株)",
+    "㈱",
+    "有限会社",
+    "（有）",
+    "(有)",
+    "㈲",
+    "合同会社",
+    "合資会社",
+    "合名会社",
+    "医療法人",
+    "学校法人",
+    "社会福祉法人",
+    "一般社団法人",
+    "公益社団法人",
+    "一般財団法人",
+    "公益財団法人",
+    "独立行政法人",
+    "国立大学法人",
+    "公立大学法人",
+    "特殊法人",
+    "認可法人",
 )
 # 自治体 (municipality) is always safe to display (公的主体).
 MUNICIPAL_KINDS = frozenset({"municipality"})
@@ -254,9 +269,8 @@ def build_json_ld(row: dict, domain: str, slug: str, laws: list[dict], programs:
     ministry = row.get("ministry") or "日本国政府機関"
     url = f"https://{domain}/enforcement/{slug}"
 
-    action_type = "GovernmentService"  # public sector enforcement record
     if ev == "penalty":
-        action_type = "LegalForceStatus"
+        pass
 
     actor_name = displayable_recipient(row)
     object_program = row.get("program_name_hint") or ""
@@ -279,8 +293,18 @@ def build_json_ld(row: dict, domain: str, slug: str, laws: list[dict], programs:
             "@type": "BreadcrumbList",
             "@id": f"{url}#bc",
             "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "ホーム", "item": f"https://{domain}/"},
-                {"@type": "ListItem", "position": 2, "name": "行政処分", "item": f"https://{domain}/enforcement/"},
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "ホーム",
+                    "item": f"https://{domain}/",
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "行政処分",
+                    "item": f"https://{domain}/enforcement/",
+                },
                 {"@type": "ListItem", "position": 3, "name": label, "item": url},
             ],
         },
@@ -364,7 +388,9 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
     legal_basis = row.get("legal_basis") or ""
     program_hint = row.get("program_name_hint") or ""
     bangou = (row.get("recipient_houjin_bangou") or "").strip()
-    bangou_shown = bangou if (len(bangou) == 13 and bangou.isdigit() and is_publicly_attributable(row)) else ""
+    bangou_shown = (
+        bangou if (len(bangou) == 13 and bangou.isdigit() and is_publicly_attributable(row)) else ""
+    )
 
     title_chunks = [actor, label]
     if disclosed:
@@ -392,11 +418,13 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
             f'rel="external">{esc(law["law_title"])}</a></li>'
             for law in laws
         )
-        related_law_html = f'<section><h2>関連法令</h2><ul class="related-list">{law_lis}</ul></section>'
+        related_law_html = (
+            f'<section><h2>関連法令</h2><ul class="related-list">{law_lis}</ul></section>'
+        )
     elif legal_basis:
         related_law_html = (
-            f'<section><h2>関連法令</h2><p>{esc(legal_basis)} '
-            '(e-Gov 法令検索で全文を確認: '
+            f"<section><h2>関連法令</h2><p>{esc(legal_basis)} "
+            "(e-Gov 法令検索で全文を確認: "
             f'<a href="https://laws.e-gov.go.jp/search/elawsSearch/elaws_search/lsg0100/?searchKeyword={esc(legal_basis[:40])}" '
             'rel="external nofollow noopener">e-Gov</a>)</p></section>'
         )
@@ -410,7 +438,7 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
             for p in programs
         )
         related_prog_html = (
-            f'<section><h2>関連する公的制度</h2>'
+            f"<section><h2>関連する公的制度</h2>"
             f'<p class="muted">jpcite の制度カタログから自動マッチ。詳細は各制度ページをご確認ください。</p>'
             f'<ul class="related-list">{prog_lis}</ul></section>'
         )
@@ -424,10 +452,13 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
     if grant_paid:
         amount_rows.append(f"<dt>交付済額</dt><dd>{esc(jpy_label(grant_paid))}</dd>")
     if amount_total:
-        amount_rows.append(f"<dt>不正受給 / 返還 / 課徴金 額</dt><dd><strong>{esc(jpy_label(amount_total))}</strong></dd>")
+        amount_rows.append(
+            f"<dt>不正受給 / 返還 / 課徴金 額</dt><dd><strong>{esc(jpy_label(amount_total))}</strong></dd>"
+        )
     amount_html = (
         f'<section><h2>金額</h2><dl class="enforcement-amount">{"".join(amount_rows)}</dl></section>'
-        if amount_rows else ""
+        if amount_rows
+        else ""
     )
 
     # ---- Meta block (omit fields we don't want visible) ----
@@ -435,7 +466,9 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
     if actor and is_publicly_attributable(row):
         meta_rows.append(f"<dt>対象</dt><dd>{esc(actor)}</dd>")
     elif actor:
-        meta_rows.append(f"<dt>対象</dt><dd>{esc(actor)} <span class='muted'>(個人特定不能化のため詳細非表示)</span></dd>")
+        meta_rows.append(
+            f"<dt>対象</dt><dd>{esc(actor)} <span class='muted'>(個人特定不能化のため詳細非表示)</span></dd>"
+        )
     if bangou_shown:
         meta_rows.append(f"<dt>法人番号</dt><dd><code>{esc(bangou_shown)}</code></dd>")
     meta_rows.append(f"<dt>処分種別</dt><dd>{esc(label)}</dd>")
@@ -454,18 +487,19 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
     # ---- Reason ----
     reason_html = (
         f"<section><h2>処分理由 (公表記録より要約)</h2><p>{esc(reason)}</p></section>"
-        if reason else ""
+        if reason
+        else ""
     )
 
     # ---- Use-case CTA (M&A / 信金) ----
     usecase_html = (
-        '<section><h2>このページの使い方</h2>'
+        "<section><h2>このページの使い方</h2>"
         '<ul class="usecase-list">'
-        '<li>M&A 仲介・FA: 対象企業の過去処分の有無を 1 ページで一次資料リンク付きで確認。</li>'
-        '<li>信用金庫・信金渉外: 与信前 due diligence で取引先の公的処分履歴をスキャン。</li>'
-        '<li>会計事務所・税理士: 補助金関与先のリスクヒアリングで公表記録を提示。</li>'
-        '<li>研究者・記者: 一次資料 URL に直接ジャンプし、原本確認。</li>'
-        '</ul></section>'
+        "<li>M&A 仲介・FA: 対象企業の過去処分の有無を 1 ページで一次資料リンク付きで確認。</li>"
+        "<li>信用金庫・信金渉外: 与信前 due diligence で取引先の公的処分履歴をスキャン。</li>"
+        "<li>会計事務所・税理士: 補助金関与先のリスクヒアリングで公表記録を提示。</li>"
+        "<li>研究者・記者: 一次資料 URL に直接ジャンプし、原本確認。</li>"
+        "</ul></section>"
     )
 
     breadcrumb = (
@@ -477,11 +511,11 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
     primary_source_block = ""
     if src:
         primary_source_block = (
-            '<section><h2>一次資料</h2>'
-            '<p>本ページの内容は以下の公的記録に基づきます。最新の取消・撤回情報は必ず一次資料をご確認ください。</p>'
+            "<section><h2>一次資料</h2>"
+            "<p>本ページの内容は以下の公的記録に基づきます。最新の取消・撤回情報は必ず一次資料をご確認ください。</p>"
             f'<p><a class="primary-link" rel="external nofollow noopener" href="{esc(src)}">{esc(src_title)} を開く</a></p>'
             f'<p class="muted">出典取得日時: {esc(row.get("fetched_at") or "")}</p>'
-            '</section>'
+            "</section>"
         )
 
     canonical = f"https://{domain}/enforcement/{slug}"
@@ -491,20 +525,24 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
     cite_in_ai_html = (
         '<section aria-labelledby="cite-title" class="cite-this-section">'
         '<h2 id="cite-title">Cite this in AI / 引用</h2>'
-        '<p>AI 回答に本処分記録を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。'
-        + (f'一次資料は <a href="{esc(src)}" rel="external nofollow noopener">公的公表記録</a>。' if src else '')
-        + '</p>'
+        "<p>AI 回答に本処分記録を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。"
+        + (
+            f'一次資料は <a href="{esc(src)}" rel="external nofollow noopener">公的公表記録</a>。'
+            if src
+            else ""
+        )
+        + "</p>"
         '<pre class="code-block cite-block"><code>'
         f"&gt; {esc(actor)} — {esc(label)} "
         f"(出典: https://{esc(cite_url_short)}、jpcite が政府公表記録を機械可読化)"
-        '</code></pre>'
+        "</code></pre>"
         '<p class="muted">'
         f'<button type="button" class="copy-cite-btn" data-cite-url="https://{esc(cite_url_short)}" '
         f"onclick=\"navigator.clipboard&amp;&amp;navigator.clipboard.writeText('https://{esc(cite_url_short)}')\">"
-        'URL をコピー</button> '
+        "URL をコピー</button> "
         f'<a href="https://{esc(cite_url_short)}">https://{esc(cite_url_short)}</a>'
-        '</p>'
-        '</section>'
+        "</p>"
+        "</section>"
     )
 
     return f"""<!DOCTYPE html>
@@ -561,7 +599,7 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
 <h1>{esc(actor)} — {esc(label)}</h1>
 <p class="byline">
 <span class="updated">出典取得: {esc(row.get("fetched_at") or "")}</span>
-{('<span class="sep">/</span> <span class="source">出典: <a href="' + esc(src) + '" rel="external nofollow noopener">公的記録</a></span>') if src else ''}
+{('<span class="sep">/</span> <span class="source">出典: <a href="' + esc(src) + '" rel="external nofollow noopener">公的記録</a></span>') if src else ""}
 <span class="sep">/</span> <span class="author">jpcite</span>
 </p>
 <p class="byline-note muted">※公表時点の記録です。撤回・取消・期間満了している可能性があります。最新情報は一次資料をご確認ください。</p>
@@ -579,7 +617,7 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
 <section>
 <h2>API で取得</h2>
 <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\
- "https://api.{esc(domain)}/v1/enforcement/cases/{esc(row.get('case_id') or '')}"</code></pre>
+ "https://api.{esc(domain)}/v1/enforcement/cases/{esc(row.get("case_id") or "")}"</code></pre>
 <p class="api-cta-line">公的記録 1,185 件をプログラムから検索: <a href="/docs/">ドキュメント</a> · <a href="/dashboard.html">API キー発行</a></p>
 </section>
 {cite_in_ai_html}
@@ -614,7 +652,7 @@ def write_sitemap(out_path: Path, domain: str, slugs_with_dates: list[tuple[str,
     today = datetime.now(JST).date().isoformat()
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
-        "<!-- auto-generated by scripts/generate_enforcement_pages.py -->",
+        "<!-- Enforcement case sitemap shard for jpcite.com. -->",
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ]
     for slug, disclosed in slugs_with_dates:
@@ -656,15 +694,27 @@ def write_marker(site_dir: Path, domain: str, reason: str) -> None:
 # Main
 # ---------------------------------------------------------------------------
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--db", type=Path, default=DEFAULT_DB, help="jpintel.db path (enforcement_cases)")
-    p.add_argument("--autonomath-db", type=Path, default=DEFAULT_AUTONOMATH_DB, help="autonomath.db path (used only for fallback marker check)")
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    p.add_argument(
+        "--db", type=Path, default=DEFAULT_DB, help="jpintel.db path (enforcement_cases)"
+    )
+    p.add_argument(
+        "--autonomath-db",
+        type=Path,
+        default=DEFAULT_AUTONOMATH_DB,
+        help="autonomath.db path (used only for fallback marker check)",
+    )
     p.add_argument("--site-dir", type=Path, default=DEFAULT_SITE_DIR)
     p.add_argument("--domain", default=DEFAULT_DOMAIN)
     p.add_argument("--limit", type=int, default=0, help="0 = no limit (all rows)")
     p.add_argument("--log-level", default="INFO")
     args = p.parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO), format="%(levelname)s %(name)s %(message)s")
+    logging.basicConfig(
+        level=getattr(logging, args.log_level.upper(), logging.INFO),
+        format="%(levelname)s %(name)s %(message)s",
+    )
 
     site_dir: Path = args.site_dir
     enforcement_dir = site_dir / "enforcement"
@@ -677,7 +727,12 @@ def main(argv: list[str] | None = None) -> int:
         msg = f"jpintel.db not present ({db_path}); autonomath.db present={am_exists}. Re-run after data sync."
         logger.warning(msg)
         write_marker(site_dir, args.domain, msg)
-        print(json.dumps({"db_read_ok": False, "generated": 0, "marker": True, "reason": msg}, ensure_ascii=False))
+        print(
+            json.dumps(
+                {"db_read_ok": False, "generated": 0, "marker": True, "reason": msg},
+                ensure_ascii=False,
+            )
+        )
         return 0
 
     try:
@@ -686,7 +741,12 @@ def main(argv: list[str] | None = None) -> int:
         msg = f"failed to open jpintel.db: {e}"
         logger.error(msg)
         write_marker(site_dir, args.domain, msg)
-        print(json.dumps({"db_read_ok": False, "generated": 0, "marker": True, "reason": msg}, ensure_ascii=False))
+        print(
+            json.dumps(
+                {"db_read_ok": False, "generated": 0, "marker": True, "reason": msg},
+                ensure_ascii=False,
+            )
+        )
         return 0
 
     con.row_factory = sqlite3.Row

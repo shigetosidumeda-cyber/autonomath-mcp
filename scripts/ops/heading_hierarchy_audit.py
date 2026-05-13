@@ -81,13 +81,10 @@ def audit_file(path: Path) -> list[str]:
     # rule 1: exactly one <h1>
     h1_lines = [ln for ln, lv in headings if lv == 1]
     if len(h1_lines) == 0:
-        violations.append(
-            f"{path}: <h1> missing (page has {len(headings)} headings but no h1)"
-        )
+        violations.append(f"{path}: <h1> missing (page has {len(headings)} headings but no h1)")
     elif len(h1_lines) > 1:
         violations.append(
-            f"{path}: <h1> appears {len(h1_lines)} times (lines {h1_lines}); "
-            "exactly one allowed"
+            f"{path}: <h1> appears {len(h1_lines)} times (lines {h1_lines}); exactly one allowed"
         )
 
     # rule 2: no level-jump (e.g. h2 -> h4)
@@ -96,9 +93,7 @@ def audit_file(path: Path) -> list[str]:
     for line, level in headings:
         if last_level == 0:
             if level != 1:
-                violations.append(
-                    f"{path}:{line}: first heading is <h{level}> (must be <h1>)"
-                )
+                violations.append(f"{path}:{line}: first heading is <h{level}> (must be <h1>)")
         elif level > last_level + 1:
             violations.append(
                 f"{path}:{line}: level jump <h{last_level}> -> <h{level}> "
@@ -123,12 +118,15 @@ def collect_paths(args: argparse.Namespace) -> list[Path]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--strict", action="store_true",
-                        help="scan bulk per-record pages too (cases/laws/enforcement)")
-    parser.add_argument("--paths", nargs="*",
-                        help="explicit file paths to audit (overrides default set)")
-    parser.add_argument("--quiet", action="store_true",
-                        help="suppress per-file PASS lines")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="scan bulk per-record pages too (cases/laws/enforcement)",
+    )
+    parser.add_argument(
+        "--paths", nargs="*", help="explicit file paths to audit (overrides default set)"
+    )
+    parser.add_argument("--quiet", action="store_true", help="suppress per-file PASS lines")
     args = parser.parse_args(argv)
 
     paths = collect_paths(args)

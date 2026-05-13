@@ -14,7 +14,7 @@ Contract guarded by this file
     ``am_x402_endpoint_config`` table.
 4.  No PRAGMA quick_check / integrity_check is added by the new block (per
     ``feedback_no_quick_check_on_huge_sqlite`` — boot must stay under the
-    Fly 60s health-check grace; the seeder is O(5 SELECT + ≤5 INSERT)).
+    Fly 60s health-check grace; the seeder is O(canonical endpoint count)).
 5.  The seed runner must be wired BEFORE the final ``exec "$@"`` handoff.
 
 Test strategy
@@ -85,7 +85,13 @@ def _block_runtime_lines(text: str) -> str:
     on those documentation lines, only on executable shell.
     """
     start = text.index("# 4.x. W48.x402")
-    end = text.index("# 5. Hand off to CMD", start)
+    end_candidates = [
+        idx
+        for marker in ("\n# 5. ", "\n# 6. Hand off to CMD")
+        if (idx := text.find(marker, start + 1)) != -1
+    ]
+    assert end_candidates, "could not find end marker after W48.x402 block"
+    end = min(end_candidates)
     block = text[start:end]
     runtime = "\n".join(
         line for line in block.splitlines() if not line.lstrip().startswith("#")
@@ -109,7 +115,7 @@ def test_entrypoint_seed_block_does_not_pass_force_flag() -> None:
 
 
 def test_seed_script_idempotent_against_fresh_schema(tmp_path: Path) -> None:
-    """Live exec: seed an empty am_x402_endpoint_config twice, assert 2nd is all-noop."""
+    """Live exec: seed an empty x402 config twice, assert 2nd is all-noop."""
     db = tmp_path / "autonomath.db"
     # Confirm the canonical migration declares the schema we mirror inline
     # below (so a future schema change forces an intentional test update).
@@ -149,12 +155,18 @@ def test_seed_script_idempotent_against_fresh_schema(tmp_path: Path) -> None:
 
     first = _run()
     assert first["dim"] == "V" and first["wave"] == 47
-    assert len(first["endpoints"]) == 5
-    assert {ep["action"] for ep in first["endpoints"]} == {"inserted"}
+    active_first = [ep for ep in first["endpoints"] if not ep["action"].startswith("retired_")]
+    retired_first = [ep for ep in first["endpoints"] if ep["action"].startswith("retired_")]
+    assert len(active_first) == 4
+    assert {ep["action"] for ep in active_first} == {"inserted"}
+    assert retired_first == [
+        {"endpoint_path": "/v1/programs/search", "action": "retired_absent"}
+    ]
 
     second = _run()
-    assert len(second["endpoints"]) == 5
-    assert {ep["action"] for ep in second["endpoints"]} == {"noop"}, (
+    active_second = [ep for ep in second["endpoints"] if not ep["action"].startswith("retired_")]
+    assert len(active_second) == 4
+    assert {ep["action"] for ep in active_second} == {"noop"}, (
         "re-run must be all-noop for true idempotency"
     )
 
@@ -169,11 +181,58 @@ def test_seed_script_idempotent_against_fresh_schema(tmp_path: Path) -> None:
         )
     finally:
         conn.close()
-    assert row_count == 5
+    assert row_count == 4
     assert paths == [
-        "/v1/audit_workpaper",
-        "/v1/cases",
-        "/v1/programs",
-        "/v1/search",
-        "/v1/semantic_search",
+        "/v1/audit/workpaper",
+        "/v1/case-studies/search",
+        "/v1/programs/prescreen",
+        "/v1/search/semantic",
     ]
+
+
+def test_seed_script_disables_retired_programs_search_row(tmp_path: Path) -> None:
+    """Existing prod DBs may still carry the retired route-owned search row."""
+    db = tmp_path / "autonomath.db"
+    create_stmt = """
+    CREATE TABLE IF NOT EXISTS am_x402_endpoint_config (
+        endpoint_path          TEXT PRIMARY KEY,
+        required_amount_usdc   REAL NOT NULL,
+        expires_after_seconds  INTEGER NOT NULL DEFAULT 3600,
+        enabled                INTEGER NOT NULL DEFAULT 1,
+        created_at             TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+        updated_at             TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+    );
+    """
+    conn = sqlite3.connect(str(db))
+    try:
+        conn.executescript(create_stmt)
+        conn.execute(
+            "INSERT INTO am_x402_endpoint_config "
+            "(endpoint_path, required_amount_usdc, enabled) VALUES (?, ?, 1)",
+            ("/v1/programs/search", 0.002),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    proc = subprocess.run(
+        [sys.executable, str(SEED_SCRIPT), "--db", str(db)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stderr
+    report = json.loads(proc.stdout.strip().splitlines()[-1])
+    by_path = {ep["endpoint_path"]: ep["action"] for ep in report["endpoints"]}
+    assert by_path["/v1/programs/search"] == "retired_disabled"
+
+    conn = sqlite3.connect(str(db))
+    try:
+        enabled = conn.execute(
+            "SELECT enabled FROM am_x402_endpoint_config WHERE endpoint_path = ?",
+            ("/v1/programs/search",),
+        ).fetchone()[0]
+    finally:
+        conn.close()
+    assert enabled == 0

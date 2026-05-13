@@ -11,6 +11,7 @@
   --border: #e5e5e5;
   --bg: #ffffff;
   --bg-alt: #f7f7f8;
+  --bg-subtle: #fafafa;
   --code-bg: #0f172a;
   --code-text: #e2e8f0;
   --danger: #b91c1c;
@@ -1417,6 +1418,7 @@ pre code { word-break: normal; }
     --border: #30363d;
     --bg: #0d1117;
     --bg-alt: #161b22;
+    --bg-subtle: #161b22;
     --code-bg: #010409;
     --code-text: #e6edf3;
     --danger: #f85149;
@@ -1427,6 +1429,7 @@ pre code { word-break: normal; }
   .btn-secondary { background: var(--bg-alt); }
   .btn-secondary:hover { background: var(--border); }
   .demo-note code { background: var(--bg-alt); }
+  .trust-strip-blocks li { background: var(--bg-alt); }
   .newsletter-form input[type="email"] { background: var(--bg-alt); }
   .ps-card { background: var(--bg-alt); }
   .ps-form select,

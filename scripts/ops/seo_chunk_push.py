@@ -154,7 +154,7 @@ def _file_to_site_url(file_path: Path) -> str | None:
         site_ix = parts.index("site")
     except ValueError:
         return None
-    relative = "/".join(parts[site_ix + 1:])
+    relative = "/".join(parts[site_ix + 1 :])
     if not relative:
         return None
     return f"{SITE_HOST}/{relative}"
@@ -207,7 +207,7 @@ def _today_iso() -> str:
     """Return today's date as YYYY-MM-DD (UTC). Kept tiny + dep-free."""
     import datetime
 
-    return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
+    return datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d")
 
 
 def _run_git(args: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -237,7 +237,7 @@ def _stage_files(files: list[Path], sitemap_path: Path, *, dry_run: bool) -> int
     # git accepts thousands of args fine; chunk just-in-case at 500.
     staged = 0
     for ix in range(0, len(rels), 500):
-        batch = rels[ix:ix + 500]
+        batch = rels[ix : ix + 500]
         _run_git(["add", "--", *batch])
         staged += len(batch)
     return staged
@@ -305,25 +305,36 @@ def _push_with_retry(
 # Wave 20 extension: --paths glob mode for in-memory micro-chunking.
 # ---------------------------------------------------------------------------
 
+
 def _wave20_ensure_branch(branch: str) -> None:
     """Create + checkout branch idempotently (no-op if already on it)."""
     cur = subprocess.run(
         ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-        cwd=REPO_ROOT, text=True, capture_output=True,
+        cwd=REPO_ROOT,
+        text=True,
+        capture_output=True,
     )
     cur_name = (cur.stdout or "").strip()
     if cur_name == branch:
         return
     exists = subprocess.run(
         ["git", "rev-parse", "--verify", branch],
-        cwd=REPO_ROOT, text=True, capture_output=True,
+        cwd=REPO_ROOT,
+        text=True,
+        capture_output=True,
     )
     if exists.returncode == 0:
-        subprocess.run(["git", "checkout", branch], cwd=REPO_ROOT, check=True,
-                       text=True, capture_output=True)
+        subprocess.run(
+            ["git", "checkout", branch], cwd=REPO_ROOT, check=True, text=True, capture_output=True
+        )
     else:
-        subprocess.run(["git", "checkout", "-b", branch], cwd=REPO_ROOT,
-                       check=True, text=True, capture_output=True)
+        subprocess.run(
+            ["git", "checkout", "-b", branch],
+            cwd=REPO_ROOT,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
 
 
 def _wave20_chunked_push(
@@ -348,9 +359,7 @@ def _wave20_chunked_push(
     else:
         matched = sorted(glob.glob(str(REPO_ROOT / paths_glob), recursive=True))
     if not matched:
-        sys.stderr.write(
-            f"no files matched glob: {paths_glob} (resolved against {REPO_ROOT})\n"
-        )
+        sys.stderr.write(f"no files matched glob: {paths_glob} (resolved against {REPO_ROOT})\n")
         return 2
 
     rels: list[str] = []
@@ -370,15 +379,15 @@ def _wave20_chunked_push(
     actionable: list[str] = []
     seen: set[str] = set()
     for ix in range(0, len(rels), 500):
-        batch = rels[ix:ix + 500]
+        batch = rels[ix : ix + 500]
         proc = subprocess.run(
             ["git", "status", "--porcelain", "--", *batch],
-            cwd=REPO_ROOT, text=True, capture_output=True,
+            cwd=REPO_ROOT,
+            text=True,
+            capture_output=True,
         )
         if proc.returncode != 0:
-            sys.stderr.write(
-                f"git status probe failed at batch {ix}: {proc.stderr[:200]}\n"
-            )
+            sys.stderr.write(f"git status probe failed at batch {ix}: {proc.stderr[:200]}\n")
             continue
         for line in proc.stdout.splitlines():
             if len(line) < 4:
@@ -398,7 +407,7 @@ def _wave20_chunked_push(
         print(f"wave20: no actionable paths from glob {paths_glob} (all clean)")
         return 0
 
-    chunks = [actionable[i:i + chunk_size] for i in range(0, total, chunk_size)]
+    chunks = [actionable[i : i + chunk_size] for i in range(0, total, chunk_size)]
     end = end_chunk if end_chunk is not None else len(chunks) - 1
 
     print(
@@ -416,20 +425,24 @@ def _wave20_chunked_push(
         if ix < start_chunk or ix > end:
             continue
         prefix = f"[{ix + 1}/{len(chunks)}]"
-        msg = (
-            f"feat(wave20): companion .md chunk {ix + 1}/{len(chunks)} "
-            f"({len(chunk_paths)} files)"
-        )
+        msg = f"feat(wave20): companion .md chunk {ix + 1}/{len(chunks)} ({len(chunk_paths)} files)"
         if dry_run:
             print(f"  {prefix} would add {len(chunk_paths)} paths -> commit '{msg}'")
             continue
         for batch_ix in range(0, len(chunk_paths), 500):
-            batch = chunk_paths[batch_ix:batch_ix + 500]
-            subprocess.run(["git", "add", "--", *batch], cwd=REPO_ROOT,
-                           check=True, text=True, capture_output=True)
+            batch = chunk_paths[batch_ix : batch_ix + 500]
+            subprocess.run(
+                ["git", "add", "--", *batch],
+                cwd=REPO_ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
         commit_proc = subprocess.run(
             ["git", "commit", "-m", msg],
-            cwd=REPO_ROOT, text=True, capture_output=True,
+            cwd=REPO_ROOT,
+            text=True,
+            capture_output=True,
         )
         if commit_proc.returncode != 0:
             out = (commit_proc.stdout + commit_proc.stderr).lower()
@@ -447,9 +460,7 @@ def _wave20_chunked_push(
                 backoff_base=sleep_between,
             )
         except RuntimeError as exc:
-            sys.stderr.write(
-                f"  {prefix} PUSH FAILED — branch left with local commit: {exc}\n"
-            )
+            sys.stderr.write(f"  {prefix} PUSH FAILED — branch left with local commit: {exc}\n")
             return 1
         is_first_push = False
         pushed_ok += 1
@@ -464,13 +475,9 @@ def _process_chunk(chunk: Chunk, *, dry_run: bool) -> dict[str, int]:
     files = _read_chunk_file_paths(chunk.chunk_path)
     existing, missing = _filter_existing(files)
     urls = [u for u in (_file_to_site_url(p) for p in existing) if u]
-    sitemap_appended = _append_sitemap_entries(
-        chunk.sitemap_path, urls, dry_run=dry_run
-    )
+    sitemap_appended = _append_sitemap_entries(chunk.sitemap_path, urls, dry_run=dry_run)
     staged_count = _stage_files(existing, chunk.sitemap_path, dry_run=dry_run)
-    commit_message = (
-        f"feat(seo): {chunk.category} chunk {chunk.index} ({len(existing)} page)"
-    )
+    commit_message = f"feat(seo): {chunk.category} chunk {chunk.index} ({len(existing)} page)"
     committed = _commit(commit_message, dry_run=dry_run)
     pushed = False
     if committed:
@@ -571,8 +578,7 @@ def main(argv: list[str] | None = None) -> int:
     selected = [c for c in chunks if args.start <= c.index <= args.end]
     if not selected:
         sys.stderr.write(
-            f"no chunks matched range {args.start}..{args.end} "
-            f"(total={len(chunks)})\n"
+            f"no chunks matched range {args.start}..{args.end} (total={len(chunks)})\n"
         )
         return 2
 
@@ -586,9 +592,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             result = _process_chunk(chunk, dry_run=args.dry_run)
         except Exception as exc:  # noqa: BLE001 -- surface and continue
-            sys.stderr.write(
-                f"chunk {chunk.index} ({chunk.chunk_label}) FAILED: {exc}\n"
-            )
+            sys.stderr.write(f"chunk {chunk.index} ({chunk.chunk_label}) FAILED: {exc}\n")
             return 1
         print(
             f"  chunk {result['chunk_index']:>3} {result['category']:>11} "

@@ -110,6 +110,14 @@ def test_release_pytest_targets_match_test_workflow() -> None:
     )
 
 
+def test_release_pytest_gate_runs_without_deselects() -> None:
+    block = _workflow_step_block(RELEASE_WORKFLOW, "Pytest (PYTEST_TARGETS — matches test.yml)")
+
+    assert "pytest $PYTEST_TARGETS -q --tb=short" in block
+    for token in ("--deselect", "DESELECTS", "|| true", "continue-on-error: true"):
+        assert token not in block
+
+
 def test_release_runs_ruff_format_check() -> None:
     text = RELEASE_WORKFLOW.read_text(encoding="utf-8")
     assert "ruff format --check $RUFF_TARGETS" in text

@@ -93,6 +93,17 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   if (!url.pathname.endsWith(".md")) {
     return env.ASSETS.fetch(request);
   }
+  if (
+    url.pathname.length > 300 ||
+    url.pathname.includes("/_internal/") ||
+    url.pathname.includes("/.git/") ||
+    url.pathname.includes("..")
+  ) {
+    return new Response("# 404\nNot found.\n", {
+      status: 404,
+      headers: { "content-type": MD_CONTENT_TYPE },
+    });
+  }
 
   // Pages static surface MAY include some .md files (press/*.md,
   // security/policy.md per the deploy rsync include list). Try ASSETS
@@ -103,7 +114,9 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   }
 
   // Cache lookup at edge.
-  const cacheKey = new Request(url.toString(), request);
+  const cacheUrl = new URL(url.toString());
+  cacheUrl.search = "";
+  const cacheKey = new Request(cacheUrl.toString(), request);
   const cache = (caches as unknown as { default: Cache }).default;
   const cached = await cache.match(cacheKey);
   if (cached) {
@@ -129,12 +142,11 @@ export const onRequest: PagesFunction<Env> = async (context) => {
         "User-Agent": "jpcite-pages-function/1.0 (+https://jpcite.com)",
       },
     });
-  } catch (err) {
+  } catch {
     return new Response(
       JSON.stringify({
         error: "upstream_unreachable",
-        upstream,
-        message: err instanceof Error ? err.message : String(err),
+        message: "markdown_source_unavailable",
       }),
       {
         status: 502,
@@ -158,9 +170,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return new Response(
       JSON.stringify({
         error: "upstream_error",
-        upstream,
-        status: upstreamResp.status,
-        body_snippet: (await upstreamResp.text()).slice(0, 200),
+        message: "markdown_source_unavailable",
       }),
       {
         status: 502,

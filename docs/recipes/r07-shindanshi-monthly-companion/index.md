@@ -3,7 +3,7 @@ title: "中小企業診断士の月次伴走"
 slug: "r07-shindanshi-monthly-companion"
 audience: "中小企業診断士"
 intent: "monthly_companion"
-tools: ["search_programs", "get_corp_360", "apply_eligibility_chain_am", "bundle_application_kit"]
+tools: ["search_programs", "get_corp_360", "apply_eligibility_chain", "bundle_application_kit"]
 artifact_type: "companion_log.md"
 billable_units_per_run: 14
 seo_query: "中小企業診断士 経営革新 補助金 伴走 認定支援機関"
@@ -16,13 +16,13 @@ license: "PDL v1.0 / CC-BY-4.0"
 # 中小企業診断士の月次伴走
 
 ## 想定 user
-認定経営革新等支援機関ロールを持つ中小企業診断士 (1 人事務所〜30 人法人) で、顧問先 30-80 社の月次伴走を行う。各社の業種 × 都道府県 × 設備投資計画 × 経営状況から該当制度を当てる工数を本 recipe で 1 社 5 分以内に圧縮し、`find_complementary_programs_am` + `apply_eligibility_chain_am` + `forecast_program_renewal` で 補完候補 + 排他 chain + 来期更新確度を 3 req で取得、その後 `bundle_application_kit` で 申請 scaffold を assemble する。月次レビュー + 個社診断 + 提案 kit の 3 phase を 1 セッションで完結。
+認定経営革新等支援機関ロールを持つ中小企業診断士 (1 人事務所〜30 人法人) で、顧問先 30-80 社の月次伴走を行う。各社の業種 × 都道府県 × 設備投資計画 × 経営状況から該当制度を当てる工数を本 recipe で 1 社 5 分以内に圧縮し、補完候補・排他確認・来期更新確度を取得したうえで、申請前確認に貼れる材料をまとめる。月次レビュー + 個社診断 + 提案 kit の 3 phase を 1 セッションで完結。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - `X-Client-Tag` (顧問先別計上、認定支援機関 ID 連動)
 - 顧問先 法人番号 + 業種 + 都道府県 + 直近売上 + 従業員数
-- (推奨) `saved_searches.profile_ids` (mig 097) 事前登録で月次 fan-out 自動化
+- (推奨) `saved_searches.profile_ids` (saved-search profile support) 事前登録で月次 fan-out 自動化
 - (推奨) 過去 3 年の採択履歴 + 重複申請禁止条項のチェック用
 
 ## 入力例
@@ -106,18 +106,18 @@ const kit = await jpcite.bundle_application_kit({
 ```
 
 ## known gaps
-- 認定経営革新等支援機関の業務範囲外の助言は対象外、本 recipe は scaffold + 一次 URL まで
+- 認定経営革新等支援機関の業務範囲外の助言は対象外、本 recipe は 項目整理 + 一次 URL まで
 - 採択確率は過去採択率ベースの推定、保証ではない
-- 申請書面 (事業計画書 / 経営革新計画申請書) の自動生成は行政書士法 §1 で fence、scaffold のみ
+- 申請書面 (事業計画書 / 経営革新計画申請書) の自動生成は行政書士法 §1 で fence、項目整理 のみ
 - `industry_jsic` 1 文字 (E=製造業) 必須、サブ分類は別 input
 - 排他ルール 181 件は逐次拡充、新規制度の排他は 30 日 lag
 
 ## 関連 tool
 - `prescreen_programs` (本 recipe 中核、5 input → top_n 候補)
-- `find_complementary_programs_am` (補完候補、Wave 21)
-- `apply_eligibility_chain_am` (排他 chain、Wave 21)
-- `forecast_program_renewal` (来期更新確度、Wave 22)
-- `bundle_application_kit` (申請 kit assembly、Wave 22)
+- `find_complementary_programs` (補完候補、公開版 21)
+- `apply_eligibility_chain` (排他 chain、公開版 21)
+- `forecast_program_renewal` (来期更新確度、公開版 22)
+- `bundle_application_kit` (申請 kit assembly、公開版 22)
 
 ## 関連 recipe
 - [r01-tax-firm-monthly-review](../r01-tax-firm-monthly-review/) — 税理士月次、税制控除との連動
@@ -128,7 +128,6 @@ const kit = await jpcite.bundle_application_kit({
 - 1 顧問先 14 units (prescreen 5 + chain 3 + forecast 1 + kit 5) × ¥3 = ¥42 / 顧問先 / 月
 - 顧問先 50 社 = ¥2,100 / 月、税込 ¥2,310
 - 顧問先 80 社 (上位事務所) = ¥3,360 / 月、税込 ¥3,696
-- 節約 (純 LLM vs jpcite ¥3/req): 顧問先 50 社 × 月 1 cycle で、純 LLM は約 ¥7,000/月 (1 cycle ¥140 = prescreen + chain + forecast の reasoning + tool 14) に対し jpcite は ¥2,100/月 (700 req × ¥3) → 節約 約 ¥4,900/月 / 顧問先あたり ¥98 (cf. `docs/canonical/cost_saving_examples.md` case 4)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0
@@ -137,7 +136,7 @@ const kit = await jpcite.bundle_application_kit({
 
 ## 業法 fence
 - 中小企業診断士登録規則 — 経営助言の業務範囲内
-- 行政書士法 §1 — 申請書面作成は行政書士、本 recipe は kit assembly (scaffold) まで
+- 行政書士法 §1 — 申請書面作成は行政書士、本 recipe は kit preparation まで
 - 税理士法 §52 — 税務代理は税理士、補助金会計処理は税理士連携
 - 弁護士法 §72 — 法的紛争予測は弁護士
 - 景表法 §5 — `fit_score` / `renewal_forecast` は推定値、保証ではない

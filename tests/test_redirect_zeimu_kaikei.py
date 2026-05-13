@@ -24,12 +24,14 @@ Memory references:
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RULES_FILE = REPO_ROOT / "cloudflare-rules.yaml"
+PAGES_REDIRECTS_FILE = REPO_ROOT / "site" / "_redirects"
 
 
 @pytest.fixture(scope="module")
@@ -136,6 +138,37 @@ def test_zeimu_kaikei_indexnow_legacy_rule(rules_doc: dict) -> None:
     # Path matcher should target the IndexNow key-file naming convention
     assert "{32," in rule["expression"], (
         "IndexNow keys are 32+ char URL-safe tokens; pattern must reflect that"
+    )
+
+
+def test_legacy_host_redirects_stay_out_of_pages_redirects() -> None:
+    """Host-level legacy redirects belong to Cloudflare Redirect Rules.
+
+    Cloudflare Pages `_redirects` is path-only; putting zeimu-kaikei.ai there
+    would either be ignored or become a path rule that can shadow jpcite.com
+    assets.
+    """
+    redirects = PAGES_REDIRECTS_FILE.read_text(encoding="utf-8")
+    for needle in ("zeimu-kaikei.ai", "www.zeimu-kaikei.ai"):
+        assert needle not in redirects
+
+
+def test_redirect_rules_do_not_match_apex_jpcite_paths(rules_doc: dict) -> None:
+    """The legacy migration must not redirect canonical jpcite.com paths.
+
+    jpcite.com path redirects are owned by site/_redirects and Pages static
+    serving. Edge redirect rules may canonicalize www.jpcite.com, but they
+    must not capture the apex host.
+    """
+    offenders: list[str] = []
+    for rule in rules_doc["redirect_rules"]:
+        expression = rule.get("expression", "")
+        quoted_values = set(re.findall(r'"([^"]+)"', expression))
+        if "jpcite.com" in quoted_values:
+            offenders.append(rule.get("name", "<unnamed>"))
+    assert offenders == [], (
+        "Cloudflare redirect rule(s) match apex jpcite.com and could break "
+        f"canonical paths: {offenders}"
     )
 
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-  ROI savings estimator (2026-05-05). This page calls /v1/calculator/savings
-  to show a token-spend ROI estimate for a given (model, queries_per_month,
+  Cost saving estimator (2026-05-05). This page calls /v1/calculator/savings
+  to show a token-spend cost saving estimate for a given (model, queries_per_month,
   domain_mix). It is INTENTIONALLY separate from /calculator.html (the
   coverage explorer): that page deliberately avoids saving framing, this
   page surfaces saving framing WITH the honest caveat that raw token math
@@ -14,11 +14,11 @@
 <!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
-<title>ROI 試算 (β) — jpcite (verify time + citation lift first)</title>
-<meta name="description" content="jpcite ROI 試算ツール。verify 時間節約 (h/月) + 監査可能引用 lift + 月次 net 損益 の 3 軸を主指標として表示。token saving は raw figure 参考表示のみ。raw token math だけでは ¥3/billable unit を償却できないケースあり (honest)。">
+<title>コスト削減試算 (β) — jpcite (verify time + citation lift first)</title>
+<meta name="description" content="jpcite コスト削減試算ツール。verify 時間節約 (h/月) + 監査可能引用 lift + 月次 net 損益 の 3 軸を主指標として表示。token saving は raw figure 参考表示のみ。raw token math だけでは ¥3/billable unit を償却できないケースあり (honest)。">
 <meta name="robots" content="index, follow">
 
-<meta property="og:title" content="ROI 試算 (β) — jpcite">
+<meta property="og:title" content="コスト削減試算 (β) — jpcite">
 <meta property="og:description" content="LLM モデル × 月次クエリ数 から token 節約 USD/JPY を試算。raw token math だけで jpcite 課金は償却できない (honest framing)。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/calculator/">
@@ -28,8 +28,6 @@
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/calculator/">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/calculator/">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="/styles.css?v=20260505a">
 
 <style>
@@ -125,7 +123,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -168,11 +166,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -222,10 +220,10 @@
     <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
       <a href="/">ホーム</a> <span aria-hidden="true">›</span>
       <a href="/pricing.html">料金</a> <span aria-hidden="true">›</span>
-      <span aria-current="page">ROI 試算 (β)</span>
+      <span aria-current="page">コスト削減試算 (β)</span>
     </nav>
 
-    <h1>ROI 試算 (β)</h1>
+    <h1>コスト削減試算 (β)</h1>
     <p class="lead">
       LLM モデル × 月次クエリ数 × ドメイン構成 から、 jpcite を使った場合の
       <strong>(1) verify 時間節約 (h/月)</strong>、
@@ -246,7 +244,7 @@
 
       <!-- Input form -->
       <form class="roi-form" id="roi-form" autocomplete="off" novalidate
-            aria-label="ROI 試算 入力フォーム">
+            aria-label="コスト削減試算 入力フォーム">
         <h2>入力</h2>
 
         <div class="field">
@@ -290,7 +288,7 @@
 
       <!-- Output -->
       <aside class="roi-output" aria-live="polite" aria-atomic="true"
-             aria-label="ROI 試算 結果">
+             aria-label="コスト削減試算 結果">
         <h2>試算結果 (月次・time-first)</h2>
         <div id="err-box" class="err-box" role="alert"></div>
         <dl>
@@ -315,7 +313,7 @@
             <dd id="out-savings-usd" class="savings" style="font-size:18px;">$ —<span class="secondary" id="out-savings-jpy">¥— (FX 換算)。 raw token math だけでは ¥3/billable unit を償却できないケースあり (honest)</span></dd>
           </div>
           <div>
-            <dt>(参考) ROI % (token 節約 / jpcite コスト)</dt>
+            <dt>(参考) コスト削減率 % (token 節約 / jpcite コスト)</dt>
             <dd id="out-roi" class="roi" style="font-size:18px;">— %<span class="secondary">100% 未満 = token 単独では未回収 (verify 時間で回収するのが本筋)</span></dd>
           </div>
         </dl>

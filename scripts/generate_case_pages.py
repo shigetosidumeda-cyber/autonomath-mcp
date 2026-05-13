@@ -21,7 +21,7 @@ import html
 import json
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -240,9 +240,7 @@ def render_page(row: dict[str, Any]) -> str:
         programs_html = (
             "<section aria-labelledby='programs-title'>"
             "<h2 id='programs-title'>利用制度</h2>"
-            "<ul class='programs-list'>"
-            + "".join(li(p) for p in programs)
-            + "</ul></section>"
+            "<ul class='programs-list'>" + "".join(li(p) for p in programs) + "</ul></section>"
         )
 
     outcomes_html = ""
@@ -250,9 +248,7 @@ def render_page(row: dict[str, Any]) -> str:
         outcomes_html = (
             "<section aria-labelledby='outcomes-title'>"
             "<h2 id='outcomes-title'>成果・効果</h2>"
-            "<ul class='outcomes-list'>"
-            + "".join(li(o) for o in outcomes)
-            + "</ul></section>"
+            "<ul class='outcomes-list'>" + "".join(li(o) for o in outcomes) + "</ul></section>"
         )
 
     patterns_html = ""
@@ -260,9 +256,7 @@ def render_page(row: dict[str, Any]) -> str:
         patterns_html = (
             "<section aria-labelledby='patterns-title'>"
             "<h2 id='patterns-title'>取り組みパターン</h2>"
-            "<ul class='patterns-list'>"
-            + "".join(li(p) for p in patterns)
-            + "</ul></section>"
+            "<ul class='patterns-list'>" + "".join(li(p) for p in patterns) + "</ul></section>"
         )
 
     meta_rows: list[str] = []
@@ -282,9 +276,7 @@ def render_page(row: dict[str, Any]) -> str:
     if subsidy:
         meta_rows.append(f"<dt>受給額 (累計)</dt><dd>{format_yen(subsidy)}</dd>")
     if houjin:
-        meta_rows.append(
-            f"<dt>法人番号</dt><dd><code>{safe_html(houjin)}</code></dd>"
-        )
+        meta_rows.append(f"<dt>法人番号</dt><dd><code>{safe_html(houjin)}</code></dd>")
     if is_sole:
         meta_rows.append("<dt>事業形態</dt><dd>個人事業主</dd>")
     if pub_date:
@@ -327,7 +319,7 @@ def render_page(row: dict[str, Any]) -> str:
         "<h2 id='api-title'>API で取得</h2>"
         "<p>本事例の機械可読データは REST / MCP の両方で取得できます。</p>"
         f"<pre class='code-block'><code>curl -H \"X-API-Key: YOUR_API_KEY\" \\\n"
-        f"  \"https://api.{DOMAIN}/v1/cases/{safe_html(case_id)}\"</code></pre>"
+        f'  "https://api.{DOMAIN}/v1/cases/{safe_html(case_id)}"</code></pre>'
         "<p>MCP クライアント (Claude Desktop / Cursor / Cline 等) では "
         f"<code>similar_cases(case_id=&quot;{safe_html(case_id)}&quot;)</code> "
         "で類似事例を取得できます。詳細は <a href='/docs/api-reference'>API リファレンス</a>。"
@@ -340,7 +332,6 @@ def render_page(row: dict[str, Any]) -> str:
     # AEO Wave 18: explicit "Cite this in AI" block so AI agents pick the
     # canonical jpcite URL when surfacing this fact in a generated answer.
     cite_url_short = f"{DOMAIN}/cases/{case_id}"
-    cite_url_full = canonical
     cite_block_html = (
         "<section aria-labelledby='cite-title' class='cite-this-section'>"
         "<h2 id='cite-title'>Cite this in AI / 引用</h2>"
@@ -534,7 +525,7 @@ def render_page(row: dict[str, Any]) -> str:
 
 
 def render_sitemap(case_ids: list[tuple[str, str | None]]) -> str:
-    today = datetime.now(timezone.utc).date().isoformat()
+    today = datetime.now(UTC).date().isoformat()
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
@@ -554,7 +545,7 @@ def render_sitemap(case_ids: list[tuple[str, str | None]]) -> str:
 def write_marker_page() -> None:
     """When DB is unavailable, drop one marker page so deploy paths don't 404."""
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).isoformat()
+    stamp = datetime.now(UTC).isoformat()
     marker = OUT_DIR / "_unavailable.html"
     marker.write_text(
         "<!DOCTYPE html>\n"
@@ -574,7 +565,7 @@ def main() -> int:
         SITEMAP_PATH.write_text(
             '<?xml version="1.0" encoding="UTF-8"?>\n'
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-            '</urlset>\n',
+            "</urlset>\n",
             encoding="utf-8",
         )
         return 0

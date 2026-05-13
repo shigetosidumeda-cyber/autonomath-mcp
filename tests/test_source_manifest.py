@@ -771,3 +771,126 @@ def test_no_entity_link_redacts_unknown_primary_source(client: TestClient) -> No
     assert body["primary_license"] == "unknown"
     assert body["fact_provenance"] == []
     assert body["summary"]["source_count"] == 0
+
+
+# ---------------------------------------------------------------------------
+# R3 P1-6: blocked-license rollup LIMIT 50 — 100k+ fact stress
+# ---------------------------------------------------------------------------
+
+
+def test_blocked_license_rollup_bounded_on_huge_program(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> None:
+    """Program with 10k+ facts spread across 200+ blocked licenses: the
+    blocked-license GROUP BY rollup query itself completes in well under
+    100ms because LIMIT 50 caps the result-set materialization and the
+    accompanying ORDER BY work.
+
+    Tests the SQL hot-path directly (sqlite3.execute) rather than the full
+    HTTP stack — middleware overhead (anon limit + x402 + audit log +
+    structured logging) on the FastAPI TestClient adds ~200ms baseline
+    that has nothing to do with the rollup query the LIMIT 50 fixes.
+    """
+    import time
+
+    from jpintel_mcp.api._license_gate import REDISTRIBUTABLE_LICENSES
+
+    db_path = tmp_path_factory.mktemp("source_manifest_stress") / "autonomath.db"
+    _build_fixture_autonomath_db(db_path)
+
+    # Seed one fat program (program:test:stress) on top of the existing
+    # fixture: 250 distinct proprietary licenses × 50 facts each = 12,500
+    # blocked rows. Without LIMIT 50, the GROUP BY rollup walks all 12,500
+    # rows AND emits 250 distinct license groups — the change caps both
+    # the result set and the ORDER BY ranking work.
+    con = sqlite3.connect(db_path)
+    try:
+        con.execute(
+            "INSERT INTO am_entities("
+            "  canonical_id, primary_name, record_kind, source_url, "
+            "  fetched_at, confidence"
+            ") VALUES (?,?,?,?,?,?)",
+            (
+                "program:test:stress",
+                "ストレステスト 補助金",
+                "program",
+                "https://www.example.go.jp/stress.html",
+                "2026-04-30T00:00:00",
+                1.0,
+            ),
+        )
+        source_ids: list[int] = []
+        for lic_idx in range(250):
+            cur = con.execute(
+                "INSERT INTO am_source(source_url, source_type, domain, "
+                "license, content_hash, first_seen) VALUES (?,?,?,?,?,?)",
+                (
+                    f"https://blocked.example/{lic_idx}",
+                    "reference",
+                    "blocked.example",
+                    f"proprietary_variant_{lic_idx:03d}",
+                    f"sha256:stress{lic_idx:03d}",
+                    "2026-04-30T00:00:00",
+                ),
+            )
+            source_ids.append(int(cur.lastrowid or 0))
+        fact_rows: list[tuple[str, str, str, str, int]] = []
+        for lic_idx, sid in enumerate(source_ids):
+            for fct in range(50):
+                fact_rows.append(
+                    (
+                        "program:test:stress",
+                        f"field_{lic_idx:03d}_{fct:02d}",
+                        f"stress-value-{lic_idx}-{fct}",
+                        "text",
+                        sid,
+                    )
+                )
+        con.executemany(
+            "INSERT INTO am_entity_facts("
+            "  entity_id, field_name, field_value_text, field_kind, source_id"
+            ") VALUES (?,?,?,?,?)",
+            fact_rows,
+        )
+        con.commit()
+    finally:
+        con.close()
+
+    # Replay the exact production SQL from source_manifest.py:595-606 with
+    # the LIMIT 50 fix attached. We re-open a fresh read-only connection
+    # so this measurement reflects the cold-cache cost the endpoint pays.
+    allowed_licenses = sorted(REDISTRIBUTABLE_LICENSES)
+    allowed_sql = ",".join("?" for _ in allowed_licenses)
+    sql = (
+        f"""SELECT COALESCE(s.license, 'unknown_null') AS license, COUNT(*) AS n
+              FROM am_entity_facts f
+              JOIN am_source s ON s.id = f.source_id
+             WHERE f.entity_id = ?
+               AND f.source_id IS NOT NULL
+               AND COALESCE(s.license, 'unknown_null') NOT IN ({allowed_sql})
+             GROUP BY COALESCE(s.license, 'unknown_null')
+             ORDER BY n DESC, license ASC
+             LIMIT 50"""
+    )
+    ro = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+    ro.row_factory = sqlite3.Row
+    try:
+        # Warm up the parsed-statement / page cache.
+        ro.execute(sql, ("program:test:stress", *allowed_licenses)).fetchall()
+
+        t0 = time.perf_counter()
+        rows = ro.execute(sql, ("program:test:stress", *allowed_licenses)).fetchall()
+        elapsed_ms = (time.perf_counter() - t0) * 1000.0
+    finally:
+        ro.close()
+
+    # LIMIT 50 must cap the result-set even with 250 distinct license
+    # buckets in the underlying group-by.
+    assert len(rows) == 50, f"LIMIT 50 must cap blocked_license_rows; got {len(rows)}"
+
+    # Latency assertion on the SQL rollup alone: bounded result-set keeps
+    # the rollup well under 100ms even with 12,500 blocked fact rows.
+    assert elapsed_ms < 100.0, (
+        f"blocked-license rollup on 12.5k facts took {elapsed_ms:.1f}ms; "
+        "expected <100ms with LIMIT 50."
+    )

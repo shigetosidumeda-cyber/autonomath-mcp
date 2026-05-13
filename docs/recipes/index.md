@@ -1,137 +1,53 @@
 ---
-title: "適格事業者の抹消 watch"
-slug: "r30-invoice-revoke-watch"
-audience: "横串 (経理・税理士)"
-intent: "invoice_revoke_watch"
-tools: ["check_invoice_status", "get_invoice_history", "get_corp_360"]
-artifact_type: "revoke_alert.json"
-billable_units_per_run: 100
-seo_query: "適格事業者 抹消 watch インボイス 廃業"
-total_time: "PT5M"
-date_created: "2026-05-11"
-date_modified: "2026-05-11"
+title: "Recipes"
+date_modified: "2026-05-13"
 license: "PDL v1.0 / CC-BY-4.0"
 ---
 
-# 適格事業者の抹消 watch
+# Recipes
 
-## 想定 user
-EC / 卸売 / 商社 / メーカー / 飲食店チェーン 等の経理担当者・税理士事務所の所員が、仕入先 100-10,000 社の適格事業者登録が抹消 / 廃業 / 取消 / 名称変更されないか毎週検知して、消費税仕入税額控除のリスクを抑える運用。月次の `bulk_invoice_verify` (r11) より頻度を上げて週次 / 日次の `invoice_revoke_watch` を回し、抹消検知の翌営業日に支払保留 + 税区分修正を行う運用が想定読者。期末決算前 (3 月 / 12 月) の年次総点検では 10,000-50,000 社規模を 1 batch で sweep する用途にも対応。
+jpcite の recipe は、公開情報の根拠確認、法人・制度・登録情報の照合、AI ツール連携を短時間で試すための実装例です。このページは recipe の索引です。個別の手順、前提、出力例は各 recipe ページで確認してください。
 
-## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
-- 仕入先の登録番号 CSV (T + 13 桁、freee / マネーフォワード / 弥生会計から export)
-- 週次 cron (n8n / GitHub Actions / Fly cron / Cloud Functions / Lambda 等)
-- (推奨) `Idempotency-Key` ヘッダー (週次 batch の冪等性確保)
-- (推奨) 仕入先別の支払予定額 — 抹消検知時の影響額試算用
+## 業務別 recipe
 
-## 入力例
-```json
-{
-  "invoice_numbers": ["T7010001234567", "T8010001234568", "<T + 13 桁を 100-10,000 件 配列で>"],
-  "watch": "revoke",
-  "events": ["revoke", "expire", "name_change"],
-  "client_tag": "weekly-2026Q2",
-  "idempotency_key": "watch-2026-05-11-v1",
-  "include_corp_360": false
-}
-```
+- [r01-tax-firm-monthly-review](r01-tax-firm-monthly-review/) - 税理士事務所の月次レビュー前に、法人・制度・税務関連の確認材料を整理
+- [r02-pre-closing-subsidy-check](r02-pre-closing-subsidy-check/) - 決算前に補助金・制度候補を確認し、顧問先への質問を準備
+- [r03-sme-ma-public-dd](r03-sme-ma-public-dd/) - SME M&A の公開情報 DD 用 evidence packet を作成
+- [r04-shinkin-borrower-watch](r04-shinkin-borrower-watch/) - 信金・金融機関の取引先モニタリング候補を根拠付きで整理
+- [r05-gyosei-licensing-eligibility](r05-gyosei-licensing-eligibility/) - 行政書士の許認可・制度確認の初回ヒアリング材料を作成
+- [r06-sharoushi-grant-match](r06-sharoushi-grant-match/) - 社労士向けに助成金・労務関連制度の確認候補を整理
+- [r07-shindanshi-monthly-companion](r07-shindanshi-monthly-companion/) - 中小企業診断士の月次伴走で使う制度・公開情報メモを作成
+- [r08-benrishi-ip-grant-monitor](r08-benrishi-ip-grant-monitor/) - 弁理士・知財支援向けに IP 関連制度の更新を確認
+- [r09-bpo-grant-triage-1000](r09-bpo-grant-triage-1000/) - BPO で多数企業の補助金候補を一次トリアージ
+- [r10-cci-municipal-screen](r10-cci-municipal-screen/) - 商工会議所・自治体の管内企業向け制度案内候補を作成
 
-## 実行 (curl / Python / TypeScript)
-### curl
-```bash
-curl -X POST -H "X-API-Key: $JPCITE_API_KEY" -H "X-Client-Tag: weekly-2026Q2" \
-  -H "Idempotency-Key: watch-2026-05-11-v1" -H "Content-Type: application/json" \
-  -d @nums.json \
-  "https://api.jpcite.com/v1/invoice/bulk_watch?event=revoke"
+## データ照合・監視 recipe
 
-curl -H "X-API-Key: $JPCITE_API_KEY" \
-  "https://api.jpcite.com/v1/invoice/T7010001234567/history"
-```
-### Python
-```python
-import os, csv, json, requests
-from jpcite import Client
-c = Client(api_key=os.environ["JPCITE_API_KEY"], client_tag="weekly-2026Q2")
-with open("vendor_invoices.csv") as f:
-    nums = [row[0] for row in csv.reader(f) if row[0].startswith("T")]
-res = c.bulk_invoice_watch(invoice_numbers=nums,
-    events=["revoke", "name_change"], idempotency_key="watch-2026-05-11-v1")
-revoked = [r for r in res.results if r.event == "revoke"]
-if revoked:
-    text = f"[抹消検知] {len(revoked)} 社"
-    requests.post(os.environ["SLACK_WEBHOOK_URL"], json={"text": text})
-with open(f"revoke_{res.fetched_at[:10]}.json", "w") as f:
-    json.dump([r.__dict__ for r in revoked], f, ensure_ascii=False, indent=2)
-```
-### TypeScript
-```ts
-import { jpcite } from "@jpcite/sdk";
-import fs from "node:fs";
-const nums = fs.readFileSync("vendor_invoices.csv", "utf8")
-  .split("\n").filter(l => l.startsWith("T"));
-const res = await jpcite.bulk_invoice_watch({
-  invoice_numbers: nums, events: ["revoke", "name_change"],
-  idempotency_key: "watch-2026-05-11-v1", client_tag: "weekly-2026Q2",
-});
-const revoked = res.results.filter(r => r.event === "revoke");
-fs.writeFileSync("revoke_alert.json", JSON.stringify(revoked, null, 2));
-```
+- [r11-ec-invoice-bulk-verify](r11-ec-invoice-bulk-verify/) - EC・経理の適格請求書発行事業者番号を一括確認
+- [r12-audit-firm-kyc-sweep](r12-audit-firm-kyc-sweep/) - 監査法人向けの KYC・独立性確認材料を整理
+- [r13-shihoshoshi-registry-watch](r13-shihoshoshi-registry-watch/) - 司法書士向けの登記・法人情報ウォッチ
+- [r14-public-bid-watch](r14-public-bid-watch/) - 公共調達・入札情報の監視
+- [r24-houjin-6source-join](r24-houjin-6source-join/) - 法人番号を起点に 6 系統の公開情報を結合
+- [r25-adoption-bulk-export](r25-adoption-bulk-export/) - 採択履歴などの公開情報を一括 export
+- [r26-enforcement-rss-slack](r26-enforcement-rss-slack/) - 行政処分・公表情報の RSS / Slack 通知
+- [r27-law-amendment-program-link](r27-law-amendment-program-link/) - 法改正と制度ページの関連確認
+- [r28-edinet-program-trigger](r28-edinet-program-trigger/) - EDINET 情報をきっかけに制度・公開情報確認を開始
+- [r29-municipal-grant-monitor](r29-municipal-grant-monitor/) - 自治体補助金の更新監視
+- [r30-invoice-revoke-watch](r30-invoice-revoke-watch/) - 適格事業者登録の抹消・変更を検知
 
-## 出力例 (artifact)
-```json
-{
-  "fetched_at": "2026-05-11T09:00:00Z",
-  "source_url": "https://www.invoice-kohyo.nta.go.jp/regno-search/main",
-  "scanned_total": 100,
-  "active": 91,
-  "revoked": 7,
-  "expired": 0,
-  "name_changed": 2,
-  "results_revoked": [
-    {"invoice_number": "T7010001234567", "event": "revoke",
-     "revoked_date": "2026-04-30", "reason": "廃業", "corp_name": "サンプル商事株式会社"},
-    {"invoice_number": "T8010001234568", "event": "revoke",
-     "revoked_date": "2026-05-08", "reason": "取消"}
-  ],
-  "client_tag": "weekly-2026Q2",
-  "known_gaps": ["抹消反映に 1-2 日遅延", "抹消理由詳細は限定公開"]
-}
-```
+## AI ツール連携 recipe
 
-## known gaps
-- 国税庁公表サイトの更新は 1-2 日遅延、月末 / 期末締の直前 watch では翌営業日 再 watch が安全
-- 抹消理由詳細 (廃業 / 取消 / 死亡 / 法人解散) は公表サイト UI 表示に依存、本 API は分類後 enum のみ提供
-- 月次 4M 行 bulk (`nta-bulk-monthly`、1st-of-month 03:00 JST) 直後の整合性は最大 24 時間
-- 個人事業主の抹消は法人格と異なり、本人申出ベース、検知ラグは長め
-- `name_change` (商号変更) は 抹消 + 新規登録 のペアとして reflect される場合あり
+- [r16-claude-code-30sec](r16-claude-code-30sec/) - Claude Code から jpcite を呼び出す最短セットアップ
+- [r17-chatgpt-custom-gpt](r17-chatgpt-custom-gpt/) - ChatGPT Custom GPT 連携
+- [r18-cursor-mcp-setup](r18-cursor-mcp-setup/) - Cursor MCP 連携
+- [r19-codex-agents-sdk](r19-codex-agents-sdk/) - Codex / Agents SDK 連携
+- [r20-continue-cline](r20-continue-cline/) - Continue / Cline 連携
+- [r21-langchain-llamaindex-rag](r21-langchain-llamaindex-rag/) - LangChain / LlamaIndex / RAG からの利用
+- [r22-n8n-zapier-webhook](r22-n8n-zapier-webhook/) - n8n / Zapier / Webhook 連携
+- [r23-slack-bot](r23-slack-bot/) - Slack bot からの照会
 
-## 関連 tool
-- `check_invoice_status` (単発の登録 status 確認)
-- `bulk_invoice_watch` (本 recipe の中核、週次差分 watch)
-- `get_invoice_history` (登録 / 抹消 / 商号変更履歴の縦覧)
-- `get_corp_360` (法人 360 度ビュー、抹消 + 行政処分 + 採択履歴の組み合わせ)
+## 注意
 
-## 関連 recipe
-- [r11-ec-invoice-bulk-verify](../r11-ec-invoice-bulk-verify/) — EC 経理月次 verify、本 recipe の前段
-- [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC、独立性チェック
-- [r24-houjin-6source-join](../r24-houjin-6source-join/) — 法人 6 source join、抹消 + 行政処分の組み合わせ素材
-
-## billable_units 試算
-- 1 batch 100 units × ¥3 = ¥300 / 週
-- 月 4 週 = ¥1,200 / 月、税込 ¥1,320
-- 仕入先 1,000 社 = ¥3,000 / 週 × 4 = ¥12,000 / 月、税込 ¥13,200
-- 期末年次総点検 (10,000 社) = ¥30,000 / 期末、税込 ¥33,000
-- ROI: 抹消未検知 1 件 (買掛 ¥10M) × 消費税控除否認 ¥1M / 1 件で API 費用は完全回収
-
-## 商業利用条件
-- PDL v1.0 (NTA 公開データ、出典明記必須) + CC-BY-4.0 (jpcite 編集物)
-- 経理 / 税務 / 監査調書への組込 OK、外部公表は税理士確認推奨
-- 仕入先への抹消通知 / 支払保留通知は事実通知に留め、信用毀損リスクに留意
-- 公開資料に基づく公知情報、NDA 対象外
-
-## 業法 fence
-- 消費税法 §30 (仕入税額控除) の判断は税理士領域
-- 経理処理 (買掛金修正 / 税区分修正) は事業者内部 OK、外部公表時は税理士確認
-- 個人情報保護法 — 個人事業主の氏名 / 住所が含まれる場合、安全管理措置と利用目的明示
-- 景表法 §5 — 仕入先への通知は事実通知に留め、評価表現 (悪質 / 危険) は避ける
+- recipe は公開情報の確認と evidence packet 作成を補助する例です。税務、法務、監査、投資、融資、許認可の判断を代替しません。
+- 料金や匿名枠は [Pricing](/pricing.html) の現行表示を確認してください。
+- 個人事業主情報や取引先情報を扱う場合は、利用目的、アクセス権限、保存期間を事前に確認してください。

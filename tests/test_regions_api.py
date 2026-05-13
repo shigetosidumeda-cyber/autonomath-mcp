@@ -322,6 +322,7 @@ def test_mcp_impl_programs_by_region_unknown(autonomath_region_db, seeded_db) ->
 def test_mcp_impl_region_coverage_municipality(autonomath_region_db, seeded_db) -> None:
     _seed_programs(seeded_db)
     os.environ["JPINTEL_DB_PATH"] = str(seeded_db)
+    os.environ["JPCITE_DB_PATH"] = str(seeded_db)
     from jpintel_mcp.mcp.autonomath_tools.region_tools import _impl_region_coverage
 
     out = _impl_region_coverage(region_code="13105")

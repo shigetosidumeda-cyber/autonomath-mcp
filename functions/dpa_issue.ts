@@ -1,4 +1,5 @@
 /// <reference types="@cloudflare/workers-types" />
+import { readRequestTextLimited } from "./_body_limit.ts";
 /*
  * POST /dpa/issue -- Cloudflare Pages Function (Wave 18 E5).
  *
@@ -57,6 +58,15 @@ interface Env {
 }
 
 /**
+ * DPA payload is tiny — `{ company, user_name, effective_date? }`, each
+ * field capped at 80 chars after escape. 4KB is the same cap used by
+ * `functions/api/rum_beacon.ts` (sendBeacon hard cap), comfortable
+ * headroom over the ~200-byte realistic payload while still rejecting
+ * pathological bodies cheaply.
+ */
+const MAX_BODY_BYTES = 4 * 1024;
+
+/**
  * Escape PDF metacharacters for safe inclusion inside a (...) string
  * literal in a content stream. Per ISO 32000-1 7.3.4.2 we must escape
  * \, (, ).
@@ -108,9 +118,19 @@ function spliceInPlace(buf: Uint8Array, start: number, oldLen: number, newBytes:
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   // 1. Method + content-type guards
+  //    Cap the JSON body BEFORE parse — see R3 cluster fix in
+  //    `functions/_body_limit.ts`. Rejects oversized bodies with a
+  //    413 `payload_too_large` envelope before any parse work happens.
+  const bodyRead = await readRequestTextLimited(request, MAX_BODY_BYTES);
+  if (!bodyRead.ok) {
+    return new Response(
+      JSON.stringify({ error: "payload_too_large", max_bytes: MAX_BODY_BYTES }),
+      { status: 413, headers: { "content-type": "application/json" } },
+    );
+  }
   let body: DpaIssueRequest;
   try {
-    body = (await request.json()) as DpaIssueRequest;
+    body = JSON.parse(bodyRead.text) as DpaIssueRequest;
   } catch {
     return new Response('{"error":"invalid_json"}', { status: 400, headers: { "content-type": "application/json" } });
   }

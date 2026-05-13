@@ -71,6 +71,35 @@ def _ensure_customer_webhooks_table(seeded_db: Path):
     yield
 
 
+@pytest.fixture(autouse=True)
+def _patch_register_time_dns(monkeypatch):
+    """Make register-time DNS-rebind check deterministic.
+
+    R2 P1-4 added a ``is_safe_webhook`` call inside
+    ``_validate_webhook_url`` (POST /v1/me/webhooks + PATCH update). The
+    helper does a real ``socket.getaddrinfo`` on hostnames that are not IP
+    literals. Test hostnames like ``hooks.example.com`` are NOT resolvable
+    in CI sandboxes, so without this patch every register-happy-path test
+    would 400 with ``dns_failed``.
+
+    Default behaviour: every non-literal host resolves to ``93.184.216.34``
+    (example.com's RFC-2606 reserved public IP). Tests that need the
+    DNS-rebind branch can override ``socket.getaddrinfo`` again with their
+    own mapping (see ``test_register_rejects_dns_rebind_to_private_ip``).
+    The override only fires on ``customer_webhooks`` URLs — IP-literal
+    paths still exercise the unmocked branch.
+    """
+    import jpintel_mcp.utils.webhook_safety as _safety
+
+    def _fake_getaddrinfo(host, *_args, **_kwargs):
+        # Tests that want the rebind branch reassign socket.getaddrinfo
+        # AFTER this fixture; we are the floor.
+        return [(2, 1, 6, "", ("93.184.216.34", 0))]
+
+    monkeypatch.setattr(_safety.socket, "getaddrinfo", _fake_getaddrinfo)
+    yield
+
+
 # ---------------------------------------------------------------------------
 # Endpoint tests
 # ---------------------------------------------------------------------------
@@ -161,6 +190,121 @@ def test_register_rejects_unknown_event_type(client, webhook_key):
     )
     # Pydantic Literal rejection => 422
     assert r.status_code == 422
+
+
+def test_register_rejects_dns_rebind_to_private_ip(
+    client,
+    webhook_key,
+    monkeypatch,
+):
+    """R2 P1-4 register-time gate: hostname resolves to RFC1918 → 400.
+
+    Customer POSTs ``https://example.test/hook`` — not an IP literal, so the
+    legacy ``_is_internal_host`` check would have allowed it. The new
+    ``is_safe_webhook`` call inside ``_validate_webhook_url`` MUST resolve
+    the hostname and reject because it points at ``10.0.0.5``.
+
+    Detail string carries ``webhook_target_unsafe`` so callers can
+    pattern-match without a DNS round-trip.
+    """
+
+    def _fake_getaddrinfo(host, *_args, **_kwargs):
+        if host == "example.test":
+            return [(2, 1, 6, "", ("10.0.0.5", 0))]
+        return [(2, 1, 6, "", ("93.184.216.34", 0))]
+
+    monkeypatch.setattr(
+        "jpintel_mcp.utils.webhook_safety.socket.getaddrinfo",
+        _fake_getaddrinfo,
+    )
+
+    r = client.post(
+        "/v1/me/webhooks",
+        headers={"X-API-Key": webhook_key},
+        json={
+            "url": "https://example.test/hook",
+            "event_types": ["program.created"],
+        },
+    )
+    assert r.status_code == 400, r.text
+    detail = r.json()["detail"].lower()
+    assert "webhook_target_unsafe" in detail
+    assert "internal_ip_resolved" in detail
+
+
+def test_register_accepts_public_resolving_hostname(
+    client,
+    webhook_key,
+    monkeypatch,
+):
+    """R2 P1-4 register-time gate: hostname → public IP → 201 + secret."""
+
+    def _fake_getaddrinfo(host, *_args, **_kwargs):
+        if host == "public.example.com":
+            return [(2, 1, 6, "", ("8.8.8.8", 0))]
+        return [(2, 1, 6, "", ("93.184.216.34", 0))]
+
+    monkeypatch.setattr(
+        "jpintel_mcp.utils.webhook_safety.socket.getaddrinfo",
+        _fake_getaddrinfo,
+    )
+
+    r = client.post(
+        "/v1/me/webhooks",
+        headers={"X-API-Key": webhook_key},
+        json={
+            "url": "https://public.example.com/hook",
+            "event_types": ["program.created"],
+        },
+    )
+    assert r.status_code == 201, r.text
+    body = r.json()
+    assert body["url"] == "https://public.example.com/hook"
+    assert body["secret_hmac"] is not None
+    assert body["status"] == "active"
+
+
+def test_update_rejects_dns_rebind_to_private_ip(
+    client,
+    webhook_key,
+    monkeypatch,
+):
+    """R2 P1-4 update-time gate: PATCH with private-resolving URL → 400.
+
+    The update path must apply the same DNS-rebind gate as register. Without
+    it a customer could register a safe URL then PATCH it to point at a
+    private IP, bypassing the gate at register-time.
+    """
+    # First register with a safe URL (autouse fixture maps to public IP).
+    r = client.post(
+        "/v1/me/webhooks",
+        headers={"X-API-Key": webhook_key},
+        json={
+            "url": "https://hooks.example.com/initial",
+            "event_types": ["program.created"],
+        },
+    )
+    assert r.status_code == 201, r.text
+    wid = r.json()["id"]
+
+    # Now monkey the resolver so the PATCH target maps to RFC1918.
+    def _fake_getaddrinfo(host, *_args, **_kwargs):
+        if host == "internal.example.test":
+            return [(2, 1, 6, "", ("192.168.1.5", 0))]
+        return [(2, 1, 6, "", ("93.184.216.34", 0))]
+
+    monkeypatch.setattr(
+        "jpintel_mcp.utils.webhook_safety.socket.getaddrinfo",
+        _fake_getaddrinfo,
+    )
+
+    r2 = client.patch(
+        f"/v1/me/webhooks/{wid}",
+        headers={"X-API-Key": webhook_key},
+        json={"url": "https://internal.example.test/hook"},
+    )
+    assert r2.status_code == 400, r2.text
+    assert "webhook_target_unsafe" in r2.json()["detail"].lower()
 
 
 def test_register_happy_path_returns_secret_once(client, webhook_key, seeded_db):
@@ -344,6 +488,12 @@ def test_test_delivery_signs_payload_with_hmac(
     import httpx as _httpx
 
     monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
+    # Bypass the DNS-rebind fire-time safety check — hooks.example.com is
+    # not resolvable in the test env so the real helper would 400.
+    monkeypatch.setattr(
+        "jpintel_mcp.api.customer_webhooks.is_safe_webhook",
+        lambda url: (True, None),
+    )
 
     rt = client.post(f"/v1/me/webhooks/{wid}/test", headers={"X-API-Key": webhook_key})
     assert rt.status_code == 200, rt.text
@@ -366,6 +516,36 @@ def test_test_delivery_signs_payload_with_hmac(
     assert payload["event_type"] == "test.ping"
 
 
+def test_test_delivery_non_2xx_does_not_return_upstream_body_excerpt(
+    client,
+    webhook_key,
+    monkeypatch,
+):
+    r = client.post(
+        "/v1/me/webhooks",
+        headers={"X-API-Key": webhook_key},
+        json={"url": "https://hooks.example.com/test", "event_types": ["program.created"]},
+    )
+    wid = r.json()["id"]
+
+    mock = _MockClient(responses=[(500, "upstream secret body should not leak")])
+    import httpx as _httpx
+
+    monkeypatch.setattr(_httpx, "Client", lambda *a, **k: mock)
+    monkeypatch.setattr(
+        "jpintel_mcp.api.customer_webhooks.is_safe_webhook",
+        lambda url: (True, None),
+    )
+
+    rt = client.post(f"/v1/me/webhooks/{wid}/test", headers={"X-API-Key": webhook_key})
+    assert rt.status_code == 200, rt.text
+    out = rt.json()
+    assert out["ok"] is False
+    assert out["status_code"] == 500
+    assert out["error"] == "http_500"
+    assert "upstream secret" not in json.dumps(out)
+
+
 def test_test_delivery_disabled_webhook_400(client, webhook_key, seeded_db):
     r = client.post(
         "/v1/me/webhooks",
@@ -382,6 +562,96 @@ def test_test_delivery_disabled_webhook_400(client, webhook_key, seeded_db):
     rt = client.post(f"/v1/me/webhooks/{wid}/test", headers={"X-API-Key": webhook_key})
     assert rt.status_code == 400
     assert "disabled" in rt.json()["detail"].lower()
+
+
+def test_test_delivery_rejects_dns_rebind_to_private_ip(
+    client,
+    webhook_key,
+    monkeypatch,
+    seeded_db,
+):
+    """R2 P1-4: DNS-rebind defence on POST /v1/me/webhooks/{id}/test.
+
+    Customer registers ``https://example.test/hook`` — the hostname is not
+    an IP literal so register-time validation (_validate_webhook_url) lets
+    it through. By the time the test-delivery surface fires, ``example.test``
+    resolves to ``127.0.0.1`` (DNS rebind / split-horizon). The fire-time
+    safety helper MUST reject before any POST is made, returning 400
+    ``webhook_target_unsafe`` so the customer cannot use the test endpoint
+    to probe operator-internal services (10.0.0.0/8, 127.0.0.0/8,
+    169.254.0.0/16, etc.).
+    """
+    # Bypass register-time DNS resolution: _validate_webhook_url only checks
+    # IP literals, so registering a hostname is allowed by default. Insert
+    # the row directly so we control the URL exactly.
+    secret = "whsec_dns_rebind_test"
+    c = sqlite3.connect(seeded_db)
+    try:
+        from jpintel_mcp.api.deps import hash_api_key
+
+        key_hash = hash_api_key(webhook_key)
+        cur = c.execute(
+            "INSERT INTO customer_webhooks(api_key_hash, url, event_types_json, "
+            "secret_hmac, status, failure_count, created_at, updated_at) "
+            "VALUES (?, ?, ?, ?, 'active', 0, datetime('now'), datetime('now'))",
+            (
+                key_hash,
+                "https://example.test/hook",
+                json.dumps(["program.created"]),
+                secret,
+            ),
+        )
+        wid = cur.lastrowid
+        c.commit()
+    finally:
+        c.close()
+
+    # Test resolver mapping example.test -> 127.0.0.1 (loopback rebind).
+    def _fake_getaddrinfo(host, *_args, **_kwargs):
+        if host == "example.test":
+            # getaddrinfo tuple: (family, type, proto, canonname, sockaddr)
+            return [(2, 1, 6, "", ("127.0.0.1", 0))]
+        raise OSError("unexpected host in test")
+
+    monkeypatch.setattr(
+        "jpintel_mcp.utils.webhook_safety.socket.getaddrinfo",
+        _fake_getaddrinfo,
+    )
+
+    # Sentinel: httpx.Client.post must NOT be called. If the rejection lands
+    # before the POST as required, this mock sees zero calls.
+    post_calls: list = []
+
+    class _BlockingMockClient:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_exc):
+            return False
+
+        def close(self):
+            pass
+
+        def post(self, url, **kwargs):
+            post_calls.append((url, kwargs))
+            raise AssertionError(
+                "httpx.Client.post must NOT be called when DNS rebinds to "
+                "a private IP — the safety check has to short-circuit BEFORE "
+                "the POST"
+            )
+
+    import httpx as _httpx
+
+    monkeypatch.setattr(_httpx, "Client", lambda *a, **k: _BlockingMockClient())
+
+    rt = client.post(f"/v1/me/webhooks/{wid}/test", headers={"X-API-Key": webhook_key})
+    assert rt.status_code == 400, rt.text
+    detail = rt.json()["detail"].lower()
+    assert "webhook_target_unsafe" in detail
+    # Reason string surfaces as `internal_ip_resolved` — DNS-rebind branch.
+    assert "internal_ip_resolved" in detail
+    # And critically: zero POST calls were attempted.
+    assert post_calls == []
 
 
 # ---------------------------------------------------------------------------
@@ -687,3 +957,86 @@ def test_compute_signature_matches_python_reference():
     body = b'{"event_type":"x","timestamp":"y","data":{}}'
     expected = "hmac-sha256=" + hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
     assert compute_signature(secret, body) == expected
+
+
+def test_forged_signature_one_byte_diff_fails_compare_digest():
+    """Forge a signature with one byte flipped; assert verification fails.
+
+    Contract test for the R2 P2 audit recommendation. We cannot meaningfully
+    measure timing side-channels in a unit test, so the assertion is:
+
+      1. ``hmac.compare_digest`` returns False when one byte differs.
+      2. The producer surface (compute_signature) is the SOLE HMAC
+         touch-point in customer_webhooks.py / dispatch_webhooks.py; no
+         ``==`` comparison against a computed HMAC exists in either file
+         (source-grep below).
+
+    If a future commit introduces an inbound HMAC verification path, the
+    source-grep half of this test will fail unless ``hmac.compare_digest``
+    is used.
+    """
+    from jpintel_mcp.api.customer_webhooks import compute_signature
+
+    secret = "whsec_audit_byte_forge"
+    body = b'{"event_type":"forge","timestamp":"t","data":{}}'
+    real = compute_signature(secret, body)
+
+    # Forge: flip the last hex char (one byte's lower nibble) so the
+    # signature is structurally valid but cryptographically wrong.
+    last = real[-1]
+    flipped = "0" if last != "0" else "1"
+    forged = real[:-1] + flipped
+    assert real != forged
+
+    # The correct primitive for verification is hmac.compare_digest. Show
+    # that it rejects the forged value (and accepts the real one).
+    assert hmac.compare_digest(real, real) is True
+    assert hmac.compare_digest(real, forged) is False
+
+
+def test_no_naive_equality_compare_on_hmac_in_sources():
+    """Source-grep contract: no ``==`` compare against computed HMAC.
+
+    customer_webhooks.py and dispatch_webhooks.py are PRODUCER-ONLY
+    surfaces today — they sign outbound payloads. If a future change
+    introduces an inbound verification path, the comparison MUST use
+    ``hmac.compare_digest`` (constant-time) per R2 P2 audit. This test
+    asserts that contract by grep.
+    """
+    import re
+
+    repo = Path(__file__).resolve().parent.parent
+    targets = [
+        repo / "src" / "jpintel_mcp" / "api" / "customer_webhooks.py",
+        repo / "scripts" / "cron" / "dispatch_webhooks.py",
+    ]
+
+    # Patterns flagging an `==` (or `!=`) comparison on the same line as
+    # any token containing ``hmac`` / ``signature`` / ``digest`` / ``sig``.
+    # ``sig`` is a substring of ``signal`` etc.; the word-boundary keeps
+    # the false-positive rate at zero against the current sources.
+    danger = re.compile(
+        r"(?:==|!=).*\b(?:hmac|signature|digest|sig)\b"
+        r"|\b(?:hmac|signature|digest|sig)\b.*(?:==|!=)",
+        re.IGNORECASE,
+    )
+    # compute_signature(...) == expected in tests / docstrings is fine
+    # — these sources are PROD code; comments are OK because they describe
+    # the contract. Filter to non-comment, non-string code lines.
+    for path in targets:
+        assert path.is_file(), f"missing source: {path}"
+        for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            stripped = line.strip()
+            # Skip blank, full-line comments, and docstring-style lines.
+            if not stripped or stripped.startswith("#") or stripped.startswith('"'):
+                continue
+            # Skip lines inside docstrings is harder; instead allow any
+            # match that has 'compare_digest' on the same line (that is
+            # the safe primitive).
+            if "compare_digest" in line:
+                continue
+            if danger.search(line):
+                raise AssertionError(
+                    f"{path.name}:{lineno} naive HMAC/signature compare suspected: "
+                    f"{stripped!r} — use hmac.compare_digest"
+                )

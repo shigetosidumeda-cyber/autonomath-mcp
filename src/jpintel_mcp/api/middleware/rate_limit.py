@@ -47,9 +47,11 @@ Identity extraction
 * ``X-API-Key`` / ``Authorization: Bearer …`` → bucket keyed on
   ``HMAC(api_key_salt, raw_key)`` so we never log raw keys. Falls back to
   IP-based bucket if the header value is empty after strip.
-* No header → bucket keyed on the canonicalised client IP (Fly-Client-IP
-  > X-Forwarded-For first hop > request.client.host), normalised via the
-  same ``_normalize_ip_to_prefix`` rule as ``anon_limit`` (IPv6 → /64).
+* No header → bucket keyed on the canonicalised client IP. ``Fly-Client-IP``
+  is trusted. ``X-Forwarded-For`` is only trusted when the request carries a
+  valid signed edge header; bare XFF is spoofable and falls back to the
+  transport peer. The final value is normalised via the same
+  ``_normalize_ip_to_prefix`` rule as ``anon_limit`` (IPv6 → /64).
 
 Fail-open posture
 -----------------
@@ -160,16 +162,39 @@ def _normalize_ip_to_prefix(ip: str) -> str:
 
 
 def _client_ip(request: Request) -> str:
-    """Same priority order as ``anon_limit._client_ip``."""
+    """Return the client IP used for the origin burst bucket.
+
+    ``X-Forwarded-For`` is caller-controlled unless it arrives with an
+    origin-trusted marker. Prefer Fly's proxy-owned header and only accept
+    XFF on the signed edge-auth path. A bare XFF falls back to
+    ``request.client.host`` so an attacker cannot choose their bucket key.
+    """
     fly_ip = request.headers.get("fly-client-ip")
     if fly_ip:
         return fly_ip.strip()
-    xff = request.headers.get("x-forwarded-for")
-    if xff:
+    xff = request.headers.get("x-forwarded-for", "").strip()
+    if xff and _trusted_edge_header_present(request):
         return xff.split(",")[0].strip()
     if request.client:
         return request.client.host
     return "unknown"
+
+
+def _trusted_edge_header_present(request: Request) -> bool:
+    """Return true when ``X-Edge-Auth`` proves XFF came via our edge."""
+    try:
+        from jpintel_mcp.api.middleware.edge_header_sanitization import (
+            _edge_auth_secret,
+            _verify_signed_edge_header,
+        )
+    except Exception:  # pragma: no cover - defensive fail-closed
+        return False
+
+    secret = _edge_auth_secret()
+    if not secret:
+        return False
+    raw_token = request.headers.get("x-edge-auth", "")
+    return bool(raw_token and _verify_signed_edge_header(raw_token, secret))
 
 
 def _extract_raw_key(request: Request) -> str | None:

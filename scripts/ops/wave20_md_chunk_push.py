@@ -22,6 +22,7 @@ Usage:
         --chunk-size 100 \
         --branch feat/jpcite_2026_05_11_wave20_enforcement_md_bulk
 """
+
 from __future__ import annotations
 
 import argparse
@@ -35,7 +36,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
-def run_git(args: list[str], *, check: bool = True, capture: bool = True) -> subprocess.CompletedProcess[str]:
+def run_git(
+    args: list[str], *, check: bool = True, capture: bool = True
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["git", *args],
         cwd=REPO_ROOT,
@@ -57,7 +60,9 @@ def ensure_branch(branch: str) -> None:
         run_git(["checkout", "-b", branch])
 
 
-def push_with_retry(*, set_upstream: bool, branch: str, attempts: int = 3, backoff_base: float = 5.0) -> bool:
+def push_with_retry(
+    *, set_upstream: bool, branch: str, attempts: int = 3, backoff_base: float = 5.0
+) -> bool:
     last_err = ""
     for attempt in range(1, attempts + 1):
         env = os.environ.copy()
@@ -67,7 +72,11 @@ def push_with_retry(*, set_upstream: bool, branch: str, attempts: int = 3, backo
         if set_upstream:
             cmd.extend(["--set-upstream", "origin", branch])
         proc = subprocess.run(
-            cmd, cwd=REPO_ROOT, text=True, capture_output=True, env=env,
+            cmd,
+            cwd=REPO_ROOT,
+            text=True,
+            capture_output=True,
+            env=env,
         )
         if proc.returncode == 0:
             return True
@@ -102,10 +111,12 @@ def filter_actionable(rels: list[str]) -> list[str]:
     actionable: list[str] = []
     seen: set[str] = set()
     for ix in range(0, len(rels), 500):
-        batch = rels[ix:ix + 500]
+        batch = rels[ix : ix + 500]
         proc = subprocess.run(
             ["git", "status", "--porcelain", "--", *batch],
-            cwd=REPO_ROOT, text=True, capture_output=True,
+            cwd=REPO_ROOT,
+            text=True,
+            capture_output=True,
         )
         if proc.returncode != 0:
             sys.stderr.write(f"git status probe failed at batch {ix}: {proc.stderr[:200]}\n")
@@ -129,7 +140,9 @@ def main() -> int:
     parser.add_argument("--paths", required=True, help="Glob pattern (REPO_ROOT-relative).")
     parser.add_argument("--chunk-size", type=int, default=100, help="Files per chunk.")
     parser.add_argument("--branch", required=True, help="Target branch.")
-    parser.add_argument("--sleep-between", type=float, default=5.0, help="Sleep seconds between pushes.")
+    parser.add_argument(
+        "--sleep-between", type=float, default=5.0, help="Sleep seconds between pushes."
+    )
     parser.add_argument("--start-chunk", type=int, default=0)
     parser.add_argument("--end-chunk", type=int, default=None)
     parser.add_argument("--dry-run", action="store_true")
@@ -146,7 +159,7 @@ def main() -> int:
         print(f"wave20: no actionable paths from {args.paths} (all clean)")
         return 0
 
-    chunks = [actionable[i:i + args.chunk_size] for i in range(0, total, args.chunk_size)]
+    chunks = [actionable[i : i + args.chunk_size] for i in range(0, total, args.chunk_size)]
     end = args.end_chunk if args.end_chunk is not None else len(chunks) - 1
 
     print(
@@ -169,12 +182,19 @@ def main() -> int:
             print(f"  {prefix} would add {len(chunk_paths)} paths -> '{msg}'")
             continue
         for batch_ix in range(0, len(chunk_paths), 500):
-            batch = chunk_paths[batch_ix:batch_ix + 500]
-            subprocess.run(["git", "add", "--", *batch], cwd=REPO_ROOT,
-                           check=True, text=True, capture_output=True)
+            batch = chunk_paths[batch_ix : batch_ix + 500]
+            subprocess.run(
+                ["git", "add", "--", *batch],
+                cwd=REPO_ROOT,
+                check=True,
+                text=True,
+                capture_output=True,
+            )
         commit_proc = subprocess.run(
             ["git", "commit", "-m", msg],
-            cwd=REPO_ROOT, text=True, capture_output=True,
+            cwd=REPO_ROOT,
+            text=True,
+            capture_output=True,
         )
         if commit_proc.returncode != 0:
             out = (commit_proc.stdout + commit_proc.stderr).lower()
@@ -184,8 +204,12 @@ def main() -> int:
             sys.stderr.write(commit_proc.stdout + commit_proc.stderr)
             return 1
         try:
-            push_with_retry(set_upstream=is_first_push, branch=args.branch,
-                            attempts=3, backoff_base=args.sleep_between)
+            push_with_retry(
+                set_upstream=is_first_push,
+                branch=args.branch,
+                attempts=3,
+                backoff_base=args.sleep_between,
+            )
         except RuntimeError as exc:
             sys.stderr.write(f"  {prefix} PUSH FAILED: {exc}\n")
             return 1

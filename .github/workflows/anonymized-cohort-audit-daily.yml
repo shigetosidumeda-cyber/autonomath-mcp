@@ -15,8 +15,8 @@ name: anonymized-cohort-audit-daily
 
 on:
   schedule:
-    # 03:15 UTC == 12:15 JST. After daily Lane A window.
-    - cron: "15 3 * * *"
+    # 03:10 UTC == 12:10 JST. After daily Lane A window.
+    - cron: "10 3 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -42,8 +42,32 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Dry-run report
-        run: python scripts/etl/aggregate_anonymized_outcomes.py --dry-run
-      - name: Run k>=5 cohort aggregation
-        if: ${{ github.event.inputs.dry_run != 'true' }}
-        run: python scripts/etl/aggregate_anonymized_outcomes.py
+
+      - name: Local dry-run probe (no production DB)
+        run: |
+          set -euo pipefail
+          python scripts/etl/aggregate_anonymized_outcomes.py \
+            --dry-run \
+            --db "$RUNNER_TEMP/wave49-g3-nonprod-missing.db"
+
+      - name: Install flyctl
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.dry_run != 'true' }}
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run k>=5 cohort aggregation on Fly production DB
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.dry_run != 'true' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
+        run: |
+          set -euo pipefail
+          FLAGS="--db /data/autonomath.db"
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="--dry-run ${FLAGS}"
+          elif [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" != "I_ACK_PROD_DB_MUTATION" ]; then
+            echo "::warning::Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
+            FLAGS="--dry-run ${FLAGS}"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/etl/aggregate_anonymized_outcomes.py ${FLAGS}"

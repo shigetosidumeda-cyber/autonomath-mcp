@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#ffffff">
 <title>6-axis Monitoring Dashboard — jpcite</title>
 <meta name="description" content="jpcite の 6 軸 (data 量 / data 質 / 鮮度 / 組み合わせ / 多言語 / output) 監視ダッシュボード。各軸の minimum gate 充足状況をリアルタイム表示します。">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex,nofollow">
 <link rel="canonical" href="https://jpcite.com/status/six_axis_dashboard.html">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/status/six_axis_dashboard.html">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/six_axis_dashboard.html">
@@ -175,11 +175,11 @@
     {"@type": "PropertyValue", "name": "axis_1_data_volume",
      "description": "Row counts for municipal / JPO / EDINET / court / industry / NTA corpora."},
     {"@type": "PropertyValue", "name": "axis_2_data_quality",
-     "description": "Precompute table coverage (cohort_5d / risk_4d / supplier_chain / compat_promote / amount_verify / amendment_dated)."},
+     "description": "Public coverage checks for cohort, compatibility, amount, and amendment signals."},
     {"@type": "PropertyValue", "name": "axis_3_freshness",
-     "description": "7-day rolling ingest health for 5 daily ETL pipelines."},
+     "description": "7-day rolling freshness health for scheduled public data refreshes."},
     {"@type": "PropertyValue", "name": "axis_4_combination",
-     "description": "Refresh state of 5 precompute outputs (portfolio / risk_score / forecast / alliance / graph_vec)."},
+     "description": "Refresh state of public combination and forecasting snapshots."},
     {"@type": "PropertyValue", "name": "axis_5_multilingual",
      "description": "Coverage % per language (en / zh / ko, ja baseline)."},
     {"@type": "PropertyValue", "name": "axis_6_output",
@@ -216,9 +216,7 @@
       <a href="/status/">/status/</a>.
     </p>
     <p>
-      Daily SLA breach probe runs in
-      <code>.github/workflows/six-axis-sanity-daily.yml</code> at 06:30 UTC.
-      Source script: <code>scripts/ops/six_axis_sanity_check.py</code>.
+      Daily SLA breach probe results are published as a static status snapshot.
     </p>
     <p>
       © Bookyou株式会社 · jpcite ·

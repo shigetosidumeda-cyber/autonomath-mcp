@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>Unsubscribe — jpcite law-revision alerts</title>
-<meta name="description" content="Unsubscribe from jpcite law-revision alerts. One-click cancellation; the linked Stripe subscription is also cancelled automatically for paid plans.">
+<meta name="description" content="Confirmation page for stopping jpcite law-revision alert emails. For paid plans, the linked Stripe subscription is also cancelled.">
 <meta name="robots" content="noindex,nofollow">
 
 <meta property="og:title" content="Unsubscribe — jpcite law-revision alerts">
-<meta property="og:description" content="Cancel jpcite law-revision email alerts in one click.">
+<meta property="og:description" content="Stop jpcite law-revision alert emails. For paid plans, the linked Stripe subscription is also cancelled.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/alerts-unsubscribe.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Unsubscribe — jpcite law-revision alerts">
-<meta name="twitter:description" content="Cancel jpcite law-revision email alerts in one click.">
+<meta name="twitter:description" content="Stop jpcite law-revision alert emails. For paid plans, the linked Stripe subscription is also cancelled.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/en/alerts-unsubscribe">
@@ -37,7 +37,7 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Unsubscribe — jpcite law-revision alerts",
-  "description": "Confirmation page for unsubscribing from jpcite law-revision email alerts. Operated by Bookyou Inc.",
+  "description": "Confirmation page for stopping jpcite law-revision alert emails. For paid plans, the linked Stripe subscription is also cancelled. Operated by Bookyou Inc.",
   "url": "https://jpcite.com/en/alerts-unsubscribe.html",
   "inLanguage": "en",
   "isPartOf": {
@@ -100,14 +100,14 @@
  <div class="container">
  <div class="unsub-card">
  <h1 id="unsub-title">Cancel your subscription?</h1>
- <p id="unsub-lead">This will stop jpcite law-revision alerts being sent to your email address. To continue, click the button below.</p>
+ <p id="unsub-lead">This will stop jpcite law-revision alert emails for this address. To continue, click the button below.</p>
  <div class="actions">
- <button class="btn btn-primary" type="button" id="unsub-btn">Unsubscribe</button>
- <a class="btn btn-secondary" href="alerts.html">Cancel</a>
+ <button class="btn btn-primary" type="button" id="unsub-btn">Stop alert emails</button>
+ <a class="btn btn-secondary" href="alerts.html">Back to alert settings</a>
  </div>
  <p class="status" id="unsub-status" role="status" aria-live="polite"></p>
  <p style="font-size:12px;color:var(--text-muted);margin:20px 0 0;padding-top:16px;border-top:1px solid var(--border);">
- If you are on the paid plan (¥3/notification), the linked Stripe subscription will also be cancelled automatically.
+ If you are on the paid plan (¥3/notification), the linked Stripe subscription will also be cancelled. New alert deliveries after cancellation are not billed.
  </p>
  </div>
  </div>
@@ -125,67 +125,6 @@
  <a href="getting-started.html">Getting started</a>
  <a href="pricing.html">Pricing</a>
  <a href="../tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
- </div>
-</footer>
-
-<script>
-  (function () {
-    // Extract token from ?token=... (the email footer link shape), fallback to
-    // the path fragment for direct POST to /v1/compliance/unsubscribe/{token}.
-    function tokenFromQuery() {
-      var m = location.search.match(/[?&]token=([a-f0-9]{32})/i);
-      return m ? m[1] : "";
-    }
-
-    var btn = document.getElementById("unsub-btn");
-    var status = document.getElementById("unsub-status");
-    var title = document.getElementById("unsub-title");
-    var lead = document.getElementById("unsub-lead");
-    if (!btn) return;
-
-    var token = tokenFromQuery();
-    if (!token) {
-      status.className = "status err";
-      status.innerHTML = 'This link is invalid. Please use the link at the bottom of the email. If you cannot find it, contact <a href="mailto:info@bookyou.net">info@bookyou.net</a>.<br><a href="alerts.html">Back to alert settings</a>';
-      btn.disabled = true;
-      return;
-    }
-
-    btn.addEventListener("click", function () {
-      btn.disabled = true;
-      status.className = "status";
-      status.textContent = "Sending…";
-      var apiBase = window.JPCITE_API_BASE || "https://api.jpcite.com";
-      fetch(apiBase + "/v1/compliance/unsubscribe/" + encodeURIComponent(token), {
-        method: "POST",
-        headers: { "Accept": "text/html" }
-      }).then(function (r) {
-        if (r.ok) {
-          title.textContent = "You have been unsubscribed";
-          lead.textContent = "We will not send any further alerts to this email address.";
-          status.className = "status ok";
-          status.textContent = "Done.";
-        } else {
-          status.className = "status err";
-          status.textContent = "The request failed. Please try again later, or contact info@bookyou.net.";
-          btn.disabled = false;
-        }
-      }).catch(function () {
-        status.className = "status err";
-        status.textContent = "Network error. Please try again later.";
-        btn.disabled = false;
-      });
-    });
-  })();
-</script>
-
-</body>
-</html>
-/tokushoho.html">Legal (JP)</a>
  <a href="mailto:info@bookyou.net">info@bookyou.net</a>
  </nav>
  <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>

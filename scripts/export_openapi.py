@@ -46,6 +46,249 @@ _COMPONENT_SCHEMA_NAMES = {
 }
 
 
+# -----------------------------------------------------------------------------
+# OpenAPI leak sanitizer (A3-style denylist for description/summary text).
+#
+# OpenAPI specs are auto-generated from FastAPI route docstrings + Pydantic
+# field descriptions, so internal table names and runbook references leak into
+# the published schema by default. We do NOT edit the source docstrings — there
+# are dozens of them and they're more useful with the precise table names. Sanitize
+# at export time instead. Pattern denylist parallels
+# `scripts/sync_mcp_public_manifests.PUBLIC_DESCRIPTION_REPLACEMENTS`.
+# -----------------------------------------------------------------------------
+
+# (regex, replacement). Order matters: longer/specific names first so they win
+# before generic `am_*` catch-alls fire on a substring.
+OPENAPI_LEAK_PATTERN_REPLACEMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
+    # ---- am_x+ table names — replace with public-friendly corpus names ----
+    (re.compile(r"\bam_compat_matrix\b"), "compatibility-matrix corpus"),
+    (re.compile(r"\bam_entity_facts\b"), "entity-fact corpus"),
+    (re.compile(r"\bam_entities\b"), "entity corpus"),
+    (re.compile(r"\bam_relation\b"), "relationship graph"),
+    (re.compile(r"\bam_source\b"), "source catalog"),
+    (re.compile(r"\bam_loan_product\b"), "loan-product corpus"),
+    (re.compile(r"\bam_law_article\b"), "law-article corpus"),
+    (re.compile(r"\bam_enforcement_detail\b"), "enforcement-detail corpus"),
+    (re.compile(r"\bam_amount_condition\b"), "amount-condition corpus"),
+    (re.compile(r"\bam_tax_treaty\b"), "tax-treaty corpus"),
+    (re.compile(r"\bam_industry_jsic\b"), "industry-classification corpus"),
+    (re.compile(r"\bam_application_round\b"), "application-round corpus"),
+    (re.compile(r"\bam_amendment_snapshot\b"), "historical amendment snapshot"),
+    (re.compile(r"\bam_amendment_diff\b"), "public change log"),
+    (re.compile(r"\bam_funding_stack_empirical\b"), "funding-stack corpus"),
+    (re.compile(r"\bam_program_eligibility_predicate\b"), "eligibility-predicate corpus"),
+    (re.compile(r"\bam_entity_annotation\b"), "entity annotations"),
+    (re.compile(r"\bam_entity_source\b"), "entity-level source references"),
+    (re.compile(r"\bam_validation_rule\b"), "configured validation rules"),
+    # Catch-all for remaining am_*, jpi_*, jc_* schema-prefixed names.
+    (re.compile(r"\bjpi_[A-Za-z0-9_]+\b"), "public dataset"),
+    (re.compile(r"\bjc_[a-z0-9_]+\b"), "public dataset"),
+    (re.compile(r"\bam_[A-Za-z0-9_]+\b"), "source-derived dataset"),
+    # ---- Internal operational table names ----
+    (re.compile(r"\bhoujin_watch\b"), "corporate watch list"),
+    (re.compile(r"\busage_events\b"), "usage tagging"),
+    (re.compile(r"\bapi_keys\b"), "API keys"),
+    (re.compile(r"\bcost_ledger\b"), "cost summary"),
+    (re.compile(r"\bidempotency_cache\b"), "idempotency store"),
+    (re.compile(r"\bclient_profiles\b"), "client profile dataset"),
+    (re.compile(r"\baudit_seal\b"), "audit-seal dataset"),
+    (re.compile(r"\btrust_infrastructure\b"), "trust infrastructure"),
+    # ---- Internal DB filenames ----
+    (re.compile(r"\bjpintel\.db\b", re.IGNORECASE), "primary corpus database"),
+    (re.compile(r"\bautonomath\.db\b", re.IGNORECASE), "primary corpus database"),
+    # ---- Wave / migration / CLAUDE.md / DEEP markers ----
+    (re.compile(r"CLAUDE\.md gotcha", re.IGNORECASE), "known data-quality caveat"),
+    (re.compile(r"\bCLAUDE\.md\b"), ""),
+    (re.compile(r"\bDEEP-\d+\b"), ""),
+    (re.compile(r"\bWave\s+\d+(?:\.\d+)*\b"), ""),
+    (re.compile(r"\bwave\s+\d+\b", re.IGNORECASE), ""),
+    (re.compile(r"\bmigrations?\s+\d+(?:[-/]\d+)+\b", re.IGNORECASE), "schema update"),
+    (re.compile(r"\bmigration\s+\d+\b", re.IGNORECASE), "schema update"),
+    (re.compile(r"\bmig\s+\d+\b", re.IGNORECASE), "schema update"),
+    # ---- Operator script paths ----
+    (re.compile(r"`?scripts/cron/[A-Za-z0-9_./-]+`?"), "scheduled job"),
+    (re.compile(r"`?scripts/etl/[A-Za-z0-9_./-]+`?"), "background ETL"),
+    (re.compile(r"`?scripts/migrations/[A-Za-z0-9_./-]+`?"), "schema update"),
+    (re.compile(r"`?scripts/[A-Za-z0-9_./-]+\.(?:py|sh|sql)`?"), "operator script"),
+)
+
+# Belt-and-suspenders post-export gate. Any pattern listed here is treated as a
+# hard leak — if it survives the sanitizer pass the export aborts so a stale
+# spec is never committed. Keep in sync with `BANNED_PUBLIC_LEAK_PATTERNS` in
+# scripts/sync_mcp_public_manifests.py.
+BANNED_OPENAPI_LEAK_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"\bam_compat_matrix\b"),
+    re.compile(r"\bam_entity_facts\b"),
+    re.compile(r"\bam_entities\b"),
+    re.compile(r"\bam_relation\b"),
+    re.compile(r"\bam_loan_product\b"),
+    re.compile(r"\bam_law_article\b"),
+    re.compile(r"\bam_enforcement_detail\b"),
+    re.compile(r"\bam_amount_condition\b"),
+    re.compile(r"\bam_tax_treaty\b"),
+    re.compile(r"\bam_industry_jsic\b"),
+    re.compile(r"\bam_application_round\b"),
+    re.compile(r"\bam_amendment_snapshot\b"),
+    re.compile(r"\bam_amendment_diff\b"),
+    re.compile(r"\bhoujin_watch\b"),
+    re.compile(r"\busage_events\b"),
+    re.compile(r"\bcost_ledger\b"),
+    re.compile(r"\bidempotency_cache\b"),
+    re.compile(r"\bjpintel\.db\b", re.IGNORECASE),
+    re.compile(r"\bautonomath\.db\b", re.IGNORECASE),
+    re.compile(r"CLAUDE\.md"),
+    re.compile(r"\bWave\s+\d", re.IGNORECASE),
+    re.compile(r"\bmigration\s+\d", re.IGNORECASE),
+    re.compile(r"\bscripts/cron/"),
+    re.compile(r"\bscripts/etl/"),
+)
+
+
+def _strip_openapi_leak_patterns(text: str) -> str:
+    """Apply the A3-style denylist to a single string."""
+    out = text
+    for pattern, replacement in OPENAPI_LEAK_PATTERN_REPLACEMENTS:
+        out = pattern.sub(replacement, out)
+    # Collapse whitespace that the empty-string replacements left behind.
+    out = re.sub(r"[ \t]{2,}", " ", out)
+    out = re.sub(r" +([,.;:])", r"\1", out)
+    return out
+
+
+# -----------------------------------------------------------------------------
+# JSON-pointer exemption list for the leak sanitizer.
+#
+# E5 originally walked every string in the OpenAPI schema and applied the
+# `am_*` → public-friendly replacement table to all of them. That clobbered
+# spec values that MUST stay byte-identical to the runtime response (Pydantic
+# `default` literals, response/request `example` payloads, operation IDs).
+# E11 audit caught the spec↔runtime drift; per that audit we exempt the
+# following JSON-pointer-derived contexts from the leak walk:
+#
+#   * `paths.*.*.responses.*.content.*.example` and `…examples.*.value`
+#   * `paths.*.*.requestBody.content.*.example` and `…examples.*.value`
+#   * `components.schemas.*.properties.*.default`
+#   * the entire `operationId` field (route-derived identifier)
+#
+# Implementation: we don't try to match full JSON pointers — we just track the
+# parent key while descending, and if the current key matches one of the
+# exempt keys we freeze the whole subtree below it (no string rewrites occur
+# anywhere inside that subtree). This is conservative but matches the user
+# contract: spec must promise X iff runtime returns X.
+# -----------------------------------------------------------------------------
+EXEMPT_LEAK_WALK_KEYS: frozenset[str] = frozenset(
+    {
+        "default",
+        "example",
+        "examples",
+        "operationId",
+    }
+)
+
+
+def _walk_strings(
+    node: Any,
+    transform,
+    *,
+    exempt: bool = False,
+    parent_key: str | None = None,
+) -> None:
+    """Apply ``transform`` to every string value in ``node`` (in place).
+
+    When the recursion descends into a node whose parent key is in
+    ``EXEMPT_LEAK_WALK_KEYS`` (or anywhere underneath such a node), the
+    ``transform`` is skipped — string values are kept verbatim so spec
+    ``default`` / ``example`` literals stay byte-identical to the runtime
+    response. We still recurse into children so the tree is fully walked,
+    but no rewrites occur on the exempt subtree.
+    """
+    if isinstance(node, dict):
+        for key, value in list(node.items()):
+            child_exempt = exempt or key in EXEMPT_LEAK_WALK_KEYS
+            if isinstance(value, str):
+                if not child_exempt:
+                    node[key] = transform(value)
+            else:
+                _walk_strings(value, transform, exempt=child_exempt, parent_key=key)
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            if isinstance(value, str):
+                if not exempt:
+                    node[index] = transform(value)
+            else:
+                _walk_strings(value, transform, exempt=exempt, parent_key=parent_key)
+
+
+def sanitize_openapi_schema_leaks(schema: dict[str, Any]) -> None:
+    """Walk a full OpenAPI schema and strip internal leak patterns in place.
+
+    Public entry point so `scripts/export_agent_openapi.py` can apply the same
+    rules to the agent projection without duplicating the table.
+    """
+    _walk_strings(schema, _strip_openapi_leak_patterns)
+
+
+def _redact_exempt_subtrees_for_scan(node: Any, *, exempt: bool = False) -> Any:
+    """Return a deep-copied tree with exempt subtree string values blanked.
+
+    The post-export leak gate (`assert_no_openapi_leaks`) scans the rendered
+    JSON payload for banned patterns. Once the sanitizer walker exempts
+    `default` / `example` / `operationId` values, those literals will legally
+    contain `am_*` strings (because the Pydantic source defines them and we
+    don't rewrite spec values that the runtime echoes back). The leak gate
+    must therefore ignore those exempt slots too — we blank them in a copy
+    before scanning so the gate still trips on description/summary leaks but
+    accepts byte-identical default/example/operationId payloads.
+    """
+    if isinstance(node, dict):
+        out: dict[str, Any] = {}
+        for key, value in node.items():
+            child_exempt = exempt or key in EXEMPT_LEAK_WALK_KEYS
+            if isinstance(value, str):
+                out[key] = "" if child_exempt else value
+            else:
+                out[key] = _redact_exempt_subtrees_for_scan(value, exempt=child_exempt)
+        return out
+    if isinstance(node, list):
+        result: list[Any] = []
+        for item in node:
+            if isinstance(item, str):
+                result.append("" if exempt else item)
+            else:
+                result.append(_redact_exempt_subtrees_for_scan(item, exempt=exempt))
+        return result
+    return node
+
+
+def assert_no_openapi_leaks(payload: str, *, label: str = "openapi spec") -> None:
+    """Hard gate: raise if a banned pattern survived in the rendered string.
+
+    The payload is parsed as JSON so we can blank out exempt JSON-pointer
+    subtrees (default / example / examples / operationId) before scanning —
+    those slots are spec↔runtime contracts and must stay verbatim even when
+    they happen to embed an `am_*` literal. Description / summary leaks
+    still trip the gate.
+    """
+    try:
+        parsed = json.loads(payload)
+    except (json.JSONDecodeError, ValueError):
+        parsed = None
+    if isinstance(parsed, (dict, list)):
+        redacted = _redact_exempt_subtrees_for_scan(parsed)
+        scan_target = json.dumps(redacted, ensure_ascii=False)
+    else:
+        scan_target = payload
+    leaks: list[str] = []
+    for pattern in BANNED_OPENAPI_LEAK_PATTERNS:
+        match = pattern.search(scan_target)
+        if match:
+            idx = match.start()
+            window = scan_target[max(0, idx - 60) : idx + 80].replace("\n", " ")
+            leaks.append(f"{pattern.pattern!r} near …{window}…")
+    if leaks:
+        raise SystemExit(f"sanitizer would leak banned patterns into {label}: {leaks}")
+
+
 def _build_app(include_preview: bool):
     # Flip the setting BEFORE importing the API module so `create_app()` sees
     # it. The setting is consulted once at app-construction time.
@@ -460,11 +703,24 @@ def _sanitize_public_text(text: str) -> str:
     # that pass.
     text = re.sub(r"\bsource records\b", "public records", text)
     text = re.sub(r"\bsource record\b", "public record", text)
+    # A3-style leak sanitizer: strip am_* table names, internal operational
+    # tables, DB filenames, Wave/migration/CLAUDE.md markers, and operator
+    # script paths. Runs last so the legacy replacements above can rewrite
+    # without colliding with the leak rules.
+    text = _strip_openapi_leak_patterns(text)
     return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
-def _sanitize_public_schema(node: Any) -> None:
+def _sanitize_public_schema(node: Any, *, exempt: bool = False) -> None:
+    # `exempt=True` is propagated from a parent dict whose key was in
+    # EXEMPT_LEAK_WALK_KEYS (default / example / examples / operationId). In
+    # that subtree we skip the text rewrites so spec values stay byte-identical
+    # to the runtime response — but we still recurse so non-leak-sensitive
+    # normalizations (e.g. tag renames) keep applying where they would have.
     if isinstance(node, dict):
+        info = node.get("info")
+        if isinstance(info, dict):
+            info.pop("contact", None)
         tags = node.get("tags")
         if isinstance(tags, list):
             # Operation-level `tags` is a list of strings; root-level
@@ -517,6 +773,15 @@ def _sanitize_public_schema(node: Any) -> None:
             required = node.get("required")
             if isinstance(required, list):
                 node["required"] = ["dataset" if item == "table" else item for item in required]
+        properties = node.get("properties")
+        if isinstance(properties, dict):
+            contact_schema = properties.get("contact")
+            if (
+                isinstance(contact_schema, dict)
+                and contact_schema.get("default") == "info@bookyou.net"
+            ):
+                contact_schema.pop("default", None)
+                contact_schema.setdefault("description", "Support contact.")
         enum_values = node.get("enum")
         if isinstance(enum_values, list):
             node["enum"] = [item for item in enum_values if item != "internal"]
@@ -528,13 +793,15 @@ def _sanitize_public_schema(node: Any) -> None:
                 if not (isinstance(parameter, dict) and parameter.get("name") == "include_internal")
             ]
         for key, value in list(node.items()):
+            child_exempt = exempt or key in EXEMPT_LEAK_WALK_KEYS
             if isinstance(value, str):
-                node[key] = _sanitize_public_text(value)
+                if not child_exempt:
+                    node[key] = _sanitize_public_text(value)
             else:
-                _sanitize_public_schema(value)
+                _sanitize_public_schema(value, exempt=child_exempt)
     elif isinstance(node, list):
         for item in node:
-            _sanitize_public_schema(item)
+            _sanitize_public_schema(item, exempt=exempt)
 
 
 # ----- gpt30 profile -----------------------------------------------------
@@ -790,7 +1057,7 @@ def _build_gpt30_subset(full_schema: dict[str, Any]) -> dict[str, Any]:
         },
         "x-openai-isConsequential": False,
         "x-jpcite-variant": "gpt30-slim",
-        "x-jpcite-source": "scripts/export_openapi.py --profile gpt30",
+        "x-jpcite-source": "public OpenAPI export",
     }
 
     _downgrade_nullable(slim_schema)
@@ -811,7 +1078,7 @@ def _merge_preserved_policy_blocks(slim: dict[str, Any], preserved: dict[str, An
         # Preserve standard info fields (description, etc.) plus any x-*
         # extensions found nested inside info.
         for key, value in preserved_info.items():
-            if key in ("description", "version", "contact", "termsOfService", "license"):
+            if key in ("description", "version", "termsOfService", "license"):
                 if value is not None:
                     slim["info"][key] = value
             elif key.startswith("x-"):
@@ -840,10 +1107,6 @@ def _gpt30_info_block(info: dict[str, Any]) -> dict[str, Any]:
             "legal/tax advice."
         ),
         "version": base_version,
-        "contact": {
-            "name": "jpcite Support",
-            "url": "https://jpcite.com/tokushoho.html",
-        },
         "termsOfService": "https://jpcite.com/tos.html",
         "license": {"name": "Proprietary - see termsOfService"},
     }
@@ -890,6 +1153,11 @@ def main() -> int:
     schema = app.openapi()
     _normalize_component_schema_names(schema)
     _sanitize_public_schema(schema)
+    # Belt-and-suspenders A3-style leak sanitizer pass. `_sanitize_public_schema`
+    # only rewrites strings that are direct dict values; this pass catches any
+    # string-typed list entries (enum members, example arrays, preserved policy
+    # blocks merged from a previously-published gpt30 file).
+    sanitize_openapi_schema_leaks(schema)
 
     if args.profile == "gpt30":
         slim = _build_gpt30_subset(schema)
@@ -903,11 +1171,13 @@ def main() -> int:
                 print(f"  warn: could not parse existing {out} for merge: {exc}")
             else:
                 _merge_preserved_policy_blocks(slim, preserved)
+        # Re-scan the merged slim so any leak patterns in the carried-forward
+        # policy blocks are stripped before we render the final file.
+        sanitize_openapi_schema_leaks(slim)
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(
-            json.dumps(slim, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
+        payload = json.dumps(slim, indent=2, sort_keys=True) + "\n"
+        assert_no_openapi_leaks(payload, label=str(out))
+        out.write_text(payload, encoding="utf-8")
         missing = [p for p in GPT30_PATHS if p not in slim["paths"]]
         print(
             f"wrote {out} (gpt30-slim), "
@@ -922,18 +1192,18 @@ def main() -> int:
     # --- full profile (default) ---
     out = args.out or Path("docs/openapi/v1.json")
     site_out = args.site_out or Path("site/docs/openapi/v1.json")
+    site_openapi_mirror = Path("site/openapi/v1.json")
 
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(
-        json.dumps(schema, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    payload = json.dumps(schema, indent=2, sort_keys=True) + "\n"
+    assert_no_openapi_leaks(payload, label=str(out))
+    out.write_text(payload, encoding="utf-8")
     if site_out:
         site_out.parent.mkdir(parents=True, exist_ok=True)
-        site_out.write_text(
-            json.dumps(schema, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
+        site_out.write_text(payload, encoding="utf-8")
+        if site_out != site_openapi_mirror:
+            site_openapi_mirror.parent.mkdir(parents=True, exist_ok=True)
+            site_openapi_mirror.write_text(payload, encoding="utf-8")
 
     preview_paths = [
         p

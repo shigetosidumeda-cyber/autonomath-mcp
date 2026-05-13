@@ -4,8 +4,6 @@
   "spec_note": "Pre-standardization machine-readable counterpart of llms.txt / llms-full.txt. Companion descriptor that AI crawlers and managed agents can resolve via /.well-known/ to enumerate content surfaces, MCP endpoints, OpenAPI artifacts, and content-integrity hashes without parsing prose. Field names follow agents.json / ai-plugin.json conventions where possible. Subject to revision once Anthropic / OpenAI / W3C publishes a canonical schema.",
   "generated_at": "2026-05-11",
   "canonical": "https://jpcite.com",
-  "operator": "Bookyou株式会社",
-  "operator_jct_registration": "T8010001213708",
   "product": "jpcite",
   "description": "Japanese public-program / public-record evidence API and MCP server. Source-linked retrieval for subsidies, loans, licenses, administrative dispositions, qualified-invoice registrants, laws, and court decisions.",
   "llms_txt": {
@@ -15,7 +13,7 @@
     "full_en": "https://jpcite.com/llms-full.en.txt"
   },
   "openapi": {
-    "public_rest": "https://api.jpcite.com/openapi.public.json",
+    "public_rest": "https://api.jpcite.com/v1/openapi.json",
     "agent_full": "https://jpcite.com/openapi.agent.json",
     "agent_slim_gpt30": "https://jpcite.com/openapi.agent.gpt30.json"
   },
@@ -35,7 +33,6 @@
   },
   "sitemap_index": "https://jpcite.com/sitemap-index.xml",
   "contact": {
-    "email": "info@bookyou.net",
     "support": "https://jpcite.com/support.html",
     "security_txt": "https://jpcite.com/.well-known/security.txt"
   },
@@ -60,16 +57,16 @@
   },
   "content_hash": {
     "algorithm": "sha256",
-    "llms_txt": "c3a758f5c6cc760e1da144afb38de4eadcfa3c6f0bb953b9682662bf4db1854e",
-    "llms_full_txt": "8f9588a0192b78c5fcef6d4702f641400315a311cd71a1790fc42925ecdb8b32",
-    "llms_en_txt": "973f8333fbf910fe1c873f52be48eb98e491397fb0eff3e7caec60a0c9f6b27a",
-    "llms_full_en_txt": "1249ba3a752b975961a131b25c03ff20b22fd1d93902ea604e004b868e4d7b5a"
+    "llms_txt": "5c820861b6bc8a4fa630b14b378c8f130d8bda8c7b28feb618bef87e6d7b730e",
+    "llms_full_txt": "a886d6deec6a2afcebbcd14a04891e905ddf3a43c97699608ce9e51e9ef4aa68",
+    "llms_en_txt": "304575e8eadb9a8dae18e2853d873800b6648e4d70da2384aa89e594515655f7",
+    "llms_full_en_txt": "827d1ad0970d2d286743d8b18597ea8e824b410e07cffbd62fe847cc295e46e6"
   },
   "content_hash_md5": {
     "algorithm": "md5",
-    "llms_txt": "8958bf6615aa95ab72cd22acff6e88a4",
-    "llms_full_txt": "2f674ea2065a7656e5aac033c6cee487",
-    "llms_en_txt": "f23681e0154f3ac358ec8dd539fb9ee8",
-    "llms_full_en_txt": "94a7c62cdd6d5fc28a723e9cfb690fe5"
+    "llms_txt": "6649b66969c07f7799012d5e805d7748",
+    "llms_full_txt": "fecbb2b62ba9d0e275a7feda7d2abb4b",
+    "llms_en_txt": "e91491d9d297b060157591f582bac119",
+    "llms_full_en_txt": "597a2fdeae7b1f9de6eade460ffcabfb"
   }
 }

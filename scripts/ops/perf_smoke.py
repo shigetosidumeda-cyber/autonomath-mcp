@@ -65,6 +65,7 @@ class Endpoint:
     name: str
     path: str
     params: dict[str, str] | None = None
+    expected_statuses: frozenset[int] | None = None
 
 
 @dataclass(frozen=True)
@@ -87,7 +88,12 @@ class SyncClient(Protocol):
 
 DEFAULT_ENDPOINTS: tuple[Endpoint, ...] = (
     Endpoint("healthz", "/healthz"),
-    Endpoint("programs_search", "/v1/programs/search", {"q": "補助金", "limit": "1"}),
+    Endpoint(
+        "programs_search",
+        "/v1/programs/search",
+        {"q": "補助金", "limit": "1"},
+        frozenset({200, 402}),
+    ),
     Endpoint("meta", "/v1/meta"),
 )
 
@@ -105,6 +111,12 @@ def _request_once(client: SyncClient, endpoint: Endpoint, timeout_s: float) -> t
     response = client.get(endpoint.path, params=endpoint.params, timeout=timeout_s)
     elapsed_ms = (time.perf_counter_ns() - start) / 1_000_000
     return int(response.status_code), elapsed_ms
+
+
+def _status_is_expected(status_code: int, endpoint: Endpoint) -> bool:
+    if endpoint.expected_statuses is not None:
+        return status_code in endpoint.expected_statuses
+    return 200 <= status_code < 400
 
 
 def measure_endpoint(
@@ -126,7 +138,7 @@ def measure_endpoint(
         status_code, elapsed_ms = _request_once(client, endpoint, timeout_s)
         timings.append(elapsed_ms)
         status_codes[status_code] = status_codes.get(status_code, 0) + 1
-        if 200 <= status_code < 400:
+        if _status_is_expected(status_code, endpoint):
             ok += 1
 
     p95_ms = percentile(timings, 95)
@@ -206,7 +218,7 @@ def _local_client() -> Any:
     return TestClient(
         create_app(),
         raise_server_exceptions=False,
-        headers={"X-Forwarded-For": smoke_ip},
+        headers={"Fly-Client-IP": smoke_ip},
     )
 
 

@@ -24,9 +24,7 @@ from pathlib import Path
 
 SITE_ROOT = Path(__file__).resolve().parents[2] / "site"
 
-CANONICAL_RE = re.compile(
-    r'<link\s+rel=["\']canonical["\']\s+href=["\']([^"\']+)["\']\s*/?>'
-)
+CANONICAL_RE = re.compile(r'<link\s+rel=["\']canonical["\']\s+href=["\']([^"\']+)["\']\s*/?>')
 HREFLANG_RE = re.compile(r'<link[^>]+rel=["\']alternate["\'][^>]*hreflang=')
 
 

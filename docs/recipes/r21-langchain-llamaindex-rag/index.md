@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 LangChain (0.3+) / LlamaIndex (0.10+) を使って RAG bot を構築する agent dev / SaaS 開発者 / 大学研究者で、補助金原文 (要綱本文) を検索コーパスに、メタデータ (program_id / tier / deadline / source_url) を構造化フィルタとして使う層。jpcite を 1 つの retrieval tool として登録し、agent 推論側で組み合わせ。LLM API の選定 (OpenAI / Anthropic / Bedrock / VertexAI / GROQ 等) は agent 構築者責任、本 recipe は jpcite tool wrapping のみ。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
 - `langchain` 0.3+ または `llama-index` 0.10+
 - Python 3.10+ (3.11 推奨、async tool 利用時)
 - (任意) Vector DB (Chroma / Pinecone / Weaviate / pgvector) — jpcite メタデータと併用するハイブリッド検索用
@@ -93,7 +93,7 @@ const searchTool = new DynamicTool({
 ## known gaps
 - 補助金原文 PDF は別 endpoint (`get_program_detail` で本文 markdown + PDF URL を返却)
 - Vector DB との連携は別 recipe、本 recipe は jpcite を retrieval tool として wrapping するまで
-- LangChain 0.3 への migration で `initialize_agent` deprecated → `create_react_agent` 推奨
+- LangChain 0.3 への schema update で `initialize_agent` deprecated → `create_react_agent` 推奨
 - LlamaIndex 0.10 系は `ServiceContext` → `Settings` API へ移行済
 - 大量 doc embedding は jpcite ではなく Vector DB 側でローカルに行う設計
 
@@ -102,7 +102,7 @@ const searchTool = new DynamicTool({
 - `get_program_detail` (補助金原文取得、agent への文脈注入)
 - `get_corp_360` (法人 360 度ビュー、agent 推論側の事実 grounding)
 - `list_adoptions` (採択履歴、類似事例検索)
-- `apply_eligibility_chain_am` (排他ルールチェック、Wave 21)
+- `apply_eligibility_chain_am` (排他ルールチェック、公開版 21)
 
 ## 関連 recipe
 - [r17-chatgpt-custom-gpt](../r17-chatgpt-custom-gpt/) — ChatGPT Custom GPT、SDK 不使用パス

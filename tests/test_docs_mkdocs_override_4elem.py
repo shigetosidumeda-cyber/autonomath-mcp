@@ -77,6 +77,17 @@ def test_main_html_injects_rum_funnel_collector_script() -> None:
     ), "rum_funnel_collector.js must be loaded with defer (CWV contract)"
 
 
+def test_main_html_injects_docs_hreflang_alternates() -> None:
+    """Docs are ja-only, so every canonical MkDocs page self-declares ja + x-default."""
+    src = MAIN_HTML.read_text(encoding="utf-8")
+    assert "page.canonical_url" in src, (
+        "docs hreflang alternates must derive from Material's canonical URL "
+        "so sitemap pages stay aligned after mkdocs build"
+    )
+    assert 'hreflang="ja" href="{{ page.canonical_url }}"' in src
+    assert 'hreflang="x-default" href="{{ page.canonical_url }}"' in src
+
+
 def test_content_html_injects_billing_progress_div() -> None:
     """Element 3/4: <div data-billing-progress> mount point on every page."""
     src = CONTENT_HTML.read_text(encoding="utf-8")
@@ -137,6 +148,24 @@ def test_main_html_still_inherits_base() -> None:
     assert "{% block extrahead %}" in src, (
         "{% block extrahead %} missing — the 2 script tags must live "
         "inside this block to land in <head>, not below </html>"
+    )
+
+
+def test_main_html_does_not_add_google_fonts_stylesheet() -> None:
+    """Regression: avoid override-level render-blocking third-party font CSS."""
+    src = MAIN_HTML.read_text(encoding="utf-8")
+    offenders = [
+        needle
+        for needle in (
+            "fonts.googleapis.com",
+            "fonts.gstatic.com",
+            "https://fonts.googleapis.com/css2",
+        )
+        if needle in src
+    ]
+    assert offenders == [], (
+        "overrides/main.html must not add Google Fonts preconnects or "
+        "stylesheets; MkDocs Material owns font.text/font.code loading"
     )
 
 

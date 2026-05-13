@@ -14,6 +14,8 @@ Background — 2026-04-25 CORS audit (a0a7316a311c3ffd9):
 from __future__ import annotations
 
 import re
+from collections import Counter
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -21,6 +23,7 @@ if TYPE_CHECKING:
 
 
 _TOKEN_HEX_8_RE = re.compile(r"^[0-9a-f]{16}$")
+_REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 # ---------------------------------------------------------------------------
@@ -137,3 +140,13 @@ def test_request_id_valid_format_echoed(client: TestClient) -> None:
     good = "abc-123-valid-id"
     resp = client.get("/healthz", headers={"X-Request-ID": good})
     assert resp.headers.get("x-request-id") == good
+
+
+def test_main_mounts_each_literal_router_once() -> None:
+    """Static guard against duplicate `app.include_router(foo_router)` mounts."""
+    src = (_REPO_ROOT / "src" / "jpintel_mcp" / "api" / "main.py").read_text(
+        encoding="utf-8"
+    )
+    names = re.findall(r"app\.include_router\((\w+_router)\b", src)
+    duplicates = {name: count for name, count in Counter(names).items() if count > 1}
+    assert duplicates == {}

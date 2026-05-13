@@ -72,7 +72,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -108,8 +108,19 @@ CHROME_TAGS_WITH_CLASS = {
 }
 # Block tags that emit a paragraph break.
 BLOCK_TAGS = {
-    "p", "div", "section", "article", "header", "main", "aside",
-    "ul", "ol", "table", "tr", "details", "summary",
+    "p",
+    "div",
+    "section",
+    "article",
+    "header",
+    "main",
+    "aside",
+    "ul",
+    "ol",
+    "table",
+    "tr",
+    "details",
+    "summary",
 }
 HEADING_TAGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
 
@@ -250,9 +261,7 @@ class _Md(HTMLParser):
 
 # Regex to pull a canonical URL from <link rel="canonical">. Faster than
 # re-parsing for the 9,964 file batch path.
-_CANONICAL_RE = re.compile(
-    r'<link\s+rel="canonical"\s+href="([^"]+)"', re.IGNORECASE
-)
+_CANONICAL_RE = re.compile(r'<link\s+rel="canonical"\s+href="([^"]+)"', re.IGNORECASE)
 
 
 def _extract_canonical(raw_html: str, fallback: str) -> str:
@@ -402,7 +411,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = p.parse_args(argv)
 
-    fetched_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    fetched_at = datetime.now(UTC).isoformat(timespec="seconds")
     selected = (
         [c for c in CATEGORIES if c.name == args.category]
         if args.category != "all"
@@ -426,13 +435,9 @@ def main(argv: list[str] | None = None) -> int:
             if args.sample and sample_emitted >= args.sample:
                 break
             try:
-                content, md_url, est_tokens = _build_companion_md(
-                    html_path, cat, fetched_at
-                )
+                content, md_url, est_tokens = _build_companion_md(html_path, cat, fetched_at)
             except Exception as exc:  # noqa: BLE001 -- surface parse error
-                sys.stderr.write(
-                    f"[companion-md-full] parse error: {html_path}: {exc}\n"
-                )
+                sys.stderr.write(f"[companion-md-full] parse error: {html_path}: {exc}\n")
                 skipped += 1
                 per_cat_counts[cat.name]["skipped"] += 1
                 continue
@@ -456,10 +461,8 @@ def main(argv: list[str] | None = None) -> int:
             break
 
     print(
-        "[companion-md-full] done — total_html={th} written={w} skipped={s} "
-        "est_total_tokens={t}".format(
-            th=total_html, w=written, s=skipped, t=total_tokens
-        )
+        f"[companion-md-full] done — total_html={total_html} written={written} skipped={skipped} "
+        f"est_total_tokens={total_tokens}"
     )
     for name, counts in per_cat_counts.items():
         print(

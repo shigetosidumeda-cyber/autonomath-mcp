@@ -5,13 +5,13 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>支払い完了 — jpcite</title>
-<meta name="description" content="Stripe 決済完了後の API キー発行ページ。">
+<meta name="description" content="jpcite の決済完了後に API キーを1回だけ表示するお客様向けページです。キーのコピー、利用開始、ダッシュボードへの導線を案内します。">
 <meta name="robots" content="noindex,nofollow">
 
 <meta property="og:title" content="支払い完了 — jpcite">
-<meta property="og:description" content="Stripe 決済後に API キーを発行します。">
+<meta property="og:description" content="jpcite の決済完了後に API キーを1回だけ表示し、利用開始とダッシュボードへの導線を案内します。">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/success.html">
+<meta property="og:url" content="https://jpcite.com/success">
 <meta property="og:image" content="https://jpcite.com/assets/og-square.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -20,19 +20,17 @@
 
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="支払い完了 — jpcite">
-<meta name="twitter:description" content="Stripe 決済後に API キーを発行します。">
+<meta name="twitter:description" content="jpcite の決済完了後に API キーを1回だけ表示し、利用開始手順を案内します。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-square.png">
 
 <link rel="canonical" href="https://jpcite.com/success">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/success.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/success.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/success.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/success">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/success">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/success">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 <style>
   /* success.html — post-checkout key reveal. Matches dashboard design tokens. */
@@ -241,7 +239,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -284,11 +282,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -361,11 +359,11 @@
  </div>
 
  <div class="state-card">
- <p class="label">Your APIキー</p>
+ <p class="label">APIキー</p>
  <pre id="api-key-block" class="key-block" aria-label="API key">am_…</pre>
  <p class="key-warning" role="alert">この key は発行時 1 回だけ表示されます。今すぐコピーして保管してください。</p>
  <div class="btn-row">
- <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキー をコピー</button>
+ <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキーをコピー</button>
  </div>
  <div class="meta-row" aria-label="metadata">
  <span>plan: <strong>完全従量 ¥3/課金単位 (税込 ¥3.30)</strong></span>
@@ -389,7 +387,7 @@
  <button id="copy-claude-btn" class="btn-ghost" type="button">&#128203; Claude config をコピー</button>
  </div>
  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
- 事前に <code>pip install autonomath-mcp</code> または <code>uv tool install autonomath-mcp</code> (互換のため旧配布名を維持、ブランドは jpcite)。
+ 事前に <code>pip install jpcite-mcp</code> または <code>uv tool install jpcite-mcp</code>。
  設定ファイル: macOS = <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>。
  詳細 → <a href="/integrations/claude-desktop.html">Claude Desktop 統合ガイド</a>
  </p>
@@ -429,9 +427,9 @@ Auth value: …</pre>
  <div class="next-steps">
  <h2>次のステップ</h2>
  <ol>
- <li><a href="/docs/getting-started">Getting Started</a> &mdash; Python / Node の最小例、 認証、 rate limit</li>
+ <li><a href="/docs/getting-started/">Getting Started</a> &mdash; Python / Node の最小例、 認証、 rate limit</li>
  <li><a href="dashboard.html">既存 API キーを管理 (ダッシュボード)</a> &mdash; 利用量、 キー再発行、 Stripe ポータル、 解約</li>
- <li><a href="/docs/cookbook/">Cookbook (12 レシピ)</a> &mdash; 税理士 daily / Claude Desktop install / 法人 360 / pref heatmap / 採択事例 / 行政処分 watch ほか</li>
+ <li><a href="/docs/prompt_cookbook/">Cookbook (12 レシピ)</a> &mdash; 税理士 daily / Claude Desktop install / 法人 360 / pref heatmap / 採択事例 / 行政処分 watch ほか</li>
  <li><a href="support.html">サポート</a> &mdash; FAQ / Status / Issue tracker / メール窓口</li>
  </ol>
  </div>
@@ -457,7 +455,7 @@ Auth value: …</pre>
  </div>
  <div class="btn-row">
  <button id="retry-btn" class="btn btn-primary" type="button">再試行</button>
- <a class="btn btn-secondary" href="pricing.html">Pricing に戻る</a>
+ <a class="btn btn-secondary" href="pricing.html">料金ページに戻る</a>
  </div>
  </div>
 
@@ -468,7 +466,7 @@ Auth value: …</pre>
  </div>
  <div class="btn-row">
  <a class="btn btn-primary" href="dashboard.html">Dashboard を開く</a>
- <a class="btn btn-secondary" href="/docs/getting-started">Getting Started</a>
+ <a class="btn btn-secondary" href="/docs/getting-started/">Getting Started</a>
  </div>
  </div>
 
@@ -486,10 +484,10 @@ Auth value: …</pre>
  <div id="state-error-missing" tabindex="-1" hidden>
  <div class="alert" role="alert">
  <strong>session_id が URL に見つかりません</strong>
- このページは Stripe 決済完了後に <code>?session_id=cs_…</code> 付きでアクセスするページです。直接開かれた場合は Pricing から再契約してください。
+ このページは Stripe 決済完了後に <code>?session_id=cs_…</code> 付きでアクセスするページです。直接開かれた場合は料金ページから手続きをやり直してください。
  </div>
  <div class="btn-row">
- <a class="btn btn-primary" href="pricing.html">Pricing に戻る</a>
+ <a class="btn btn-primary" href="pricing.html">料金ページに戻る</a>
  <a class="btn btn-secondary" href="dashboard.html">既に契約済みの方は Dashboard</a>
  </div>
  </div>
@@ -593,7 +591,7 @@ Auth value: …</pre>
         '  "mcpServers": {\n' +
         '    "jpcite": {\n' +
         '      "command": "uvx",\n' +
-        '      "args": ["autonomath-mcp"],\n' +
+        '      "args": ["jpcite-mcp"],\n' +
         '      "env": {"JPCITE_API_KEY": "' + apiKey + '"}\n' +
         '    }\n' +
         '  }\n' +
@@ -606,7 +604,7 @@ Auth value: …</pre>
         '  "mcpServers": {\n' +
         '    "jpcite": {\n' +
         '      "command": "uvx",\n' +
-        '      "args": ["autonomath-mcp"],\n' +
+        '      "args": ["jpcite-mcp"],\n' +
         '      "env": {"JPCITE_API_KEY": "' + apiKey + '"}\n' +
         '    }\n' +
         '  }\n' +

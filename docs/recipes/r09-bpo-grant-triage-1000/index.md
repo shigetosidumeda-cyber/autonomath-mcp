@@ -4,7 +4,7 @@ slug: "r09-bpo-grant-triage-1000"
 audience: "BPO"
 intent: "bulk_triage"
 tools: ["search_programs", "get_corp_360", "check_eligibility"]
-artifact_type: "triage_table.csv"
+artifact_type: "triage.csv"
 billable_units_per_run: 1000
 seo_query: "BPO 補助金 トリアージ 大量 自動化"
 total_time: "PT5M"
@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 親会社 / 地銀 / メガバンク / 商工会連合会 / 信金中金 / 産業創造機構 等から、傘下 / 取引先 / 会員企業 500-5,000 社の補助金フィット度算定を一括委託される BPO 事業者。月次 / 四半期で 1,000 社の法人番号 CSV を受領し、各社につき適合補助金 top 5 + 排他ルール抵触有無 + 採択確率帯 (low/mid/high) を 5 分でテーブル化し、優先架電 100 社 / 案内 DM 900 社の振分けを行う。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、bulk 利用は事前 prepay 推奨)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料、bulk 利用は事前 prepay 推奨)
 - `X-Client-Tag` (委託元別計上)
 - 1,000 社の法人番号 CSV (法人番号 + 任意で 業種 / 所在地 / 直近売上 / 従業員数)
 - (推奨) 委託元の業種 (JSIC 中分類) リスト
@@ -122,11 +122,10 @@ const res = await jpcite.bulk_match_programs({
 - `bulk_match_programs` (本 recipe 中核、大量 法人番号 bulk マッチング)
 - `get_corp_360` (個社深掘り、架電前の追加調査)
 - `check_eligibility` (個別補助金の eligibility chain 確認)
-- `apply_eligibility_chain_am` (Wave 21、複合補助金組合せ)
-- `match_due_diligence_questions` (Wave 22、与信 DD 30-60 質問)
+- `apply_eligibility_chain` (公開版 21、複合補助金組合せ)
+- `match_due_diligence_questions` (公開版 22、与信 DD 30-60 質問)
 
 ## 関連 recipe
-- [r15-grant-saas-internal-enrich](../r15-grant-saas-internal-enrich/) — SaaS 内部 enrich、BPO の自社化 path
 - [r24-houjin-6source-join](../r24-houjin-6source-join/) — 6 source join、素材 endpoint
 - [r25-adoption-bulk-export](../r25-adoption-bulk-export/) — 採択 bulk export、後段の集計
 
@@ -134,7 +133,6 @@ const res = await jpcite.bulk_match_programs({
 - 1 batch 1,000 units (法人 1 社 1 unit) × ¥3 = ¥3,000 / 委託
 - 月 5 委託 = ¥15,000 / 月 (税込 ¥16,500)
 - 月 20 委託 = ¥60,000 / 月 (税込 ¥66,000)
-- 節約 (純 LLM vs jpcite ¥3/req): 月 4 batch × 250 = 1,000 cycle で、純 LLM は約 ¥48,000/月 (cycle ¥48 = source 4,000 + tool 3) に対し jpcite は ¥12,000/月 (4,000 req × ¥3) → 節約 約 ¥36,000/月 / batch あたり ¥9,000 (cf. `docs/canonical/cost_saving_examples.md` case 5)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

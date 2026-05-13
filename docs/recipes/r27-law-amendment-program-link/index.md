@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 中小企業政策・税制大綱・労働関連法改正・環境関連法改正・DX 推進政策の発表に紐付けて、新規創設 / 拡充 / 終了予定の補助金リスト + 関連通達 + 国税不服審判所 裁決を 5 分でまとめるリサーチャー / 記者 / 業界団体スタッフ / シンクタンク研究員 / 大学院生・研究者・士業事務所の最新情報 watch 担当。法改正速報 (税務通信 / 戦略経営者通信 / TKC 戦略経営者通信 / 月刊 / 週刊 ベース) と jpcite の構造化データを突合させ、見落とし防止 + 顧客向け解説資料の素材作成を目標とする。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - 法令名 (e-Gov 法令検索の正式名称) or 法令 ID or 公布日
 - e-Gov 法令検索の URL (一次資料リンク)
 - (任意) 関連通達番号 (国税庁 法令解釈通達 / 厚労省 業務取扱要領 等)
@@ -126,7 +126,7 @@ console.log(`関連補助金: ${law.related_programs.length} 件`);
 - 1 件 5 units × ¥3 = ¥15
 - 法改正 10 件 / 月 = ¥150 / 月、税込 ¥165
 - 法改正 50 件 / 月 (大手シンクタンク level) = ¥750 / 月、税込 ¥825
-- 節約 (純 LLM vs jpcite ¥3/req): 月 10 件法改正 link で、純 LLM は約 ¥500/月 (1 件 cycle ¥50 = 法令本文 + 補助金 + 通達 cross-ref + tool 6) に対し jpcite は ¥150/月 (50 req × ¥3) → 節約 約 ¥350/月 / 件あたり ¥35 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
+- 節約 (純 LLM vs jpcite 標準従量料金): 月 10 件法改正 link で、純 LLM は約 ¥500/月 (1 件 cycle ¥50 = 法令本文 + 補助金 + 通達 cross-ref + tool 6) に対し jpcite は ¥150/月 (50 req × ¥3) → 節約 約 ¥350/月 / 件あたり ¥35 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

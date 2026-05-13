@@ -1,3 +1,4 @@
+-- target_db: autonomath
 -- 269_create_jpcite_views.sql
 -- Wave 46.B (2026-05-12): jpcite brand alias views over am_* tables
 -- Background: internal autonomath schema (am_*) retains 152+ tables for SOT.

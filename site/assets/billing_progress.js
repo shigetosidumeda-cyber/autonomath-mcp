@@ -1,5 +1,5 @@
 /*
- * billing_progress.js — Wave 48 tick#2 (jpcite 2026-05-12)
+ * billing_progress.js — jpcite billing progress (2026-05-12) (jpcite 2026-05-12)
  *
  * Purpose:
  *   "ノンフリクション + 迷子ゼロ" billing funnel UI helper.
@@ -9,7 +9,7 @@
  * 4-step linear funnel (memory: feedback_keep_it_simple, feedback_zero_touch_solo):
  *   1. free      — Try 3 anonymous req/day (no signup)
  *   2. signup    — GitHub OAuth or magic link (1 click)
- *   3. topup     — Pick one of 3 payment rails (Credit Wallet / x402 / Stripe)
+ *   3. billing   — Confirm metered billing and spending caps
  *   4. use       — Call API/MCP, see usage in dashboard
  *
  * Idle detection: 30s of no interaction => modal hint with "next step is X" copy.
@@ -34,16 +34,16 @@
       label: "2. サインイン",
       desc: "GitHub OAuth または magic link (1 click)",
       cta: "サインインする",
-      href: "/signin.html",
+      href: "/dashboard.html",
       nextHint: "サインインすると毎日リセットされる無料枠と利用量ダッシュボードが使えます。"
     },
     {
-      id: "topup",
-      label: "3. 課金開始",
-      desc: "3 ルート: Credit Wallet ¥/x402 USDC/Stripe",
-      cta: "topup する",
-      href: "/wallet.html",
-      nextHint: "auto-topup を ON にすると ¥3/req のまま中断ゼロで運用できます。"
+      id: "billing",
+      label: "3. 課金設定",
+      desc: "Stripe 従量課金 + 月次上限",
+      cta: "料金を確認",
+      href: "/pricing.html",
+      nextHint: "広い実行は見積もりと X-Cost-Cap-JPY を設定してから動かしてください。"
     },
     {
       id: "use",
@@ -72,7 +72,7 @@
     var p = (location.pathname || "").toLowerCase();
     if (p.indexOf("/playground") === 0) return 0;
     if (p.indexOf("/signin") === 0 || p.indexOf("/signup") === 0) return 1;
-    if (p.indexOf("/wallet") === 0 || p.indexOf("/topup") === 0) return 2;
+    if (p.indexOf("/pricing") === 0 || p.indexOf("/billing") === 0) return 2;
     if (p.indexOf("/dashboard") === 0) return 3;
     return 0;
   }
@@ -195,7 +195,7 @@
     var step = STEPS[idx] || STEPS[0];
     var modal = document.createElement("div");
     modal.id = "jpcite-bp-modal";
-    // Wave 48 tick#4 fix: also expose canonical "idle hint" hooks so the UX
+    // billing UX fix: also expose canonical "idle hint" hooks so the UX
     // audit's standard selectors (.hint-modal, #idle-hint, .lost-user-hint)
     // match this element. Classes are additive; existing CSS still applies.
     modal.className = "jpcite-bp-modal hint-modal lost-user-hint";
@@ -259,10 +259,10 @@
     if (!host) return null;
     host.innerHTML = buildStrip(idx);
 
-    // 迷子検知 (Wave 48 tick#4 fix): only intentional interactions reset the
+    // 迷子検知 (billing UX fix): only intentional interactions reset the
     // 30s idle timer. mousemove fires continuously while the cursor is over
     // the viewport and used to prevent the modal from ever showing — that is
-    // the exact "modal DOM emit が不発" bug surfaced by the tick#4 UX audit.
+    // the exact "modal DOM emit が不発" bug surfaced by the billing UX audit.
     // We keep click/keydown/scroll/touchstart (which signal real intent) and
     // drop mousemove. See tests/test_idle_hint_modal_dom.py for the live
     // Playwright verify that the modal#jpcite-bp-modal node now appears.

@@ -31,12 +31,13 @@ from __future__ import annotations
 import time
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from jpintel_mcp.api._error_envelope import COMMON_ERROR_RESPONSES
 from jpintel_mcp.api.deps import ApiContextDep, DbDep, log_usage
+from jpintel_mcp.api.me.api_keys import require_scope
 from jpintel_mcp.mcp.autonomath_tools import cohort_match_tools
 
 router = APIRouter(prefix="/v1/cases", tags=["case-studies"])
@@ -97,6 +98,7 @@ class CohortMatchBody(BaseModel):
 @router.post(
     "/cohort_match",
     summary="Cohort matcher (採択事例 × 業種 × 規模 × 地域)",
+    dependencies=[Depends(require_scope("read:cases"))],
     description=(
         "Returns the 採択 cohort that matches the caller's 4-axis profile "
         "(industry / employees / revenue / prefecture), pulling case_studies "

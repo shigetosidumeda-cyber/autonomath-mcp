@@ -211,12 +211,17 @@ def test_manifest_parses_and_has_required_keys() -> None:
     assert int(data["tool_count_default_gates"]) == EXPECTED_TOOL_COUNT_DEFAULT_GATES
     assert int(data["route_count"]) == EXPECTED_ROUTE_COUNT
     assert int(data["openapi_path_count"]) == EXPECTED_OPENAPI_PATH_COUNT
+    assert int(data["tool_count_default_gates"]) == 151
+    assert int(data["route_count"]) == 354
+    assert int(data["openapi_path_count"]) == 297
 
     assert "site/mcp-server.json" in data["version_surface_paths"]
     assert "site/mcp-server.full.json" in data["version_surface_paths"]
     assert "mcp-server.full.json" in data["version_surface_paths"]
     assert "docs/mcp-tools.md" in data["tool_count_surface_paths"]
     assert "dxt/README.md" in data["tool_count_surface_paths"]
+    assert "site/llms.en.txt" in data["pricing_surface_paths"]
+    assert "site/en/llms.txt" in data["pricing_surface_paths"]
     assert "docs/mcp-tools.md" not in data["pricing_surface_paths"]
     assert "dxt/README.md" not in data["pricing_surface_paths"]
 
@@ -230,8 +235,13 @@ def test_manifest_parses_and_has_required_keys() -> None:
     assert "mcp-server.core.json" not in data["tool_count_surface_paths"]
     assert "mcp-server.composition.json" not in data["tool_count_surface_paths"]
 
+    # Current llms surfaces must carry price/free-tier markers; the remaining
     # Wave 6 P0 additions should not broaden pricing/free-tier scans.
-    assert not (EXPECTED_WAVE6_P0_CANDIDATES & set(data["pricing_surface_paths"]))
+    allowed_pricing_p0 = {"site/llms.en.txt", "site/en/llms.txt"}
+    assert not (
+        (EXPECTED_WAVE6_P0_CANDIDATES - allowed_pricing_p0)
+        & set(data["pricing_surface_paths"])
+    )
 
     # Agent-safe OpenAPI files are Actions schemas, not MCP package manifests.
     assert "docs/openapi/agent.json" in data["distribution_surface_paths"]
@@ -273,6 +283,64 @@ def test_openapi_agent_specs_use_info_version_without_package_requirement() -> N
         }
     )
     assert not [row for row in canonical_rows if row.field == "canonical_mcp_package"]
+
+
+def test_manifest_pyproject_version_is_checked_against_pyproject_sot() -> None:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    from check_distribution_manifest_drift import (  # type: ignore[import-not-found]
+        _scan_manifest_sot,
+    )
+
+    data = _load_manifest_dict()
+    rows = _scan_manifest_sot(data)
+    assert rows == []
+
+    drifted = dict(data)
+    drifted["pyproject_version"] = "0.3.5"
+    rows = _scan_manifest_sot(drifted)
+    assert rows
+    assert rows[0].field == "pyproject_version"
+    assert rows[0].file == "scripts/distribution_manifest.yml"
+
+
+def test_llms_price_and_package_markers_fail_closed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    import check_distribution_manifest_drift as drift  # type: ignore[import-not-found]
+
+    repo = tmp_path / "repo"
+    llms = repo / "site" / "llms.txt"
+    llms.parent.mkdir(parents=True)
+    llms.write_text("# jpcite\n\nMCP tools: https://jpcite.com/docs/mcp-tools/\n", encoding="utf-8")
+    monkeypatch.setattr(drift, "REPO_ROOT", repo)
+
+    manifest = {
+        "canonical_domains": {"site": "https://jpcite.com"},
+        "canonical_mcp_package": "autonomath-mcp",
+        "canonical_api_env": {"api_key": "JPCITE_API_KEY", "api_base": "JPCITE_API_BASE"},
+        "distribution_surface_paths": ["site/llms.txt"],
+        "canonical_mcp_package_surface_paths": ["site/llms.txt"],
+        "pricing_surface_paths": ["site/llms.txt"],
+        "pricing_unit_jpy_ex_tax": 3,
+        "pricing_unit_jpy_tax_included": "3.30",
+        "free_tier_requests_per_day": 3,
+    }
+
+    package_rows = drift._scan_canonical_values(manifest)
+    pricing_rows = drift._scan_pricing(manifest)
+    assert any(row.field == "canonical_mcp_package" for row in package_rows)
+    assert any(row.field == "pricing_unit_jpy_ex_tax" for row in pricing_rows)
+    assert any(row.field == "free_tier_requests_per_day" for row in pricing_rows)
+
+    llms.write_text(
+        "Brand: jpcite. Canonical domain: https://jpcite.com.\n"
+        "MCP package: autonomath-mcp. Pricing: JPY 3 per billable unit; "
+        "about JPY 3.30 tax-included; anonymous usage is 3 requests/day/IP.\n",
+        encoding="utf-8",
+    )
+    assert drift._scan_canonical_values(manifest) == []
+    assert drift._scan_pricing(manifest) == []
 
 
 # ---------------------------------------------------------------------------

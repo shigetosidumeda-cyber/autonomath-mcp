@@ -42,6 +42,8 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from jpintel_mcp.mcp.transport_metadata import mcp_transport_names
+
 logger = logging.getLogger("jpintel.mcp.federation")
 
 FEDERATION_SCHEMA = "mcp-federation-discovery/v1"
@@ -191,7 +193,7 @@ def build_federation_manifest() -> dict[str, Any]:
         "operator_corporate_number": "8010001213708",
         "capabilities": {
             "protocol": "mcp/2025-06-18",
-            "transport": ["stdio", "streamable_http"],
+            "transport": mcp_transport_names(),
             "sampling": True,
             "resources": True,
             "prompts": True,

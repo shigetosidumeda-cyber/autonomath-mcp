@@ -1,11 +1,12 @@
-"""Wave 48 — x402 full payment chain (mock proof-verify middleware).
+"""Wave 48 — x402 payment chain middleware.
 
 Closes the gap between Wave 47 Dim V x402 *storage* (migration 282
 `am_x402_endpoint_config` + `am_x402_payment_log`) and a working in-process
-**HTTP 402 -> proof-verify -> 200** chain. The canonical settlement path
-remains on-chain (USDC on Base, verified by `functions/x402_handler.ts`
-at the CF Pages edge), but the origin needs a deterministic mock
-implementation so:
+**HTTP 402 -> verified settlement -> 200** chain. The canonical settlement
+path remains on-chain (USDC on Base, verified by `functions/x402_handler.ts`
+at the CF Pages edge). A deterministic mock verifier is available only when
+explicitly enabled for tests/dev with ``JPCITE_X402_MOCK_PROOF_ENABLED=1`` so
+the production origin cannot be satisfied by a self-computed proof.
 
   * tests can exercise the full 402 -> 200 flow without an RPC dependency,
   * dev / staging can demo `curl -H "X-Payment-Proof: ..."` against the
@@ -15,9 +16,9 @@ implementation so:
 
 Contract
 --------
-For every endpoint registered in ``am_x402_endpoint_config`` (5 canonical
-seeds: ``/v1/search``, ``/v1/programs``, ``/v1/cases``,
-``/v1/audit_workpaper``, ``/v1/semantic_search``):
+For every endpoint registered in ``am_x402_endpoint_config`` (canonical
+seeds include ``/v1/case-studies/search``, ``/v1/programs/prescreen``,
+``/v1/audit/workpaper``, and ``/v1/search/semantic``):
 
   Request                                              | Response
   -----------------------------------------------------+------------------
@@ -25,6 +26,7 @@ seeds: ``/v1/search``, ``/v1/programs``, ``/v1/cases``,
   GET <path>  X-Payment-Proof: <bad>                   | 402 + verify_failed
   GET <path>  X-Payment-Proof: <wellformed-but-empty>  | 401 missing_payer
   GET <path>  X-Payment-Proof: <valid mock proof>      | 200 + payment_id
+                                                      | only when mock flag is on
 
 A "mock proof" is a JSON-then-sha256-tagged string of shape::
 
@@ -32,8 +34,9 @@ A "mock proof" is a JSON-then-sha256-tagged string of shape::
 
 The middleware:
 
-  1. Looks up the endpoint in ``am_x402_endpoint_config`` (cached).
-     If absent => endpoint is NOT x402-gated; pass through.
+  1. Looks up the endpoint in ``am_x402_endpoint_config``. If the x402
+     schema is unavailable for a canonical paid path, fail closed with 503
+     unless the explicit dev/test schema fail-open flag is enabled.
   2. If no ``X-Payment-Proof`` header => issue 402 with a fresh
      ``challenge_nonce`` (returned in body + ``X-Payment-Required`` header).
   3. If the header is present, parse the structured proof. On parse error
@@ -54,6 +57,7 @@ Brand / discipline
 from __future__ import annotations
 
 import hashlib
+import hmac
 import logging
 import os
 import secrets
@@ -62,7 +66,7 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, Header, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -76,6 +80,58 @@ logger = logging.getLogger("jpintel.x402.payment")
 
 router = APIRouter(prefix="/v1/x402", tags=["x402-payment"])
 
+_X402_DIAGNOSTIC_SECRET_ENV = "JPCITE_X402_DIAGNOSTIC_SECRET"
+_X402_DIAGNOSTIC_SECRET_HEADER = "X-JPCITE-X402-Diagnostic-Secret"
+_X402_MOCK_PROOF_ENV = "JPCITE_X402_MOCK_PROOF_ENABLED"
+_X402_SCHEMA_FAIL_OPEN_ENV = "JPCITE_X402_SCHEMA_FAIL_OPEN_DEV"
+X402_CANONICAL_ENDPOINT_SEEDS: tuple[dict[str, object], ...] = (
+    {
+        "endpoint_path": "/v1/audit/workpaper",
+        "required_amount_usdc": 0.01,
+        "expires_after_seconds": 600,
+    },
+    {
+        "endpoint_path": "/v1/case-studies/search",
+        "required_amount_usdc": 0.002,
+        "expires_after_seconds": 3600,
+    },
+    {
+        "endpoint_path": "/v1/programs/prescreen",
+        "required_amount_usdc": 0.002,
+        "expires_after_seconds": 3600,
+    },
+    {
+        "endpoint_path": "/v1/search/semantic",
+        "required_amount_usdc": 0.005,
+        "expires_after_seconds": 1800,
+    },
+)
+_X402_CANONICAL_PAID_ENDPOINTS = frozenset(
+    str(endpoint["endpoint_path"]) for endpoint in X402_CANONICAL_ENDPOINT_SEEDS
+)
+_ROUTE_OWNED_PAYMENT_GATES = frozenset({"/v1/programs/search"})
+
+
+def _has_valid_auth_shape(request: Request) -> bool:
+    """Return True only for credential shapes that downstream auth accepts."""
+    x_api_key = request.headers.get("X-API-Key")
+    if x_api_key and x_api_key.strip():
+        return True
+
+    authorization = request.headers.get("Authorization")
+    if not authorization:
+        return False
+    parts = authorization.split(None, 1)
+    return (
+        len(parts) == 2
+        and parts[0].lower() == "bearer"
+        and bool(parts[1].strip())
+    )
+
+
+class X402ConfigUnavailableError(RuntimeError):
+    """Raised when a paid x402 path cannot safely read its registry."""
+
 
 # ---------- db helpers ----------------------------------------------------
 
@@ -88,6 +144,97 @@ def _connect() -> sqlite3.Connection:
     conn = sqlite3.connect(str(_autonomath_db_path()))
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def _missing_x402_schema(exc: sqlite3.OperationalError) -> bool:
+    msg = str(exc).lower()
+    return (
+        "no such table: v_x402_endpoint_enabled" in msg
+        or "no such table: am_x402_endpoint_config" in msg
+        or "no such table: am_x402_payment_log" in msg
+    )
+
+
+def _require_diagnostic_auth(header_value: str | None) -> None:
+    expected = os.environ.get(_X402_DIAGNOSTIC_SECRET_ENV, "").strip()
+    if not expected:
+        raise HTTPException(status_code=404, detail="x402_diagnostic_disabled")
+    if not header_value or not hmac.compare_digest(header_value, expected):
+        raise HTTPException(status_code=403, detail="x402_diagnostic_auth_failed")
+
+
+def _mock_proof_enabled() -> bool:
+    """Return true only for explicit test/dev mock-proof mode.
+
+    **Production NEVER accepts mock proofs.** The middleware synthesises a
+    deterministic ``txn_hash`` from the proof string when the caller omits
+    the header (see middleware §"txn_hash is required" at line ~425); that
+    branch only runs when this helper returns True. The contract: this
+    helper returns True iff BOTH ``JPCITE_X402_MOCK_PROOF_ENABLED`` is
+    truthy AND the runtime env label resolves to one of {dev,test,local,ci}.
+
+    A defence-in-depth boot gate in ``api/main.py:_assert_production_secrets``
+    independently asserts ``_mock_proof_enabled() is False`` when
+    ``JPINTEL_ENV`` is prod/production, so a drift between ``JPCITE_ENV``
+    and ``JPINTEL_ENV`` (or a stray ``JPCITE_X402_MOCK_PROOF_ENABLED=1`` in
+    a Fly secret) cannot silently re-activate the mock path in production.
+    """
+
+    return _truthy_env(_X402_MOCK_PROOF_ENV) and _runtime_env() in {
+        "dev",
+        "test",
+        "local",
+        "ci",
+    }
+
+
+def _truthy_env(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _runtime_env() -> str:
+    return (
+        (os.environ.get("JPCITE_ENV") or os.environ.get("JPINTEL_ENV") or settings.env or "dev")
+        .strip()
+        .lower()
+    )
+
+
+def _schema_fail_open_allowed() -> bool:
+    """Return true only for explicit local/test schema bypass."""
+
+    if not _truthy_env(_X402_SCHEMA_FAIL_OPEN_ENV):
+        return False
+    return _runtime_env() in {"dev", "test", "local", "ci"}
+
+
+def _is_canonical_paid_endpoint(path: str) -> bool:
+    return path in _X402_CANONICAL_PAID_ENDPOINTS
+
+
+def _route_owns_payment_gate(path: str) -> bool:
+    """Return true when the FastAPI route owns finer-grained payment logic.
+
+    ``/v1/programs/search`` intentionally keeps default/minimal anonymous
+    discovery open and gates only ``fields=full`` inside the route handler.
+    The middleware must ignore stale x402 registry rows for this path so
+    route validation, anonymous quota handling, and the ``fields=full``
+    upgrade response stay reachable.
+    """
+
+    return path in _ROUTE_OWNED_PAYMENT_GATES
+
+
+def _fail_closed_response(path: str) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content={
+            "error": "x402_config_unavailable",
+            "endpoint_path": path,
+            "hint": "Payment configuration is unavailable; retry after migration/seed repair.",
+        },
+        headers={"X-Payment-Required": "true"},
+    )
 
 
 # ---------- public response models ----------------------------------------
@@ -144,13 +291,40 @@ def _fresh_challenge_nonce() -> str:
 
 def _load_endpoint_config(path: str) -> dict[str, Any] | None:
     """Return enabled endpoint config row or None if not x402-gated."""
-    with _connect() as conn:
-        row = conn.execute(
-            "SELECT endpoint_path, required_amount_usdc, expires_after_seconds "
-            "FROM v_x402_endpoint_enabled WHERE endpoint_path = ?",
-            (path,),
-        ).fetchone()
-    return dict(row) if row else None
+    if _route_owns_payment_gate(path):
+        return None
+
+    try:
+        with _connect() as conn:
+            row = conn.execute(
+                "SELECT endpoint_path, required_amount_usdc, expires_after_seconds "
+                "FROM v_x402_endpoint_enabled WHERE endpoint_path = ?",
+                (path,),
+            ).fetchone()
+    except sqlite3.OperationalError as exc:
+        if _missing_x402_schema(exc):
+            if _is_canonical_paid_endpoint(path) and not _schema_fail_open_allowed():
+                logger.error(
+                    "x402 schema absent for paid endpoint; failing closed path=%s",
+                    path,
+                )
+                raise X402ConfigUnavailableError(path) from exc
+            logger.warning(
+                "x402 schema absent; payment middleware failing open path=%s env=%s",
+                path,
+                _runtime_env(),
+            )
+            return None
+        raise
+    if row:
+        return dict(row)
+    if _is_canonical_paid_endpoint(path) and not _schema_fail_open_allowed():
+        logger.error(
+            "x402 endpoint config absent for paid endpoint; failing closed path=%s",
+            path,
+        )
+        raise X402ConfigUnavailableError(path)
+    return None
 
 
 def _record_payment(
@@ -206,7 +380,7 @@ def build_challenge(
 class X402PaymentMiddleware(BaseHTTPMiddleware):
     """Gate registered endpoints behind HTTP 402.
 
-    Wires the 5 canonical paths from ``am_x402_endpoint_config`` to the
+    Wires the canonical paths from ``am_x402_endpoint_config`` to the
     402-or-200 flow. Pass-through for any path not in the registry.
     """
 
@@ -214,7 +388,13 @@ class X402PaymentMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
 
     async def dispatch(self, request: Request, call_next):  # type: ignore[override]
-        cfg = _load_endpoint_config(request.url.path)
+        if _has_valid_auth_shape(request):
+            return await call_next(request)
+
+        try:
+            cfg = _load_endpoint_config(request.url.path)
+        except X402ConfigUnavailableError:
+            return _fail_closed_response(request.url.path)
         if cfg is None:
             # Not an x402-gated endpoint — pass through.
             return await call_next(request)
@@ -246,6 +426,18 @@ class X402PaymentMiddleware(BaseHTTPMiddleware):
                     "error": "missing_payer_or_nonce",
                     "hint": "Resend with X-Payment-Payer and X-Payment-Challenge-Nonce.",
                 },
+            )
+
+        if not _mock_proof_enabled():
+            ch = build_challenge(request.url.path, cfg)
+            return JSONResponse(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                content={
+                    **ch.model_dump(),
+                    "error": "edge_verification_required",
+                    "hint": "Use the /x402 edge settlement flow; origin mock proofs are disabled.",
+                },
+                headers={"X-Payment-Required": "true"},
             )
 
         # Compute expected proof; on mismatch => 402 verify_failed (NOT 401),
@@ -302,7 +494,11 @@ class X402PaymentMiddleware(BaseHTTPMiddleware):
 # ---------- diagnostic router --------------------------------------------
 
 
-@router.get("/payment/preview", summary="Issue a 402 challenge for any registered path")
+@router.get(
+    "/payment/preview",
+    summary="Issue a 402 challenge for any registered path",
+    include_in_schema=False,
+)
 async def preview_challenge(endpoint_path: str) -> X402Challenge:
     """Return a 402 challenge body for ``endpoint_path``.
 
@@ -310,24 +506,40 @@ async def preview_challenge(endpoint_path: str) -> X402Challenge:
     needing to hit the gated endpoint first. Returns 404 if the path is
     not x402-gated.
     """
-    cfg = _load_endpoint_config(endpoint_path)
+    try:
+        cfg = _load_endpoint_config(endpoint_path)
+    except X402ConfigUnavailableError as exc:
+        raise HTTPException(status_code=503, detail="x402_config_unavailable") from exc
     if cfg is None:
         raise HTTPException(status_code=404, detail="endpoint_not_x402_gated")
     return build_challenge(endpoint_path, cfg)
 
 
-@router.get("/payment/quote", summary="Compute the expected proof for a candidate payer + nonce")
+@router.get(
+    "/payment/quote",
+    summary="Compute the expected proof for a candidate payer + nonce",
+    include_in_schema=False,
+)
 async def quote_proof(
     endpoint_path: str,
     payer_address: str,
     challenge_nonce: str,
+    x402_diagnostic_secret: str | None = Header(
+        default=None,
+        alias=_X402_DIAGNOSTIC_SECRET_HEADER,
+    ),
 ) -> dict[str, Any]:
     """Dev helper: return the proof an honest payer would have to present.
 
-    NEVER deploy this without auth on a real network; it trivialises proof
-    verification (the on-chain settlement gate is what matters in prod).
+    Protected by an operator-only diagnostic secret because the response
+    includes the proof value used by the mock verifier.
     """
-    cfg = _load_endpoint_config(endpoint_path)
+    _require_diagnostic_auth(x402_diagnostic_secret)
+
+    try:
+        cfg = _load_endpoint_config(endpoint_path)
+    except X402ConfigUnavailableError as exc:
+        raise HTTPException(status_code=503, detail="x402_config_unavailable") from exc
     if cfg is None:
         raise HTTPException(status_code=404, detail="endpoint_not_x402_gated")
     proof = _expected_proof(
@@ -346,18 +558,35 @@ async def quote_proof(
     }
 
 
-@router.get("/payment/log/recent", summary="Recent settled x402 payments (audit view)")
-async def recent_payments(limit: int = 20) -> dict[str, Any]:
+@router.get(
+    "/payment/log/recent",
+    summary="Recent settled x402 payments (audit view)",
+    include_in_schema=False,
+)
+async def recent_payments(
+    limit: int = 20,
+    x402_diagnostic_secret: str | None = Header(
+        default=None,
+        alias=_X402_DIAGNOSTIC_SECRET_HEADER,
+    ),
+) -> dict[str, Any]:
     """Return the most recent settled x402 payments for ops visibility."""
+    _require_diagnostic_auth(x402_diagnostic_secret)
+
     if limit <= 0 or limit > 200:
         raise HTTPException(status_code=422, detail="limit_out_of_range")
-    with _connect() as conn:
-        rows = conn.execute(
-            "SELECT payment_id, http_status_402_id, endpoint_path, "
-            "amount_usdc, payer_address, txn_hash, occurred_at "
-            "FROM am_x402_payment_log ORDER BY payment_id DESC LIMIT ?",
-            (limit,),
-        ).fetchall()
+    try:
+        with _connect() as conn:
+            rows = conn.execute(
+                "SELECT payment_id, http_status_402_id, endpoint_path, "
+                "amount_usdc, payer_address, txn_hash, occurred_at "
+                "FROM am_x402_payment_log ORDER BY payment_id DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+    except sqlite3.OperationalError as exc:
+        if _missing_x402_schema(exc):
+            raise HTTPException(status_code=404, detail="x402_schema_not_installed") from exc
+        raise
     return {
         "count": len(rows),
         "payments": [dict(r) for r in rows],

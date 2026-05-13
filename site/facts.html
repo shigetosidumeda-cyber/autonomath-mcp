@@ -38,8 +38,6 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script defer src="analytics.js?v=20260503a"></script>
@@ -119,7 +117,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -162,11 +160,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -486,7 +484,7 @@
  </div>
 
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
- <dt id="combo-law-article" style="font-weight:600;font-size:16px;">8. 法令 × 条文改正 (am_law_article)</dt>
+ <dt id="combo-law-article" style="font-weight:600;font-size:16px;">8. 法令 × 条文改正 (law-article corpus)</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
  9,484 法令メタデータ × 353,278 条文行 × 改正版差分。 条文参照では、条文単位で「現行版」「改正前版」を取得できます。<br>
  サンプル query: <code>GET /v1/laws/{id}/articles</code> · <code>GET /v1/laws/{id}/articles/{article_no}/amendments</code>
@@ -496,7 +494,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="combo-case-cohort" style="font-weight:600;font-size:16px;">9. 採択 × 業種規模 cohort</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 採択 215,233 (am_entities) × JSIC 業種 37 分類 × 規模 (従業員数・資本金 帯)。 同業 同規模 の採択 cohort を 構造的に 抽出。<br>
+ 採択 215,233 (entity corpus) × JSIC 業種 37 分類 × 規模 (従業員数・資本金 帯)。 同業 同規模 の採択 cohort を 構造的に 抽出。<br>
  サンプル query: <code>POST /v1/cases/cohort_match</code>
  </dd>
  </div>
@@ -520,7 +518,7 @@
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 18px;">
  <dt id="combo-houjin-enforcement" style="font-weight:600;font-size:16px;">12. 法人 × 処分履歴 (houjin_360)</dt>
  <dd style="margin:6px 0 0;font-size:14px;color:var(--text-muted);">
- 法人 166,969 × 処分 22,255 (am_enforcement_detail) × 採択 215,233。 法人番号 から 360 度ビュー (採択履歴 + 処分歴 + 請求書 登録状態) を 1 リクエスト で。<br>
+ 法人 166,969 × 処分 22,255 (enforcement-detail corpus) × 採択 215,233。 法人番号 から 360 度ビュー (採択履歴 + 処分歴 + 請求書 登録状態) を 1 リクエスト で。<br>
  サンプル query: <code>GET /v1/houjin/{houjin_bangou}/360</code>
  </dd>
  </div>

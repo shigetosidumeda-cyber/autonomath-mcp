@@ -27,7 +27,7 @@ def conn(seeded_db: Path):
 
 def test_generate_key_shape():
     raw, h = generate_api_key()
-    assert raw.startswith("am_")
+    assert raw.startswith("jc_")
     assert len(raw) > 30
     assert hash_api_key(raw) == h
     assert hash_api_key(raw + "tamper") != h
@@ -254,6 +254,21 @@ def test_checkout_rejects_nonstandard_jpcite_port(client, stripe_env):
     )
     assert r.status_code == 400
     assert "success_url" in r.json()["detail"]
+
+
+def test_pricing_page_uses_allowlisted_success_html_redirect():
+    pricing_html = (Path(__file__).resolve().parent.parent / "site" / "pricing.html").read_text(
+        encoding="utf-8"
+    )
+
+    assert (
+        "success_url: 'https://jpcite.com/success.html?session_id={CHECKOUT_SESSION_ID}'"
+        in pricing_html
+    )
+    assert (
+        "success_url: 'https://jpcite.com/success?session_id={CHECKOUT_SESSION_ID}'"
+        not in pricing_html
+    )
 
 
 def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch, seeded_db: Path):
@@ -616,7 +631,7 @@ def test_issue_from_checkout_returns_raw_key_once_and_persists_hash(
     assert body["tier"] == "paid"
     assert body["customer_id"] == "cus_happy"
     raw_key = body["api_key"]
-    assert raw_key.startswith("am_")
+    assert raw_key.startswith("jc_")
 
     # Raw key never in DB — only the HMAC hash.
     c = sqlite3.connect(seeded_db)
@@ -805,7 +820,7 @@ def test_issue_from_checkout_still_returns_key_when_welcome_enqueue_fails(
     r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_enqueue_fail"})
     assert r.status_code == 200, r.text
     raw_key = r.json()["api_key"]
-    assert raw_key.startswith("am_")
+    assert raw_key.startswith("jc_")
 
     c = sqlite3.connect(seeded_db)
     try:
@@ -854,7 +869,7 @@ def test_issue_from_checkout_retry_reissues_usable_key(
     r2 = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_retry"})
     assert r2.status_code == 200, r2.text
     raw2 = r2.json()["api_key"]
-    assert raw2.startswith("am_")
+    assert raw2.startswith("jc_")
     assert raw2 != raw1
 
     c = sqlite3.connect(seeded_db)
@@ -981,7 +996,7 @@ def test_issue_from_checkout_retry_refuses_when_children_exist(
             parent_key_hash=_hash_api_key(parent_raw),
             label="tenant-a",
         )
-        assert child_raw.startswith("am_")
+        assert child_raw.startswith("jc_")
         c.commit()
     finally:
         c.close()
@@ -1232,7 +1247,7 @@ def test_invoice_paid_before_checkout_does_not_block_key_reveal(
     r = client.post("/v1/billing/keys/from-checkout", json={"session_id": "cs_after_paid"})
     assert r.status_code == 200, r.text
     body = r.json()
-    assert body["api_key"].startswith("am_")
+    assert body["api_key"].startswith("jc_")
     assert body["customer_id"] == customer_id
 
     c = sqlite3.connect(seeded_db)

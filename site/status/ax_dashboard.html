@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>AX Dashboard (Agent Experience) — jpcite</title>
-<meta name="description" content="jpcite のエージェント計測 (AX = Agent Experience)。エージェント traffic 比率 / MCP tool 呼出数 / task 成功率 / 認証成功率 / llms.txt 配信数 / 経由 conversion の 6 指標を 7 日 rolling で公開。">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://jpcite.com/status/ax_dashboard">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/ax_dashboard">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/ax_dashboard">
+<meta name="description" content="jpcite のエージェント計測 (AX = Agent Experience)。エージェント traffic 比率 / MCP tool 呼出数 / task 成功率 / 認証成功率 / llms.txt 配信数 / follow-through の 6 指標を 7 日 rolling で公開。">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://jpcite.com/status/ax_dashboard.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status/ax_dashboard.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/ax_dashboard.html">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -107,7 +107,7 @@
       <p class="card-label">2. MCP tool 呼出数 (daily)</p>
       <p class="card-value" id="kpi-mcp-calls">—</p>
       <p class="card-percentiles"><span>weekly: <b id="kpi-mcp-weekly">—</b></span><span>monthly: <b id="kpi-mcp-monthly">—</b></span></p>
-      <p class="card-meta">jsonrpc <code>tools/call</code> 件数。stdio + Streamable HTTP transport の合計。</p>
+      <p class="card-meta">MCP tool-call 件数。stdio + Streamable HTTP transport の合計。</p>
     </div>
     <div class="card">
       <p class="card-label">3. task 成功率</p>
@@ -128,16 +128,16 @@
       <p class="card-meta">エージェント学習層への直接配信。HTML 配信比で相対化。</p>
     </div>
     <div class="card">
-      <p class="card-label">6. エージェント経由 conversion</p>
+      <p class="card-label">6. エージェント経由 follow-through</p>
       <p class="card-value" id="kpi-agent-cvr">—<span class="card-unit">%</span></p>
-      <p class="card-percentiles"><span>tokens: <b id="kpi-agent-tokens">—</b></span><span>UTM sourced</span></p>
-      <p class="card-meta">エージェント発の token 発行 / Stripe checkout 件数。</p>
+      <p class="card-percentiles"><span>auth events: <b id="kpi-agent-tokens">—</b></span><span>attributed sessions</span></p>
+      <p class="card-meta">エージェント起点の利用開始イベントを集計。</p>
     </div>
   </div>
 
   <section class="chart-section">
     <h2>AX 4 柱 監査スコア</h2>
-    <p class="chart-sub">audit_runner_ax_4pillars.py の最新出力。0–100 の総合スコア。</p>
+    <p class="chart-sub">公開用の検査結果スナップショット。0–100 の総合スコア。</p>
     <div class="pillars" id="pillars-root">
       <div class="pillar"><div class="pillar-name">Reach</div><div class="pillar-score" id="pillar-reach">—</div></div>
       <div class="pillar"><div class="pillar-name">Auth</div><div class="pillar-score" id="pillar-auth">—</div></div>
@@ -150,9 +150,9 @@
 
   <footer>
     <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async">jpcite</p>
-    <p>集約: <code>scripts/cron/ax_metrics_aggregator.py</code> (daily 03:30 JST)</p>
-    <p>監査: <code>scripts/ops/audit_runner_ax_4pillars.py</code></p>
-    <p>データソース: <code>/status/ax_metrics.json</code> + <code>analytics/cf_ai_audit_*.jsonl</code></p>
+    <p>集約: 日次の公開メトリクス更新</p>
+    <p>監査: 公開用の検査結果スナップショット</p>
+    <p>データソース: <code>/status/ax_metrics.json</code> + 公開検査結果スナップショット</p>
   </footer>
 </div>
 
@@ -234,7 +234,7 @@
     { key: "task_success_pct",      title: "3. task 成功率 (% — isError=false)",          unit: "%" },
     { key: "auth_success_pct",      title: "4. エージェント認証成功率 (%)",               unit: "%" },
     { key: "llms_txt_requests",     title: "5. llms.txt / .md リクエスト数 (daily)",       unit: "" },
-    { key: "agent_conversion_pct",  title: "6. エージェント経由 conversion (% — UTM)",     unit: "%" }
+    { key: "agent_conversion_pct",  title: "6. エージェント経由 follow-through (%)",        unit: "%" }
   ];
 
   function renderCharts(days) {
@@ -242,7 +242,7 @@
     if (!root) return;
     if (!days.length) {
       root.innerHTML = '<div class="empty-state"><h2>計測データなし</h2>'
-        + '<p>AX 指標は <code>scripts/cron/ax_metrics_aggregator.py</code> が日次で <code>/status/ax_metrics.json</code> に書き出します。'
+        + '<p>AX 指標は日次で <code>/status/ax_metrics.json</code> に書き出されます。'
         + 'まだ 7 日 rolling データが揃っていない場合は数日お待ちください。</p></div>';
       return;
     }

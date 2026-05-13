@@ -11,6 +11,10 @@ from pydantic import BaseModel
 from jpintel_mcp.api.anon_limit import AnonIpLimitDep
 from jpintel_mcp.api.deps import TIER_LIMITS, ApiContextDep, DbDep, log_usage
 from jpintel_mcp.config import settings
+from jpintel_mcp.mcp.transport_metadata import (
+    MCP_PRIMARY_TRANSPORT,
+    mcp_transport_manifest_meta,
+)
 from jpintel_mcp.models import DataLineage, Meta
 
 router = APIRouter(tags=["meta"])
@@ -233,18 +237,11 @@ def list_transports() -> JSONResponse:
     Wave 18 AX surface anchored to ``mcp-server.json._meta.transports``.
     Shape: ``{"transports": ["stdio", "sse", "streamable_http"], ...}``.
     """
+    meta = mcp_transport_manifest_meta()
     return JSONResponse(
         content={
-            "transports": ["stdio", "sse", "streamable_http"],
-            "primary": "stdio",
-            "remote": {
-                "sse": "https://api.jpcite.com/mcp/sse (advertised — wire later)",
-                "streamable_http": (
-                    "https://api.jpcite.com/mcp (advertised; FastMCP "
-                    "streamable_http requires `mcp.run(transport=\"streamable-http\")` "
-                    "deploy variant, see docs/_internal/mcp_transport_plan.md)"
-                ),
-            },
+            **meta,
+            "primary": MCP_PRIMARY_TRANSPORT,
             "fetched_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
     )

@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 47 都道府県 + 1,741 市町村 + 23 特別区 + 20 政令市の独自補助金 / 助成金 / 認証 / 認定制度を毎週差分配信で受け取り、特定地域 (例: 関東圏 / 関西圏 / 北海道 / 九州) または特定業種 (例: IT / 製造 / 農林水産 / 飲食) をターゲットにする商工会連合会 / 商工会議所 / 信用金庫 / 中小企業診断士 / 補助金 SaaS / 自治体施策コンサル / 大学院政策研究室 等の watch 担当者。週次差分で新規公示 + 募集終了 + 要綱改訂を縦覧し、自治体ごとの独自施策動向を四半期レポート化する用途も含む。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - 47 都道府県コード (01-47) or 市区町村コード (5 桁、総務省 LGCode)
 - 週次 cron 環境 (n8n / GitHub Actions / Fly cron / Cloud Functions / Lambda 等)
 - (任意) 業種フィルタ (JSIC 中分類)
@@ -112,14 +112,13 @@ console.log(`新規 ${diff.added_programs.length} 件、削除 ${diff.removed_pr
 
 ## 関連 recipe
 - [r10-cci-municipal-screen](../r10-cci-municipal-screen/) — 商工会議所 市町村 sweep、会員企業との突合
-- [r15-grant-saas-internal-enrich](../r15-grant-saas-internal-enrich/) — SaaS 内部 enrich、自治体補助金の取込
 - [r22-n8n-zapier-webhook](../r22-n8n-zapier-webhook/) — n8n / Zapier、差分配信自動化
 
 ## billable_units 試算
 - 1 batch 47 units × ¥3 = ¥141 / 週
 - 月 4 週 = ¥564 / 月、税込 ¥620
 - 1,741 市町村全件 = 1 batch 1,741 units × ¥3 = ¥5,223 / 週、月 ¥20,892、税込 ¥22,981
-- 節約 (純 LLM vs jpcite ¥3/req): 47 自治体 × 月 4 週で、純 LLM は約 ¥1,880/月 (1 batch cycle ¥470 = 47 自治体 diff fetch + filter) に対し jpcite は ¥564/月 (188 req × ¥3) → 節約 約 ¥1,316/月 / 自治体あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
+- 節約 (純 LLM vs jpcite 標準従量料金): 47 自治体 × 月 4 週で、純 LLM は約 ¥1,880/月 (1 batch cycle ¥470 = 47 自治体 diff fetch + filter) に対し jpcite は ¥564/月 (188 req × ¥3) → 節約 約 ¥1,316/月 / 自治体あたり ¥28 (cf. `docs/canonical/cost_saving_examples.md` case 6 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

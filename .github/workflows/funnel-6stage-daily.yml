@@ -79,9 +79,6 @@ jobs:
             echo "no funnel delta to commit"
             exit 0
           fi
-          git commit -m "cron(funnel-6stage): daily 6-stage agent funnel snapshot
-
-Wave 43.5 monitoring integration — Discoverability / Justifiability /
-Trustability / Accessibility / Payability / Retainability. Memory:
-feedback_autonomath_no_api_use."
+          git commit -m "cron(funnel-6stage): daily 6-stage agent funnel snapshot" \
+            -m "Wave 43.5 monitoring integration — Discoverability / Justifiability / Trustability / Accessibility / Payability / Retainability. Memory: feedback_autonomath_no_api_use."
           git push origin HEAD:main

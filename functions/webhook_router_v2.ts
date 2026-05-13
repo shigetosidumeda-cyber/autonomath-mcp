@@ -51,6 +51,7 @@ interface Env {
 
 const MAX_BODY_BYTES = 65_536;
 const REPLAY_WINDOW_MS = 5 * 60 * 1000;
+const OUTBOUND_FETCH_TIMEOUT_MS = 5_000;
 const ALLOWED_TARGETS = new Set(["slack", "discord", "teams"]);
 const EVENT_COLORS: Record<string, string> = {
   info: "0078D4", warn: "FFA500", alert: "FF3333",
@@ -59,11 +60,73 @@ const EVENT_EMOJI: Record<string, string> = {
   info: "ℹ️", warn: "⚠️", alert: "🚨",
 };
 
+type LimitedTextResult = { ok: true; text: string } | { ok: false };
+
 function jsonResponse(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "content-type": "application/json; charset=utf-8" },
   });
+}
+
+function contentLengthExceeds(headers: Headers, maxBytes: number): boolean {
+  const value = headers.get("content-length");
+  if (!value) return false;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > maxBytes;
+}
+
+async function readRequestTextLimited(
+  request: Request,
+  maxBytes: number,
+): Promise<LimitedTextResult> {
+  if (contentLengthExceeds(request.headers, maxBytes)) {
+    return { ok: false };
+  }
+  if (!request.body) {
+    return { ok: true, text: "" };
+  }
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      try {
+        await reader.cancel();
+      } catch {
+        // Best effort; the response will be rejected either way.
+      }
+      return { ok: false };
+    }
+    chunks.push(value);
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return { ok: true, text: new TextDecoder().decode(bytes) };
+}
+
+async function fetchWithTimeout(
+  url: string,
+  init: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 function hexFromBuffer(buffer: ArrayBuffer): string {
@@ -269,11 +332,11 @@ async function fanOut(
     Object.entries(destinations).map(async ([target, url]) => {
       const body = builders[target](payload);
       try {
-        const resp = await fetch(url, {
+        const resp = await fetchWithTimeout(url, {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(body),
-        });
+        }, OUTBOUND_FETCH_TIMEOUT_MS);
         results[target] = resp.status;
       } catch {
         results[target] = 0;
@@ -295,10 +358,11 @@ export const onRequestPost: PagesFunction<Env, "customer_key"> = async (ctx) => 
     return jsonResponse(401, { error: "missing signature headers" });
   }
 
-  const raw = await ctx.request.text();
-  if (raw.length > MAX_BODY_BYTES) {
+  const bodyRead = await readRequestTextLimited(ctx.request, MAX_BODY_BYTES);
+  if (!bodyRead.ok) {
     return jsonResponse(413, { error: "body too large" });
   }
+  const raw = bodyRead.text;
 
   const secret = resolveSecret(ctx.env, customerKey);
   if (!secret) {

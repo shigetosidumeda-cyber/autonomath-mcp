@@ -2,18 +2,17 @@
 
 Covers
 ------
-* Mock static-fetch failure → Playwright fallback path triggers.
-* Aggregator URL refusal (CLAUDE.md "Data hygiene").
+* Mock httpx failure/short body -> Playwright fallback path triggers.
+* Aggregator URL refusal (CLAUDE.md "Data hygiene") fails closed.
 * Viewport hard-cap (≤ 1600 px).
 * sips resize (best-effort, no-op when sips absent).
-* `screenshot_path_for` emits stable timestamped path under
-  `/tmp/etl_screenshots/`.
+* `screenshot_filename` emits stable hashed PNG names.
 * All 11 ETL wires import the helper without errors.
 
 The Playwright path itself is mocked — we never actually launch chromium
 in the test suite. The mock asserts that `fetch_with_fallback()` routes
-to the fallback after `RETRY_ATTEMPTS` static failures, but does not
-require the chromium binary to be present.
+to the fallback after the first-pass httpx fetch fails or returns a short
+body, but does not require the chromium binary to be present.
 
 LLM API import scan: this test deliberately imports nothing from
 `anthropic` / `openai` / `claude_agent_sdk`; the
@@ -24,9 +23,10 @@ from __future__ import annotations
 
 import asyncio
 import importlib
+import re
 import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -39,23 +39,19 @@ from scripts.etl._image_helper import (  # noqa: E402
     sips_resize_inplace,
 )
 from scripts.etl._playwright_helper import (  # noqa: E402
-    AggregatorRefusedError,
-    BANNED_SOURCE_HOSTS,
-    FetchResult,
     JPCITE_USER_AGENT,
+    MAX_RETRIES,
     MAX_SCREENSHOT_EDGE,
-    PlaywrightFallbackError,
-    RenderResult,
-    RETRY_ATTEMPTS,
     VIEWPORT_HEIGHT,
     VIEWPORT_WIDTH,
+    FetchResult,
+    RenderResult,
     fetch_with_fallback,
     fetch_with_fallback_sync,
     is_banned_url,
     render_page,
-    screenshot_path_for,
+    screenshot_filename,
 )
-
 
 # ---------------------------------------------------------------------------
 # Aggregator URL refusal
@@ -89,22 +85,21 @@ def test_legitimate_url_allowed(url: str) -> None:
 
 
 def test_fetch_with_fallback_sync_refuses_aggregator() -> None:
-    with pytest.raises(AggregatorRefusedError):
-        fetch_with_fallback_sync(
-            "https://noukaweb.example.jp/x",
-            static_fetcher=lambda u: "<html></html>",
-        )
+    result = fetch_with_fallback_sync("https://noukaweb.example.jp/x")
+    assert result.source == "aggregator_refused"
+    assert result.status == 0
+    assert result.text == ""
+    assert result.error == "aggregator_refused"
 
 
 def test_fetch_with_fallback_async_refuses_aggregator() -> None:
-    async def _run() -> None:
-        with pytest.raises(AggregatorRefusedError):
-            await fetch_with_fallback(
-                "https://hojyokin-portal.jp/x",
-                static_fetcher=None,
-            )
+    async def _run() -> FetchResult:
+        return await fetch_with_fallback("https://hojyokin-portal.jp/x")
 
-    asyncio.run(_run())
+    result = asyncio.run(_run())
+    assert result.source == "aggregator_refused"
+    assert result.status == 0
+    assert result.text == ""
 
 
 # ---------------------------------------------------------------------------
@@ -120,12 +115,11 @@ def test_viewport_within_cli_safe_bounds() -> None:
     assert MAX_CLI_SAFE_PX <= 1600
 
 
-def test_banned_source_hosts_seeded() -> None:
-    """CLAUDE.md Data hygiene: aggregator deny-list non-empty."""
-    assert len(BANNED_SOURCE_HOSTS) >= 3
-    assert "noukaweb" in BANNED_SOURCE_HOSTS
-    assert "hojyokin-portal" in BANNED_SOURCE_HOSTS
-    assert "biz.stayway" in BANNED_SOURCE_HOSTS
+def test_banned_source_examples_refused() -> None:
+    """CLAUDE.md Data hygiene: core aggregator examples stay refused."""
+    assert is_banned_url("https://noukaweb.example.jp/foo") is True
+    assert is_banned_url("https://hojyokin-portal.jp/foo") is True
+    assert is_banned_url("https://biz.stayway.jp/foo") is True
 
 
 def test_user_agent_brand_jpcite() -> None:
@@ -136,34 +130,47 @@ def test_user_agent_brand_jpcite() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Static-first → Playwright fallback path
+# httpx-first -> Playwright fallback path
 # ---------------------------------------------------------------------------
 
 
-def test_static_success_short_circuits() -> None:
-    """When static succeeds on first try, Playwright is never invoked."""
+def test_httpx_success_short_circuits() -> None:
+    """When httpx succeeds with enough body text, Playwright is never invoked."""
+    body = "<html>" + ("OK" * 120) + "</html>"
 
     async def _run() -> FetchResult:
-        return await fetch_with_fallback(
-            "https://www.meti.go.jp/sample",
-            static_fetcher=lambda u: "<html>OK</html>",
-        )
+        def _fake_httpx_get(url: str, *, timeout_s: float, user_agent: str):
+            return (200, body, url, None)
+
+        render_mock = AsyncMock()
+        with patch(
+            "scripts.etl._playwright_helper._httpx_get",
+            side_effect=_fake_httpx_get,
+        ), patch(
+            "scripts.etl._playwright_helper._render_async",
+            new=render_mock,
+        ):
+            result = await fetch_with_fallback("https://www.meti.go.jp/sample")
+            assert render_mock.await_count == 0
+            return result
 
     result = asyncio.run(_run())
-    assert result.source == "static"
-    assert result.status_code == 200
-    assert result.body == "<html>OK</html>"
+    assert result.source == "httpx"
+    assert result.status == 200
+    assert result.text == body
 
 
-def test_static_retry_then_fallback_invoked() -> None:
-    """RETRY_ATTEMPTS exhausted → Playwright path triggers."""
+def test_httpx_failure_then_fallback_invoked() -> None:
+    """Failed first-pass httpx fetch -> Playwright path triggers."""
     attempts: list[int] = []
+    render_kwargs: dict[str, object] = {}
 
-    def _broken(_url: str) -> str:
+    def _broken(url: str, *, timeout_s: float, user_agent: str):
         attempts.append(1)
-        raise RuntimeError("static fetch failed")
+        return (0, "", url, "RuntimeError: static fetch failed")
 
-    async def _mock_render(url, **kw):  # noqa: ANN001, ARG001
+    async def _mock_render(url, **kw):  # noqa: ANN001
+        render_kwargs.update(kw)
         return RenderResult(
             text="<html>rendered</html>",
             screenshot_path=None,
@@ -175,62 +182,102 @@ def test_static_retry_then_fallback_invoked() -> None:
         )
 
     with patch(
+        "scripts.etl._playwright_helper._httpx_get",
+        side_effect=_broken,
+    ), patch(
         "scripts.etl._playwright_helper._render_async",
-        side_effect=_mock_render,
+        new=AsyncMock(side_effect=_mock_render),
     ):
 
         async def _run() -> FetchResult:
-            return await fetch_with_fallback(
-                "https://www.meti.go.jp/sample-broken",
-                static_fetcher=_broken,
-            )
+            return await fetch_with_fallback("https://www.meti.go.jp/sample-broken")
 
         result = asyncio.run(_run())
 
-    assert len(attempts) == RETRY_ATTEMPTS
+    assert len(attempts) == 1
+    assert render_kwargs["max_retries"] == MAX_RETRIES
     assert result.source == "playwright"
-    assert "rendered" in result.body
+    assert "rendered" in result.text
 
 
-def test_playwright_failure_raises_helper_error() -> None:
-    """Both static + Playwright fail → PlaywrightFallbackError."""
+def test_short_httpx_body_triggers_fallback() -> None:
+    """A 200 response with too little body text still asks Playwright."""
 
-    def _broken(_u: str) -> str:
-        raise RuntimeError("static down")
+    def _short(url: str, *, timeout_s: float, user_agent: str):
+        return (200, "tiny", url, None)
 
     async def _mock_render(url, **kw):  # noqa: ANN001, ARG001
-        raise RuntimeError("chromium crashed")
+        return RenderResult(
+            text="FULL_DOM_TEXT",
+            screenshot_path=None,
+            status=200,
+            final_url=url,
+            fetched_at="2026-05-12T00:00:00Z",
+            extractor="innertext",
+            error=None,
+        )
 
     with patch(
+        "scripts.etl._playwright_helper._httpx_get",
+        side_effect=_short,
+    ), patch(
         "scripts.etl._playwright_helper._render_async",
-        side_effect=_mock_render,
+        new=AsyncMock(side_effect=_mock_render),
     ):
 
         async def _run() -> FetchResult:
-            return await fetch_with_fallback(
-                "https://www.meti.go.jp/double-down",
-                static_fetcher=_broken,
-            )
+            return await fetch_with_fallback("https://www.meti.go.jp/short")
 
-        with pytest.raises(PlaywrightFallbackError):
-            asyncio.run(_run())
+        result = asyncio.run(_run())
+
+    assert result.source == "playwright"
+    assert result.text == "FULL_DOM_TEXT"
+
+
+def test_playwright_failure_returns_error_result() -> None:
+    """Both httpx + Playwright fail -> source='error' without raising."""
+
+    def _broken(url: str, *, timeout_s: float, user_agent: str):
+        return (0, "", url, "RuntimeError: httpx down")
+
+    async def _mock_render(url, **kw):  # noqa: ANN001, ARG001
+        return RenderResult(
+            text="",
+            screenshot_path=None,
+            status=0,
+            final_url=url,
+            fetched_at="2026-05-12T00:00:00Z",
+            extractor="",
+            error="RuntimeError: chromium crashed",
+        )
+
+    with patch(
+        "scripts.etl._playwright_helper._httpx_get",
+        side_effect=_broken,
+    ), patch(
+        "scripts.etl._playwright_helper._render_async",
+        new=AsyncMock(side_effect=_mock_render),
+    ):
+
+        async def _run() -> FetchResult:
+            return await fetch_with_fallback("https://www.meti.go.jp/double-down")
+
+        result = asyncio.run(_run())
+
+    assert result.source == "error"
+    assert result.text == ""
+    assert result.error == "RuntimeError: chromium crashed"
 
 
 # ---------------------------------------------------------------------------
-# screenshot_path_for
+# screenshot_filename
 # ---------------------------------------------------------------------------
 
 
-def test_screenshot_path_format() -> None:
-    p = screenshot_path_for("jpo_patents")
-    assert p.startswith("/tmp/etl_screenshots/jpo_patents_")
-    assert p.endswith(".png")
-
-
-def test_screenshot_path_for_custom_root() -> None:
-    p = screenshot_path_for("invoice_diff_daily", root="/tmp/custom")
-    assert p.startswith("/tmp/custom/invoice_diff_daily_")
-    assert p.endswith(".png")
+def test_screenshot_filename_format_and_stability() -> None:
+    name = screenshot_filename("https://www.jpo.go.jp/sample")
+    assert name == screenshot_filename("https://www.jpo.go.jp/sample")
+    assert re.fullmatch(r"[0-9a-f]{16}\.png", name)
 
 
 # ---------------------------------------------------------------------------

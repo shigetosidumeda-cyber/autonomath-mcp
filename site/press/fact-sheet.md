@@ -25,7 +25,7 @@
 | 提供形態 | REST API + MCP server (stdio) |
 | MCP プロトコル | 2025-06-18 |
 | MCP ツール総数 | 139 |
-| REST API 経路 | `/v1/*` (FastAPI) |
+| REST API 経路 | `/v1/*` |
 
 ## Coverage (2026-05-03 時点)
 
@@ -40,8 +40,8 @@
 | 税務 ruleset | 50 | 国税庁 (インボイス + 電帳法) |
 | 適格事業者 | 13,801 | 国税庁 (PDL v1.0) |
 | entity-fact entities | 503,930 | 12 record_kinds |
-| entity-fact facts | 6.12M | EAV schema |
-| entity-fact relations | 378,342 | relation table |
+| entity facts | 6.12M | 公開情報項目 |
+| entity relations | 378,342 | 公開情報リンク |
 | entity-fact aliases | 335,605 | 別名・略称 index |
 | 法令条文 index | 28,048 | e-Gov 法令データ提供システム |
 | 行政処分 cases | 1,185 | 各官庁の公表行政処分 |
@@ -66,7 +66,7 @@
 |---|---|
 | API 提供地域 | 日本向け運用 |
 | 静的サイト | 公開Webサイト |
-| データベース | SQLite + 日本語の高速全文検索 |
+| データベース | 日本語の高速全文検索 |
 | OpenAPI | https://api.jpcite.com/v1/openapi.json |
 | MCP distribution | MCP client configuration, DXT bundle, public manifests |
 
@@ -78,7 +78,7 @@ and in the audit log feed.
 ## Contact
 
 - Press: [info@bookyou.net](mailto:info@bookyou.net)
-- 件名 prefix: `[press]`
+- 件名: press inquiry
 - SLA: 24h JST 営業日
 
 ---

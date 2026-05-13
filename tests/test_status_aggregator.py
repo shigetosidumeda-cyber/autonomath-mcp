@@ -24,7 +24,6 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
-import sys
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
@@ -250,12 +249,40 @@ def test_aggregator_end_to_end_honest_null(tmp_path, monkeypatch) -> None:
     assert rc == 0
     sidecar = json.loads((site_status / "status_alerts_w41.json").read_text("utf-8"))
     assert sidecar["max_severity"] == "unknown"
+    assert sidecar["critical_count"] == 0
     assert sidecar["schema_version"] == 1
     assert len(sidecar["alerts"]) == 5
     assert (analytics / "status_alerts_w41.jsonl").exists()
     atom = (site_status / "feed.atom").read_text("utf-8")
     assert atom.startswith("<?xml")
     assert "<feed xmlns=\"http://www.w3.org/2005/Atom\">" in atom
+
+
+def test_aggregator_sidecar_counts_critical_status_probe(tmp_path, monkeypatch) -> None:
+    """The SLA breach monitor consumes critical_count from this sidecar."""
+    mod = _import_aggregator()
+    site_status = tmp_path / "site" / "status"
+    analytics = tmp_path / "analytics"
+    site_status.mkdir(parents=True)
+    analytics.mkdir(parents=True)
+    monkeypatch.setattr(mod, "SITE_STATUS", site_status)
+    monkeypatch.setattr(mod, "ANALYTICS", analytics)
+    monkeypatch.setattr(mod, "ALERT_JSONL", analytics / "status_alerts_w41.jsonl")
+    monkeypatch.setattr(mod, "SIDECAR_JSON", site_status / "status_alerts_w41.json")
+    monkeypatch.setattr(mod, "FEED_ATOM", site_status / "feed.atom")
+    monkeypatch.delenv("TG_BOT_TOKEN", raising=False)
+    monkeypatch.delenv("TG_CHAT_ID", raising=False)
+    (site_status / "status.json").write_text(
+        json.dumps({"components": {"api": {"status": "down"}, "mcp": {"status": "ok"}}}),
+        encoding="utf-8",
+    )
+
+    rc = mod.run()
+
+    assert rc == 0
+    sidecar = json.loads((site_status / "status_alerts_w41.json").read_text("utf-8"))
+    assert sidecar["max_severity"] == "critical"
+    assert sidecar["critical_count"] == 1
 
 
 # ---------------------------------------------------------------------------

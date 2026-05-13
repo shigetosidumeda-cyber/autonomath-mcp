@@ -7,6 +7,7 @@ JSON envelope the regression gate consumes.
 
 Pure stdlib. Read-only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -16,7 +17,7 @@ import random
 import re
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 SITE = REPO_ROOT / "site"
@@ -75,8 +76,7 @@ def score_canonical_extensionless() -> SubScore:
 def score_schema_jsonld() -> SubScore:
     findings: list[str] = []
     pts = 10.0
-    for fam, folder in [("cases", "cases"), ("laws", "laws"),
-                        ("enforcement", "enforcement")]:
+    for fam, folder in [("cases", "cases"), ("laws", "laws"), ("enforcement", "enforcement")]:
         pages = _sample(SITE / folder)
         if not pages:
             continue
@@ -86,8 +86,9 @@ def score_schema_jsonld() -> SubScore:
             if "BreadcrumbList" not in html:
                 missing_breadcrumb += 1
         if missing_breadcrumb:
-            findings.append(f"{fam}: BreadcrumbList JSON-LD missing in "
-                            f"{missing_breadcrumb}/{len(pages)}")
+            findings.append(
+                f"{fam}: BreadcrumbList JSON-LD missing in {missing_breadcrumb}/{len(pages)}"
+            )
             pts -= 1.0
     return SubScore("schema_jsonld", max(0.0, min(10.0, pts)), findings)
 
@@ -95,8 +96,7 @@ def score_schema_jsonld() -> SubScore:
 def score_internal_link_density() -> SubScore:
     findings: list[str] = []
     pts = 10.0
-    for fam, folder in [("cases", "cases"), ("laws", "laws"),
-                        ("enforcement", "enforcement")]:
+    for fam, folder in [("cases", "cases"), ("laws", "laws"), ("enforcement", "enforcement")]:
         pages = _sample(SITE / folder)
         if not pages:
             continue
@@ -115,8 +115,12 @@ def score_sitemap_health() -> SubScore:
     findings: list[str] = []
     pts = 10.0
     idx = _read(SITE / "sitemap-index.xml")
-    for shard in ("sitemap-cases.xml", "sitemap-laws.xml",
-                  "sitemap-laws-en.xml", "sitemap-enforcement-cases.xml"):
+    for shard in (
+        "sitemap-cases.xml",
+        "sitemap-laws.xml",
+        "sitemap-laws-en.xml",
+        "sitemap-enforcement-cases.xml",
+    ):
         if shard not in idx:
             findings.append(f"sitemap-index.xml missing {shard}")
             pts -= 2.0
@@ -127,8 +131,7 @@ def score_per_page_meta() -> SubScore:
     findings: list[str] = []
     pts = 10.0
     legacy = ["jpintel", "AutonoMath", "税務会計AI", "zeimu-kaikei.ai"]
-    for fam, folder in [("cases", "cases"), ("laws", "laws"),
-                        ("enforcement", "enforcement")]:
+    for fam, folder in [("cases", "cases"), ("laws", "laws"), ("enforcement", "enforcement")]:
         pages = _sample(SITE / folder)
         if not pages:
             continue
@@ -147,14 +150,12 @@ def score_per_page_meta() -> SubScore:
 def score_cross_link_schema() -> SubScore:
     findings: list[str] = []
     pts = 10.0
-    for fam, folder in [("cases", "cases"), ("laws", "laws"),
-                        ("enforcement", "enforcement")]:
+    for fam, folder in [("cases", "cases"), ("laws", "laws"), ("enforcement", "enforcement")]:
         pages = _sample(SITE / folder)
         if not pages:
             continue
         without_mentions = sum(
-            1 for p in pages
-            if '"mentions"' not in _read(p) and '"citation"' not in _read(p)
+            1 for p in pages if '"mentions"' not in _read(p) and '"citation"' not in _read(p)
         )
         if without_mentions == len(pages):
             findings.append(f"{fam}: 0/{len(pages)} JSON-LD carry mentions/citation")
@@ -165,13 +166,13 @@ def score_cross_link_schema() -> SubScore:
 def score_a11y_cwv() -> SubScore:
     findings: list[str] = []
     pts = 9.0
-    for fam, folder in [("cases", "cases"), ("laws", "laws"),
-                        ("enforcement", "enforcement")]:
+    for fam, folder in [("cases", "cases"), ("laws", "laws"), ("enforcement", "enforcement")]:
         pages = _sample(SITE / folder)
         if not pages:
             continue
-        no_skip = sum(1 for p in pages if "skip-link" not in _read(p)
-                      and "Skip to main" not in _read(p))
+        no_skip = sum(
+            1 for p in pages if "skip-link" not in _read(p) and "Skip to main" not in _read(p)
+        )
         if no_skip > len(pages) * 0.5:
             findings.append(f"{fam}: {no_skip}/{len(pages)} missing skip-link")
             pts -= 0.5
@@ -200,7 +201,7 @@ def run_audit() -> dict:
         "findings": [f for s in subs for f in s.findings],
         "page_count_total": page_count,
         "sample_per_family": SAMPLE_PER_FAMILY,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -211,7 +212,8 @@ def render_md(result: dict) -> str:
         f"**Score**: {result['score']:.2f} / 10 ({result['verdict'].upper()})",
         f"**Pages sampled**: {result['sample_per_family']} per family. Total page corpus: {result['page_count_total']:,}.",
         "",
-        "| sub-axis | score |", "| --- | --- |",
+        "| sub-axis | score |",
+        "| --- | --- |",
     ]
     for k, v in result["sub_scores"].items():
         lines.append(f"| {k} | {v:.2f} |")
@@ -235,8 +237,7 @@ def main(argv: list[str] | None = None) -> int:
         pathlib.Path(args.out_md).write_text(render_md(result))
     if args.out_json:
         pathlib.Path(args.out_json).parent.mkdir(parents=True, exist_ok=True)
-        pathlib.Path(args.out_json).write_text(json.dumps(result, indent=2,
-                                                          ensure_ascii=False))
+        pathlib.Path(args.out_json).write_text(json.dumps(result, indent=2, ensure_ascii=False))
     return 0
 
 

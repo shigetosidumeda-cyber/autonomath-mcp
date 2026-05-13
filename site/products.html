@@ -30,8 +30,6 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script defer src="analytics.js?v=20260503a"></script>
@@ -95,7 +93,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -138,11 +136,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -210,31 +208,31 @@
 	 <h2 id="cards-title" class="visually-hidden">5 つの成果物</h2>
 	 <div class="pricing-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
 
-	 <article class="price-card">
+	 <article class="price-card" id="monthly-review">
 	 <h2>顧問先月次レビュー</h2>
 	 <p class="tier-desc">顧問先名・所在地・業種を入れると、税制・補助金・融資候補、出典URL、未確認点、顧問先へ送る質問文を月次レビュー用に返します。事務所の定例確認工数を減らす対価です。</p>
 	 <a class="btn btn-secondary" href="pricing.html">費用例を見る →</a>
 	 </article>
 
-	 <article class="price-card">
+	 <article class="price-card" id="company-folder">
 	 <h2>会社フォルダ作成パック</h2>
 	 <p class="tier-desc">法人番号・T番号・会社名を入れると、同定結果、インボイス確認、公開情報、質問票、watch対象を会社フォルダに保存できる形で返します。取引開始前の確認作業向けです。</p>
 	 <a class="btn btn-secondary" href="/docs/getting-started/audiences/">始め方 →</a>
 	 </article>
 
-	 <article class="price-card">
+	 <article class="price-card" id="bpo-intake">
 	 <h2>申請戦略パック</h2>
 	 <p class="tier-desc">地域・業種・投資額を入れると、候補制度、除外条件、必要資料、次に聞く質問を申請前の打合せ資料として返します。一次資料確認と候補整理に課金されます。</p>
 	 <a class="btn btn-secondary" href="/playground.html?flow=evidence3">無料でプレビュー →</a>
 	 </article>
 
-	 <article class="price-card">
+	 <article class="price-card" id="public-dd">
 	 <h2>公開情報DDパック</h2>
 	 <p class="tier-desc">取引先名・法人番号を入れると、公開情報、行政処分、採択履歴、未確認範囲をDDメモとして返します。融資・M&amp;A・取材前の裏取り担当向けです。</p>
 	 <a class="btn btn-secondary" href="/docs/getting-started/audiences/">DDの始め方 →</a>
 	 </article>
 
-	 <article class="price-card">
+	 <article class="price-card" id="pre-consult">
 	 <h2>相談前プレ診断票</h2>
 	 <p class="tier-desc">Widget から来た相談内容を、根拠URL、未確認点、専門家に聞く質問付きの相談票へ変換します。相談パック更新や締切リマインドはメール通知で受け取れます。</p>
 	 <a class="btn btn-secondary" href="widget.html">診断入口を見る →</a>

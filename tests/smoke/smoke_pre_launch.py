@@ -25,6 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 REAL_DB = REPO_ROOT / "data" / "jpintel.db"
 assert REAL_DB.exists(), f"data/jpintel.db not found at {REAL_DB}"
 os.environ["JPINTEL_DB_PATH"] = str(REAL_DB)
+os.environ["JPCITE_DB_PATH"] = str(REAL_DB)
 os.environ.setdefault("API_KEY_SALT", "smoke-test-salt")
 # Disable the global anon rate limit for the broad smoke pass — the harness
 # fires ~60+ anon requests across REST/MCP/telemetry sections, which would

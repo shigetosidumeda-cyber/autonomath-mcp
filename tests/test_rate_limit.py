@@ -11,9 +11,13 @@ contaminate each other.
 
 from __future__ import annotations
 
+import hashlib
+import hmac
+import time
 from typing import TYPE_CHECKING
 
 import pytest
+from starlette.requests import Request
 
 if TYPE_CHECKING:
     from fastapi.testclient import TestClient
@@ -27,6 +31,30 @@ def _reset_buckets() -> None:
     from jpintel_mcp.api.middleware.rate_limit import _reset_rate_limit_buckets
 
     _reset_rate_limit_buckets()
+
+
+def _request_for_client_ip(headers: dict[str, str]) -> Request:
+    return Request(
+        {
+            "type": "http",
+            "method": "GET",
+            "path": "/v1/meta",
+            "headers": [
+                (name.lower().encode("latin-1"), value.encode("latin-1"))
+                for name, value in headers.items()
+            ],
+            "client": ("testclient", 50000),
+            "server": ("testserver", 80),
+            "scheme": "http",
+            "query_string": b"",
+        }
+    )
+
+
+def _edge_auth_token(secret: str) -> str:
+    ts = str(int(time.time()))
+    sig = hmac.new(secret.encode("utf-8"), f"v1:{ts}".encode("utf-8"), hashlib.sha256)
+    return f"v1:{ts}:{sig.hexdigest()}"
 
 
 @pytest.fixture(autouse=True)
@@ -48,6 +76,36 @@ def _enable_throttle_for_this_module(
 
 
 # --- anonymous IP throttle --------------------------------------------------
+
+
+def test_bare_x_forwarded_for_does_not_choose_origin_bucket(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A direct caller must not pick its rate-limit bucket via bare XFF."""
+    from jpintel_mcp.api.middleware.rate_limit import _client_ip
+
+    monkeypatch.delenv("JPCITE_EDGE_AUTH_SECRET", raising=False)
+    request = _request_for_client_ip({"X-Forwarded-For": "203.0.113.77"})
+
+    assert _client_ip(request) == "testclient"
+
+
+def test_x_forwarded_for_is_allowed_with_signed_edge_header(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """XFF may choose the bucket only when our edge signed the request."""
+    from jpintel_mcp.api.middleware.rate_limit import _client_ip
+
+    secret = "edge-secret-for-rate-limit-test"
+    monkeypatch.setenv("JPCITE_EDGE_AUTH_SECRET", secret)
+    request = _request_for_client_ip(
+        {
+            "X-Forwarded-For": "203.0.113.77, 198.51.100.10",
+            "X-Edge-Auth": _edge_auth_token(secret),
+        }
+    )
+
+    assert _client_ip(request) == "203.0.113.77"
 
 
 def test_anon_burst_under_limit_passes(client: TestClient) -> None:
@@ -88,11 +146,9 @@ def test_anon_429_does_not_burn_daily_quota(client: TestClient) -> None:
     """A request rejected by the burst middleware must not increment the
     daily anon counter — the router-dep runs INSIDE the handler, after
     the middleware has already short-circuited."""
-    import hashlib
-    import hmac
     import sqlite3
 
-    from jpintel_mcp.api.anon_limit import _jst_day_bucket, _normalize_ip_to_prefix
+    from jpintel_mcp.api.anon_limit import _jst_day_bucket, hash_ip
     from jpintel_mcp.config import settings
 
     # Burn the burst.
@@ -101,16 +157,17 @@ def test_anon_429_does_not_burn_daily_quota(client: TestClient) -> None:
     rejected = client.get("/v1/meta")
     assert rejected.status_code == 429
 
-    # P2.6.2: production hash composes IP + 4-axis fingerprint. TestClient
-    # default fingerprint is "other|?|h1.1|?" (UA=testclient, no AL, HTTP/1.1,
-    # no JA3). Mirror that to find the row.
-    normalized = _normalize_ip_to_prefix("testclient")
-    composed = f"{normalized}#other|?|h1.1|?"
-    ip_h = hmac.new(
-        settings.api_key_salt.encode("utf-8"),
-        composed.encode("utf-8"),
-        hashlib.sha256,
-    ).hexdigest()
+    # Quota-key hardening 2026-05-13: the authoritative anon bucket key is
+    # HMAC-SHA256(normalized_ip, api_key_salt) only — client-controlled
+    # fingerprint axes (UA / Accept-Language / HTTP version / JA3) are
+    # captured as `request.state.anon_abuse_fingerprint` metadata but no
+    # longer compose into `anon_rate_limit.ip_hash`. Mirror the production
+    # helper directly so this test stays in lock-step with any future
+    # quota-key change.
+    ip_h = hash_ip("testclient")
+    # 64-char hex digest, schema-stable column width.
+    assert len(ip_h) == 64
+    assert all(c in "0123456789abcdef" for c in ip_h)
 
     # Inspect the daily counter — the rejected request must NOT have
     # advanced it past 5 (the 5 successful calls).

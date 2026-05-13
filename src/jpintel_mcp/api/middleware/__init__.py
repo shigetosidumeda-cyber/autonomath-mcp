@@ -55,6 +55,9 @@ from jpintel_mcp.api.middleware.customer_cap import (
 from jpintel_mcp.api.middleware.deprecation_warning import (
     DeprecationWarningMiddleware,
 )
+from jpintel_mcp.api.middleware.edge_header_sanitization import (
+    EdgeHeaderSanitizationMiddleware,
+)
 from jpintel_mcp.api.middleware.envelope_adapter import (
     EnvelopeAdapterMiddleware,
 )
@@ -97,6 +100,7 @@ __all__ = [
     "CostCapState",
     "CustomerCapMiddleware",
     "DeprecationWarningMiddleware",
+    "EdgeHeaderSanitizationMiddleware",
     "EnvelopeAdapterMiddleware",
     "HostDeprecationMiddleware",
     "IdempotencyMiddleware",

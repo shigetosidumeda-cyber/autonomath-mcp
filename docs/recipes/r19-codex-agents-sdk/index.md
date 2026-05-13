@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 OpenAI Codex CLI v1.0+ を使う agent dev / 自動化 pipeline 開発者で、Codex MCP tool として jpcite を 1 行で登録 (`codex mcp add jpcite -- uvx autonomath-mcp`) し、ターミナル内チャットから補助金検索・法人 360 度ビュー・適格事業者検証を呼び出す層。グローバル設定 `~/.codex/mcp.json` または repo 別の `.codex/mcp.json` のいずれも対応、Codex は MCP 標準準拠で Claude Code / Cursor と同じ config 形式が使える。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - OpenAI Codex CLI v1.0+ (`npm i -g @openai/codex` or homebrew)
 - `uvx` (Astral uv): `curl -LsSf https://astral.sh/uv/install.sh | sh` 後シェル再起動
 - (任意) repo 別 `.codex/mcp.json` 配置

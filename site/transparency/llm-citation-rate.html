@@ -5,10 +5,11 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>LLM citation rate (cascade tipping panel) — jpcite</title>
-<meta name="description" content="jpcite が 4 LLM (Claude / Perplexity / ChatGPT / Gemini) でどの程度引用されているかの月次測定。 operator が月 1 回 30 分の手動 sampling、 LLM API 呼出 0。 CLV2-11 cascade tipping critical q* = 0.10 の閾値を可視化。">
+<meta name="description" content="jpcite の LLM citation rate 透明性ページ。初回の公開用集計が未確定のため、現在は計測方法と公開予定の項目のみを表示しています。">
+<meta name="robots" content="noindex,follow">
 
 <meta property="og:title" content="LLM citation rate — jpcite">
-<meta property="og:description" content="月次手動 sample (4 LLM × 100 query) で jpcite citation share q を観測。 LLM API 0。">
+<meta property="og:description" content="初回の公開用集計が未確定のため、現在は計測方法と公開予定の項目のみを表示しています。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/transparency/llm-citation-rate">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -16,7 +17,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="LLM citation rate — jpcite">
-<meta name="twitter:description" content="月次手動 sample で jpcite citation share q を可視化。 LLM API 0。">
+<meta name="twitter:description" content="初回の公開用集計が未確定のため、現在は計測方法と公開予定の項目のみを表示しています。">
 
 <link rel="canonical" href="https://jpcite.com/transparency/llm-citation-rate">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/transparency/llm-citation-rate">
@@ -25,8 +26,6 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="/styles.css?v=20260507">
 
 <script type="application/ld+json">
@@ -34,9 +33,9 @@
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "LLM citation rate — jpcite",
-  "description": "月次手動 sample (4 LLM × 100 query) で jpcite citation share q を観測。 cascade tipping critical q* = 0.10 を可視化。 LLM API 0。",
+  "description": "初回の公開用集計が未確定のため、現在は計測方法と公開予定の項目のみを表示しています。",
   "datePublished": "2026-05-07",
-  "dateModified": "2026-05-07",
+  "dateModified": "2026-05-13",
   "inLanguage": "ja",
   "url": "https://jpcite.com/transparency/llm-citation-rate",
   "author": {
@@ -145,7 +144,7 @@ table.llm-table th { background: #f9fafb; font-weight: 600; }
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -188,11 +187,11 @@ table.llm-table th { background: #f9fafb; font-weight: 600; }
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -231,70 +230,66 @@ table.llm-table th { background: #f9fafb; font-weight: 600; }
 <h1>LLM citation rate — cascade tipping panel</h1>
 
 <p class="lead">
-jpcite が Claude / Perplexity / ChatGPT / Gemini の 4 LLM 内でどの程度
-引用されているかを、 operator が月 1 回 30 分かけて手動 sample
-(各 LLM 100 query × 4 = 400 sample / 月) し集計しています。
-本ダッシュボードは <strong>LLM API を 1 度も呼ばずに</strong>
-作成された一次集計です。
+jpcite が Claude / Perplexity / ChatGPT / Gemini の回答内でどの程度
+引用されるかを確認する透明性ページです。初回の公開用集計はまだ
+確定していないため、このページは暫定表示として noindex にしています。
+数値が確定するまでは、測定方法と公開予定の項目のみを掲載します。
 </p>
 
 <div class="disclaimer-box">
-<strong>計測プロトコル</strong> ・ 自動 LLM sampling は採用していません。
-operator が browser 経由で各 LLM の web UI に query を入力し、
-回答内に <code>jpcite.com</code> / <code>api.jpcite.com</code> /
-明示的な jpcite citation が出現したかを目視判定します。 集計 script
-(<code>tools/offline/operator_review/log_citation_sample.py</code>) は
-read-only で LLM API を 1 度も呼びません。
+<strong>データ未確定</strong> ・ 表示用の集計データがない状態で
+テンプレート変数や仮の率を公開しないため、現在の q、LLM 別 rate、
+過去 trend は非表示にしています。公開時は測定期間、sample 数、
+判定基準、known gaps を同じページに併記します。
 </div>
 
 <section class="dashboard-section">
-<h2>現在の q (jpcite citation share)</h2>
+<h2>現在の状態</h2>
 <div class="dashboard-card">
 <div class="dashboard-grid">
 <div class="metric-tile">
-<div class="metric-label">直近月 q</div>
-<div class="metric-value" data-bind="q_jpcite">{{ q_jpcite|default("—") }}</div>
-<div class="metric-unit">/ 1.0</div>
+<div class="metric-label">公開用データ</div>
+<div class="metric-value" data-bind="q_jpcite">未公開</div>
+<div class="metric-unit">初回集計の確認待ち</div>
 </div>
 <div class="metric-tile">
-<div class="metric-label">critical q*</div>
-<div class="metric-value">0.10</div>
-<div class="metric-unit">CLV2-11 tipping 閾値</div>
+<div class="metric-label">indexing</div>
+<div class="metric-value">noindex</div>
+<div class="metric-unit">数値公開まで検索登録を抑制</div>
 </div>
 <div class="metric-tile">
-<div class="metric-label">cascade state</div>
+<div class="metric-label">citation state</div>
 <div class="metric-value">
-<span class="cascade-band cascade-{{ cascade_band|default('pre') }}"
-      data-bind="cascade_state">{{ cascade_state|default("pre_tipping") }}</span>
+<span class="cascade-band cascade-pre" data-bind="cascade_state">pending</span>
 </div>
 </div>
 <div class="metric-tile">
-<div class="metric-label">月次 sample 数</div>
-<div class="metric-value" data-bind="total_samples">{{ total_samples|default(0) }}</div>
-<div class="metric-unit">/ 400</div>
+<div class="metric-label">sample 数</div>
+<div class="metric-value" data-bind="total_samples">0</div>
+<div class="metric-unit">公開用集計なし</div>
 </div>
 </div>
 
 <div style="margin-top: 1rem;">
 <div class="q-line">
-<span>q_jpcite vs q*</span>
+<span>q_jpcite</span>
 <div class="q-bar-wrap">
-<div class="q-bar" style="width: {{ (q_jpcite|default(0) * 100)|round(1) }}%"></div>
+<div class="q-bar" style="width: 0%"></div>
 <div class="q-star-line"></div>
 </div>
 </div>
 </div>
 
 <div class="tipping-zone">
-<div class="zone-pre"><strong>pre_tipping</strong><br>q &lt; 0.05<br>1 % 認知</div>
-<div class="zone-app"><strong>approach</strong><br>0.05 ≤ q &lt; 0.10<br>10 % 認知</div>
-<div class="zone-conf"><strong>tipping_confirmed</strong><br>q ≥ 0.10<br>80 % 認知</div>
+<div class="zone-pre"><strong>pending</strong><br>公開用データ未確定</div>
+<div class="zone-app"><strong>measured</strong><br>測定期間と sample 数を併記</div>
+<div class="zone-conf"><strong>reviewed</strong><br>判定基準と known gaps を併記</div>
 </div>
 </div>
 </section>
 
 <section class="dashboard-section">
-<h2>LLM 別 citation rate (直近月)</h2>
+<h2>LLM 別 citation rate</h2>
 <div class="dashboard-card">
 <table class="llm-table">
 <thead><tr>
@@ -306,16 +301,9 @@ read-only で LLM API を 1 度も呼びません。
 <th>competitor rate</th>
 </tr></thead>
 <tbody data-bind="per_llm">
-{% for llm, agg in per_llm.items() %}
 <tr>
-<td>{{ llm }}</td>
-<td>{{ agg.sample_count }}</td>
-<td>{{ agg.jpcite_cited }}</td>
-<td>{{ agg.competitor_cited }}</td>
-<td>{{ "%.4f"|format(agg.jpcite_rate) }}</td>
-<td>{{ "%.4f"|format(agg.competitor_rate) }}</td>
+<td colspan="6">初回の公開用集計が確定するまで非表示です。</td>
 </tr>
-{% endfor %}
 </tbody>
 </table>
 </div>
@@ -332,19 +320,14 @@ read-only で LLM API を 1 度も呼びません。
 <th>q_competitor</th>
 </tr></thead>
 <tbody data-bind="trend_12mo">
-{% for m in trend_12mo %}
 <tr>
-<td>{{ m.month }}</td>
-<td>{{ m.total_samples }}</td>
-<td>{{ "%.4f"|format(m.q_jpcite) }}</td>
-<td>{{ "%.4f"|format(m.q_competitor) }}</td>
+<td colspan="4">公開できる月次 trend はまだありません。</td>
 </tr>
-{% endfor %}
 </tbody>
 </table>
 <p style="margin-top: 0.75rem; font-size: 0.85rem; color: #6b7280;">
-3 ヶ月連続で q ≥ 0.10 を満たすと CLV2-11 cascade tipping が
-確定 (IA-09 #4 milestone, IA-10 #10 announce 解禁)。
+月次 trend を公開する場合は、測定月、sample 数、判定基準、
+未確認の限界を併記します。
 </p>
 </div>
 </section>
@@ -353,15 +336,14 @@ read-only で LLM API を 1 度も呼びません。
 <h2>Sampling protocol (公開仕様)</h2>
 <div class="dashboard-card">
 <ul>
-<li><strong>頻度</strong> ・ 毎月 1 日 09:00-09:30 JST、 operator 1 名</li>
+<li><strong>頻度</strong> ・ 月次で手動確認</li>
 <li><strong>対象</strong> ・ Claude / Perplexity / ChatGPT / Gemini の 4 LLM web UI</li>
-<li><strong>query 数</strong> ・ 各 LLM 100 query × 4 = 400 sample / 月</li>
-<li><strong>query 設計</strong> ・ 業法 sensitive 24 + non-sensitive 24 + 一般 52</li>
+<li><strong>query 数</strong> ・ 公開時に実数を併記</li>
+<li><strong>query 設計</strong> ・ 業務領域、一般質問、比較質問が偏らないように分散</li>
 <li><strong>判定</strong> ・ jpcite.com / api.jpcite.com / 明示 citation の目視確認</li>
-<li><strong>記録</strong> ・ CSV (BOM 付き UTF-8) + autonomath.citation_sample</li>
-<li><strong>LLM API 呼出</strong> ・ <strong>0</strong>
-(<code>memory feedback_no_operator_llm_api</code>)</li>
-<li><strong>5 % 月次 rotate</strong> ・ 100 query 中 5 query を毎月 rotate して staleness 回避</li>
+<li><strong>記録</strong> ・ 測定月、LLM 名、query group、citation 判定、確認者メモ</li>
+<li><strong>LLM API 呼出</strong> ・ 公開用測定は web UI の目視確認のみ</li>
+<li><strong>query rotate</strong> ・ 固定 query と入れ替え query を分け、同一設問への過適合を避ける</li>
 </ul>
 </div>
 </section>
@@ -369,11 +351,9 @@ read-only で LLM API を 1 度も呼びません。
 <section class="dashboard-section">
 <h2>関連リソース</h2>
 <ul>
-<li>spec ・ <code>tools/offline/_inbox/value_growth_dual/_deep_plan/DEEP_43_ai_crawler_citation_sample.md</code></li>
-<li>query set ・ <code>tools/offline/operator_review/citation_query_set_100.json</code></li>
-<li>logger ・ <code>tools/offline/operator_review/log_citation_sample.py</code></li>
-<li>migration ・ <code>scripts/migrations/wave24_189_citation_sample.sql</code></li>
-<li>cascade ODE 理論 ・ CLV2-11 (q* = 0.10 critical 値)</li>
+<li><a href="/transparency.html">出典の透明性</a></li>
+<li><a href="/sources.html">収録 source</a></li>
+<li><a href="/status.html">status</a></li>
 </ul>
 </section>
 
@@ -382,8 +362,8 @@ read-only で LLM API を 1 度も呼びません。
 このダッシュボードは
 <a href="https://jpcite.com/">jpcite</a> (Bookyou株式会社) の透明性
 レポートの一部です。 LLM API 呼出 0、 月次 30 分の手動 sample
-プロトコルで生成されています。
-更新日: 2026-05-07
+プロトコルで生成する予定です。
+更新日: 2026-05-13
 </p>
 </footer>
 </article>

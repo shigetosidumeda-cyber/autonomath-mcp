@@ -1,0 +1,7 @@
+{
+  "snapshot_at": "2026-05-12T10:00:00+09:00",
+  "overall": "ok",
+  "series_count": 19,
+  "generated_by": "daily freshness rollup",
+  "notes": "Public fallback snapshot for static reachability. Live freshness details are also available through the API."
+}

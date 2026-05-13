@@ -38,11 +38,14 @@ def test_build_commands_uses_required_local_checks(tmp_path):
     assert [command.name for command in commands] == [
         "release_readiness",
         "production_improvement_preflight",
+        "pre_deploy_manifest_verify",
         "perf_smoke",
     ]
     assert commands[0].argv[-1] == "--warn-only"
     assert commands[1].argv[-2:] == ["--warn-only", "--json"]
-    assert commands[2].argv[-7:] == [
+    assert commands[2].argv[-1] == "--warn-only"
+    assert commands[2].argv[-2].endswith("pre_deploy_manifest_verify.py")
+    assert commands[3].argv[-7:] == [
         "--samples",
         "1",
         "--warmups",
@@ -64,7 +67,11 @@ def test_build_commands_passes_preflight_db_and_migrations_dir(tmp_path):
         preflight_migrations_dir=migrations_dir,
     )
 
-    preflight = commands[1].argv
+    preflight = next(
+        command.argv
+        for command in commands
+        if command.name == "production_improvement_preflight"
+    )
     assert preflight[-4:] == [
         "--db",
         str(db),
@@ -76,6 +83,7 @@ def test_build_commands_passes_preflight_db_and_migrations_dir(tmp_path):
 def test_build_report_passes_when_all_child_json_passes(monkeypatch, tmp_path):
     module = _load_module()
     payloads = [
+        {"ok": True, "issues": []},
         {"ok": True, "issues": []},
         {"ok": True, "issues": []},
         [{"name": "healthz", "passed": True}],
@@ -91,9 +99,9 @@ def test_build_report_passes_when_all_child_json_passes(monkeypatch, tmp_path):
     report = module.build_report(tmp_path)
 
     assert report["ok"] is True
-    assert report["summary"] == {"pass": 3, "fail": 0, "total": 3}
+    assert report["summary"] == {"pass": 4, "fail": 0, "total": 4}
     assert report["issues"] == []
-    assert len(calls) == 3
+    assert len(calls) == 4
 
 
 def test_build_report_collects_json_and_exit_failures(monkeypatch, tmp_path):
@@ -101,6 +109,7 @@ def test_build_report_collects_json_and_exit_failures(monkeypatch, tmp_path):
     responses = [
         _completed({"ok": False, "issues": ["workflow_ruff_targets_synced"]}),
         _completed({"ok": True, "issues": []}, returncode=2),
+        _completed({"ok": True, "issues": []}),
         _completed([{"name": "meta", "passed": False}]),
     ]
 
@@ -112,11 +121,45 @@ def test_build_report_collects_json_and_exit_failures(monkeypatch, tmp_path):
     report = module.build_report(tmp_path)
 
     assert report["ok"] is False
-    assert report["summary"] == {"pass": 0, "fail": 3, "total": 3}
+    assert report["summary"] == {"pass": 1, "fail": 3, "total": 4}
     assert report["issues"] == [
         {"name": "release_readiness", "issues": ["workflow_ruff_targets_synced"]},
         {"name": "production_improvement_preflight", "issues": ["exit_code:2"]},
         {"name": "perf_smoke", "issues": ["perf_smoke:endpoint_failed:meta"]},
+    ]
+
+
+def test_build_report_blocks_on_manifest_payload_failure_even_warn_only(
+    monkeypatch, tmp_path
+):
+    module = _load_module()
+    responses = [
+        _completed({"ok": True, "issues": []}),
+        _completed({"ok": True, "issues": []}),
+        _completed(
+            {
+                "ok": False,
+                "missing_from_manifest": ["289_audit_workpaper_v2.sql"],
+                "issues": ["manifest_missing_required_migration"],
+            }
+        ),
+        _completed([{"name": "healthz", "passed": True}]),
+    ]
+
+    def fake_run(argv, **kwargs):
+        return responses.pop(0)
+
+    monkeypatch.setattr(module.subprocess, "run", fake_run)
+
+    report = module.build_report(tmp_path)
+
+    assert report["ok"] is False
+    assert report["summary"] == {"pass": 3, "fail": 1, "total": 4}
+    assert report["issues"] == [
+        {
+            "name": "pre_deploy_manifest_verify",
+            "issues": ["manifest_missing_required_migration"],
+        }
     ]
 
 

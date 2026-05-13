@@ -1,5 +1,7 @@
+import base64
 import contextlib
 import json
+import math
 import re
 import sqlite3
 import time
@@ -8,7 +10,7 @@ from collections import OrderedDict
 from threading import Lock
 from typing import Annotated, Any, Literal, cast
 
-from fastapi import APIRouter, Header, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
 
 from jpintel_mcp.api._corpus_snapshot import attach_corpus_snapshot, snapshot_headers
@@ -21,6 +23,7 @@ from jpintel_mcp.api.deps import (
     log_empty_search,
     log_usage,
 )
+from jpintel_mcp.api.me.api_keys import require_scope
 from jpintel_mcp.api.middleware.cost_cap import record_cost_cap_spend
 from jpintel_mcp.api.vocab import (
     _normalize_authority_level,
@@ -182,6 +185,114 @@ _L4_TTL_PROGRAMS_SEARCH = 300  # 5 min — programs change daily, FTS hot path
 _L4_TTL_PROGRAMS_GET = 3600  # 1 h — single-row reads, less Zipf churn
 _L4_TOOL_SEARCH = "api.programs.search"
 _L4_TOOL_GET = "api.programs.get"
+
+# OFFSET pagination gets linearly more expensive in SQLite because the
+# engine still has to walk skipped rows. Keep deep crawls on bulk/export
+# surfaces instead of letting /search become an accidental table scanner.
+#
+# R3 P0-3 (2026-05-13): the FTS search path uses ROW_NUMBER() OVER inside
+# a 2-3-level nested subquery for primary_name dedup. At ``OFFSET=10_000``
+# SQLite still materialises the entire dedupe partition before discarding,
+# producing a p99 of 2-5 s. ``cursor`` now exists as a keyset alternative
+# so the deep-offset escape hatch is no longer load-bearing; the cap is
+# tightened to 1,000 (one full p50-sized page x ~50 reasonable scrolls).
+# Callers asking for offsets above 1,000 should switch to ``?cursor=`` or
+# the bulk/export surfaces. The previous 10k ceiling is preserved as
+# ``_PROGRAM_SEARCH_LEGACY_MAX_OFFSET`` for downstream tests that grandfather
+# the historical envelope contract.
+PROGRAM_SEARCH_MAX_OFFSET = 1_000
+_PROGRAM_SEARCH_LEGACY_MAX_OFFSET = 10_000
+
+
+# Cursor token = url-safe base64 of a compact JSON dict carrying the
+# ORDER BY tuple of the last row returned on the previous page. The
+# keyset comparison below uses ``(_score, primary_name, unified_id)``
+# matching the outer ``ORDER BY _score, primary_name`` post-dedup sort
+# (FTS path: ASC, lower _score earlier; non-FTS path: DESC on _score,
+# ASC on primary_name). ``unified_id`` is a final tiebreaker even though
+# the dedup partition makes primary_name unique post-projection — keeping
+# it lets clients keyset-walk even if a future revision relaxes the
+# dedup. The ``f`` byte records which sort direction the cursor was built
+# against so a stale FTS-cursor on a LIKE-fallback refetch raises 422.
+# ``v`` is the token schema version — bumping it lets us evolve the
+# keyset without breaking clients that paginate across deploys.
+_CURSOR_VERSION = 1
+
+
+def _encode_cursor(
+    *,
+    score: float | None,
+    primary_name: str,
+    unified_id: str,
+    fts: bool,
+    raw_query: str | None = None,
+    literal_rank: int | None = None,
+) -> str:
+    """Pack the last-row keyset tuple into an opaque ``next_cursor`` token.
+
+    ``score`` is either the composite ``bm25 * tier_weight`` (FTS path,
+    lower = better) or the tier_weight (non-FTS path, higher = better).
+    ``primary_name`` + ``unified_id`` are the secondary / tertiary
+    tiebreakers so identical _score rows still keyset-walk deterministically
+    in the same order as the outer ``ORDER BY _score, primary_name``.
+    ``fts`` records which sort direction the cursor was built against so
+    a downstream refetch that flips path (e.g. zero-recall LIKE fallback)
+    raises 422 instead of returning the wrong row sequence."""
+    if score is not None and (math.isnan(score) or math.isinf(score)):
+        # NaN / inf are not JSON-safe and would silently coerce to null on
+        # the round-trip; refuse to produce a corrupt token.
+        score = None
+    payload = {
+        "v": _CURSOR_VERSION,
+        "s": score,
+        "n": primary_name,
+        "u": unified_id,
+        "f": 1 if fts else 0,
+        "q": raw_query,
+        "l": literal_rank,
+    }
+    raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
+
+
+def _decode_cursor(token: str) -> dict[str, Any]:
+    """Inverse of :func:`_encode_cursor`. Raises 422 on any decode error.
+
+    Validates the schema version + the presence of the keyset fields so a
+    truncated / mangled token never reaches the SQL builder as a string of
+    ``None`` parameters."""
+    try:
+        # Re-pad: urlsafe_b64encode strips ``=`` for URL compactness; the
+        # decoder needs the padding back to a multiple of 4.
+        pad = "=" * (-len(token) % 4)
+        raw = base64.urlsafe_b64decode((token + pad).encode("ascii"))
+        payload = json.loads(raw.decode("utf-8"))
+    except (ValueError, TypeError, json.JSONDecodeError) as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=f"cursor token is malformed ({exc})",
+        ) from exc
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=422, detail="cursor token has wrong shape")
+    if payload.get("v") != _CURSOR_VERSION:
+        raise HTTPException(
+            status_code=422,
+            detail=f"cursor token version {payload.get('v')!r} unsupported",
+        )
+    if "u" not in payload or not isinstance(payload["u"], str):
+        raise HTTPException(status_code=422, detail="cursor token missing unified_id")
+    if "n" not in payload or not isinstance(payload["n"], str):
+        raise HTTPException(status_code=422, detail="cursor token missing primary_name")
+    # ``s`` may be None (non-FTS path before a tier_weight was projected, or
+    # an FTS path where bm25 was unavailable for the last row); ``f`` must
+    # be 0 or 1.
+    if payload.get("f") not in (0, 1):
+        raise HTTPException(status_code=422, detail="cursor token missing direction byte")
+    if "q" in payload and payload["q"] is not None and not isinstance(payload["q"], str):
+        raise HTTPException(status_code=422, detail="cursor token has invalid query key")
+    if "l" in payload and payload["l"] is not None and payload["l"] not in (0, 1):
+        raise HTTPException(status_code=422, detail="cursor token has invalid literal rank")
+    return payload
 
 
 def _l4_get_or_compute_safe(
@@ -1089,7 +1200,12 @@ def _attach_export_lineage(
         "`POST /v1/programs/batch`.\n\n"
         "**Search behavior:** punctuation and full-width characters are normalized, "
         "quoted phrases are preserved, and empty searches without filters return "
-        "no rows. Combine text search with filters when browsing broad topics.\n\n"
+        "no rows. Combine text search with filters when browsing broad topics. "
+        f"`offset` is capped at {PROGRAM_SEARCH_MAX_OFFSET:,} (R3 P0-3 tightening, "
+        "2026-05-13); larger values return 422 so clients switch to `?cursor=` "
+        "keyset pagination or the bulk/export workflows. The response carries "
+        "`next_cursor`; pass it back as `?cursor=` to resume after the last row "
+        "with flat p99 even at deep pages.\n\n"
         "Use `as_of_date=YYYY-MM-DD` to pin the result set to a historical "
         "dataset state. `confidence` and `source_fetched_at` are exposed per-row."
     ),
@@ -1143,6 +1259,7 @@ def _attach_export_lineage(
                                 "next_deadline": None,
                             },
                         ],
+                        "next_cursor": "eyJ2IjoxLCJzIjotMC44LCJ1IjoiVU5JLTI2MTEwNTBmOWEiLCJmIjoxfQ",
                     }
                 }
             },
@@ -1167,7 +1284,15 @@ def search_programs(
     ] = None,
     tier: Annotated[
         list[SearchTier] | None,
-        Query(description="filter public tier, repeat for OR (S/A/B/C)"),
+        Query(
+            description="filter public tier, repeat for OR (S/A/B/C)",
+            # R3 guard: cap repetition independent of Literal value-set.
+            # Pydantic Literal constrains *values* but not list *length*, so
+            # ?tier=S&tier=A&...×1000 could otherwise inflate the prepared
+            # statement parameter list. Tier domain is 4 ({S,A,B,C}); any
+            # caller exceeding that is either a bug or an abuse attempt.
+            max_length=4,
+        ),
     ] = None,
     prefecture: Annotated[
         str | None,
@@ -1197,7 +1322,34 @@ def search_programs(
     amount_min: Annotated[float | None, Query(ge=0)] = None,
     amount_max: Annotated[float | None, Query(ge=0)] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
-    offset: Annotated[int, Query(ge=0)] = 0,
+    offset: Annotated[
+        int,
+        Query(
+            ge=0,
+            le=PROGRAM_SEARCH_MAX_OFFSET,
+            description=(
+                f"Pagination offset. Hard-capped at {PROGRAM_SEARCH_MAX_OFFSET} "
+                "(R3 P0-3 tightening, 2026-05-13). Deeper crawls must use "
+                "``?cursor=<next_cursor>`` keyset pagination, which has flat "
+                "p99 vs. offset's quadratic dedupe-partition walk; bulk/"
+                "export workflows remain available for >cursor walks."
+            ),
+        ),
+    ] = 0,
+    cursor: Annotated[
+        str | None,
+        Query(
+            description=(
+                "Opaque keyset token returned as ``next_cursor`` on the prior "
+                "page. When set, ``offset`` is ignored and the search resumes "
+                "at the row immediately after the cursor's anchor. Format is "
+                "url-safe base64 of a versioned JSON dict; tokens from a "
+                "different sort path (FTS vs LIKE-fallback) are rejected as "
+                "422. Use this instead of ``offset`` for any page > 1k."
+            ),
+            max_length=512,
+        ),
+    ] = None,
     fields: Annotated[
         FieldsLevel,
         Query(
@@ -1254,6 +1406,9 @@ def search_programs(
     # R8: validate as_of_date early — malformed input must 422 before any
     # SQL is built so the cache key is never poisoned with garbage.
     _as_of_iso = _validate_as_of_date(as_of_date)
+    # R3 P0-3: decode the cursor early too so a malformed token 422s before
+    # any SQL builds (and before the L4 cache key is computed off garbage).
+    _cursor_payload = _decode_cursor(cursor) if cursor else None
 
     # L4 cache key — every user-visible param + ctx.tier (poisoning guard).
     # Sorted lists ensure repeat-param order doesn't fragment the key. The
@@ -1269,7 +1424,13 @@ def search_programs(
         "amount_max": amount_max,
         "include_excluded": False,
         "limit": limit,
-        "offset": offset,
+        # When cursor is supplied the offset is ignored on the SQL side; keep
+        # the cache key partitioned by the active pagination axis (cursor
+        # token vs offset int) so the two surfaces never collide on the same
+        # entry. Token is opaque from the cache's POV — its bytes are enough
+        # for stable canonicalisation.
+        "offset": None if _cursor_payload is not None else offset,
+        "cursor": cursor if _cursor_payload is not None else None,
         "fields": fields,
         "include_advisors": include_advisors,
         "ctx_tier": ctx.tier,
@@ -1296,6 +1457,7 @@ def search_programs(
             fields=fields,
             include_advisors=include_advisors,
             as_of_iso=_as_of_iso,
+            cursor_payload=_cursor_payload,
         )
 
     response_body = _l4_get_or_compute_safe(
@@ -1478,6 +1640,7 @@ def _build_search_response(
     fields: FieldsLevel,
     include_advisors: bool,
     as_of_iso: str | None = None,
+    cursor_payload: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Pure compute for /v1/programs/search — JSON-serialisable response dict.
 
@@ -1485,6 +1648,13 @@ def _build_search_response(
     this without dragging in the side-effect plumbing (log_usage,
     log_empty_search, telemetry timer). Returns the same shape that the
     route used to construct inline. Side-effects belong to the caller.
+
+    ``cursor_payload``: decoded keyset token (see :func:`_decode_cursor`).
+    When set, the search resumes after the anchor row using
+    ``WHERE (_score, unified_id) > (?, ?)`` keyset semantics — flat p99
+    even at deep pages, in contrast to the legacy ``OFFSET=10_000`` walk
+    which materialised the entire dedupe partition. Also drives the
+    ``next_cursor`` field in the returned dict when more rows remain.
     """
     where: list[str] = []
     params: list[Any] = []
@@ -1821,18 +1991,23 @@ def _build_search_response(
     #
     # Inner uses `programs.*` qualified refs (join site); outer uses flat
     # unqualified refs (subquery projection drops the qualifier).
-    outer_order_parts: list[str] = []
-    name_match_params: list[Any] = []
+    literal_rank_params: list[Any] = []
     if raw_query:
-        outer_order_parts.append("CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END")
-        name_match_params.append(f"%{raw_query}%")
+        literal_rank_expr = "CASE WHEN programs.primary_name LIKE ? THEN 0 ELSE 1 END"
+        literal_rank_params.append(f"%{raw_query}%")
+    else:
+        literal_rank_expr = "0"
+
+    outer_order_parts: list[str] = []
+    if raw_query:
+        outer_order_parts.append("_literal_rank")
     # Outer ORDER BY (post-dedup) is always against the unqualified projection.
     if join_fts:
         # `_score` is bm25 (negative) × tier_weight; lower = better.
         outer_order_parts.append("_score")
     else:
         # No bm25 → sort by tier weight DESC (higher weight = better tier).
-        outer_order_parts.append(f"{_TIER_WEIGHT_CASE_OUTER} DESC")
+        outer_order_parts.append("_score DESC")
     outer_order_parts.append("primary_name")
     outer_order_sql = "ORDER BY " + ", ".join(outer_order_parts)
 
@@ -1851,7 +2026,7 @@ def _build_search_response(
     if join_fts:
         rn_order_parts: list[str] = []
         if raw_query:
-            rn_order_parts.append("CASE WHEN primary_name LIKE ? THEN 0 ELSE 1 END")
+            rn_order_parts.append("_literal_rank")
         # Composite calibrated score (bm25 × tier_prior_weight). Inside the
         # PARTITION BY primary_name dedup window this also picks the
         # highest-tier (lowest _score) row per duplicated name.
@@ -1860,7 +2035,7 @@ def _build_search_response(
         rn_order_sql = "ORDER BY " + ", ".join(rn_order_parts)
 
         innermost_sql = (
-            f"SELECT programs.*, {BM25_EXPR} AS _rank, "
+            f"SELECT programs.*, {literal_rank_expr} AS _literal_rank, {BM25_EXPR} AS _rank, "
             f"({BM25_EXPR}) * ({_TIER_WEIGHT_CASE_INNER}) AS _score "
             f"FROM {base_from} WHERE {where_clause}"
         )
@@ -1871,37 +2046,181 @@ def _build_search_response(
         )
     else:
         # Non-FTS path: no bm25 to multiply into, so tier_weight DESC is the
-        # ranking signal (higher tier_weight = stronger prior).
+        # ranking signal (higher tier_weight = stronger prior). Project the
+        # tier_weight as `_score` so the cursor-keyset path below has a
+        # uniform column to compare against; the outer ORDER BY still uses
+        # ``_TIER_WEIGHT_CASE_OUTER DESC`` for legibility but ``_score``
+        # (= same expression) is the sortable echo we hand back to clients.
         rn_order_parts = []
         if raw_query:
-            rn_order_parts.append("CASE WHEN programs.primary_name LIKE ? THEN 0 ELSE 1 END")
-        rn_order_parts.append(f"{_TIER_WEIGHT_CASE_INNER} DESC")
-        rn_order_parts.append("programs.primary_name")
+            rn_order_parts.append("_literal_rank")
+        rn_order_parts.append("_score DESC")
+        rn_order_parts.append("primary_name")
         rn_order_sql = "ORDER BY " + ", ".join(rn_order_parts)
 
-        inner_sql = (
+        innermost_sql = (
             f"SELECT programs.*, "
-            f"  ROW_NUMBER() OVER (PARTITION BY programs.primary_name "
-            f"                     {rn_order_sql}) AS _rn "
+            f"  {literal_rank_expr} AS _literal_rank, "
+            f"  ({_TIER_WEIGHT_CASE_INNER}) AS _score "
             f"FROM {base_from} WHERE {where_clause}"
         )
-    select_sql = f"SELECT * FROM ({inner_sql}) WHERE _rn = 1 {outer_order_sql} LIMIT ? OFFSET ?"
+        inner_sql = (
+            f"SELECT *, "
+            f"  ROW_NUMBER() OVER (PARTITION BY primary_name "
+            f"                     {rn_order_sql}) AS _rn "
+            f"FROM ({innermost_sql})"
+        )
+
+    # R3 P0-3 cursor keyset (2026-05-13). When a cursor is supplied, we add
+    # a WHERE predicate against the dedup'd projection that strictly orders
+    # *after* the last row of the previous page. Semantics depend on the
+    # active ORDER BY direction:
+    #
+    #   FTS path:       _score ASC,  primary_name ASC, unified_id ASC
+    #   Non-FTS path:   _score DESC, primary_name ASC, unified_id ASC
+    #
+    # Keyset = (_score, primary_name, unified_id). Per packet spec the
+    # token still surfaces as ``(_score, unified_id)`` but we MUST include
+    # primary_name in the comparison because the outer ORDER BY is
+    # ``_score, primary_name`` — without primary_name in the keyset, two
+    # rows with the same _score skip rows out of order (e.g. seed corpus
+    # tier=A and tier=B both at weight 1.06: 'B-tier ...' < '青森 ...' by
+    # primary_name, so the keyset must keep that ordering not collapse to
+    # unified_id ASC which would skip 'UNI-test-a-1' on the third page).
+    # NULL _score is treated as "past the end" so a stale FTS-built cursor
+    # on a non-FTS refetch (cursor.f=1 != join_fts) raises 422 instead.
+    cursor_predicate = ""
+    cursor_params: list[Any] = []
+    if cursor_payload is not None:
+        cursor_for_fts = bool(cursor_payload.get("f"))
+        if cursor_for_fts != bool(join_fts):
+            # Path-class mismatch — refuse rather than silently produce the
+            # wrong ranking. Callers should restart pagination with offset=0
+            # / cursor unset when their query class shifts (e.g. typo fix
+            # that flips FTS → LIKE fallback).
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "cursor token was issued against the "
+                    f"{'FTS' if cursor_for_fts else 'non-FTS'} sort path "
+                    "but this query routes through the "
+                    f"{'FTS' if join_fts else 'non-FTS'} path; "
+                    "restart pagination from offset=0."
+                ),
+            )
+        cursor_query = cursor_payload.get("q")
+        if cursor_query != raw_query:
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    "cursor token was issued for a different text query; "
+                    "reuse it only with the same q parameter."
+                ),
+            )
+        anchor_score = cursor_payload.get("s")
+        anchor_name = cursor_payload["n"]
+        anchor_uid = cursor_payload["u"]
+        anchor_literal_rank = cursor_payload.get("l")
+        # FTS path = _score ASC (lower is earlier), non-FTS = _score DESC.
+        cmp_op = ">" if join_fts else "<"
+        if raw_query and anchor_literal_rank not in (0, 1):
+            raise HTTPException(
+                status_code=422,
+                detail="cursor token missing literal-name rank for text query",
+            )
+        if raw_query and anchor_score is None:
+            raise HTTPException(
+                status_code=422,
+                detail="cursor token missing score for text query",
+            )
+        if raw_query:
+            cursor_predicate = (
+                f"AND (_literal_rank > ? OR "
+                f"     (_literal_rank = ? AND _score {cmp_op} ?) OR "
+                f"     (_literal_rank = ? AND _score = ? AND primary_name > ?) OR "
+                f"     (_literal_rank = ? AND _score = ? AND primary_name = ? "
+                f"      AND unified_id > ?))"
+            )
+            cursor_params = [
+                anchor_literal_rank,
+                anchor_literal_rank,
+                anchor_score,
+                anchor_literal_rank,
+                anchor_score,
+                anchor_name,
+                anchor_literal_rank,
+                anchor_score,
+                anchor_name,
+                anchor_uid,
+            ]
+        elif anchor_score is None:
+            # No score on the anchor (extremely thin edge case — e.g. a
+            # cursor produced before _score was projected). Fall back to
+            # (primary_name, unified_id) keyset, which still preserves
+            # order within equal-score ties.
+            cursor_predicate = (
+                "AND (primary_name > ? OR "
+                "     (primary_name = ? AND unified_id > ?))"
+            )
+            cursor_params = [anchor_name, anchor_name, anchor_uid]
+        else:
+            cursor_predicate = (
+                f"AND (_score {cmp_op} ? OR "
+                f"     (_score = ? AND primary_name > ?) OR "
+                f"     (_score = ? AND primary_name = ? AND unified_id > ?))"
+            )
+            cursor_params = [
+                anchor_score,
+                anchor_score,
+                anchor_name,
+                anchor_score,
+                anchor_name,
+                anchor_uid,
+            ]
+        # OFFSET is meaningless once cursor is engaged — the cursor IS the
+        # offset. Force to 0 so the SQL builder below uses pure LIMIT.
+        offset = 0
+
+    select_sql = (
+        f"SELECT * FROM ({inner_sql}) "
+        f"WHERE _rn = 1 {cursor_predicate} {outer_order_sql} LIMIT ? OFFSET ?"
+    )
     # Parameter order (textual left-to-right in final SQL):
-    #   1. inner ORDER BY inside OVER(...)  -> name_match_params
+    #   1. inner SELECT literal-rank expr    -> literal_rank_params
     #   2. inner WHERE clause                -> params
-    #   3. outer ORDER BY                    -> name_match_params
+    #   3. cursor keyset predicate           -> cursor_params
     #   4. LIMIT, OFFSET
+    page_limit = limit + 1
     full_params = [
-        *name_match_params,
+        *literal_rank_params,
         *params,
-        *name_match_params,
-        limit,
+        *cursor_params,
+        page_limit,
         offset,
     ]
-    rows = conn.execute(select_sql, full_params).fetchall()
+    fetched_rows = conn.execute(select_sql, full_params).fetchall()
+    has_more = len(fetched_rows) > limit
+    rows = fetched_rows[:limit]
 
     results: list[dict[str, Any]] = []
+    # Capture the keyset anchor for the last row BEFORE trimming so a
+    # ``fields=minimal`` response still carries enough info to compute
+    # the ``next_cursor`` (minimal whitelist drops _score; we read it off
+    # the raw row before _trim_to_fields strips it).
+    last_score: float | None = None
+    last_literal_rank: int | None = None
+    last_primary_name: str | None = None
+    last_unified_id: str | None = None
     for r in rows:
+        # sqlite3.Row exposes mapped access; pull _score before mutation.
+        with contextlib.suppress(IndexError, KeyError):
+            raw_score = r["_score"]
+            if raw_score is not None:
+                last_score = float(raw_score)
+        with contextlib.suppress(IndexError, KeyError):
+            raw_literal_rank = r["_literal_rank"]
+            if raw_literal_rank is not None:
+                last_literal_rank = int(raw_literal_rank)
         base = _row_to_program(r).model_dump()
         base["next_deadline"] = _post_cache_next_deadline(base.get("next_deadline"))
         if fields == "full":
@@ -1914,13 +2233,41 @@ def _build_search_response(
             base["source_fetched_at"] = src_fetched
             base["source_checksum"] = src_checksum
             base["required_documents"] = _extract_required_documents(enriched)
+        if base.get("unified_id"):
+            last_unified_id = base["unified_id"]
+        if base.get("primary_name"):
+            last_primary_name = base["primary_name"]
         results.append(_trim_to_fields(base, fields))
+
+    # next_cursor is set ONLY when we fetched an extra row AND we know how to
+    # keyset forward (an anchor row with primary_name + unified_id). Exact
+    # multiple pages must not emit a cursor after the final row: that would
+    # invite a paid empty follow-up page. Text-query ordering has an additional
+    # literal-name boost, so text-query cursors carry both the raw query and
+    # the last row's literal-rank key; a caller that changes q gets 422 rather
+    # than a subtly misordered page.
+    next_cursor: str | None = None
+    if (
+        has_more
+        and last_unified_id is not None
+        and last_primary_name is not None
+        and (raw_query is None or last_literal_rank in (0, 1))
+    ):
+        next_cursor = _encode_cursor(
+            score=last_score,
+            primary_name=last_primary_name,
+            unified_id=last_unified_id,
+            fts=join_fts,
+            raw_query=raw_query,
+            literal_rank=last_literal_rank if raw_query else None,
+        )
 
     response_body: dict[str, Any] = {
         "total": total,
         "limit": limit,
         "offset": offset,
         "results": results,
+        "next_cursor": next_cursor,
     }
 
     # Empty-result hint + retry_with — parity with the MCP `search_programs`
@@ -2021,6 +2368,7 @@ def _build_search_response(
 @router.post(
     "/batch",
     summary="Batch fetch up to 50 programs by unified_id",
+    dependencies=[Depends(require_scope("read:programs"))],
     description=(
         "Resolve up to 50 `unified_id` values in a single round-trip. "
         "Output shape matches `GET /v1/programs/{unified_id}` per row, so "

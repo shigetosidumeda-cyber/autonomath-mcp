@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 中小 M&A 支援機関 (M&A 仲介・FA・地銀 M&A 部門・事業承継・引継ぎ支援センター) の案件担当者で、買い手・売り手のいずれか (又は両方) に対して公的情報の DD (デューデリジェンス) を実施する。基本合意 (LOI) 直後 / 最終契約 (SPA) 前の 2 タイミングで、売り手の補助金返還義務 (財産処分制限期間) / 行政処分歴 / 適格事業者抹消歴 / 公共入札の指名停止有無を 5 分で把握し、後段の弁護士・会計士 DD のスコーピングと費用見積に直結させる。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - `X-Client-Tag` (案件別計上、契約書 / 請求書の通し番号と一致)
 - 売り手 (target) 法人番号 + 買い手 (buyer) 法人番号
 - (任意) M&A 支援機関登録番号 — artifact 脚注に記載すると顧客向け透明性が上がる
@@ -37,7 +37,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 ```
 - `lookback_years`: 補助金財産処分制限の標準 5 年 + 設備の 8-15 年に合わせ 5-15 を指定
 - `include`: 5 種類のうち選択、`bid_suspension` は公共入札の指名停止 (国 + 47 都道府県 + 政令市)
-- `houjin_amendment`: `am_amendment_snapshot` 経由で代表者 / 商号 / 住所 / 目的変更歴を遡及
+- `houjin_amendment`: 代表者 / 商号 / 住所 / 目的変更歴を遡及
 
 ## 実行 (curl / Python / TypeScript)
 ### curl
@@ -135,7 +135,6 @@ fs.writeFileSync(`dd_pack_${target}.json`, JSON.stringify({ target, dd, clawback
 - 1 DD 28 units × ¥3 = ¥84 / DD
 - 月 10 案件 = ¥840 / 月、税込 ¥924
 - 月 30 案件 = ¥2,520 / 月、税込 ¥2,772
-- 節約 (純 LLM vs jpcite ¥3/req): 月 10 案件 DD で、純 LLM は約 ¥3,600/月 (1 deck cycle ¥360 = source 8,000 + search 30 call) に対し jpcite は ¥840/月 (280 req × ¥3) → 節約 約 ¥2,760/月 / 1 deck あたり ¥276 (cf. `docs/canonical/cost_saving_examples.md` case 2)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

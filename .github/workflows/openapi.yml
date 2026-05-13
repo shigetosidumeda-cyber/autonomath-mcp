@@ -41,7 +41,11 @@ jobs:
           mkdir -p docs/openapi site/docs/openapi
           python scripts/export_openapi.py --out docs/openapi/v1.json --site-out site/docs/openapi/v1.json
           python scripts/export_agent_openapi.py
+          python scripts/export_openapi.py --profile gpt30 --out site/openapi.agent.gpt30.json
 
       - name: Verify committed schema is current
         run: |
-          git diff --exit-code docs/openapi/v1.json site/docs/openapi/v1.json docs/openapi/agent.json site/openapi.agent.json site/docs/openapi/agent.json
+          git diff --exit-code docs/openapi/v1.json site/docs/openapi/v1.json docs/openapi/agent.json site/openapi.agent.json site/docs/openapi/agent.json site/openapi.agent.gpt30.json
+
+      - name: Run OpenAPI drift gate
+        run: python scripts/check_openapi_drift.py

@@ -54,7 +54,7 @@ from fastapi import (
     Response,
     status,
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from jpintel_mcp.api._audit_log import log_event
 from jpintel_mcp.api.deps import (
@@ -333,6 +333,8 @@ class MeResponse(BaseModel):
 
 
 class UsageDay(BaseModel):
+    model_config = ConfigDict(title="MeLegacyUsageDay")
+
     date: str
     calls: int
 
@@ -340,7 +342,7 @@ class UsageDay(BaseModel):
 class UsageByClientTag(BaseModel):
     """Per-client_tag aggregate row (税理士 顧問先 attribution).
 
-    Migration 085: surfaced by GET /v1/me/usage?group_by=client_tag and
+    Surfaced by GET /v1/me/usage?group_by=client_tag and
     GET /v1/me/usage.csv?group_by=client_tag. `client_tag=None` is the
     catch-all bucket for requests that did not pass X-Client-Tag.
     """
@@ -729,16 +731,15 @@ def get_me_usage(
 ) -> list[UsageDay] | list[UsageByClientTag]:
     """Per-day OR per-client_tag usage aggregate.
 
-    Default (``group_by`` absent) returns the legacy daily series — one
-    row per UTC date with the call count, contiguous (gaps filled with
+    Default (``group_by`` absent) returns the daily series — one
+    record per UTC date with the call count, contiguous (gaps filled with
     zeros) so dashboards can plot directly. ``days`` clamped 1..90.
 
-    ``group_by=client_tag`` (migration 085) returns one row per distinct
+    ``group_by=client_tag`` returns one record per distinct
     ``X-Client-Tag`` value within the same window, sorted by descending
     call count. ``client_tag=None`` is the catch-all bucket for requests
-    that did not pass the header. Aggregation runs across the full
-    parent/child tree (migration 086) so a parent caller sees totals for
-    all children.
+    that did not pass the header. Account-scoped keys can view the usage
+    totals they manage without exposing unrelated customer activity.
     """
     if days < 1:
         days = 1
@@ -1161,17 +1162,13 @@ def issue_child_key_route(
 ) -> ChildKeyIssueResponse:
     """Issue a new child API key under the caller's parent key.
 
-    Wires the `issue_child_key` helper (billing/keys.py, migration 086)
-    into the REST surface. The raw child key is returned ONCE in the
-    response body; subsequent reads only ever surface the
-    `key_hash_prefix` (first 8 chars) for identification.
+    The raw child key is returned once in the response body. Subsequent
+    reads only surface the ``key_hash_prefix`` for identification.
 
-    Constraints enforced upstream:
-      * Caller must be the parent (children cannot spawn grandchildren —
-        the helper rejects with `nesting_forbidden`).
-      * Per-parent cap applies to active child keys; the API returns
-        `child_cap_exceeded` once exhausted. Revoked siblings free up slots.
-      * Label is required, ≤64 chars, no control characters.
+    Constraints:
+      * Caller must be the parent key; child keys cannot create child keys.
+      * A per-parent active child-key cap applies.
+      * Label is required, ≤64 chars, with no control characters.
     """
     parent_hash, _tier = me
     try:

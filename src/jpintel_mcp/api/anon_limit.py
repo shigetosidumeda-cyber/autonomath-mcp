@@ -268,30 +268,138 @@ def _jst_next_month_iso(now: datetime | None = None) -> str:
     return _next_jst_month_start(now_jst).isoformat()
 
 
+def _is_loopback_or_internal(host: str) -> bool:
+    """Return True iff `host` is a loopback / RFC1918 / link-local literal.
+
+    Covers the ranges the spec calls out: 127.0.0.0/8, 10.0.0.0/8,
+    172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, ::1. `ipaddress.is_private`
+    in CPython 3.x covers RFC1918 + RFC4193 (ULA fc00::/7); `is_loopback`
+    covers 127/8 + ::1; `is_link_local` covers 169.254.0.0/16 + fe80::/10.
+    The union matches the spec's "not a real public IP" definition.
+
+    A non-IP-parseable string (literal "testclient" under TestClient, junk
+    headers in production) is NOT treated as loopback. Treating it as
+    loopback would 503 every TestClient request and any caller whose IP
+    we couldn't parse for transient reasons; the authoritative defence
+    here is the "Fly-Client-IP missing AND `request.client.host` is in
+    a private/loopback CIDR" pair, which only fires for traffic that
+    genuinely bypassed the Fly proxy.
+    """
+    import ipaddress
+
+    try:
+        addr = ipaddress.ip_address(host)
+    except (ValueError, TypeError):
+        return False
+    return bool(addr.is_loopback or addr.is_private or addr.is_link_local)
+
+
+def _raise_edge_ip_unavailable(request: Request) -> NoReturn:
+    """Refuse the request because we cannot identify the caller's IP.
+
+    Fired when `Fly-Client-IP` is absent AND `request.client.host` is in
+    a loopback / RFC1918 / link-local range — i.e. direct-to-Fly traffic
+    that bypassed the Fly proxy chain. The Fly proxy ALWAYS sets
+    `Fly-Client-IP`; its absence here means either (a) someone reached
+    the Fly machine through an internal network path (anycast, VPC peer,
+    misconfigured route) or (b) the request originated inside the machine
+    itself. Both are suspicious — without a trusted IP we cannot bucket
+    the caller against `anon_rate_limit.call_count`, and silently picking
+    "unknown" as the bucket key shares one quota across every spoofed
+    caller. Return 503 so dashboards distinguish the misconfig from a
+    real over-quota event.
+    """
+    with contextlib.suppress(Exception):
+        request.state.anon_quota = {
+            "remaining": 0,
+            "limit": settings.anon_rate_limit_per_day,
+            "reset_at_jst": _jst_next_day_iso(),
+        }
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail={
+            "code": "edge_ip_unavailable",
+            "reason": "edge_ip_unavailable",
+            "detail": (
+                "発信元 IP を特定できませんでした。"
+                "https://jpcite.com 経由でアクセスしてください。"
+            ),
+            "detail_en": (
+                "Caller IP could not be identified. Route the request "
+                "through https://jpcite.com or https://api.jpcite.com."
+            ),
+        },
+        headers={"X-Edge-Rate-Limit": "origin-direct-to-fly-rejected"},
+    )
+
+
 def _client_ip(request: Request) -> str:
     """Extract the caller's IP.
 
-    Priority: Fly-Client-IP (Fly.io's trusted proxy header) > X-Forwarded-For
-    (first hop) > request.client.host. Fall back to 'unknown' so we still
-    rate-limit a misconfigured deployment rather than skipping entirely.
+    Priority: Fly-Client-IP (Fly.io's trusted proxy header) >
+    request.client.host. Do not trust bare X-Forwarded-For here: clients can
+    set it directly, so using it without a trusted proxy marker lets an
+    anonymous caller choose their own bucket. Fall back to 'unknown' so we
+    still rate-limit a misconfigured deployment rather than skipping entirely.
+
+    Hardening (R2 P1-3, 2026-05-13): if Fly-Client-IP is absent AND the
+    transport-level peer (`request.client.host`) is in a loopback / RFC1918
+    / link-local range, raise 503 instead of falling back to "unknown".
+    The Fly proxy always sets Fly-Client-IP; a private peer with no header
+    means the request bypassed the Fly proxy entirely (direct-to-machine
+    traffic from inside the VPC or the machine itself). Without a trusted
+    IP we cannot bucket the caller, and falling back to a single "unknown"
+    bucket would share one quota across every spoofed caller.
     """
     fly_ip = request.headers.get("fly-client-ip")
     if fly_ip:
         return fly_ip.strip()
-    xff = request.headers.get("x-forwarded-for")
-    if xff:
-        return xff.split(",")[0].strip()
     if request.client:
-        return request.client.host
-    return "unknown"
+        host = request.client.host
+        if _is_loopback_or_internal(host):
+            _raise_edge_ip_unavailable(request)
+        return host
+    # No transport-level peer AND no Fly-Client-IP — unrecoverable.
+    _raise_edge_ip_unavailable(request)
+
+
+def canonical_ipv6_64(ip: str) -> str | None:
+    """Return RFC 5952 canonical text form of the IPv6 /64 network containing `ip`.
+
+    Returns None if the input is not a valid IPv6 address. The output
+    matches `str(ipaddress.IPv6Network((addr, 64), strict=False).network_address)`
+    verbatim — examples (input -> output):
+
+      "::1"                                    -> "::"
+      "2001:db8::1"                            -> "2001:db8::"
+      "2001:db8:0:1::ffff"                     -> "2001:db8:0:1::"
+      "2001:db8:1234:5678:abcd:ef01:2345:6789" -> "2001:db8:1234:5678::"
+      "fe80::1"                                -> "fe80::"
+
+    This is the contract shared with the Cloudflare Pages edge limiter in
+    `functions/anon_rate_limit_edge.ts` (`canonicalIpv6Slash64`) — the
+    edge MUST produce byte-identical output for the same input so the
+    advisory pre-filter and the authoritative origin bucket never split.
+    Adding a test or a new caller? Update both sides together and lean
+    on `tests/test_anon_ipv6_canonical.py` to pin the fixture vector.
+    """
+    import ipaddress
+
+    try:
+        addr = ipaddress.IPv6Address(ip)
+    except (ipaddress.AddressValueError, ValueError):
+        return None
+    net = ipaddress.IPv6Network((addr, 64), strict=False)
+    return str(net.network_address)
 
 
 def _normalize_ip_to_prefix(ip: str) -> str:
     """Reduce an IP to its rate-limit aggregation unit.
 
     - IPv4 -> full /32 (the address itself; one user typically == one /32).
-    - IPv6 -> first 64 bits (/64). An ISP hands a single customer a whole
-      /64; rate-limiting on the full /128 would trivially be bypassed by
+    - IPv6 -> first 64 bits (/64), RFC 5952 canonical text (see
+      `canonical_ipv6_64`). An ISP hands a single customer a whole /64;
+      rate-limiting on the full /128 would trivially be bypassed by
       cycling through privacy extensions. Normalising to /64 aligns with
       how real-world abuse shows up.
 
@@ -307,16 +415,18 @@ def _normalize_ip_to_prefix(ip: str) -> str:
         return ip
     if isinstance(addr, ipaddress.IPv4Address):
         return str(addr)
-    # IPv6 -> /64 network address, canonicalised.
-    try:
-        net = ipaddress.IPv6Network((addr, 64), strict=False)
-        return str(net.network_address)
-    except ValueError:
-        return ip
+    # IPv6 -> /64 network address, canonicalised. canonical_ipv6_64 already
+    # parses + ipaddress raises on invalid input, so the second-try guard is
+    # belt-and-suspenders for shapes like scoped link-local literals.
+    canonical = canonical_ipv6_64(ip)
+    if canonical is not None:
+        return canonical
+    return ip
 
 
 # ---------------------------------------------------------------------------
-# Behavioural fingerprint (P2.6.2, 2026-04-25)
+# Behavioural fingerprint telemetry (P2.6.2, 2026-04-25; quota-key
+# hardening 2026-05-13)
 # ---------------------------------------------------------------------------
 #
 # IP-only rate limiting (single axis: /32 v4, /64 v6, fail-open) leaks
@@ -327,12 +437,12 @@ def _normalize_ip_to_prefix(ip: str) -> str:
 #   * a small VPN provider hands distinct /32s to the same logical user
 #     across one session
 #
-# Goal is NOT bypass-proof — the spec is "silent leak ≤10%". We compose
-# 4 cheap, header-derived axes alongside the IP into a single HMAC. Two
-# requests with the same fingerprint but different IPs share a bucket;
-# two requests with the same IP but different fingerprints stay separate
-# (so a coffee-shop NAT with 5 distinct laptops still gets separate daily buckets, not
-# the limit collapsed to one).
+# These axes are telemetry only. They must not participate in the quota
+# bucket key: Accept-Language and User-Agent are client-controlled, and
+# composing them into `anon_rate_limit.ip_hash` lets one origin IP rotate
+# headers to obtain fresh 3/day anonymous buckets. The authoritative quota
+# key is the normalized IP (/32 IPv4, /64 IPv6). The fingerprint remains
+# available on `request.state.anon_abuse_fingerprint` for abuse analytics.
 #
 # The four axes:
 #   1. UA-class — User-Agent normalised to a stable class string
@@ -504,27 +614,39 @@ def _fingerprint_string(request: Request) -> str:
     return f"{ua}|{lang}|{http_v}|{ja3}"
 
 
+def _fingerprint_metadata(request: Request) -> dict[str, str]:
+    """Return secondary abuse-fingerprint metadata for observers.
+
+    This intentionally does not affect the anonymous quota key. The values
+    are useful for log/analytics correlation, but they are client-controlled
+    enough that they cannot define the advertised per-IP cap.
+    """
+    ua, lang, http_v, ja3 = _fingerprint_components(request)
+    return {
+        "ua_class": ua,
+        "accept_language": lang,
+        "http_version": http_v,
+        "ja3": ja3,
+        "fingerprint": f"{ua}|{lang}|{http_v}|{ja3}",
+    }
+
+
 def hash_ip(ip: str, request: Request | None = None) -> str:
-    """HMAC-SHA256(normalized_ip [+ fingerprint], api_key_salt). Hex digest.
+    """HMAC-SHA256(normalized_ip, api_key_salt). Hex digest.
 
     `request` is optional for backward compatibility — callers that pass
-    None get the legacy IP-only digest (used by tests asserting raw IP
-    hash determinism). Production paths pass the request so the IP is
-    composed with the 4-axis behavioural fingerprint, multiplying the
-    bucket key space by ~UA_class × lang × http_v × JA3 ≈ 100s of
-    distinct buckets per /32 — enough to make CGNAT rotation costly
-    without breaking legitimate shared-NAT users (each NAT'd device
-    has its own UA/lang fingerprint).
+    it still get the same authoritative per-IP digest. Behavioural
+    fingerprint fields are intentionally excluded because they are
+    client-controlled and would let a caller rotate headers into fresh
+    anonymous quota buckets.
 
     Schema-stable: the `anon_rate_limit.ip_hash` column still holds a
-    64-char hex digest — we just include more entropy in what we hash.
-    No migration needed.
+    64-char hex digest. No migration needed.
     """
     normalized = _normalize_ip_to_prefix(ip)
-    composed = f"{normalized}#{_fingerprint_string(request)}" if request is not None else normalized
     return hmac.new(
         settings.api_key_salt.encode("utf-8"),
-        composed.encode("utf-8"),
+        normalized.encode("utf-8"),
         hashlib.sha256,
     ).hexdigest()
 
@@ -557,7 +679,7 @@ def _try_increment(conn: sqlite3.Connection, ip_hash: str, day_bucket: str, now_
 
 
 async def enforce_anon_ip_limit(request: Request) -> None:
-    """Router-level dep: reject anon callers over the monthly per-IP quota.
+    """Router-level dep: reject anon callers over the daily per-IP quota.
 
     Bypasses only after an active X-API-Key / Authorization: Bearer value
     validates against `api_keys`. A bogus key is counted as anonymous so
@@ -606,10 +728,21 @@ async def enforce_anon_ip_limit(request: Request) -> None:
                 anon_conn.close()
             return
 
-    ip = _client_ip(request)
-    # Fingerprint-aware hash: combines normalized IP with UA-class +
-    # Accept-Language + HTTP version + JA3 so CGNAT / VPN rotation that
-    # shares one fingerprint still aggregates to one bucket.
+    # Resolve the caller IP; may raise HTTPException(503,
+    # edge_ip_unavailable) if Fly-Client-IP is absent AND the transport
+    # peer is loopback/internal. Close the anon-bucket conn first so a
+    # 503 doesn't leak the SQLite handle on shutdown.
+    try:
+        ip = _client_ip(request)
+    except HTTPException:
+        with contextlib.suppress(Exception):
+            anon_conn.close()
+        raise
+    with contextlib.suppress(Exception):
+        request.state.anon_abuse_fingerprint = _fingerprint_metadata(request)
+
+    # Authoritative per-IP hash. Client-controlled fingerprint fields are
+    # preserved as secondary metadata above, but never key the quota bucket.
     ip_h = hash_ip(ip, request)
     day_bucket = _jst_day_bucket()
     now_iso = datetime.now(UTC).isoformat()
@@ -752,10 +885,12 @@ __all__ = [
     "UPGRADE_URL_BASE",
     "UPGRADE_URL_FROM_429",
     "anon_rate_limit_exception_handler",
+    "canonical_ipv6_64",
     "enforce_anon_ip_limit",
     "hash_ip",
     "_AnonRateLimitExceeded",
     "_classify_user_agent",
     "_fingerprint_components",
+    "_fingerprint_metadata",
     "_fingerprint_string",
 ]

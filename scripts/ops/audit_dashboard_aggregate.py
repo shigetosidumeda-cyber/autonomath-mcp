@@ -53,12 +53,12 @@ The weekly workflow runs this before pushing — see
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import sys
 import tempfile
-import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -70,22 +70,22 @@ MONITORING_DIR = REPO_ROOT / "monitoring"
 # Metric targets — mirrored from the static HTML so /status/audit_dashboard.html
 # and audit-regression-gate.yml stay in sync.
 METRIC_SPEC: dict[str, dict] = {
-    "seo":      {"target": 92.0, "unit": "%",   "lower_is_better": False},
-    "geo":      {"target": 35.0, "unit": "%",   "lower_is_better": False},
-    "html":     {"target": 0.95, "unit": None,  "lower_is_better": False},
-    "a11y":     {"target": 0.5,  "unit": "/1k", "lower_is_better": True},
-    "cwv":      {"target": 0.90, "unit": None,  "lower_is_better": False},
-    "ai_audit": {"target": 80.0, "unit": "%",   "lower_is_better": False},
-    "rum":      {"target": 2500, "unit": "ms",  "lower_is_better": True},
-    "sla":      {"target": 99.9, "unit": "%",   "lower_is_better": False},
-    "coverage": {"target": 95.0, "unit": "%",   "lower_is_better": False},
+    "seo": {"target": 92.0, "unit": "%", "lower_is_better": False},
+    "geo": {"target": 35.0, "unit": "%", "lower_is_better": False},
+    "html": {"target": 0.95, "unit": None, "lower_is_better": False},
+    "a11y": {"target": 0.5, "unit": "/1k", "lower_is_better": True},
+    "cwv": {"target": 0.90, "unit": None, "lower_is_better": False},
+    "ai_audit": {"target": 80.0, "unit": "%", "lower_is_better": False},
+    "rum": {"target": 2500, "unit": "ms", "lower_is_better": True},
+    "sla": {"target": 99.9, "unit": "%", "lower_is_better": False},
+    "coverage": {"target": 95.0, "unit": "%", "lower_is_better": False},
 }
 
 PILLAR_WEIGHTS: dict[str, dict[str, float]] = {
     "discovery": {"seo": 0.5, "geo": 0.3, "ai_audit": 0.2},
     "reasoning": {"html": 0.4, "a11y": 0.3, "coverage": 0.3},
-    "action":    {"sla": 0.5, "rum": 0.5},
-    "context":   {"geo": 0.4, "html": 0.3, "coverage": 0.3},
+    "action": {"sla": 0.5, "rum": 0.5},
+    "context": {"geo": 0.4, "html": 0.3, "coverage": 0.3},
 }
 
 
@@ -111,10 +111,7 @@ def _read_jsonl_latest(prefix: str) -> dict | None:
     )
     for path in files:
         try:
-            rows = [
-                line for line in path.read_text(encoding="utf-8").splitlines()
-                if line.strip()
-            ]
+            rows = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
         except OSError:
             continue
         for raw in reversed(rows):
@@ -132,13 +129,17 @@ def collect_metrics() -> dict[str, dict]:
     # 1. SEO crawl coverage
     seo_row = _read_jsonl_latest("seo_") or _read_jsonl_latest("crawl_")
     out["seo"] = {
-        "value": float(seo_row["fetch_ratio_pct"]) if seo_row and "fetch_ratio_pct" in seo_row else None,
+        "value": float(seo_row["fetch_ratio_pct"])
+        if seo_row and "fetch_ratio_pct" in seo_row
+        else None,
     }
 
     # 2. GEO citation rate
     geo_row = _read_jsonl_latest("aeo_citation_") or _read_jsonl_latest("geo_")
     out["geo"] = {
-        "value": float(geo_row["citation_rate_pct"]) if geo_row and "citation_rate_pct" in geo_row else None,
+        "value": float(geo_row["citation_rate_pct"])
+        if geo_row and "citation_rate_pct" in geo_row
+        else None,
     }
 
     # 3. HTML structure score
@@ -150,7 +151,9 @@ def collect_metrics() -> dict[str, dict]:
     # 4. a11y violations / 1k pages
     a11y_row = _read_jsonl_latest("a11y_")
     out["a11y"] = {
-        "value": float(a11y_row["violations_per_1k"]) if a11y_row and "violations_per_1k" in a11y_row else None,
+        "value": float(a11y_row["violations_per_1k"])
+        if a11y_row and "violations_per_1k" in a11y_row
+        else None,
     }
 
     # 5. Core Web Vitals weighted
@@ -162,11 +165,15 @@ def collect_metrics() -> dict[str, dict]:
             # Lighthouse-style: pass/warn/fail bands per CrUX 2024.
             def _band(v, good, ok):
                 return 1.0 if v <= good else (0.5 if v <= ok else 0.0)
-            cwv_val = round((
-                0.5 * _band(cwv_row["lcp_p75_ms"], 2500, 4000)
-                + 0.4 * _band(cwv_row["inp_p75_ms"], 200, 500)
-                + 0.1 * _band(cwv_row["cls_p75"], 0.1, 0.25)
-            ), 3)
+
+            cwv_val = round(
+                (
+                    0.5 * _band(cwv_row["lcp_p75_ms"], 2500, 4000)
+                    + 0.4 * _band(cwv_row["inp_p75_ms"], 200, 500)
+                    + 0.1 * _band(cwv_row["cls_p75"], 0.1, 0.25)
+                ),
+                3,
+            )
         else:
             cwv_val = None
     else:
@@ -188,14 +195,20 @@ def collect_metrics() -> dict[str, dict]:
     # 7. RUM beacon LCP p75
     rum = _read_json(STATUS_DIR / "rum.json")
     out["rum"] = {
-        "value": float(rum["lcp_p75_ms"]) if rum and isinstance(rum, dict) and "lcp_p75_ms" in rum else None,
+        "value": float(rum["lcp_p75_ms"])
+        if rum and isinstance(rum, dict) and "lcp_p75_ms" in rum
+        else None,
     }
 
     # 8. SLA uptime
     status = _read_json(STATUS_DIR / "status.json")
     if status and isinstance(status, dict):
         # status.json uses either `uptime_7d_pct` or `availability` keyed.
-        sla_val = status.get("uptime_7d_pct") or status.get("availability_7d") or status.get("availability")
+        sla_val = (
+            status.get("uptime_7d_pct")
+            or status.get("availability_7d")
+            or status.get("availability")
+        )
         out["sla"] = {"value": float(sla_val) if sla_val is not None else None}
     else:
         out["sla"] = {"value": None}
@@ -250,7 +263,7 @@ def compute_pillars(metrics: dict[str, dict]) -> dict[str, float | None]:
 
 def merge_daily(existing: list[dict] | None, today_row: dict) -> list[dict]:
     """Prepend today, drop anything older than 7 days. Dedupe on `date`."""
-    seven_days_ago = (datetime.now(timezone.utc) - timedelta(days=7)).date().isoformat()
+    seven_days_ago = (datetime.now(UTC) - timedelta(days=7)).date().isoformat()
     out: list[dict] = [today_row]
     seen_dates = {today_row["date"]}
     for row in existing or []:
@@ -273,10 +286,8 @@ def atomic_write(path: Path, data: dict) -> None:
         os.replace(tmp, path)
     finally:
         if os.path.exists(tmp):
-            try:
+            with contextlib.suppress(OSError):
                 os.unlink(tmp)
-            except OSError:
-                pass
 
 
 def main() -> int:
@@ -288,7 +299,7 @@ def main() -> int:
     metrics = collect_metrics()
     pillars = compute_pillars(metrics)
 
-    today = datetime.now(timezone.utc)
+    today = datetime.now(UTC)
     today_row = {
         "date": today.date().isoformat(),
         "seo": metrics["seo"].get("value"),

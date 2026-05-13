@@ -8,9 +8,9 @@
 <meta name="description" content="jpcite の稼働状況 / Current operational status of the jpcite API.">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://jpcite.com/status">
-<link rel="alternate" hreflang="ja" href="https://jpcite.com/status.html">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/status.html">
-<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/status">
+<link rel="alternate" hreflang="en" href="https://jpcite.com/en/status">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/status">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -218,7 +218,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -315,10 +315,10 @@
       2. Add "active" to the new state (ok / warn / down).
       3. Update "最終更新 / Last updated" below.
       4. Publish the updated static page.
-    Default = ok.
+    Current = down. Keep this page in sync with site/status/status.json.
   -->
 
- <section class="state ok active" aria-label="operational">
+ <section class="state ok" aria-label="operational">
  <span class="dot" aria-hidden="true">🟢</span>
  <div>
  <h2>運用中 / Operational</h2>
@@ -336,7 +336,7 @@
  </div>
  </section>
 
- <section class="state down" aria-label="down">
+ <section class="state down active" aria-label="down">
  <span class="dot" aria-hidden="true">🔴</span>
  <div>
  <h2>停止中 / Down (代替手段モード)</h2>
@@ -347,7 +347,7 @@
 
  <p class="updated">
  最終更新 / Last updated:
- <code>2026-05-07 (static fallback status)</code>
+ <code>2026-05-12T10:25:15+09:00 (status.json)</code>
  </p>
 
  <p class="fallback-note">

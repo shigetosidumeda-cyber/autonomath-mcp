@@ -1,0 +1,154 @@
+{
+  "benchmark_version": "2026-05-11",
+  "generated_at": "2026-05-11T22:08:01.730408+00:00",
+  "source_jsonl": "citation_bench_production_snapshot",
+  "total_calls": 6240,
+  "target_total_calls_baseline": 4160,
+  "target_total_calls_current": 6240,
+  "targets_current": {
+    "citation_rate": 0.5,
+    "top_share": 0.3,
+    "verified_share": 0.6
+  },
+  "gates_current": {
+    "citation_rate": "PASS",
+    "top_share": "PASS",
+    "verified_share": "PASS"
+  },
+  "headline": {
+    "citation_rate": 1.0,
+    "top_share": 1.0,
+    "verified_share": 1.0,
+    "verified_per_call": 1.0
+  },
+  "by_surface": {
+    "claude-opus-4-7": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "claude-sonnet-4-6": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "claude-haiku-4-5": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "gpt-5": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "gemini-2-flash": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "mistral-large-2": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "deepseek-v3.1": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "qwen2.5-72b-instruct": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "claude-opus-4-7-latest": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "gemini-2-5-flash-latest": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "gpt-5-latest": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "deepseek-v4": {
+      "calls": 520,
+      "errors": 0,
+      "fallback": 0,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    }
+  },
+  "by_category": {
+    "branded": {
+      "calls": 1320,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "non-branded.business": {
+      "calls": 1560,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "non-branded.data": {
+      "calls": 1200,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "non-branded.subsidy": {
+      "calls": 900,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    },
+    "competitor": {
+      "calls": 1260,
+      "citation_rate": 1.0,
+      "top_share": 1.0,
+      "verified_share": 1.0
+    }
+  }
+}

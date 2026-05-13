@@ -6,6 +6,10 @@ name: ingest-daily
 #
 # Required GitHub repository secrets:
 #   FLY_API_TOKEN             Fly.io deploy token with ssh access to `autonomath-api`.
+#   PROD_DB_MUTATION_OPERATOR_ACK
+#                             Must equal I_ACK_PROD_DB_MUTATION to allow
+#                             production DB writes. Otherwise Fly SSH ingest
+#                             forces --dry-run.
 #
 # Optional secrets:
 #   SLACK_WEBHOOK_INGEST      Slack incoming webhook for 3-consecutive-failure alerts.
@@ -16,10 +20,11 @@ name: ingest-daily
 
 on:
   schedule:
-    # 19:15 UTC == 04:15 JST. Offset +15 min from eligibility-history-daily
-    # (19:00 UTC) to avoid runner contention (W14-12 audit). Still after
+    # 19:23 UTC == 04:23 JST. Offset from eligibility-history-daily
+    # (19:00 UTC) and idempotency-sweep-hourly (:15) to avoid runner
+    # contention (W14-12 audit). Still after
     # nightly-backup (03:17 JST) and before pricing/webhook hours (09:00 JST).
-    - cron: "15 19 * * *"
+    - cron: "23 19 * * *"
   workflow_dispatch:
     inputs:
       authority:
@@ -29,7 +34,7 @@ on:
       dry_run:
         description: "dry-run (no DB writes)"
         required: false
-        default: "false"
+        default: "true"
 
 concurrency:
   group: ingest-daily
@@ -72,14 +77,22 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
           INPUT_AUTHORITY: ${{ github.event.inputs.authority }}
           INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
         run: |
           set -euo pipefail
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::notice::FLY_API_TOKEN unset; skipping ingest-daily."
+            exit 0
+          fi
 
           ARGS="$TIER"
           if [ -n "${INPUT_AUTHORITY:-}" ]; then
             ARGS="$ARGS --authority $INPUT_AUTHORITY"
           fi
           if [ "${INPUT_DRY_RUN:-false}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          elif [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" != "I_ACK_PROD_DB_MUTATION" ]; then
+            echo "::warning::Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
             ARGS="$ARGS --dry-run"
           fi
 

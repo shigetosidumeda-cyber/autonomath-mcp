@@ -1,134 +1,2011 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<!-- CWV-HARDENED -->
-<meta charset="UTF-8">
-<meta name="theme-color" content="#ffffff">
-<title>API ドキュメント — jpcite</title>
-<meta name="description" content="jpcite API / MCP ドキュメントのハブ。OpenAPI v0.4.0 (306 paths)、MCP server / tools / resources / prompts、SDK、Webhook、認証、x402、Credit Wallet など全リファレンスへの入口。¥3/req 完全従量、匿名 3 req/日 無料。">
 
-<meta property="og:title" content="API ドキュメント — jpcite">
-<meta property="og:description" content="OpenAPI v0.4.0 / MCP / SDK / Webhook / 認証 / x402 / Credit Wallet。全リファレンスへの入口。">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://jpcite.com/docs/">
-<meta property="og:image" content="https://jpcite.com/assets/og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="ja_JP">
-<meta property="og:locale:alternate" content="en_US">
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
 
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="API ドキュメント — jpcite">
-<meta name="twitter:description" content="OpenAPI v0.4.0 + MCP + SDK + Webhook へのハブ。">
-<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<link rel="canonical" href="https://jpcite.com/docs/">
+        <meta name="description" content="jpcite — 日本の公的制度・法人・法令・行政処分データを、出典URLと取得時点付きのEvidence Packetとして返す REST + MCP API。現在の公開料金と匿名枠はPricingに掲載。">
+
+
+        <meta name="author" content="jpcite">
+
+
+        <link rel="canonical" href="https://jpcite.com/docs/">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/docs/">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/docs/">
-<link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
-<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
-<link rel="stylesheet" href="/styles.css?v=20260429a">
 
-<script defer src="/analytics.js?v=20260503a"></script>
-</head>
-<body>
-<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
-<header class="site-header" role="banner">
- <div class="container header-inner">
- <a class="brand" href="/" aria-label="jpcite ホーム">
- <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
- </a>
- <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="/products.html">使い方</a>
- <a href="/pricing.html">料金</a>
- <a href="/audiences/">事例</a>
- <a href="/docs/" aria-current="page">API ドキュメント</a>
- <a href="/about.html">会社</a>
- </nav>
- </div>
+
+        <link rel="next" href="getting-started/">
+
+
+      <link rel="icon" href="assets/images/favicon.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+
+
+
+        <title>jpcite</title>
+
+
+
+      <link rel="stylesheet" href="assets/stylesheets/main.a40c8224.min.css">
+
+
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+
+
+
+
+
+
+
+
+
+
+
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+JP:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans JP";--md-code-font:"JetBrains Mono"}</style>
+
+
+
+      <link rel="stylesheet" href="stylesheets/extra.css">
+
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+
+
+
+
+
+
+        <meta  property="og:type"  content="website" >
+
+        <meta  property="og:title"  content="jpcite" >
+
+        <meta  property="og:description"  content="jpcite — 日本の公的制度・法人・法令・行政処分データを、出典URLと取得時点付きのEvidence Packetとして返す REST + MCP API。現在の公開料金と匿名枠はPricingに掲載。" >
+
+        <meta  property="og:image"  content="https://jpcite.com/docs/assets/images/social/index.png" >
+
+        <meta  property="og:image:type"  content="image/png" >
+
+        <meta  property="og:image:width"  content="1200" >
+
+        <meta  property="og:image:height"  content="630" >
+
+        <meta  property="og:url"  content="https://jpcite.com/docs/" >
+
+        <meta  name="twitter:card"  content="summary_large_image" >
+
+        <meta  name="twitter:title"  content="jpcite" >
+
+        <meta  name="twitter:description"  content="jpcite — 日本の公的制度・法人・法令・行政処分データを、出典URLと取得時点付きのEvidence Packetとして返す REST + MCP API。現在の公開料金と匿名枠はPricingに掲載。" >
+
+        <meta  name="twitter:image"  content="https://jpcite.com/docs/assets/images/social/index.png" >
+
+
+
+  <script src="/assets/billing_progress.js" defer></script>
+  <script src="/assets/rum_funnel_collector.js" defer></script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://jpcite.com/docs/#app",
+      "name": "jpcite",
+      "alternateName": "日本の公的制度 API",
+      "applicationCategory": "DeveloperApplication",
+      "applicationSubCategory": "API",
+      "operatingSystem": "any",
+      "description": "日本の制度データ (補助金・融資・税制・認定制度) 11,601 件検索対象 + 採択事例 2,286 + 融資 108 + 行政処分 1,185 を横断検索できる REST + MCP API。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から利用可能。",
+      "inLanguage": "ja",
+      "offers": [
+        {"@type": "Offer", "name": "Free",           "price": "0", "priceCurrency": "JPY", "description": "3 req/日 per IP, 登録不要 (JST 翌日リセット)"},
+        {"@type": "Offer", "name": "Paid (metered)", "price": "3", "priceCurrency": "JPY", "description": "¥3 / billable unit 税別 (税込 ¥3.30, Stripe 従量)",
+         "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3", "priceCurrency": "JPY", "unitText": "billable unit", "valueAddedTaxIncluded": false}}
+      ],
+      "featureList": [
+        "11,601 searchable programs (14,472 total) + 2,286 採択事例 + 108 融資 + 1,185 行政処分 を横断検索",
+        "181 排他・前提ルール (exclude 125 + prerequisite 17 + absolute 15 + その他 24)",
+        "MCP ネイティブ (標準構成で 139 tools)",
+        "出典確認状況に基づく品質ラベル",
+        "融資は 担保 / 個人保証人 / 第三者保証人 の三軸分解",
+        "公開行は原則として source_url + fetched_at を付与"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/docs/#site",
+      "name": "jpcite ドキュメント",
+      "url": "https://jpcite.com/docs/",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/docs/#app"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://jpcite.com/docs/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://jpcite.com/docs/#dataset",
+      "name": "jpcite — 日本の制度データセット",
+      "alternateName": "jpcite 日本の公的制度データセット",
+      "description": "日本の公的制度 (補助金・助成金・融資・税制優遇・認定) 11,601 件検索対象 + 採択事例 2,286 + 融資 108 (担保・個人保証人・第三者保証人の三軸分解) + 行政処分 1,185 件 の正規化データセット。経済産業省・農林水産省・中小企業庁・日本政策金融公庫・都道府県・市町村の公開資料から収集し、検出済み集約サイト由来の情報は除外します。主要公開レコードには出典 URL と取得日を付与し、181 本の併用チェックルールを提供します。法令データ (e-Gov CC-BY) も参照導線として扱います。",
+      "url": "https://jpcite.com/docs/",
+      "sameAs": ["https://jpcite.com/", "https://pypi.org/project/autonomath-mcp/"],
+      "keywords": [
+        "補助金", "助成金", "融資", "税制優遇", "認定制度", "行政処分", "採択事例",
+        "subsidy", "grant", "loan", "tax incentive", "certification", "Japan", "public programs",
+        "MCP", "Model Context Protocol", "REST API", "AI agent"
+      ],
+      "creator": {
+        "@type": "Organization",
+        "name": "jpcite",
+        "url": "https://jpcite.com/"
+      },
+      "publisher": {"@id": "https://jpcite.com/docs/#app"},
+      "license": "https://jpcite.com/tos.html",
+      "isAccessibleForFree": true,
+      "conditionsOfAccess": "匿名 3 req/日 per IP 無料 (JST 翌日リセット)、それ以上は ¥3/billable unit 税別 (税込 ¥3.30) 従量課金。",
+      "inLanguage": "ja",
+      "spatialCoverage": {"@type": "Country", "name": "日本"},
+      "variableMeasured": [
+        {"@type": "PropertyValue", "name": "制度件数 (programs, searchable)", "value": 11601},
+        {"@type": "PropertyValue", "name": "採択事例件数 (case_studies)", "value": 2286},
+        {"@type": "PropertyValue", "name": "融資プログラム件数 (loan_programs)", "value": 108},
+        {"@type": "PropertyValue", "name": "行政処分件数 (enforcement_cases)", "value": 1185},
+        {"@type": "PropertyValue", "name": "排他・前提ルール件数 (exclusion_rules)", "value": 181},
+        {"@type": "PropertyValue", "name": "法令メタデータ件数 (laws, e-Gov CC-BY)", "value": 9484},
+        {"@type": "PropertyValue", "name": "出典URL", "value": "主要公開レコードに一次資料URLと取得時刻を付与"}
+      ],
+      "distribution": [
+        {
+          "@type": "DataDownload",
+          "name": "REST API (OpenAPI 3.1)",
+          "contentUrl": "https://api.jpcite.com/v1/openapi.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "MCP server (stdio, standard configuration with 139 tools)",
+          "contentUrl": "https://pypi.org/project/autonomath-mcp/",
+          "encodingFormat": "application/x-python"
+        }
+      ]
+    },
+    {
+      "@type": "WebAPI",
+      "@id": "https://jpcite.com/docs/#webapi",
+      "name": "jpcite REST + MCP API",
+      "description": "日本の公的制度データを AI エージェント / 開発者向けに 1 API で提供。標準構成で 139 MCP tools を利用でき、制度検索、詳細取得、一括取得、併用チェック、法令・税務公開資料・判例・入札・適格請求書登録番号・出典情報を REST + MCP で返します。",
+      "documentation": "https://jpcite.com/docs/",
+      "termsOfService": "https://jpcite.com/tos.html",
+      "provider": {"@id": "https://jpcite.com/docs/#app"},
+      "endpointURL": "https://api.jpcite.com/v1/",
+      "endpointDescription": "https://api.jpcite.com/v1/openapi.json",
+      "inLanguage": "ja",
+      "isAccessibleForFree": true
+    }
+  ]
+}
+</script>
+
+
+  </head>
+
+
+
+
+
+
+
+
+
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+
+
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+
+
+        <a href="#jpcite-api-docs" class="md-skip">
+          コンテンツにスキップ
+        </a>
+
+    </div>
+    <div data-md-component="announce">
+
+    </div>
+
+
+
+
+
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="." title="jpcite" class="md-header__button md-logo" aria-label="jpcite" data-md-component="logo">
+
+  <img src="assets/images/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            jpcite
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+
+              ホーム
+
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+        <form class="md-header__option" data-md-component="palette">
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="ダークモードに切り替え"  type="radio" name="__palette" id="__palette_0">
+
+      <label class="md-header__button md-icon" title="ダークモードに切り替え" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+
+
+
+
+
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="ライトモードに切り替え"  type="radio" name="__palette" id="__palette_1">
+
+      <label class="md-header__button md-icon" title="ライトモードに切り替え" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+
+
+</form>
+
+
+
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+
+
+
+      <label class="md-header__button md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="検索">
+
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
+
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            検索を初期化
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  </nav>
+
 </header>
 
-<nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 auto;max-width:1200px;padding:8px 24px 0;font-size:14px;color:var(--text-muted);">
- <a href="/">ホーム</a> <span aria-hidden="true">›</span>
- <span aria-current="page">API ドキュメント</span>
+    <div class="md-container" data-md-component="container">
+
+
+
+
+
+
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+
+
+
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="jpcite" class="md-nav__button md-logo" aria-label="jpcite" data-md-component="logo">
+
+  <img src="assets/images/logo.svg" alt="logo">
+
+    </a>
+    jpcite
+  </label>
+
+  <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--active">
+
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+
+
+
+
+
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+
+
+  <span class="md-ellipsis">
+    ホーム
+  </span>
+
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+
+      <a href="." class="md-nav__link md-nav__link--active">
+
+
+  <span class="md-ellipsis">
+    ホーム
+  </span>
+
+
+      </a>
+
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+
+
+
+
+
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#最初に読むもの" class="md-nav__link">
+    <span class="md-ellipsis">
+      最初に読むもの
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#使える形" class="md-nav__link">
+    <span class="md-ellipsis">
+      使える形
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#ai-agent-向け-first-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI agent 向け first call
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#データ収録" class="md-nav__link">
+    <span class="md-ellipsis">
+      データ収録
+    </span>
+  </a>
+
+</li>
+
+    </ul>
+
 </nav>
 
-<main id="main">
- <div class="container">
+    </li>
 
- <div data-billing-progress data-cta-variant="docs-progress" style="margin:0 0 16px;"></div>
 
- <h1 style="margin:8px 0 6px;font-size:28px;">API ドキュメント</h1>
- <p style="margin:0 0 18px;color:var(--text-muted);font-size:15px;line-height:1.65;">jpcite は AI agent に日本の制度・法令・判例・補助金を <strong>一次資料 URL 付き</strong> で答えさせるための API / MCP server です。¥3/req 完全従量、匿名 3 req/日 無料、月額固定なし。</p>
 
- <section aria-labelledby="ref-h" style="margin:0 0 24px;">
- <h2 id="ref-h" style="font-size:18px;margin:0 0 10px;">主なリファレンス</h2>
- <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;">
- <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
- <a href="/docs/openapi/v1.json" style="font-weight:700;text-decoration:none;">OpenAPI v0.4.0 (REST)</a>
- <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">306 paths。検索 / 詳細 / Webhook / Wallet / x402 を含む全 REST 仕様。</p>
- </li>
- <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
- <a href="/docs/openapi/agent.json" style="font-weight:700;text-decoration:none;">OpenAPI Agent (slim)</a>
- <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">GPT-3.0 / Custom GPT 向け slim 版。tool count を抑えた agent profile。</p>
- </li>
- <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
- <a href="/.well-known/mcp.json" style="font-weight:700;text-decoration:none;">MCP server.json</a>
- <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">MCP capabilities (tools / resources / prompts / sampling / transports)。</p>
- </li>
- <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
- <a href="/llms.txt" style="font-weight:700;text-decoration:none;">llms.txt / llms-full.txt</a>
- <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">LLM 向け要約。citation guidance + companion .md token budget。</p>
- </li>
- <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
- <a href="/onboarding.html" style="font-weight:700;text-decoration:none;">オンボーディング (4 step)</a>
- <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">匿名無料 → OAuth → topup → 呼出。階層プラン無し、最低利用期間無し。</p>
- </li>
- <li style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:14px 16px;">
- <a href="/pricing.html" style="font-weight:700;text-decoration:none;">料金</a>
- <p style="margin:6px 0 0;font-size:13px;color:var(--text-muted);">¥3/billable unit (税込 ¥3.30)。Stripe / Wallet / x402 の 3 ルート。</p>
- </li>
- </ul>
- </section>
 
- <section aria-labelledby="quick-h" style="margin:0 0 24px;border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;">
- <h2 id="quick-h" style="font-size:16px;margin:0 0 8px;">クイックスタート</h2>
- <p style="margin:0 0 8px;font-size:14px;line-height:1.65;">匿名 3 req/日 無料枠で即試せます。</p>
- <pre style="margin:0;padding:12px 14px;background:#f5f5f4;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.55;"><code>curl https://api.jpcite.com/v1/search?q=&#x8d77;&#x696d;&#x88dc;&#x52a9;&#x91d1;</code></pre>
- </section>
 
- </div>
-</main>
 
-<footer class="site-footer" role="contentinfo">
- <div class="container">
- <nav class="footer-nav" aria-label="フッターナビゲーション">
- <a href="/about.html">会社</a>
- <a href="/security/">セキュリティ</a>
- <a href="/legal/terms.html">利用規約</a>
- <a href="/legal/privacy.html">プライバシー</a>
- <a href="https://github.com/shigetosidumeda-cyber" aria-label="GitHub" rel="noopener">GitHub</a>
- </nav>
- <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
- </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+
+
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    入門
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            入門
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="getting-started/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    はじめに
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="getting-started/audiences/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    利用者別の始め方
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="pricing/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    料金
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="faq/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    FAQ
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="honest_capabilities/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    正直な能力と限界
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+
+
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    API
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="api-reference/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    REST
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="api-reference/response_envelope/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    レスポンス エンベロープ
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="error_handling/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    エラー
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="mcp-tools/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    MCP ツール
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="exclusions/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    排他ルール
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+
+
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    開発者
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            開発者
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="examples/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    サンプル
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="prompt_cookbook/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Prompt Cookbook
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--nested">
+
+
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+
+
+
+          <div class="md-nav__link md-nav__container">
+            <a href="recipes/" class="md-nav__link ">
+
+
+  <span class="md-ellipsis">
+    Recipes
+  </span>
+
+
+            </a>
+
+
+              <label class="md-nav__link " for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+
+          </div>
+
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Recipes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r01-tax-firm-monthly-review/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    税理士 月次レビュー
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r02-pre-closing-subsidy-check/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    補助金 締切前チェック
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r03-sme-ma-public-dd/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    M&A 公的情報DD
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r04-shinkin-borrower-watch/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    信金 取引先ウォッチ
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r05-gyosei-licensing-eligibility/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    行政書士 許認可確認
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r06-sharoushi-grant-match/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    社労士 助成金マッチ
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r07-shindanshi-monthly-companion/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    診断士 月次伴走
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r08-benrishi-ip-grant-monitor/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    弁理士 IP補助金監視
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r09-bpo-grant-triage-1000/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    BPO 補助金トリアージ
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r10-cci-municipal-screen/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    商工会議所 自治体スクリーニング
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r11-ec-invoice-bulk-verify/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    EC 適格事業者一括確認
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recipes/r12-audit-firm-kyc-sweep/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    監査法人 KYCスイープ
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="recommendation-scenarios/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    AI 推薦条件
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="dashboard_guide/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    ダッシュボード
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="alerts_guide/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    アラート
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="webhooks/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Webhook
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="sdks/typescript/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    SDK (TypeScript)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="integrations/bookmarklet/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    ブックマークレット & Chrome 拡張
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="integrations/ai-recommendation-template/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    AI 推薦テンプレート
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+
+
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    信頼
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            信頼
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="sla/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    SLA
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="confidence_methodology/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Confidence
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="hallucination_guard_methodology/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    Hallucination 対策
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="https://jpcite.com/data-freshness.html#rss-heading" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    制度フィード (RSS)
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+
+
+
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+
+
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+
+
+  <span class="md-ellipsis">
+    コンプライアンス
+  </span>
+
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            コンプライアンス
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="compliance/INDEX/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    概要
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="compliance/privacy_policy/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    プライバシーポリシー
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="compliance/terms_of_service/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    利用規約
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="compliance/landing_disclaimer/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    免責事項
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="compliance/data_governance/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    データガバナンス
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="compliance/data_subject_rights/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    データ主体の権利
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+
+
+
+
+
+
+    <li class="md-nav__item">
+      <a href="compliance/tokushoho/" class="md-nav__link">
+
+
+  <span class="md-ellipsis">
+    特定商取引法に基づく表記
+  </span>
+
+
+      </a>
+    </li>
+
+
+
+
+          </ul>
+        </nav>
+
+    </li>
+
+
+
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+
+
+
+
+
+
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+
+        <li class="md-nav__item">
+  <a href="#最初に読むもの" class="md-nav__link">
+    <span class="md-ellipsis">
+      最初に読むもの
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#使える形" class="md-nav__link">
+    <span class="md-ellipsis">
+      使える形
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#ai-agent-向け-first-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI agent 向け first call
+    </span>
+  </a>
+
+</li>
+
+        <li class="md-nav__item">
+  <a href="#データ収録" class="md-nav__link">
+    <span class="md-ellipsis">
+      データ収録
+    </span>
+  </a>
+
+</li>
+
+    </ul>
+
+</nav>
+                  </div>
+                </div>
+              </div>
+
+
+
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+
+                  <nav class="jpcite-doc-nav breadcrumb" aria-label="パンくず" style="margin:0 0 14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:14px;color:var(--md-default-fg-color--light, #666);">
+    <a href="/" style="text-decoration:none;color:inherit;">ホーム</a>
+    <span aria-hidden="true" style="opacity:0.4;">›</span>
+    <span aria-current="page" style="color:var(--md-default-fg-color, #333);">ドキュメント</span>
+  </nav>
+<div data-billing-progress data-cta-variant="docs-progress" hidden style="margin:0 0 16px;"></div><h1 id="jpcite-api-docs">jpcite API Docs<a class="headerlink" href="#jpcite-api-docs" title="Permanent link">&para;</a></h1>
+<p>このドキュメントは、jpcite の <strong>REST API</strong> と <strong>MCP server</strong> を組み込む開発者・AI エージェント設定者向けの入口です。</p>
+<p>jpcite は、日本の制度・法人・法令・税制・行政処分データを AI が使いやすい根拠パケットとして返す evidence prefetch layer です。制度候補、出典 URL、取得時刻、content hash、併用ルール、known gaps、decision insights を短い JSON で取得できます。アプリや AI クライアントは、その返却値を使って最終回答を作ります。</p>
+<p>GPT / Claude / Cursor に長い PDF や公式ページを直接渡す前に、Evidence Packet を取得すると、出典付きの構造化 JSON を回答生成の入力にできます。元の入力トークン数を把握している場合は <code>source_tokens_basis=token_count&amp;source_token_count=&lt;tokens&gt;</code> を渡すことで、返却パケットとの文脈サイズ比較も確認できます。現在の公開料金と匿名枠は <a href="pricing/">Pricing</a> に掲載しています。</p>
+<h2 id="最初に読むもの">最初に読むもの<a class="headerlink" href="#最初に読むもの" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>目的</th>
+<th>ページ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5 分で API を試す</td>
+<td><a href="getting-started/">Getting started</a></td>
+</tr>
+<tr>
+<td>エンドポイント一覧を見る</td>
+<td><a href="api-reference/">API reference</a></td>
+</tr>
+<tr>
+<td>Claude / Cursor などのMCPクライアント、ChatGPT Custom GPT から使う</td>
+<td><a href="mcp-tools/">MCP tools</a> / <a href="api-reference/">API reference</a></td>
+</tr>
+<tr>
+<td>5-15 行 runnable レシピ集</td>
+<td><a href="recipes/">Recipes</a></td>
+</tr>
+<tr>
+<td>調査コンテキストを小さくできる条件を見る</td>
+<td><a href="mcp-tools/#evidence-packet">MCP tools</a> / <a href="api-reference/">API reference</a></td>
+</tr>
+<tr>
+<td>返却形式とエラー処理を合わせる</td>
+<td><a href="api-reference/response_envelope/">Response envelope</a> / <a href="error_handling/">Error handling</a></td>
+</tr>
+<tr>
+<td>出典・根拠・除外ルールを確認する</td>
+<td><a href="exclusions/">Exclusions</a> / <a href="honest_capabilities/">Honest capabilities</a></td>
+</tr>
+<tr>
+<td>料金と無料枠を確認する</td>
+<td><a href="pricing/">Pricing</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="使える形">使える形<a class="headerlink" href="#使える形" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>REST API</strong>: <code>https://api.jpcite.com/v1/*</code></li>
+<li><strong>Agent-safe OpenAPI</strong>: <a href="openapi/agent.json">openapi/agent.json</a> / <code>https://api.jpcite.com/v1/openapi.agent.json</code> (ChatGPT Custom GPT Actions や AI tool import 向け)</li>
+<li><strong>Full OpenAPI</strong>: <a href="openapi/v1.json">openapi/v1.json</a> / <code>https://api.jpcite.com/v1/openapi.json</code> (SDK 生成・完全リファレンス向け)</li>
+<li><strong>MCP server</strong>: Claude Desktop / Cursor / Cline などの MCP クライアントで利用できます。ChatGPT Custom GPT では OpenAPI Actions 経由で同等の REST endpoint を呼び出します。</li>
+<li><strong>配布 package</strong>: 互換性のため package 名は <code>autonomath-mcp</code> を維持しています。表示名とサービス名は jpcite です。</li>
+</ul>
+<h2 id="ai-agent-向け-first-call">AI agent 向け first call<a class="headerlink" href="#ai-agent-向け-first-call" title="Permanent link">&para;</a></h2>
+<ol>
+<li>広い制度質問は <code>GET /v1/intelligence/precomputed/query?include_facts=false&amp;include_compression=true</code></li>
+<li>根拠 record、known gaps、文脈サイズ比較が必要なら <code>POST /v1/evidence/packets/query</code></li>
+<li>実在 ID が必要な場合だけ <code>GET /v1/programs/search</code></li>
+<li>詳細・併用確認は <code>GET /v1/programs/{unified_id}</code> / <code>POST /v1/exclusions/check</code></li>
+<li>AI クライアント側では <code>source_url</code> と <code>source_fetched_at</code> を添え、known gaps も明示する</li>
+</ol>
+<h2 id="データ収録">データ収録<a class="headerlink" href="#データ収録" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>データ種別</th>
+<th style="text-align: right;">検索対象 件数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>補助金 / 助成金 / 認定</td>
+<td style="text-align: right;">11,601</td>
+</tr>
+<tr>
+<td>採択事例</td>
+<td style="text-align: right;">2,286</td>
+</tr>
+<tr>
+<td>融資</td>
+<td style="text-align: right;">108</td>
+</tr>
+<tr>
+<td>行政処分</td>
+<td style="text-align: right;">1,185</td>
+</tr>
+<tr>
+<td>法令メタデータ</td>
+<td style="text-align: right;">9,484</td>
+</tr>
+<tr>
+<td>法令本文</td>
+<td style="text-align: right;">提供中</td>
+</tr>
+<tr>
+<td>判例</td>
+<td style="text-align: right;">2,065</td>
+</tr>
+<tr>
+<td>税制ルールセット</td>
+<td style="text-align: right;">50</td>
+</tr>
+<tr>
+<td>適格請求書発行事業者</td>
+<td style="text-align: right;">13,801</td>
+</tr>
+<tr>
+<td>排他 / 前提ルール</td>
+<td style="text-align: right;">181</td>
+</tr>
+</tbody>
+</table>
+<p>品質ラベルは、出典・構造化・説明材料の充足度を表す目安です。重要な判断では、返却される <code>source_url</code> / <code>source_fetched_at</code> を確認し、必要に応じて一次資料も参照してください。</p>
+
+              </article>
+            </div>
+
+
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  ページトップへ戻る
+</button>
+
+      </main>
+
+        <footer class="md-footer">
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+        © 2026 jpcite
+        &middot;
+        <a href="/tokushoho.html">特定商取引法表記</a>
+        &middot;
+        <a href="/privacy.html">プライバシー</a>
+        &middot;
+        <a href="/tos.html">利用規約</a>
+      </div>
+    </div>
+  </div>
 </footer>
 
-<script src="/assets/billing_progress.js" defer></script>
-<script src="/assets/feedback-widget.js" defer></script>
-<script src="/assets/rum_funnel_collector.js" defer></script>
-<script defer>
-document.addEventListener('DOMContentLoaded', function() {
-  if (window.jpciteFeedback) {
-    window.jpciteFeedback.mount('body', { position: 'bottom-right' });
-  }
-});
-</script>
-</body>
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+
+
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.top", "navigation.indexes", "navigation.path", "toc.follow", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}}</script>
+
+
+      <script src="assets/javascripts/bundle.60a45f97.min.js"></script>
+
+        <script src="assets/feedback-widget.js"></script>
+
+        <script src="assets/feedback-init.js"></script>
+
+        <script src="assets/search-input-patch.js"></script>
+
+
+  </body>
 </html>

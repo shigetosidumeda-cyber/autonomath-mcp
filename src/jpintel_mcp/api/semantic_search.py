@@ -70,6 +70,7 @@ import os
 import sqlite3
 import struct
 import time
+from contextlib import suppress
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -96,6 +97,8 @@ EXPECTED_EMBEDDING_DIM = 1024
 # without adding value (the agent can re-query with a refined embedding).
 _DEFAULT_TOP_K = 20
 _MAX_TOP_K = 100
+_SQLITE_PROGRESS_OPS = 1_000
+_KNN_TIMEOUT_MS = int(os.environ.get("SEMANTIC_SEARCH_KNN_TIMEOUT_MS", "2500"))
 
 # Canonical vec family — keyed by canonical_id substrate via the map
 # sidecar. Migration 166 created these; tools/offline/embed_canonical_entities.py
@@ -259,10 +262,27 @@ def _vec_table_has_rows(conn: sqlite3.Connection, table: str) -> bool:
     if not row:
         return False
     try:
-        cnt_row = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
+        one_row = conn.execute(f"SELECT 1 FROM {table} LIMIT 1").fetchone()
     except sqlite3.OperationalError:
         return False
-    return bool(cnt_row and int(cnt_row[0]) > 0)
+    return one_row is not None
+
+
+def _set_sqlite_deadline(
+    conn: sqlite3.Connection, timeout_ms: int
+) -> None:
+    deadline = time.perf_counter() + (timeout_ms / 1000.0)
+
+    def _progress() -> int:
+        return 1 if time.perf_counter() > deadline else 0
+
+    with suppress(sqlite3.OperationalError):
+        conn.set_progress_handler(_progress, _SQLITE_PROGRESS_OPS)
+
+
+def _clear_sqlite_deadline(conn: sqlite3.Connection) -> None:
+    with suppress(sqlite3.OperationalError):
+        conn.set_progress_handler(None, 0)
 
 
 def _knn(
@@ -418,6 +438,7 @@ def semantic_search(
     else:
         emb_bytes = _encode_embedding(body.embedding)
         try:
+            _set_sqlite_deadline(am, _KNN_TIMEOUT_MS)
             results = _knn(
                 conn=am,
                 vec_table=vec_table,
@@ -430,7 +451,12 @@ def semantic_search(
             # MATCH unsupported → vec extension not loaded. This is the
             # documented 503 path.
             error_marker = str(exc)
-            corpus_state = "vec_extension_unavailable"
+            if "interrupted" in str(exc).lower():
+                corpus_state = "timeout"
+            else:
+                corpus_state = "vec_extension_unavailable"
+        finally:
+            _clear_sqlite_deadline(am)
 
     # --- 4. Close + meter ---
     try:
@@ -447,6 +473,17 @@ def semantic_search(
                 "message": (
                     "sqlite-vec extension is not loaded on this instance; "
                     "semantic_search is temporarily unavailable. "
+                    f"backend_error={error_marker!r}"
+                ),
+            },
+        )
+    if corpus_state == "timeout":
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "code": "semantic_search_timeout",
+                "message": (
+                    "semantic_search exceeded its local sqlite deadline; "
                     f"backend_error={error_marker!r}"
                 ),
             },

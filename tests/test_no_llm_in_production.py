@@ -6,25 +6,35 @@ jpcite bills ¥3/request fully metered and cannot absorb per-request LLM
 provider costs. A single LLM call costs ¥0.5–¥5; one slipped import on
 the request path bankrupts the unit economics.
 
-Any `import anthropic`, `import openai`, `import google.generativeai`, or
-`import claude_agent_sdk` under `src/`, `scripts/`, or `tests/` is a
-regression that fails CI. Operator-only offline scripts that legitimately
-call LLM APIs live under `tools/offline/` (which is NOT scanned here).
-See `tools/offline/README.md`.
+Any `import anthropic`, `import openai`, `import google.generativeai`,
+`import claude_agent_sdk`, `import langchain[._*]`, `import mistralai`,
+`import cohere`, `import groq`, `import replicate`, `import together`,
+`import vertexai`, or `import bedrock_runtime` under `src/`, `scripts/`,
+or `tests/` is a regression that fails CI. The `boto3.client(
+"bedrock-runtime")` factory call is also flagged because AWS Bedrock is
+the canonical "import an LLM by stealth via boto3" footgun. Operator-
+only offline scripts that legitimately call LLM APIs live under
+`tools/offline/` (which is NOT scanned here). See
+`tools/offline/README.md`.
 
-Five-axis detection strategy (all axes must stay green):
+Six-axis detection strategy (all axes must stay green):
 
   * **Axis 1 — Imports** (AST-based, `test_no_llm_imports_in_production`):
     Only flags actual `import X` / `from X import ...` statements. String
     literals containing the same phrase (e.g. existing meta-tests in
     `tests/test_self_improve_loops.py` that check for the forbidden
-    strings inline) are NOT flagged.
+    strings inline) are NOT flagged. Covers the full provider set:
+    Anthropic / OpenAI / Google (`google.generativeai`, `vertexai`) /
+    `claude_agent_sdk` / LangChain (`langchain`, `langchain_*` family) /
+    Mistral / Cohere / Groq / Replicate / Together AI / AWS Bedrock
+    (`bedrock_runtime`).
   * **Axis 2 — Env var refs** (regex on non-string AST spans,
     `test_no_llm_imports_in_production`): Flags actual references to
     `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GEMINI_API_KEY` /
-    `GOOGLE_API_KEY` while permitting comments + docstrings that mention
-    the names in invariant-enforcement context (e.g. "NO
-    ANTHROPIC_API_KEY").
+    `GOOGLE_API_KEY` / `MISTRAL_API_KEY` / `COHERE_API_KEY` /
+    `GROQ_API_KEY` / `REPLICATE_API_TOKEN` / `TOGETHER_API_KEY` while
+    permitting comments + docstrings that mention the names in
+    invariant-enforcement context (e.g. "NO ANTHROPIC_API_KEY").
   * **Axis 3 — Hardcoded provider secrets**
     (`test_no_hardcoded_llm_secrets_in_production`): Regex over file
     contents for `sk-ant-...`, `sk-<20+chars>`, and `AIzaSy...` literal
@@ -45,8 +55,15 @@ Five-axis detection strategy (all axes must stay green):
     that would execute on the runner, while tolerating shell
     `grep`/`!grep` invariant-enforcement lines (matched outside Python
     contexts).
+  * **Axis 6 — `boto3.client("bedrock-runtime")` runtime factory**
+    (`test_no_bedrock_runtime_boto3_client`): The AWS Bedrock LLM API
+    is accessed via `boto3.client("bedrock-runtime")` — there is no
+    `import bedrock` statement to catch via axes 1/5. This axis regex-
+    scans for the literal factory call across `src/` / `scripts/` /
+    `tests/`, excluding meta-test files which name the pattern as the
+    content of the rule.
 
-`tools/offline/` is excluded from axes 1, 2, 3 by path filter
+`tools/offline/` is excluded from axes 1, 2, 3, 6 by path filter
 (operator-only offline tools may legitimately import LLM SDKs and read
 API keys per CLAUDE.md). Axis 4 enforces that `tools/offline/` is the
 **only** path that may carry the `LLM_IMPORT_TOLERATED` marker — so the
@@ -69,12 +86,49 @@ FORBIDDEN_IMPORT_MODULES = {
     "openai",
     "google.generativeai",
     "claude_agent_sdk",
+    # Wave 49 expansion (2026-05-13): widen the SDK denylist to cover the
+    # full commercial LLM provider surface. See CLAUDE.md §"What NOT to
+    # do" — the same ¥3/req economics apply regardless of which provider
+    # SDK someone imports, so all are gated together.
+    "langchain",
+    "mistralai",
+    "cohere",
+    "groq",
+    "replicate",
+    "together",
+    "vertexai",
+    "bedrock_runtime",
 }
+# Head names that are forbidden as bare-head imports (e.g. `import groq`
+# or `from groq import Groq`). The `langchain` family also forbids any
+# module whose head starts with `langchain_` (e.g. `langchain_core`,
+# `langchain_anthropic`, `langchain_community`).
+_FORBIDDEN_HEAD_NAMES = frozenset(
+    {
+        "anthropic",
+        "openai",
+        "claude_agent_sdk",
+        "langchain",
+        "mistralai",
+        "cohere",
+        "groq",
+        "replicate",
+        "together",
+        "vertexai",
+        "bedrock_runtime",
+    }
+)
 FORBIDDEN_ENV = (
     "ANTHROPIC_API_KEY",
     "OPENAI_API_KEY",
     "GEMINI_API_KEY",
     "GOOGLE_API_KEY",
+    # Wave 49 expansion (2026-05-13): match the SDK denylist above.
+    "MISTRAL_API_KEY",
+    "COHERE_API_KEY",
+    "GROQ_API_KEY",
+    "REPLICATE_API_TOKEN",
+    "TOGETHER_API_KEY",
 )
 # Production python scan scope. Note: full `scripts/` is now scanned,
 # which subsumes `scripts/cron` + `scripts/etl` + `scripts/ops` +
@@ -110,11 +164,23 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
 def _module_is_forbidden(module_name: str | None) -> bool:
-    """Return True if a `module_name` like 'anthropic.types' or 'openai' is forbidden."""
+    """Return True if a `module_name` like 'anthropic.types' or 'openai' is forbidden.
+
+    Match rules:
+      * Bare head match against `_FORBIDDEN_HEAD_NAMES` (covers e.g.
+        `import groq`, `from cohere import Client`, `import vertexai.preview`).
+      * `langchain_*` family: any head starting with `langchain_` (e.g.
+        `langchain_core`, `langchain_anthropic`, `langchain_community`).
+      * Google generative AI: `google.generativeai` must match the dotted
+        prefix (the unrelated `google.protobuf` etc. are fine).
+    """
     if not module_name:
         return False
     head = module_name.split(".")[0]
-    if head in {"anthropic", "openai", "claude_agent_sdk"}:
+    if head in _FORBIDDEN_HEAD_NAMES:
+        return True
+    # langchain_* family (langchain_core, langchain_anthropic, etc.).
+    if head.startswith("langchain_"):
         return True
     # google.generativeai must match the dotted prefix.
     return bool(
@@ -471,4 +537,183 @@ def test_no_llm_in_workflow_inline_python() -> None:
         "LLM API leaked into a GitHub Actions workflow inline-python block:\n  - "
         + "\n  - ".join(violations)
         + "\n\nMove operator-only LLM work to tools/offline/ (run locally, not on CI)."
+    )
+
+
+# --- Axis 6: `boto3.client("bedrock-runtime")` runtime factory ----------
+# AWS Bedrock LLMs (Anthropic Claude on Bedrock, Mistral on Bedrock, etc.)
+# are accessed through `boto3.client("bedrock-runtime")` — there is no
+# top-level `import bedrock` to catch via axes 1/5. This axis regex-scans
+# real-code lines for the literal factory call. The hyphenated service
+# name `bedrock-runtime` is what makes the pattern unambiguous: no other
+# AWS service uses it, and the string is unlikely to appear except in the
+# call. We also flag the `boto3.client('bedrock')` control-plane client
+# because the only reason to instantiate it inside production code is to
+# inspect / provision an LLM model.
+
+_BEDROCK_CLIENT_RE = re.compile(
+    r"""boto3\s*\.\s*client\s*\(\s*['"]bedrock(?:-runtime|-agent|-agent-runtime|)['"]"""
+)
+
+
+def _scan_bedrock_client_calls(py_file: pathlib.Path) -> list[str]:
+    """Return list of `boto3.client("bedrock*")` call hits in py_file.
+
+    Scans the raw file text (the pattern itself contains a string literal,
+    so AST string-span stripping would erase the very signal we need).
+    Comment lines are still skipped because comments are inert. Meta-test
+    files are handled by the caller via META_TEST_ALLOWLIST.
+    """
+    try:
+        src = py_file.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        return []
+    hits: list[str] = []
+    for lineno, line in enumerate(src.splitlines(), start=1):
+        # Drop everything after the first `#`: comments cannot execute the
+        # call, so they are safe even when they document the pattern.
+        code_part = line.split("#", 1)[0]
+        m = _BEDROCK_CLIENT_RE.search(code_part)
+        if m:
+            hits.append(f"line {lineno}: {m.group(0)}")
+    return hits
+
+
+def test_no_bedrock_runtime_boto3_client() -> None:
+    """Axis 6: no `boto3.client("bedrock-runtime")` (or `bedrock-agent`,
+    `bedrock-agent-runtime`, `bedrock`) call in production code. AWS
+    Bedrock is the canonical "import an LLM by stealth via boto3" path —
+    there is no `import bedrock` to catch via axis 1.
+    """
+    violations: list[str] = []
+    for prod_dir in PRODUCTION_DIRS:
+        base = REPO_ROOT / prod_dir
+        if not base.exists():
+            continue
+        for py_file in base.rglob("*.py"):
+            rel = py_file.relative_to(REPO_ROOT).as_posix()
+            if rel == "tests/test_no_llm_in_production.py":
+                continue
+            if _is_excluded(rel):
+                continue
+            if rel in META_TEST_ALLOWLIST:
+                continue
+            for hit in _scan_bedrock_client_calls(py_file):
+                violations.append(f"{rel}: {hit}")
+
+    assert not violations, (
+        "AWS Bedrock LLM client instantiated in production code:\n  - "
+        + "\n  - ".join(violations)
+        + "\n\nBedrock-hosted LLMs are billed per-token by AWS, same blast"
+        " radius as Anthropic/OpenAI direct. Move to tools/offline/."
+    )
+
+
+# --- Synthesized-leak detection tests -----------------------------------
+# These tests verify that the scanner functions themselves detect the
+# newly-added patterns. They construct a fake leak file in `tmp_path` and
+# assert that `_scan_imports` / `_scan_env_vars` / `_scan_bedrock_client_calls`
+# return a non-empty hit list. Without these, a typo in the regex (e.g.
+# `langchian_` instead of `langchain_`) would silently let real leaks
+# through and the production scan would still report 0 hits because
+# there are no real leaks today.
+
+_NEW_PROVIDER_IMPORTS = (
+    # (statement, expected_hit_substring)
+    ("import langchain", "import langchain"),
+    ("import langchain_core", "import langchain_core"),
+    ("from langchain_anthropic import ChatAnthropic", "from langchain_anthropic"),
+    ("import mistralai", "import mistralai"),
+    ("from mistralai.client import MistralClient", "from mistralai.client"),
+    ("import cohere", "import cohere"),
+    ("from cohere import Client", "from cohere"),
+    ("import groq", "import groq"),
+    ("from groq import Groq", "from groq"),
+    ("import replicate", "import replicate"),
+    ("import together", "import together"),
+    ("from together import Together", "from together"),
+    ("import vertexai", "import vertexai"),
+    ("from vertexai.generative_models import GenerativeModel", "from vertexai.generative_models"),
+    ("import bedrock_runtime", "import bedrock_runtime"),
+)
+
+
+def test_scan_imports_detects_new_provider_sdks(tmp_path: pathlib.Path) -> None:
+    """Synthesized leak: every entry in `_NEW_PROVIDER_IMPORTS` must be
+    flagged by `_scan_imports`. Guards against regex/head-name drift
+    when the denylist is edited.
+    """
+    misses: list[str] = []
+    for stmt, expected in _NEW_PROVIDER_IMPORTS:
+        leak_file = tmp_path / "synthesized_leak.py"
+        leak_file.write_text(f"{stmt}\n", encoding="utf-8")
+        hits = _scan_imports(leak_file)
+        if not any(expected in h for h in hits):
+            misses.append(f"`{stmt}` not detected (hits={hits!r})")
+    assert not misses, (
+        "New-provider SDK import not flagged by _scan_imports:\n  - "
+        + "\n  - ".join(misses)
+    )
+
+
+_NEW_PROVIDER_ENV_VARS = (
+    "MISTRAL_API_KEY",
+    "COHERE_API_KEY",
+    "GROQ_API_KEY",
+    "REPLICATE_API_TOKEN",
+    "TOGETHER_API_KEY",
+)
+
+
+def test_scan_env_vars_detects_new_provider_keys(tmp_path: pathlib.Path) -> None:
+    """Synthesized leak: every entry in `_NEW_PROVIDER_ENV_VARS` must be
+    flagged by `_scan_env_vars` when it appears on a real code line.
+    """
+    misses: list[str] = []
+    for name in _NEW_PROVIDER_ENV_VARS:
+        leak_file = tmp_path / f"synthesized_env_{name}.py"
+        # Real code line: function call referencing the env var name.
+        # The name itself sits outside any string-literal AST span.
+        leak_file.write_text(
+            f"import os\nkey = os.environ[{name}]\n",
+            encoding="utf-8",
+        )
+        hits = _scan_env_vars(leak_file, in_meta_allowlist=False)
+        if not any(name in h for h in hits):
+            misses.append(f"`{name}` not detected (hits={hits!r})")
+    assert not misses, (
+        "New-provider env var not flagged by _scan_env_vars:\n  - "
+        + "\n  - ".join(misses)
+    )
+
+
+_BEDROCK_LEAK_PATTERNS = (
+    'client = boto3.client("bedrock-runtime")',
+    "client = boto3.client('bedrock-runtime')",
+    'client = boto3.client( "bedrock-runtime" )',
+    'client = boto3.client("bedrock-agent-runtime")',
+    'client = boto3.client("bedrock-agent")',
+    'client = boto3.client("bedrock")',
+)
+
+
+def test_scan_bedrock_client_calls_detects_synthesized_leaks(
+    tmp_path: pathlib.Path,
+) -> None:
+    """Synthesized leak: each `boto3.client("bedrock*")` variant must be
+    flagged by `_scan_bedrock_client_calls`. The pattern itself contains
+    a string literal so the standard AST string-span filter would erase
+    the very signal we need — this test guards the regex from being
+    silently neutered by future refactors.
+    """
+    misses: list[str] = []
+    for stmt in _BEDROCK_LEAK_PATTERNS:
+        leak_file = tmp_path / "synthesized_bedrock.py"
+        leak_file.write_text(f"import boto3\n{stmt}\n", encoding="utf-8")
+        hits = _scan_bedrock_client_calls(leak_file)
+        if not hits:
+            misses.append(f"`{stmt}` not detected (no hits)")
+    assert not misses, (
+        "Bedrock client factory call not flagged:\n  - "
+        + "\n  - ".join(misses)
     )

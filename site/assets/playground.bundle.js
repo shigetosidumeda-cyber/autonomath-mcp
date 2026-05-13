@@ -1,4 +1,4 @@
-// playground.bundle.js — Wave 15 C8 external JS bundle for /playground.
+// playground.bundle.js — external playground JS bundle for /playground.
 // Loaded via <script src="/assets/playground.bundle.js" defer> from playground.html.
 // Single IIFE: vanilla JS controller for the interactive REST API try-it surface.
 //   - ENDPOINTS catalog (local OpenAPI mirror, ~6 KB priority routes)
@@ -1981,7 +1981,7 @@
   // The wizard reuses the public anonymous quota (3 req/IP/day). Each step
   // opens an EventSource at /v1/playground/evidence3/stream?step=N&... which
   // dispatches SSE events { status | section | done | error } at ~200ms
-  // ticks (see src/jpintel_mcp/api/playground_stream.py). Section payloads
+  // progress events (see src/jpintel_mcp/api/playground_stream.py). Section payloads
   // are rendered into a per-step grid; the raw stream log stays visible for
   // debugging.
   //

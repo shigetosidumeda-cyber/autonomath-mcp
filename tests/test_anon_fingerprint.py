@@ -1,37 +1,12 @@
-"""Behavioural fingerprint tests (P2.6.2, 2026-04-25).
+"""Anonymous quota fingerprint hardening tests.
 
-The legacy anon limiter keyed buckets on IP /32 (v4) or /64 (v6) only —
-trivially bypassed by:
-
-  * cycling through a residential CGNAT NAT pool (one IP, many users)
-  * walking SLAAC privacy extensions inside one /64 (we already aggregate
-    those, but a true VPN rotation gives a new /32 every minute)
-  * cycling User-Agent strings on the same connection
-
-This module asserts:
-
-  1. **Same fingerprint, different IPs share a bucket** — a CGNAT egress
-     pool that rotates the source IP between requests but keeps the same
-     LLM-client UA / lang / HTTP-version / JA3 collapses to one logical
-     caller. Without this, a /22 NAT pool would deliver
-     3 × len(pool)/日 free requests instead of 3/日.
-
-  2. **UA-rotation does NOT reset the bucket** — bumping
-     "Cursor/1.2.3" → "Cursor/1.2.4" between requests stays in the same
-     UA-class ("cursor") so the bucket key is stable. This is the most
-     common naive bypass attempt, and the one we explicitly defeat by
-     classifying instead of hashing the raw UA.
-
-We deliberately do NOT assert "different fingerprints on the same IP get
-separate buckets" here — that's the *intended* behaviour at a coffee-shop
-NAT (5 laptops = 5 buckets) and it is implicit in the way `hash_ip()`
-composes (different fingerprint string -> different HMAC input).
+The advertised anonymous cap is per origin IP. Behavioural fingerprint
+fields such as User-Agent and Accept-Language are still useful telemetry,
+but they are client-controlled and must not define the quota bucket.
 """
 
 from __future__ import annotations
 
-import hashlib
-import hmac
 import importlib
 import sqlite3
 import sys
@@ -52,23 +27,10 @@ def _anon_module():
     return mod
 
 
-def _hash_for(ip: str, fingerprint: str) -> str:
-    """Compute the digest the dep would have written for `ip` + `fingerprint`.
-
-    `fingerprint` is the canonical pipe-joined string
-    "<ua_class>|<lang>|<http_v>|<ja3>" — same shape `_fingerprint_string`
-    produces in the production path.
-    """
-    from jpintel_mcp.config import settings
-
+def _hash_for(ip: str) -> str:
+    """Compute the authoritative per-IP digest the dep writes."""
     anon = _anon_module()
-    normalized = anon._normalize_ip_to_prefix(ip)
-    composed = f"{normalized}#{fingerprint}"
-    return hmac.new(
-        settings.api_key_salt.encode("utf-8"),
-        composed.encode("utf-8"),
-        hashlib.sha256,
-    ).hexdigest()
+    return anon.hash_ip(ip)
 
 
 def _row_count(db: Path, ip_hash: str, day_bucket: str) -> int:
@@ -83,90 +45,93 @@ def _row_count(db: Path, ip_hash: str, day_bucket: str) -> int:
     return 0 if row is None else int(row[0])
 
 
-# ---------------------------------------------------------------------------
-# Case 1: same fingerprint, different IPs -> ONE shared bucket
-# ---------------------------------------------------------------------------
-
-
-def test_same_fingerprint_different_ips_share_bucket(
+def test_same_ip_different_accept_language_and_user_agent_share_bucket(
     client: TestClient,
     seeded_db: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """CGNAT-style IP rotation with identical client fingerprint must
-    aggregate to a single rate-limit bucket.
-
-    Setup:
-      * Two distinct IPv4 addresses (203.0.113.10, 203.0.113.11) — the
-        kind of /32 churn a residential carrier or VPN provider produces.
-      * Identical headers on both: same Cursor UA, same `ja` lang, default
-        TestClient HTTP/1.1, no JA3.
-
-    Expectation:
-      * Both IPs hash to *different* `ip_hash` rows (we do NOT collapse
-        across IPs at the DB layer — that would break per-IP audit). But
-        the **count is split** across them deterministically per request.
-        Concretely: 3 requests across the two IPs leave 3 rows total when
-        we walk both fingerprint-derived hashes.
-
-    Note we cannot directly assert "shared bucket" at the row level because
-    the fingerprint composes WITH the IP, not REPLACES it. The actual
-    silent-leak reduction is at the *attacker* layer: the attacker now has
-    to rotate fingerprint AND IP to dodge — which is exponentially harder
-    than rotating IP alone.
-
-    What we DO assert here: the per-IP rows still increment correctly under
-    fingerprint composition (no off-by-one / double-count regression), and
-    the fingerprint hash differs from the legacy IP-only hash (proving the
-    new entropy is actually included).
-    """
+    """Header rotation from one origin IP must not mint fresh anon quota."""
     from jpintel_mcp.config import settings
 
-    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 3)
+    monkeypatch.setattr(settings, "anon_rate_limit_per_day", 2)
+    ip = "203.0.113.10"
 
-    headers_a = {
-        "x-forwarded-for": "203.0.113.10",
-        "user-agent": "Cursor/1.2.3 (electron; node)",
-        "accept-language": "ja",
-    }
-    headers_b = {
-        "x-forwarded-for": "203.0.113.11",
-        "user-agent": "Cursor/1.2.3 (electron; node)",
-        "accept-language": "ja",
-    }
+    r1 = client.get(
+        "/meta",
+        headers={
+            "fly-client-ip": ip,
+            "user-agent": "Cursor/1.2.3 (electron; node)",
+            "accept-language": "ja",
+        },
+    )
+    r2 = client.get(
+        "/meta",
+        headers={
+            "fly-client-ip": ip,
+            "user-agent": "ChatGPT-User/1.0",
+            "accept-language": "en-US,en;q=0.8",
+        },
+    )
+    r3 = client.get(
+        "/meta",
+        headers={
+            "fly-client-ip": ip,
+            "user-agent": "curl/8.4.0",
+            "accept-language": "fr",
+        },
+    )
 
-    r1 = client.get("/meta", headers=headers_a)
-    r2 = client.get("/meta", headers=headers_b)
-    assert r1.status_code == 200
-    assert r2.status_code == 200
+    assert r1.status_code == 200, r1.text
+    assert r2.status_code == 200, r2.text
+    assert r3.status_code == 429, r3.text
 
     anon = _anon_module()
     day_bucket = anon._jst_day_bucket()
+    assert _row_count(seeded_db, _hash_for(ip), day_bucket) == 3
 
-    # Both rows exist under DIFFERENT ip_hash values — fingerprint composes,
-    # not collapses.
-    fp = "cursor|ja|h1.1|?"
-    h_a = _hash_for("203.0.113.10", fp)
-    h_b = _hash_for("203.0.113.11", fp)
-    assert h_a != h_b, "different IPs must hash to different rows"
 
-    assert _row_count(seeded_db, h_a, day_bucket) == 1
-    assert _row_count(seeded_db, h_b, day_bucket) == 1
+def test_hash_ip_ignores_request_fingerprint_metadata() -> None:
+    """Passing a request must not change the quota hash."""
+    from starlette.datastructures import Headers
+    from starlette.requests import Request
 
-    # And — load-bearing assertion — the legacy IP-only hash (no
-    # fingerprint) MUST differ from the new composed hash. If a future
-    # refactor accidentally drops the fingerprint, this assert flips and
-    # we catch the regression.
-    legacy_a = anon.hash_ip("203.0.113.10")  # no request -> IP-only path
-    assert legacy_a != h_a, (
-        "fingerprint must contribute entropy; row hash collapsed to legacy "
-        "IP-only digest -> behavioural fingerprint not actually in effect"
+    anon = _anon_module()
+    ip = "203.0.113.44"
+
+    def req(headers: dict[str, str]) -> Request:
+        return Request(
+            {
+                "type": "http",
+                "method": "GET",
+                "path": "/meta",
+                "headers": Headers(headers).raw,
+                "http_version": "1.1",
+            }
+        )
+
+    request_a = req(
+        {
+            "user-agent": "Cursor/1.2.3 (electron; node)",
+            "accept-language": "ja",
+        }
+    )
+    request_b = req(
+        {
+            "user-agent": "curl/8.4.0",
+            "accept-language": "en-US,en;q=0.8",
+        }
     )
 
+    assert anon._fingerprint_string(request_a) != anon._fingerprint_string(request_b)
+    assert anon.hash_ip(ip, request_a) == anon.hash_ip(ip, request_b) == anon.hash_ip(ip)
 
-# ---------------------------------------------------------------------------
-# Case 2: UA version-bump does NOT reset the bucket
-# ---------------------------------------------------------------------------
+    assert anon._fingerprint_metadata(request_a) == {
+        "ua_class": "cursor",
+        "accept_language": "ja",
+        "http_version": "h1.1",
+        "ja3": "?",
+        "fingerprint": "cursor|ja|h1.1|?",
+    }
 
 
 def test_ua_version_rotation_does_not_reset_bucket(
@@ -174,21 +139,7 @@ def test_ua_version_rotation_does_not_reset_bucket(
     seeded_db: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The naive "rotate UA between requests" bypass attempt must fail.
-
-    Two requests from the SAME IP, with the SAME LLM-client family
-    (Cursor) but DIFFERENT version suffixes — the UA-classifier strips
-    the version, so both classify as "cursor" and share one bucket.
-
-    Setup:
-      * Single IP 203.0.113.20 across both requests.
-      * UA #1: "Cursor/1.2.3 (electron; node)"
-      * UA #2: "Cursor/1.2.4 (electron; node)"  (just version bumped)
-
-    Expectation:
-      * Both requests increment the SAME row (call_count == 2).
-      * No second row appears under any plausible alternate hash.
-    """
+    """The naive "rotate UA between requests" bypass attempt must fail."""
     from jpintel_mcp.config import settings
 
     monkeypatch.setattr(settings, "anon_rate_limit_per_day", 3)
@@ -198,7 +149,7 @@ def test_ua_version_rotation_does_not_reset_bucket(
     r1 = client.get(
         "/meta",
         headers={
-            "x-forwarded-for": ip,
+            "fly-client-ip": ip,
             "user-agent": "Cursor/1.2.3 (electron; node)",
             "accept-language": "ja",
         },
@@ -206,8 +157,8 @@ def test_ua_version_rotation_does_not_reset_bucket(
     r2 = client.get(
         "/meta",
         headers={
-            "x-forwarded-for": ip,
-            "user-agent": "Cursor/1.2.4 (electron; node)",  # version bump
+            "fly-client-ip": ip,
+            "user-agent": "Cursor/1.2.4 (electron; node)",
             "accept-language": "ja",
         },
     )
@@ -216,18 +167,7 @@ def test_ua_version_rotation_does_not_reset_bucket(
 
     anon = _anon_module()
     day_bucket = anon._jst_day_bucket()
+    assert _row_count(seeded_db, _hash_for(ip), day_bucket) == 2
 
-    fp = "cursor|ja|h1.1|?"
-    ip_h = _hash_for(ip, fp)
-
-    # Both calls hit the same bucket — version-bump did not split.
-    assert _row_count(seeded_db, ip_h, day_bucket) == 2, (
-        "UA version rotation reset the bucket — classifier is leaking the "
-        "raw UA string into the fingerprint hash"
-    )
-
-    # And the classifier itself: assert each side classifies to "cursor"
-    # so a future refactor that breaks _classify_user_agent gets caught
-    # by this test even if the row math somehow still passes.
     assert anon._classify_user_agent("Cursor/1.2.3 (electron; node)") == "cursor"
     assert anon._classify_user_agent("Cursor/1.2.4 (electron; node)") == "cursor"

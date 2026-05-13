@@ -198,6 +198,11 @@ def test_ax_5pillars_runs_and_scores():
     result = mod.run_audit()
     assert result["axis"] == "ax_5pillars"
     assert result["max_score"] == 60.0
+    assert result["average_score"] == result["average_score_10"]
+    assert 0.0 <= result["average_score_10"] <= 10.0
+    assert result["average_score_10"] == round(
+        (result["total_score"] / result["max_score"]) * 10, 2
+    )
     assert result["cell_count"] >= 36
     # 5 pillars × at least 1 cell each.
     assert set(result["pillars"].keys()) >= {"Access", "Context", "Tools", "Orchestration", "Resilience"}

@@ -13,7 +13,7 @@ Datasets handled:
 Pipeline per dataset:
 
   1. SELECT rows from the source DB (read-only) using a dataset-specific query.
-  2. Drop rows with `license` in {'unknown', 'proprietary'} (E1 launch gate).
+  2. Drop rows whose `license` is not explicitly redistributable (E1 launch gate).
   3. Drop rows whose `source_id` / `source_url` is on the E1 license_review_queue
      blacklist (`analysis_wave18/license_review_queue.csv`).
   4. For invoice-registrants: redact `kojin` (sole_proprietor) full address down
@@ -55,7 +55,7 @@ if str(ETL_DIR) not in sys.path:
     sys.path.insert(0, str(ETL_DIR))
 
 from hf_export_safety_gate import (  # noqa: E402
-    BLOCKED_LICENSES,
+    REDISTRIBUTABLE_LICENSES,
     HfExport,
     HfExportSafetyError,
     assert_hf_export_safe,
@@ -336,9 +336,10 @@ WHERE d.source_url IS NOT NULL
 
 def _filter_by_license(df: pd.DataFrame) -> pd.DataFrame:
     if "license" not in df.columns:
-        return df
-    mask = df["license"].astype(str).str.lower().isin(BLOCKED_LICENSES)
-    return df.loc[~mask].copy()
+        return df.iloc[0:0].copy()
+    normalized = df["license"].fillna("").astype(str).str.strip().str.lower()
+    mask = normalized.isin(REDISTRIBUTABLE_LICENSES)
+    return df.loc[mask].copy()
 
 
 def _filter_by_url_blacklist(df: pd.DataFrame, blacklist_urls: set[str]) -> pd.DataFrame:

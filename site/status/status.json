@@ -4,71 +4,29 @@
     "api": {
       "status": "down",
       "latency_ms": 10073,
-      "http": 0,
-      "healthz_http": 0,
-      "deep_http": 0,
-      "deep_json_valid": false,
-      "error": "TimeoutError: The read operation timed out"
+      "error_category": "timeout"
     },
     "mcp": {
       "status": "down",
       "latency_ms": 10046,
-      "http": 0,
-      "tools_count": null,
-      "recurring_workflows": null,
-      "error": "TimeoutError: The read operation timed out"
+      "error_category": "timeout"
     },
     "billing": {
       "status": "ok",
       "latency_ms": 0,
-      "http": 0,
-      "failed_events_24h": 0,
-      "rate_5xx": 0.0,
-      "stub": true,
-      "error": "STRIPE_SECRET_KEY not configured"
+      "error_category": "external_dependency_unavailable"
     },
     "data-freshness": {
       "status": "degraded",
       "latency_ms": 0,
-      "http": 0,
+      "error_category": null,
       "last_updated_at": null,
-      "max_age_days": null,
-      "datasets": {
-        "programs": {
-          "status": "degraded",
-          "age_seconds": null,
-          "sla_seconds": 86400,
-          "db_present": false
-        },
-        "am_amendment_diff": {
-          "status": "degraded",
-          "age_seconds": null,
-          "sla_seconds": 604800,
-          "db_present": false
-        },
-        "invoice_registrants": {
-          "status": "degraded",
-          "age_seconds": null,
-          "sla_seconds": 2592000,
-          "db_present": false
-        },
-        "case_studies": {
-          "status": "degraded",
-          "age_seconds": null,
-          "sla_seconds": 2592000,
-          "db_present": false
-        }
-      },
-      "error": null
+      "max_age_days": null
     },
     "dashboard": {
       "status": "degraded",
       "latency_ms": 282,
-      "http": 200,
-      "has_billing_anchor": true,
-      "login_request_http": 0,
-      "magic_link_ok": false,
-      "error": "TimeoutError: The read operation timed out"
+      "error_category": "timeout"
     }
   },
   "overall": "down"

@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>配信停止 — jpcite 法令改正アラート</title>
-<meta name="description" content="jpcite 法令改正アラートの配信を停止します。1クリックで解除。">
+<meta name="description" content="jpcite 法令改正アラートのメール配信を停止する確認ページです。有料プランの場合は、連動する Stripe サブスクリプションの停止も行います。">
 <meta name="robots" content="noindex,nofollow">
 
 <link rel="canonical" href="https://jpcite.com/alerts-unsubscribe">
@@ -16,8 +16,6 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script type="application/ld+json">
@@ -25,7 +23,7 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "配信停止 — jpcite 法令改正アラート",
-	  "description": "jpcite 法令改正メールアラートの配信停止確認ページ。",
+	  "description": "jpcite 法令改正メールアラートの配信停止確認ページ。有料プランの場合は、連動する Stripe サブスクリプションの停止も行います。",
   "url": "https://jpcite.com/alerts-unsubscribe.html",
   "inLanguage": "ja",
   "isPartOf": {
@@ -57,7 +55,7 @@
 
 <script defer src="analytics.js?v=20260503a"></script>
 <meta property="og:title" content="配信停止 — jpcite 法令改正アラート">
-<meta property="og:description" content="jpcite 法令改正アラートの配信を停止します。1クリックで解除。">
+<meta property="og:description" content="jpcite 法令改正アラートのメール配信を停止します。有料プランの場合は連動する Stripe サブスクリプションも停止します。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/alerts-unsubscribe.html">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -68,7 +66,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="配信停止 — jpcite 法令改正アラート">
-<meta name="twitter:description" content="jpcite 法令改正アラートの配信を停止します。1クリックで解除。">
+<meta name="twitter:description" content="jpcite 法令改正アラートのメール配信を停止します。有料プランの場合は連動する Stripe サブスクリプションも停止します。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
   <script type="application/ld+json" data-jpcite-jsonld="common">{
   "@context": "https://schema.org",
@@ -79,7 +77,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -122,11 +120,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -186,14 +184,14 @@
  <div class="container">
  <div class="unsub-card">
  <h1 id="unsub-title">配信を停止しますか？</h1>
- <p id="unsub-lead">jpcite 法令改正アラートの配信を停止します。続けるには下のボタンを押してください。</p>
+ <p id="unsub-lead">このメールアドレスへの jpcite 法令改正アラートを停止します。続けるには下のボタンを押してください。</p>
  <div class="actions">
  <button class="btn btn-primary" type="button" id="unsub-btn">配信を停止する</button>
- <a class="btn btn-secondary" href="alerts.html">やめる</a>
+ <a class="btn btn-secondary" href="alerts.html">アラート設定に戻る</a>
  </div>
  <p class="status" id="unsub-status" role="status" aria-live="polite"></p>
  <p style="font-size:12px;color:var(--text-muted);margin:20px 0 0;padding-top:16px;border-top:1px solid var(--border);">
- Stripe での課金は次回利用分から発生しません。
+ 有料プランの場合は、連動する Stripe サブスクリプションも停止します。停止後の新しい配信分には課金されません。
  </p>
  </div>
  </div>

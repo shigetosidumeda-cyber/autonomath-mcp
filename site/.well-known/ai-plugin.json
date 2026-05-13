@@ -3,10 +3,10 @@
   "name_for_human": "jpcite",
   "name_for_model": "jpcite",
   "description_for_human": "日本の補助金・許認可・行政処分・適格事業者・法令を法人番号 1 つで横断照会する API/MCP。¥3/req 完全従量、Free 3 req/IP/日。",
-  "description_for_model": "jpcite is a Japanese public-program evidence API/MCP. Use for: subsidies, loans, licenses, administrative dispositions, qualified-invoice registry, laws. Do not use for: individual tax calculation (Tax Accountant Law §52), legal advice (Lawyer Law §72), filing proxy (Administrative Scrivener Law §1). Auth: anonymous 3 req/IP/day works WITHOUT any API key (no header needed). For metered use (¥3/billable_unit, tax-incl ¥3.30), send 'X-API-Key: jc_...' header — NOT Authorization: Bearer. Newly-issued keys carry the 'jc_' prefix; existing 'sk_' / 'am_' keys remain valid (backward-compatible, no rotation required). Keys are issued at https://jpcite.com/pricing.html#api-paid via Stripe Checkout (1 min, email-free). Always cite source_url + fetched_at + content_hash from response.",
+  "description_for_model": "jpcite is a Japanese public-program evidence API/MCP. Use for: subsidies, loans, licenses, administrative dispositions, qualified-invoice registry, laws. Do not use for: individual tax calculation (Tax Accountant Law §52), legal advice (Lawyer Law §72), filing proxy (Administrative Scrivener Law §1). Auth: anonymous 3 req/IP/day works WITHOUT any API key (no header needed). For metered use (¥3/billable_unit, tax-incl ¥3.30), send the issued API key in the X-API-Key header. Keys are issued at https://jpcite.com/pricing.html#api-paid via Stripe Checkout (1 min, email-free). Always cite source_url + fetched_at + content_hash from response.",
   "auth": {
     "type": "none",
-    "instructions": "Anonymous 3 req/IP/day works without auth. For metered use, send 'X-API-Key: jc_...' header (issued at https://jpcite.com/pricing.html#api-paid via Stripe Checkout, 1 min, email-free). New keys use the 'jc_' prefix; legacy 'sk_' / 'am_' keys remain valid (backward-compatible)."
+    "instructions": "Anonymous 3 req/IP/day works without auth. For metered use, send the issued key in the X-API-Key header. Keys are issued at https://jpcite.com/pricing.html#api-paid via Stripe Checkout (1 min, email-free)."
   },
   "api": {
     "type": "openapi",

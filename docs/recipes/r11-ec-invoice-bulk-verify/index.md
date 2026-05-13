@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 EC 事業者 (年商 ¥1-50 億規模) の経理担当者・財務部マネージャーが、月次仕入先 500-5,000 社の適格事業者登録番号 (T + 13 桁) を一括 verify して、消費税仕入税額控除の漏れを防ぐ。月末締めの 3 営業日以内に「抹消・廃業・取消」を検知し、買掛金支払時の税区分修正、得意先別の請求書再発行依頼、税理士への月次レポート提出に直結させる運用が想定読者。期末決算前 (3 月 / 12 月) の年次総点検では 10,000 社規模を 1 batch で sweep する用途にも対応。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)
 - `X-Client-Tag` ヘッダー (仕入先別 / 部門別の billable 計上)
 - 仕入先の登録番号 CSV (T + 13 桁、freee / マネーフォワード / 弥生会計から export)
 - (推奨) 月次の支払予定額・取引高 — 抹消検知時の影響額試算に使用
@@ -118,7 +118,6 @@ fs.writeFileSync("hold_payment.json", JSON.stringify(revoked, null, 2));
 - 1 batch 500 units × ¥3 = ¥1,500 / 月、税込 ¥1,650
 - 年 12 batch = ¥18,000 / 年、税込 ¥19,800
 - 期末年次総点検 (10,000 社) = ¥30,000 / 期末、税込 ¥33,000
-- 節約 (純 LLM vs jpcite ¥3/req): 月 1 batch (500 取引先) で、純 LLM は約 ¥5,000/月 (1 取引先 cycle ¥10 = NTA 検索 2 call + 検証 reasoning) に対し jpcite は ¥1,500/月 (500 req × ¥3) → 節約 約 ¥3,500/月 / 取引先あたり ¥7 (cf. `docs/canonical/cost_saving_examples.md` case 3 同系)
 
 ## 商業利用条件
 - PDL v1.0 (NTA 公開データ、出典明記必須) + CC-BY-4.0 (jpcite 編集物)

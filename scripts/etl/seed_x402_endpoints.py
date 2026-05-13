@@ -1,4 +1,4 @@
-"""Seed 5 x402-gated endpoint configs for the Dim V micropayment surface (Wave 47).
+"""Seed x402-gated endpoint configs for the micropayment surface.
 
 Materialises the initial endpoint catalogue for the Dim V "x402 protocol
 micropayment" surface (per ``feedback_agent_x402_protocol.md``) on top of
@@ -6,11 +6,10 @@ the storage layer added by ``scripts/migrations/282_x402_payment.sql``.
 
 Seeded x402-gated endpoints
 ---------------------------
-  * /v1/search                 (general jpcite search, 0.001 USDC)
-  * /v1/programs               (subsidy program lookup, 0.002 USDC)
-  * /v1/cases                  (court case search, 0.002 USDC)
-  * /v1/audit_workpaper        (Dim D compose audit workpaper, 0.01 USDC)
-  * /v1/semantic_search        (Dim A E5 semantic search, 0.005 USDC)
+  * /v1/audit/workpaper        (audit workpaper composition, 0.01 USDC)
+  * /v1/case-studies/search    (awarded case-study search, 0.002 USDC)
+  * /v1/programs/prescreen     (profile-based candidate prescreen, 0.002 USDC)
+  * /v1/search/semantic        (hybrid semantic search, 0.005 USDC)
 
 Each row registers ``endpoint_path`` + ``required_amount_usdc`` +
 ``expires_after_seconds`` only. The actual on-chain settlement is handled
@@ -54,41 +53,19 @@ import sqlite3
 import sys
 from pathlib import Path
 
+_SRC = Path(__file__).resolve().parents[2] / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+
+from jpintel_mcp.api.x402_payment import X402_CANONICAL_ENDPOINT_SEEDS  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB_PATH = REPO_ROOT / "autonomath.db"
 LOG = logging.getLogger("seed_x402_endpoints")
 
-# Canonical 5-endpoint seed. Order is stable across runs (alphabetical by
-# endpoint_path) so a diff stays trivial to review. Prices in USDC per
-# call. TTL of issued bearer key defaults to 3600s (1h) for low-volume
-# endpoints, 600s (10min) for the high-value audit_workpaper endpoint.
-_ENDPOINTS: tuple[dict[str, object], ...] = (
-    {
-        "endpoint_path": "/v1/audit_workpaper",
-        "required_amount_usdc": 0.01,
-        "expires_after_seconds": 600,
-    },
-    {
-        "endpoint_path": "/v1/cases",
-        "required_amount_usdc": 0.002,
-        "expires_after_seconds": 3600,
-    },
-    {
-        "endpoint_path": "/v1/programs",
-        "required_amount_usdc": 0.002,
-        "expires_after_seconds": 3600,
-    },
-    {
-        "endpoint_path": "/v1/search",
-        "required_amount_usdc": 0.001,
-        "expires_after_seconds": 3600,
-    },
-    {
-        "endpoint_path": "/v1/semantic_search",
-        "required_amount_usdc": 0.005,
-        "expires_after_seconds": 1800,
-    },
-)
+# Canonical endpoint seed lives with the middleware to prevent registry drift.
+_ENDPOINTS = X402_CANONICAL_ENDPOINT_SEEDS
+_RETIRED_ENDPOINTS = frozenset({"/v1/programs/search"})
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -159,6 +136,31 @@ def _upsert_endpoint(
     return "updated"
 
 
+def _retire_endpoint(
+    conn: sqlite3.Connection,
+    endpoint_path: str,
+    *,
+    dry_run: bool,
+) -> str:
+    """Disable stale x402 rows that are now owned by route-level gates."""
+    row = conn.execute(
+        "SELECT enabled FROM am_x402_endpoint_config WHERE endpoint_path = ?",
+        (endpoint_path,),
+    ).fetchone()
+    if row is None:
+        return "absent"
+    if int(row[0]) == 0:
+        return "already_disabled"
+    if not dry_run:
+        conn.execute(
+            "UPDATE am_x402_endpoint_config "
+            "SET enabled = 0, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') "
+            "WHERE endpoint_path = ?",
+            (endpoint_path,),
+        )
+    return "disabled"
+
+
 def main(argv: list[str] | None = None) -> int:
     ns = _parse_args(argv)
     logging.basicConfig(
@@ -188,6 +190,14 @@ def main(argv: list[str] | None = None) -> int:
                 {
                     "endpoint_path": str(endpoint["endpoint_path"]),
                     "action": act,
+                }
+            )
+        for endpoint_path in sorted(_RETIRED_ENDPOINTS):
+            act = _retire_endpoint(conn, endpoint_path, dry_run=ns.dry_run)
+            actions.append(
+                {
+                    "endpoint_path": endpoint_path,
+                    "action": f"retired_{act}",
                 }
             )
         if not ns.dry_run:

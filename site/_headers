@@ -1,16 +1,49 @@
 # Cloudflare Pages _headers — jpcite.com
 # Reference: https://developers.cloudflare.com/pages/configuration/headers/
-# Generated 2026-04-25 for security and sitemap cache headers.
+# Security and sitemap cache headers.
 
 # Security headers for the static site. Review CSP changes before deploy.
+#
+# 2026-05-13 static security header update:
+#   - Added upgrade-insecure-requests: silently re-issues any mixed-content sub-resource
+#     over HTTPS (belt+suspenders with HSTS preload).
+#   - Added Cross-Origin-Resource-Policy / Cross-Origin-Opener-Policy: blocks Spectre-style
+#     side-channel embeds + window.opener leak from popup-based phishing.
+#   - Added X-Permitted-Cross-Domain-Policies: none — disables legacy Flash/Acrobat policy
+#     file discovery on this origin.
+#   - Tightened Permissions-Policy: 22-feature explicit opt-out (was 3). All disabled — we
+#     ship no UA-feature-using code on the static site. Adds payment=() so an injected
+#     card-stealer script can't summon a PaymentRequest dialog. fullscreen=(self) is the only
+#     feature that's "self" rather than "()" so a hypothetical future status-page expand-on-
+#     click can still go fullscreen on the user's own click; today no site/*.html uses it.
+#   - Kept 'unsafe-inline' in script-src / style-src: 27 site/*.html files carry inline
+#     <script> bodies (event handlers / SSR data hydration / status polling) + 34 carry
+#     inline <style>. Full unsafe-inline removal is a separate lane (see RESIDUAL DEBT
+#     comment below — would require hash-pinning every inline block or extracting all into
+#     /static/*.js + /static/*.css, both high-churn vs static-site benefit).
+#   - Kept hash-pinned script-src in CSP-Report-Only as the migration target — the 6 sha256
+#     hashes already cover the load-bearing inline blocks; expand the list as we extract
+#     more inline scripts.
+#
+# RESIDUAL DEBT (track in audit; do not silently expand without re-pinning hashes):
+#   - 27 site/*.html files with inline <script> bodies (excluding type=application/ld+json
+#     which is non-executable JSON-LD and CSP-exempt).
+#   - 34 site/*.html files with inline <style> bodies.
+#   - 3 site/*.html files with inline event handlers (onclick=/onsubmit=/onload=): login.html,
+#     dashboard.html, bookmarklet.html.
+#   Goal: drive both counts to 0 in a dedicated lane, then strip 'unsafe-inline' from
+#   script-src and style-src in the enforcing CSP above.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'sha256-0LkrXXIDvlJXDyiVMzXgmEl9qUbtOjoKDx3IC87K8bY=' 'sha256-1TFHSaz1uwUQa0945e71hEHJEzuJjt/CNaWnWsvpSvo=' 'sha256-AJtTnpCPsluvn5R8eQuYalW6heCXkU6dk1zmth/oITQ=' 'sha256-otI9BoZyeDx91z2i6bqiMURDUX1T5yXR+T7rTExOD3w=' 'sha256-oz2/C7uS96S5tB0l5gMxl8QG2Dfc7vQde6m+gn5CjZM=' 'sha256-sJV/8gAIT9L3t693bKuhv84h/vMPAT/WmmgGKWpwEH0=' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com; upgrade-insecure-requests
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'sha256-0LkrXXIDvlJXDyiVMzXgmEl9qUbtOjoKDx3IC87K8bY=' 'sha256-1TFHSaz1uwUQa0945e71hEHJEzuJjt/CNaWnWsvpSvo=' 'sha256-AJtTnpCPsluvn5R8eQuYalW6heCXkU6dk1zmth/oITQ=' 'sha256-otI9BoZyeDx91z2i6bqiMURDUX1T5yXR+T7rTExOD3w=' 'sha256-oz2/C7uS96S5tB0l5gMxl8QG2Dfc7vQde6m+gn5CjZM=' 'sha256-sJV/8gAIT9L3t693bKuhv84h/vMPAT/WmmgGKWpwEH0=' https://plausible.io https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.jpcite.com https://pypi.org https://plausible.io https://cloudflareinsights.com; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Permissions-Policy: accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-site
+  X-Permitted-Cross-Domain-Policies: none
 
 # Sitemaps must be served as XML to be parsed by Googlebot / Bingbot.
 /sitemap*.xml
@@ -21,7 +54,7 @@
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=3600
 
-# RSS 2.0 announcements feed (release notes, dataset ingests, migrations).
+# RSS 2.0 announcements feed (release notes, dataset ingests, data updates).
 # Served as application/rss+xml per RSS 2.0 spec; UTF-8 charset declared
 # explicitly so Cloudflare's content-type sniffer does not downgrade to
 # text/xml on browsers that do not advertise RSS in Accept.
@@ -70,77 +103,96 @@
 # a 10-min TTL that absorbs HN/X spike bursts. Verified live with
 # `curl -sI https://jpcite.com/server.json | grep cf-cache-status` flipping
 # from DYNAMIC → MISS → HIT after redeploy.
+# NOTE on Cross-Origin-Resource-Policy: the global /* rule above pins CORP to
+# `same-site`, which would block legitimate cross-origin SDK fetches of these
+# manifests. Each JSON manifest route below explicitly sets
+# `Cross-Origin-Resource-Policy: cross-origin` to override the global default
+# so MCP-discovery clients on any origin can still fetch the manifest. The
+# CORS allowlist remains `*` (intentional: these manifests are non-sensitive
+# discovery surfaces).
 /openapi/*.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /v1/openapi*.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /docs/openapi/*.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /openapi.agent.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /server.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /mcp-server.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /mcp-server.full.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /.well-known/mcp.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /.well-known/trust.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /.well-known/sbom.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /.well-known/sbom/*.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /bench/*.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 /llms-full.txt
   Content-Type: text/markdown; charset=utf-8
@@ -150,7 +202,7 @@
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=3600
 
-# Wave 17 AX — companion-Markdown surface (GitHub-style `{url}.md`).
+# companion Markdown — companion-Markdown surface (GitHub-style `{url}.md`).
 # Every public SEO HTML page (cases / laws / enforcement) ships a sibling
 # `.md` file that contains the same canonical narrative as Markdown with
 # YAML-ish frontmatter (canonical / lang / est_tokens / source_url / fetched_at).
@@ -158,8 +210,8 @@
 # JS-heavy HTML and ingest only `{url}.md` when present. Cloudflare Pages must
 # serve them as `text/markdown` so the crawler does not fall back to
 # `application/octet-stream`. UTF-8 charset is required for JA text.
-# Long edge cache because the .md companion is deterministically regenerated
-# in bulk; downstream LLMs benefit from a stable corpus snapshot.
+# Long edge cache because the .md companion files are refreshed together;
+# downstream LLMs benefit from a stable corpus snapshot.
 /cases/*.md
   Content-Type: text/markdown; charset=utf-8
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
@@ -184,17 +236,18 @@
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
-# Status page — live health probe, must always re-evaluate.
-# /status/index.html embeds vanilla JS that polls /v1/am/health/deep +
-# PyPI every 30s. If browsers cache the HTML, users see stale "all green"
-# overlays after an outage clears (or worse, stale green during one).
+# Status page — public snapshot, must always re-evaluate.
+# /status/index.html reads /status/status.json every 30s. If browsers cache
+# the HTML, users see stale status copy after an outage clears (or worse,
+# stale green during one).
 # max-age=0 forces revalidation on every reload; s-maxage=60 lets the edge
 # absorb crawler bursts. The JS itself controls liveness — a 60s edge cache
 # on the shell only hides newly-published copy edits, not the live status.
 /status/*
   Cache-Control: public, max-age=0, s-maxage=60, must-revalidate
-  X-Robots-Tag: index, follow
+  X-Robots-Tag: noindex, nofollow
 
 # Trial-key reveal page: no-store, noindex.
 # /trial.html receives the issued key in the URL fragment (#api_key=...)
@@ -216,7 +269,7 @@
 
 # /playground.html — interactive REST API try-it surface. Ships a single
 # inline <script> block (~6 KB local OpenAPI mirror + fetch controller).
-# The shell rarely changes (param schema is the only churn), but visitors
+# The shell rarely changes (parameter definitions are the usual churn), but visitors
 # return mid-evaluation and we want copy edits to reach them in minutes,
 # not hours. 5 min browser / 10 min edge mirrors /index.html policy
 # (similar interactive-shell pattern). Robots indexable — playground is
@@ -283,28 +336,38 @@
 # Path-fingerprinted by sha10 of the upstream gstatic URL → safe to
 # cache 1y immutable. Access-Control-Allow-Origin enables cross-subdomain
 # use (e.g. api.jpcite.com docs preview).
+# Cross-Origin-Resource-Policy: cross-origin overrides the global same-site
+# default so the same font subsets can hydrate the mkdocs preview rendered
+# on api.jpcite.com (different eTLD+1 sub-resource).
 /static/fonts/*
   Cache-Control: public, max-age=31536000, immutable
   Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
 
 # OG / Twitter PNGs + decorative WebP previews. PNG sources stay because
 # the Twitter card scraper does not reliably resolve WebP. 1-day cache
 # (was 30d — caused branding-update propagation pain on 2026-04-30 logo
 # refresh). Brand assets need to rotate fast when corrected.
+# OG / Twitter / Discord / Slack social-card scrapers fetch these from
+# cross-origin contexts; override the global CORP same-site default so
+# the unfurl pipeline does not 403 on the embedded preview image.
 /assets/*.png
   Cache-Control: public, max-age=86400
+  Cross-Origin-Resource-Policy: cross-origin
 
 /assets/*.webp
   Cache-Control: public, max-age=86400
+  Cross-Origin-Resource-Policy: cross-origin
 
 /assets/*.svg
   Cache-Control: public, max-age=86400
+  Cross-Origin-Resource-Policy: cross-origin
 
 # Industry and program cross-reference pages.
 /industries/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
-# Generated news posts use shorter cache because source updates can change.
+# News posts use shorter cache because source updates can change.
 /news/*
   Cache-Control: public, max-age=3600, stale-while-revalidate=21600
 
@@ -317,7 +380,7 @@
   Cache-Control: public, max-age=3600, s-maxage=86400
 
 # ------------------------------------------------------------------
-# 2026-05-11 Wave 14 GEO group α: index-discovery directories.
+# 2026-05-11 index-discovery: index-discovery directories.
 # /cases/*, /laws/*, /enforcement/* are per-row SEO surfaces (2,286 case
 # studies + 6,493 law full-text + 1,185 行政処分). They are the densest
 # citation substrate for answer engines, but Cloudflare Pages does not
@@ -327,7 +390,7 @@
 # and-suspenders to the in-page <meta name="robots" content="index,
 # follow"> already present in the row templates.
 # Cache profile (browser 1 day / edge 1 week) matches the rest of the
-# per-row SEO cohort and is conservative enough that any copy fix
+# per-row SEO group and is conservative enough that any copy fix
 # (citation tooltip, primary-source URL fix, 公的機関 name update)
 # propagates to readers within 24h without smashing the origin under
 # crawler bursts.
@@ -347,22 +410,22 @@
   Cache-Control: public, max-age=86400
   CDN-Cache-Control: public, max-age=604800
 
-# AI-surface sitemap (16-URL llmstxt/openapi/mcp/well-known cohort).
-# Served as XML; lifespan matches the rest of the sitemap-* cohort.
+# AI-surface sitemap (16-URL llmstxt/openapi/mcp/well-known group).
+# Served as XML; lifespan matches the rest of the sitemap-* group.
 /sitemap-llms.xml
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=3600
 
 # ------------------------------------------------------------------
-# Wave 24 (2026-05-12) — CDN cache strategy hot-path optimization.
+# 2026-05-12 — CDN cache strategy hot-path optimization.
 # ------------------------------------------------------------------
 # /v1/programs/* responses are proxied through functions/api_proxy.ts.
-# The upstream FastAPI emits its own cache-control on 200 results
+# The upstream API emits its own cache-control on 200 results
 # (s-maxage=60), but Cloudflare Pages does not honor that without an
 # explicit edge directive when the response is routed through a Pages
 # Function. The headers here ensure /api/programs/* still hits the
 # CF edge cache for 60s, which is the practical max for an FTS search
-# surface (programs corpus is regenerated nightly; 60s cache eats >95%
+# surface (programs corpus is refreshed nightly; 60s cache eats >95%
 # of duplicate query bursts without serving truly-stale results).
 /api/programs/*
   Cache-Control: public, max-age=60, s-maxage=60
@@ -371,12 +434,12 @@
 
 # /llms.txt is the AI-bot canonical landing surface (also served by
 # functions/aeo_redirect.ts for AI-bot UAs on /). 3600s edge cache is
-# safe: llms.txt regeneration is nightly via scripts/regen_llms_full.py.
+# safe: llms.txt is refreshed on the regular publishing schedule.
 # Already cached at 3600s above — duplicated explicit rule here documents
 # the AEO contract.
 
 # Sitemap XML — 86400s edge cache.
-# Sitemaps are regenerated on every deploy and never change between
+# Sitemaps are refreshed on every deploy and never change between
 # deploys; a 1-day cache cuts crawler bandwidth without staleness.
 # Already cached at 3600s above; explicit rule for /sitemap-*.xml lifts
 # the edge cache to 24h while keeping browser revalidation at 1h.

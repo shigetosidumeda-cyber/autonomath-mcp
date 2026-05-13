@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 補助金 SaaS / 中小企業診断士事務所 / 大学院政策研究室 / シンクタンク / 経営コンサル会社で、補助金別の採択事例 (現状 2,286 件) を月次 / 四半期で bulk export し、自社 DB の `cases` テーブルや分析ノートブックに取り込む層。本 recipe は最も網羅性が高い endpoint で、program_id 別 / 業種別 / 都道府県別 / 採択日別の filter + parquet / JSON / CSV 出力に対応。年次レポート / 競合分析 / 業界動向把握の素材として使う。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - `X-Client-Tag` (用途別計上)
 - 抽出条件 (program_id list / 業種 / 都道府県 / 採択日 range)
 - (推奨) `Idempotency-Key` (bulk batch の冪等性確保)
@@ -122,7 +122,7 @@ console.log(`採択 ${job.row_count} 件、URL: ${job.result_url}`);
 - 1 batch 200 units × ¥3 = ¥600 / 月
 - 月 5 batch (program 別 / 業種別) = ¥3,000 / 月、税込 ¥3,300
 - 年 ¥36,000 / 年、税込 ¥39,600
-- 節約 (純 LLM vs jpcite ¥3/req): 月 5 batch × 200 cycle で、純 LLM は約 ¥10,000/月 (1 batch cycle ¥2,000 = bulk fetch 200 record + filter) に対し jpcite は ¥3,000/月 (1,000 req × ¥3) → 節約 約 ¥7,000/月 / batch あたり ¥1,400 (cf. `docs/canonical/cost_saving_examples.md` case 5 同系)
+- 節約 (純 LLM vs jpcite 標準従量料金): 月 5 batch × 200 cycle で、純 LLM は約 ¥10,000/月 (1 batch cycle ¥2,000 = bulk fetch 200 record + filter) に対し jpcite は ¥3,000/月 (1,000 req × ¥3) → 節約 約 ¥7,000/月 / batch あたり ¥1,400 (cf. `docs/canonical/cost_saving_examples.md` case 5 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

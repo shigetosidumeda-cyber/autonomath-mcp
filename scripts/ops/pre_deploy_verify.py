@@ -64,6 +64,14 @@ def build_commands(
             preflight_argv,
         ),
         VerificationCommand(
+            "pre_deploy_manifest_verify",
+            [
+                sys.executable,
+                str(scripts_dir / "pre_deploy_manifest_verify.py"),
+                "--warn-only",
+            ],
+        ),
+        VerificationCommand(
             "perf_smoke",
             [
                 sys.executable,

@@ -68,12 +68,11 @@ from __future__ import annotations
 import argparse
 import contextlib
 import json
-import os
 import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -131,7 +130,7 @@ STATUS_OK = "ok"
 STATUS_DEGRADED = "degraded"
 STATUS_DOWN = "down"
 
-PROBE_TIMEOUT = 10.0   # seconds
+PROBE_TIMEOUT = 10.0  # seconds
 
 # Content-length tolerance — 5%. CDN edge variants can differ slightly
 # (e.g. different ETag headers in HTML responses); 5% is loose enough
@@ -142,23 +141,53 @@ SIZE_TOLERANCE = 0.05
 # fans out against this list (16 UAs × 3 hosts × N paths). Each UA must
 # return 200 (or expected redirect) on every host/path combo.
 AI_BOT_USER_AGENTS: list[tuple[str, str]] = [
-    ("GPTBot", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; GPTBot/1.2; +https://openai.com/gptbot"),
-    ("ChatGPT-User", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot"),
-    ("ClaudeBot", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ClaudeBot/1.0; +https://www.anthropic.com/claude-bot"),
-    ("Claude-User", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; Claude-User/1.0; +https://www.anthropic.com/claude-user"),
+    (
+        "GPTBot",
+        "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; GPTBot/1.2; +https://openai.com/gptbot",
+    ),
+    (
+        "ChatGPT-User",
+        "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot",
+    ),
+    (
+        "ClaudeBot",
+        "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ClaudeBot/1.0; +https://www.anthropic.com/claude-bot",
+    ),
+    (
+        "Claude-User",
+        "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; Claude-User/1.0; +https://www.anthropic.com/claude-user",
+    ),
     ("anthropic-ai", "anthropic-ai/1.0"),
     ("Google-Extended", "Mozilla/5.0 (compatible; Google-Extended/1.0)"),
     ("Googlebot", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"),
-    ("PerplexityBot", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot"),
-    ("Meta-ExternalAgent", "meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)"),
+    (
+        "PerplexityBot",
+        "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; PerplexityBot/1.0; +https://perplexity.ai/perplexitybot",
+    ),
+    (
+        "Meta-ExternalAgent",
+        "meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)",
+    ),
     ("Twitterbot", "Twitterbot/1.0"),
-    ("Amazonbot", "Mozilla/5.0 (compatible; Amazonbot/0.1; +https://developer.amazon.com/amazonbot)"),
+    (
+        "Amazonbot",
+        "Mozilla/5.0 (compatible; Amazonbot/0.1; +https://developer.amazon.com/amazonbot)",
+    ),
     ("MistralAI-User", "MistralAI-User/1.0"),
     ("DeepSeekBot", "Mozilla/5.0 (compatible; DeepSeekBot/1.0; +https://www.deepseek.com)"),
-    ("Bytespider", "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/537.36 (KHTML, like Gecko); compatible; Bytespider; bytespider@bytedance.com"),
+    (
+        "Bytespider",
+        "Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/537.36 (KHTML, like Gecko); compatible; Bytespider; bytespider@bytedance.com",
+    ),
     ("cohere-ai", "cohere-ai/1.0"),
-    ("Applebot-Extended", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko); Applebot-Extended/0.1"),
-    ("Bingbot", "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm"),
+    (
+        "Applebot-Extended",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko); Applebot-Extended/0.1",
+    ),
+    (
+        "Bingbot",
+        "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm",
+    ),
 ]
 
 
@@ -167,7 +196,9 @@ AI_BOT_USER_AGENTS: list[tuple[str, str]] = [
 # ---------------------------------------------------------------------------
 
 
-def _http_head_or_get(url: str, user_agent: str | None = None) -> tuple[int, int, str, str, str | None]:
+def _http_head_or_get(
+    url: str, user_agent: str | None = None
+) -> tuple[int, int, str, str, str | None]:
     """One-shot HTTP GET. Returns (status, body_len, content_type, etag, error).
 
     We use GET rather than HEAD because Cloudflare's CDN sometimes
@@ -232,8 +263,8 @@ def verify_path_across_hosts(path: str, hosts: list[str]) -> dict[str, Any]:
     # Compute drift signals.
     expected = EXPECTED_HOST_BEHAVIOR.get(path, {})
 
-    statuses = {h: per_host[h]["http_status"] for h in hosts}
-    sizes = [per_host[h]["body_len"] for h in hosts if per_host[h]["body_len"] > 0]
+    {h: per_host[h]["http_status"] for h in hosts}
+    [per_host[h]["body_len"] for h in hosts if per_host[h]["body_len"] > 0]
     cts = {per_host[h]["content_type"] for h in hosts if per_host[h]["content_type"]}
 
     drift = []
@@ -248,9 +279,8 @@ def verify_path_across_hosts(path: str, hosts: list[str]) -> dict[str, Any]:
         elif expected_behavior == "redirect":
             if actual not in (301, 302, 307, 308):
                 drift.append(f"{h}: expected 3xx redirect, got {actual}")
-        elif expected_behavior == "absent":
-            if actual in (200,):
-                drift.append(f"{h}: expected 404, got {actual}")
+        elif expected_behavior == "absent" and actual in (200,):
+            drift.append(f"{h}: expected 404, got {actual}")
 
     # Size parity. Skip if any host returned non-200 — comparing 200 vs 404
     # body sizes is meaningless. Only enforce for the subset of hosts
@@ -345,9 +375,8 @@ def verify_path_across_uas(
             elif expected_behavior == "accept":
                 if status not in (200, 304):
                     drift.append(f"{ua_label}@{host}: expected 200/304, got {status}")
-            elif expected_behavior == "absent":
-                if status == 200:
-                    drift.append(f"{ua_label}@{host}: expected absent, got 200")
+            elif expected_behavior == "absent" and status == 200:
+                drift.append(f"{ua_label}@{host}: expected absent, got 200")
         per_ua[ua_label] = per_host
 
     return {
@@ -385,27 +414,36 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         description="jpcite Cloudflare Pages parity verify (3 hosts × 10 paths).",
     )
     p.add_argument(
-        "--hosts", type=str, default=",".join(DEFAULT_HOSTS),
+        "--hosts",
+        type=str,
+        default=",".join(DEFAULT_HOSTS),
         help=f"Comma-separated hostnames (default: {','.join(DEFAULT_HOSTS)}).",
     )
     p.add_argument(
-        "--paths", type=str, default=",".join(TARGET_PATHS),
+        "--paths",
+        type=str,
+        default=",".join(TARGET_PATHS),
         help=f"Comma-separated paths (default: {len(TARGET_PATHS)} pre-configured resources).",
     )
     p.add_argument(
-        "--out", type=Path, default=Path("site/status/cf_parity.json"),
+        "--out",
+        type=Path,
+        default=Path("site/status/cf_parity.json"),
         help="Write JSON snapshot to this path.",
     )
     p.add_argument(
-        "--pretty", action="store_true",
+        "--pretty",
+        action="store_true",
         help="Indent JSON output.",
     )
     p.add_argument(
-        "--quiet", action="store_true",
+        "--quiet",
+        action="store_true",
         help="Suppress stdout summary.",
     )
     p.add_argument(
-        "--ua-mode", action="store_true",
+        "--ua-mode",
+        action="store_true",
         help=(
             "Wave 22: AI-bot UA fanout mode. Probe every (host × path) "
             "combination with each UA in the AI_BOT_USER_AGENTS list. "
@@ -413,7 +451,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         ),
     )
     p.add_argument(
-        "--ua-out", type=Path, default=Path("site/status/cf_parity_ua.json"),
+        "--ua-out",
+        type=Path,
+        default=Path("site/status/cf_parity_ua.json"),
         help="Output path for --ua-mode snapshot.",
     )
     return p.parse_args(argv)
@@ -431,7 +471,10 @@ def main(argv: list[str] | None = None) -> int:
         ua_snapshot = build_ua_snapshot(hosts, paths, AI_BOT_USER_AGENTS)
         args.ua_out.parent.mkdir(parents=True, exist_ok=True)
         args.ua_out.write_text(
-            json.dumps(ua_snapshot, indent=2 if args.pretty else None, ensure_ascii=False, sort_keys=False) + "\n",
+            json.dumps(
+                ua_snapshot, indent=2 if args.pretty else None, ensure_ascii=False, sort_keys=False
+            )
+            + "\n",
             encoding="utf-8",
         )
         if not args.quiet:
@@ -445,15 +488,18 @@ def main(argv: list[str] | None = None) -> int:
             if n_degraded:
                 for p in ua_snapshot["per_path"]:
                     if p["status"] != STATUS_OK:
-                        print(f"  - {p['path']}: {'; '.join(p['drift'][:5])}"
-                              + (" ..." if len(p["drift"]) > 5 else ""))
+                        print(
+                            f"  - {p['path']}: {'; '.join(p['drift'][:5])}"
+                            + (" ..." if len(p["drift"]) > 5 else "")
+                        )
         return 0
 
     snapshot = build_snapshot(hosts, paths)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(
-        json.dumps(snapshot, indent=2 if args.pretty else None, ensure_ascii=False, sort_keys=False) + "\n",
+        json.dumps(snapshot, indent=2 if args.pretty else None, ensure_ascii=False, sort_keys=False)
+        + "\n",
         encoding="utf-8",
     )
 

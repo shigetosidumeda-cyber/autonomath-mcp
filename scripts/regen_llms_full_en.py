@@ -437,7 +437,7 @@ def _section_footer() -> list[str]:
         "",
         "## License and attribution",
         "",
-        "Publisher: jpcite. Contact: https://jpcite.com/docs/compliance/tokushoho/.",
+        "Publisher: jpcite. Contact: https://jpcite.com/tokushoho.html.",
         "Product: jpcite. Canonical domain: https://jpcite.com. MCP installation is documented at https://jpcite.com/docs/mcp-tools/.",
         "",
         "Data attribution:",
@@ -451,7 +451,7 @@ def _section_footer() -> list[str]:
         "- The Japanese-language sibling is at https://jpcite.com/llms-full.txt.",
         "- The shorter index file is at https://jpcite.com/llms.en.txt.",
         "",
-        "No machine translation of program names, law titles, or case fields. Use the original Japanese labels unless an official English name is published. See https://jpcite.com/docs/i18n_strategy/ for the canonical bilingual policy.",
+        "No machine translation of program names, law titles, or case fields. Use the original Japanese labels unless an official English name is published. See https://jpcite.com/llms.en.txt for the canonical bilingual index.",
         "",
     ]
 

@@ -28,7 +28,7 @@ import json
 import pathlib
 import sqlite3
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = REPO_ROOT / "site"
@@ -68,7 +68,10 @@ def _read_counts() -> dict[str, int]:
     except sqlite3.Error:
         return counts
     try:
-        c = _safe_count(db, "SELECT COUNT(*) FROM programs WHERE COALESCE(excluded,0)=0 AND tier IN ('S','A','B','C')")
+        c = _safe_count(
+            db,
+            "SELECT COUNT(*) FROM programs WHERE COALESCE(excluded,0)=0 AND tier IN ('S','A','B','C')",
+        )
         if c is not None and c > 0:
             counts["programs_searchable"] = c
         c = _safe_count(db, "SELECT COUNT(*) FROM programs")
@@ -89,7 +92,7 @@ def _read_counts() -> dict[str, int]:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _publisher_node() -> dict:
@@ -129,12 +132,20 @@ def build_programs_dataset(counts: dict[str, int]) -> dict:
         "datePublished": "2025-12-01",
         "dateModified": _now_iso(),
         "variableMeasured": [
-            {"@type": "PropertyValue", "name": "searchable_programs", "value": counts["programs_searchable"]},
+            {
+                "@type": "PropertyValue",
+                "name": "searchable_programs",
+                "value": counts["programs_searchable"],
+            },
             {"@type": "PropertyValue", "name": "total_programs", "value": counts["programs_total"]},
         ],
         "distribution": [
-            {"@type": "DataDownload", "encodingFormat": "application/json",
-             "contentUrl": "https://api.jpcite.com/v1/programs", "description": "REST API"},
+            {
+                "@type": "DataDownload",
+                "encodingFormat": "application/json",
+                "contentUrl": "https://api.jpcite.com/v1/programs",
+                "description": "REST API",
+            },
         ],
         "additionalProperty": [
             {"@type": "PropertyValue", "name": "ariaDescribedBy", "value": "programs-main"},
@@ -169,8 +180,12 @@ def build_laws_dataset(counts: dict[str, int]) -> dict:
             {"@type": "PropertyValue", "name": "laws_catalog", "value": counts["laws_catalog"]},
         ],
         "distribution": [
-            {"@type": "DataDownload", "encodingFormat": "application/json",
-             "contentUrl": "https://api.jpcite.com/v1/laws", "description": "REST API"},
+            {
+                "@type": "DataDownload",
+                "encodingFormat": "application/json",
+                "contentUrl": "https://api.jpcite.com/v1/laws",
+                "description": "REST API",
+            },
         ],
         "additionalProperty": [
             {"@type": "PropertyValue", "name": "ariaDescribedBy", "value": "laws-main"},
@@ -201,11 +216,19 @@ def build_cases_dataset(counts: dict[str, int]) -> dict:
         "dateModified": _now_iso(),
         "variableMeasured": [
             {"@type": "PropertyValue", "name": "case_studies", "value": counts["cases"]},
-            {"@type": "PropertyValue", "name": "court_decisions", "value": counts["court_decisions"]},
+            {
+                "@type": "PropertyValue",
+                "name": "court_decisions",
+                "value": counts["court_decisions"],
+            },
         ],
         "distribution": [
-            {"@type": "DataDownload", "encodingFormat": "application/json",
-             "contentUrl": "https://api.jpcite.com/v1/cases", "description": "REST API"},
+            {
+                "@type": "DataDownload",
+                "encodingFormat": "application/json",
+                "contentUrl": "https://api.jpcite.com/v1/cases",
+                "description": "REST API",
+            },
         ],
         "additionalProperty": [
             {"@type": "PropertyValue", "name": "ariaDescribedBy", "value": "cases-main"},
@@ -238,8 +261,12 @@ def build_enforcement_dataset(counts: dict[str, int]) -> dict:
             {"@type": "PropertyValue", "name": "enforcement_cases", "value": counts["enforcement"]},
         ],
         "distribution": [
-            {"@type": "DataDownload", "encodingFormat": "application/json",
-             "contentUrl": "https://api.jpcite.com/v1/enforcement", "description": "REST API"},
+            {
+                "@type": "DataDownload",
+                "encodingFormat": "application/json",
+                "contentUrl": "https://api.jpcite.com/v1/enforcement",
+                "description": "REST API",
+            },
         ],
         "additionalProperty": [
             {"@type": "PropertyValue", "name": "ariaDescribedBy", "value": "enforcement-main"},
@@ -278,7 +305,11 @@ def build_aggregate_dataset(counts: dict[str, int]) -> dict:
         "dateModified": _now_iso(),
         "hasPart": [{"@id": sid} for sid in sub_ids],
         "variableMeasured": [
-            {"@type": "PropertyValue", "name": "searchable_programs", "value": counts["programs_searchable"]},
+            {
+                "@type": "PropertyValue",
+                "name": "searchable_programs",
+                "value": counts["programs_searchable"],
+            },
             {"@type": "PropertyValue", "name": "laws_fulltext", "value": counts["laws_fulltext"]},
             {"@type": "PropertyValue", "name": "case_studies", "value": counts["cases"]},
             {"@type": "PropertyValue", "name": "enforcement_cases", "value": counts["enforcement"]},

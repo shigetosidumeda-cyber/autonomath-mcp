@@ -582,10 +582,13 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
     # "14 days / 200 requests" promise.
     if ctx.tier == "trial":
         row = conn.execute(
-            "SELECT trial_expires_at FROM api_keys WHERE key_hash = ?",
+            "SELECT trial_expires_at, monthly_cap_yen FROM api_keys WHERE key_hash = ?",
             (ctx.key_hash,),
         ).fetchone()
         expires_raw = row["trial_expires_at"] if row else None
+        trial_cap = TRIAL_REQUEST_CAP
+        if row and row["monthly_cap_yen"] is not None:
+            trial_cap = max(0, int(row["monthly_cap_yen"]) // 3)
         if expires_raw:
             try:
                 expires_at = datetime.fromisoformat(str(expires_raw).replace("Z", "+00:00"))
@@ -618,7 +621,7 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
                 "SET trial_requests_used = COALESCE(trial_requests_used, 0) + 1 "
                 "WHERE key_hash = ? "
                 "AND COALESCE(trial_requests_used, 0) < ?",
-                (ctx.key_hash, TRIAL_REQUEST_CAP),
+                (ctx.key_hash, trial_cap),
             )
             row = conn.execute(
                 "SELECT trial_requests_used FROM api_keys WHERE key_hash = ?",
@@ -637,15 +640,15 @@ def _enforce_quota(conn: sqlite3.Connection, ctx: ApiContext) -> None:
                 status.HTTP_429_TOO_MANY_REQUESTS,
                 detail={
                     "error": "trial_request_cap_reached",
-                    "trial_request_cap": TRIAL_REQUEST_CAP,
+                    "trial_request_cap": trial_cap,
                     "trial_requests_used": used,
                     "trial_terms": (
-                        f"トライアルは 14 日間または {TRIAL_REQUEST_CAP} リクエストまで無料です。"
+                        f"トライアルは期限内または {trial_cap} リクエストまで利用できます。"
                     ),
                     "upgrade_url": TRIAL_UPGRADE_URL,
                     "cta_text_ja": "API キー発行で続行 (¥3.30/req)",
                     "message": (
-                        f"トライアルの上限 {TRIAL_REQUEST_CAP} リクエストに"
+                        f"トライアルの上限 {trial_cap} リクエストに"
                         "達しました。¥3.30/req (税込) で続行できます。"
                     ),
                 },

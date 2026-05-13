@@ -53,18 +53,27 @@ if not _AM_DB.exists() or not _JPI_DB.exists() or not _GRAPH.exists():
     )
 
 os.environ["AUTONOMATH_DB_PATH"] = str(_AM_DB)
+os.environ["JPCITE_AUTONOMATH_DB_PATH"] = str(_AM_DB)
 os.environ["AUTONOMATH_GRAPH_DB_PATH"] = str(_GRAPH)
+os.environ["JPCITE_AUTONOMATH_GRAPH_DB_PATH"] = str(_GRAPH)
 # Capture conftest's tmp jpintel.db path BEFORE we override — the
 # autouse session-scoped fixture below restores it after this module's
 # tests run, so unrelated tests later in the suite still see the seeded
 # tmp DB and don't accidentally hit the production corpus / accumulate
 # rate-limit state across suites.
 _PRIOR_JPINTEL_DB_PATH = os.environ.get("JPINTEL_DB_PATH")
+_PRIOR_JPCITE_DB_PATH = os.environ.get("JPCITE_DB_PATH")
 # Override conftest's tmp jpintel.db path with the production corpus —
 # the industry pack wrapper opens jpintel.db read-only via JPINTEL_DB_PATH.
+# Mirror the canonical JPCITE_DB_PATH so `get_flag` resolves to production
+# (canonical wins over legacy in the bridge, so the JPCITE_DB_PATH set in
+# tests/conftest.py would otherwise still point at the seeded tmp DB).
 os.environ["JPINTEL_DB_PATH"] = str(_JPI_DB)
+os.environ["JPCITE_DB_PATH"] = str(_JPI_DB)
 os.environ.setdefault("AUTONOMATH_ENABLED", "1")
+os.environ.setdefault("JPCITE_ENABLED", "1")
 os.environ.setdefault("AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1")
+os.environ.setdefault("JPCITE_INDUSTRY_PACKS_ENABLED", "1")
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -83,6 +92,10 @@ def _restore_jpintel_db_path_after_module():
         os.environ.pop("JPINTEL_DB_PATH", None)
     else:
         os.environ["JPINTEL_DB_PATH"] = _PRIOR_JPINTEL_DB_PATH
+    if _PRIOR_JPCITE_DB_PATH is None:
+        os.environ.pop("JPCITE_DB_PATH", None)
+    else:
+        os.environ["JPCITE_DB_PATH"] = _PRIOR_JPCITE_DB_PATH
     # The module-level Settings() singleton holds the production
     # jpintel.db path captured at this module's import time. Mutate the
     # PATH ATTRIBUTE in place (not the binding) so every consumer that
@@ -107,6 +120,7 @@ def _use_production_jpintel_db_for_industry_packs(_reset_anon_rate_limit):
     """Keep this module on the production corpus after global test resets."""
 
     os.environ["JPINTEL_DB_PATH"] = str(_JPI_DB)
+    os.environ["JPCITE_DB_PATH"] = str(_JPI_DB)
     try:
         from jpintel_mcp.config import settings as _live_settings
 

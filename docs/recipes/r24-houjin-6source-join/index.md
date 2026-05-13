@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 SaaS 開発者 / agent dev / リサーチャー / 大学院生で、法人番号 1 件から 6 つの公的 source (1) 採択履歴、(2) 行政処分、(3) 適格事業者状況、(4) EDINET 重要事実、(5) 公共入札落札、(6) 商号 / 住所 / 代表者変更 を 1 envelope で join した parquet / JSON を取得し、自社 SaaS の DB に取り込む素材レイヤとして使う。本 recipe は最も汎用的な素材 endpoint で、他の recipe (r03 M&A DD / r09 BPO トリアージ / r12 監査 KYC / r15 SaaS enrich) の下流に位置する。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - `X-Client-Tag` (用途別計上)
 - 法人番号 (13 桁、国税庁付番)
 - (推奨) Idempotency-Key (大量 batch の冪等性確保)
@@ -116,13 +116,12 @@ fs.writeFileSync("houjin_join.json", JSON.stringify(snap, null, 2));
 ## 関連 recipe
 - [r03-sme-ma-public-dd](../r03-sme-ma-public-dd/) — M&A DD、本 recipe の上流ユースケース
 - [r12-audit-firm-kyc-sweep](../r12-audit-firm-kyc-sweep/) — 監査法人 KYC
-- [r15-grant-saas-internal-enrich](../r15-grant-saas-internal-enrich/) — SaaS 内部 enrich、本 recipe の bulk 版
 
 ## billable_units 試算
 - 1 法人 50 units × ¥3 = ¥150 / 法人
 - 月 100 法人 = ¥15,000 / 月、税込 ¥16,500
 - 月 1,000 法人 = ¥150,000 / 月、税込 ¥165,000
-- 節約 (純 LLM vs jpcite ¥3/req): 月 100 法人 join で、純 LLM は約 ¥21,000/月 (1 法人 cycle ¥210 = 6 source × 35 = 6 別 fetch + reasoning) に対し jpcite は ¥15,000/月 (5,000 req × ¥3, join 済 envelope は 50 req/法人) → 節約 約 ¥6,000/月 / 法人あたり ¥60 (cf. `docs/canonical/cost_saving_examples.md` case 1 / case 2 同系、別途 SaaS 開発工数 50-80% 圧縮は ADDENDUM)
+- 節約 (純 LLM vs jpcite 標準従量料金): 月 100 法人 join で、純 LLM は約 ¥21,000/月 (1 法人 cycle ¥210 = 6 source × 35 = 6 別 fetch + reasoning) に対し jpcite は ¥15,000/月 (5,000 req × ¥3, join 済 envelope は 50 req/法人) → 節約 約 ¥6,000/月 / 法人あたり ¥60 (cf. `docs/canonical/cost_saving_examples.md` case 1 / case 2 同系、別途 SaaS 開発工数 50-80% 圧縮は ADDENDUM)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0、出典明記必須

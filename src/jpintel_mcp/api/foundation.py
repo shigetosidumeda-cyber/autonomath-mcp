@@ -37,6 +37,7 @@ import logging
 import os
 import sqlite3
 import time
+import urllib.parse
 from contextlib import suppress
 from pathlib import Path
 from typing import Annotated, Any
@@ -66,6 +67,8 @@ _FOUNDATION_DISCLAIMER = (
 
 
 _VALID_TYPES = frozenset({"公益財団", "一般財団", "NPO", "業界団体"})
+_FOUNDATION_SUMMARY_LIMIT = 64
+_FOUNDATION_MAX_OFFSET = 10_000
 
 
 def _autonomath_db_path() -> str:
@@ -75,11 +78,16 @@ def _autonomath_db_path() -> str:
     return str(Path(__file__).resolve().parents[3] / "autonomath.db")
 
 
+def _sqlite_readonly_uri(path: str) -> str:
+    return f"file:{urllib.parse.quote(Path(path).resolve().as_posix(), safe='/')}?mode=ro"
+
+
 def _open_am_ro() -> sqlite3.Connection | None:
     path = _autonomath_db_path()
     try:
-        uri = f"file:{path}?mode=ro"
+        uri = _sqlite_readonly_uri(path)
         conn = sqlite3.connect(uri, uri=True, timeout=5.0)
+        conn.execute("PRAGMA query_only = 1")
         conn.row_factory = sqlite3.Row
         return conn
     except sqlite3.OperationalError:
@@ -119,14 +127,57 @@ def _row_to_dict(r: sqlite3.Row) -> dict[str, Any]:
     }
 
 
+def _bounded_summary(
+    rows: list[dict[str, Any]],
+    foundation_type: str | None,
+    grant_theme: str | None,
+) -> dict[str, Any]:
+    """Summarize only the bounded result page, never the full foundation table."""
+
+    buckets: dict[tuple[str | None, str | None], set[str]] = {}
+    counts: dict[tuple[str | None, str | None], int] = {}
+    for row in rows:
+        key = (row.get("foundation_type"), row.get("donation_category"))
+        counts[key] = counts.get(key, 0) + 1
+        foundation_name = str(row.get("foundation_name") or "")
+        buckets.setdefault(key, set())
+        if foundation_name:
+            buckets[key].add(foundation_name)
+
+    by_type = [
+        {
+            "foundation_type": key[0],
+            "donation_category": key[1],
+            "program_count": count,
+            "foundation_count": len(buckets.get(key, set())),
+        }
+        for key, count in sorted(
+            counts.items(),
+            key=lambda item: (-item[1], str(item[0][0] or ""), str(item[0][1] or "")),
+        )[:_FOUNDATION_SUMMARY_LIMIT]
+    ]
+
+    filtered_by: dict[str, str] = {}
+    if foundation_type:
+        filtered_by["foundation_type"] = foundation_type
+    if grant_theme:
+        filtered_by["grant_theme"] = grant_theme
+
+    return {
+        "by_type": by_type,
+        "limit": _FOUNDATION_SUMMARY_LIMIT,
+        "scope": "current_page",
+        "filtered_by": filtered_by,
+    }
+
+
 @router.get(
     "/list",
     summary="List 民間助成財団 grant programs (filter by type + theme)",
     description=(
         "Returns 民間 (公益財団 / 一般財団 / NPO / 業界団体) 助成 program "
         "rows with optional ``foundation_type`` / ``grant_theme`` filters. "
-        "NO LLM call. Pure SQLite + index walk on "
-        "``am_program_private_foundation`` (migration 250).\n\n"
+        "NO LLM call. Results are served from precomputed indexed records.\n\n"
         "**Pricing**: ¥3 / call (``_billing_unit: 1``).\n\n"
         "**Sensitive**: 税理士法 §2 / 行政書士法 §1 / 弁護士法 §72 fence — "
         "every 2xx carries ``_disclaimer`` (envelope key). LLM agents MUST "
@@ -144,8 +195,7 @@ def list_foundations(
         str | None,
         Query(
             description=(
-                "Filter by foundation type. One of "
-                "'公益財団', '一般財団', 'NPO', '業界団体'."
+                "Filter by foundation type. One of '公益財団', '一般財団', 'NPO', '業界団体'."
             ),
         ),
     ] = None,
@@ -154,7 +204,7 @@ def list_foundations(
         Query(description="Filter by grant theme (e.g. '研究', '環境')."),
     ] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
-    offset: Annotated[int, Query(ge=0)] = 0,
+    offset: Annotated[int, Query(ge=0, le=_FOUNDATION_MAX_OFFSET)] = 0,
 ) -> JSONResponse:
     """List 民間助成財団 grants."""
     t0 = time.perf_counter()
@@ -163,8 +213,7 @@ def list_foundations(
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=(
-                f"foundation_type must be one of {sorted(_VALID_TYPES)}, "
-                f"got {foundation_type!r}."
+                f"foundation_type must be one of {sorted(_VALID_TYPES)}, got {foundation_type!r}."
             ),
         )
 
@@ -195,24 +244,7 @@ def list_foundations(
                     params,
                 ).fetchall()
                 rows = [_row_to_dict(r) for r in fetched]
-                # cheap summary roll-up
-                if _table_exists(am, "v_program_private_foundation_summary"):
-                    summary_rows = am.execute(
-                        "SELECT foundation_type, donation_category, "
-                        "       program_count, foundation_count "
-                        "FROM v_program_private_foundation_summary"
-                    ).fetchall()
-                    summary = {
-                        "by_type": [
-                            {
-                                "foundation_type": s["foundation_type"],
-                                "donation_category": s["donation_category"],
-                                "program_count": s["program_count"],
-                                "foundation_count": s["foundation_count"],
-                            }
-                            for s in summary_rows
-                        ]
-                    }
+                summary = _bounded_summary(rows, foundation_type, grant_theme)
         except sqlite3.OperationalError as exc:
             logger.warning("foundation list query failed: %s", exc)
         finally:
@@ -255,8 +287,8 @@ def list_foundations(
     "/{foundation_id}",
     summary="Fetch one 民間助成財団 row by foundation_id",
     description=(
-        "Returns one row from ``am_program_private_foundation`` by its "
-        "internal ``foundation_id``. ¥3 / call. NO LLM. ``_disclaimer`` "
+        "Returns one 民間助成財団 grant program by its "
+        "``foundation_id``. ¥3 / call. NO LLM. ``_disclaimer`` "
         "envelope key is mandatory."
     ),
     responses={
@@ -270,7 +302,7 @@ def get_foundation(
     ctx: ApiContextDep,
     foundation_id: Annotated[
         int,
-        FastPath(ge=1, description="Internal autoincrement id from migration 250."),
+        FastPath(ge=1, description="Stable foundation record id."),
     ],
 ) -> JSONResponse:
     """Fetch one 民間助成財団 row."""

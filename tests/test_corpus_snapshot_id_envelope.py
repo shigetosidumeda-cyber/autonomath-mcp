@@ -52,13 +52,19 @@ _DEFAULT_JPI_DB = _REPO_ROOT / "data" / "jpintel.db"
 # so set the env var to the most likely real DB if it exists, else a
 # tmpfs path that lets the helper fall through gracefully.
 os.environ.setdefault("AUTONOMATH_DB_PATH", str(_DEFAULT_AM_DB))
+os.environ.setdefault("JPCITE_AUTONOMATH_DB_PATH", str(_DEFAULT_AM_DB))
 os.environ.setdefault("AUTONOMATH_GRAPH_DB_PATH", str(_DEFAULT_GRAPH))
+os.environ.setdefault("JPCITE_AUTONOMATH_GRAPH_DB_PATH", str(_DEFAULT_GRAPH))
 os.environ.setdefault("JPINTEL_DB_PATH", str(_DEFAULT_JPI_DB))
+os.environ.setdefault("JPCITE_DB_PATH", str(_DEFAULT_JPI_DB))
 os.environ.setdefault("AUTONOMATH_ENABLED", "1")
+os.environ.setdefault("JPCITE_ENABLED", "1")
 os.environ.setdefault("AUTONOMATH_WAVE22_ENABLED", "1")
+os.environ.setdefault("JPCITE_WAVE22_ENABLED", "1")
 os.environ.setdefault("AUTONOMATH_WAVE24_FIRST_HALF_ENABLED", "1")
 os.environ.setdefault("AUTONOMATH_WAVE24_SECOND_HALF_ENABLED", "1")
 os.environ.setdefault("AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1")
+os.environ.setdefault("JPCITE_INDUSTRY_PACKS_ENABLED", "1")
 
 # server import first to break the autonomath_tools<->server circular
 # import (same convention as test_wave22_tools.py / test_industry_packs.py).

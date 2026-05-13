@@ -33,6 +33,11 @@ import subprocess
 import sys
 
 import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+from jpintel_mcp.api.credit_wallet import router as wallet_router
+from jpintel_mcp.api.deps import get_db, hash_api_key
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_281 = REPO_ROOT / "scripts" / "migrations" / "281_credit_wallet.sql"
@@ -102,6 +107,170 @@ def _run_etl(db: pathlib.Path, *extra: str) -> dict:
     )
     last_line = proc.stdout.strip().splitlines()[-1]
     return json.loads(last_line)
+
+
+def _wallet_api_client(
+    *,
+    seeded_db: pathlib.Path,
+    autonomath_db: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> TestClient:
+    _apply(autonomath_db, MIG_281)
+    monkeypatch.setenv("AUTONOMATH_DB_PATH", str(autonomath_db))
+
+    app = FastAPI()
+    app.include_router(wallet_router)
+
+    def override_db():
+        conn = sqlite3.connect(seeded_db, check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        try:
+            yield conn
+        finally:
+            conn.close()
+
+    app.dependency_overrides[get_db] = override_db
+    return TestClient(app)
+
+
+def _wallet_row(db: pathlib.Path, key_hash: str) -> sqlite3.Row | None:
+    conn = sqlite3.connect(str(db))
+    conn.row_factory = sqlite3.Row
+    try:
+        return conn.execute(
+            "SELECT wallet_id, balance_yen, auto_topup_threshold, "
+            "       auto_topup_amount, monthly_budget_yen "
+            "FROM am_credit_wallet WHERE owner_token_hash = ?",
+            (key_hash,),
+        ).fetchone()
+    finally:
+        conn.close()
+
+
+def _usage_count(db: pathlib.Path, key_hash: str, endpoints: tuple[str, ...]) -> int:
+    placeholders = ",".join("?" for _ in endpoints)
+    conn = sqlite3.connect(str(db))
+    try:
+        row = conn.execute(
+            f"SELECT COUNT(*) FROM usage_events WHERE key_hash = ? "
+            f"AND endpoint IN ({placeholders})",
+            (key_hash, *endpoints),
+        ).fetchone()
+        return int(row[0])
+    finally:
+        conn.close()
+
+
+# ---------------------------------------------------------------------------
+# 0. REST hardening — auth, idempotency, and no control-plane billing
+# ---------------------------------------------------------------------------
+
+
+def test_wallet_topup_requires_api_key_before_balance_mutation(
+    tmp_path: pathlib.Path,
+    seeded_db: pathlib.Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    am_db = tmp_path / "wallet-api.db"
+    c = _wallet_api_client(
+        seeded_db=seeded_db,
+        autonomath_db=am_db,
+        monkeypatch=monkeypatch,
+    )
+
+    res = c.post(
+        "/v1/wallet/topup",
+        json={
+            "auto_topup_threshold": 1_000,
+            "auto_topup_amount": 5_000,
+            "monthly_budget_yen": 10_000,
+            "immediate_amount": 5_000,
+        },
+    )
+
+    assert res.status_code == 401
+    conn = sqlite3.connect(str(am_db))
+    try:
+        (wallets,) = conn.execute("SELECT COUNT(*) FROM am_credit_wallet").fetchone()
+        (txns,) = conn.execute("SELECT COUNT(*) FROM am_credit_transaction_log").fetchone()
+    finally:
+        conn.close()
+    assert wallets == 0
+    assert txns == 0
+
+
+def test_wallet_topup_immediate_amount_credits_once_for_paid_key(
+    tmp_path: pathlib.Path,
+    seeded_db: pathlib.Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    am_db = tmp_path / "wallet-api.db"
+    c = _wallet_api_client(
+        seeded_db=seeded_db,
+        autonomath_db=am_db,
+        monkeypatch=monkeypatch,
+    )
+    key_hash = hash_api_key(paid_key)
+
+    res = c.post(
+        "/v1/wallet/topup",
+        headers={"X-API-Key": paid_key, "Idempotency-Key": "dim-u-topup-credit"},
+        json={
+            "auto_topup_threshold": 1_000,
+            "auto_topup_amount": 5_000,
+            "monthly_budget_yen": 10_000,
+            "immediate_amount": 5_000,
+            "note": "initial credit",
+        },
+    )
+
+    assert res.status_code == 200, res.text
+    body = res.json()
+    assert body["balance_yen"] == 5_000
+    assert body["topup_requested_yen"] == 5_000
+    assert body["topup_recorded_yen"] == 5_000
+
+    row = _wallet_row(am_db, key_hash)
+    assert row is not None
+    assert int(row["balance_yen"]) == 5_000
+    assert int(row["auto_topup_threshold"]) == 1_000
+    assert int(row["auto_topup_amount"]) == 5_000
+    assert int(row["monthly_budget_yen"]) == 10_000
+
+    conn = sqlite3.connect(str(am_db))
+    try:
+        (topups,) = conn.execute(
+            "SELECT COUNT(*) FROM am_credit_transaction_log WHERE txn_type = 'topup'"
+        ).fetchone()
+    finally:
+        conn.close()
+    assert topups == 1
+    assert _usage_count(seeded_db, key_hash, ("wallet_topup",)) == 0
+
+
+def test_wallet_control_plane_reads_do_not_emit_paid_usage(
+    tmp_path: pathlib.Path,
+    seeded_db: pathlib.Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    am_db = tmp_path / "wallet-api.db"
+    c = _wallet_api_client(
+        seeded_db=seeded_db,
+        autonomath_db=am_db,
+        monkeypatch=monkeypatch,
+    )
+    key_hash = hash_api_key(paid_key)
+    endpoints = ("wallet_balance", "wallet_transactions", "wallet_alerts")
+    before = _usage_count(seeded_db, key_hash, endpoints)
+
+    for path in ("/v1/wallet/balance", "/v1/wallet/transactions", "/v1/wallet/alerts"):
+        res = c.get(path, headers={"X-API-Key": paid_key})
+        assert res.status_code == 200, res.text
+        assert res.json()["_billing_unit"] == 0
+
+    assert _usage_count(seeded_db, key_hash, endpoints) == before
 
 
 # ---------------------------------------------------------------------------

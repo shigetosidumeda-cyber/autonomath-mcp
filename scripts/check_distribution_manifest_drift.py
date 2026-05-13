@@ -11,6 +11,7 @@ verification remains in ``scripts/probe_runtime_distribution.py``.
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import json
 import re
 import sys
@@ -68,6 +69,8 @@ PRICE_PATTERNS = [
 TAX_INCLUDED_PATTERNS = [
     re.compile(r"¥\s*3\.30", re.IGNORECASE),
     re.compile(r"\b3\.30\s+tax-incl\b", re.IGNORECASE),
+    re.compile(r"\b3\.30\s+tax-included\b", re.IGNORECASE),
+    re.compile(r"\b3\.30\s+tax-inclusive\b", re.IGNORECASE),
     re.compile(r"税込\s*¥?\s*3\.30", re.IGNORECASE),
     re.compile(r"税込3\.30円", re.IGNORECASE),
 ]
@@ -261,6 +264,31 @@ def _version_values(path: Path) -> set[str]:
     return values
 
 
+def _pyproject_version() -> str | None:
+    """Return pyproject.toml [project].version without extra dependencies."""
+    path = REPO_ROOT / "pyproject.toml"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return None
+
+    in_project = False
+    for raw in text.splitlines():
+        line = raw.strip()
+        if line.startswith("[") and line.endswith("]"):
+            in_project = line == "[project]"
+            continue
+        if not in_project or not line.startswith("version") or "=" not in line:
+            continue
+        value = line.split("=", 1)[1].strip()
+        if "#" in value:
+            value = value.split("#", 1)[0].strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            return value[1:-1]
+        return value
+    return None
+
+
 def _canonical_mcp_package_paths(manifest: dict[str, Any]) -> list[Path]:
     default_values = manifest.get("distribution_surface_paths", DEFAULT_DISTRIBUTION_SURFACES)
     if not isinstance(default_values, list):
@@ -298,6 +326,37 @@ def _scan_required_paths(manifest: dict[str, Any]) -> list[DriftRow]:
                     hint="Create the file or remove it from distribution_manifest.yml.",
                 )
             )
+    return rows
+
+
+def _scan_manifest_sot(manifest: dict[str, Any]) -> list[DriftRow]:
+    """Verify manifest-declared SOT values agree with their upstream source."""
+    rows: list[DriftRow] = []
+    expected = str(manifest.get("pyproject_version", "")).strip()
+    actual = _pyproject_version()
+    if actual is None:
+        rows.append(
+            DriftRow(
+                field="pyproject_version",
+                expected=expected or "present",
+                file="pyproject.toml",
+                observed="not found",
+                status="MISSING",
+                hint="Restore pyproject.toml [project].version.",
+            )
+        )
+        return rows
+    if expected and expected != actual:
+        rows.append(
+            DriftRow(
+                field="pyproject_version",
+                expected=actual,
+                file=_rel(MANIFEST_PATH),
+                observed=expected,
+                status="DRIFT",
+                hint=f"Set pyproject_version to the pyproject.toml value {actual}.",
+            )
+        )
     return rows
 
 
@@ -672,6 +731,21 @@ def _format_table(rows: list[DriftRow]) -> str:
     return "\n".join(lines)
 
 
+def _format_summary(rows: list[DriftRow]) -> str:
+    if not rows:
+        return "(no drift)"
+    by_field = Counter(row.field for row in rows)
+    by_status = Counter(row.status for row in rows)
+    lines = [
+        "By status: "
+        + ", ".join(f"{status}={count}" for status, count in sorted(by_status.items())),
+        "By field:",
+    ]
+    for field, count in sorted(by_field.items(), key=lambda item: (-item[1], item[0])):
+        lines.append(f"  - {field}: {count}")
+    return "\n".join(lines)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -695,6 +769,7 @@ def main() -> int:
 
     rows: list[DriftRow] = []
     rows.extend(_scan_required_paths(manifest))
+    rows.extend(_scan_manifest_sot(manifest))
     rows.extend(_scan_versions(manifest))
     rows.extend(_scan_canonical_values(manifest))
     rows.extend(_scan_forbidden_tokens(manifest))
@@ -712,6 +787,8 @@ def main() -> int:
         f"[check_distribution_manifest_drift] DRIFT - {len(rows)} issue(s) "
         f"across {len({row.file for row in rows})} surface(s):\n"
     )
+    print(_format_summary(rows))
+    print("\nDetailed rows:\n")
     print(_format_table(rows))
 
     if args.fix:

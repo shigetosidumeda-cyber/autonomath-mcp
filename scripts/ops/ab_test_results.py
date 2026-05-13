@@ -82,13 +82,14 @@ Output schema
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import math
 import os
 import sys
 import tempfile
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -153,7 +154,9 @@ def discover_warehouse(arg: str | None) -> list[Path]:
 
 def aggregate(rows) -> dict:
     # (test_id, event) -> bucket -> set(external_ref), conv_count, value_sum
-    visitors: dict[tuple[str, str], dict[str, set[str]]] = defaultdict(lambda: {"a": set(), "b": set()})
+    visitors: dict[tuple[str, str], dict[str, set[str]]] = defaultdict(
+        lambda: {"a": set(), "b": set()}
+    )
     conv: dict[tuple[str, str], dict[str, int]] = defaultdict(lambda: {"a": 0, "b": 0})
     val: dict[tuple[str, str], dict[str, float]] = defaultdict(lambda: {"a": 0.0, "b": 0.0})
     approximate: dict[tuple[str, str], bool] = defaultdict(bool)
@@ -190,10 +193,7 @@ def aggregate(rows) -> dict:
             winner = "none"
         else:
             sig_flag = bool(not math.isnan(p_value) and p_value < ALPHA)
-            if sig_flag:
-                winner = "b" if rate_b > rate_a else "a"
-            else:
-                winner = "none"
+            winner = ("b" if rate_b > rate_a else "a") if sig_flag else "none"
 
         out.setdefault(t, {"events": {}})["events"][e] = {
             "n_a": n_a,
@@ -226,10 +226,8 @@ def atomic_write(path: Path, data: dict) -> None:
         os.replace(tmp, path)
     finally:
         if os.path.exists(tmp):
-            try:
+            with contextlib.suppress(OSError):
                 os.unlink(tmp)
-            except OSError:
-                pass
 
 
 def main() -> int:
@@ -247,7 +245,7 @@ def main() -> int:
 
     doc = {
         "schema": "jpcite/ab_test_results/v1",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "warehouse_files": [str(p) for p in paths],
         "row_count": len(rows),
         "tests": tests,
@@ -264,8 +262,7 @@ def main() -> int:
     print(f"wrote {args.out}")
     print(f"tests aggregated: {len(tests)}")
     sig_count = sum(
-        1 for t in tests.values() for e in t["events"].values()
-        if e["significant_95pct"] is True
+        1 for t in tests.values() for e in t["events"].values() if e["significant_95pct"] is True
     )
     print(f"significant @95%: {sig_count}")
     return 0

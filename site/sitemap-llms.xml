@@ -14,7 +14,7 @@
     - facts.html JP+EN (2)
 
   changefreq / priority hints follow sitemaps.org 0.9 spec; priorities are
-  internal hints to AI crawlers, not Google PageRank.
+  discovery hints for AI crawlers, not Google PageRank.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 

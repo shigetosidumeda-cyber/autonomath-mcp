@@ -117,7 +117,7 @@ Closed enum on `error.code`:
 | `LICENSE_GATE_BLOCKED` | false | 403 | row(s) dropped by `?license=` filter or proprietary policy |
 | `QUOTA_EXCEEDED` | false | 429 | quota cap reached (anon 3/日 or paid customer-set monthly cap) |
 | `INTEGRITY_ERROR` | true | 500 | DB integrity / cross-source mismatch detected mid-request; retry once |
-| `INTERNAL_ERROR` | true | 500 | unexpected exception; `developer_message` carries the trace pointer |
+| `SERVER_ERROR` | true | 500 | unexpected exception; `developer_message` carries the trace pointer |
 
 ## MCP shape
 
@@ -171,12 +171,12 @@ The following routes accept the `Accept: application/vnd.jpcite.v2+json` opt-in 
 
 (`citations[]` is empty here because the rows already carry `source_url` inline; routes with separate provenance — e.g. `/v1/houjin/{bangou}` — populate `citations[]` directly.)
 
-## Migration timeline
+## Compatibility timeline
 
 - **2026-04-30** — v2 ships as opt-in via `Accept: application/vnd.jpcite.v2+json`.
 - **2026-05-06** (launch) — v2 documented in API reference, MCP tools, and SDK READMEs as the recommended shape for AI/agent clients.
 - **2026-05-06 → 2026-08-04** (90-day window) — both shapes supported in parallel. Legacy callers see no change. v2 adoption tracked via `X-Envelope-Version` access logs.
-- **2026-08-04** — compatibility review point. v1 remains supported unless a separate migration notice is published in advance; client negotiation stays header-only during this period.
+- **2026-08-04** — compatibility review point. v1 remains supported unless a separate schema update notice is published in advance; client negotiation stays header-only during this period.
 
 ## Stability
 

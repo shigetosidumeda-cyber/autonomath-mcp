@@ -15,7 +15,7 @@ Instead it asserts:
 2. Each cleaned file does not contain bare "ROI 倍率" (no marker) or
    "年 ARR 上限" without the explicit historical marker we just inserted.
 3. The canonical cost-saving SOT (docs/canonical/cost_saving_examples.md)
-   stays anchored as the per-case savings spec.
+   stays anchored to the public-safe API-fee-delta spec.
 """
 
 from __future__ import annotations
@@ -46,6 +46,19 @@ CLEANED_FILES = [
 
 CANONICAL_SOT = "docs/canonical/cost_saving_examples.md"
 
+TARGET_PUBLIC_COPY_FILES = [
+    "docs/pricing/case_studies/admin_scrivener_construction_license.md",
+    "docs/pricing/case_studies/ma_advisor_dd.md",
+    "docs/pricing/case_studies/shinkin_customer_watch.md",
+    "docs/pricing/case_studies/sme_diagnostician_consulting.md",
+    "docs/pricing/case_studies/tax_accountant_monthly_review.md",
+    "docs/announce/tkc_journal_jpcite.md",
+]
+
+TARGET_INTERNAL_EXCLUDED_FILES = [
+    "docs/use_cases/by_industry_v2_2026_05_12.md",
+]
+
 
 def _read(rel: str) -> str:
     return (REPO_ROOT / rel).read_text(encoding="utf-8")
@@ -59,9 +72,7 @@ def test_cleaned_files_mention_savings() -> None:
         text = _read(rel)
         if ("節約" not in text) and ("cost saving" not in text.lower()):
             misses.append(rel)
-    assert misses == [], (
-        "Cleaned files lack any savings phrasing (節約 / cost saving): " f"{misses}"
-    )
+    assert misses == [], f"Cleaned files lack any savings phrasing (節約 / cost saving): {misses}"
 
 
 def test_no_bare_roi_baikai_in_cleaned_files() -> None:
@@ -92,7 +103,8 @@ def test_no_bare_roi_baikai_in_cleaned_files() -> None:
     assert bare_hits == [], (
         "User-facing files still surface bare 'ROI 倍率' without a "
         "historical marker; please retain marker per "
-        "feedback_destruction_free_organization. Hits: " f"{bare_hits}"
+        "feedback_destruction_free_organization. Hits: "
+        f"{bare_hits}"
     )
 
 
@@ -118,12 +130,13 @@ def test_no_bare_arr_ceiling_in_cleaned_files() -> None:
             bare_hits.append((rel, lineno, line.strip()[:160]))
     assert bare_hits == [], (
         "User-facing files still surface bare '年 ARR 上限' framing without "
-        "a historical / 流通額 marker. Hits: " f"{bare_hits}"
+        "a historical / 流通額 marker. Hits: "
+        f"{bare_hits}"
     )
 
 
 def test_canonical_sot_intact() -> None:
-    """docs/canonical/cost_saving_examples.md remains the per-case SOT.
+    """docs/canonical/cost_saving_examples.md remains the API-fee-delta SOT.
 
     This SOT is being rolled out incrementally — if it has not yet landed on
     the branch under test (e.g. when this cleanup PR merges before the SOT
@@ -137,8 +150,52 @@ def test_canonical_sot_intact() -> None:
 
         pytest.skip(f"{CANONICAL_SOT} not present yet — will gate on merge")
     text = sot_path.read_text(encoding="utf-8")
-    assert "節約" in text, "cost_saving_examples.md must surface 節約 framing"
-    assert "ROI" not in text or "旧表記" in text, (
+    assert "API fee delta" in text or "API 料金差額" in text, (
+        "cost_saving_examples.md must surface API-fee-delta framing"
+    )
+    assert "ROI" not in text or any(marker in text for marker in ("旧表記", "旧来")), (
         "cost_saving_examples.md must not re-introduce ROI as primary unit "
         "(only as 旧表記 explainer)"
     )
+
+
+def test_target_public_copy_has_no_roi_arr_or_internal_gtm_terms() -> None:
+    """Docs cleaned in this pass must use public-safe cost/request framing."""
+
+    forbidden = (
+        "ROI",
+        "ARR",
+        "倍率",
+        "回収倍率",
+        "organic outreach",
+        "zero-touch",
+        "住み着",
+        "pillar",
+    )
+    hits: list[tuple[str, str]] = []
+    for rel in TARGET_PUBLIC_COPY_FILES:
+        text = _read(rel)
+        for bad in forbidden:
+            if bad in text:
+                hits.append((rel, bad))
+    assert hits == [], f"public copy still contains forbidden ROI/GTM terms: {hits}"
+
+
+def test_target_public_copy_uses_request_or_assumption_framing() -> None:
+    """Public-facing docs should anchor value in req counts, savings, or assumptions."""
+
+    misses: list[str] = []
+    for rel in TARGET_PUBLIC_COPY_FILES:
+        text = _read(rel)
+        if not any(marker in text for marker in ("req", "節約", "明示的な前提", "利用前提")):
+            misses.append(rel)
+    assert misses == [], f"public copy lacks request/savings/assumption framing: {misses}"
+
+
+def test_target_internal_roi_notes_are_marked_excluded() -> None:
+    """Long-form historical ROI notes may remain only when explicitly excluded."""
+
+    for rel in TARGET_INTERNAL_EXCLUDED_FILES:
+        text = _read(rel)
+        assert "operator-only / public docs excluded" in text
+        assert "exclude_docs: use_cases/" in text

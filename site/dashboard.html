@@ -28,8 +28,6 @@
 <link rel="alternate" hreflang="en" href="https://jpcite.com/en/dashboard">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/dashboard">
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -97,8 +95,8 @@
 }
 </script>
 
-<script defer src="dashboard.js"></script>
-<script defer src="dashboard_v2.js"></script>
+<script defer src="/dashboard.js"></script>
+<script defer src="/dashboard_v2.js"></script>
 <style>
   .dash { padding: 48px 0 64px; }
   .dash h1 { font-size: 28px; margin: 0 0 4px; font-weight: 800; letter-spacing: -0.01em; }
@@ -166,7 +164,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -209,11 +207,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -275,7 +273,7 @@
  <div id="dash-dunning-banner" class="dunning-banner" role="alert" hidden
  style="display:none;">
  <span id="dash-dunning-msg" class="dunning-banner-msg"></span>
- <a id="dash-dunning-portal" class="dunning-banner-action" href="#" role="button">Stripe ポータルへ</a>
+ <button id="dash-dunning-portal" class="dunning-banner-action" type="button">Stripe ポータルへ</button>
  </div>
 
  <div id="dash-newkey-reveal" class="newkey-reveal" role="status" aria-live="polite" hidden
@@ -317,11 +315,11 @@
  </div>
 
  <div role="tabpanel" id="qs-panel-claude" aria-labelledby="qs-tab-claude" class="qs-panel" hidden>
- <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ターミナルで <code>pip install autonomath-mcp</code> (互換のため旧配布名を維持、ブランドは jpcite) · <strong>2.</strong> 下を <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) に貼り付け · <strong>3.</strong> Claude Desktop 再起動。</p>
+          <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ターミナルで <code>pip install jpcite-mcp</code> · <strong>2.</strong> 下を <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) に貼り付け · <strong>3.</strong> Claude Desktop 再起動。</p>
  <pre id="qs-claude-snippet" class="qs-code" aria-label="Claude Desktop config"><code>{
  "mcpServers": {
  "jpcite": {
- "command": "autonomath-mcp",
+ "command": "jpcite-mcp",
  "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
  }
  }
@@ -335,7 +333,7 @@
  <pre id="qs-cursor-snippet" class="qs-code" aria-label="Cursor MCP config"><code>{
  "name": "jpcite",
  "command": "uvx",
- "args": ["autonomath-mcp"],
+ "args": ["jpcite-mcp"],
  "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
 }</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-cursor-snippet">コピー</button>
@@ -348,7 +346,7 @@
  "mcpServers": {
  "jpcite": {
  "command": "uvx",
- "args": ["autonomath-mcp"],
+ "args": ["jpcite-mcp"],
  "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"},
  "autoApprove": ["search_programs", "get_program", "search_laws"]
  }
@@ -466,8 +464,8 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <h2 id="dash-user-section-title" style="font-size:22px;font-weight:800;margin:0 0 8px;letter-spacing:-0.01em;">既存 user 向け — API キー / 利用状況 / 請求 ダッシュボード</h2>
  <p class="sub" style="margin:0 0 6px;">ログイン中: <code>—</code></p>
  <p class="sub" style="font-size:13px;color:var(--text-muted);margin:0 0 14px;line-height:1.6;">
- このページは <strong>既存 user 専用</strong> です — API キー list、利用量、Stripe billing portal link が下に並びます。
- <strong>新規 user は <a href="/docs/getting-started/">/docs/getting-started/</a></strong> (5 分クイックスタート) か
+ このページは <strong>既存ユーザー専用</strong> です — API キー一覧、利用量、Stripe 請求ポータルが下に並びます。
+ <strong>新規ユーザーは <a href="/docs/getting-started/">5 分クイックスタート</a></strong> か
  <a href="pricing.html#api-paid">Pricing で API キー発行 (¥3.30/unit 完全従量)</a> へ。
  </p>
 
@@ -701,7 +699,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <p class="stat-label">請求</p>
  <p class="stat-value" style="font-size:20px" data-billing-headline>読み込み中…</p>
  <p class="stat-note" style="margin:8px 0 14px">ご利用は ¥3/課金単位 (税別 / 税込 ¥3.30) の従量課金です。請求書 (適格請求書) は Stripe ポータルからダウンロードできます。</p>
- <a class="btn btn-primary" id="dash-billing-btn" href="#" role="button">Stripe ポータルを開く &rarr;</a>
+ <button class="btn btn-primary" id="dash-billing-btn" type="button">Stripe ポータルを開く &rarr;</button>
  <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
  ご不要になられましたら、Stripe ポータルから <strong>サブスクリプションをキャンセル</strong> できます。
  キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/課金単位 従量請求が発生します。次月以降の課金は停止します。
@@ -1536,7 +1534,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
 本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
 </p>
 
-<!-- v3 9 widget tab dashboard (W1..W9) — Wave 8 hydrate -->
+	<!-- Account dashboard tabs. -->
 <style>
  .w9-wrap { margin: 32px 0 16px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg); }
  .w9-tablist { display: flex; gap: 0; flex-wrap: wrap; border-bottom: 1px solid var(--border); background: var(--bg-alt,#fafaf9); padding: 0; }
@@ -1557,27 +1555,27 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  @media (max-width: 640px) { .w9-tablist { flex-wrap: wrap; } .w9-tab { flex: 1 1 33%; padding: 12px 8px; font-size: 12px; } }
 </style>
 
-<section class="w9-wrap" aria-label="9 widget dashboard (api-keys / usage / billing / saved-searches / webhooks / oauth / audit-seal / parent-child / client-tag)">
- <div role="tablist" aria-label="9 widget" class="w9-tablist">
-  <button type="button" role="tab" id="w9-tab-keys" class="w9-tab" aria-selected="true" aria-controls="w9-panel-keys" data-w9-target="keys">W1 api-key list</button>
-  <button type="button" role="tab" id="w9-tab-usage" class="w9-tab" aria-selected="false" aria-controls="w9-panel-usage" data-w9-target="usage">W2 usage quota</button>
-  <button type="button" role="tab" id="w9-tab-billing" class="w9-tab" aria-selected="false" aria-controls="w9-panel-billing" data-w9-target="billing">W3 billing portal</button>
-  <button type="button" role="tab" id="w9-tab-saved" class="w9-tab" aria-selected="false" aria-controls="w9-panel-saved" data-w9-target="saved">W4 saved searches</button>
-  <button type="button" role="tab" id="w9-tab-hooks" class="w9-tab" aria-selected="false" aria-controls="w9-panel-hooks" data-w9-target="hooks">W5 webhooks</button>
-  <button type="button" role="tab" id="w9-tab-oauth" class="w9-tab" aria-selected="false" aria-controls="w9-panel-oauth" data-w9-target="oauth">W6 OAuth</button>
-  <button type="button" role="tab" id="w9-tab-seal" class="w9-tab" aria-selected="false" aria-controls="w9-panel-seal" data-w9-target="seal">W7 audit-seal</button>
-  <button type="button" role="tab" id="w9-tab-child" class="w9-tab" aria-selected="false" aria-controls="w9-panel-child" data-w9-target="child">W8 parent/child key</button>
-  <button type="button" role="tab" id="w9-tab-tag" class="w9-tab" aria-selected="false" aria-controls="w9-panel-tag" data-w9-target="tag">W9 client-tag</button>
+<section class="w9-wrap" aria-label="Account dashboard">
+ <div role="tablist" aria-label="Account dashboard" class="w9-tablist">
+  <button type="button" role="tab" id="w9-tab-keys" class="w9-tab" aria-selected="true" aria-controls="w9-panel-keys" data-w9-target="keys">API キー</button>
+  <button type="button" role="tab" id="w9-tab-usage" class="w9-tab" aria-selected="false" aria-controls="w9-panel-usage" data-w9-target="usage">利用量</button>
+  <button type="button" role="tab" id="w9-tab-billing" class="w9-tab" aria-selected="false" aria-controls="w9-panel-billing" data-w9-target="billing">請求</button>
+  <button type="button" role="tab" id="w9-tab-saved" class="w9-tab" aria-selected="false" aria-controls="w9-panel-saved" data-w9-target="saved">保存条件</button>
+  <button type="button" role="tab" id="w9-tab-hooks" class="w9-tab" aria-selected="false" aria-controls="w9-panel-hooks" data-w9-target="hooks">Webhook</button>
+  <button type="button" role="tab" id="w9-tab-oauth" class="w9-tab" aria-selected="false" aria-controls="w9-panel-oauth" data-w9-target="oauth">ログイン連携</button>
+  <button type="button" role="tab" id="w9-tab-seal" class="w9-tab" aria-selected="false" aria-controls="w9-panel-seal" data-w9-target="seal">監査記録</button>
+  <button type="button" role="tab" id="w9-tab-child" class="w9-tab" aria-selected="false" aria-controls="w9-panel-child" data-w9-target="child">子キー</button>
+  <button type="button" role="tab" id="w9-tab-tag" class="w9-tab" aria-selected="false" aria-controls="w9-panel-tag" data-w9-target="tag">顧問先別明細</button>
  </div>
 
- <!-- W1 api-key list -->
+ <!-- API key list -->
  <div role="tabpanel" id="w9-panel-keys" aria-labelledby="w9-tab-keys" class="w9-panel">
-  <h3>W1 — API キー一覧 (jc_ / sk_ / am_ 3 prefix 受容)</h3>
+  <h3>API キー一覧</h3>
   <p class="w9-note">
    <span class="w9-key-pill jc">jc_</span> 現行発行 (Stripe Checkout)
    <span class="w9-key-pill sk">sk_</span> 過去発行 (互換)
-   <span class="w9-key-pill am">am_</span> 互換 prefix
-   いずれも HMAC-SHA256 hash で照合され、 GET /v1/me/api_keys で list 取得します。 新規キーは Stripe Checkout 経由のみ発行可能。
+	   <span class="w9-key-pill am">am_</span> 旧キー互換
+	   いずれも HMAC-SHA256 hash で照合され、 GET /v1/me/api_keys で一覧取得します。 新規キーは Stripe Checkout 経由のみ発行可能。
   </p>
   <table class="w9-table" id="w9-keys-table">
    <thead><tr>
@@ -1595,11 +1593,11 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   </p>
  </div>
 
- <!-- W2 usage quota -->
+ <!-- Usage -->
  <div role="tabpanel" id="w9-panel-usage" aria-labelledby="w9-tab-usage" class="w9-panel" hidden>
-  <h3>W2 — 利用量 残量 (匿名 quota + paid quota)</h3>
+  <h3>利用量と上限</h3>
   <p class="w9-note">
-   匿名 = 3 リクエスト/日/IP (JST 翌日 00:00 リセット)。 paid = ¥3/課金単位 (税込 ¥3.30) の完全従量、上限 cap は任意設定。 月次 burn-rate は 30 日線形外挿。
+	   匿名 = 3 リクエスト/日/IP (JST 翌日 00:00 リセット)。 有料利用は ¥3/課金単位 (税込 ¥3.30) の完全従量で、月額上限は任意設定できます。 月次見込みは 30 日線形外挿です。
   </p>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
    <div class="stat-card" style="margin:0;">
@@ -1608,14 +1606,14 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
     <p class="stat-note">JST 翌日 00:00 リセット</p>
    </div>
    <div class="stat-card" style="margin:0;">
-    <p class="stat-label">paid quota (今月)</p>
+    <p class="stat-label">今月の従量利用</p>
     <p class="stat-value" style="font-size:24px;"><span id="w9-paid-used">—</span><span class="unit"> リクエスト</span></p>
     <p class="stat-note">¥3 × 件数 / 月末 Stripe 締め</p>
    </div>
    <div class="stat-card" style="margin:0;">
     <p class="stat-label">burn rate (月次外挿)</p>
     <p class="stat-value" style="font-size:24px;">¥<span id="w9-burn-rate">—</span></p>
-    <p class="stat-note">30 日 average × 30 (税別)</p>
+    <p class="stat-note">30 日平均 × 30 (税別)</p>
    </div>
   </div>
   <p class="w9-note" style="margin-top:14px;">
@@ -1623,11 +1621,11 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   </p>
  </div>
 
- <!-- W3 billing portal -->
+ <!-- Billing portal -->
  <div role="tabpanel" id="w9-panel-billing" aria-labelledby="w9-tab-billing" class="w9-panel" hidden>
-  <h3>W3 — Stripe Customer Portal (請求書 DL / カード変更 / 解約)</h3>
+  <h3>Stripe Customer Portal (請求書 DL / カード変更 / 解約)</h3>
   <p class="w9-note">
-   POST /v1/billing/portal で one-shot Stripe Customer Portal URL を mint します。 適格請求書 (T8010001213708) は portal から PDF DL 可能。 子 API キー (parent/child) からは portal を開けません。
+	   Stripe Customer Portal で適格請求書 (T8010001213708) の PDF ダウンロード、カード変更、解約ができます。子 API キーからはポータルを開けません。
   </p>
   <div id="w9-billing-banner" role="status" aria-live="polite" hidden
    style="display:none;margin:0 0 12px;padding:9px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);background:var(--bg);"></div>
@@ -1635,15 +1633,15 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    <span aria-hidden="true">💳 </span>Stripe Customer Portal を開く &rarr;
   </button>
   <p class="w9-note" style="margin-top:14px;">
-   解約: Portal → サブスクリプションをキャンセル。 月末まで API 利用可能、当月利用分のみ ¥3/件 metered 請求が発生。 次月以降は停止。
+	   解約: Portal → サブスクリプションをキャンセル。 月末まで API 利用可能、当月利用分のみ ¥3/件の従量請求が発生します。 次月以降は停止します。
   </p>
  </div>
 
- <!-- W4 saved searches -->
+ <!-- Saved searches -->
  <div role="tabpanel" id="w9-panel-saved" aria-labelledby="w9-tab-saved" class="w9-panel" hidden>
-  <h3>W4 — 保存条件 (cohort #5 補助金 consultant 向け)</h3>
+  <h3>保存条件</h3>
   <p class="w9-note">
-   POST /v1/me/saved_searches で 検索条件 (q / 都道府県 / 対象事業者 / 金額帯 / 顧問先 profile_ids) を保存。 毎日 06:00 JST に新着差分を自動スキャン → ダイジェストメールを成功配信 ¥3/通知 で送信。 顧問先別 fan-out は mig 097 saved_searches.profile_ids で対応。
+	   検索条件 (q / 都道府県 / 対象事業者 / 金額帯 / 顧問先) を保存できます。毎日 06:00 JST に新着差分を自動スキャンし、ダイジェストメールを成功配信 ¥3/通知で送信します。
   </p>
   <p>
    <a href="#saved-searches" class="btn btn-primary" style="padding:10px 18px;font-size:13px;font-weight:600;">
@@ -1651,15 +1649,15 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    </a>
   </p>
   <p class="w9-note" style="margin-top:14px;">
-   仕様詳細は <a href="/docs/saved_searches/">/docs/saved_searches/</a> + <a href="/docs/recurring_engagement/">/docs/recurring_engagement/</a>。
+	   使い方は <a href="/support.html">サポート</a> と <a href="/docs/getting-started/">クイックスタート</a> をご覧ください。
   </p>
  </div>
 
- <!-- W5 webhooks -->
+ <!-- Webhooks -->
  <div role="tabpanel" id="w9-panel-hooks" aria-labelledby="w9-tab-hooks" class="w9-panel" hidden>
-  <h3>W5 — Webhook 通知 (mig 088 houjin_watch + mig 099 recurring_engagement)</h3>
+  <h3>Webhook 通知</h3>
   <p class="w9-note">
-   自社 HTTPS endpoint に program.created / program.amended / enforcement.added / tax_ruleset.amended / invoice_registrant.matched / houjin_watch.amended を SHA256 署名検証付きで POST します。 成功配信 ¥3/通知 metered。 5 連続失敗で自動無効化、再試行は非課金。
+	   自社 HTTPS endpoint に program.created / program.amended / enforcement.added / tax_ruleset.amended / invoice_registrant.matched / houjin_watch.amended を SHA256 署名検証付きで POST します。 成功配信は ¥3/通知の従量請求です。5 連続失敗で自動無効化し、再試行は非課金です。
   </p>
   <p>
    <a href="#dash2-webhooks" class="btn btn-primary" style="padding:10px 18px;font-size:13px;font-weight:600;">
@@ -1667,13 +1665,13 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    </a>
   </p>
   <p class="w9-note" style="margin-top:14px;">
-   仕様詳細は <a href="/docs/webhooks/">/docs/webhooks/</a>。 上の <a href="#dash2-alerts">法令改正アラート</a> も同じ ¥3 metered。
+	   仕様詳細は <a href="/docs/webhooks/">Webhook ドキュメント</a>。 上の <a href="#dash2-alerts">法令改正アラート</a> も同じ ¥3/通知の従量請求です。
   </p>
  </div>
 
- <!-- W6 OAuth -->
+ <!-- OAuth -->
  <div role="tabpanel" id="w9-panel-oauth" aria-labelledby="w9-tab-oauth" class="w9-panel" hidden>
-  <h3>W6 — OAuth ログイン 状態 (GitHub + Google)</h3>
+  <h3>OAuth ログイン状態 (GitHub + Google)</h3>
   <p class="w9-note">
    GET /v1/auth/github/start で GitHub OAuth フロー開始 → callback で JWT cookie set。 Google OAuth は scope=openid email、 callback 同様に jpcite_session cookie に JWT 24h を発行。
   </p>
@@ -1701,11 +1699,11 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   </p>
  </div>
 
- <!-- W7 audit-seal -->
+ <!-- Audit record -->
  <div role="tabpanel" id="w9-panel-seal" aria-labelledby="w9-tab-seal" class="w9-panel" hidden>
-  <h3>W7 — audit-seal (税理士 monthly audit-seal pack PDF + RSS)</h3>
+  <h3>月次監査記録 (PDF + RSS)</h3>
   <p class="w9-note">
-   毎月 1 日 03:00 JST に当月対象の差分 (法令改正 / 制度改正 / 行政処分 / 適格事業者 status 変化) を 1 PDF に纏めて発行。 監査記録の "snapshot 証跡" としてアーカイブ可能。 mig 089 audit_seal + scripts/cron/regenerate_audit_log_rss.py。
+	   毎月 1 日 03:00 JST に当月対象の差分 (法令改正 / 制度改正 / 行政処分 / 適格事業者 status 変化) を 1 PDF にまとめて発行します。監査記録の snapshot 証跡としてアーカイブできます。
   </p>
   <table class="w9-table" style="margin:0 0 14px;">
    <thead><tr><th scope="col">対象月</th><th scope="col">PDF</th><th scope="col">RSS</th><th scope="col">SHA256</th></tr></thead>
@@ -1716,11 +1714,11 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   </p>
  </div>
 
- <!-- W8 parent / child api-key -->
+ <!-- Parent / child API key -->
  <div role="tabpanel" id="w9-panel-child" aria-labelledby="w9-tab-child" class="w9-panel" hidden>
-  <h3>W8 — API キー parent/child (mig 086 SaaS B2B fan-out)</h3>
+  <h3>親 API キー / 子 API キー</h3>
   <p class="w9-note">
-   親 API キー 1 本から、 顧問先別 (税理士 / コンサル / 取次店) の子 キーを発行。 子キー単位で usage を集計可能 (mig 085 X-Client-Tag と組み合わせ可)。 子キーから billing portal は開けない、 課金は親キー集約。
+	   親 API キー 1 本から、顧問先別 (税理士 / コンサル / 取次店) の子キーを発行できます。子キー単位で利用量を集計でき、請求は親キーに集約されます。
   </p>
   <table class="w9-table" id="w9-child-table" style="margin:0 0 14px;">
    <thead><tr>
@@ -1739,15 +1737,15 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    <button type="submit" class="btn btn-primary" style="padding:9px 16px;font-size:13px;">子キーを発行</button>
   </form>
   <p class="w9-note" style="margin-top:14px;">
-   仕様詳細は <a href="/docs/parent_child_keys/">/docs/parent_child_keys/</a>。
+	   使い方は <a href="/support.html">サポート</a> をご覧ください。
   </p>
  </div>
 
- <!-- W9 client_tag -->
+ <!-- Client tag -->
  <div role="tabpanel" id="w9-panel-tag" aria-labelledby="w9-tab-tag" class="w9-panel" hidden>
-  <h3>W9 — usage_events client_tag (mig 085 X-Client-Tag 顧問先別)</h3>
+  <h3>顧問先別利用明細 (X-Client-Tag)</h3>
   <p class="w9-note">
-   request header に X-Client-Tag: kyobun_a 等を付けると、 usage_events に client_tag 列が記録され、 顧問先別 ROI / 月次 内訳を月末 Stripe 請求に CSV として同梱可能。 1 件 ¥3 metered の内訳が顧問先単位で見える。
+	   request header に X-Client-Tag: kyobun_a 等を付けると、顧問先別の月次利用量と原価内訳を月末 Stripe 請求に CSV として同梱できます。1 件 ¥3 の従量明細が顧問先単位で見えます。
   </p>
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px;">
    <label for="w9-tag-month" class="stat-note" style="margin:0;">対象月:</label>
@@ -1765,7 +1763,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    <tbody id="w9-tag-tbody"><tr><td colspan="4" style="color:var(--text-muted);padding:14px 6px;">読み込み中… (ログイン後に表示)</td></tr></tbody>
   </table>
   <p class="w9-note" style="margin-top:14px;">
-   X-Client-Tag は ascii / [a-z0-9_\-]{1,32} のみ受容。 詳細は <a href="/docs/client_tag/">/docs/client_tag/</a>。
+   X-Client-Tag は ascii / [a-z0-9_\-]{1,32} のみ受容します。詳細は <a href="/support.html">サポート</a> をご覧ください。
   </p>
  </div>
 </section>
@@ -1872,7 +1870,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   return esc(String(s).slice(0, 16).replace('T', ' '));
  }
 
- // W1 api-key list
+	 // API key list
  async function loadKeys() {
   var tbody = document.getElementById('w9-keys-tbody');
   if (!tbody) return;
@@ -1904,7 +1902,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   }
  }
 
- // W2 usage quota
+	 // Usage
  async function loadUsage() {
   try {
    var anon = await callJSON('/v1/me/quota_status');
@@ -1925,7 +1923,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   }
  }
 
- // W3 billing portal
+	 // Billing portal
  var billingBtn = document.getElementById('w9-billing-portal-btn');
  var billingBanner = document.getElementById('w9-billing-banner');
  function setBillingBanner(msg, isError) {
@@ -1956,7 +1954,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
     if (err && err.status === 401) {
      setBillingBanner('API キー または ログインが必要です (上のログインブロック)。', true);
     } else if (err && err.status === 404) {
-     setBillingBanner('Stripe 顧客がまだありません。 初回 ¥3 metered 請求の後に portal が開けるようになります。', true);
+	     setBillingBanner('Stripe 顧客がまだありません。 初回の従量請求後に portal が開けるようになります。', true);
     } else {
      setBillingBanner('Portal 発行に失敗: ' + msg, true);
     }
@@ -1964,7 +1962,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   });
  }
 
- // W6 OAuth status probe
+	 // OAuth status probe
  async function loadOAuthStatus() {
   try {
    var data = await callJSON('/v1/me/oauth_links');
@@ -1980,7 +1978,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   } catch (_e) {}
  }
 
- // W7 audit-seal pack list
+	 // Audit record list
  async function loadSeal() {
   var tbody = document.getElementById('w9-seal-tbody');
   if (!tbody) return;
@@ -2007,7 +2005,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   }
  }
 
- // W8 parent/child api-key
+	 // Parent/child api-key
  async function loadChildKeys() {
   var tbody = document.getElementById('w9-child-tbody');
   if (!tbody) return;
@@ -2053,7 +2051,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
   });
  }
 
- // W9 client_tag breakdown
+	 // Client-tag breakdown
  var tagMonth = document.getElementById('w9-tag-month');
  var tagRefresh = document.getElementById('w9-tag-refresh');
  var tagCsv = document.getElementById('w9-tag-csv');
@@ -2139,7 +2137,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
 </footer>
 
 <script src="/assets/feedback-widget.js" defer></script>
-<script src="dashboard_init.js" defer></script>
+<script src="/dashboard_init.js" defer></script>
 <script src="/assets/trust-strip.js" defer></script>
 
 </body>

@@ -1,7 +1,7 @@
 name: evolution-dashboard-weekly
 
 # DEEP-42 12 axis evolution dashboard aggregator (jpcite v0.3.4).
-# Runs weekly on Tuesday 03:00 UTC (= JST Tue 12:00) so that Monday-night
+# Runs weekly on Tuesday 03:43 UTC (= JST Tue 12:43) so that Monday-night
 # axis cron (DEEP-36 ODE / DEEP-39 国会会議録 / DEEP-40 業界誌 / DEEP-41 brand
 # mention etc.) have completed before aggregation reads their tables/JSONs.
 # - Aggregates 12 axis × N signal status (healthy / degraded / broken)
@@ -13,7 +13,7 @@ name: evolution-dashboard-weekly
 
 on:
   schedule:
-    - cron: '0 3 * * 2'   # weekly Tue 03:00 UTC == 12:00 JST
+    - cron: '43 3 * * 2'   # weekly Tue 03:43 UTC == 12:43 JST
   workflow_dispatch:
     inputs:
       reason:
@@ -27,6 +27,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
   issues: write
 
 concurrency:
@@ -93,15 +94,23 @@ jobs:
             site/transparency/evolution.html
           retention-days: 90
 
-      - name: Deploy to Cloudflare Pages
-        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
+      - name: Check Cloudflare Pages secrets
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
+            echo "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required for Cloudflare Pages deploy."
+            exit 1
+          fi
+
+      - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: jpcite-site
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: autonomath
           directory: site
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           branch: main

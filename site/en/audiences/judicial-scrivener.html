@@ -89,9 +89,9 @@
   "mainEntity": [
     {"@type": "Question", "name": "Can jpcite draft commercial registration documents for me?", "acceptedAnswer": {"@type": "Answer", "text": "No. jpcite provides fact-finding only. Judicial Scrivener Act §3 (司法書士法 §3) makes commercial registration, real estate registration, deposit handling, and summary court representation the exclusive work of licensed 司法書士. jpcite returns scaffold data and primary-source URLs; the licensed scrivener prepares and submits filings. (A partner directory of licensed scriveners is not currently published; planned for a future release.)"}},
     {"@type": "Question", "name": "Is adult guardianship support possible?", "acceptedAnswer": {"@type": "Answer", "text": "Information lookup yes — jpcite surfaces adult guardianship program timelines (中核機関整備, 任意後見, 市民後見人養成) and Civil Code §7-§876 article text via search_programs and get_law_article_en. Court filing drafts no — guardianship petitions and filing documents remain the exclusive work of licensed 司法書士 / 弁護士 under §3 / Lawyers Act §72."}},
-    {"@type": "Question", "name": "What is a reasonable substitute for 反社 (organized crime) checks?", "acceptedAnswer": {"@type": "Answer", "text": "Enforcement-history lookup yes — am_enforcement_detail returns fines, grant refunds, and subsidy exclusion records by 法人番号 (corporate number). Personal credit information no — APPI (個人情報保護法) compliance fences personal PII out of the surface. The licensed 司法書士 makes the final 反社 determination using their own protocol; jpcite contributes only the corporate-side enforcement signal."}},
+    {"@type": "Question", "name": "What is a reasonable substitute for 反社 (organized crime) checks?", "acceptedAnswer": {"@type": "Answer", "text": "Corporate enforcement-history lookup is available: fines, grant refunds, and subsidy exclusion records by 法人番号 (corporate number). Personal credit information is not handled — APPI (個人情報保護法) compliance fences personal PII out of the surface. The licensed 司法書士 makes the final 反社 determination using their own protocol; jpcite contributes only corporate-side enforcement signals."}},
     {"@type": "Question", "name": "What is the pricing?", "acceptedAnswer": {"@type": "Answer", "text": "¥3 per request fully metered (税込 ¥3.30 ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset. No tier SKUs, no seat fees, no annual minimums, no Pro / Starter plan. The only free path is the IP-based anonymous quota."}},
-    {"@type": "Question", "name": "How does this differ from your tax advisor or CPA cohort?", "acceptedAnswer": {"@type": "Answer", "text": "Cohort-specific persona kits inject the relevant exclusive-work boundaries dynamically. The 司法書士 cohort fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The 税理士 cohort fences Tax Accountants Act §52 (tax representation / tax document preparation). The 公認会計士 cohort fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different fence — the boundary text is loaded from cohort_shihoshoshi.yaml at request time and surfaced in every _disclaimer field."}}
+    {"@type": "Question", "name": "How does this differ from your tax advisor or CPA audience?", "acceptedAnswer": {"@type": "Answer", "text": "Audience-specific boundary guidance injects the relevant exclusive-work boundaries dynamically. The 司法書士 audience fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The 税理士 audience fences Tax Accountants Act §52 (tax representation / tax document preparation). The 公認会計士 audience fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different legal boundary; every response surfaces the applicable _disclaimer field."}}
   ]
 }
 </script>
@@ -191,7 +191,7 @@
  <h3>1. Pre-commercial-registration corporate 360°</h3>
  <p class="card-lead">tools: <code>intel_houjin_full</code> + <code>check_enforcement_am</code></p>
  <p><strong>Sample call:</strong> "Show last 5 years of representative changes + enforcement history for legal entity X (houjin_bangou 1234567890123)."</p>
- <p>Returns: registered corporate name, established_at, capital_yen, JSIC major, role-amendment timeline from <code>am_entity_facts</code> where field_name LIKE 'corp.%', and enforcement detail (fine / grant_refund / subsidy_exclude) by 法人番号. Cost: ¥3 + ¥3 = ¥6 across the two tools (¥6.60 tax inclusive). Primary sources: <span lang="ja">国税庁法人番号公表サイト</span>, <span lang="ja">gBizINFO</span>, ministry enforcement bulletins. The licensed <span lang="ja">司法書士</span> uses this fact base when preparing the registration filing.</p>
+ <p>Returns: registered corporate name, establishment date, capital amount, JSIC major category, representative-change timeline, and enforcement details (fine / grant_refund / subsidy_exclude) by 法人番号. Cost: ¥3 + ¥3 = ¥6 across the two tools (¥6.60 tax inclusive). Primary sources: <span lang="ja">国税庁法人番号公表サイト</span>, <span lang="ja">gBizINFO</span>, ministry enforcement bulletins. The licensed <span lang="ja">司法書士</span> uses this fact base when preparing the registration filing.</p>
  </article>
 
  <article class="card">
@@ -204,7 +204,7 @@
  <article class="card">
  <h3>3. Pre-small-claims-litigation entity verify</h3>
  <p class="card-lead">tool: <code>shihoshoshi_dd_pack_am</code> (new)</p>
- <p><strong>Sample call:</strong> "Recent credit + bankruptcy risk + 反社 (organized crime) equivalent check for counterparty entity X."</p>
+ <p><strong>Sample call:</strong> "Recent public enforcement and registration checks for counterparty entity X."</p>
  <p>Returns unified envelope of (a) commercial registration snapshot, (b) jurisdiction breakdown, (c) enforcement history (fine / grant_refund / subsidy_exclude), (d) tax / lawyer / admin-scrivener boundary warnings (any §52 / §72 / §1 keyword hit on enforcement description). Cost: ¥3 (¥3.30 tax inclusive) for the unified pack. Personal credit information is APPI-fenced out &mdash; only corporate-side signals appear. The licensed <span lang="ja">司法書士</span> determines whether the ¥1.4M small-claims threshold applies and whether to accept representation.</p>
  </article>
 
@@ -212,7 +212,7 @@
  <h3>4. Adult guardianship + welfare program mapping</h3>
  <p class="card-lead">tools: <code>search_programs</code> + <code>get_law_article_en</code></p>
  <p><strong>Sample call:</strong> "Adult guardianship + related subsidy programs for elderly FDI investor's Japan-side estate planning."</p>
- <p>Returns: adult-guardianship-related program corpus (<span lang="ja">中核機関整備, 任意後見契約サポート, 市民後見人養成</span>), Civil Code §7&ndash;§876 article text in English (<code>am_law_article.body_en</code> via migration 090), and program timeline mapping via <code>am_amendment_diff</code>. Cost: ¥3 + ¥3 = ¥6 per query pair. The licensed <span lang="ja">司法書士</span> handles the actual guardianship petition and court filing.</p>
+ <p>Returns: adult-guardianship-related program corpus (<span lang="ja">中核機関整備, 任意後見契約サポート, 市民後見人養成</span>), Civil Code §7&ndash;§876 article text in English, and program timeline mapping from public-source updates. Cost: ¥3 + ¥3 = ¥6 per query pair. The licensed <span lang="ja">司法書士</span> handles the actual guardianship petition and court filing.</p>
  </article>
 
  </div>
@@ -234,7 +234,7 @@ curl 'https://api.jpcite.com/v1/am/cross_check_jurisdiction?houjin_bangou=123456
  <article class="card">
  <h3>Python (commercial, ¥3/billable unit)</h3>
  <pre class="code-block"><code>import httpx
-H = {"X-API-Key": "am_..."}
+H = {"X-API-Key": "&lt;YOUR_JPCITE_API_KEY&gt;"}
 
 # 1. Pre-registration corporate 360°
 r = httpx.get(
@@ -266,7 +266,7 @@ for row in r2.json()["items"]:
  "jpcite": {
  "command": "npx",
  "args": ["-y", "autonomath-mcp"],
- "env": {"JPCITE_API_KEY": "am_..."}
+ "env": {"JPCITE_API_KEY": "&lt;YOUR_JPCITE_API_KEY&gt;"}
  }
  }
 }</code></pre>
@@ -355,7 +355,7 @@ for row in r2.json()["items"]:
 
  <article class="card">
  <h3>Q3. What is a reasonable substitute for <span lang="ja">反社</span> (organized crime) checks?</h3>
- <p><strong>A.</strong> Enforcement-history lookup yes &mdash; <code>am_enforcement_detail</code> returns fines, grant refunds, and subsidy exclusion records by 法人番号 (corporate number). Personal credit information no &mdash; APPI (<span lang="ja">個人情報保護法</span>) compliance fences personal PII out of the surface. The licensed <span lang="ja">司法書士</span> makes the final <span lang="ja">反社</span> determination using their own protocol; jpcite contributes only the corporate-side enforcement signal.</p>
+ <p><strong>A.</strong> Corporate enforcement-history lookup is available: fines, grant refunds, and subsidy exclusion records by 法人番号 (corporate number). Personal credit information is not handled &mdash; APPI (<span lang="ja">個人情報保護法</span>) compliance fences personal PII out of the surface. The licensed <span lang="ja">司法書士</span> makes the final <span lang="ja">反社</span> determination using their own protocol; jpcite contributes only corporate-side enforcement signals.</p>
  </article>
 
  <article class="card">
@@ -364,8 +364,8 @@ for row in r2.json()["items"]:
  </article>
 
  <article class="card">
- <h3>Q5. How does this differ from your tax advisor or CPA cohort?</h3>
- <p><strong>A.</strong> Cohort-specific persona kits inject the relevant exclusive-work boundaries dynamically. The <span lang="ja">司法書士</span> cohort fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The <span lang="ja">税理士</span> cohort fences Tax Accountants Act §52 (tax representation / tax document preparation). The <span lang="ja">公認会計士</span> cohort fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different fence &mdash; the boundary text is loaded from <code>cohort_shihoshoshi.yaml</code> at request time and surfaced in every <code>_disclaimer</code> field.</p>
+ <h3>Q5. How does this differ from your tax advisor or CPA audience?</h3>
+ <p><strong>A.</strong> Audience-specific boundary guidance injects the relevant exclusive-work boundaries dynamically. The <span lang="ja">司法書士</span> audience fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The <span lang="ja">税理士</span> audience fences Tax Accountants Act §52 (tax representation / tax document preparation). The <span lang="ja">公認会計士</span> audience fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different legal boundary &mdash; every response surfaces the applicable <code>_disclaimer</code> field.</p>
  </article>
 
  </div>

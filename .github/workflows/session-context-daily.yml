@@ -12,8 +12,8 @@ name: session-context-daily
 
 on:
   schedule:
-    # 02:30 UTC == 11:30 JST. After predictive-events-daily (02:15).
-    - cron: "30 2 * * *"
+    # 02:25 UTC == 11:25 JST. After predictive-events-daily (02:10).
+    - cron: "25 2 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -39,8 +39,32 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Dry-run plan
-        run: python scripts/etl/clean_session_context_expired.py --dry-run
-      - name: Run TTL purge
-        if: ${{ github.event.inputs.dry_run != 'true' }}
-        run: python scripts/etl/clean_session_context_expired.py
+
+      - name: Local dry-run probe (no production DB)
+        run: |
+          set -euo pipefail
+          python scripts/etl/clean_session_context_expired.py \
+            --dry-run \
+            --db "$RUNNER_TEMP/wave49-g3-nonprod-missing.db"
+
+      - name: Install flyctl
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.dry_run != 'true' }}
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run TTL purge on Fly production DB
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.dry_run != 'true' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
+        run: |
+          set -euo pipefail
+          FLAGS="--db /data/autonomath.db"
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="--dry-run ${FLAGS}"
+          elif [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" != "I_ACK_PROD_DB_MUTATION" ]; then
+            echo "::warning::Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
+            FLAGS="--dry-run ${FLAGS}"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/etl/clean_session_context_expired.py ${FLAGS}"

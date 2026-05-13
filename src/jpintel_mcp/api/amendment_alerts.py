@@ -74,6 +74,20 @@ WATCH_TYPES: tuple[str, ...] = ("program_id", "law_id", "industry_jsic")
 # bumps cron CPU into Fly machine-restart territory.
 MAX_WATCHES_PER_SUBSCRIPTION = 50
 
+# R3 P1-4 (2026-05-13): Maximum industry_jsic watches expanded into a single
+# feed call's `IN (?, ?, ...)` sub-SELECT against `am_entity_facts`. Because
+# /feed unions watches across ALL of the caller's active subscriptions, the
+# per-subscription cap (50) does not bound the per-call cap. Without this
+# cap a caller with 20 subscriptions × 50 industry watches each would expand
+# the IN-list to 1,000 placeholders + scan `am_entity_facts` (6.12M rows).
+# Index reference: as of 2026-05-13, no canonical `idx_am_entity_facts_
+# field_name_value` exists on autonomath.db (mig 049 = (source_id), mig 052 =
+# (entity_id,...), mig 067 = (valid_from,valid_until), mig 101 =
+# (entity_id, field_name, confirming_source_count)). When D4 lands such an
+# index this cap stays — the cap is the call-site invariant, the index is
+# the storage invariant. Both belong.
+MAX_INDUSTRY_WATCHES_PER_CALL = 50
+
 # Feed window (days). 90 days matches the audit-log RSS cadence.
 FEED_WINDOW_DAYS = 90
 
@@ -291,6 +305,27 @@ def _fetch_diffs_for_watches(
     """
     if not watches:
         return []
+
+    # R3 P1-4 (2026-05-13): Cap the industry_jsic IN-list BEFORE opening the
+    # autonomath.db connection. /feed unions watches across ALL of the
+    # caller's active subscriptions, so a caller with 20 subscriptions × 50
+    # industry watches would have produced a 1,000-placeholder IN-list and
+    # scanned `am_entity_facts` (6.12M rows). 422 (Unprocessable Entity) is
+    # the right shape: payload is syntactically valid but exceeds a
+    # documented semantic limit; the caller MUST reshape the subscription
+    # union (deactivate sub-sets or split the call) before retrying.
+    industry_count = sum(1 for w in watches if w.type == "industry_jsic")
+    if industry_count > MAX_INDUSTRY_WATCHES_PER_CALL:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            (
+                f"industry_watch_list_too_long: "
+                f"{industry_count} industry_jsic watches in the unioned "
+                f"feed call exceeds the per-call cap of "
+                f"{MAX_INDUSTRY_WATCHES_PER_CALL}. Deactivate unused "
+                f"amendment-alert subscriptions or split the union."
+            ),
+        )
 
     am_conn = connect_autonomath()
     try:
@@ -603,6 +638,7 @@ def deactivate(
 __all__ = [
     "FEED_WINDOW_DAYS",
     "MAX_FEED_ROWS",
+    "MAX_INDUSTRY_WATCHES_PER_CALL",
     "MAX_WATCHES_PER_SUBSCRIPTION",
     "WATCH_TYPES",
     "router",

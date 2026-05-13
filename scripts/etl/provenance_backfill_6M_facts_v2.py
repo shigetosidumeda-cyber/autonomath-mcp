@@ -19,11 +19,13 @@ because:
       ``am_fact_signature`` (e.g., daily axis-3 amendment_diff_v3).
 
 This v2 backfill walks ``am_entity_facts`` directly (NOT ``am_fact_signature``)
-and idempotently UPSERTs an ``am_fact_metadata`` row for any ``fact_id`` where
-``source_doc IS NULL`` OR no metadata row exists. The 4-axis tuple is derived
-from ``am_entity_facts`` columns (``source_id`` → ``am_source.url`` join,
-``confidence`` → [lower, upper] band, ``extracted_at`` proxy from the parent
-row's ``created_at`` when present, ``verified_by`` = ``etl_prov_backfill_v2``).
+and idempotently UPSERTs an ``am_fact_metadata`` row for any metadata fact id
+where ``source_doc IS NULL`` OR no metadata row exists. The metadata fact id is
+``am_entity_facts.id`` stringified. The 4-axis tuple is derived from
+``am_entity_facts`` columns (``COALESCE(f.source_url, s.source_url)`` via
+``am_source.id`` join, optional ``confidence`` → [lower, upper] band,
+``extracted_at`` proxy from the parent row's ``created_at`` when present,
+``verified_by`` = ``etl_prov_backfill_v2``).
 
 Hard constraints
 ----------------
@@ -75,6 +77,7 @@ _log = logging.getLogger("jpcite.etl.provenance_backfill_6M_facts_v2")
 
 DEFAULT_CHUNK_SIZE = 1_000
 DEFAULT_VERIFIED_BY = "etl_prov_backfill_v2"
+_COLUMN_CACHE: dict[tuple[str, str, str], bool] = {}
 # 64-byte zero-pad placeholder for unsigned legacy rows (still satisfies
 # am_fact_metadata length CHECK >= 64). Real sign happens on next v1 tick.
 _PLACEHOLDER_SIG = b"\x00" * 64
@@ -137,30 +140,55 @@ def _canonical_payload(
     ).encode("utf-8")
 
 
-def _derive_source_doc(conn: sqlite3.Connection, fact_id: str) -> str | None:
+def _has_column(conn: sqlite3.Connection, table: str, column: str) -> bool:
+    try:
+        db_key = conn.execute("PRAGMA database_list").fetchone()[2]
+    except (sqlite3.OperationalError, TypeError):
+        db_key = str(id(conn))
+    cache_key = (db_key or str(id(conn)), table, column)
+    if cache_key in _COLUMN_CACHE:
+        return _COLUMN_CACHE[cache_key]
+    try:
+        cols = conn.execute(f"PRAGMA table_info({table})").fetchall()
+    except sqlite3.OperationalError:
+        _COLUMN_CACHE[cache_key] = False
+        return False
+    found = any(row[1] == column for row in cols)
+    _COLUMN_CACHE[cache_key] = found
+    return found
+
+
+def _derive_source_doc(conn: sqlite3.Connection, fact_id: object) -> str | None:
     try:
         cur = conn.execute(
-            "SELECT source_id FROM am_entity_facts WHERE fact_id = ? LIMIT 1",
+            """
+            SELECT COALESCE(f.source_url, s.source_url)
+            FROM am_entity_facts f
+            LEFT JOIN am_source s ON s.id = f.source_id
+            WHERE f.id = ?
+            LIMIT 1
+            """,
             (fact_id,),
         )
         row = cur.fetchone()
-        if not row or row[0] is None:
-            return None
-        cur = conn.execute(
-            "SELECT url FROM am_source WHERE source_id = ? LIMIT 1", (row[0],)
-        )
-        srow = cur.fetchone()
-        return srow[0] if srow else None
+        return row[0] if row else None
     except sqlite3.OperationalError:
         return None
 
 
 def _derive_confidence(
-    conn: sqlite3.Connection, fact_id: str
+    conn: sqlite3.Connection, fact_id: object
 ) -> tuple[float | None, float | None]:
+    if not _has_column(conn, "am_entity_facts", "confidence"):
+        return (None, None)
     try:
         cur = conn.execute(
-            "SELECT confidence FROM am_entity_facts WHERE fact_id = ? LIMIT 1",
+            """
+            SELECT confidence
+            FROM am_entity_facts
+            WHERE id = ?
+            LIMIT 1
+            """,
             (fact_id,),
         )
         row = cur.fetchone()
@@ -177,10 +205,15 @@ def _derive_confidence(
         return (None, None)
 
 
-def _derive_extracted_at(conn: sqlite3.Connection, fact_id: str) -> str:
+def _derive_extracted_at(conn: sqlite3.Connection, fact_id: object) -> str:
     try:
         cur = conn.execute(
-            "SELECT created_at FROM am_entity_facts WHERE fact_id = ? LIMIT 1",
+            """
+            SELECT created_at
+            FROM am_entity_facts
+            WHERE id = ?
+            LIMIT 1
+            """,
             (fact_id,),
         )
         row = cur.fetchone()
@@ -211,14 +244,15 @@ def _sign(priv_key: Any | None, payload: bytes) -> tuple[bytes, str]:
 
 def _upsert_one(
     conn: sqlite3.Connection,
-    fact_id: str,
+    source_fact_id: object,
     priv_key: Any | None,
     *,
     dry_run: bool,
 ) -> str:
-    source_doc = _derive_source_doc(conn, fact_id)
-    conf_lo, conf_hi = _derive_confidence(conn, fact_id)
-    extracted_at = _derive_extracted_at(conn, fact_id)
+    fact_id = str(source_fact_id)
+    source_doc = _derive_source_doc(conn, source_fact_id)
+    conf_lo, conf_hi = _derive_confidence(conn, source_fact_id)
+    extracted_at = _derive_extracted_at(conn, source_fact_id)
     verified_by = DEFAULT_VERIFIED_BY
 
     # Skip-if-already-populated. v2 only fills NULL source_doc rows OR
@@ -285,40 +319,41 @@ def _walk(
     dry_run: bool,
 ) -> dict[str, int]:
     counts = {"upserted": 0, "unchanged": 0, "skipped": 0, "errors": 0}
-    cursor: str | None = None
+    cursor: object | None = None
     walked = 0
     batches = 0
 
     while True:
         if cursor is None:
             cur = conn.execute(
-                "SELECT fact_id FROM am_entity_facts "
-                "ORDER BY fact_id ASC LIMIT ?",
+                "SELECT id FROM am_entity_facts "
+                "ORDER BY id ASC LIMIT ?",
                 (chunk_size,),
             )
         else:
             cur = conn.execute(
-                "SELECT fact_id FROM am_entity_facts "
-                "WHERE fact_id > ? ORDER BY fact_id ASC LIMIT ?",
+                "SELECT id FROM am_entity_facts "
+                "WHERE id > ? "
+                "ORDER BY id ASC LIMIT ?",
                 (cursor, chunk_size),
             )
         batch = cur.fetchall()
         if not batch:
             break
 
-        for (fact_id,) in batch:
+        for (source_fact_id,) in batch:
             if max_rows and walked >= max_rows:
                 return counts
             try:
-                outcome = _upsert_one(conn, fact_id, priv_key, dry_run=dry_run)
+                outcome = _upsert_one(conn, source_fact_id, priv_key, dry_run=dry_run)
                 counts[outcome] += 1
             except sqlite3.IntegrityError as exc:
                 counts["errors"] += 1
                 _log.warning(
-                    "integrity error fact_id=%s err=%s", fact_id, exc
+                    "integrity error fact_id=%s err=%s", source_fact_id, exc
                 )
             walked += 1
-            cursor = fact_id
+            cursor = source_fact_id
 
         if not dry_run:
             conn.commit()

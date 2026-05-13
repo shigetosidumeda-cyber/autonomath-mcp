@@ -75,6 +75,12 @@ jobs:
           python scripts/ops/release_readiness.py | tee /tmp/release_readiness.json
           python -c "import json; d=json.load(open('/tmp/release_readiness.json')); s=d.get('summary',{}); print(f\"summary: pass={s.get('pass')} fail={s.get('fail')} total={s.get('total')}\")"
 
+      # Hard sync guard. This intentionally duplicates the dedicated
+      # check-workflow-target-sync workflow so release-readiness-ci cannot
+      # pass on PRs/tags when the richer verifier sees target drift.
+      - name: Verify workflow target sync (hard gate)
+        run: python scripts/ops/sync_workflow_targets_verify.py --check
+
       # Surface the JSON as a workflow artifact so reviewers can inspect
       # the per-check evidence without re-running locally. Tiny file
       # (<10 KB) so 14-day retention is fine on the free plan.

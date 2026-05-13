@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#ffffff">
 <title>Audit Dashboard - jpcite 9-metric rolling status</title>
 <meta name="description" content="jpcite の 9 軸合算ダッシュボード。SEO / GEO / HTML 構造 / a11y / Core Web Vitals / CF AI Audit / RUM / SLA / coverage を 7 日 rolling で公開。エージェント機械可読 (JSON-LD)・ヒト可読 (HTML) を 1 ページに統合。">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex,nofollow">
 <link rel="canonical" href="https://jpcite.com/status/audit_dashboard.html">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/status/audit_dashboard.html">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/audit_dashboard.html">
@@ -175,7 +175,7 @@
   <section class="section">
     <h2>4 pillars (Discovery / Reasoning / Action / Context)</h2>
     <p class="sub">AX (Agent Experience) の構成 4 柱。各柱は 9 metric から算出した
-    重みづけ合算 (詳細は <a href="/docs/_internal/ax_4_pillars.html">ax_4_pillars.html</a>)</p>
+    重みづけ合算で、Discovery / Reasoning / Action / Context の公開品質を確認します。</p>
     <div class="pillars">
       <div class="pillar" data-pillar="discovery">
         <p class="pn">Discovery</p>
@@ -198,7 +198,7 @@
 
   <section class="section">
     <h2>7-day rolling table</h2>
-    <p class="sub">各指標の日次値。週次 audit-regression-gate workflow は本テーブルを SOT として診断します。</p>
+    <p class="sub">各指標の日次値。週次監査は本テーブルの公開値を参照します。</p>
     <table>
       <thead>
         <tr>
@@ -253,7 +253,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite audit dashboard (9 metric 7-day rolling)",
-  "description": "9-axis quality metrics for jpcite: SEO crawl coverage, GEO citation rate, HTML structure, a11y, Core Web Vitals, CF AI Audit, RUM, SLA uptime, data coverage. Updated daily 03:00 JST. Source-of-truth for audit-regression-gate workflow.",
+  "description": "9-axis quality metrics for jpcite: SEO crawl coverage, GEO citation rate, HTML structure, a11y, Core Web Vitals, CF AI Audit, RUM, SLA uptime, data coverage. Updated daily as a public status snapshot.",
   "url": "https://jpcite.com/status/audit_dashboard.html",
   "license": "https://creativecommons.org/licenses/by/4.0/",
   "publisher": {

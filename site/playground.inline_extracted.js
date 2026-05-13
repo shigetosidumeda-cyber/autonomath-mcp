@@ -154,7 +154,7 @@
       method: 'GET',
       path: '/v1/am/loans',
       title: '融資検索 (公庫 / 商工中金 / 自治体制度融資 — 3 軸保証)',
-      desc: 'am_loan_product。 担保 / 個人保証人 / 第三者保証人 を独立 boolean で。',
+      desc: 'loan-product corpus。 担保 / 個人保証人 / 第三者保証人 を独立 boolean で。',
       params: [
         { name: 'loan_kind',                type: 'enum',     label: '融資種別',          options: ['', 'ippan','trou','seirei','sanko','sogyo','rinsei','saigai','shingiseikyu','kiki','other'] },
         { name: 'no_collateral',            type: 'checkbox', label: '無担保' },

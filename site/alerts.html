@@ -5,10 +5,10 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>法令改正アラート — jpcite</title>
-<meta name="description" content="インボイス・電子帳簿保存法・補助金・融資・行政処分の変更をメールで通知。月次サマリー無料、リアルタイム通知は1通あたり ¥3 (税込 ¥3.30) 完全従量。">
+<meta name="description" content="インボイス・電子帳簿保存法・補助金・融資・行政処分の変更をメールで通知。月次サマリーは無料、リアルタイムは最大1日1通・1通 ¥3 (税込 ¥3.30) の完全従量です。">
 
 <meta property="og:title" content="法令改正アラート — インボイス・電帳法・補助金の変更に気づきやすくする">
-<meta property="og:description" content="制度変更をメール通知。月次サマリー無料 / リアルタイム 1通 ¥3 (税込 ¥3.30) 完全従量。一次資料の URL 付き。">
+<meta property="og:description" content="制度変更をメール通知。月次サマリー無料 / リアルタイムは最大1日1通・1通 ¥3 (税込 ¥3.30)。一次資料 URL 付き。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/alerts">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="法令改正アラート — jpcite">
-<meta name="twitter:description" content="インボイス・電帳法・補助金の変更をメール通知。1通 ¥3 (税込 ¥3.30) 完全従量。">
+<meta name="twitter:description" content="インボイス・電帳法・補助金の変更をメール通知。月次無料、リアルタイムは最大1日1通・1通 ¥3。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/alerts">
@@ -30,8 +30,6 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script type="application/ld+json">
@@ -201,7 +199,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -244,11 +242,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -312,7 +310,7 @@
  あなたの業種・都道府県・関心領域に絞って、検出した制度変更をメールでお届けします。
  すべて一次資料 (省庁・公庫・e-Gov・国税庁・裁判所) の URL 付き。
  </p>
- <p class="tag">月次サマリーは無料。リアルタイム通知は 1通あたり ¥3 (税込 ¥3.30) 完全従量。配信が0件の月は ¥0。</p>
+ <p class="tag">通知先はメールのみです。月次サマリーは無料。リアルタイム通知は最大1日1通、1通あたり ¥3 (税込 ¥3.30) 完全従量。配信が0件の月は ¥0。</p>
  </div>
 </section>
 
@@ -325,7 +323,7 @@
  <div class="field">
  <label for="email">メールアドレス <span aria-hidden="true" style="color:var(--danger)">*</span></label>
  <input type="email" id="email" name="email" required aria-required="true" autocomplete="email" placeholder="you@example.com">
- <p class="hint">確認メールを送信します。他の用途には使いません。</p>
+ <p class="hint">確認メールを送信します。アラート配信以外の用途には使いません。</p>
  </div>
 
  <div class="field-inline">
@@ -389,11 +387,11 @@
  <label id="plan-paid-label">
  <input type="radio" name="plan" value="paid">
  <span class="plan-price">リアルタイム通知 — 1通 ¥3 (税込 ¥3.30) 完全従量</span>
- <div class="plan-desc">検出した変更を関心領域に絞って配信。 配信が0件の月は ¥0。</div>
+ <div class="plan-desc">検出した変更を関心領域に絞ってメール配信。最大1日1通、配信が0件の月は ¥0。</div>
  </label>
  </fieldset>
 
- <button class="btn btn-primary" type="submit" style="width:100%; padding:12px; font-size:15px; margin-top:4px;">購読する</button>
+ <button class="btn btn-primary" type="submit" style="width:100%; padding:12px; font-size:15px; margin-top:4px;">メールで購読する</button>
  <p class="signup-status" id="signup-status" role="status" aria-live="polite"></p>
  <p class="hint" style="margin-top:14px;">
  購読をもって <a href="tos.html">利用規約</a> ・
@@ -488,7 +486,7 @@
  <details>
  <summary>月次サマリー と リアルタイム の切替はどうやりますか？</summary>
  <p>
- 月次サマリー (無料) から リアルタイム (1通 ¥3) への移行は Stripe 決済画面 で従量計測を有効化、 リアルタイムから月次サマリーに戻す場合は配信プランを切り替えるだけで再登録不要です。 配信頻度の違いだけで、上下ランクはありません。
+ 月次サマリー (無料) からリアルタイム (1通 ¥3) へ進む場合は、確認メール内のリンクから Stripe 決済へ進みます。リアルタイムから月次サマリーへ戻す場合は、有料プランを停止したうえで同じメールアドレスで月次サマリーを登録してください。配信頻度の違いだけで、上下ランクはありません。
  </p>
  </details>
  </div>

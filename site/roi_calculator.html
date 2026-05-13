@@ -5,16 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
-<title>ROI calculator — jpcite</title>
-<meta name="description" content="6 業種 × 顧問先数で動的に jpcite 月次 ROI を計算。AI 単体 vs AI+jpcite の delta + 倍率を realtime 表示。サーバ呼び出しなし、LLM 推論なし、lookup table 内蔵。">
+<title>Cost saving calculator — jpcite</title>
+<meta name="description" content="6 業種 × 顧問先数で、AI 単体運用と AI+jpcite の月次 cost saving を試算。サーバ呼び出しなし、LLM 推論なし、lookup table 内蔵。">
 
-<meta property="og:title" content="ROI calculator — jpcite">
-<meta property="og:description" content="6 業種 × 顧問先数で月次 ROI を realtime 計算。">
+<meta property="og:title" content="Cost saving calculator — jpcite">
+<meta property="og:description" content="6 業種 × 顧問先数で月次 cost saving を realtime 計算。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/roi_calculator">
 <meta property="og:locale" content="ja_JP">
 
 <link rel="canonical" href="https://jpcite.com/roi_calculator">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/roi_calculator">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/roi_calculator">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/styles.css?v=20260512a">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -23,7 +25,7 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "jpcite ROI Calculator",
+  "name": "jpcite Cost Saving Calculator",
   "url": "https://jpcite.com/roi_calculator",
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Web",
@@ -34,9 +36,9 @@
     "@type": "Offer",
     "price": "0",
     "priceCurrency": "JPY",
-    "description": "ROI calculator 利用は無料、jpcite API 利用は ¥3/billable unit 完全従量"
+    "description": "Cost saving calculator 利用は無料、jpcite API 利用は ¥3/billable unit 完全従量"
   },
-  "description": "6 業種 (税理士 / 会計士 / 行政書士 / 中小企業診断士 / M&A advisor / 信用金庫) × 顧問先数 1-1,000 で動的に月次 ROI を計算する。AI 単体 baseline と AI+jpcite (¥3.30/req) の delta + 倍率を realtime 表示。lookup table 内蔵、サーバ呼び出しなし、LLM 推論なし。",
+  "description": "6 業種 (税理士 / 会計士 / 行政書士 / 中小企業診断士 / M&A advisor / 信用金庫) × 顧問先数 1-1,000 で動的に月次 cost saving を計算する。AI 単体 baseline と AI+jpcite (¥3.30/req) の差分を realtime 表示。lookup table 内蔵、サーバ呼び出しなし、LLM 推論なし。",
   "creator": {
     "@type": "Organization",
     "name": "Bookyou株式会社",
@@ -59,7 +61,7 @@
   "@type": "BreadcrumbList",
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
-    {"@type": "ListItem", "position": 2, "name": "ROI Calculator", "item": "https://jpcite.com/roi_calculator"}
+    {"@type": "ListItem", "position": 2, "name": "Cost Saving Calculator", "item": "https://jpcite.com/roi_calculator"}
   ]
 }
 </script>
@@ -232,6 +234,10 @@ input[type=range] {
   border-collapse: collapse;
   font-size: 13px;
 }
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .task-detail th, .task-detail td {
   text-align: left;
   padding: 8px 6px;
@@ -319,11 +325,11 @@ footer.site-footer {
 
     <nav class="breadcrumb" aria-label="パンくず">
       <a href="/">ホーム</a> &rsaquo;
-      <span aria-current="page">ROI calculator</span>
+      <span aria-current="page">Cost saving calculator</span>
     </nav>
 
-    <h1>ROI calculator</h1>
-    <p class="lede">業種と顧問先 (取引先) 数を入れると、AI 単体 baseline と AI+jpcite (¥3.30/req) の delta + 月次 ROI 倍率を realtime 表示します。 LLM 推論なし、サーバ呼び出しなし、lookup table 内蔵。</p>
+    <h1>Cost saving calculator</h1>
+    <p class="lede">業種と顧問先 (取引先) 数を入れると、AI 単体 baseline と AI+jpcite (¥3.30/req) の月次差分を realtime 表示します。LLM 推論なし、サーバ呼び出しなし、lookup table 内蔵。</p>
 
     <div class="calc-grid">
 
@@ -349,17 +355,17 @@ footer.site-footer {
         <p class="note">slider または直接入力 (1-1,000)。 業種で「単位」が変わります (顧問先 / 監査契約 / 月案件 / 月ディール / 取引先)。</p>
 
         <div class="fence">
-          数字は <a href="/docs/use_cases/by_industry_v2_2026_05_12">by_industry_v2_2026_05_12.md</a> に準拠した推定値。 業務内容で増減します、絶対値保証ではありません。
+          数字は公開用の料金前提に基づく推定値です。業務内容で増減し、外部 LLM 料金そのものを保証するものではありません。
         </div>
       </section>
 
       <section class="result-card" aria-labelledby="result-h2">
-        <h2 id="result-h2">月次 ROI</h2>
+        <h2 id="result-h2">月次 cost saving</h2>
 
         <div class="roi-headline" id="calculate">
-          <div class="roi-suffix">月次 ROI 倍率</div>
-          <span class="roi-number" id="roi-multiple">35</span>
-          <div class="roi-suffix">倍</div>
+          <div class="roi-suffix">月次削減率</div>
+          <span class="roi-number" id="saving-rate">97</span>
+          <div class="roi-suffix">%</div>
         </div>
 
         <div class="metric">
@@ -392,6 +398,7 @@ footer.site-footer {
 
     <section class="task-detail" aria-labelledby="detail-h3">
       <h3 id="detail-h3">5 task 内訳</h3>
+      <div class="table-scroll">
       <table>
         <thead>
           <tr>
@@ -407,13 +414,14 @@ footer.site-footer {
         <tbody id="task-tbody">
         </tbody>
       </table>
+      </div>
       <p class="note" id="industry-note">税理士事務所では時間単価 ¥6,000 で計算。 顧問先数に応じて線形 scale。</p>
     </section>
 
     <div class="cta-row">
-      <a class="btn btn-primary" href="/dashboard.html?src=roi_calculator">API キー発行 &rarr;</a>
-      <a class="btn btn-secondary" href="/docs/use_cases/by_industry_v2_2026_05_12">詳細 ROI 表 (v2 doc)</a>
-      <a class="btn btn-secondary" href="/pricing.html?src=roi_calculator">料金</a>
+      <a class="btn btn-primary" href="/dashboard.html?src=cost_saving_calculator">API キー発行 &rarr;</a>
+      <a class="btn btn-secondary" href="/audiences/">業種別 use case</a>
+      <a class="btn btn-secondary" href="/pricing.html?src=cost_saving_calculator">料金</a>
     </div>
 
     <div class="fence" style="margin-top: 32px;">
@@ -421,7 +429,7 @@ footer.site-footer {
     </div>
 
     <p class="note" style="margin-top: 24px;">
-      AI 単体 baseline は推定値、業務内容で増減します。 中央値 + sensitivity range を <a href="/docs/use_cases/by_industry_v2_2026_05_12">v2 doc</a> で開示。 jpcite は SQLite + 一次資料 URL のみで動作し、LLM 推論を持ちません (`tests/test_no_llm_in_production.py` で CI guard)。
+      AI 単体 baseline は推定値で、業務内容により増減します。jpcite は SQLite + 一次資料 URL を中心にした retrieval layer で、LLM 推論を持ちません。
     </p>
 
   </div>
@@ -450,7 +458,7 @@ const LOOKUP = {
       { name: "1.4 業種別最適 (JSIC × 制度)", ai_time: 6, hal: 28, ai_err: 20000, ai_total: 56000, req: 40, jp_total: 1932 },
       { name: "1.5 採択事例参考", ai_time: 5, hal: 20, ai_err: 15000, ai_total: 45000, req: 30, jp_total: 1299 }
     ],
-    note: "税理士事務所では時間単価 ¥6,000 で計算。 顧問先数に応じて線形 scale (fan-out 効率で緩やかに ROI 上昇)。"
+    note: "税理士事務所では時間単価 ¥6,000 で計算。顧問先数に応じて線形 scale します。"
   },
   accountant: {
     label: "会計士事務所 (監査繁忙期)",
@@ -464,7 +472,7 @@ const LOOKUP = {
       { name: "2.4 行政処分 filter", ai_time: 4, hal: 25, ai_err: 20000, ai_total: 60000, req: 20, jp_total: 2066 },
       { name: "2.5 監査調書 template", ai_time: 7, hal: 18, ai_err: 20000, ai_total: 90000, req: 40, jp_total: 4132 }
     ],
-    note: "会計士事務所 (監査繁忙期) では時間単価 ¥10,000 で計算。 繁忙期 1.5 ヶ月集中で平時 ÷3、年間平均は ROI 安定。"
+    note: "会計士事務所 (監査繁忙期) では時間単価 ¥10,000 で計算。繁忙期と平時で件数は変わります。"
   },
   admin_scrivener: {
     label: "行政書士",
@@ -478,7 +486,7 @@ const LOOKUP = {
       { name: "3.4 排他ルール", ai_time: 6, hal: 32, ai_err: 25000, ai_total: 55000, req: 25, jp_total: 1583 },
       { name: "3.5 申請 checklist", ai_time: 10, hal: 18, ai_err: 15000, ai_total: 65000, req: 50, jp_total: 2665 }
     ],
-    note: "行政書士では時間単価 ¥5,000 で計算。 月案件数に対して線形 scale、件あたり ¥610 のコストで報酬 ¥150,000 を取りこぼし無くする。"
+    note: "行政書士では時間単価 ¥5,000 で計算。月案件数に対して線形 scale します。"
   },
   diagnostician: {
     label: "中小企業診断士",
@@ -492,7 +500,7 @@ const LOOKUP = {
       { name: "4.4 補完制度", ai_time: 6, hal: 32, ai_err: 25000, ai_total: 73000, req: 30, jp_total: 2499 },
       { name: "4.5 申請 kit assembly", ai_time: 8, hal: 22, ai_err: 20000, ai_total: 84000, req: 30, jp_total: 3299 }
     ],
-    note: "中小企業診断士では時間単価 ¥8,000 で計算。 顧問先数で線形 scale、saved_searches.profile_ids fan-out が ¥/req 効率を最大化。"
+    note: "中小企業診断士では時間単価 ¥8,000 で計算。顧問先数で線形 scale します。"
   },
   ma_advisor: {
     label: "M&A advisor",
@@ -506,7 +514,7 @@ const LOOKUP = {
       { name: "5.4 業法 fence", ai_time: 10, hal: 30, ai_err: 150000, ai_total: 300000, req: 30, jp_total: 7599 },
       { name: "5.5 事業承継 制度 matcher", ai_time: 8, hal: 35, ai_err: 80000, ai_total: 200000, req: 25, jp_total: 6083 }
     ],
-    note: "M&A advisor では時間単価 ¥15,000 で計算。 ディール崩壊 1 件 ¥2,500 万のリスク shield は別軸 (本計算には含まれない)。"
+    note: "M&A advisor では時間単価 ¥15,000 で計算。公開情報 DD の前処理コストを中心に試算します。"
   },
   shinkin: {
     label: "信用金庫渉外",
@@ -520,7 +528,7 @@ const LOOKUP = {
       { name: "6.4 行政処分 filter", ai_time: 4, hal: 28, ai_err: 25000, ai_total: 43000, req: 30, jp_total: 999 },
       { name: "6.5 認定計画 (経営革新 等)", ai_time: 5, hal: 30, ai_err: 20000, ai_total: 42500, req: 25, jp_total: 983 }
     ],
-    note: "信用金庫渉外では時間単価 ¥4,500 で計算 (中央銀行員 35 才 中央値)。 時間単価が最低のため API ¥/req 効率が突出、最高 ROI 47 倍。"
+    note: "信用金庫渉外では時間単価 ¥4,500 で計算。取引先数に対して線形 scale します。"
   }
 };
 
@@ -558,7 +566,7 @@ function scaleToCount(industry, count) {
     api_cost: total_req * 3.30,
     time_cost: total_jp_time_h * industry.hourly_rate,
     delta: total_ai_cost - total_jp_cost,
-    roi: total_jp_cost > 0 ? (total_ai_cost - total_jp_cost) / total_jp_cost : 0,
+    saving_rate: total_ai_cost > 0 ? (total_ai_cost - total_jp_cost) / total_ai_cost * 100 : 0,
     scaled_tasks
   };
 }
@@ -578,7 +586,7 @@ function render() {
   document.getElementById("api-cost").textContent = fmt(result.api_cost);
   document.getElementById("time-cost").textContent = fmt(result.time_cost);
   document.getElementById("annual-delta").textContent = fmt(result.delta * 12);
-  document.getElementById("roi-multiple").textContent = Math.round(result.roi).toString();
+  document.getElementById("saving-rate").textContent = Math.max(0, Math.round(result.saving_rate)).toString();
   document.getElementById("industry-note").textContent = industry.note;
 
   const tbody = document.getElementById("task-tbody");

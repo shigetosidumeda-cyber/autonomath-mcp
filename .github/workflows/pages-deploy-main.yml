@@ -52,6 +52,12 @@ on:
       - "overrides/**"
       - "mkdocs.yml"
       - "docs-requirements.txt"
+      - "mcp-server*.json"
+      - "server.json"
+      - "scripts/check_mcp_drift.py"
+      - "scripts/check_openapi_drift.py"
+      - "scripts/export_agent_openapi.py"
+      - "scripts/export_openapi.py"
       - ".github/workflows/pages-deploy-main.yml"
   workflow_dispatch: {}
 
@@ -83,9 +89,8 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
-            echo "::warning::CF_API_TOKEN and/or CF_ACCOUNT_ID is not configured. Skipping Cloudflare Pages deploy; see this workflow header for setup instructions."
-            echo "available=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required for Cloudflare Pages production deploy."
+            exit 1
           fi
           echo "available=true" >> "$GITHUB_OUTPUT"
 
@@ -95,6 +100,7 @@ jobs:
           set -euo pipefail
           python3 -m pip install --upgrade pip
           python3 -m pip install -r docs-requirements.txt
+          python3 -m pip install -e ".[site]"
           # Wave 24: non-strict on prod deploy. recipes/*/index.md cross-links
           # use bare-dir form (../r20-continue-cline/) which mkdocs flags as
           # warnings in --strict but resolves at runtime via index.html. CI
@@ -104,6 +110,16 @@ jobs:
           # a follow-up by appending /index.md (or absolute URLs) to the 30
           # recipes/rXX-*/index.md cross-references.
           python3 -m mkdocs build
+
+      - name: Run deploy drift gates
+        if: steps.cf-secrets.outputs.available == 'true'
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          AUTONOMATH_EXPERIMENTAL_API_ENABLED: "0"
+        run: |
+          set -euo pipefail
+          python3 scripts/check_openapi_drift.py
+          python3 scripts/check_mcp_drift.py
 
       - name: Build static artifact (rsync site/ → dist/site/)
         if: steps.cf-secrets.outputs.available == 'true'
@@ -158,8 +174,14 @@ jobs:
           for f in \
             dist/site/server.json \
             dist/site/mcp-server.json \
+            dist/site/mcp-server.full.json \
+            dist/site/.well-known/mcp.json \
+            dist/site/.well-known/agents.json \
+            dist/site/.well-known/llms.json \
+            dist/site/.well-known/openapi-discovery.json \
             dist/site/docs/openapi/v1.json \
-            dist/site/openapi.agent.json
+            dist/site/openapi.agent.json \
+            dist/site/openapi.agent.gpt30.json
           do
             echo "validating $f"
             python3 -m json.tool "$f" > /dev/null
@@ -207,8 +229,14 @@ jobs:
           for url in \
             "https://jpcite.com/server.json?$Q" \
             "https://jpcite.com/mcp-server.json?$Q" \
+            "https://jpcite.com/mcp-server.full.json?$Q" \
+            "https://jpcite.com/.well-known/mcp.json?$Q" \
+            "https://jpcite.com/.well-known/agents.json?$Q" \
+            "https://jpcite.com/.well-known/llms.json?$Q" \
+            "https://jpcite.com/.well-known/openapi-discovery.json?$Q" \
             "https://jpcite.com/docs/openapi/v1.json?$Q" \
-            "https://jpcite.com/openapi.agent.json?$Q"
+            "https://jpcite.com/openapi.agent.json?$Q" \
+            "https://jpcite.com/openapi.agent.gpt30.json?$Q"
           do
             echo "smoke: $url"
             ok=false
@@ -234,13 +262,11 @@ jobs:
           # Wave 45 verification: functions/[[path]].ts must proxy any
           # .md URL that ASSETS returns 404 for. Sample one canonical
           # path from each of the three large cohorts (laws,
-          # enforcement, cases) — if all three return 200 with
-          # text/markdown the Function is wired and the edge cache will
-          # warm naturally as agents crawl the surface. Sampled URLs
+          # enforcement, cases). All must return 200 or the deploy fails.
+          # Sampled URLs
           # are stable canonical filenames present in the git tree as
           # of the deploy commit.
           Q="deploy_check=$(date +%s)"
-          fail_count=0
           for url in \
             "https://jpcite.com/laws/chusho-kihon.md?$Q" \
             "https://jpcite.com/enforcement/act-10084.md?$Q" \
@@ -260,17 +286,8 @@ jobs:
               sleep $((attempt * 10))
             done
             if [ "$ok" != "true" ]; then
-              echo "::warning::Wave 45 .md smoke failed for $url — Function may not be deployed yet"
-              fail_count=$((fail_count + 1))
+              echo "::error::Wave 45 .md smoke failed for $url"
+              exit 1
             fi
           done
-          # 2026-05-12: the first deploy that lands the Function may
-          # need one Pages-internal propagation cycle before the
-          # catch-all routes start firing. Treat all 3 failing as
-          # non-fatal on the first run; the cf-parity-daily cron
-          # will catch regressions afterwards.
-          if [ "$fail_count" -ge 3 ]; then
-            echo "::warning::all 3 .md probes failed — investigate functions/[[path]].ts wiring"
-          else
-            echo "Wave 45 .md smoke OK (${fail_count}/3 transient failures)"
-          fi
+          echo "Wave 45 .md smoke OK"

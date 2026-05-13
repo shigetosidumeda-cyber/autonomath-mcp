@@ -1,4 +1,5 @@
 /// <reference types="@cloudflare/workers-types" />
+import { readRequestTextLimited } from "./_body_limit.ts";
 /*
  * H5: A/B test infrastructure for jpcite — CF Pages Function that assigns
  * a deterministic bucket (a|b) to each anonymous visitor and persists the
@@ -84,6 +85,14 @@ export interface Env {
 const COOKIE_NAME = "jpcite_ab_bucket";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 const COOKIE_DOMAIN = ".jpcite.com";
+
+/**
+ * Conversion payload is tiny — `{ test_id, event, value, cookie_bucket,
+ * external_ref }`. Even with generous padding the realistic body fits
+ * in <500 bytes; 2KB is the R3 cap so a misbehaving Stripe webhook or
+ * attacker streaming a multi-MB body can't inflate worker CPU.
+ */
+const MAX_BODY_BYTES = 2 * 1024;
 
 const KNOWN_TESTS = new Set<string>([
   // landing page copy variant
@@ -227,9 +236,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (!url.pathname.endsWith("/conversion")) {
     return jsonResponse({ error: "method_not_allowed" }, { status: 405 });
   }
+  // Cap the conversion payload BEFORE parse — see R3 cluster fix in
+  // `functions/_body_limit.ts`. Rejects oversized bodies with a 413
+  // `payload_too_large` envelope before any parse work happens.
+  const bodyRead = await readRequestTextLimited(context.request, MAX_BODY_BYTES);
+  if (!bodyRead.ok) {
+    return jsonResponse(
+      { error: "payload_too_large", max_bytes: MAX_BODY_BYTES },
+      { status: 413 },
+    );
+  }
   let payload: ConversionPayload;
   try {
-    payload = (await context.request.json()) as ConversionPayload;
+    payload = JSON.parse(bodyRead.text) as ConversionPayload;
   } catch {
     return jsonResponse({ error: "invalid_json" }, { status: 400 });
   }

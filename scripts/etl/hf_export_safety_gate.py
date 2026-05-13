@@ -11,6 +11,15 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+REDISTRIBUTABLE_LICENSES = frozenset(
+    {
+        "pdl_v1.0",
+        "gov_standard",
+        "gov_standard_v2.0",
+        "cc_by_4.0",
+        "public_domain",
+    }
+)
 BLOCKED_LICENSES = frozenset({"proprietary", "unknown"})
 MIN_SAFE_AGGREGATE_ROWS = 5
 
@@ -102,8 +111,8 @@ def _clean_query(query: str) -> str:
     return query.strip().rstrip(";")
 
 
-def _blocked_license_sql() -> str:
-    return ", ".join(f"'{license_name}'" for license_name in sorted(BLOCKED_LICENSES))
+def _redistributable_license_sql() -> str:
+    return ", ".join(f"'{license_name}'" for license_name in sorted(REDISTRIBUTABLE_LICENSES))
 
 
 def _columns_for_query(conn: sqlite3.Connection, query: str) -> list[str]:
@@ -126,7 +135,7 @@ def _sample_license_values(conn: sqlite3.Connection, query: str, column: str) ->
                COUNT(*) AS row_count
           FROM ({_clean_query(query)}) AS export_rows
          WHERE {column} IS NULL
-            OR LOWER(TRIM(CAST({column} AS TEXT))) IN ({_blocked_license_sql()})
+            OR LOWER(TRIM(CAST({column} AS TEXT))) NOT IN ({_redistributable_license_sql()})
             OR TRIM(CAST({column} AS TEXT)) = ''
       GROUP BY license_value
       ORDER BY row_count DESC, license_value
@@ -146,7 +155,8 @@ def _license_issues(
                 HfSafetyIssue(
                     export.table,
                     "blocked_license",
-                    "blocked, blank, or missing license values: " + ", ".join(blocked),
+                    "non-redistributable, blank, or missing license values: "
+                    + ", ".join(blocked),
                 )
             ]
         return []
@@ -159,7 +169,7 @@ def _license_issues(
               FROM ({_clean_query(export.query)}) AS export_rows
              LEFT JOIN am_source s ON s.source_url = export_rows.source_url
              WHERE s.license IS NULL
-                OR LOWER(TRIM(CAST(s.license AS TEXT))) IN ({_blocked_license_sql()})
+                OR LOWER(TRIM(CAST(s.license AS TEXT))) NOT IN ({_redistributable_license_sql()})
                 OR TRIM(CAST(s.license AS TEXT)) = ''
           GROUP BY license_value
           ORDER BY row_count DESC, license_value
@@ -172,7 +182,8 @@ def _license_issues(
                 HfSafetyIssue(
                     export.table,
                     "blocked_source_license",
-                    f"source_url rows resolve to blocked or missing am_source license: {samples}",
+                    "source_url rows resolve to non-redistributable or missing "
+                    f"am_source license: {samples}",
                 )
             ]
         return []

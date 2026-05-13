@@ -8,7 +8,11 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from jpintel_mcp.api.deps import get_db, hash_api_key
-from jpintel_mcp.api.intel_portfolio_heatmap import router
+from jpintel_mcp.api.intel_portfolio_heatmap import (
+    PortfolioHeatmapRequest,
+    _build_envelope,
+    router,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -82,3 +86,156 @@ def test_portfolio_heatmap_paid_final_cap_failure_returns_503_without_usage_even
     assert res.status_code == 503, res.text
     assert res.json()["detail"]["code"] == "billing_cap_final_check_failed"
     assert usage_count() == before
+
+
+def _heatmap_conn() -> sqlite3.Connection:
+    conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
+    conn.executescript(
+        """
+        CREATE TABLE jpi_programs (
+            unified_id TEXT PRIMARY KEY,
+            primary_name TEXT,
+            tier TEXT,
+            program_kind TEXT,
+            amount_max_man_yen REAL
+        );
+        """
+    )
+    conn.executemany(
+        """INSERT INTO jpi_programs
+           (unified_id, primary_name, tier, program_kind, amount_max_man_yen)
+           VALUES (?, ?, ?, ?, ?)""",
+        [
+            ("P1", "検証済み金額制度", "A", "補助金", None),
+            ("P2", "テンプレ既定値のみ制度", "B", "補助金", None),
+            ("P3", "プログラム金額ヒント制度", "A", "補助金", 250.0),
+        ],
+    )
+    return conn
+
+
+def test_portfolio_heatmap_filters_template_default_amounts() -> None:
+    conn = _heatmap_conn()
+    conn.executescript(
+        """
+        CREATE TABLE am_amount_condition (
+            program_id TEXT,
+            amount_max_yen INTEGER,
+            quality_tier TEXT,
+            template_default INTEGER,
+            is_authoritative INTEGER
+        );
+        """
+    )
+    conn.executemany(
+        """INSERT INTO am_amount_condition
+           (program_id, amount_max_yen, quality_tier, template_default, is_authoritative)
+           VALUES (?, ?, ?, ?, ?)""",
+        [
+            ("P1", 123456, "verified", 0, 1),
+            ("P1", 90000000, "template_default", 1, 0),
+            ("P2", 500000, "template_default", 1, 0),
+        ],
+    )
+
+    body = _build_envelope(conn, PortfolioHeatmapRequest(program_ids=["P1", "P2"]))
+
+    rows = {row["program_id"]: row for row in body["heatmap_rows"]}
+    assert rows["P1"]["amount"]["max_yen"] == 123456
+    assert rows["P1"]["amount"]["quality"]["quality_tier"] == "verified"
+    assert rows["P1"]["amount"]["quality"]["template_default"] is False
+    assert rows["P2"]["amount"]["max_yen"] is None
+    assert rows["P2"]["amount"]["quality"]["source"] == "none"
+    assert "verified/authoritative" in rows["P2"]["amount"]["quality"]["limitation"]
+    assert body["summary"]["total_amount_max_yen"] == 123456
+    assert body["summary"]["total_verified_amount_max_yen"] == 123456
+    assert "program_amount_hint" in body["summary"]["amount_total_limitation"]
+    assert body["summary"]["omitted_amount_condition_count"] == 2
+    assert any("omitted 2" in gap for gap in body["known_gaps"])
+
+
+def test_portfolio_heatmap_omits_legacy_amounts_without_quality_metadata() -> None:
+    conn = _heatmap_conn()
+    conn.executescript(
+        """
+        CREATE TABLE am_amount_condition (
+            program_id TEXT,
+            amount_max_yen INTEGER
+        );
+        INSERT INTO am_amount_condition (program_id, amount_max_yen)
+        VALUES ('P1', 777777);
+        """
+    )
+
+    body = _build_envelope(conn, PortfolioHeatmapRequest(program_ids=["P1"]))
+
+    row = body["heatmap_rows"][0]
+    assert row["amount"]["max_yen"] is None
+    assert row["amount"]["quality"]["source"] == "none"
+    assert "quality metadata is unavailable" in row["amount"]["quality"]["limitation"]
+    assert any("quality metadata unavailable" in gap for gap in body["known_gaps"])
+    assert "verified/authoritative" in body["data_quality"]["amount_policy"]
+
+
+def test_portfolio_heatmap_does_not_total_program_amount_hints() -> None:
+    conn = _heatmap_conn()
+    conn.executescript(
+        """
+        CREATE TABLE am_amount_condition (
+            program_id TEXT,
+            amount_max_yen INTEGER,
+            quality_tier TEXT,
+            template_default INTEGER,
+            is_authoritative INTEGER
+        );
+        INSERT INTO am_amount_condition
+            (program_id, amount_max_yen, quality_tier, template_default, is_authoritative)
+        VALUES ('P1', 123456, 'verified', 0, 1);
+        """
+    )
+
+    body = _build_envelope(conn, PortfolioHeatmapRequest(program_ids=["P1", "P3"]))
+
+    rows = {row["program_id"]: row for row in body["heatmap_rows"]}
+    assert rows["P3"]["amount"]["max_yen"] == 2_500_000
+    assert rows["P3"]["amount"]["verified_max_yen"] is None
+    assert rows["P3"]["amount"]["counts_toward_total"] is False
+    assert rows["P3"]["amount"]["quality"]["source"] == "program_amount_hint"
+    assert body["summary"]["total_amount_max_yen"] == 123456
+    assert body["summary"]["total_verified_amount_max_yen"] == 123456
+    assert "template_default" in body["data_quality"]["amount_total_limitation"]
+
+
+def test_portfolio_heatmap_exposes_compatibility_advisory_quality() -> None:
+    conn = _heatmap_conn()
+    conn.executescript(
+        """
+        CREATE TABLE am_compat_matrix (
+            program_a_id TEXT,
+            program_b_id TEXT,
+            compat_status TEXT,
+            rationale_short TEXT,
+            source_url TEXT,
+            confidence REAL,
+            inferred_only INTEGER
+        );
+        INSERT INTO am_compat_matrix
+            (program_a_id, program_b_id, compat_status, rationale_short,
+             source_url, confidence, inferred_only)
+        VALUES ('P1', 'P2', 'case_by_case', 'heuristic row', NULL, 0.4, 1);
+        """
+    )
+
+    body = _build_envelope(conn, PortfolioHeatmapRequest(program_ids=["P1", "P2"]))
+
+    pair = body["compatibility_pairs"][0]
+    assert pair["status"] == "case_by_case"
+    assert pair["advisory_quality"] == "heuristic_advisory"
+    assert pair["inferred_only"] is True
+    assert pair["source_url_present"] is False
+    assert "advisory matrix signal" in pair["caveat"]
+    row = body["heatmap_rows"][0]
+    assert row["compatibility"]["status"] == "requires_review"
+    assert row["compatibility"]["advisory_quality"] == "mixed_advisory"
+    assert "primary sources" in row["compatibility"]["caveat"]

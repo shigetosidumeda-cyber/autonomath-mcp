@@ -1,5 +1,5 @@
 /*
- * webmcp_init.js — jpcite WebMCP early preview wiring (Wave 17 AX Layer 3).
+ * webmcp_init.js — jpcite WebMCP early preview wiring (WebMCP preview).
  *
  * Exposes 4 browser-resident agent tools through Chrome 145+ WebMCP
  * (`navigator.modelContext.registerTool`) so a co-located agent can invoke

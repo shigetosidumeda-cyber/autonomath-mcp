@@ -1,6 +1,6 @@
 # robots.txt for jpcite.com
 # Policy: allow public discovery crawlers and keep non-public paths out of indexes.
-# Wave 19 §B2 fine-grain: 39+ named AI bots welcome / 6 SEO aggregators denied.
+# public crawler policy fine-grain: 39+ named AI bots welcome / 6 SEO aggregators denied.
 #
 # Brand-specific policy by crawler family:
 #   - Search-index AI (Google-Extended / GPTBot / ClaudeBot / Applebot-Extended /
@@ -194,5 +194,7 @@ Sitemap: https://jpcite.com/sitemap-enforcement-cases.xml
 Sitemap: https://jpcite.com/sitemap-laws.xml
 Sitemap: https://jpcite.com/sitemap-laws-en.xml
 Sitemap: https://jpcite.com/sitemap-llms.xml
+Sitemap: https://jpcite.com/sitemap-facts.xml
+Sitemap: https://jpcite.com/sitemap-structured.xml
 Sitemap: https://jpcite.com/docs/sitemap.xml
 Sitemap: https://jpcite.com/sitemap-companion-md.xml

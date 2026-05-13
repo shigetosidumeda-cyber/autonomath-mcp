@@ -59,6 +59,8 @@ from typing import Any, Literal
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
+from jpintel_mcp.mcp.transport_metadata import a2a_transport_advertisements
+
 router = APIRouter(prefix="/v1/a2a", tags=["a2a"])
 
 # ---------------------------------------------------------------------------
@@ -247,7 +249,7 @@ async def agent_card() -> dict[str, Any]:
             "tax_included_yen": 3.3,
             "free_tier": "3 req/day per IP (anonymous, JST midnight reset)",
         },
-        "transport": ["http_json", "mcp_stdio", "mcp_streamable_http"],
+        "transport": a2a_transport_advertisements(),
         "compliance": {
             "disclaimer_keys": [
                 "_disclaimer",

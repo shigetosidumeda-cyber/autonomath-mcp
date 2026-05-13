@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import json
 import os
-import statistics
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -115,16 +114,18 @@ def _fetch_cf_fallback(date_str: str) -> list[dict]:
     for g in groups or []:
         q = g.get("quantiles") or {}
         n = int(g.get("count") or 0)
-        synth.append({
-            "date": date_str,
-            "lcp": q.get("lcpP75"),
-            "inp": q.get("inpP75"),
-            "cls": q.get("clsP75"),
-            "ttfb": q.get("ttfbP75"),
-            "fcp": q.get("fcpP75"),
-            "samples": n,
-            "source": "cf_fallback",
-        })
+        synth.append(
+            {
+                "date": date_str,
+                "lcp": q.get("lcpP75"),
+                "inp": q.get("inpP75"),
+                "cls": q.get("clsP75"),
+                "ttfb": q.get("ttfbP75"),
+                "fcp": q.get("fcpP75"),
+                "samples": n,
+                "source": "cf_fallback",
+            }
+        )
     return synth
 
 
@@ -190,7 +191,9 @@ def main() -> int:
     _OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     _OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
     total = sum(d["samples"] for d in days_out if isinstance(d["samples"], int))
-    print(f"[rum_aggregator] wrote {_OUT_PATH.relative_to(_REPO_ROOT)} days={len(days_out)} samples={total}")
+    print(
+        f"[rum_aggregator] wrote {_OUT_PATH.relative_to(_REPO_ROOT)} days={len(days_out)} samples={total}"
+    )
     return 0
 
 

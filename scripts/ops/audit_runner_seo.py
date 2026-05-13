@@ -14,6 +14,7 @@ Usage:
     audit_runner_seo.py --compare-baseline PATH --month YYYY-MM \\
                         --emit-summary PATH
 """
+
 from __future__ import annotations
 
 import argparse
@@ -21,17 +22,26 @@ import json
 import pathlib
 import re
 import sys
-from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 SITE = REPO_ROOT / "site"
 
-CORE_PAGES = ["index.html", "pricing.html", "playground.html",
-              "dashboard.html", "login.html", "artifact.html"]
+CORE_PAGES = [
+    "index.html",
+    "pricing.html",
+    "playground.html",
+    "dashboard.html",
+    "login.html",
+    "artifact.html",
+]
 EXPECTED_SITEMAPS = [
-    "sitemap-index.xml", "sitemap-cases.xml", "sitemap-laws.xml",
-    "sitemap-laws-en.xml", "sitemap-enforcement-cases.xml",
+    "sitemap-index.xml",
+    "sitemap-cases.xml",
+    "sitemap-laws.xml",
+    "sitemap-laws-en.xml",
+    "sitemap-enforcement-cases.xml",
     "sitemap-enforcement.xml",
 ]
 
@@ -106,9 +116,13 @@ def score_og_twitter() -> SubScore:
     pts = 10.0
     for p in CORE_PAGES:
         html = _read(SITE / p)
-        for tag in ['property="og:title"', 'property="og:description"',
-                    'property="og:url"', 'property="og:image"',
-                    'name="twitter:card"']:
+        for tag in [
+            'property="og:title"',
+            'property="og:description"',
+            'property="og:url"',
+            'property="og:image"',
+            'name="twitter:card"',
+        ]:
             if tag not in html:
                 findings.append(f"{p}: missing {tag}")
                 pts -= 0.2
@@ -165,7 +179,7 @@ def run_audit() -> dict:
         "verdict": "green" if avg >= 8.5 else ("yellow" if avg >= 6.5 else "red"),
         "sub_scores": {s.name: round(s.score, 2) for s in subs},
         "findings": [f for s in subs for f in s.findings],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -175,7 +189,8 @@ def render_md(result: dict) -> str:
         "",
         f"**Score**: {result['score']:.2f} / 10 ({result['verdict'].upper()})",
         "",
-        "| sub-axis | score |", "| --- | --- |",
+        "| sub-axis | score |",
+        "| --- | --- |",
     ]
     for k, v in result["sub_scores"].items():
         lines.append(f"| {k} | {v:.2f} |")
@@ -188,15 +203,18 @@ def render_md(result: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def compare_baseline(baseline_path: pathlib.Path, current: dict,
-                     threshold: float = 0.5) -> str | None:
+def compare_baseline(
+    baseline_path: pathlib.Path, current: dict, threshold: float = 0.5
+) -> str | None:
     baseline = json.loads(baseline_path.read_text())
     base_score = float(baseline["axes"][current["axis"]]["score"])
     delta = current["score"] - base_score
     if delta < -threshold:
-        return (f"axis={current['axis']} baseline={base_score:.2f} "
-                f"current={current['score']:.2f} delta={delta:+.2f} "
-                f"(threshold -{threshold})")
+        return (
+            f"axis={current['axis']} baseline={base_score:.2f} "
+            f"current={current['score']:.2f} delta={delta:+.2f} "
+            f"(threshold -{threshold})"
+        )
     return None
 
 
@@ -216,8 +234,7 @@ def main(argv: list[str] | None = None) -> int:
         pathlib.Path(args.out_md).write_text(render_md(result))
     if args.out_json:
         pathlib.Path(args.out_json).parent.mkdir(parents=True, exist_ok=True)
-        pathlib.Path(args.out_json).write_text(json.dumps(result, indent=2,
-                                                          ensure_ascii=False))
+        pathlib.Path(args.out_json).write_text(json.dumps(result, indent=2, ensure_ascii=False))
 
     if args.compare_baseline:
         summary = compare_baseline(pathlib.Path(args.compare_baseline), result)

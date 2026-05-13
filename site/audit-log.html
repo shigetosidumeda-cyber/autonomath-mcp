@@ -4,11 +4,11 @@
 <!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
-<title>変更履歴 — jpcite</title>
-<meta name="description" content="補助金・融資・税制・認定制度の変更を一次資料 URL 付きで公開。RSS / JSON 対応。">
+<title>公開変更履歴 — jpcite</title>
+<meta name="description" content="jpcite が検出した補助金・融資・税制・認定制度の公開変更履歴です。一次資料 URL、検出日、RSS フィードで変更内容を確認できます。">
 
-<meta property="og:title" content="変更履歴 — jpcite">
-<meta property="og:description" content="補助金・融資・税制・認定制度の変更を一次資料 URL 付きで公開。">
+<meta property="og:title" content="公開変更履歴 — jpcite">
+<meta property="og:description" content="補助金・融資・税制・認定制度の公開変更履歴。一次資料 URL、検出日、RSS フィードで確認できます。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/audit-log">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -17,8 +17,8 @@
 <meta property="og:locale" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="変更履歴 — jpcite">
-<meta name="twitter:description" content="制度の変更を一次資料 URL 付きで公開。">
+<meta name="twitter:title" content="公開変更履歴 — jpcite">
+<meta name="twitter:description" content="補助金・融資・税制・認定制度の公開変更履歴。一次資料 URL と検出日付き。">
 
 <link rel="canonical" href="https://jpcite.com/audit-log">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/audit-log">
@@ -29,16 +29,14 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="preload" as="font" type="font/woff2" href="/static/fonts/noto-sans-jp-3e6b27914d.woff2" crossorigin>
-<link rel="stylesheet" href="/static/fonts/noto-sans-jp.css">
 <link rel="stylesheet" href="styles.css?v=20260428a">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Dataset",
-  "name": "jpcite 変更履歴",
-  "description": "公的制度の変更履歴。出典 URL 付き。",
+  "name": "jpcite 公開変更履歴",
+  "description": "jpcite が検出した公的制度の公開変更履歴。一次資料 URL と検出日付き。",
   "url": "https://jpcite.com/audit-log",
   "sameAs": "https://api.jpcite.com/v1/am/audit-log",
   "license": "https://creativecommons.org/licenses/by/4.0/",
@@ -143,7 +141,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -186,11 +184,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -239,7 +237,7 @@
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="/audit-log.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
  <span class="sep" aria-hidden="true">/</span>
- <a href="/en/" lang="en" hreflang="en">EN</a>
+ <a href="/en/audit-log.html" lang="en" hreflang="en">EN</a>
  </span>
  </nav>
  </div>
@@ -247,8 +245,8 @@
 
 <main id="main" class="auditlog-page">
  <div class="container">
- <h1>変更履歴</h1>
- <p class="lead">公的制度の変更を一次資料 URL 付きで公開しています。</p>
+ <h1>公開変更履歴</h1>
+ <p class="lead">jpcite が検出した公的制度の変更を、一次資料 URL と検出日付きで公開しています。利用者が確認できる公開情報の変更履歴です。</p>
 
  <div class="auditlog-controls" role="search" aria-label="変更履歴フィルタ">
  <label>検出開始日 (UTC)

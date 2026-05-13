@@ -63,10 +63,9 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import ipaddress
+import hashlib
 import json
 import logging
-import socket
 import sqlite3
 import sys
 import time
@@ -88,6 +87,9 @@ from jpintel_mcp.billing.delivery import record_metered_delivery  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
+from jpintel_mcp.utils.webhook_safety import SafeWebhookTransport, is_safe_webhook  # noqa: E402
+
+_is_safe_webhook_shared = is_safe_webhook
 
 logger = logging.getLogger("autonomath.cron.dispatch_webhooks")
 
@@ -113,57 +115,27 @@ _AUTO_DISABLE_THRESHOLD = 5
 _DEFAULT_WINDOW_MINUTES = 1440
 
 
+def _delivery_idempotency_key(event_type: str, event_id: str) -> str:
+    seed = f"{event_type}:{event_id}".encode()
+    return hashlib.sha256(seed).hexdigest()
+
+
 # ---------------------------------------------------------------------------
-# URL safety re-check (mirrors api/customer_webhooks._is_internal_host but
-# with the DNS-resolution branch from amendment_alert)
+# URL safety re-check — single source of truth in
+# jpintel_mcp.utils.webhook_safety.is_safe_webhook. Kept as a module-level
+# name here so existing monkeypatches against
+# scripts.cron.dispatch_webhooks._is_safe_webhook keep working and so the
+# customer-side test_delivery surface and the cron dispatcher share one
+# DNS-rebind defence implementation.
 # ---------------------------------------------------------------------------
 
 
 def _is_safe_webhook(url: str) -> tuple[bool, str | None]:
-    """Re-validate the URL at fire time. Returns (ok, reason_if_unsafe)."""
-    try:
-        parsed = urlparse(url)
-    except ValueError:
-        return False, "url_unparseable"
-    if parsed.scheme.lower() != "https":
-        return False, "scheme_not_https"
-    host = (parsed.hostname or "").strip("[]").lower()
-    if not host or host == "localhost":
-        return False, "no_host"
-    try:
-        ip = ipaddress.ip_address(host)
-        if (
-            ip.is_loopback
-            or ip.is_private
-            or ip.is_link_local
-            or ip.is_multicast
-            or ip.is_reserved
-            or ip.is_unspecified
-        ):
-            return False, "internal_ip_literal"
-        return True, None
-    except ValueError:
-        pass
-    try:
-        infos = socket.getaddrinfo(host, None)
-    except socket.gaierror:
-        return False, "dns_failed"
-    for info in infos:
-        addr = info[4][0]
-        try:
-            ip = ipaddress.ip_address(addr)
-        except ValueError:
-            continue
-        if (
-            ip.is_loopback
-            or ip.is_private
-            or ip.is_link_local
-            or ip.is_multicast
-            or ip.is_reserved
-            or ip.is_unspecified
-        ):
-            return False, "internal_ip_resolved"
-    return True, None
+    """Re-validate the URL at fire time. Returns (ok, reason_if_unsafe).
+
+    Thin wrapper over ``jpintel_mcp.utils.webhook_safety.is_safe_webhook``.
+    """
+    return _is_safe_webhook_shared(url)
 
 
 # ---------------------------------------------------------------------------
@@ -713,6 +685,7 @@ def _deliver_one(
     url: str,
     secret: str,
     event_type: str,
+    event_id: str,
     payload: dict[str, Any],
     dry_run: bool,
 ) -> tuple[int | None, str | None]:
@@ -737,6 +710,7 @@ def _deliver_one(
     headers = {
         "Content-Type": "application/json; charset=utf-8",
         "User-Agent": "jpcite-webhook/1.0",
+        "Idempotency-Key": _delivery_idempotency_key(event_type, event_id),
         "X-Jpcite-Signature": sig,
         "X-Jpcite-Event": event_type,
         # Legacy aliases retained for existing integrations.
@@ -1058,7 +1032,7 @@ def run(
             return summary
 
         # 3. Per-webhook fan out with idempotency.
-        client = httpx.Client(timeout=_HTTPX_TIMEOUT)
+        client = httpx.Client(timeout=_HTTPX_TIMEOUT, transport=SafeWebhookTransport())
         try:
             now_iso = datetime.now(UTC).isoformat()
             for w in whs:
@@ -1098,6 +1072,7 @@ def run(
 
                     payload = {
                         "event_type": ev["event_type"],
+                        "event_id": ev["event_id"],
                         "timestamp": ev["timestamp"] or now_iso,
                         "data": ev["data"],
                     }
@@ -1113,6 +1088,7 @@ def run(
                             url=w["url"],
                             secret=w["secret_hmac"],
                             event_type=ev["event_type"],
+                            event_id=ev["event_id"],
                             payload=payload,
                             dry_run=dry_run,
                         )

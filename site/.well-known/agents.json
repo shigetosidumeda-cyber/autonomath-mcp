@@ -4,22 +4,22 @@
   "operator_corporate_number": "8010001213708",
   "operator_jct_registration": "T8010001213708",
   "product": "jpcite",
-  "description": "Japanese public-program / public-record evidence API and MCP server. Source-linked retrieval for subsidies, loans, licenses, administrative dispositions, qualified-invoice registrants, laws, and court decisions. Corpus snapshot 2026-05-07: 503,930 entities, 6.12M facts, 11,601 searchable programs across 47 prefectures, 9,484 law catalog stubs (6,493 full-text indexed), 50 tax_rulesets, 2,065 court_decisions, 1,185 enforcement_cases, 13,801 invoice_registrants (monthly 4M-row zenken bulk wired). MCP runtime cohort = 146 tools (manifest hold-at-139 default-gate count until next intentional bump).",
+  "description": "Japanese public-program / public-record evidence API and MCP server. Source-linked retrieval for subsidies, loans, licenses, administrative dispositions, qualified-invoice registrants, laws, and court decisions. Corpus snapshot 2026-05-07: 503,930 entities, 6.12M facts, 11,601 searchable programs across 47 prefectures, 9,484 law catalog stubs (6,493 full-text indexed), 50 tax_rulesets, 2,065 court_decisions, 1,185 enforcement_cases, and 13,801 invoice_registrants.",
   "mcp_endpoint": "https://api.jpcite.com/mcp",
-  "rest_openapi": "https://api.jpcite.com/openapi.public.json",
+  "rest_openapi": "https://api.jpcite.com/v1/openapi.json",
   "agent_openapi": "https://jpcite.com/openapi.agent.json",
   "agent_openapi_slim_gpt30": "https://jpcite.com/openapi.agent.gpt30.json",
   "openapi_discovery": "https://jpcite.com/.well-known/openapi-discovery.json",
   "llms_txt": "https://jpcite.com/llms.txt",
   "llms_full_txt": "https://jpcite.com/llms-full.txt",
   "companion_md_sitemap": "https://jpcite.com/sitemap-companion-md.xml",
-  "role_separation_note": "agents.json (this file) is a machine-readable AI-capability spec; llms.txt is the narrative site description for AI + human readers. They are intentionally non-overlapping: agents.json carries machine-readable tool counts, corpus scale, workflow IDs, pricing primitives; llms.txt carries first-call sequences, route guidance, and operator copy. Cross-link both ways via the `llms_txt` field above and the `## Agent-side capability spec` section of llms.txt.",
+  "role_separation_note": "agents.json (this file) is a machine-readable AI-capability spec; llms.txt is the narrative site description for AI + human readers. agents.json carries capability metadata, corpus scale, and pricing primitives; llms.txt carries route guidance and narrative site context. Cross-link both ways via the `llms_txt` field above and the `## Agent-side capability spec` section of llms.txt.",
   "policy_url": "https://jpcite.com/tos.html",
   "privacy_url": "https://jpcite.com/privacy.html",
   "tools_count": {
-    "runtime_cohort": 146,
-    "manifest_hold_at": 139,
-    "note": "CLAUDE.md SOT: runtime cohort = 146 as of 2026-05-07. Manifests (pyproject.toml / server.json / dxt/manifest.json / smithery.yaml / mcp-server.json) intentionally hold at 139 until the next intentional bump. Verify with len(await mcp.list_tools())."
+    "public_default": 151,
+    "runtime_verified": 151,
+    "note": "Public MCP manifests advertise 151 tools."
   },
   "corpus_scale": {
     "entities": 503930,
@@ -38,58 +38,5 @@
   "contact_email": "info@bookyou.net",
   "support_sla_hours": 24,
   "geo_eligibility": "Japan-only (Stripe customer billing_address_country=JP required)",
-  "data_licenses": ["PDL_v1.0", "CC-BY-4.0", "政府標準利用規約v2.0"],
-  "recurring_agent_workflows": {
-    "activation_rule": "Choose one first paid evidence call, use previewCost before broad runs, rerun with X-API-Key after the anonymous daily trial, and set X-Client-Tag for customer or project attribution.",
-    "workflows": [
-      {
-        "id": "company_folder_intake",
-        "description": "1法人の公開ベースライン作成 (createCompanyPublicBaseline + folder brief + evidence packet).",
-        "first_paid_call": "createCompanyPublicBaseline",
-        "sequence": ["previewCost", "createCompanyPublicBaseline", "createCompanyFolderBrief", "queryEvidencePacket"],
-        "approx_req": 18,
-        "approx_jpy_inc_tax": 59.40
-      },
-      {
-        "id": "monthly_client_review",
-        "description": "顧問先 N 社の月次 evidence packet 再取得 + prescreen 走査.",
-        "first_paid_call": "queryEvidencePacket",
-        "sequence": ["previewCost", "queryEvidencePacket", "prescreenPrograms"],
-        "approx_req_per_client": 1,
-        "approx_jpy_inc_tax_per_client": 3.30
-      },
-      {
-        "id": "counterparty_dd_and_audit_prep",
-        "description": "M&A 相手先 / 監査前準備の DD pack + audit pack + 専門家ハンドオフ.",
-        "first_paid_call": "createCompanyPublicBaseline",
-        "sequence": ["previewCost", "createCompanyPublicBaseline", "createCompanyPublicAuditPack", "match_advisors_v1_advisors_match_get"],
-        "approx_req": 47,
-        "approx_jpy_inc_tax": 155.10
-      },
-      {
-        "id": "law_amendment_cross_reference_monitor",
-        "description": "法令改正 cohort cross-reference monitor (am_amendment_diff + 制度影響 surface). 月次で 12 cohort を回す.",
-        "first_paid_call": "queryEvidencePacket",
-        "sequence": ["previewCost", "queryEvidencePacket", "track_amendment_lineage_am", "cross_check_jurisdiction"],
-        "approx_req_per_month": 12,
-        "approx_jpy_inc_tax_per_month": 39.60
-      },
-      {
-        "id": "adoption_case_cohort_compare",
-        "description": "採択事例 cohort 比較 (業種 × 規模 × 地域). 1 顧問先につき pack_construction / pack_manufacturing / pack_real_estate のいずれかを cohort matcher で回す.",
-        "first_paid_call": "case_cohort_match",
-        "sequence": ["previewCost", "case_cohort_match", "match_due_diligence_questions"],
-        "approx_req_per_compare": 6,
-        "approx_jpy_inc_tax_per_compare": 19.80
-      },
-      {
-        "id": "enforcement_watch_rss",
-        "description": "行政処分 watch (am_enforcement_detail RSS subscribe + houjin_watch webhook). 月 1 回の subscribe rerun + webhook fire.",
-        "first_paid_call": "queryEvidencePacket",
-        "sequence": ["previewCost", "queryEvidencePacket", "check_enforcement_am"],
-        "approx_req_per_month": 12,
-        "approx_jpy_inc_tax_per_month": 39.60
-      }
-    ]
-  }
+  "data_licenses": ["PDL_v1.0", "CC-BY-4.0", "政府標準利用規約v2.0"]
 }

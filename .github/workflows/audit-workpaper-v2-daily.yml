@@ -1,0 +1,94 @@
+name: audit-workpaper-v2-daily
+
+# Wave 46 dim 19 D-final — audit_workpaper v2 cache builder.
+#
+# Daily ETL pass that materialises am_audit_workpaper from the same
+# deterministic 5-source SQLite projection used by the live composer.
+#
+# Invokes: scripts/etl/build_audit_workpaper_v2.py. Stdlib + sqlite3 only,
+# LLM API 0 (feedback_no_operator_llm_api). Manual runs default to dry-run.
+# Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK to equal
+# I_ACK_PROD_DB_MUTATION; otherwise the Fly SSH command forces --dry-run.
+
+on:
+  schedule:
+    # 03:35 UTC == 12:35 JST. After Wave 49 AX Layer 5 ETL lane.
+    - cron: "35 3 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "If true, plan only (no DB writes)"
+        required: false
+        default: "true"
+      fiscal_year:
+        description: "Optional FY override, e.g. 2025"
+        required: false
+        default: ""
+      limit_houjin:
+        description: "Max houjin cohort size"
+        required: false
+        default: "20000"
+      max_rows:
+        description: "Max houjin/FY rows to scan"
+        required: false
+        default: "40000"
+
+concurrency:
+  group: audit-workpaper-v2-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Local dry-run probe (no production DB)
+        run: |
+          set -euo pipefail
+          if [ -s "$RUNNER_TEMP/audit-workpaper-v2-nonprod.db" ]; then
+            python scripts/etl/build_audit_workpaper_v2.py \
+              --dry-run \
+              --db "$RUNNER_TEMP/audit-workpaper-v2-nonprod.db" \
+              --limit-houjin 5 \
+              --max-rows 5
+          else
+            python scripts/etl/build_audit_workpaper_v2.py --help >/dev/null
+          fi
+
+      - name: Install flyctl
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.dry_run != 'true' }}
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run audit workpaper ETL on Fly production DB
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.dry_run != 'true' }}
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          PROD_DB_MUTATION_OPERATOR_ACK: ${{ secrets.PROD_DB_MUTATION_OPERATOR_ACK }}
+          FISCAL_YEAR: ${{ github.event.inputs.fiscal_year }}
+          LIMIT_HOUJIN: ${{ github.event.inputs.limit_houjin || '20000' }}
+          MAX_ROWS: ${{ github.event.inputs.max_rows || '40000' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--db /data/autonomath.db --limit-houjin ${LIMIT_HOUJIN} --max-rows ${MAX_ROWS}"
+          if [ "${DRY_RUN}" = "true" ]; then
+            FLAGS="--dry-run ${FLAGS}"
+          elif [ "${PROD_DB_MUTATION_OPERATOR_ACK:-}" != "I_ACK_PROD_DB_MUTATION" ]; then
+            echo "::warning::Production DB mutation requires PROD_DB_MUTATION_OPERATOR_ACK=I_ACK_PROD_DB_MUTATION; forcing --dry-run."
+            FLAGS="--dry-run ${FLAGS}"
+          fi
+          if [ -n "${FISCAL_YEAR}" ]; then
+            FLAGS="${FLAGS} --fiscal-year ${FISCAL_YEAR}"
+          fi
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/etl/build_audit_workpaper_v2.py ${FLAGS}"

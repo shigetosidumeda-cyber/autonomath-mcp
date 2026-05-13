@@ -8,7 +8,6 @@
 <link rel="canonical" href="https://jpcite.com/connect/codex">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/codex">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/connect/codex">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/codex">
 <meta property="og:type" content="website">
 <meta property="og:title" content="OpenAI Codex CLI / Agents SDK から jpcite 1 import | jpcite">
@@ -146,7 +145,7 @@ print(result.final_output)
 
   <section>
     <h2>動作確認</h2>
-    <p>Agent 経由で <code>ものづくり補助金 東京都</code> を投げ、jpcite tools 経由の回答 (source_url 付き) が返ることを確認 (<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルトで 139 tool)。</p>
+    <p>Agent 経由で <code>ものづくり補助金 東京都</code> を投げ、jpcite tools 経由の回答 (source_url 付き) が返ることを確認します。公開 tools は 139 件で、36協定書面の生成機能は公開提供していません。</p>
 <pre><code aria-label="動作確認 (Agent 経由)">python -c "import os; from agents import Agent, HostedMCPTool, Runner; \
 t = HostedMCPTool(tool_config={'type':'mcp','server_label':'jpcite','server_url':'https://api.jpcite.com/mcp','require_approval':'never'}); \
 a = Agent(name='probe', tools=[t]); \

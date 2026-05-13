@@ -1,7 +1,7 @@
 name: production-gate-dashboard-daily
 
 # DEEP-58 production gate progress dashboard (session A draft, jpcite v0.3.4).
-# Runs daily at 06:00 JST (UTC 21:00 prev day) and on manual dispatch.
+# Runs daily at 06:52 JST (UTC 21:52 prev day) and on manual dispatch.
 # - Aggregates 4 blocker + 8 ACK boolean + 33 spec status (DEEP-22..54)
 # - Emits analytics/production_gate_<date>.json + analytics/production_gate.html
 # - Auto-deploys the static page to Cloudflare Pages under /transparency/
@@ -10,7 +10,7 @@ name: production-gate-dashboard-daily
 
 on:
   schedule:
-    - cron: '0 21 * * *'   # daily 21:00 UTC == 06:00 JST next day
+    - cron: '52 21 * * *'   # daily 21:52 UTC == 06:52 JST next day
   workflow_dispatch:
     inputs:
       reason:
@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
   issues: write
 
 concurrency:
@@ -85,12 +86,23 @@ jobs:
           mkdir -p site/transparency
           cp analytics/production_gate.html site/transparency/production-gate.html
 
+      - name: Check Cloudflare Pages secrets
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
+            echo "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required for Cloudflare Pages deploy."
+            exit 1
+          fi
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: jpcite-site
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          projectName: autonomath
           directory: site
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           branch: main

@@ -551,6 +551,110 @@ def test_q_empty_with_filter_still_filters(client: TestClient) -> None:
     assert body["total"] >= 1
 
 
+def test_q_cursor_preserves_literal_name_boost(
+    client: TestClient,
+    db_conn: sqlite3.Connection,
+    paid_key: str,
+) -> None:
+    """Text-search cursors must carry the literal-name boost key.
+
+    ``テストカーソル設備支援`` matches only through enriched_text. It must stay
+    behind rows whose primary_name literally contains the query across both
+    offset and cursor pagination.
+    """
+    query = "カーソル補助金"
+    _insert(
+        db_conn,
+        unified_id="UNI-fts5-cursor-literal-a",
+        primary_name="テストカーソル補助金A",
+        tier="C",
+    )
+    _insert(
+        db_conn,
+        unified_id="UNI-fts5-cursor-literal-b",
+        primary_name="テストカーソル補助金B",
+        tier="C",
+    )
+    _insert(
+        db_conn,
+        unified_id="UNI-fts5-cursor-body-only",
+        primary_name="テストカーソル設備支援",
+        tier="S",
+        enriched_text=query,
+    )
+    headers = {"X-API-Key": paid_key}
+
+    offset_names: list[str] = []
+    for offset in range(3):
+        resp = client.get(
+            "/v1/programs/search",
+            params={"q": query, "limit": 1, "offset": offset},
+            headers=headers,
+        )
+        assert resp.status_code == 200, resp.text
+        offset_names.extend(row["primary_name"] for row in resp.json()["results"])
+
+    cursor_names: list[str] = []
+    resp = client.get(
+        "/v1/programs/search",
+        params={"q": query, "limit": 1},
+        headers=headers,
+    )
+    for _ in range(5):
+        assert resp.status_code == 200, resp.text
+        body = resp.json()
+        cursor_names.extend(row["primary_name"] for row in body["results"])
+        token = body.get("next_cursor")
+        if not token:
+            break
+        resp = client.get(
+            "/v1/programs/search",
+            params={"q": query, "limit": 1, "cursor": token},
+            headers=headers,
+        )
+
+    assert cursor_names[:3] == offset_names
+    assert all(query in name for name in cursor_names[:2])
+    assert cursor_names[2] == "テストカーソル設備支援"
+
+
+def test_q_cursor_rejects_changed_query(
+    client: TestClient,
+    db_conn: sqlite3.Connection,
+    paid_key: str,
+) -> None:
+    query = "カーソル変更補助金"
+    _insert(
+        db_conn,
+        unified_id="UNI-fts5-cursor-query-a",
+        primary_name="テストカーソル変更補助金A",
+        tier="A",
+    )
+    _insert(
+        db_conn,
+        unified_id="UNI-fts5-cursor-query-b",
+        primary_name="テストカーソル変更補助金B",
+        tier="A",
+    )
+    headers = {"X-API-Key": paid_key}
+    resp = client.get(
+        "/v1/programs/search",
+        params={"q": query, "limit": 1},
+        headers=headers,
+    )
+    assert resp.status_code == 200, resp.text
+    token = resp.json().get("next_cursor")
+    assert token
+
+    mismatch = client.get(
+        "/v1/programs/search",
+        params={"q": "別のカーソル変更補助金", "limit": 1, "cursor": token},
+        headers=headers,
+    )
+    assert mismatch.status_code == 422, mismatch.text
+    assert "cursor" in mismatch.text
+
+
 # ---------------------------------------------------------------------------
 # Edge cases — the spec calls these out explicitly.
 # ---------------------------------------------------------------------------

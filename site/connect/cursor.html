@@ -8,7 +8,6 @@
 <link rel="canonical" href="https://jpcite.com/connect/cursor">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/cursor">
-<link rel="alternate" hreflang="en" href="https://jpcite.com/en/connect/cursor">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/cursor">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Cursor MCP に jpcite を 30 秒で接続 | jpcite">
@@ -84,7 +83,7 @@
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -127,11 +126,11 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
+          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
+          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
+          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
+          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -196,7 +195,7 @@
     <h2>動作確認</h2>
     <p>Cursor のチャットで以下を入力。jpcite が呼ばれ、source_url 付きの結果が返れば成功。</p>
 <pre><code aria-label="Cursor 動作確認">@jpcite search_programs q="ものづくり補助金" prefecture="東京都"</code></pre>
-    <p>Settings → MCP → jpcite の右側に tools count: 139 が表示される (<code>AUTONOMATH_36_KYOTEI_ENABLED=false</code> がデフォルト)。</p>
+    <p>Settings → MCP → jpcite の右側に tools count: 139 が表示されれば接続成功です。36協定書面の生成機能は公開提供していません。</p>
     <p>REST 直叩きで疎通確認する場合は <code>-G --data-urlencode</code> を必ず使うこと。日本語 query を URL に直接埋めると HTTP リクエスト行が壊れ、API は <code>{"error":{"code":"bad_request",...,"hint":"Use --data-urlencode for non-ASCII query params..."}}</code> を返します。</p>
 <pre><code aria-label="REST 動作確認 (curl)">curl -G "https://api.jpcite.com/v1/programs/search" \
   --data-urlencode "q=ものづくり補助金" \

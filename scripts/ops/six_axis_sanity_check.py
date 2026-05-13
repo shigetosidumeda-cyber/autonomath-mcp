@@ -52,13 +52,14 @@ import os
 import sqlite3
 import sys
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = REPO_ROOT / "data"
 ANALYTICS_DIR = REPO_ROOT / "analytics"
+
 
 # DB resolution: env override first; fall back to volume mount paths if those
 # exist; otherwise use repo-root paths. This lets the script run both inside
@@ -135,14 +136,23 @@ AXIS_5_LANGS: list[tuple[str, str, float]] = [
 ]
 
 AXIS_6_CHANNELS: list[str] = [
-    "pdf", "excel", "freee", "mf", "yayoi",
-    "notion", "linear", "slack", "discord", "teams",
+    "pdf",
+    "excel",
+    "freee",
+    "mf",
+    "yayoi",
+    "notion",
+    "linear",
+    "slack",
+    "discord",
+    "teams",
 ]
 
 
 # ---------------------------------------------------------------------------
 # Probe primitives
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class SubResult:
@@ -168,8 +178,7 @@ def _safe_count(db_path: Path | None, table: str) -> int | None:
     try:
         with sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=5) as conn:
             row = conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view') AND name = ?",
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name = ?",
                 (table,),
             ).fetchone()
             if not row:
@@ -180,20 +189,20 @@ def _safe_count(db_path: Path | None, table: str) -> int | None:
         return None
 
 
-def _safe_recent_count(db_path: Path | None, table: str, days: int = 7,
-                       ts_col: str = "fetched_at") -> int | None:
+def _safe_recent_count(
+    db_path: Path | None, table: str, days: int = 7, ts_col: str = "fetched_at"
+) -> int | None:
     if db_path is None or not db_path.exists():
         return None
     try:
         with sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=5) as conn:
             t = conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view') AND name = ?",
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name = ?",
                 (table,),
             ).fetchone()
             if not t:
                 return None
-            cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+            cutoff = (datetime.now(UTC) - timedelta(days=days)).isoformat()
             try:
                 cur = conn.execute(
                     f"SELECT COUNT(*) FROM {table} WHERE {ts_col} >= ?",  # noqa: S608
@@ -221,8 +230,10 @@ def _load_sidecar(path: Path) -> dict[str, Any] | None:
 # Axis runners
 # ---------------------------------------------------------------------------
 
-def _classify(observed: int | float | None, threshold: int | float,
-              unit: str = "") -> tuple[str, str]:
+
+def _classify(
+    observed: int | float | None, threshold: int | float, unit: str = ""
+) -> tuple[str, str]:
     if observed is None:
         return "unknown", f"input missing (threshold {threshold}{unit})"
     if observed >= threshold:
@@ -236,10 +247,16 @@ def run_axis1() -> AxisResult:
         db_path = AUTONOMATH_DB if db_key == "autonomath" else JPINTEL_DB
         count = _safe_count(db_path, table)
         status, detail = _classify(count, min_rows)
-        axis.sub_results.append(SubResult(
-            sub_id=sub_id, label=table, status=status,
-            observed=count, threshold=min_rows, detail=detail,
-        ))
+        axis.sub_results.append(
+            SubResult(
+                sub_id=sub_id,
+                label=table,
+                status=status,
+                observed=count,
+                threshold=min_rows,
+                detail=detail,
+            )
+        )
     return _finalise(axis)
 
 
@@ -248,10 +265,16 @@ def run_axis2() -> AxisResult:
     for sub_id, table, min_rows in AXIS_2_PRECOMPUTES:
         count = _safe_count(AUTONOMATH_DB, table)
         status, detail = _classify(count, min_rows)
-        axis.sub_results.append(SubResult(
-            sub_id=sub_id, label=table, status=status,
-            observed=count, threshold=min_rows, detail=detail,
-        ))
+        axis.sub_results.append(
+            SubResult(
+                sub_id=sub_id,
+                label=table,
+                status=status,
+                observed=count,
+                threshold=min_rows,
+                detail=detail,
+            )
+        )
     return _finalise(axis)
 
 
@@ -264,10 +287,16 @@ def run_axis3() -> AxisResult:
             # try autonomath side
             recent = _safe_recent_count(AUTONOMATH_DB, table, days=7)
         status, detail = _classify(recent, 1)  # at least one row in 7d
-        axis.sub_results.append(SubResult(
-            sub_id=sub_id, label=table, status=status,
-            observed=recent, threshold=1, detail=detail,
-        ))
+        axis.sub_results.append(
+            SubResult(
+                sub_id=sub_id,
+                label=table,
+                status=status,
+                observed=recent,
+                threshold=1,
+                detail=detail,
+            )
+        )
     return _finalise(axis)
 
 
@@ -276,10 +305,16 @@ def run_axis4() -> AxisResult:
     for sub_id, table, min_rows in AXIS_4_REFRESHES:
         count = _safe_count(AUTONOMATH_DB, table)
         status, detail = _classify(count, min_rows)
-        axis.sub_results.append(SubResult(
-            sub_id=sub_id, label=table, status=status,
-            observed=count, threshold=min_rows, detail=detail,
-        ))
+        axis.sub_results.append(
+            SubResult(
+                sub_id=sub_id,
+                label=table,
+                status=status,
+                observed=count,
+                threshold=min_rows,
+                detail=detail,
+            )
+        )
     return _finalise(axis)
 
 
@@ -288,16 +323,19 @@ def run_axis5() -> AxisResult:
     # The multilingual sidecar is populated by scripts/cron/fill_laws_*.py
     sidecar = _load_sidecar(ANALYTICS_DIR / "multilingual_coverage.json")
     for sub_id, lang_code, min_pct in AXIS_5_LANGS:
-        if sidecar:
-            obs = float(sidecar.get(lang_code, {}).get("coverage", 0.0))
-        else:
-            # Honest-null when sidecar missing
-            obs = None  # type: ignore[assignment]
+        # Honest-null when sidecar missing
+        obs = float(sidecar.get(lang_code, {}).get("coverage", 0.0)) if sidecar else None
         status, detail = _classify(obs, min_pct, unit="")
-        axis.sub_results.append(SubResult(
-            sub_id=sub_id, label=f"{lang_code} coverage", status=status,
-            observed=obs, threshold=min_pct, detail=detail,
-        ))
+        axis.sub_results.append(
+            SubResult(
+                sub_id=sub_id,
+                label=f"{lang_code} coverage",
+                status=status,
+                observed=obs,
+                threshold=min_pct,
+                detail=detail,
+            )
+        )
     return _finalise(axis)
 
 
@@ -315,10 +353,16 @@ def run_axis6() -> AxisResult:
         else:
             obs = None
         status, detail = _classify(obs, threshold)
-        axis.sub_results.append(SubResult(
-            sub_id=f"6_{channel}", label=channel, status=status,
-            observed=obs, threshold=threshold, detail=detail,
-        ))
+        axis.sub_results.append(
+            SubResult(
+                sub_id=f"6_{channel}",
+                label=channel,
+                status=status,
+                observed=obs,
+                threshold=threshold,
+                detail=detail,
+            )
+        )
     return _finalise(axis)
 
 
@@ -339,8 +383,9 @@ def _finalise(axis: AxisResult) -> AxisResult:
 # Orchestrator
 # ---------------------------------------------------------------------------
 
+
 def run_all() -> dict[str, Any]:
-    started = datetime.now(timezone.utc).isoformat()
+    started = datetime.now(UTC).isoformat()
     axes = [
         run_axis1(),
         run_axis2(),
@@ -396,9 +441,7 @@ def render_alert(report: dict[str, Any]) -> str | None:
         lines.append(f"Axis {axis['axis_id']} ({axis['label']}): BREACH")
         for sub in axis["sub_results"]:
             if sub["status"] == "fail":
-                lines.append(
-                    f"  - {sub['sub_id']} {sub['label']}: {sub['detail']}"
-                )
+                lines.append(f"  - {sub['sub_id']} {sub['label']}: {sub['detail']}")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
 
@@ -439,15 +482,18 @@ def render_md(report: dict[str, Any]) -> str:
 # CLI
 # ---------------------------------------------------------------------------
 
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--out-json", help="Write JSON status to this path.")
     p.add_argument("--out-md", help="Write Markdown report to this path.")
-    p.add_argument("--emit-alert", help="If overall verdict is breach, "
-                                        "write SLA alert text here.")
-    p.add_argument("--exit-on-breach", action="store_true",
-                   help="Exit non-zero when verdict is breach (default off "
-                        "so probe runs are observable in CI logs).")
+    p.add_argument("--emit-alert", help="If overall verdict is breach, write SLA alert text here.")
+    p.add_argument(
+        "--exit-on-breach",
+        action="store_true",
+        help="Exit non-zero when verdict is breach (default off "
+        "so probe runs are observable in CI logs).",
+    )
     args = p.parse_args(argv)
 
     report = run_all()

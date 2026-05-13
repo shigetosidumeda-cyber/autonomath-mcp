@@ -1,4 +1,4 @@
-// rum.js — Real User Monitoring beacon (Wave 16 E1).
+// rum.js — Real User Monitoring beacon (public RUM beacon).
 //
 // Captures Web Vitals (LCP / INP / CLS / TTFB / FCP) from real browsers and
 // POSTs them to /v1/rum/beacon for daily aggregation into /status/rum.json.
@@ -35,7 +35,7 @@
 
   // ---- Bot UA filter -------------------------------------------------------
   // Skip beacon entirely for known bots — their performance is irrelevant
-  // and would skew p75. Pattern list mirrors scripts/cron/cf_analytics_export.py
+  // and would skew p75. Pattern list mirrors the operator analytics export
   // intentionally (kept short — CF AI Audit covers the long tail).
   var BOT_RE = /(bot|spider|crawler|gptbot|claudebot|perplexity|amazonbot|googlebot|bingbot|chatgpt|oai-searchbot|bytespider|ahrefs|semrush|diffbot|cohere-ai|youbot|mistralai|applebot|facebookexternalhit|twitterbot|yandex|baiduspider)/i;
   if (BOT_RE.test(navigator.userAgent || "")) return;

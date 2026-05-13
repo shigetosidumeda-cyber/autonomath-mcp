@@ -115,11 +115,9 @@ async def _run_audit(
     results: list[dict[str, Any]] = []
     async with httpx.AsyncClient(limits=limits, headers=headers, http2=False) as client:
         tasks = [_probe_one(client, u, sem) for u in urls]
-        done = 0
-        for coro in asyncio.as_completed(tasks):
+        for done, coro in enumerate(asyncio.as_completed(tasks), start=1):
             res = await coro
             results.append(res)
-            done += 1
             if progress_every > 0 and done % progress_every == 0:
                 sys.stderr.write(f"  [{done}/{len(urls)}] probed\n")
                 sys.stderr.flush()
@@ -159,9 +157,7 @@ def _emit_rollup(rollup: dict[str, Any], generated_at: str) -> None:
     safe["generated_at"] = generated_at
     safe["sample_404"] = [b["url"] for b in rollup["bad"][:50]]
     safe["wave"] = "wave41_agent_f"
-    ROLLUP_PATH.write_text(
-        json.dumps(safe, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    ROLLUP_PATH.write_text(json.dumps(safe, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:

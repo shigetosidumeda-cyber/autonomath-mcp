@@ -85,11 +85,17 @@ try:
 except Exception:
     print("0")
     sys.exit(0)
-# refresh_sources.py emits a top-level "summary" with status_counts.
-# We count any non-2xx as not-alive for this gate.
-sc = (d.get("summary") or {}).get("status_counts") or {}
-ok = sum(int(v) for k, v in sc.items() if k.startswith("2"))
-total = sum(int(v) for v in sc.values()) or 1
+# Current refresh_sources.py emits per_tier totals plus outcome counters.
+# Treat ok/ok_redirected as alive and every checked row outside that set
+# as not-alive for this gate.
+per_tier = d.get("per_tier") or {}
+if per_tier:
+    ok = sum(int(v.get("ok", 0) or 0) for v in per_tier.values())
+    total = sum(int(v.get("total", 0) or 0) for v in per_tier.values()) or 1
+else:
+    totals = d.get("totals") or {}
+    ok = int(totals.get("ok", 0) or 0) + int(totals.get("ok_redirected", 0) or 0)
+    total = int(d.get("rows_checked", 0) or 0) or 1
 print(f"{(ok / total) * 100:.2f}")
 PY
 )"

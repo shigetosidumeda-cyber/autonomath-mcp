@@ -18,6 +18,7 @@ Output: docs/audit/ax_anti_patterns_audit_*.md with per-axis violation list.
 
 Pure stdlib + optional requests for the live CAPTCHA probe. Read-only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,7 +27,7 @@ import pathlib
 import re
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 SITE = REPO_ROOT / "site"
@@ -170,7 +171,7 @@ def check_jsonld_html_divergence() -> AntiPatternResult:
             continue
         # Extract JSON-LD blocks.
         for m in re.finditer(
-            r'<script[^>]*application/ld\+json[^>]*>(.*?)</script>',
+            r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>",
             html,
             flags=re.DOTALL,
         ):
@@ -308,7 +309,7 @@ def check_browser_only_oauth() -> AntiPatternResult:
     api_key_routes = []
     for fp in SRC_API.glob("**/*.py"):
         text = _read(fp)
-        if re.search(r'/api[_-]?keys?\b|issue_api_key|create_api_key', text):
+        if re.search(r"/api[_-]?keys?\b|issue_api_key|create_api_key", text):
             api_key_routes.append(fp.relative_to(REPO_ROOT))
     if (has_github or has_google) and not api_key_routes:
         r.violations.append(
@@ -326,9 +327,7 @@ def check_server_side_session() -> AntiPatternResult:
         "server_side_session_state",
         "Server-side session-ID cookie state is hard for agent HTTP clients. Prefer stateless token auth.",
     )
-    sess_rx = re.compile(
-        r'SessionMiddleware|request\.session\[|fastapi\.middleware\.sessions'
-    )
+    sess_rx = re.compile(r"SessionMiddleware|request\.session\[|fastapi\.middleware\.sessions")
     for fp in SRC_API.glob("**/*.py"):
         text = _read(fp)
         for m in sess_rx.finditer(text):
@@ -388,9 +387,7 @@ def check_humanized_ai() -> AntiPatternResult:
         html = _read(fp)
         for m in rx.finditer(html):
             line_no = html[: m.start()].count("\n") + 1
-            r.violations.append(
-                f"{fp.name}:{line_no}: humanized marker '{m.group(0)}'"
-            )
+            r.violations.append(f"{fp.name}:{line_no}: humanized marker '{m.group(0)}'")
     return r
 
 
@@ -415,8 +412,7 @@ def run_audit() -> dict:
         "anti_pattern_count_target": 0,
         "total_violations": total_violations,
         "verdict": (
-            "green" if total_violations == 0
-            else ("yellow" if total_violations <= 10 else "red")
+            "green" if total_violations == 0 else ("yellow" if total_violations <= 10 else "red")
         ),
         "anti_patterns": [
             {
@@ -428,7 +424,7 @@ def run_audit() -> dict:
             }
             for c in checks
         ],
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
     }
 
 
@@ -480,9 +476,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.out_json:
         out_json = pathlib.Path(args.out_json)
         out_json.parent.mkdir(parents=True, exist_ok=True)
-        out_json.write_text(
-            json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
-        )
+        out_json.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
 
     print(
         f"AX Anti-Patterns total_violations={result['total_violations']} "

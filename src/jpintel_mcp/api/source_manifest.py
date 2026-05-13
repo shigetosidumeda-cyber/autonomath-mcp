@@ -592,6 +592,9 @@ def _build_manifest(
             LIMIT ?""",
         (canonical_id, *allowed_licenses, _MAX_FACT_PROVENANCE + 1),
     ).fetchall()
+    # LIMIT 50: license_gate aggregation only needs the top distinct license
+    # values (sufficient for blocked_reasons rollup); full enumeration on
+    # 100k+ fact programs would scan every row unnecessarily.
     blocked_license_rows = am_conn.execute(
         f"""SELECT COALESCE(s.license, 'unknown_null') AS license, COUNT(*) AS n
               FROM am_entity_facts f
@@ -600,7 +603,8 @@ def _build_manifest(
                AND f.source_id IS NOT NULL
                AND COALESCE(s.license, 'unknown_null') NOT IN ({_ALLOWED_LICENSES_SQL})
              GROUP BY COALESCE(s.license, 'unknown_null')
-             ORDER BY n DESC, license ASC""",
+             ORDER BY n DESC, license ASC
+             LIMIT 50""",
         (canonical_id, *allowed_licenses),
     ).fetchall()
 

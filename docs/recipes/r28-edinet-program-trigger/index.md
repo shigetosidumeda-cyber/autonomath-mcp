@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 上場会社の IR 部 / 経営企画部 / コーポレート部 / SaaS の営業企画部で、EDINET 適時開示 (有価証券報告書 / 四半期報告書 / 臨時報告書 / 大量保有報告書 / 自己株券買付状況) の重要事実発生を trigger に、対象会社の関連補助金候補 + 業種別動向 + 競合分析を 5 分で出す運用。M&A・組織再編・新規事業の機会探索 / 公共調達への参入機会発見 / 上場準備 (J-Adviser) の補助金活用 等で使う。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料)
+- jpcite API key (標準従量料金、初回 3 req/IP/日無料)
 - EDINET コード (5 桁、上場会社) or 法人番号 (13 桁)
 - (任意) 監視業種フィルタ (JSIC 中分類)
 - (任意) 重要事実分類 (M&A / 組織再編 / 新規事業 / 増資 / 配当 / etc.)
@@ -125,7 +125,7 @@ console.log(`${triggers.events.length} 件の trigger 検知`);
 - 1 batch 12 units × ¥3 = ¥36 / 週
 - 月 4 週 = ¥144 / 月、税込 ¥158
 - 監視会社 100 社 = ¥1,200 / 月、税込 ¥1,320
-- 節約 (純 LLM vs jpcite ¥3/req): 監視会社 100 社 × 月 4 週 trigger で、純 LLM は約 ¥3,500/月 (1 batch cycle ¥875 = EDINET fetch + program link 推論) に対し jpcite は ¥1,200/月 (400 req × ¥3) → 節約 約 ¥2,300/月 / 監視会社あたり ¥23 (cf. `docs/canonical/cost_saving_examples.md` case 2 同系)
+- 節約 (純 LLM vs jpcite 標準従量料金): 監視会社 100 社 × 月 4 週 trigger で、純 LLM は約 ¥3,500/月 (1 batch cycle ¥875 = EDINET fetch + program link 推論) に対し jpcite は ¥1,200/月 (400 req × ¥3) → 節約 約 ¥2,300/月 / 監視会社あたり ¥23 (cf. `docs/canonical/cost_saving_examples.md` case 2 同系)
 
 ## 商業利用条件
 - PDL v1.0 + CC-BY-4.0

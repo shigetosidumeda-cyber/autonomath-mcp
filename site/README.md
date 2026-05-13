@@ -1,53 +1,25 @@
-# Site Directory Contract
+# Site Directory
 
-`site/` is the Cloudflare Pages public surface. It intentionally contains both
-hand-authored public files and generated output. Do not assume every file here
-has the same source of truth.
+`site/` is the deployed public web surface for jpcite.
 
-## Hand-Authored Or Curated
+Some files are hand-authored public pages and some are deployment artifacts
+produced from the documentation, API description, or data publishing process.
+When changing this directory, keep public copy edits small and review the
+rendered result before publishing.
 
-These may be edited directly when the change is public copy or static surface
-work.
+Public entry points include:
 
-- `site/index.html`
-- `site/pricing.html`
-- `site/trial.html`
-- `site/integrations/*.html`
-- `site/qa/**/*.html`
-- `site/llms.txt`
-- `site/llms.en.txt`
-- `site/en/llms.txt`
-- `site/.well-known/*.json`
-- `site/_templates/`
-- `site/assets/`
+- `index.html`
+- `pricing.html`
+- `trial.html`
+- `integrations/`
+- `qa/`
+- `.well-known/`
+- `assets/`
+- `docs/`
+- `openapi*.json`
+- `sitemap-*.xml`
 
-## Generated Or Mirrored
-
-Do not hand-edit these unless you are deliberately repairing a generated
-artifact and will follow up by fixing the generator.
-
-- `site/docs/`
-- `site/docs/openapi/*.json`
-- `site/openapi.agent.json`
-- `site/programs/*`
-- `site/prefectures/`
-- `site/structured/`
-- `site/llms-full.txt`
-- `site/llms-full.en.txt`
-- `site/sitemap-*.xml`
-- `site/_data/public_counts.json`
-
-## Main Generators
-
-- OpenAPI full: `uv run python scripts/export_openapi.py`
-- OpenAPI agent: `uv run python scripts/export_agent_openapi.py`
-- Public counts: `uv run python scripts/generate_public_counts.py`
-- Full LLM dump: `uv run python scripts/regen_llms_full.py`
-- Full English LLM dump: `uv run python scripts/regen_llms_full_en.py`
-- MkDocs output: `mkdocs build` writes to `site/docs/`
-
-## Review Rule
-
-Separate hand-authored site copy from generated output when possible. If they
-must land together, state the generator command and why the public artifact
-changed.
+Large data, API, sitemap, and documentation artifacts may be refreshed by the
+release process. Prefer changing the public source content where available, then
+review the deployed artifact for user-facing accuracy.

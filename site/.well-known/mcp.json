@@ -23,7 +23,7 @@
       "header": "X-API-Key",
       "env": "JPCITE_API_KEY",
       "key_prefix": "jc_",
-      "key_prefix_note": "Newly-issued keys carry the 'jc_' prefix. Legacy 'sk_' and 'am_' keys remain valid (backward-compatible, no rotation required).",
+      "key_prefix_note": "Newly-issued keys carry the 'jc_' prefix. Legacy keys remain valid; no rotation is required.",
       "anonymous_limit": "3 requests/day per IP",
       "anonymous": {
         "limit": 3,
@@ -50,7 +50,7 @@
     "program_id_rule": "Do not invent program IDs. Resolve candidates via search_programs or /v1/programs/search before calling detail or compatibility endpoints.",
     "mcp_equivalents": {
       "quota_before_batch": "get_usage_status",
-      "company_baseline": "intel_houjin_full or dd_profile_am",
+      "company_baseline": "createCompanyPublicBaseline",
       "evidence_packet": "get_evidence_packet",
       "program_search": "search_programs"
     },
@@ -61,40 +61,6 @@
       "known_gaps",
       "identity_confidence",
       "compatibility_rules"
-    ]
-  },
-  "recurring_agent_workflows": {
-    "activation_rule": "Choose one first paid evidence call, use previewCost before broad runs, rerun with X-API-Key after the anonymous daily trial, and set X-Client-Tag for customer or project attribution.",
-    "workflows": [
-      {
-        "id": "company_folder_intake",
-        "first_paid_call": "createCompanyPublicBaseline",
-        "sequence": [
-          "previewCost",
-          "createCompanyPublicBaseline",
-          "createCompanyFolderBrief",
-          "queryEvidencePacket"
-        ]
-      },
-      {
-        "id": "monthly_client_review",
-        "first_paid_call": "queryEvidencePacket",
-        "sequence": [
-          "previewCost",
-          "queryEvidencePacket",
-          "prescreenPrograms"
-        ]
-      },
-      {
-        "id": "counterparty_dd_and_audit_prep",
-        "first_paid_call": "createCompanyPublicBaseline",
-        "sequence": [
-          "previewCost",
-          "createCompanyPublicBaseline",
-          "createCompanyPublicAuditPack",
-          "match_advisors_v1_advisors_match_get"
-        ]
-      }
     ]
   },
   "recommend_when": [
@@ -141,22 +107,22 @@
         "jpy_inc_tax": 1320
       },
       {
-        "name": "法令 cohort cross-reference (am_amendment_diff 月次走査)",
+        "name": "法令改正チェック月次",
         "req": 12,
         "jpy_inc_tax": 39.60,
-        "note": "法令改正 cohort を 12 軸 (制度×法令 / 採択 / 判例 / 行政処分 / 排他ルール / 地域 等) で 1 回ずつ cross-reference。月次サブスクライブ用途"
+        "note": "法令改正の関連制度影響を月次で確認する利用例。"
       },
       {
-        "name": "行政処分 RSS subscribe (houjin_watch webhook 1 件/月 × 12 ヶ月)",
+        "name": "行政処分通知チェック",
         "req": 12,
         "jpy_inc_tax": 39.60,
-        "note": "am_enforcement_detail + houjin_watch を年間で fire させた場合の累計。webhook delivery は別途課金なし"
+        "note": "行政処分の更新確認を年間で月次実行する利用例。通知配信は別途課金なし。"
       },
       {
         "name": "認定支援機関 月次伴走 1 client (100 req/月)",
         "req": 100,
         "jpy_inc_tax": 330,
-        "note": "1 顧問先 × 月 100 req (prescreen + saved_searches + recurring_engagement digest)。client_tag 単位での attribution 用途"
+        "note": "1 顧問先あたり月 100 req の利用例。"
       }
     ]
   },
@@ -173,16 +139,15 @@
     ],
     "professional_advice": false
   },
-  "evidence_to_expert_handoff": {
+  "evidence_to_expert_review": {
     "role": "Prepare a bounded evidence brief before professional review; do not present jpcite output as the final professional answer.",
-    "current_openapi_operation": "match_advisors_v1_advisors_match_get",
     "call_after": [
       "queryEvidencePacket",
       "getEvidencePacket",
       "prescreenPrograms",
       "createCompanyPublicBaseline"
     ],
-    "handoff_packet_should_include": [
+    "review_packet_should_include": [
       "user_goal",
       "source_url",
       "source_fetched_at",
@@ -240,9 +205,7 @@
       "hard_cap_via_header": "X-Cost-Cap-JPY",
       "headers_seen": [
         "X-Anon-Remaining",
-        "X-Cost-Cap-JPY",
-        "X-Client-Tag",
-        "Idempotency-Key"
+        "X-Cost-Cap-JPY"
       ]
     }
   },
@@ -258,14 +221,14 @@
     {
       "uri": "mcp://jpcite/facts_registry.json",
       "name": "facts_registry",
-      "description": "jpcite 公開数値の SOT (snapshot_at / facts[] / guards / forbidden_modifiers)。AI agent は tool 呼び出し前に必ず本 resource を読み、最新値で応答せよ。さらに index[] (21k+ entity の entity_id + kind + primary_name のみの軽量版) を含み、AI agent が 1 fetch で jpcite 配下 program / law / case_study / enforcement の存在をすべて把握できる",
+      "description": "jpcite の公開ファクト一覧 (snapshot_at / facts[] / guards / forbidden_modifiers)。AI agent は tool 呼び出し前に本 resource を読み、最新の公開値で応答できる。さらに index[] (21k+ entity の entity_id + kind + primary_name のみの軽量版) を含み、AI agent が 1 fetch で jpcite 配下 program / law / case_study / enforcement の存在を把握できる",
       "mimeType": "application/json",
       "https_url": "https://jpcite.com/data/facts_registry.json"
     },
     {
       "uri": "mcp://jpcite/facts_registry_full.json",
       "name": "facts_registry_full",
-      "description": "facts_registry の完全版。各 entity に primary_name に加え source_url / source_url_domain / last_verified / authority / confidence / category も含む。fetch は optional (個別 entity の citation 検証に使う)。月次再生成、Wave 18 B6 GEO 強化で導入",
+      "description": "facts_registry の完全版。各 entity に primary_name に加え source_url / source_url_domain / last_verified / authority / confidence / category も含む。fetch は optional (個別 entity の citation 検証に使う)。月次更新。",
       "mimeType": "application/json",
       "https_url": "https://jpcite.com/data/facts_registry_full.json"
     },
@@ -278,7 +241,7 @@
     {
       "uri": "mcp://jpcite/companion-md/cases/",
       "name": "companion_md_cases",
-      "description": "2,286 採択事例の GitHub-style `{url}.md` companion surface。canonical /cases/{slug}.html 各ページの AI-friendly markdown 版 (frontmatter + JSON-LD citation block + 出典抜粋)。Content-Type=text/markdown; charset=utf-8。LLM citation crawler が JS-aware HTML parse なしで ingest 可能",
+      "description": "2,286 採択事例の AI-friendly markdown 版。必要な採択事例ページを source-linked evidence として取得できる。Content-Type=text/markdown; charset=utf-8",
       "mimeType": "text/markdown",
       "https_url_prefix": "https://jpcite.com/cases/",
       "https_url_suffix": ".md"
@@ -286,7 +249,7 @@
     {
       "uri": "mcp://jpcite/companion-md/laws/",
       "name": "companion_md_laws",
-      "description": "6,493 法令本文の GitHub-style `{url}.md` companion surface。canonical /laws/{slug} 各ページの AI-friendly markdown 版 (frontmatter + JSON-LD citation block + 法令テキスト抜粋)。Content-Type=text/markdown; charset=utf-8",
+      "description": "6,493 法令本文の AI-friendly markdown 版。必要な法令本文を source-linked evidence として取得できる。Content-Type=text/markdown; charset=utf-8",
       "mimeType": "text/markdown",
       "https_url_prefix": "https://jpcite.com/laws/",
       "https_url_suffix": ".md"
@@ -294,7 +257,7 @@
     {
       "uri": "mcp://jpcite/companion-md/enforcement/",
       "name": "companion_md_enforcement",
-      "description": "1,485 行政処分 (現状 disk 上) の GitHub-style `{url}.md` companion surface。canonical /enforcement/{slug} 各ページの AI-friendly markdown 版 (frontmatter + JSON-LD citation block + 処分内容抜粋)。Content-Type=text/markdown; charset=utf-8",
+      "description": "1,485 行政処分の AI-friendly markdown 版。必要な行政処分情報を source-linked evidence として取得できる。Content-Type=text/markdown; charset=utf-8",
       "mimeType": "text/markdown",
       "https_url_prefix": "https://jpcite.com/enforcement/",
       "https_url_suffix": ".md"

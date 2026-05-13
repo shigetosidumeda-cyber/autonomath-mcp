@@ -7,22 +7,22 @@
   "publisher_legal_entity": "Bookyou株式会社",
   "publisher_invoice_id": "T8010001213708",
   "canonical": "https://jpcite.com",
-  "generated_at": "2026-05-11T10:25:11Z",
+  "generated_at": "2026-05-13T02:01:21Z",
   "generator": "scripts/regen_structured_sitemap_and_llms_meta.py",
   "description": "Machine-readable index of the llms.txt cohort plus the 4 well-known discovery surfaces (sitemap-llms.xml, .well-known/mcp.json, agents.json, ai-plugin.json). AI agents can use this index to range-fetch a single section anchor without re-pulling the whole llms-full.txt body.",
   "license": "CC BY 4.0 (this index file). Underlying program/law data: see /licensing.html.",
   "total_files": 8,
-  "total_section_anchors": 242,
+  "total_section_anchors": 158,
   "files": [
     {
       "file": "/llms.txt",
       "lang": "ja",
-      "size_bytes": 47443,
-      "line_count": 417,
-      "content_hash_sha256": "c3a758f5c6cc760e1da144afb38de4eadcfa3c6f0bb953b9682662bf4db1854e",
-      "last_modified": "2026-05-11T05:27:39Z",
-      "sections": 32,
-      "anchors_total": 49,
+      "size_bytes": 4742,
+      "line_count": 87,
+      "content_hash_sha256": "5c820861b6bc8a4fa630b14b378c8f130d8bda8c7b28feb618bef87e6d7b730e",
+      "last_modified": "2026-05-13T01:58:06Z",
+      "sections": 8,
+      "anchors_total": 9,
       "section_anchors": [
         {
           "level": 1,
@@ -33,360 +33,71 @@
         },
         {
           "level": 2,
-          "text": "What jpcite is",
-          "anchor": "what-jpcite-is",
-          "line": 4,
+          "text": "How to cite",
+          "anchor": "how-to-cite",
+          "line": 10,
+          "kind": "heading"
+        },
+        {
+          "level": 2,
+          "text": "First calls for agents",
+          "anchor": "first-calls-for-agents",
+          "line": 23,
+          "kind": "heading"
+        },
+        {
+          "level": 2,
+          "text": "Public pages",
+          "anchor": "public-pages",
+          "line": 31,
+          "kind": "heading"
+        },
+        {
+          "level": 2,
+          "text": "Machine-readable discovery",
+          "anchor": "machine-readable-discovery",
+          "line": 49,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Use when",
           "anchor": "use-when",
-          "line": 7,
+          "line": 70,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "Do not use when",
-          "anchor": "do-not-use-when",
-          "line": 13,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "First call",
-          "anchor": "first-call",
-          "line": 17,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Japanese company first-hop routing",
-          "anchor": "japanese-company-first-hop-routing",
-          "line": 25,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Evidence / context estimates",
-          "anchor": "evidence-context-estimates",
-          "line": 48,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Evidence-to-Expert Handoff rule",
-          "anchor": "evidence-to-expert-handoff-rule",
-          "line": 60,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Install MCP",
-          "anchor": "install-mcp",
-          "line": 67,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "OpenAPI",
-          "anchor": "openapi",
-          "line": 74,
+          "text": "Do not use as final judgment",
+          "anchor": "do-not-use-as-final-judgment",
+          "line": 76,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Pricing",
           "anchor": "pricing",
-          "line": 79,
+          "line": 80,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "Do not call when (業法フェンス + 個別判定禁止)",
-          "anchor": "do-not-call-when-(業法フェンス-+-個別判定禁止)",
-          "line": 89,
+          "text": "Languages",
+          "anchor": "languages",
+          "line": 84,
           "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Call order (AI surface 別 3 variant)",
-          "anchor": "call-order-(ai-surface-別-3-variant)",
-          "line": 103,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Claude Code (MCP stdio + Read/Edit)",
-          "anchor": "claude-code-(mcp-stdio-+-read-edit)",
-          "line": 104,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "ChatGPT GPT (OpenAPI Actions)",
-          "anchor": "chatgpt-gpt-(openapi-actions)",
-          "line": 110,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Cursor (MCP via cursor_mcp_settings.json)",
-          "anchor": "cursor-(mcp-via-cursor_mcp_settings.json)",
-          "line": 116,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Cost example (5 ケース)",
-          "anchor": "cost-example-(5-ケース)",
-          "line": 122,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Fence-aware quote 規約",
-          "anchor": "fence-aware-quote-規約",
-          "line": 129,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Coverage",
-          "anchor": "coverage",
-          "line": 140,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Do not call when (業法フェンス、各 line は jpcite が踏み込まない領域)",
-          "anchor": "do-not-call-when-(業法フェンス、各-line-は-jpcite-が踏み込まない領域)",
-          "line": 143,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Cost example (5 cases、税込)",
-          "anchor": "cost-example-(5-cases、税込)",
-          "line": 158,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Docs",
-          "anchor": "docs",
-          "line": 173,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "LLM agent integration guide",
-          "anchor": "llm-agent-integration-guide",
-          "line": 188,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Evidence prefetch / context-size estimates",
-          "anchor": "evidence-prefetch-context-size-estimates",
-          "line": 192,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "AI recommendation criteria",
-          "anchor": "ai-recommendation-criteria",
-          "line": 202,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Sample queries (paste into your AI agent)",
-          "anchor": "sample-queries-(paste-into-your-ai-agent)",
-          "line": 230,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Tool argument cheat-sheet (canonical enum values)",
-          "anchor": "tool-argument-cheat-sheet-(canonical-enum-values)",
-          "line": 246,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Examples",
-          "anchor": "examples",
-          "line": 258,
-          "kind": "heading"
-        },
-        {
-          "level": 0,
-          "text": "Examples (Python + curl)",
-          "anchor": "examples-(python-+-curl)",
-          "href": "https://jpcite.com/docs/examples/",
-          "line": 260,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Try the prescreen widget",
-          "anchor": "try-the-prescreen-widget",
-          "href": "https://jpcite.com/index#try",
-          "line": 261,
-          "kind": "link_target"
-        },
-        {
-          "level": 2,
-          "text": "MCP server",
-          "anchor": "mcp-server",
-          "line": 264,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "MCP tool index (when to use which — 1 line each)",
-          "anchor": "mcp-tool-index-(when-to-use-which-—-1-line-each)",
-          "line": 269,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Client integrations",
-          "anchor": "client-integrations",
-          "line": 308,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Data licenses",
-          "anchor": "data-licenses",
-          "line": 318,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Structured data",
-          "anchor": "structured-data",
-          "line": 328,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Q&A (citation-targeted)",
-          "anchor": "q&a-(citation-targeted)",
-          "line": 342,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "News / change detection",
-          "anchor": "news-change-detection",
-          "line": 360,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Product releases / changelog",
-          "anchor": "product-releases-changelog",
-          "line": 367,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Comparisons",
-          "anchor": "comparisons",
-          "line": 374,
-          "kind": "heading"
-        },
-        {
-          "level": 0,
-          "text": "全比較表 (6 サービス × 13 軸)",
-          "anchor": "全比較表-(6-サービス-×-13-軸)",
-          "href": "https://jpcite.com/compare",
-          "line": 380,
-          "kind": "link_target"
-        },
-        {
-          "level": 2,
-          "text": "Trust signals (transparency surfaces)",
-          "anchor": "trust-signals-(transparency-surfaces)",
-          "line": 392,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Trust (法人購買 + AI agent 用)",
-          "anchor": "trust-(法人購買-+-ai-agent-用)",
-          "line": 399,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Optional",
-          "anchor": "optional",
-          "line": 409,
-          "kind": "heading"
-        },
-        {
-          "level": 0,
-          "text": "About / 会社情報",
-          "anchor": "about-会社情報",
-          "href": "https://jpcite.com/about",
-          "line": 411,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Glossary / 用語集",
-          "anchor": "glossary-用語集",
-          "href": "https://jpcite.com/glossary",
-          "line": 412,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Pricing page (HTML)",
-          "anchor": "pricing-page-(html)",
-          "href": "https://jpcite.com/pricing",
-          "line": 413,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Terms of service / 利用規約",
-          "anchor": "terms-of-service-利用規約",
-          "href": "https://jpcite.com/tos",
-          "line": 414,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Privacy policy / プライバシー",
-          "anchor": "privacy-policy-プライバシー",
-          "href": "https://jpcite.com/privacy",
-          "line": 415,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Security disclosure (RFC 9116)",
-          "anchor": "security-disclosure-(rfc-9116)",
-          "href": "https://jpcite.com/.well-known/security.txt",
-          "line": 416,
-          "kind": "link_target"
         }
       ]
     },
     {
       "file": "/llms.en.txt",
       "lang": "en",
-      "size_bytes": 22087,
-      "line_count": 207,
-      "content_hash_sha256": "973f8333fbf910fe1c873f52be48eb98e491397fb0eff3e7caec60a0c9f6b27a",
-      "last_modified": "2026-05-11T05:27:39Z",
-      "sections": 14,
-      "anchors_total": 31,
+      "size_bytes": 4768,
+      "line_count": 87,
+      "content_hash_sha256": "304575e8eadb9a8dae18e2853d873800b6648e4d70da2384aa89e594515655f7",
+      "last_modified": "2026-05-13T01:58:06Z",
+      "sections": 8,
+      "anchors_total": 9,
       "section_anchors": [
         {
           "level": 1,
@@ -397,240 +108,71 @@
         },
         {
           "level": 2,
-          "text": "Quick agent contract",
-          "anchor": "quick-agent-contract",
-          "line": 6,
+          "text": "How to cite",
+          "anchor": "how-to-cite",
+          "line": 10,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "Docs",
-          "anchor": "docs",
-          "line": 28,
-          "kind": "heading"
-        },
-        {
-          "level": 0,
-          "text": "Overview",
-          "anchor": "overview",
-          "href": "https://jpcite.com/docs/",
-          "line": 30,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "API reference (REST)",
-          "anchor": "api-reference-(rest)",
-          "href": "https://jpcite.com/docs/api-reference/",
-          "line": 32,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Examples (Python + curl)",
-          "anchor": "examples-(python-+-curl)",
-          "href": "https://jpcite.com/docs/examples/",
-          "line": 36,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Error handling",
-          "anchor": "error-handling",
-          "href": "https://jpcite.com/docs/error_handling/",
-          "line": 37,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Exclusion rules",
-          "anchor": "exclusion-rules",
-          "href": "https://jpcite.com/docs/exclusions/",
-          "line": 38,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "FAQ",
-          "anchor": "faq",
-          "href": "https://jpcite.com/docs/faq/",
-          "line": 39,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "SLA",
-          "anchor": "sla",
-          "href": "https://jpcite.com/docs/sla/",
-          "line": 41,
-          "kind": "link_target"
-        },
-        {
-          "level": 2,
-          "text": "Evidence prefetch / context-size estimates",
-          "anchor": "evidence-prefetch-context-size-estimates",
-          "line": 43,
+          "text": "First calls for agents",
+          "anchor": "first-calls-for-agents",
+          "line": 23,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "Evidence-to-Expert Handoff rule",
-          "anchor": "evidence-to-expert-handoff-rule",
-          "line": 58,
+          "text": "Public pages",
+          "anchor": "public-pages",
+          "line": 31,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "Japanese company first-hop routing",
-          "anchor": "japanese-company-first-hop-routing",
-          "line": 66,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "AI recommendation criteria",
-          "anchor": "ai-recommendation-criteria",
-          "line": 90,
+          "text": "Machine-readable discovery",
+          "anchor": "machine-readable-discovery",
+          "line": 49,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "First call",
-          "anchor": "first-call",
-          "line": 120,
+          "text": "Use when",
+          "anchor": "use-when",
+          "line": 70,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "Sample queries (paste into your AI agent)",
-          "anchor": "sample-queries-(paste-into-your-ai-agent)",
-          "line": 130,
+          "text": "Do not use as final judgment",
+          "anchor": "do-not-use-as-final-judgment",
+          "line": 76,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "MCP server",
-          "anchor": "mcp-server",
-          "line": 144,
+          "text": "Pricing",
+          "anchor": "pricing",
+          "line": 80,
           "kind": "heading"
         },
         {
           "level": 2,
-          "text": "Data licenses",
-          "anchor": "data-licenses",
-          "line": 152,
+          "text": "Languages",
+          "anchor": "languages",
+          "line": 84,
           "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Structured data",
-          "anchor": "structured-data",
-          "line": 161,
-          "kind": "heading"
-        },
-        {
-          "level": 0,
-          "text": "Sitemap index",
-          "anchor": "sitemap-index",
-          "href": "https://jpcite.com/sitemap-index.xml",
-          "line": 163,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Docs sitemap",
-          "anchor": "docs-sitemap",
-          "href": "https://jpcite.com/docs/sitemap.xml",
-          "line": 164,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Programs sitemap",
-          "anchor": "programs-sitemap",
-          "href": "https://jpcite.com/sitemap-programs.xml",
-          "line": 165,
-          "kind": "link_target"
-        },
-        {
-          "level": 2,
-          "text": "Q&A (citation-targeted)",
-          "anchor": "q&a-(citation-targeted)",
-          "line": 172,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Do not call when (professional-services fences; each line is a domain jpcite does not enter)",
-          "anchor": "do-not-call-when-(professional-services-fences;-each-line-is-a-domain-jpcite-does-not-enter)",
-          "line": 179,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Cost example (5 cases, tax included)",
-          "anchor": "cost-example-(5-cases,-tax-included)",
-          "line": 194,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Optional",
-          "anchor": "optional",
-          "line": 201,
-          "kind": "heading"
-        },
-        {
-          "level": 0,
-          "text": "About",
-          "anchor": "about",
-          "href": "https://jpcite.com/en/about",
-          "line": 203,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Pricing page (HTML)",
-          "anchor": "pricing-page-(html)",
-          "href": "https://jpcite.com/en/pricing",
-          "line": 204,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Terms of service",
-          "anchor": "terms-of-service",
-          "href": "https://jpcite.com/en/tos",
-          "line": 205,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Privacy policy",
-          "anchor": "privacy-policy",
-          "href": "https://jpcite.com/en/privacy",
-          "line": 206,
-          "kind": "link_target"
-        },
-        {
-          "level": 0,
-          "text": "Security disclosure (RFC 9116)",
-          "anchor": "security-disclosure-(rfc-9116)",
-          "href": "https://jpcite.com/.well-known/security.txt",
-          "line": 207,
-          "kind": "link_target"
         }
       ]
     },
     {
       "file": "/llms-full.txt",
       "lang": "ja",
-      "size_bytes": 2322789,
-      "line_count": 13757,
-      "content_hash_sha256": "b443fbc6865a3b49c5e876cf6cabf593b3acf22b8eff5818f3beeacfd48ab66b",
-      "last_modified": "2026-05-11T10:24:54Z",
-      "sections": 92,
-      "anchors_total": 153,
+      "size_bytes": 2244307,
+      "line_count": 13136,
+      "content_hash_sha256": "a886d6deec6a2afcebbcd14a04891e905ddf3a43c97699608ce9e51e9ef4aa68",
+      "last_modified": "2026-05-13T02:00:57Z",
+      "sections": 83,
+      "anchors_total": 129,
       "section_anchors": [
         {
           "level": 1,
@@ -641,1066 +183,898 @@
         },
         {
           "level": 2,
+          "text": "Machine-readable discovery",
+          "anchor": "machine-readable-discovery",
+          "line": 17,
+          "kind": "heading"
+        },
+        {
+          "level": 2,
+          "text": "AI Citation Guidance — How to cite jpcite",
+          "anchor": "ai-citation-guidance-—-how-to-cite-jpcite",
+          "line": 32,
+          "kind": "heading"
+        },
+        {
+          "level": 2,
           "text": "Section: LLM agent integration guide",
           "anchor": "section-llm-agent-integration-guide",
-          "line": 17,
+          "line": 65,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "OpenAPI spec key facts (machine-readable)",
           "anchor": "openapi-spec-key-facts-(machine-readable)",
-          "line": 23,
+          "line": 71,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Section: Overview / 概要",
           "anchor": "section-overview-概要",
-          "line": 37,
+          "line": 85,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "jpcite docs",
           "anchor": "jpcite-docs",
-          "line": 41,
+          "line": 89,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "jpcite とは (What is jpcite)",
           "anchor": "jpcite-とは-(what-is-jpcite)",
-          "line": 45,
+          "line": 93,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "誰のためか (Who is it for)",
           "anchor": "誰のためか-(who-is-it-for)",
-          "line": 54,
+          "line": 102,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Jグランツ との違い (Position vs Jグランツ)",
           "anchor": "jグランツ-との違い-(position-vs-jグランツ)",
-          "line": 60,
+          "line": 108,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "次のステップ (Next)",
           "anchor": "次のステップ-(next)",
-          "line": 64,
+          "line": 112,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Section: Getting started / クイックスタート",
           "anchor": "section-getting-started-クイックスタート",
-          "line": 76,
+          "line": 124,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "Getting Started",
           "anchor": "getting-started",
-          "line": 80,
+          "line": 128,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "1. インストール (Install)",
           "anchor": "1.-インストール-(install)",
-          "line": 84,
+          "line": 132,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "Python (REST + MCP server)",
           "anchor": "python-(rest-+-mcp-server)",
-          "line": 86,
+          "line": 134,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "SDK (pre-release)",
           "anchor": "sdk-(pre-release)",
-          "line": 90,
+          "line": 138,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "2. API key を取得する (Get an API key)",
           "anchor": "2.-api-key-を取得する-(get-an-api-key)",
-          "line": 96,
+          "line": 144,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "匿名 (即時利用)",
           "anchor": "匿名-(即時利用)",
-          "line": 98,
+          "line": 146,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "Paid (Stripe 経由、¥3/billable unit 税別 / 税込 ¥3.30 従量)",
           "anchor": "paid-(stripe-経由、¥3-billable-unit-税別-税込-¥3.30-従量)",
-          "line": 104,
+          "line": 152,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "3. 最初のリクエスト (curl)",
           "anchor": "3.-最初のリクエスト-(curl)",
-          "line": 122,
+          "line": 170,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "4. Python 例 (requests, stdlib のみ)",
           "anchor": "4.-python-例-(requests,-stdlib-のみ)",
-          "line": 135,
+          "line": 183,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "5. Node.js 例 (fetch)",
           "anchor": "5.-node.js-例-(fetch)",
-          "line": 152,
+          "line": 200,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "6. MCP (Claude Desktop) 設定",
           "anchor": "6.-mcp-(claude-desktop)-設定",
-          "line": 168,
+          "line": 216,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "7. 5 秒スモークテスト (5-second smoke test)",
           "anchor": "7.-5-秒スモークテスト-(5-second-smoke-test)",
-          "line": 188,
+          "line": 236,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "health check (認証不要)",
           "anchor": "health-check-(認証不要)",
-          "line": 193,
+          "line": 241,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "=> {\"status\":\"ok\"}",
           "anchor": "=>-{\"status\"\"ok\"}",
-          "line": 195,
+          "line": 243,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "dataset 全体像",
           "anchor": "dataset-全体像",
-          "line": 197,
+          "line": 245,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "=> {\"total_programs\": 11601, \"tier_counts\": {...}, ...}",
           "anchor": "=>-{\"total_programs\"-11601,-\"tier_counts\"-{...},-...}",
-          "line": 199,
+          "line": 247,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "次は",
           "anchor": "次は",
-          "line": 204,
+          "line": 252,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Section: API reference",
           "anchor": "section-api-reference",
-          "line": 213,
+          "line": 261,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "API Reference",
           "anchor": "api-reference",
-          "line": 217,
+          "line": 265,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "ベース URL",
           "anchor": "ベース-url",
-          "line": 221,
+          "line": 269,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "バージョニングポリシー (Versioning policy)",
           "anchor": "バージョニングポリシー-(versioning-policy)",
-          "line": 227,
+          "line": 275,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "認証 (Authentication)",
           "anchor": "認証-(authentication)",
-          "line": 246,
+          "line": 294,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "匿名呼び出しの IP レート制限 (Anonymous per-IP limit)",
           "anchor": "匿名呼び出しの-ip-レート制限-(anonymous-per-ip-limit)",
-          "line": 257,
+          "line": 305,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Rate limit",
           "anchor": "rate-limit",
-          "line": 275,
+          "line": 323,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Programs",
           "anchor": "programs",
-          "line": 288,
+          "line": 336,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`GET /v1/programs/search`",
           "anchor": "get-v1-programs-search",
-          "line": 290,
+          "line": 338,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "default shape",
           "anchor": "default-shape",
-          "line": 387,
+          "line": 435,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "minimal — list rendering / quick filter",
           "anchor": "minimal-—-list-rendering-quick-filter",
-          "line": 391,
+          "line": 439,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`GET /v1/programs/{unified_id}`",
           "anchor": "get-v1-programs-{unified_id}",
-          "line": 400,
+          "line": 448,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "default (current behavior, unchanged)",
           "anchor": "default-(current-behavior,-unchanged)",
-          "line": 445,
+          "line": 493,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "minimal — just the headline fields",
           "anchor": "minimal-—-just-the-headline-fields",
-          "line": 449,
+          "line": 497,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "full — enriched / source_mentions / lineage keys guaranteed present",
           "anchor": "full-—-enriched-source_mentions-lineage-keys-guaranteed-present",
-          "line": 453,
+          "line": 501,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`POST /v1/programs/batch`",
           "anchor": "post-v1-programs-batch",
-          "line": 462,
+          "line": 510,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "SDK パターン: search -> batch で 20 件 enrich",
           "anchor": "sdk-パターン-search->-batch-で-20-件-enrich",
-          "line": 529,
+          "line": 577,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Exclusions",
           "anchor": "exclusions",
-          "line": 553,
+          "line": 601,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`GET /v1/exclusions/rules`",
           "anchor": "get-v1-exclusions-rules",
-          "line": 557,
+          "line": 605,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`POST /v1/exclusions/check`",
           "anchor": "post-v1-exclusions-check",
-          "line": 599,
+          "line": 647,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Meta",
           "anchor": "meta",
-          "line": 654,
+          "line": 702,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`GET /v1/meta`",
           "anchor": "get-v1-meta",
-          "line": 656,
+          "line": 704,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`GET /healthz`",
           "anchor": "get-healthz",
-          "line": 686,
+          "line": 734,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`GET /v1/ping`",
           "anchor": "get-v1-ping",
-          "line": 700,
+          "line": 748,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Billing",
           "anchor": "billing",
-          "line": 744,
+          "line": 792,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`POST /v1/billing/checkout`",
           "anchor": "post-v1-billing-checkout",
-          "line": 748,
+          "line": 796,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`POST /v1/billing/portal`",
           "anchor": "post-v1-billing-portal",
-          "line": 774,
+          "line": 822,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`POST /v1/billing/keys/from-checkout`",
           "anchor": "post-v1-billing-keys-from-checkout",
-          "line": 794,
+          "line": 842,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Feedback",
           "anchor": "feedback",
-          "line": 820,
+          "line": 868,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`POST /v1/feedback`",
           "anchor": "post-v1-feedback",
-          "line": 822,
+          "line": 870,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "エラー形式 (Error format)",
           "anchor": "エラー形式-(error-format)",
-          "line": 874,
+          "line": 922,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Administrative endpoints",
           "anchor": "administrative-endpoints",
-          "line": 894,
+          "line": 942,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "関連",
           "anchor": "関連",
-          "line": 898,
+          "line": 946,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Section: MCP tools",
           "anchor": "section-mcp-tools",
-          "line": 908,
+          "line": 956,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "MCP Tools",
           "anchor": "mcp-tools",
-          "line": 912,
+          "line": 960,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "前提 (Setup)",
           "anchor": "前提-(setup)",
-          "line": 918,
+          "line": 966,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "`search_programs`",
           "anchor": "search_programs",
-          "line": 926,
+          "line": 974,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "`get_program`",
           "anchor": "get_program",
-          "line": 986,
+          "line": 1034,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "`batch_get_programs`",
           "anchor": "batch_get_programs",
-          "line": 1040,
+          "line": 1088,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "`list_exclusion_rules`",
           "anchor": "list_exclusion_rules",
-          "line": 1094,
+          "line": 1142,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "`check_exclusions`",
           "anchor": "check_exclusions",
-          "line": 1128,
+          "line": 1176,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "`get_meta`",
           "anchor": "get_meta",
-          "line": 1166,
+          "line": 1214,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "関連",
           "anchor": "関連",
-          "line": 1192,
+          "line": 1240,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Section: Exclusion rules",
           "anchor": "section-exclusion-rules",
-          "line": 1201,
+          "line": 1249,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "排他ルール (Exclusion Rules)",
           "anchor": "排他ルール-(exclusion-rules)",
-          "line": 1205,
+          "line": 1253,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "なぜ必要か (Why it matters)",
           "anchor": "なぜ必要か-(why-it-matters)",
-          "line": 1209,
+          "line": 1257,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "ルールの種別 (Rule kinds)",
           "anchor": "ルールの種別-(rule-kinds)",
-          "line": 1220,
+          "line": 1268,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`mutex` — 相互排他",
           "anchor": "mutex-—-相互排他",
-          "line": 1222,
+          "line": 1270,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`prerequisite` — 前提条件",
           "anchor": "prerequisite-—-前提条件",
-          "line": 1240,
+          "line": 1288,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "`conditional_reduction` — 条件付き減額",
           "anchor": "conditional_reduction-—-条件付き減額",
-          "line": 1254,
+          "line": 1302,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "API で使う (Using via API)",
           "anchor": "api-で使う-(using-via-api)",
-          "line": 1260,
+          "line": 1308,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "全ルール一覧",
           "anchor": "全ルール一覧",
-          "line": 1262,
+          "line": 1310,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "候補セット検証",
           "anchor": "候補セット検証",
-          "line": 1270,
+          "line": 1318,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "MCP ツール",
           "anchor": "mcp-ツール",
-          "line": 1286,
+          "line": 1334,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "サンプル: 制度A × 制度B の併用確認",
           "anchor": "サンプル-制度a-×-制度b-の併用確認",
-          "line": 1292,
+          "line": 1340,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "現行 181 件の範囲 (Scope: current 181 rules, 2026-04-24)",
           "anchor": "現行-181-件の範囲-(scope-current-181-rules,-2026-04-24)",
-          "line": 1313,
+          "line": 1361,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "主要制度ルールの例",
           "anchor": "主要制度ルールの例",
-          "line": 1325,
+          "line": 1373,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "事業者向け制度ルールの例",
           "anchor": "事業者向け制度ルールの例",
-          "line": 1332,
+          "line": 1380,
           "kind": "heading"
         },
         {
           "level": 3,
           "text": "一次資料に基づく追加ルール",
           "anchor": "一次資料に基づく追加ルール",
-          "line": 1345,
+          "line": 1393,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "制約 (Limitations)",
           "anchor": "制約-(limitations)",
-          "line": 1351,
+          "line": 1399,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "関連",
           "anchor": "関連",
-          "line": 1357,
+          "line": 1405,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Section: FAQ",
           "anchor": "section-faq",
-          "line": 1366,
+          "line": 1414,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "FAQ",
           "anchor": "faq",
-          "line": 1370,
+          "line": 1418,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q1. データはどの頻度で更新されるか (Update cadence)",
           "anchor": "q1.-データはどの頻度で更新されるか-(update-cadence)",
-          "line": 1374,
+          "line": 1422,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q2. データソースは何か (Data sources)",
           "anchor": "q2.-データソースは何か-(data-sources)",
-          "line": 1380,
+          "line": 1428,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q3. これは法的・税務アドバイスか (Is this legal/tax advice?)",
           "anchor": "q3.-これは法的・税務アドバイスか-(is-this-legal-tax-advice?)",
-          "line": 1393,
+          "line": 1441,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q4. サブスクリプションの解約方法 (Canceling)",
           "anchor": "q4.-サブスクリプションの解約方法-(canceling)",
-          "line": 1403,
+          "line": 1451,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q5. データの正確性は保証されるか (Data accuracy)",
           "anchor": "q5.-データの正確性は保証されるか-(data-accuracy)",
-          "line": 1407,
+          "line": 1455,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q6. 日本語・英語の混在 (Japanese/English mix)",
           "anchor": "q6.-日本語・英語の混在-(japanese-english-mix)",
-          "line": 1419,
+          "line": 1467,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q7. 法人 / エンタープライズ契約 (Enterprise inquiries)",
           "anchor": "q7.-法人-エンタープライズ契約-(enterprise-inquiries)",
-          "line": 1425,
+          "line": 1473,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q8. SLA はあるか (SLA)",
           "anchor": "q8.-sla-はあるか-(sla)",
-          "line": 1429,
+          "line": 1477,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q9. オフライン / self-host 可能か (Offline / self-hosted)",
           "anchor": "q9.-オフライン-self-host-可能か-(offline-self-hosted)",
-          "line": 1438,
+          "line": 1486,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q10. rate limit のリセットタイミング (Reset timing)",
           "anchor": "q10.-rate-limit-のリセットタイミング-(reset-timing)",
-          "line": 1444,
+          "line": 1492,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q11. API key の revoke / rotate (Revoking keys)",
           "anchor": "q11.-api-key-の-revoke-rotate-(revoking-keys)",
-          "line": 1450,
+          "line": 1498,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q12. MCP クライアントの対応状況 (MCP client support)",
           "anchor": "q12.-mcp-クライアントの対応状況-(mcp-client-support)",
-          "line": 1456,
+          "line": 1504,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q13. 排他ルールは全制度をカバーしているか (Exclusion coverage)",
           "anchor": "q13.-排他ルールは全制度をカバーしているか-(exclusion-coverage)",
-          "line": 1465,
+          "line": 1513,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q14. 全文検索の日本語の挙動 (Japanese full-text search behavior)",
           "anchor": "q14.-全文検索の日本語の挙動-(japanese-full-text-search-behavior)",
-          "line": 1471,
+          "line": 1519,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Q15. データの商用利用・再配布は可能か (Commercial use / redistribution)",
           "anchor": "q15.-データの商用利用・再配布は可能か-(commercial-use-redistribution)",
-          "line": 1478,
+          "line": 1526,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "その他",
           "anchor": "その他",
-          "line": 1485,
+          "line": 1533,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "関連",
           "anchor": "関連",
-          "line": 1491,
+          "line": 1539,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Section: Pricing",
           "anchor": "section-pricing",
-          "line": 1503,
+          "line": 1551,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "Pricing",
           "anchor": "pricing",
-          "line": 1507,
+          "line": 1555,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "価格 (Price)",
           "anchor": "価格-(price)",
-          "line": 1511,
+          "line": 1559,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "なぜ従量 1 本 (Why pure metered)",
           "anchor": "なぜ従量-1-本-(why-pure-metered)",
-          "line": 1522,
+          "line": 1570,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "始め方 (Getting started)",
           "anchor": "始め方-(getting-started)",
-          "line": 1529,
+          "line": 1577,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Rate limit の仕様",
           "anchor": "rate-limit-の仕様",
-          "line": 1536,
+          "line": 1584,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "支払い・請求書 (Invoicing)",
           "anchor": "支払い・請求書-(invoicing)",
-          "line": 1542,
+          "line": 1590,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "解約・返金 (Cancellation & refunds)",
           "anchor": "解約・返金-(cancellation-&-refunds)",
-          "line": 1549,
+          "line": 1597,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "特定商取引法に基づく表記",
           "anchor": "特定商取引法に基づく表記",
-          "line": 1554,
+          "line": 1602,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "FAQ",
           "anchor": "faq",
-          "line": 1558,
+          "line": 1606,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Section: SLA",
           "anchor": "section-sla",
-          "line": 1569,
+          "line": 1617,
           "kind": "heading"
         },
         {
           "level": 1,
           "text": "稼働目標",
           "anchor": "稼働目標",
-          "line": 1573,
+          "line": 1621,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "対象",
           "anchor": "対象",
-          "line": 1579,
+          "line": 1627,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "可用性目標",
           "anchor": "可用性目標",
-          "line": 1584,
+          "line": 1632,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "計測方法",
           "anchor": "計測方法",
-          "line": 1590,
+          "line": 1638,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "SLA 除外項目",
           "anchor": "sla-除外項目",
-          "line": 1596,
+          "line": 1644,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "返金・請求調整",
           "anchor": "返金・請求調整",
-          "line": 1607,
+          "line": 1655,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "レビューサイクル",
           "anchor": "レビューサイクル",
-          "line": 1613,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: Brand & Contact / 運営会社",
-          "anchor": "section-brand-&-contact-運営会社",
-          "line": 1619,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: Authentication / 認証",
-          "anchor": "section-authentication-認証",
-          "line": 1638,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: Pricing detail / 料金詳細と cost_examples",
-          "anchor": "section-pricing-detail-料金詳細と-cost_examples",
-          "line": 1660,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "cost_examples (公開試算)",
-          "anchor": "cost_examples-(公開試算)",
-          "line": 1674,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: Corpus 規模 / Coverage (production snapshot)",
-          "anchor": "section-corpus-規模-coverage-(production-snapshot)",
-          "line": 1691,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: 業法 fence (7 / 8 拡張プラン)",
-          "anchor": "section-業法-fence-(7-8-拡張プラン)",
-          "line": 1725,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "1. 税理士 fence (`tax_accountant`)",
-          "anchor": "1.-税理士-fence-(tax_accountant)",
-          "line": 1731,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "2. 弁護士 fence (`lawyer`)",
-          "anchor": "2.-弁護士-fence-(lawyer)",
-          "line": 1738,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "3. 司法書士 fence (`judicial_scrivener`)",
-          "anchor": "3.-司法書士-fence-(judicial_scrivener)",
-          "line": 1745,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "4. 行政書士 fence (`administrative_scrivener`)",
-          "anchor": "4.-行政書士-fence-(administrative_scrivener)",
-          "line": 1752,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "5. 社会保険労務士 fence (`sharoushi`)",
-          "anchor": "5.-社会保険労務士-fence-(sharoushi)",
-          "line": 1759,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "6. 中小企業診断士 fence (`sme_diagnostician`)",
-          "anchor": "6.-中小企業診断士-fence-(sme_diagnostician)",
-          "line": 1766,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "7. 弁理士 fence (`patent_attorney`)",
-          "anchor": "7.-弁理士-fence-(patent_attorney)",
-          "line": 1773,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: MCP 139 tools manifest (公開全件)",
-          "anchor": "section-mcp-139-tools-manifest-(公開全件)",
-          "line": 1784,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: OpenAPI 220 path manifest (公開全件)",
-          "anchor": "section-openapi-220-path-manifest-(公開全件)",
-          "line": 1939,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: 8 cohort revenue model (確定)",
-          "anchor": "section-8-cohort-revenue-model-(確定)",
-          "line": 2180,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: 22 軸 cross-reference cohort (12 base + 10 R8 grow)",
-          "anchor": "section-22-軸-cross-reference-cohort-(12-base-+-10-r8-grow)",
-          "line": 2199,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: install / client integration (Claude Desktop / Cursor / Codex / ChatGPT / Anthropic API direct)",
-          "anchor": "section-install-client-integration-(claude-desktop-cursor-codex-chatgpt-anthropic-api-direct)",
-          "line": 2218,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Claude Desktop (推奨、stdio MCP)",
-          "anchor": "claude-desktop-(推奨、stdio-mcp)",
-          "line": 2222,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Cursor (stdio MCP)",
-          "anchor": "cursor-(stdio-mcp)",
-          "line": 2237,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Codex CLI / Cline (stdio MCP)",
-          "anchor": "codex-cli-cline-(stdio-mcp)",
-          "line": 2241,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "ChatGPT Custom GPT (OpenAPI Actions)",
-          "anchor": "chatgpt-custom-gpt-(openapi-actions)",
-          "line": 2245,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Anthropic API 直 (Claude API + Tool Use)",
-          "anchor": "anthropic-api-直-(claude-api-+-tool-use)",
-          "line": 2249,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Python (REST 直)",
-          "anchor": "python-(rest-直)",
-          "line": 2253,
-          "kind": "heading"
-        },
-        {
-          "level": 3,
-          "text": "Node.js (fetch)",
-          "anchor": "node.js-(fetch)",
-          "line": 2263,
-          "kind": "heading"
-        },
-        {
-          "level": 2,
-          "text": "Section: recurring agent workflows",
-          "anchor": "section-recurring-agent-workflows",
-          "line": 2273,
+          "line": 1661,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "English (secondary)",
           "anchor": "english-(secondary)",
-          "line": 2290,
+          "line": 1669,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "All Programs (11,601 searchable public program rows, compact)",
           "anchor": "all-programs-(11,601-searchable-public-program-rows,-compact)",
-          "line": 2303,
+          "line": 1682,
           "kind": "heading"
         }
       ]
@@ -1708,12 +1082,12 @@
     {
       "file": "/llms-full.en.txt",
       "lang": "en",
-      "size_bytes": 4392272,
-      "line_count": 23239,
-      "content_hash_sha256": "1249ba3a752b975961a131b25c03ff20b22fd1d93902ea604e004b868e4d7b5a",
-      "last_modified": "2026-05-11T05:27:39Z",
-      "sections": 8,
-      "anchors_total": 9,
+      "size_bytes": 4395307,
+      "line_count": 23288,
+      "content_hash_sha256": "827d1ad0970d2d286743d8b18597ea8e824b410e07cffbd62fe847cc295e46e6",
+      "last_modified": "2026-05-13T02:00:57Z",
+      "sections": 10,
+      "anchors_total": 11,
       "section_anchors": [
         {
           "level": 1,
@@ -1724,58 +1098,72 @@
         },
         {
           "level": 2,
+          "text": "Machine-readable discovery",
+          "anchor": "machine-readable-discovery",
+          "line": 7,
+          "kind": "heading"
+        },
+        {
+          "level": 2,
+          "text": "AI Citation Guidance — How to cite jpcite",
+          "anchor": "ai-citation-guidance-—-how-to-cite-jpcite",
+          "line": 22,
+          "kind": "heading"
+        },
+        {
+          "level": 2,
           "text": "About jpcite",
           "anchor": "about-jpcite",
-          "line": 13,
+          "line": 62,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Pricing",
           "anchor": "pricing",
-          "line": 25,
+          "line": 74,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Five canonical audiences",
           "anchor": "five-canonical-audiences",
-          "line": 39,
+          "line": 88,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Coverage statistics",
           "anchor": "coverage-statistics",
-          "line": 51,
+          "line": 100,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "All Programs (11,366 compact public program rows)",
           "anchor": "all-programs-(11,366-compact-public-program-rows)",
-          "line": 64,
+          "line": 113,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "All Laws (9,484 entries, compact)",
           "anchor": "all-laws-(9,484-entries,-compact)",
-          "line": 11437,
+          "line": 11486,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "All Case Studies (2,286 entries, compact)",
           "anchor": "all-case-studies-(2,286-entries,-compact)",
-          "line": 20928,
+          "line": 20977,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "License and attribution",
           "anchor": "license-and-attribution",
-          "line": 23223,
+          "line": 23272,
           "kind": "heading"
         }
       ]
@@ -1785,30 +1173,30 @@
     {
       "file": "sitemap-llms.xml",
       "kind": "ai_surface_sitemap",
-      "size_bytes": 4258,
-      "content_hash_sha256": "0aa47617f14fb0ae1ecd96084433bc5f79f3c1a993fba4b2d4778114c019a3a9",
-      "last_modified": "2026-05-11T09:25:56Z"
+      "size_bytes": 4260,
+      "content_hash_sha256": "6649d06bc7a8f89c3f5da99cb30f57c84c4506e2ee2a753eb402b86b53df799f",
+      "last_modified": "2026-05-12T22:52:37Z"
     },
     {
       "file": ".well-known/mcp.json",
       "kind": "mcp_discovery",
-      "size_bytes": 10477,
-      "content_hash_sha256": "b835757556972b79356c3ef9688905a7fe4865d8403d678da2587e44285f37ad",
-      "last_modified": "2026-05-11T09:26:31Z"
+      "size_bytes": 11381,
+      "content_hash_sha256": "e8c7376e496b506fd205f25b470cbcc338b505e6c33f45d34524c3d6cecbca92",
+      "last_modified": "2026-05-12T22:52:57Z"
     },
     {
       "file": ".well-known/agents.json",
       "kind": "agents_protocol",
-      "size_bytes": 5271,
-      "content_hash_sha256": "e7133bac9a5ca313079664339fe0ea40fa6b49f6dd94023d841f6bcff3151854",
-      "last_modified": "2026-05-11T09:26:22Z"
+      "size_bytes": 2609,
+      "content_hash_sha256": "d2f0c3dbb8a04c76e0021cebf12e0bde72a7fa7aadacd79d9f9ffed19847161f",
+      "last_modified": "2026-05-13T00:33:55Z"
     },
     {
       "file": ".well-known/ai-plugin.json",
       "kind": "openai_plugin",
-      "size_bytes": 1721,
-      "content_hash_sha256": "cbf2bcc4ee40bdf1e6dcf391894260f4c08c107066358109bd9dc75d0439c32e",
-      "last_modified": "2026-05-11T09:26:38Z"
+      "size_bytes": 1507,
+      "content_hash_sha256": "b5150a4224d06ceb96ce39fa794fb31dc5154a8ae5e6767f0d651c8205ed79c8",
+      "last_modified": "2026-05-13T00:12:21Z"
     }
   ],
   "consumption_notes": {

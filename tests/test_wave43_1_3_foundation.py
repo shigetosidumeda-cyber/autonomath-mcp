@@ -64,18 +64,14 @@ def test_migration_apply_and_rollback_idempotent() -> None:
         # Tables present?
         names = {
             row[0]
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
         }
         assert "am_program_private_foundation" in names
         assert "am_program_private_foundation_ingest_log" in names
         # View present?
         views = {
             row[0]
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='view'"
-            ).fetchall()
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='view'").fetchall()
         }
         assert "v_program_private_foundation_summary" in views
         # CHECK constraint: enum guards.
@@ -95,9 +91,7 @@ def test_migration_apply_and_rollback_idempotent() -> None:
             " donation_category) VALUES (?, ?, ?, ?)",
             ("テスト財団", "公益財団", "テスト助成", "public_interest"),
         )
-        count = conn.execute(
-            "SELECT COUNT(*) FROM am_program_private_foundation"
-        ).fetchone()[0]
+        count = conn.execute("SELECT COUNT(*) FROM am_program_private_foundation").fetchone()[0]
         assert count == 1
         # Re-apply (idempotent — should not raise).
         conn.executescript(MIG_FILE.read_text(encoding="utf-8"))
@@ -105,9 +99,7 @@ def test_migration_apply_and_rollback_idempotent() -> None:
         conn.executescript(ROLLBACK_FILE.read_text(encoding="utf-8"))
         names_after = {
             row[0]
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
         }
         assert "am_program_private_foundation" not in names_after
         # Re-apply after rollback (forward must remain idempotent).
@@ -153,6 +145,76 @@ def test_api_router_has_disclaimer_const() -> None:
     assert "_FOUNDATION_DISCLAIMER" in body
     assert "税理士法" in body  # mandatory士業 fence
     assert "_disclaimer" in body
+
+
+def test_api_readonly_connection_sets_query_only(tmp_path: Path, monkeypatch) -> None:
+    """Foundation autonomath handle must be read-only and query-only."""
+    db_path = tmp_path / "autonomath.db"
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute("CREATE TABLE am_program_private_foundation (foundation_id INTEGER)")
+        conn.commit()
+    finally:
+        conn.close()
+
+    monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db_path))
+
+    from jpintel_mcp.api import foundation
+
+    ro = foundation._open_am_ro()
+    assert ro is not None
+    try:
+        assert ro.execute("PRAGMA query_only").fetchone()[0] == 1
+        try:
+            ro.execute("CREATE TABLE should_not_write (id INTEGER)")
+            raise AssertionError("query_only connection should reject writes")
+        except sqlite3.DatabaseError as exc:
+            assert "readonly" in str(exc).lower() or "query only" in str(exc).lower()
+    finally:
+        ro.close()
+
+
+def test_api_summary_query_is_bounded() -> None:
+    body = API_FILE.read_text(encoding="utf-8")
+    assert "_FOUNDATION_SUMMARY_LIMIT" in body
+    assert "_FOUNDATION_MAX_OFFSET" in body
+    assert "LIMIT ?" in body
+    assert "Query(ge=0, le=_FOUNDATION_MAX_OFFSET)" in body
+    assert "FROM v_program_private_foundation_summary" not in body
+    assert '"scope": "current_page"' in body
+
+
+def test_api_bounded_summary_uses_current_page_only() -> None:
+    from jpintel_mcp.api.foundation import _bounded_summary
+
+    rows = [
+        {
+            "foundation_type": "公益財団",
+            "donation_category": "research",
+            "foundation_name": "A財団",
+        },
+        {
+            "foundation_type": "公益財団",
+            "donation_category": "research",
+            "foundation_name": "A財団",
+        },
+        {
+            "foundation_type": "NPO",
+            "donation_category": "community",
+            "foundation_name": "B法人",
+        },
+    ]
+
+    summary = _bounded_summary(rows, "公益財団", "研究")
+
+    assert summary["scope"] == "current_page"
+    assert summary["filtered_by"] == {"foundation_type": "公益財団", "grant_theme": "研究"}
+    assert summary["by_type"][0] == {
+        "foundation_type": "公益財団",
+        "donation_category": "research",
+        "program_count": 2,
+        "foundation_count": 1,
+    }
 
 
 def test_etl_banned_hosts_present() -> None:

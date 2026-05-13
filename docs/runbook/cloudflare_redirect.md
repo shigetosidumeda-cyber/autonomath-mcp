@@ -1,6 +1,6 @@
 ---
 title: Cloudflare Redirect Rules Setup
-updated: 2026-05-07
+updated: 2026-05-13
 operator_only: true
 category: brand
 ---
@@ -48,6 +48,26 @@ bash scripts/ops/cloudflare_redirect.sh
 The script uses the Rulesets API phase `http_request_dynamic_redirect`. It
 updates only rules whose `ref` matches `cloudflare-rules.yaml` and preserves
 unmanaged rules in the same phase.
+
+## Wave 49 Deployment Checklist
+
+1. Confirm both `zeimu-kaikei.ai` and `www.zeimu-kaikei.ai` are proxied through
+   Cloudflare and the `CLOUDFLARE_ZONE_ID_ZEIMU_KAIKEI` secret points at that
+   zone.
+2. Run the local structural guard:
+
+   ```bash
+   pytest tests/test_redirect_zeimu_kaikei.py tests/test_static_public_reachability.py::test_redirects_file_syntax_is_cloudflare_pages_compatible
+   ```
+
+3. Dry-run the operator apply command and confirm the output lists both
+   `jpcite.com` and `zeimu-kaikei.ai` rule groups.
+4. Apply the rules with `bash scripts/ops/cloudflare_redirect.sh`.
+5. Run the verification curls below. Include at least one deep path and one
+   query-string URL so path/query preservation is proven before closing the
+   migration task.
+6. Confirm direct `https://jpcite.com/...` URLs still serve from the Pages
+   site and do not receive a legacy-domain redirect.
 
 ## Expected Rules
 

@@ -81,9 +81,6 @@ jobs:
             echo "no metric delta to commit"
             exit 0
           fi
-          git commit -m "cron(monetization-metrics): daily KPI snapshot
-
-Wave 42 monetization-guide integration — daily aggregate of 12 KPIs
-(8 agent-economy + 4 legacy proxies). Memory:
-feedback_agent_new_kpis_8 + feedback_agent_anti_patterns_10."
+          git commit -m "cron(monetization-metrics): daily KPI snapshot" \
+            -m "Wave 42 monetization-guide integration — daily aggregate of 12 KPIs (8 agent-economy + 4 legacy proxies). Memory: feedback_agent_new_kpis_8 + feedback_agent_anti_patterns_10."
           git push origin HEAD:main

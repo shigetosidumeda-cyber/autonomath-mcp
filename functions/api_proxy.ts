@@ -49,6 +49,74 @@ const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Max-Age": "86400",
 };
 
+const UPSTREAM_FETCH_TIMEOUT_MS = 10_000;
+const MAX_PROXY_BODY_BYTES = 1_048_576;
+
+type LimitedBodyResult = { ok: true; body: ArrayBuffer | null } | { ok: false };
+
+function contentLengthExceeds(headers: Headers, maxBytes: number): boolean {
+  const value = headers.get("content-length");
+  if (!value) return false;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > maxBytes;
+}
+
+async function readRequestBodyLimited(
+  request: Request,
+  maxBytes: number,
+): Promise<LimitedBodyResult> {
+  if (contentLengthExceeds(request.headers, maxBytes)) {
+    return { ok: false };
+  }
+  if (!request.body) {
+    return { ok: true, body: null };
+  }
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      try {
+        await reader.cancel();
+      } catch {
+        // Best effort; the response will be rejected either way.
+      }
+      return { ok: false };
+    }
+    chunks.push(value);
+  }
+
+  if (total === 0) {
+    return { ok: true, body: null };
+  }
+  const body = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return { ok: true, body: body.buffer };
+}
+
+async function fetchWithTimeout(
+  upstreamUrl: string,
+  init: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(upstreamUrl, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 /** Build the upstream URL by stripping /api/ and prepending /v1/. */
 function rewriteToUpstream(reqUrl: URL, base: string): string {
   // /api/programs           → /v1/programs
@@ -69,6 +137,11 @@ function rewriteToUpstream(reqUrl: URL, base: string): string {
   return `${base}${upstreamPath}${reqUrl.search}`;
 }
 
+function redactUpstreamUrl(upstreamUrl: string): string {
+  const url = new URL(upstreamUrl);
+  return `${url.origin}${url.pathname}`;
+}
+
 export const onRequest: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);
 
@@ -79,6 +152,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   const base = (context.env.JPCITE_API_BASE || "https://api.jpcite.com").replace(/\/+$/, "");
   const upstreamUrl = rewriteToUpstream(url, base);
+  const redactedUpstreamUrl = redactUpstreamUrl(upstreamUrl);
 
   // Forward most headers; strip the host/CF-internal ones that would
   // confuse the origin if echoed.
@@ -87,9 +161,26 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   fwdHeaders.delete("cf-connecting-ip");
   fwdHeaders.delete("cf-ipcountry");
   fwdHeaders.delete("cf-ray");
+  fwdHeaders.delete("fly-client-ip");
+  fwdHeaders.delete("x-forwarded-for");
   // Identify the proxy hop so origin logs can distinguish direct vs proxied.
   fwdHeaders.set("X-Forwarded-By", "jpcite-pages-api-proxy");
   fwdHeaders.set("X-Forwarded-Host", url.host);
+
+  let upstreamBody: ArrayBuffer | null = null;
+  if (context.request.method !== "GET" && context.request.method !== "HEAD") {
+    const limitedBody = await readRequestBodyLimited(context.request, MAX_PROXY_BODY_BYTES);
+    if (!limitedBody.ok) {
+      return new Response(
+        JSON.stringify({ error: "body_too_large", max_body_bytes: MAX_PROXY_BODY_BYTES }),
+        {
+          status: 413,
+          headers: { "Content-Type": "application/json", ...CORS_HEADERS },
+        },
+      );
+    }
+    upstreamBody = limitedBody.body;
+  }
 
   // Reconstruct the upstream request.
   // body is null for GET/HEAD; pass through otherwise.
@@ -98,19 +189,19 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     headers: fwdHeaders,
     redirect: "manual",
   };
-  if (context.request.method !== "GET" && context.request.method !== "HEAD") {
-    init.body = context.request.body;
+  if (upstreamBody) {
+    init.body = upstreamBody;
   }
 
   let upstream: Response;
   try {
-    upstream = await fetch(upstreamUrl, init);
+    upstream = await fetchWithTimeout(upstreamUrl, init, UPSTREAM_FETCH_TIMEOUT_MS);
   } catch {
     return new Response(
       JSON.stringify({
         error: "upstream_unreachable",
         hint: "api.jpcite.com is the canonical host; try directly.",
-        canonical_url: upstreamUrl,
+        canonical_url: redactedUpstreamUrl,
       }),
       {
         status: 502,
@@ -125,7 +216,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     respHeaders.set(k, v);
   }
   respHeaders.set("X-Rate-Limit-Hint", "GET /v1/me for quota state");
-  respHeaders.set("X-Upstream-Canonical", upstreamUrl);
+  respHeaders.set("X-Upstream-Canonical", redactedUpstreamUrl);
 
   return new Response(upstream.body, {
     status: upstream.status,

@@ -130,8 +130,13 @@
 # am_<name>. Non-destructive: am_* tables remain SOT, jc_* are query-time
 # aliases for gradual rename of operator/ETL/REST/MCP code. FTS5/vec0
 # virtual tables excluded (cannot wrap with a plain view without losing
-# MATCH/vec_search capability). Idempotent on every boot; safe even if
-# am_* tables are absent (view body resolves at query time, not creation).
+# MATCH/vec_search capability). Pure additive (CREATE VIEW IF NOT EXISTS
+# only); boot-time safe; idempotent on every boot. Re-enabled 2026-05-13
+# after E10 finding: first-line `-- target_db: autonomath` header added
+# to 269_create_jpcite_views.sql so entrypoint.sh §4 head-1 grep accepts
+# the file for autonomath self-heal. Acceptance suite tests/test_jpcite_
+# views.py (9 cases) + tests/test_migration_header_consistency.py (this
+# audit's CI gate) cover the regression surface.
 269_create_jpcite_views.sql
 
 # 2026-05-12 Wave 47 — Dim K (rule_tree_branching) storage layer.
@@ -396,3 +401,12 @@
 # e59486eb), preventing the strict view from being materialized in
 # prod — this hot-fix unblocks that path.
 288_dim_n_k10_strict.sql
+
+# 2026-05-13 Wave 46 dim 19 D-final — audit_workpaper v2 cache substrate.
+# Adds am_audit_workpaper (per houjin_bangou + fiscal_year denormalized
+# deterministic workpaper snapshot) and am_audit_workpaper_run_log for
+# scripts/etl/build_audit_workpaper_v2.py. Pure additive
+# (CREATE TABLE/INDEX IF NOT EXISTS); boot-time safe; idempotent on every
+# boot. NO LLM SDK/API; cache is populated by deterministic SQLite
+# projection and preserves live REST/MCP compose billing behavior.
+289_audit_workpaper_v2.sql

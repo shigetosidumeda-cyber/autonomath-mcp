@@ -42,7 +42,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import xml.sax.saxutils as _saxutils
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -63,7 +63,7 @@ SEVERITY_ORDER = ("unknown", "info", "warn", "critical")
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _load_json(path: Path) -> dict[str, Any] | None:
@@ -290,11 +290,13 @@ def run() -> int:
         _append_jsonl(ALERT_JSONL, result)
 
     max_level = _max_severity(alerts)
+    critical_count = sum(1 for alert in alerts if alert.get("level") == "critical")
 
     sidecar_payload = {
         "snapshot_ts": snapshot_ts,
         "schema_version": 1,
         "max_severity": max_level,
+        "critical_count": critical_count,
         "alerts": alerts,
     }
     SIDECAR_JSON.parent.mkdir(parents=True, exist_ok=True)

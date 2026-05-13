@@ -20,11 +20,22 @@ Constraints:
   * Per-component 10s timeout; no retries.
   * Always exits 0 (cron-friendly). Failure state is encoded in JSON status field.
 
-JSON spec (1.0):
+Public JSON spec (1.0):
   {
     "snapshot_at": "2026-05-11T...+09:00",
     "components": {
-      "api": {"status": "ok|degraded|down", "latency_ms": int, "http": int},
+      "api": {
+        "status": "ok|degraded|down",
+        "latency_ms": int,
+        "error_category": "timeout|network|external_dependency_unavailable|..."
+      },
+      "data-freshness": {
+        "status": "ok|degraded|down",
+        "latency_ms": int,
+        "error_category": "...|null",
+        "last_updated_at": "YYYY-MM-DD|null",
+        "max_age_days": int|null
+      },
       ...
     },
     "overall": "ok|degraded|down"
@@ -64,6 +75,13 @@ COMPONENT_IDS = ["api", "mcp", "billing", "data-freshness", "dashboard"]
 STATUS_OK = "ok"
 STATUS_DEGRADED = "degraded"
 STATUS_DOWN = "down"
+PUBLIC_ERROR_CATEGORIES = {
+    "timeout",
+    "network",
+    "external_dependency_unavailable",
+    "rate_limited",
+    "maintenance",
+}
 
 # Defaults; overridable via CLI / env.
 DEFAULT_API_BASE = "https://api.jpcite.com"
@@ -538,14 +556,82 @@ def overall_status(components: dict[str, dict[str, Any]]) -> str:
     return STATUS_OK
 
 
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        return default
+
+
+def _public_error_category(component: dict[str, Any]) -> str | None:
+    """Fold raw probe details into a small public-safe category set."""
+    status = component.get("status", STATUS_DOWN)
+    raw_error = str(component.get("error") or "").lower()
+    http_status = _safe_int(component.get("http"))
+
+    if "timeout" in raw_error or "timed out" in raw_error:
+        return "timeout"
+    if http_status == 429:
+        return "rate_limited"
+    if http_status in {502, 503, 504}:
+        return "external_dependency_unavailable"
+    if component.get("stub") is True:
+        return "external_dependency_unavailable"
+    if status == STATUS_OK and not raw_error:
+        return None
+    if http_status == 0 and (raw_error or status != STATUS_OK):
+        return "network"
+    if 500 <= http_status < 600:
+        return "external_dependency_unavailable"
+    if status != STATUS_OK:
+        return "external_dependency_unavailable"
+    return None
+
+
+def public_component(component: dict[str, Any], *, data_freshness: bool = False) -> dict[str, Any]:
+    """Return the public status schema for one component.
+
+    Probe functions intentionally keep raw details for local reasoning, but
+    status.json is a public artifact and must never carry HTTP internals,
+    DB presence, tool counts, exception strings, or similar operator fields.
+    """
+    status = component.get("status")
+    if status not in {STATUS_OK, STATUS_DEGRADED, STATUS_DOWN}:
+        status = STATUS_DOWN
+
+    category = _public_error_category(component)
+    if data_freshness and not component.get("error") and not component.get("stub"):
+        category = None
+    if category not in PUBLIC_ERROR_CATEGORIES:
+        category = None
+
+    public: dict[str, Any] = {
+        "status": status,
+        "latency_ms": _safe_int(component.get("latency_ms")),
+        "error_category": category,
+    }
+    if data_freshness:
+        public["last_updated_at"] = component.get("last_updated_at")
+        public["max_age_days"] = component.get("max_age_days")
+    return public
+
+
+def public_components(components: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    return {
+        cid: public_component(cdata, data_freshness=(cid == "data-freshness"))
+        for cid, cdata in components.items()
+    }
+
+
 def build_snapshot(api_base: str, site_base: str) -> dict[str, Any]:
-    components: dict[str, dict[str, Any]] = {
+    raw_components: dict[str, dict[str, Any]] = {
         "api": probe_api(api_base),
         "mcp": probe_mcp(api_base),
         "billing": probe_billing(),
         "data-freshness": probe_data_freshness(),
         "dashboard": probe_dashboard(site_base, api_base),
     }
+    components = public_components(raw_components)
     return {
         "snapshot_at": datetime.now(JST).isoformat(timespec="seconds"),
         "components": components,
