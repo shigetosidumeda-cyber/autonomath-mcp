@@ -246,10 +246,12 @@ jobs:
             --include 'security/policy.md' \
             --include 'tools/' \
             --include 'tools/*.md' \
+            --include 'laws/index.html' \
             --exclude 'laws/*.html' \
             --exclude '*.md' \
             site/ dist/site/
-          # 2026-05-13 Wave 50: laws/*.html (6,494 files) and
+          # 2026-05-13 Wave 50: detail laws/*.html (6,493 files; hub
+          # laws/index.html is kept static above) and
           # 2026-05-12 Wave 45: laws/enforcement/cases/*.md (10,282 files)
           # are intentionally NOT bundled here, but ARE served end-to-end.
           # The full site/ tree is 32,356 files vs the Free-plan CF Pages

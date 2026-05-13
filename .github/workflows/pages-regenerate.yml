@@ -237,6 +237,7 @@ jobs:
             --exclude '*.map' \
             --include 'press/*.md' \
             --include 'security/policy.md' \
+            --include 'laws/index.html' \
             --exclude 'laws/*.html' \
             --exclude '*.md' \
             site/ dist/site/

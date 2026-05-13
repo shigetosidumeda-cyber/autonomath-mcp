@@ -179,6 +179,7 @@ jobs:
             --include 'security/policy.md' \
             --include 'tools/' \
             --include 'tools/*.md' \
+            --include 'laws/index.html' \
             --exclude 'laws/*.html' \
             --exclude '*.md' \
             site/ dist/site/

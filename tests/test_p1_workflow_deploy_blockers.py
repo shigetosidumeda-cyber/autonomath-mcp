@@ -151,7 +151,9 @@ def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
 def test_pages_law_html_artifact_trim_is_backed_by_function_proxy() -> None:
     for workflow in (PAGES_PREVIEW, PAGES_DEPLOY_MAIN, PAGES_REGENERATE):
         text = _text(workflow)
+        assert "--include 'laws/index.html'" in text
         assert "--exclude 'laws/*.html'" in text
+        assert text.index("--include 'laws/index.html'") < text.index("--exclude 'laws/*.html'")
         assert text.index("--exclude 'laws/*.html'") < text.index("--exclude '*.md'")
 
     function = _text(PAGES_CATCH_ALL_FUNCTION)
