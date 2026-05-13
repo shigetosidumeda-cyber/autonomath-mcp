@@ -36,6 +36,16 @@ def test_functions_typecheck_workflow_runs_static_guard_and_tsc() -> None:
 
     assert "npm ci --prefix functions" in workflow
     assert "npm run --prefix functions typecheck" in workflow
-    assert "pytest tests/test_functions_typecheck.py -q" in workflow
+    assert "python tests/test_functions_typecheck.py" in workflow
     assert "functions/package-lock.json" in workflow
     assert "functions/tsconfig.json" in workflow
+
+
+def main() -> None:
+    test_functions_tsconfig_is_strict_and_covers_pages_functions()
+    test_functions_package_exposes_typecheck_script()
+    test_functions_typecheck_workflow_runs_static_guard_and_tsc()
+
+
+if __name__ == "__main__":
+    main()
