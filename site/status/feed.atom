@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>jpcite 監視 alert feed</title>
-  <subtitle>SLA breach / scheduled job failure / deploy issue / endpoint 5xx を Real-time に publish</subtitle>
+  <subtitle>SLA breach / cron failure / deploy issue / endpoint 5xx を Real-time に publish (Wave 41 Agent H)</subtitle>
   <link href="https://jpcite.com/status/feed.atom" rel="self" type="application/atom+xml"/>
   <link href="https://jpcite.com/status/monitoring.html" rel="alternate" type="text/html"/>
   <id>https://jpcite.com/status/feed.atom</id>
-  <updated>2026-05-12T11:58:15Z</updated>
-  <generator uri="https://jpcite.com/" version="current">jpcite-status-aggregator</generator>
+  <updated>2026-05-13T00:09:57Z</updated>
+  <generator uri="https://jpcite.com/" version="w41">jpcite-status-aggregator</generator>
   <icon>https://jpcite.com/assets/favicon-32.png</icon>
   <logo>https://jpcite.com/assets/og.png</logo>
   <rights>Bookyou株式会社 — operational transparency feed, CC0 metadata.</rights>
@@ -16,15 +16,15 @@
     <email>info@bookyou.net</email>
   </author>
   <entry>
-    <title>[UNKNOWN] scheduled jobs: health snapshot not found</title>
-    <id>tag:jpcite.com,2026-05-12:scheduled-jobs-2026-05-12T11:58:15Z</id>
-    <updated>2026-05-12T11:58:15Z</updated>
-    <published>2026-05-12T11:58:15Z</published>
+    <title>[UNKNOWN] cron: cron health snapshot not found</title>
+    <id>tag:jpcite.com,2026-05-13:cron-2026-05-13T00:09:57Z</id>
+    <updated>2026-05-13T00:09:57Z</updated>
+    <published>2026-05-13T00:09:57Z</published>
     <link href="https://jpcite.com/status/monitoring.html" rel="alternate" type="text/html"/>
     <category term="unknown" label="unknown"/>
-    <category term="scheduled_jobs" label="scheduled jobs"/>
+    <category term="cron" label="cron"/>
     <author><name>jpcite</name></author>
-    <summary type="text">scheduled job health snapshot not found</summary>
+    <summary type="text">cron health snapshot not found</summary>
   </entry>
   <entry>
     <title>[UNKNOWN] freshness: freshness rollup not found</title>
