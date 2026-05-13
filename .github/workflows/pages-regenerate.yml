@@ -38,6 +38,7 @@ on:
       - "site/_templates/**"
       - "scripts/generate_program_pages.py"
       - "scripts/generate_prefecture_pages.py"
+      - "scripts/generate_geo_industry_pages.py"
       - "scripts/generate_cross_hub_pages.py"
       - "scripts/generate_geo_program_pages.py"
       - "scripts/generate_industry_hub_pages.py"
@@ -47,6 +48,7 @@ on:
       - "scripts/generate_og_images.py"
       - "scripts/regen_llms_full.py"
       - "scripts/regen_llms_full_en.py"
+      - "scripts/regen_structured_sitemap_and_llms_meta.py"
       - "scripts/sitemap_gen.py"
       - ".github/workflows/pages-regenerate.yml"
 
@@ -141,6 +143,11 @@ jobs:
             --out site/prefectures \
             --domain jpcite.com \
             --sitemap site/sitemap-prefectures.xml
+          python scripts/generate_geo_industry_pages.py \
+            --db data/jpintel.db \
+            --out site/audiences \
+            --domain jpcite.com \
+            --sitemap site/sitemap-audiences.xml
           # Hub generators MUST run before detail generators that share a
           # sitemap namespace. cross_hub owns sitemap-cross.xml (47 URLs);
           # geo_program writes the disjoint sitemap-cross-detail.xml.
@@ -174,6 +181,7 @@ jobs:
           python scripts/generate_public_counts.py
           python scripts/regen_llms_full.py --db data/jpintel.db --out site/llms-full.txt
           python scripts/regen_llms_full_en.py --db data/jpintel.db --out site/llms-full.en.txt
+          python scripts/regen_structured_sitemap_and_llms_meta.py
 
       - name: Build docs and sitemap
         if: steps.fly-token.outputs.available == 'true'
@@ -196,9 +204,11 @@ jobs:
           set -euo pipefail
           rm -rf dist/site
           mkdir -p dist
-          # site/structured/ + sitemap-structured.xml retired 2026-05-03 (JSON-LD
-          # inlined in /programs/<slug>.html, see scripts/generate_program_pages.py).
-          # The CF Pages 20k-file limit no longer requires the --exclude trick.
+          # site/structured/ JSON-LD shards retired 2026-05-03; the public
+          # sitemap-structured.xml shard is regenerated above for crawler
+          # discovery before sitemap-index.xml is assembled.
+          # The CF Pages 20k-file limit no longer requires the old
+          # site/structured/ --exclude trick.
           rsync -a --delete \
             --exclude '_templates/' \
             --exclude '*.src.js' \

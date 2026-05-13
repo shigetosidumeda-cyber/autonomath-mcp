@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -15,6 +16,7 @@ PUBLIC_DOCS = REPO_ROOT / "site" / "docs"
 PAGES_WORKFLOWS = [
     REPO_ROOT / ".github" / "workflows" / "pages-preview.yml",
     REPO_ROOT / ".github" / "workflows" / "pages-regenerate.yml",
+    REPO_ROOT / ".github" / "workflows" / "pages-deploy-main.yml",
 ]
 PUBLIC_AI_AND_TOOL_SURFACES = [
     REPO_ROOT / "site" / "llms.txt",
@@ -173,6 +175,79 @@ def _public_sales_surfaces() -> list[Path]:
     for pattern in PUBLIC_SALES_SURFACE_GLOBS:
         paths.update(REPO_ROOT.glob(pattern))
     return sorted(path for path in paths if path.exists())
+
+
+def _docs_source_candidates(url_path: str) -> list[Path]:
+    """MkDocs build output is gitignored; validate against the docs source."""
+    if url_path in {"/docs", "/docs/"}:
+        return [REPO_ROOT / "docs" / "index.md"]
+    if not url_path.startswith("/docs/"):
+        return []
+
+    rel = url_path.removeprefix("/docs/").strip("/")
+    if not rel or Path(rel).suffix:
+        return []
+    return [
+        REPO_ROOT / "docs" / f"{rel}.md",
+        REPO_ROOT / "docs" / rel / "index.md",
+        REPO_ROOT / "docs" / rel / "README.md",
+    ]
+
+
+def _has_docs_source(url_path: str) -> bool:
+    return any(path.exists() for path in _docs_source_candidates(url_path))
+
+
+@lru_cache(maxsize=1)
+def _generated_audience_matrix_paths() -> set[str]:
+    from scripts import generate_geo_industry_pages as geo
+
+    return {
+        f"/audiences/{pref_slug}/{industry['slug']}/"
+        for pref_slug, _pref_ja in geo.PREFECTURES
+        for industry in geo.INDUSTRIES
+    }
+
+
+def _workflow_python_command_position(text: str, script: str) -> int | None:
+    match = re.search(
+        rf"(?m)^\s+python3?\s+{re.escape(script)}(?:\s|$)",
+        text,
+    )
+    return match.start() if match else None
+
+
+def _workflow_rsync_position(text: str) -> int | None:
+    match = re.search(r"(?m)^\s+rsync\s+-a\s+--delete\b", text)
+    return match.start() if match else None
+
+
+@lru_cache(maxsize=1)
+def _pages_workflows_generate_source_backed_targets() -> bool:
+    generators = (
+        "scripts/generate_geo_industry_pages.py",
+        "scripts/regen_structured_sitemap_and_llms_meta.py",
+    )
+    for workflow in PAGES_WORKFLOWS:
+        text = workflow.read_text(encoding="utf-8")
+        rsync_pos = _workflow_rsync_position(text)
+        if rsync_pos is None:
+            return False
+        for generator in generators:
+            pos = _workflow_python_command_position(text, generator)
+            if pos is None or pos > rsync_pos:
+                return False
+    return True
+
+
+def _is_generated_static_target_backed_by_source(url_path: str) -> bool:
+    if _has_docs_source(url_path):
+        return True
+    normalized = url_path if url_path.endswith("/") else f"{url_path}/"
+    return (
+        _pages_workflows_generate_source_backed_targets()
+        and normalized in _generated_audience_matrix_paths()
+    )
 
 
 def _active_status_states(body: str) -> set[str]:
@@ -764,6 +839,30 @@ def test_pages_artifact_no_longer_carries_structured_exclude_workaround() -> Non
     assert leaked == []
 
 
+def test_pages_artifacts_generate_source_backed_sitemap_targets_before_rsync() -> None:
+    """Generated sitemap URLs must be present in every Pages artifact."""
+    offenders: list[str] = []
+    generators = (
+        "scripts/generate_geo_industry_pages.py",
+        "scripts/regen_structured_sitemap_and_llms_meta.py",
+    )
+    for workflow in PAGES_WORKFLOWS:
+        text = workflow.read_text(encoding="utf-8")
+        rel = workflow.relative_to(REPO_ROOT).as_posix()
+        rsync_pos = _workflow_rsync_position(text)
+        if rsync_pos is None:
+            offenders.append(f"{rel}: missing rsync artifact build")
+            continue
+        for generator in generators:
+            pos = _workflow_python_command_position(text, generator)
+            if pos is None:
+                offenders.append(f"{rel}: missing run command for {generator}")
+            elif pos > rsync_pos:
+                offenders.append(f"{rel}: {generator} runs after rsync")
+
+    assert offenders == []
+
+
 def test_public_readiness_surfaces_do_not_link_to_missing_static_targets() -> None:
     site_root = REPO_ROOT / "site"
     offenders: list[str] = []
@@ -795,6 +894,8 @@ def test_public_readiness_surfaces_do_not_link_to_missing_static_targets() -> No
                 or (target.suffix == "" and target.with_suffix(".html").exists())
                 or (target / "index.html").exists()
             )
+            if not exists and _is_generated_static_target_backed_by_source(parsed.path):
+                continue
             if not exists:
                 offenders.append(
                     f"{path.relative_to(REPO_ROOT)}: {tag}[{attr}]={raw_url} -> missing {target.relative_to(site_root)}"
@@ -866,13 +967,17 @@ def test_robots_sitemap_block_aligns_with_sitemap_index() -> None:
 
 
 def test_sitemap_shards_only_reference_existing_static_targets() -> None:
-    """Every <loc> in every sitemap shard must resolve to a file on disk.
+    """Every <loc> must resolve to disk or a source-backed generated target.
 
     Drift between sitemap entries and `site/` files causes crawlers to fetch
     404s, which is logged as a soft 404 in Google Search Console and burns
     crawl budget. We map each URL back to a candidate static file using the
     same rules Cloudflare Pages applies: ``/foo`` -> ``foo.html`` or
     ``foo/index.html``; ``/foo/`` -> ``foo/index.html``.
+
+    MkDocs output and prefecture × industry audience pages are gitignored and
+    generated after the pytest shard in CI. Those URLs stay valid when their
+    source docs or generator constants exist.
 
     External URLs (e.g. links to docs JSON / llms.txt under different roots)
     are skipped — only same-host pages are reachability-checked.
@@ -913,6 +1018,8 @@ def test_sitemap_shards_only_reference_existing_static_targets() -> None:
                     site_root / stripped,
                 ]
             if not any(c.exists() for c in candidates):
+                if _is_generated_static_target_backed_by_source(url_path):
+                    continue
                 offenders.append(f"{shard.name}: {url_path}")
                 if len(offenders) > 20:
                     offenders.append("... truncated")

@@ -16,7 +16,7 @@ Constraints honoured:
 - LLM API call count = 0 (no `anthropic` / `openai` import; pure static checks).
 - Stdlib + pytest + sqlglot + jsonschema + PyYAML only.
 - Network calls limited to gh CLI subprocess (`check_gh_api`); skipped when
-  `JPCITE_OFFLINE=1` (CI sets this for hermetic mode).
+  `JPCITE_OFFLINE=1` or when GitHub Actions has no token exposed.
 - jpcite scope only - paths assume repo root.
 
 Author: session A lane (Wave 17 draft).
@@ -345,11 +345,31 @@ def check_gh_api(command: str, expected: str) -> CheckResult:
         return CheckResult(True, "offline mode, skipped", automated=False)
     if shutil.which("gh") is None:
         return CheckResult(False, "gh CLI missing", automated=False)
+    env = os.environ.copy()
+    if not env.get("GH_TOKEN") and env.get("GITHUB_TOKEN"):
+        env["GH_TOKEN"] = env["GITHUB_TOKEN"]
+    if env.get("GITHUB_ACTIONS") == "true" and not env.get("GH_TOKEN"):
+        return CheckResult(True, "GitHub Actions without GH_TOKEN, skipped", automated=False)
     try:
-        proc = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=30)
+        proc = subprocess.run(
+            command,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            cwd=str(REPO_ROOT),
+            env=env,
+        )
     except subprocess.TimeoutExpired:
         return CheckResult(False, "gh timeout")
     if proc.returncode != 0:
+        stderr = proc.stderr[:200]
+        if proc.returncode == 4 and (
+            "GH_TOKEN" in proc.stderr
+            or "not logged" in proc.stderr.lower()
+            or "authentication" in proc.stderr.lower()
+        ):
+            return CheckResult(False, f"gh auth unavailable: {stderr}", automated=False)
         return CheckResult(False, f"gh rc={proc.returncode}: {proc.stderr[:200]}")
     out = proc.stdout.strip().strip('"')
     if out != expected:

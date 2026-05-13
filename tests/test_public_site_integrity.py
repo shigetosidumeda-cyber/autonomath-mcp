@@ -9,6 +9,44 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SITE = REPO_ROOT / "site"
 
 
+def _mkdocs_source_candidates_for_url_path(url_path: str) -> list[Path]:
+    if url_path in {"/docs", "/docs/"}:
+        return [REPO_ROOT / "docs" / "index.md"]
+    if not url_path.startswith("/docs/"):
+        return []
+
+    rel = url_path.removeprefix("/docs/").strip("/")
+    if not rel or Path(rel).suffix:
+        return []
+    return [
+        REPO_ROOT / "docs" / f"{rel}.md",
+        REPO_ROOT / "docs" / rel / "index.md",
+        REPO_ROOT / "docs" / rel / "README.md",
+    ]
+
+
+def _mkdocs_source_for_generated_path(path: Path) -> Path | None:
+    try:
+        rel = path.relative_to(SITE / "docs")
+    except ValueError:
+        return None
+    if rel.name != "index.html":
+        return None
+
+    url_path = "/docs/"
+    parent = rel.parent.as_posix()
+    if parent != ".":
+        url_path = f"/docs/{parent}/"
+    for candidate in _mkdocs_source_candidates_for_url_path(url_path):
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _is_source_backed_site_url(url_path: str) -> bool:
+    return any(path.exists() for path in _mkdocs_source_candidates_for_url_path(url_path))
+
+
 def _site_path_for_url(url: str) -> Path | None:
     parsed = urlparse(url)
     if parsed.netloc and parsed.netloc != "jpcite.com":
@@ -60,6 +98,8 @@ def test_llms_full_top_search_anchors_resolve() -> None:
     for url in urls:
         path = _site_path_for_url(url)
         if path is not None and not path.exists():
+            if _is_source_backed_site_url(urlparse(url).path):
+                continue
             missing.append(f"{url} -> {path.relative_to(REPO_ROOT)}")
     assert missing == []
 
@@ -151,6 +191,8 @@ def test_public_openapi_and_api_reference_hide_operational_surfaces() -> None:
     )
     offenders: list[str] = []
     for path in public_targets:
+        if not path.exists() and _mkdocs_source_for_generated_path(path) is not None:
+            continue
         text = path.read_text(encoding="utf-8")
         if match := banned.search(text):
             offenders.append(f"{path.relative_to(REPO_ROOT)}: {match.group(0)}")

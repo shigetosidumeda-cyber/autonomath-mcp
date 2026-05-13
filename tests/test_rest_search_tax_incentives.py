@@ -99,3 +99,47 @@ def test_tax_incentives_combined_lang_en_and_fdi_true(client):
         meta = body.get("meta") or {}
         assert meta.get("lang") == "en"
         assert meta.get("foreign_capital_eligibility_filter") is True
+
+
+def test_tax_incentives_lang_meta_survives_tool_error(client, monkeypatch):
+    """Even DB-error envelopes must echo REST query metadata when status is 200."""
+    from jpintel_mcp.api import autonomath
+    from jpintel_mcp.mcp.autonomath_tools.error_envelope import make_error
+
+    def fake_l4_get_or_compute_safe(**kwargs):
+        return kwargs["compute"]()
+
+    def fake_search_tax_incentives(**kwargs):
+        return make_error(
+            code="db_unavailable",
+            message="autonomath db unavailable",
+            limit=kwargs.get("limit", 20),
+            offset=kwargs.get("offset", 0),
+        )
+
+    monkeypatch.setattr(
+        autonomath,
+        "_l4_get_or_compute_safe",
+        fake_l4_get_or_compute_safe,
+    )
+    monkeypatch.setattr(
+        autonomath.tools,
+        "search_tax_incentives",
+        fake_search_tax_incentives,
+    )
+
+    r = client.get(
+        "/v1/am/tax_incentives",
+        params={
+            "lang": "en",
+            "foreign_capital_eligibility": "true",
+            "limit": 5,
+        },
+    )
+
+    assert r.status_code == 200, r.text
+    body = r.json()
+    meta = body.get("meta") or {}
+    assert body.get("error", {}).get("code") == "db_unavailable"
+    assert meta.get("lang") == "en"
+    assert meta.get("foreign_capital_eligibility_filter") is True

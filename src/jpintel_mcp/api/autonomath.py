@@ -601,6 +601,13 @@ def rest_search_tax_incentives(
     # is always current, never stale-cached.
     if isinstance(body, dict):
         body = dict(body)
+        meta = body.get("meta")
+        meta = dict(meta) if isinstance(meta, dict) else {}
+        if meta.get("lang") is None:
+            meta["lang"] = lang
+        if meta.get("foreign_capital_eligibility_filter") is None:
+            meta["foreign_capital_eligibility_filter"] = bool(foreign_capital_eligibility)
+        body["meta"] = meta
         body["_disclaimer"] = _TAX_DISCLAIMER
     log_usage(conn, ctx, "am.tax_incentives.search", strict_metering=True)
     return JSONResponse(content=body)

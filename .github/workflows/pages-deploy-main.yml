@@ -12,11 +12,10 @@
 #     pulls Fly data and rebuilds generated artifacts. Heavy.
 #   - `pages-regenerate.yml` regenerates per-program / per-prefecture
 #     pages from the live SQLite (≈8-12 min wall) on a nightly cron.
-#   - This file (`pages-deploy-main.yml`) is the lightweight "ship the
-#     committed `site/` tree plus rebuilt MkDocs docs" path: no Fly fetch,
-#     no DB rebuild — just docs build, rsync, JSON validate, and Pages
-#     deploy. This is the CI equivalent of the operator workflow
-#     documented in `tools/offline/_inbox/HANDOFF_2026_05_07_FRONTEND_DEPLOY_STOP.md`.
+#   - This file (`pages-deploy-main.yml`) is the push-to-main production
+#     publish path. It still hydrates Fly data before rsync because robots.txt
+#     advertises generated sitemap shards; deploying without regenerated pages
+#     would create public 404s.
 #
 # Required GitHub repository secrets (canonical names match the existing
 # pages-preview.yml / pages-regenerate.yml convention — DO NOT introduce
@@ -25,6 +24,7 @@
 #                    Account → Cloudflare Pages → Edit
 #                  Create at https://dash.cloudflare.com/profile/api-tokens
 #   CF_ACCOUNT_ID  Cloudflare account ID (right sidebar of any CF dashboard).
+#   FLY_API_TOKEN  Fly.io deploy token used to hydrate generated static pages.
 #
 # Project name: autonomath (CF Pages dashboard project, verified 2026-05-01).
 #   Canonical domain: jpcite.com.
@@ -34,7 +34,7 @@
 #   Redirect Rules must 301 them to apex before duplicate HTML is served.
 #
 # Usage:
-#   - Push to main → auto-deploy committed site/ tree.
+#   - Push to main → auto-deploy the regenerated Pages artifact.
 #   - Manual: gh workflow run pages-deploy-main.yml.
 #
 # Constraint per CLAUDE.md: never push with --no-verify; pre-commit hooks
@@ -58,6 +58,20 @@ on:
       - "scripts/check_openapi_drift.py"
       - "scripts/export_agent_openapi.py"
       - "scripts/export_openapi.py"
+      - "scripts/generate_program_pages.py"
+      - "scripts/generate_prefecture_pages.py"
+      - "scripts/generate_geo_industry_pages.py"
+      - "scripts/generate_cross_hub_pages.py"
+      - "scripts/generate_geo_program_pages.py"
+      - "scripts/generate_industry_hub_pages.py"
+      - "scripts/generate_industry_program_pages.py"
+      - "scripts/generate_compare_pages.py"
+      - "scripts/generate_public_counts.py"
+      - "scripts/generate_og_images.py"
+      - "scripts/regen_llms_full.py"
+      - "scripts/regen_llms_full_en.py"
+      - "scripts/regen_structured_sitemap_and_llms_meta.py"
+      - "scripts/sitemap_gen.py"
       - ".github/workflows/pages-deploy-main.yml"
   workflow_dispatch: {}
 
@@ -71,7 +85,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy committed site/ to Cloudflare Pages
+    name: Deploy regenerated site/ to Cloudflare Pages
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -86,13 +100,34 @@ jobs:
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
           set -euo pipefail
           if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
             echo "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required for Cloudflare Pages production deploy."
             exit 1
           fi
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::error::FLY_API_TOKEN is required so generated sitemap targets are present in the Pages artifact."
+            exit 1
+          fi
           echo "available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Install flyctl
+        if: steps.cf-secrets.outputs.available == 'true'
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Pull latest jpintel.db for generated public artifacts
+        if: steps.cf-secrets.outputs.available == 'true'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          flyctl ssh console -a autonomath-api -C \
+            "sqlite3 /data/jpintel.db \".backup /data/jpintel.pages.db\""
+          flyctl ssh sftp get /data/jpintel.pages.db -a autonomath-api
+          mv jpintel.pages.db data/jpintel.db
 
       - name: Build docs (MkDocs Material → site/docs/)
         if: steps.cf-secrets.outputs.available == 'true'
@@ -110,6 +145,57 @@ jobs:
           # a follow-up by appending /index.md (or absolute URLs) to the 30
           # recipes/rXX-*/index.md cross-references.
           python3 -m mkdocs build
+
+      - name: Regenerate generated public artifacts
+        if: steps.cf-secrets.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/generate_program_pages.py \
+            --db data/jpintel.db \
+            --out site/programs \
+            --domain jpcite.com \
+            --sitemap site/sitemap-programs.xml \
+            --tiers S,A,B,C \
+            --verbose
+          python3 scripts/generate_prefecture_pages.py \
+            --db data/jpintel.db \
+            --out site/prefectures \
+            --domain jpcite.com \
+            --sitemap site/sitemap-prefectures.xml
+          python3 scripts/generate_geo_industry_pages.py \
+            --db data/jpintel.db \
+            --out site/audiences \
+            --domain jpcite.com \
+            --sitemap site/sitemap-audiences.xml
+          python3 scripts/generate_cross_hub_pages.py \
+            --db data/jpintel.db \
+            --out site/cross \
+            --domain jpcite.com \
+            --sitemap site/sitemap-cross.xml
+          python3 scripts/generate_geo_program_pages.py \
+            --db data/jpintel.db \
+            --out site/cross \
+            --domain jpcite.com \
+            --top 50 \
+            --sitemap site/sitemap-cross-detail.xml
+          python3 scripts/generate_industry_hub_pages.py \
+            --db data/jpintel.db \
+            --out site/industries \
+            --domain jpcite.com \
+            --sitemap site/sitemap-industries.xml
+          python3 scripts/generate_industry_program_pages.py \
+            --db data/jpintel.db \
+            --out site/industries \
+            --domain jpcite.com \
+            --sitemap site/sitemap-industries-detail.xml \
+            --sitemap-index site/sitemap-index.xml
+          python3 scripts/generate_compare_pages.py
+          python3 scripts/generate_og_images.py --out-dir site/assets
+          python3 scripts/generate_public_counts.py
+          python3 scripts/regen_llms_full.py --db data/jpintel.db --out site/llms-full.txt
+          python3 scripts/regen_llms_full_en.py --db data/jpintel.db --out site/llms-full.en.txt
+          python3 scripts/regen_structured_sitemap_and_llms_meta.py
+          python3 scripts/sitemap_gen.py --site-dir site --domain jpcite.com
 
       - name: Run deploy drift gates
         if: steps.cf-secrets.outputs.available == 'true'

@@ -178,7 +178,14 @@ def test_feed_empty_when_no_subscriptions(client, feed_key):
     assert body["results"] == []
 
 
-def test_feed_atom_format(client, feed_key):
+def test_feed_atom_format(client, feed_key, monkeypatch):
+    # This is an Atom rendering test, not a production autonomath.db
+    # availability test. Missing autonomath.db should stay a 503 in the app;
+    # CI gets a tiny seeded diff DB here instead of the 9.4 GB corpus.
+    from jpintel_mcp.api import amendment_alerts as mod
+
+    monkeypatch.setattr(mod, "connect_autonomath", _stub_amendment_diff_conn)
+
     # Subscribe first so the feed has at least one watch in scope.
     sub_r = client.post(
         "/v1/me/amendment_alerts/subscribe",

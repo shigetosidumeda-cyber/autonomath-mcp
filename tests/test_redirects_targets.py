@@ -27,6 +27,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SITE_ROOT = REPO_ROOT / "site"
+DOCS_ROOT = REPO_ROOT / "docs"
 REDIRECTS = SITE_ROOT / "_redirects"
 
 # Legacy SEO bridges: intentionally redirect away even though the source path
@@ -72,6 +73,56 @@ HTML_STRIPPING_TARGETS: tuple[str, ...] = (
 )
 
 
+def _docs_source_candidates(path_only: str) -> list[Path]:
+    """MkDocs output is gitignored; validate redirect targets against sources.
+
+    Pages workflows rebuild `site/docs/` from `docs/`, so `/docs/*` targets are
+    valid if the matching Markdown page or copied static asset exists.
+    """
+    if path_only == "/docs":
+        path_only = "/docs/"
+    if path_only == "/docs/":
+        return [DOCS_ROOT / "index.md"]
+    if not path_only.startswith("/docs/"):
+        return []
+
+    rel = path_only.removeprefix("/docs/")
+    if rel == "":
+        return [DOCS_ROOT / "index.md"]
+
+    if rel.endswith("/"):
+        stem = rel.rstrip("/")
+        return [
+            DOCS_ROOT / stem / "index.md",
+            DOCS_ROOT / f"{stem}.md",
+        ]
+
+    rel_path = Path(rel)
+    candidates = [DOCS_ROOT / rel_path]
+    if rel_path.suffix == "":
+        candidates.extend(
+            (
+                DOCS_ROOT / f"{rel}.md",
+                DOCS_ROOT / rel_path / "index.md",
+                DOCS_ROOT / rel_path / "README.md",
+            )
+        )
+    elif rel_path.suffix == ".html":
+        markdown_source = rel_path.with_suffix(".md")
+        directory_source = rel_path.with_suffix("")
+        candidates.extend(
+            (
+                DOCS_ROOT / markdown_source,
+                DOCS_ROOT / directory_source / "index.md",
+            )
+        )
+    return candidates
+
+
+def _has_docs_source(path_only: str) -> bool:
+    return any(path.is_file() for path in _docs_source_candidates(path_only))
+
+
 def _parse_redirects() -> list[tuple[int, str, str, str]]:
     """Return (lineno, source, target, status) for every non-comment line."""
     rows: list[tuple[int, str, str, str]] = []
@@ -99,10 +150,14 @@ def _is_legacy_bridge(source: str) -> bool:
 
 
 def _target_exists_on_disk(target: str) -> bool:
-    """Mirror CF Pages resolution: literal match first, then `.html` stripping,
-    then directory `index.html`, then declared pattern sample fallback."""
+    """Mirror CF Pages resolution plus the Pages workflow's MkDocs build:
+    `/docs/*` source fallback, literal match, `.html` stripping, directory
+    `index.html`, then declared pattern sample fallback."""
     # Strip leading slash + any query/fragment for filesystem lookup.
     path_only = target.split("?", 1)[0].split("#", 1)[0]
+
+    if _has_docs_source(path_only):
+        return True
 
     # Root: site/index.html
     if path_only in ("/", ""):
@@ -135,10 +190,7 @@ def _target_exists_on_disk(target: str) -> bool:
         return True
 
     # Whitelisted .html-stripping targets (covers /404 → /404.html, /en/ root etc.)
-    if path_only in HTML_STRIPPING_TARGETS:
-        return True
-
-    return False
+    return path_only in HTML_STRIPPING_TARGETS
 
 
 @pytest.fixture(scope="module")
@@ -248,9 +300,8 @@ def test_redirect_pattern_syntax_is_cf_pages_compatible(
             offenders.append(f"line {lineno}: source is host-level — {source!r}")
         if bad_chars.search(source):
             offenders.append(f"line {lineno}: regex chars in source — {source!r}")
-        if "://" in target:
+        if "://" in target and "jpcite.com" in target:
             # External targets are legitimate (rare), but flag if they hit our
             # own apex without a status code (would be a circular SEO leak).
-            if "jpcite.com" in target:
-                offenders.append(f"line {lineno}: target points back at apex — {target!r}")
+            offenders.append(f"line {lineno}: target points back at apex — {target!r}")
     assert offenders == [], "\n".join(offenders)
