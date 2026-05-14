@@ -89,7 +89,7 @@ def test_stated_baseline_is_near_public_comparisons(public_texts: dict[str, str]
 
 def test_pricing_page_uses_safe_comparison_section(public_texts: dict[str, str]) -> None:
     pricing_html = public_texts["pricing.html"]
-    assert "API 料金差額の参考比較" in pricing_html
+    assert "入力文脈量の参考比較" in pricing_html
     assert "外部 provider の token + search API fee" in pricing_html
     assert "API fee delta <strong>¥477</strong>" in pricing_html
     assert "~10x" not in pricing_html

@@ -1431,7 +1431,11 @@ pre code { word-break: normal; }
   .demo-note code { background: var(--bg-alt); }
   .trust-strip-blocks li { background: var(--bg-alt); }
   .footer-brand img[src$="jpcite-mark.svg"] {
-    filter: invert(1) brightness(1.25);
+    background: #fff;
+    border-radius: 4px;
+    box-sizing: border-box;
+    filter: none;
+    padding: 2px;
   }
   .newsletter-form input[type="email"] { background: var(--bg-alt); }
   .ps-card { background: var(--bg-alt); }

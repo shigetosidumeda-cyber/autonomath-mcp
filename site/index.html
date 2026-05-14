@@ -483,12 +483,12 @@
 	 </section>
 
 	 <section aria-labelledby="token-cost-title" style="margin:24px 0 18px;padding:18px 20px;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:var(--bg,#fff);">
-	 <p style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 8px;">Why this can be cheaper than sending long source text to an LLM</p>
+		 <p style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 8px;">Why this reduces repeated document-token input before LLM answers</p>
 	 <h2 id="token-cost-title" style="font-size:20px;line-height:1.35;margin:0 0 10px;">長い資料を毎回 AI に読ませず、必要な根拠だけを小さな packet にして渡します。</h2>
 	 <p style="font-size:14px;line-height:1.75;margin:0 0 12px;color:var(--text);">長文投入型の AI ワークフローは、検索で拾った長文 chunk をそのまま LLM に投入しがちです。jpcite は回答生成をせず、一次資料 URL・取得時刻・known gaps・引用候補だけを Evidence Packet として返します。AI 側はその短い根拠束を読むだけなので、反復業務では入力 token、遅延、出典確認のやり直しを減らせます。</p>
 	 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;font-size:13px;line-height:1.65;">
 	 <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);"><strong>長文資料を毎回 LLM に渡す場合</strong><br>LLM cost ≒ raw docs tokens × model input price + output tokens。資料量が増えるほど毎回の入力 cost が膨らみます。</div>
-	 <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);"><strong>jpcite</strong><br>Cost ≒ jpcite ¥3/billable unit + Evidence Packet を読む少量 token。根拠取得と LLM 推論の費用を分けて管理できます。</div>
+		 <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);"><strong>jpcite</strong><br>jpcite fee は根拠取得 1 billable unit = ¥3。外部 LLM の token / search 費用は利用者側の model、cache、tool 設定に依存します。</div>
 	 </div>
 	 <p style="font-size:13px;line-height:1.65;color:var(--text-muted);margin:12px 0 0;">このコスト比較は、外部 provider の token + search API fee と jpcite fee だけを見る前提付きの参考です。小さな一回限りの質問では無料検索の方が安い場合があります。jpcite が効くのは、同じ種類の公的根拠確認を何度も行う agent、士業・経理・DD・審査ワークフローです。</p>
 	 </section>
@@ -899,7 +899,7 @@
  <section class="code-demo" aria-labelledby="curl-title" id="curl-try" style="padding-top:48px;padding-bottom:32px;">
  <div class="container">
  <h2 id="curl-title" class="section-title">登録不要で試す — 3 回の無料ライブ検証</h2>
- <p class="demo-lead" style="margin:-16px 0 16px;"><span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> 回/日まで無料、 API キー不要。 1 回目で制度候補、 2 回目で Evidence Packet と事前算出バンドル、 3 回目で採算ライン到達判定を含む入力文脈削減見込みを確認します。</p>
+ <p class="demo-lead" style="margin:-16px 0 16px;"><span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> 回/日まで無料、 API キー不要。 1 回目で制度候補、 2 回目で Evidence Packet と事前算出バンドル、 3 回目で入力文脈の参考比較を確認します。</p>
 
  <h3 style="font-size:15px;margin:18px 0 8px;color:var(--text);">1 回目: 制度候補と出典 URL を確認</h3>
  <div class="curl-try" style="margin:0 0 8px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
@@ -914,9 +914,9 @@
  <pre style="flex:1 1 auto;min-width:0;margin:0;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5;"><code id="curl-snippet-evidence">curl 'https://api.jpcite.com/v1/intelligence/precomputed/query?q=%E7%9C%81%E5%8A%9B%E5%8C%96&amp;limit=5'</code></pre>
  <button id="curl-copy-btn-evidence" type="button" class="btn-ghost" data-copy-target="curl-snippet-evidence" style="flex:0 0 auto;">コピー</button>
  </div>
- <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">事前計算済み Evidence Packet を返します。 LLM 呼び出しもライブの Web 検索も行われません。 呼び出し元が比較基準を指定しない限り、 削減見込みは表示されません。</p>
+ <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">事前計算済み Evidence Packet を返します。 LLM 呼び出しもライブの Web 検索も行われません。 呼び出し元が比較基準を指定しない限り、 cost delta は表示されません。</p>
 
- <h3 style="font-size:15px;margin:14px 0 8px;color:var(--text);">3 回目: 入力文脈の削減率と採算ライン到達 (break-even) 判定を返す</h3>
+ <h3 style="font-size:15px;margin:14px 0 8px;color:var(--text);">3 回目: 入力文脈の参考比較と break-even 判定を返す</h3>
  <div class="curl-try" style="margin:0 0 8px;display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;">
  <pre style="flex:1 1 auto;min-width:0;margin:0;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5;"><code id="curl-snippet-compress">curl 'https://api.jpcite.com/v1/intelligence/precomputed/query?q=%E7%9C%81%E5%8A%9B%E5%8C%96&amp;limit=5&amp;source_tokens_basis=pdf_pages&amp;source_pdf_pages=30&amp;input_token_price_jpy_per_1m=300'</code></pre>
  <button id="curl-copy-btn-compress" type="button" class="btn-ghost" data-copy-target="curl-snippet-compress" style="flex:0 0 auto;">コピー</button>
@@ -985,7 +985,7 @@
  <style>
         .ps-field-help { display:block; margin-top:4px; font-size:0.85em; color:#5b6370; line-height:1.4; }
         .ps-required-mark { color:#c0392b; margin-left:4px; font-weight:bold; }
-        .ps-field-help code { background:#f4f6f8; padding:1px 4px; border-radius:3px; font-size:0.95em; }
+	        .ps-field-help code { background:var(--bg-alt); color:var(--text); border:1px solid var(--border); padding:1px 4px; border-radius:3px; font-size:0.95em; }
         .ps-noscript { background:var(--bg-alt); border:1px solid var(--border); border-radius:6px; padding:12px 16px; margin-bottom:16px; color:var(--text); }
       </style>
  <div class="ps-card">
@@ -1101,9 +1101,9 @@
  </article>
 
  <article class="card">
- <h3>自前運用を減らす</h3>
+	 <h3>自前データ基盤を持たずに使う</h3>
  <p class="card-lead">スクレイパ・正規化・差分検出・出典管理</p>
- <p>同等のデータ層を自前で組むには、 省庁・自治体・公庫の公開ページのスクレイパ運用、 スキーマ正規化、 法令改正の差分検出、 出典 URL の生存監視、 集約サイト誤掲載の排除を、 継続して維持する必要があります。 jpcite は ¥3/課金単位 の従量で、 開発・運用工数を肩代わりします。</p>
+	 <p>同等のデータ層を自前で組むには、 省庁・自治体・公庫の公開ページの継続収集、 スキーマ正規化、 法令改正の差分検出、 出典 URL の生存監視、 集約サイト誤掲載の排除を維持する必要があります。 jpcite は ¥3/課金単位 の従量で、 継続収集・正規化済みの evidence API として使えます。</p>
  </article>
 
  </div>

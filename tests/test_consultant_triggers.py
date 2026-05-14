@@ -39,6 +39,10 @@ from jpintel_mcp.billing.keys import issue_key
 # ---------------------------------------------------------------------------
 
 
+def _jst_today() -> date:
+    return (datetime.now(UTC) + timedelta(hours=9)).date()
+
+
 @pytest.fixture()
 def consultant_key(seeded_db: Path) -> str:
     c = sqlite3.connect(seeded_db)
@@ -641,7 +645,7 @@ def _seed_intention_with_milestone(
         program_id = "UNI-test-s-1"  # exists in seeded_db
         # awarded_at = today - 30. days_after_award = 30 + days_out.
         # → deadline = today + days_out.
-        today = date.today()
+        today = _jst_today()
         awarded = (today - timedelta(days=30)).isoformat()
         c.execute(
             "INSERT INTO program_post_award_calendar("

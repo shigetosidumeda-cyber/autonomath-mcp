@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
@@ -31,6 +31,10 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 
+def _jst_today() -> date:
+    return (datetime.now(UTC) + timedelta(hours=9)).date()
+
+
 @pytest.fixture()
 def seeded_db_with_deadlines(seeded_db: Path):
     """Stamp application_window_json onto each seeded row:
@@ -44,7 +48,7 @@ def seeded_db_with_deadlines(seeded_db: Path):
     nulls the column back out so later tests (which share the session-scoped
     seeded_db) see the original empty state.
     """
-    today = date.today()
+    today = _jst_today()
     ends = {
         "UNI-test-s-1": (today + timedelta(days=10)).isoformat(),
         "UNI-test-a-1": (today + timedelta(days=50)).isoformat(),
