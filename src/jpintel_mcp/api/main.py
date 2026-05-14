@@ -961,6 +961,14 @@ def _sanitize_openapi_public_text(text: str) -> str:
         flags=re.S,
     )
     replacements = [
+        (r"\bEvery tool response carries\b", "Evidence-oriented tool responses include"),
+        (r"\bevery response carries\b", "covered responses include"),
+        (r"\bevery response surfaces\b", "covered responses surface"),
+        (r"\benvelope on every response\b", "envelope on covered responses"),
+        (
+            r"\battribution baked into every response\b",
+            "attribution included in covered responses",
+        ),
         (r"info@bookyou\.net", "jpcite support"),
         (r"Bookyou株式会社", "jpcite operator"),
         (r"Bookyou Inc\.", "jpcite operator"),
@@ -1240,6 +1248,14 @@ _OPENAPI_LEAK_REPLACEMENTS_RUNTIME: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bmigrations?\s+\d+(?:[-/]\d+)+\b", re.IGNORECASE), "schema update"),
     (re.compile(r"\bmigration\s+\d+\b", re.IGNORECASE), "schema update"),
     (re.compile(r"\bmig\s+\d+\b", re.IGNORECASE), "schema update"),
+    (re.compile(r"\bEvery tool response carries\b", re.IGNORECASE), "Evidence-oriented tool responses include"),
+    (re.compile(r"\bevery response carries\b", re.IGNORECASE), "covered responses include"),
+    (re.compile(r"\bevery response surfaces\b", re.IGNORECASE), "covered responses surface"),
+    (re.compile(r"\benvelope on every response\b", re.IGNORECASE), "envelope on covered responses"),
+    (
+        re.compile(r"\battribution baked into every response\b", re.IGNORECASE),
+        "attribution included in covered responses",
+    ),
     (re.compile(r"`?scripts/cron/[A-Za-z0-9_./-]+`?"), "scheduled job"),
     (re.compile(r"`?scripts/etl/[A-Za-z0-9_./-]+`?"), "background ETL"),
     (re.compile(r"`?scripts/migrations/[A-Za-z0-9_./-]+`?"), "schema update"),
@@ -3153,12 +3169,12 @@ def create_app() -> FastAPI:
         schema["tags"] = [
             {
                 "name": "programs",
-	                "description": (
-	                    "Search and detail-lookup over the unified Japanese "
-	                    "public-program corpus (補助金 / 助成金 / 融資 / 税制 / 認定). "
-	                    "Use after evidence preflight when the caller needs targeted "
-	                    "program search or detail lookup."
-	                ),
+                "description": (
+                    "Search and detail-lookup over the unified Japanese "
+                    "public-program corpus (補助金 / 助成金 / 融資 / 税制 / 認定). "
+                    "Use after evidence preflight when the caller needs targeted "
+                    "program search or detail lookup."
+                ),
             },
             {
                 "name": "jpcite",
