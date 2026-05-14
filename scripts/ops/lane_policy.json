@@ -28,6 +28,7 @@
         ".github/workflows/",
         "benchmarks/",
         "docs/",
+        "sdk/agents/",
         "site/",
         "tests/",
         "pyproject.toml",
