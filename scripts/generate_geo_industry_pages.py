@@ -1220,7 +1220,7 @@ def render_page(
 <link rel="alternate" hreflang="ja" href="{canonical}">
 <link rel="alternate" hreflang="x-default" href="{canonical}">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 
 <script type="application/ld+json">
 {json_ld}
@@ -1451,7 +1451,7 @@ def _render_index_fallback(domain: str, matrix_html: str) -> str:
 <title>利用者層 — jpcite</title>
 <meta name="description" content="47 都道府県 × 22 業種の制度マトリクス。jpcite が一次資料から集約。">
 <link rel="canonical" href="https://{domain}/audiences/">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 </head>
 <body>
 <header class="site-header" role="banner">

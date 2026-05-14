@@ -29,7 +29,7 @@
 
 # Pricing
 
-jpcite は Evidence prefetch layer です。長い PDF・複数の官公庁ページ・検索結果を LLM へ渡す前に、出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返し、回答に必要な根拠確認を短くします。caller supplied baseline がある場合は、入力文脈量の削減見込みと break-even もあわせて確認できます。
+jpcite は RAG の置き換えではなく、AI が読む前の制度データ圧縮レイヤーです。長い PDF・複数の官公庁ページ・検索結果を LLM へ毎回渡す前に、出典 URL・取得時刻・known gaps・互換/排他ルール付きの小さい Evidence Packet を返し、回答に必要な根拠確認を短くします。caller supplied baseline がある場合は、入力文脈量の削減見込みと break-even もあわせて確認できます。
 
 完全従量。tier プラン無し、最低額無し、契約無し。必要に応じて利用側で月次上限を設定してください。
 
@@ -59,6 +59,8 @@ AI agent / 士業システム / 社内ワークフローで反復利用する場
 - **顧客別原価管理:** 士業 / AI agent / 社内ワークフローは `X-Client-Tag` で顧問先・会社フォルダ・案件ごとに利用量を分ける
 
 価格判断では、jpcite を「安い検索API」としてではなく、source URL、取得時刻、known gaps、compatibility / exclusion rule、source receipts を含む Evidence layer として評価してください。外部 LLM の token / search / cache / tool 料金削減は保証しません。
+
+Claude Agent SDK / `claude -p` / GitHub Actions での反復利用では、「AIだけで調べるより安い」と表現するより、毎回 PDF と検索を投げる前に根拠付きの小さい入力へ変換する、と説明してください。jpcite のレスポンスは `jpcite_cost_jpy`、`estimated_tokens_saved`、`source_count`、`known_gaps` を返すため、agent 側は Claude 側の月次クレジットや API 請求仕様に合わせて、呼ぶ価値があるケースだけ packet を渡せます。
 
 ## 無料 3 回で確認すること
 

@@ -180,6 +180,8 @@ def test_compose_full_inputs_produces_full_block() -> None:
     assert result["source_tokens_estimate"] == 30 * 700
     assert isinstance(result["avoided_tokens_estimate"], int)
     assert result["avoided_tokens_estimate"] >= 0
+    assert result["estimated_tokens_saved"] == result["avoided_tokens_estimate"]
+    assert result["jpcite_cost_jpy"] == 3
     assert isinstance(result["compression_ratio"], float)
     assert 0 < result["compression_ratio"] <= 1
     assert result["input_context_reduction_rate"] == round(
@@ -191,6 +193,7 @@ def test_compose_full_inputs_produces_full_block() -> None:
     assert savings["currency"] == "JPY"
     assert savings["input_token_price_jpy_per_1m"] == 300.0
     assert savings["jpcite_billable_units"] == 1
+    assert savings["jpcite_cost_jpy"] == 3
     assert savings["jpcite_cost_jpy_ex_tax"] == 3
     assert savings["break_even_avoided_tokens"] == 10000
     assert savings["break_even_source_tokens_estimate"] == (

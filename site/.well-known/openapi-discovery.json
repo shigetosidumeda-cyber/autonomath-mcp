@@ -99,8 +99,8 @@
       "path_count": 302,
       "ratelimit_anonymous": "3 req/day per IP",
       "ratelimit_authenticated": "metered ¥3/billable unit (税込 ¥3.30)",
-      "sha256_prefix": "32f79529ded35674",
-      "size_bytes": 1533722,
+      "sha256_prefix": "3d0ccd9e44d294f1",
+      "size_bytes": 1535050,
       "tier": "full",
       "url": "https://api.jpcite.com/v1/openapi.json"
     },
@@ -125,8 +125,8 @@
         "no_admin_paths",
         "no_pii_export"
       ],
-      "sha256_prefix": "7cb5919b0344f449",
-      "size_bytes": 546608,
+      "sha256_prefix": "62c5df1dd122e94d",
+      "size_bytes": 547936,
       "tier": "agent",
       "url": "https://jpcite.com/openapi.agent.json"
     },
@@ -139,8 +139,8 @@
       "description": "ChatGPT Custom GPT 30-path slim profile. OpenAI's Custom GPT Actions builder caps at 30 paths per spec; this profile is the curated minimum-viable evidence + search surface for that constraint.",
       "parent_tier": "agent",
       "path_count": 30,
-      "sha256_prefix": "dd931612249cfc7f",
-      "size_bytes": 383066,
+      "sha256_prefix": "b0f1303e6a9bcf3f",
+      "size_bytes": 384394,
       "tier": "gpt30",
       "url": "https://jpcite.com/openapi.agent.gpt30.json"
     }

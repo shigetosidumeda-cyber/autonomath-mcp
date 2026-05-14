@@ -1252,6 +1252,10 @@ class EvidencePacketComposer:
             "packet_tokens_estimate": compression.get("packet_tokens_estimate"),
             "source_tokens_estimate": compression.get("source_tokens_estimate"),
             "avoided_tokens_estimate": compression.get("avoided_tokens_estimate"),
+            "estimated_tokens_saved": compression.get(
+                "estimated_tokens_saved", compression.get("avoided_tokens_estimate")
+            ),
+            "jpcite_cost_jpy": compression.get("jpcite_cost_jpy"),
             "compression_ratio": compression.get("compression_ratio"),
             "input_context_reduction_rate": compression.get("input_context_reduction_rate"),
             "provider_billing_not_guaranteed": compression.get(
@@ -1263,6 +1267,9 @@ class EvidencePacketComposer:
             summary.update(
                 {
                     "input_token_price_jpy_per_1m": savings.get("input_token_price_jpy_per_1m"),
+                    "jpcite_cost_jpy": savings.get(
+                        "jpcite_cost_jpy", savings.get("jpcite_cost_jpy_ex_tax")
+                    ),
                     "break_even_avoided_tokens": savings.get("break_even_avoided_tokens"),
                     "break_even_source_tokens_estimate": savings.get(
                         "break_even_source_tokens_estimate"
@@ -1448,6 +1455,11 @@ class EvidencePacketComposer:
         """
         records_returned = len(records)
         source_linked = EvidencePacketComposer._source_linked_record_count(records)
+        source_urls = {
+            str(rec.get("source_url")).strip()
+            for rec in records
+            if isinstance(rec.get("source_url"), str) and str(rec.get("source_url")).strip()
+        }
         precomputed_records = sum(1 for rec in records if rec.get("precomputed"))
         pdf_fact_refs = sum(len(rec.get("pdf_fact_refs") or []) for rec in records)
 
@@ -1474,6 +1486,7 @@ class EvidencePacketComposer:
         return {
             "records_returned": records_returned,
             "source_linked_records": source_linked,
+            "source_count": len(source_urls),
             "precomputed_records": precomputed_records,
             "pdf_fact_refs": pdf_fact_refs,
             "known_gap_count": known_gap_count,
@@ -1866,6 +1879,27 @@ class EvidencePacketComposer:
                     verifications[(entity_id, source_url)] = dict(cit)
         citations = cls._build_citations_block(records, verifications)
         envelope["evidence_value"] = cls._build_evidence_value(envelope, records, citations)
+        cls._attach_output_convenience_fields(envelope)
+
+    @staticmethod
+    def _attach_output_convenience_fields(envelope: dict[str, Any]) -> None:
+        """Expose the small fields agents compare before spending LLM context."""
+        quality = envelope.get("quality")
+        gaps = quality.get("known_gaps") if isinstance(quality, dict) else []
+        envelope["known_gaps"] = gaps if isinstance(gaps, list) else []
+
+        evidence_value = envelope.get("evidence_value")
+        if isinstance(evidence_value, dict):
+            envelope["source_count"] = int(evidence_value.get("source_count") or 0)
+
+        compression = envelope.get("compression")
+        if isinstance(compression, dict):
+            envelope["estimated_tokens_saved"] = compression.get(
+                "estimated_tokens_saved", compression.get("avoided_tokens_estimate")
+            )
+            envelope["jpcite_cost_jpy"] = compression.get("jpcite_cost_jpy", 3)
+        else:
+            envelope.setdefault("jpcite_cost_jpy", 3)
 
     @classmethod
     def _refresh_projection_metadata(

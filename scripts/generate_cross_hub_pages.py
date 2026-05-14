@@ -292,7 +292,7 @@ def _render_hub(
 <link rel="alternate" hreflang="ja" href="{canonical}">
 <link rel="alternate" hreflang="x-default" href="{canonical}">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 <script type="application/ld+json">
 {json_ld_str}
 </script>

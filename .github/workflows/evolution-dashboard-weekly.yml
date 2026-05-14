@@ -7,7 +7,8 @@ name: evolution-dashboard-weekly
 # - Aggregates 12 axis × N signal status (healthy / degraded / broken)
 # - Emits analytics/evolution_dashboard_<YYYY-WW>.json
 # - Renders site/transparency/evolution.html (jinja2 template, 12 axis badge + 5 KPI plots)
-# - Auto-deploys static page to Cloudflare Pages
+# - Uploads static page as an artifact; production Pages deploy stays centralized
+#   in pages-deploy-main.yml so dashboard jobs cannot bypass deploy gates.
 # - On failure: SES email alert + GitHub issue auto-open
 # - LLM API import is FORBIDDEN; aggregator is stdlib + jinja2 + sqlite3 only.
 
@@ -27,7 +28,6 @@ on:
 
 permissions:
   contents: read
-  deployments: write
   issues: write
 
 concurrency:
@@ -94,26 +94,10 @@ jobs:
             site/transparency/evolution.html
           retention-days: 90
 
-      - name: Check Cloudflare Pages secrets
-        env:
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      - name: Production deploy handoff
         run: |
-          set -euo pipefail
-          if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
-            echo "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required for Cloudflare Pages deploy."
-            exit 1
-          fi
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: autonomath
-          directory: site
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          echo "Dashboard artifact uploaded only."
+          echo "Production Pages deploy is intentionally centralized in pages-deploy-main.yml."
 
   on-failure:
     needs: aggregate

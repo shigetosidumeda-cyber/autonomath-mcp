@@ -17,7 +17,7 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 
 <style>
   /* Mirror of styles.css palette (kept inline so status page works even if
@@ -371,8 +371,8 @@
  <span class="dot" aria-hidden="true">🟡</span>
  <div>
  <h2>限定運用 / Degraded</h2>
- <p>API・決済・ダッシュボードは応答中です。MCP は限定運用、データ鮮度は stale のため総合状態を限定運用としています。<br>
- API, billing, and dashboard are responding. MCP is degraded and data freshness is stale, so the overall status is Degraded.</p>
+ <p>決済・ダッシュボードは応答中です。API・MCP は限定運用、データ鮮度は stale のため総合状態を限定運用としています。<br>
+ Billing and dashboard are responding. API and MCP are degraded and data freshness is stale, so the overall status is Degraded.</p>
  </div>
  </section>
 
@@ -380,22 +380,22 @@
  <span class="dot" aria-hidden="true">🔴</span>
  <div>
  <h2>総合停止 / Overall Down (データ鮮度 stale)</h2>
- <p>API・決済・ダッシュボードは応答中です。MCP は限定運用、データ鮮度は stale のため総合状態を Down としています。<br>
- API, billing, and dashboard are responding. MCP is degraded and data freshness is stale, so the overall status is Down.</p>
+ <p>決済・ダッシュボードは応答中です。API・MCP は限定運用、データ鮮度は stale のため総合状態を Down としています。<br>
+ Billing and dashboard are responding. API and MCP are degraded and data freshness is stale, so the overall status is Down.</p>
  </div>
  </section>
 
  <p class="updated">
  最終更新 / Last updated:
-<code>2026-05-15T05:16:30+09:00 (status.json)</code>
+<code>2026-05-15T07:41:21+09:00 (status.json)</code>
  </p>
 
  <p class="fallback-note">
- 機械可読スナップショットでは API は応答中で、MCP は external_dependency_unavailable、データ鮮度は data_stale で限定運用です。
+ 機械可読スナップショットでは API と MCP は external_dependency_unavailable、データ鮮度は data_stale で限定運用です。
  決済とダッシュボードを含む詳細は <a href="/status/status.json"><code>/status/status.json</code></a> と <a href="/status/">/status/</a> を確認してください。
  <br>
- The machine-readable snapshot shows the API responding, with MCP marked
- external_dependency_unavailable and data freshness marked data_stale.
+ The machine-readable snapshot shows API and MCP marked
+ external_dependency_unavailable, with data freshness marked data_stale.
  See <a href="/status/status.json"><code>/status/status.json</code></a> and <a href="/status/">/status/</a> for billing and dashboard monitoring details.
  </p>
 

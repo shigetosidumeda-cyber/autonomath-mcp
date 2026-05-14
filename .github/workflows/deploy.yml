@@ -150,6 +150,9 @@ jobs:
             INVOICE_REGISTRATION_NUMBER
             JPCITE_EDGE_AUTH_SECRET
             JPCITE_SESSION_SECRET
+            JPCITE_X402_ADDRESS
+            JPCITE_X402_ORIGIN_SECRET
+            JPCITE_X402_QUOTE_SECRET
             JPINTEL_CORS_ORIGINS
             JPINTEL_ENV
             RATE_LIMIT_FREE_PER_DAY
@@ -200,7 +203,7 @@ jobs:
           echo "::warning::Wave 24 SKIP_HYDRATE=true engaged. Hydrate step skipped."
           echo "  ↳ Dockerfile seed-stager will fetch JPINTEL_DB_R2_URL on the remote builder."
           echo "  ↳ Use this only when GHA-side sftp/SSH tunnel to autonomath-api is unhealthy."
-          echo "  ↳ Required: canonical R2 key autonomath-api/jpintel.db.gz must be uploaded."
+          echo "  ↳ Required: canonical R2 key or a fresh timestamped autonomath-api/jpintel-*.db.gz backup must exist."
           mkdir -p data
           # Leave a 1-byte placeholder so the Dockerfile COPY data/jpintel.db
           # step still succeeds (size-gate then falls over to JPINTEL_DB_R2_URL).
@@ -209,7 +212,7 @@ jobs:
 
       - name: Hydrate jpintel seed DB for Docker build (optional, bake-in fallback)
         if: steps.fly-token.outputs.available == 'true' && github.event.inputs.skip_hydrate != 'true'
-        timeout-minutes: 20
+        timeout-minutes: 35
         # Wave 22 (2026-05-11): hydrate is now OPTIONAL.
         # ----------------------------------------------------
         # The Dockerfile `seed-stager` stage bakes /seed/jpintel.db into the
@@ -465,16 +468,84 @@ jobs:
              && [ -n "${AWS_SECRET_ACCESS_KEY:-}" ] \
              && [ -n "${R2_ENDPOINT:-}" ] \
              && [ -n "${R2_BUCKET:-}" ]; then
+            jpintel_r2_key=""
             if aws s3api head-object --bucket "$R2_BUCKET" --key "autonomath-api/jpintel.db.gz" --endpoint-url "$R2_ENDPOINT" >/dev/null 2>&1; then
-              jpintel_r2_url=$(aws s3 presign "s3://$R2_BUCKET/autonomath-api/jpintel.db.gz" \
+              jpintel_r2_key="autonomath-api/jpintel.db.gz"
+              echo "Using canonical R2 seed: ${jpintel_r2_key}"
+            else
+              echo "::warning::Canonical R2 key autonomath-api/jpintel.db.gz missing; falling back to latest timestamped jpintel backup."
+              jpintel_r2_key="$(
+                aws s3api list-objects-v2 \
+                  --bucket "$R2_BUCKET" \
+                  --prefix "autonomath-api/jpintel-" \
+                  --endpoint-url "$R2_ENDPOINT" \
+                  --query 'Contents[].Key' \
+                  --output text 2>/dev/null \
+                | tr '\t' '\n' \
+                | grep -E '\.db\.gz$' \
+                | sort -r \
+                | head -1 \
+                || true
+              )"
+              if [ -n "${jpintel_r2_key:-}" ]; then
+                echo "Using latest timestamped R2 seed: ${jpintel_r2_key}"
+              fi
+            fi
+            if [ -n "${jpintel_r2_key:-}" ]; then
+              r2_meta="$(
+                aws s3api head-object \
+                  --bucket "$R2_BUCKET" \
+                  --key "$jpintel_r2_key" \
+                  --endpoint-url "$R2_ENDPOINT" \
+                  --query '{LastModified: LastModified, ContentLength: ContentLength}' \
+                  --output json
+              )"
+              export R2_META="$r2_meta"
+              export JPINTEL_R2_SEED_MAX_AGE_SECONDS="${JPINTEL_R2_SEED_MAX_AGE_SECONDS:-108000}"
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import sys
+
+          meta = json.loads(os.environ["R2_META"])
+          size = int(meta.get("ContentLength") or 0)
+          if size < 100_000_000:
+              print(f"::error::R2 seed too small: {size} bytes")
+              sys.exit(1)
+          raw_last_modified = str(meta.get("LastModified") or "")
+          try:
+              last_modified = dt.datetime.fromisoformat(
+                  raw_last_modified.replace("Z", "+00:00")
+              )
+          except ValueError:
+              print(f"::error::cannot parse R2 seed LastModified: {raw_last_modified!r}")
+              sys.exit(1)
+          now = dt.datetime.now(dt.timezone.utc)
+          age_seconds = (now - last_modified).total_seconds()
+          max_age = int(os.environ["JPINTEL_R2_SEED_MAX_AGE_SECONDS"])
+          if age_seconds > max_age:
+              print(
+                  "::error::R2 seed is stale: "
+                  f"last_modified={raw_last_modified} age_seconds={int(age_seconds)} "
+                  f"max_age_seconds={max_age}"
+              )
+              sys.exit(1)
+          print(
+              "R2 seed freshness OK: "
+              f"last_modified={raw_last_modified} age_seconds={int(age_seconds)} "
+              f"size={size}"
+          )
+          PY
+              jpintel_r2_url=$(aws s3 presign "s3://$R2_BUCKET/${jpintel_r2_key}" \
                 --endpoint-url "$R2_ENDPOINT" --expires-in 3600 || echo "")
               if [ -n "${jpintel_r2_url:-}" ]; then
                 echo "::group::JPINTEL_DB_R2_URL build-arg"
-                echo "Generated 1h pre-signed URL for autonomath-api/jpintel.db.gz (length=${#jpintel_r2_url})"
+                echo "Generated 1h pre-signed URL for ${jpintel_r2_key} (length=${#jpintel_r2_url})"
                 echo "::endgroup::"
               fi
             else
-              echo "::warning::Canonical R2 key autonomath-api/jpintel.db.gz missing; build-arg JPINTEL_DB_R2_URL will be empty (seed-stager will rely on build-context seed)."
+              echo "::warning::No R2 seed key found; build-arg JPINTEL_DB_R2_URL will be empty (seed-stager will rely on build-context seed)."
             fi
           fi
           flyctl deploy --remote-only \

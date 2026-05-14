@@ -534,6 +534,8 @@ def test_compose_include_compression_returns_real_block(fixture_db: Path) -> Non
     assert compression["packet_tokens_estimate"] > 0
     assert compression["source_tokens_estimate"] is None
     assert compression["avoided_tokens_estimate"] is None
+    assert compression["estimated_tokens_saved"] is None
+    assert compression["jpcite_cost_jpy"] == 3
     assert compression["compression_ratio"] is None
     assert compression["source_tokens_basis"] == "unknown"
     assert "cost_savings_estimate" not in compression
@@ -566,6 +568,11 @@ def test_compose_compression_pdf_pages_baseline_returns_context_estimate(
     assert compression["avoided_tokens_estimate"] == max(
         0, 7000 - compression["packet_tokens_estimate"]
     )
+    assert compression["estimated_tokens_saved"] == compression["avoided_tokens_estimate"]
+    assert env["estimated_tokens_saved"] == compression["estimated_tokens_saved"]
+    assert env["jpcite_cost_jpy"] == 3
+    assert env["source_count"] == env["evidence_value"]["source_count"]
+    assert env["known_gaps"] == env["quality"]["known_gaps"]
     assert compression["compression_ratio"] is not None
     assert compression["estimate_scope"] == "input_context_only"
     assert compression["savings_claim"] == "estimate_not_guarantee"
@@ -1946,6 +1953,7 @@ def test_evidence_value_block_present_and_shape(fixture_db: Path) -> None:
     for key in (
         "records_returned",
         "source_linked_records",
+        "source_count",
         "precomputed_records",
         "pdf_fact_refs",
         "known_gap_count",
@@ -1956,6 +1964,9 @@ def test_evidence_value_block_present_and_shape(fixture_db: Path) -> None:
         assert key in ev, f"evidence_value missing field: {key}"
     assert ev["records_returned"] == 1
     assert ev["source_linked_records"] == 1
+    assert ev["source_count"] >= 1
+    assert env["source_count"] == ev["source_count"]
+    assert env["known_gaps"] == env["quality"]["known_gaps"]
     assert ev["precomputed_records"] >= 1
     assert ev["web_search_performed_by_jpcite"] is False
     assert ev["request_time_llm_call_performed"] is False

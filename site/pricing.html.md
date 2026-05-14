@@ -24,11 +24,11 @@ license: see https://jpcite.com/tos
 
 Stripe 経由・completely_metered・月額 minimum なし・tier なし。匿名 3 req/日 per IP は登録不要で無料 (JST 翌日 00:00 リセット)。
 
-AI agent (Custom GPT / Claude MCP / Cursor / Codex / Anthropic API direct) が日本公的制度・法令・判例・税務・適格事業者を扱う前に呼ぶ Evidence prefetch layer。通常の単発 API/MCP 呼び出しは 1 billable unit、batch/export は事前表示の式で算出します。jpcite 側は LLM 推論を一切しないため、agent dev の自前 LLM token と完全独立で jpcite の単価は固定式です。反復実行では月次上限・X-Cost-Cap-JPY・X-Client-Tag を組み合わせ予算と顧客別原価を管理できます。
+AI agent (Custom GPT / Claude MCP / Claude Agent SDK / claude -p / Cursor / Codex) が日本公的制度・法令・判例・税務・適格事業者を扱う前に呼ぶ、AI が読む前の制度データ圧縮レイヤー。通常の単発 API/MCP 呼び出しは 1 billable unit、batch/export は事前表示の式で算出します。jpcite 側は LLM 推論を一切しないため、agent dev の自前 LLM token と完全独立で jpcite の単価は固定式です。反復実行では月次上限・X-Cost-Cap-JPY・X-Client-Tag を組み合わせ予算と顧客別原価を管理できます。
 
-## 長文資料を毎回 LLM に渡す場合との費用比較式
+## 毎回 PDF と検索を投げる前に、根拠付きの小さい入力へ変換
 
-LLM に資料 chunk を毎回読ませる場合、費用は 投入 tokens × 利用モデルの input 単価 + output tokens です。jpcite を挟む場合、費用は jpcite ¥3/billable unit + Evidence Packet を読む少量 tokens です。
+LLM に資料 chunk を毎回読ませる場合、費用は 投入 tokens × 利用モデルの input 単価 + output tokens です。jpcite を挟む場合、費用は jpcite ¥3/billable unit + Evidence Packet を読む少量 tokens です。Claude Agent SDK や claude -p の月次クレジットを直接保証するものではありませんが、長い資料投入を根拠付き packet へ置き換える設計にできます。
 
 - 数十ページの公的資料を毎回投げる反復 agent では、入力 token と遅延を下げやすい設計です。
 - 1 回だけの軽い質問、短い 1 ページ確認、無料検索で足りる内容では、jpcite を挟まない方が安い場合があります。

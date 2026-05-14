@@ -180,6 +180,7 @@ a:hover { text-decoration: underline; }
   overscroll-behavior-inline: contain;
   scrollbar-width: none;
   white-space: nowrap;
+  position: relative;
 }
 .site-nav::-webkit-scrollbar { display: none; }
 .site-nav a {
@@ -972,6 +973,19 @@ pre code { word-break: normal; }
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
+}
+@supports ((-webkit-mask: url("")) or (mask: url(""))) {
+  .footer-brand-mark {
+    width: 20px;
+    height: 20px;
+    color: var(--text);
+    background: currentColor;
+    -webkit-mask: url("/assets/brand/jpcite-mark-light-fill.svg") center / contain no-repeat;
+    mask: url("/assets/brand/jpcite-mark-light-fill.svg") center / contain no-repeat;
+  }
+  .footer-brand-mark img {
+    opacity: 0;
+  }
 }
 .footer-tag {
   margin: 2px 0 0;

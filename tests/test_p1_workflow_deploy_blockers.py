@@ -127,7 +127,23 @@ def test_deploy_live_fly_secret_gate_requires_edge_auth_secret() -> None:
     step = text[text.index("Verify live Fly secret names before deploy") :]
 
     assert "JPCITE_EDGE_AUTH_SECRET" in step
+    assert "JPCITE_X402_ADDRESS" in step
+    assert "JPCITE_X402_ORIGIN_SECRET" in step
+    assert "JPCITE_X402_QUOTE_SECRET" in step
     assert "Missing required Fly secret names for autonomath-api" in step
+
+
+def test_deploy_presigns_fresh_r2_seed_or_fails_closed() -> None:
+    text = _text(DEPLOY)
+    step = text[text.index("Deploy (remote builder)") :]
+
+    assert "autonomath-api/jpintel.db.gz" in step
+    assert "autonomath-api/jpintel-" in step
+    assert "JPINTEL_R2_SEED_MAX_AGE_SECONDS" in step
+    assert "ContentLength" in step
+    assert "R2 seed too small" in step
+    assert "R2 seed is stale" in step
+    assert "aws s3 presign" in step
 
 
 def test_pages_workflows_serialize_and_avoid_preview_main_publish() -> None:
@@ -272,6 +288,21 @@ def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
     assert "::warning::source-backed smoke failed" not in step
 
 
+def test_pages_deploy_smokes_x402_edge_quote() -> None:
+    text = _text(PAGES_DEPLOY_MAIN)
+    assert "Post-deploy smoke (x402 edge quote)" in text
+    step = text[text.index("Post-deploy smoke (x402 edge quote)") :]
+
+    assert "https://jpcite.com/x402/discovery?$Q" in step
+    assert "https://jpcite.com/x402/quote?$Q" in step
+    assert (
+        '"quote_id", "amount_usdc", "amount_usdc_micro", "recipient", '
+        '"chain_id", "token_address", "signature"'
+    ) in step
+    assert "x402 quote response missing keys" in step
+    assert "x402 quote smoke OK" in step
+
+
 def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> None:
     trimmed_cohorts = ("laws", "cases", "enforcement")
     for workflow in (PAGES_PREVIEW, PAGES_DEPLOY_MAIN, PAGES_REGENERATE):
@@ -301,6 +332,13 @@ def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> Non
     assert "return `${pathname}.html`;" in function
     assert 'const HTML_CONTENT_TYPE = "text/html; charset=utf-8";' in function
     assert 'sourceHeader: "x-jpcite-html-source"' in function
+    assert "raw.githubusercontent.com/shigetosidumeda-cyber/autonomath-mcp/main/site" not in function
+    assert "CF_PAGES_COMMIT_SHA" in function
+    assert "JPCITE_SOURCE_REF" in function
+    assert "source_ref_unpinned" in function
+    assert '"x-jpcite-source-ref"' in function
+    assert '"Content-Security-Policy"' in function
+    assert '"X-Frame-Options"' in function
     assert '"content-type": MD_CONTENT_TYPE,' not in function
 
     routes = _text(PAGES_ROUTES)
@@ -311,15 +349,18 @@ def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> Non
     assert '"/*"' not in routes
 
 
-def test_dashboard_pages_deploys_use_canonical_project_and_secrets() -> None:
+def test_dashboard_workflows_cannot_bypass_central_pages_deploy() -> None:
     for workflow in DASHBOARD_PAGES_WORKFLOWS:
         text = _text(workflow)
-        assert "CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}" in text
-        assert "CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}" in text
-        assert "apiToken: ${{ secrets.CF_API_TOKEN }}" in text
-        assert "accountId: ${{ secrets.CF_ACCOUNT_ID }}" in text
-        assert "projectName: autonomath" in text
+        assert "Production deploy handoff" in text
+        assert "Dashboard artifact uploaded only." in text
+        assert "pages-deploy-main.yml" in text
+        assert "cloudflare/pages-action" not in text
+        assert "apiToken: ${{ secrets.CF_API_TOKEN }}" not in text
+        assert "accountId: ${{ secrets.CF_ACCOUNT_ID }}" not in text
+        assert "directory: site" not in text
+        assert "branch: main" not in text
+        assert "deployments: write" not in text
         assert "CLOUDFLARE_API_TOKEN" not in text
         assert "CLOUDFLARE_ACCOUNT_ID" not in text
         assert "projectName: jpcite-site" not in text
-        assert "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required" in text

@@ -5,23 +5,31 @@
 <link>https://jpcite.com/status/</link>
 <description>jpcite Service Status - api / mcp / billing / data-freshness / dashboard</description>
 <language>ja</language>
-<lastBuildDate>Thu, 14 May 2026 12:30:28 +0000</lastBuildDate>
+<lastBuildDate>Thu, 14 May 2026 22:41:21 +0000</lastBuildDate>
 <atom:link href="https://jpcite.com/status/rss.xml" rel="self" type="application/rss+xml" />
+<item>
+<title>api degraded</title>
+<link>https://jpcite.com/status/</link>
+<description>api is degraded. Public category: external_dependency_unavailable.</description>
+<guid isPermaLink="false">jpcite:status:api:2026-05-15T07:41:21+09:00</guid>
+<pubDate>Thu, 14 May 2026 22:41:21 +0000</pubDate>
+<category>degraded</category>
+</item>
 <item>
 <title>mcp degraded</title>
 <link>https://jpcite.com/status/</link>
 <description>mcp is degraded. Public category: external_dependency_unavailable.</description>
-<guid isPermaLink="false">jpcite:status:mcp:2026-05-14T21:30:28+09:00</guid>
-<pubDate>Thu, 14 May 2026 12:30:28 +0000</pubDate>
+<guid isPermaLink="false">jpcite:status:mcp:2026-05-15T07:41:21+09:00</guid>
+<pubDate>Thu, 14 May 2026 22:41:21 +0000</pubDate>
 <category>degraded</category>
 </item>
 <item>
-<title>data-freshness down</title>
+<title>data-freshness degraded</title>
 <link>https://jpcite.com/status/</link>
-<description>data-freshness is down. Public category: data_stale.</description>
-<guid isPermaLink="false">jpcite:status:data-freshness:2026-05-14T21:30:28+09:00</guid>
-<pubDate>Thu, 14 May 2026 12:30:28 +0000</pubDate>
-<category>down</category>
+<description>data-freshness is degraded. Public category: data_stale.</description>
+<guid isPermaLink="false">jpcite:status:data-freshness:2026-05-15T07:41:21+09:00</guid>
+<pubDate>Thu, 14 May 2026 22:41:21 +0000</pubDate>
+<category>degraded</category>
 </item>
 </channel>
 </rss>

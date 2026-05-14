@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="jpcite">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -182,10 +182,10 @@
   </div>
 </header>
 <main id="main">
-  <section class="hero">
-    <h1>Claude Code から jpcite を 30 秒で接続</h1>
-    <p><code>claude mcp add jpcite -- uvx autonomath-mcp</code> 1 行で 151 tool 解禁。anonymous は 3 req/IP/日まで無料、paid は税別 ¥3/billable unit metered。</p>
-  </section>
+	  <section class="hero">
+	    <h1>Claude Code から jpcite を 30 秒で接続</h1>
+	    <p><code>claude mcp add jpcite -- uvx autonomath-mcp</code> 1 行で 151 tool 解禁。jpcite は Claude が読む前に公的制度データを小さい Evidence Packet へ圧縮するレイヤーです。anonymous は 3 req/IP/日まで無料、paid は税別 ¥3/billable unit metered。</p>
+	  </section>
 
   <section>
     <h2>5 分接続手順</h2>
@@ -221,11 +221,19 @@
 <pre><code aria-label="動作確認コマンド">claude mcp list   # jpcite が「Connected」表示</code></pre>
     <p>期待値: <code>jpcite: uvx autonomath-mcp - ✓ Connected</code> と表示され、公開 tools 151 件が読まれていれば成功です。36協定書面の生成機能は公開提供していません。</p>
     <p>REST 直叩きで疎通確認する場合は <code>-G --data-urlencode</code> を必ず使うこと。日本語 query を URL に直接埋めると HTTP リクエスト行が壊れ、API は <code>{"error":{"code":"bad_request",...,"hint":"Use --data-urlencode for non-ASCII query params..."}}</code> を返します。</p>
-<pre><code aria-label="REST 動作確認 (curl)">curl -G "https://api.jpcite.com/v1/programs/search" \
-  --data-urlencode "q=補助金" \
-  --data-urlencode "prefecture=東京都" \
-  -H "X-API-Key: ${JPCITE_API_KEY:-}"</code></pre>
-  </section>
+	<pre><code aria-label="REST 動作確認 (curl)">curl -G "https://api.jpcite.com/v1/programs/search" \
+	  --data-urlencode "q=補助金" \
+	  --data-urlencode "prefecture=東京都" \
+	  -H "X-API-Key: ${JPCITE_API_KEY:-}"</code></pre>
+	    <p><code>claude -p</code> や Claude Agent SDK の prompt に長い PDF・検索結果を毎回入れる前に、まず jpcite の packet を作ると <code>jpcite_cost_jpy</code>、<code>estimated_tokens_saved</code>、<code>source_count</code>、<code>known_gaps</code> を確認できます。Claude 側の請求削減を保証するものではありませんが、反復業務では「根拠付きの小さい入力」を渡す設計にできます。</p>
+<pre><code aria-label="claude -p 用 Evidence Packet">packet="$(curl -sS -X POST "https://api.jpcite.com/v1/evidence/packets/query" \
+  -H "X-API-Key: ${JPCITE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"query_text":"東京都 製造業 設備投資 補助金","limit":5,"include_compression":true,"source_tokens_basis":"pdf_pages","source_pdf_pages":30,"input_token_price_jpy_per_1m":300}')"
+
+echo "$packet" | jq '{jpcite_cost_jpy, estimated_tokens_saved, source_count, known_gaps}'
+claude -p "この jpcite Evidence Packet だけを根拠に、候補制度・確認質問・known_gaps を整理して。専門判断として断定しないこと。 $packet"</code></pre>
+	  </section>
 
   <section>
     <h2>FAQ</h2>

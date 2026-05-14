@@ -255,7 +255,7 @@ NOW_ISO = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
 NOW_DATE = datetime.datetime.utcnow().strftime("%Y-%m-%d")
 
 COMMON_HEAD_TAIL = """<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 """
 
 ORG_JSONLD = {

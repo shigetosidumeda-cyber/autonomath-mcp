@@ -26,6 +26,13 @@ calls and does **not** charge for LLM tokens. You pay:
 Two of the five agents (`InvoiceCheckAgent`, `LawAmendmentWatchAgent`) work
 without any LLM at all — they are pure data orchestrators.
 
+jpcite is not a RAG replacement. Treat it as a data compression layer before the
+agent reads. In repeated Claude Agent SDK / `claude -p` workloads, call jpcite
+to turn long PDFs, official pages, and search results into a compact packet with
+`jpcite_cost_jpy`, `estimated_tokens_saved`, `source_count`, and `known_gaps`.
+This can preserve Claude-side credits only when it replaces repeated long
+context or search input; it is not a provider-billing guarantee.
+
 ## Install
 
 ```bash

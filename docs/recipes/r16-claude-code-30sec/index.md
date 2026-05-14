@@ -31,6 +31,14 @@ claude mcp add jpcite -- uvx autonomath-mcp
 
 # API key 設定 (paid 切替時のみ、anon mode は省略可)
 claude mcp env jpcite JPCITE_API_KEY=jc_xxxxx
+
+# prompt mode で使う場合: 長い PDF/検索を直接投げる前に jpcite の小さい packet を読む
+packet="$(curl -sS -X POST "https://api.jpcite.com/v1/evidence/packets/query" \
+  -H "X-API-Key: ${JPCITE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"query_text":"東京都 製造業 設備投資 補助金","limit":5,"include_compression":true,"source_tokens_basis":"pdf_pages","source_pdf_pages":30,"input_token_price_jpy_per_1m":300}')"
+echo "$packet" | jq '{jpcite_cost_jpy, estimated_tokens_saved, source_count, known_gaps}'
+claude -p "この jpcite Evidence Packet だけを根拠に、候補制度・確認質問・known_gaps を整理して。専門判断として断定しないこと。 $packet"
 ```
 
 ## 実行 (curl / Python / TypeScript)

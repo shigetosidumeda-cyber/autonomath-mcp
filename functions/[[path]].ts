@@ -59,11 +59,15 @@
 
 export interface Env {
   ASSETS: Fetcher;
+  CF_PAGES_COMMIT_SHA?: string;
+  JPCITE_SOURCE_REF?: string;
 }
 
-// GitHub raw host for the canonical site/ tree.
-const GITHUB_RAW_BASE =
-  "https://raw.githubusercontent.com/shigetosidumeda-cyber/autonomath-mcp/main/site";
+// GitHub raw host for the canonical site/ tree. The ref is resolved per request
+// from Cloudflare Pages' deployed commit so the proxy never reads mutable main.
+const GITHUB_RAW_REPO =
+  "https://raw.githubusercontent.com/shigetosidumeda-cyber/autonomath-mcp";
+const GIT_SHA_RE = /^[0-9a-f]{40}$/i;
 
 // Edge cache TTL for proxied .md (24h). Content updates land in git and
 // invalidate via the next deploy's cache-buster, so 24h is the right
@@ -80,6 +84,16 @@ const SOURCE_BACKED_HTML_PREFIXES = [
   "/cases/",
   "/enforcement/",
 ];
+const SECURITY_HEADERS: Record<string, string> = {
+  "Content-Security-Policy":
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Resource-Policy": "same-site",
+};
 
 type RawProxyRoute = {
   upstreamPath: string;
@@ -136,6 +150,27 @@ function notFoundBody(pathname: string, contentType: string): string {
   return `# 404 — ${pathname}\nNot found.\n`;
 }
 
+function sourceRef(env: Env): string | null {
+  const ref = String(env.JPCITE_SOURCE_REF ?? env.CF_PAGES_COMMIT_SHA ?? "").trim();
+  return GIT_SHA_RE.test(ref) ? ref : null;
+}
+
+function routeHeaders(route: RawProxyRoute, extra: Record<string, string> = {}): HeadersInit {
+  return {
+    ...SECURITY_HEADERS,
+    "content-type": route.contentType,
+    ...extra,
+  };
+}
+
+function jsonHeaders(extra: Record<string, string> = {}): HeadersInit {
+  return {
+    ...SECURITY_HEADERS,
+    "content-type": "application/json; charset=utf-8",
+    ...extra,
+  };
+}
+
 export const onRequest: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
   const url = new URL(request.url);
@@ -157,7 +192,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   ) {
     return new Response(notFoundBody(url.pathname, route.contentType), {
       status: 404,
-      headers: { "content-type": route.contentType },
+      headers: routeHeaders(route),
     });
   }
 
@@ -169,9 +204,25 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     return staticResp;
   }
 
-  // Cache lookup at edge.
+  const ref = sourceRef(env);
+  if (ref === null) {
+    return new Response(
+      JSON.stringify({
+        error: "source_ref_unpinned",
+        message: "source-backed pages require a deployed git SHA",
+      }),
+      {
+        status: 503,
+        headers: jsonHeaders({ "cache-control": "no-store" }),
+      },
+    );
+  }
+
+  // Cache lookup at edge. Include the immutable source ref in the cache key so
+  // a new Pages deploy cannot receive a 24h cached body from the previous SHA.
   const cacheUrl = new URL(url.toString());
   cacheUrl.search = "";
+  cacheUrl.searchParams.set("__jpcite_source_ref", ref);
   const cacheKey = new Request(cacheUrl.toString(), request);
   const cache = (caches as unknown as { default: Cache }).default;
   const cached = await cache.match(cacheKey);
@@ -181,7 +232,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   // Build the raw.githubusercontent.com URL. We splice the allowlisted source
   // path onto the canonical site/ base; extensionless law URLs map to .html.
-  const upstream = `${GITHUB_RAW_BASE}${route.upstreamPath}`;
+  const upstream = `${GITHUB_RAW_REPO}/${ref}/site${route.upstreamPath}`;
   let upstreamResp: Response;
   try {
     upstreamResp = await fetch(upstream, {
@@ -206,7 +257,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }),
       {
         status: 502,
-        headers: { "content-type": "application/json; charset=utf-8" },
+        headers: jsonHeaders({ "cache-control": "no-store" }),
       },
     );
   }
@@ -217,7 +268,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     // client sees a clean error.
     return new Response(notFoundBody(url.pathname, route.contentType), {
       status: 404,
-      headers: { "content-type": route.contentType },
+      headers: routeHeaders(route),
     });
   }
 
@@ -230,7 +281,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
       }),
       {
         status: 502,
-        headers: { "content-type": "application/json; charset=utf-8" },
+        headers: jsonHeaders({ "cache-control": "no-store" }),
       },
     );
   }
@@ -240,14 +291,14 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   const body = await upstreamResp.text();
   const resp = new Response(body, {
     status: 200,
-    headers: {
-      "content-type": route.contentType,
+    headers: routeHeaders(route, {
       "cache-control": `public, max-age=${EDGE_CACHE_SECONDS}`,
       [route.sourceHeader]: "github-raw-proxy",
+      "x-jpcite-source-ref": ref,
       // CORS so browser fetch() and LLM citation pipelines can pull
       // these as text/markdown without preflight grief.
       "access-control-allow-origin": "*",
-    },
+    }),
   });
 
   // Edge cache write is fire-and-forget — do not block the response.

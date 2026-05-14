@@ -41,7 +41,7 @@ LLM token と完全独立で ¥3/unit 固定。X-Cost-Cap-JPY + X-Client-Tag で
 
 [料金根拠 → ](/docs/pricing/)
 
-人が画面でブラウズする SaaS ではありません。Custom GPT / Claude MCP / Cursor / Codex / Anthropic API direct に bundle する Evidence prefetch layer。1 call = 1 unit = 税込 ¥3.30、tier なし・月額固定なし・匿名 3 req/日。
+人が画面でブラウズする SaaS ではありません。Custom GPT / Claude MCP / Claude Agent SDK / claude -p / Cursor / Codex に bundle し、AI が読む前に制度データを小さい根拠パケットへ圧縮するレイヤー。1 call = 1 unit = 税込 ¥3.30、tier なし・月額固定なし・匿名 3 req/日。
 3 段構造 — 人 → AI agent → jpcite
 
 - 1. 人

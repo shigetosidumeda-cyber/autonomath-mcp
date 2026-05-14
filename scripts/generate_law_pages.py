@@ -880,7 +880,7 @@ def _render_page_ja(
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 <script type="application/ld+json">{jsonld_text}</script>
 <script type="application/ld+json" data-jpcite-jsonld="breadcrumb">{breadcrumb_text}</script>
 {_COMMON_JSONLD}
@@ -972,7 +972,7 @@ def _render_page_en(
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 <script type="application/ld+json">{jsonld_text}</script>
 <script type="application/ld+json" data-jpcite-jsonld="breadcrumb">{breadcrumb_text}</script>
 {_COMMON_JSONLD}

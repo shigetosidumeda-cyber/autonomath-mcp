@@ -425,3 +425,25 @@ jobs:
             fi
           done
           echo "source-backed smoke OK"
+
+      - name: Post-deploy smoke (x402 edge quote)
+        if: steps.cf-secrets.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          Q="deploy_check=$(date +%s)"
+          curl -fsSL --max-time 30 "https://jpcite.com/x402/discovery?$Q" | python3 -m json.tool > /dev/null
+          quote_body='{"path":"/v1/programs/search","method":"GET","req_count":1,"agent_id":"deploy-smoke","payer_address":"0x0000000000000000000000000000000000000001"}'
+          quote_json="$(curl -fsSL --max-time 30 -X POST "https://jpcite.com/x402/quote?$Q" \
+            -H 'content-type: application/json' \
+            -d "$quote_body")"
+          QUOTE_JSON="$quote_json" python3 - <<'PY'
+          import json
+          import os
+
+          body = json.loads(os.environ["QUOTE_JSON"])
+          required = {"quote_id", "amount_usdc", "amount_usdc_micro", "recipient", "chain_id", "token_address", "signature"}
+          missing = sorted(required - set(body))
+          if missing:
+              raise SystemExit(f"x402 quote response missing keys: {missing}; body={body!r}")
+          print("x402 quote smoke OK")
+          PY

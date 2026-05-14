@@ -59,6 +59,10 @@ EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
         "normalized_filters": {"prefecture": "Tokyo"},
     },
     "answer_not_included": True,
+    "jpcite_cost_jpy": 3,
+    "estimated_tokens_saved": 13434,
+    "source_count": 1,
+    "known_gaps": [],
     "records": [
         {
             "entity_id": "program:example",
@@ -89,6 +93,8 @@ EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
         "packet_tokens_estimate": 566,
         "source_tokens_estimate": 14000,
         "avoided_tokens_estimate": 13434,
+        "estimated_tokens_saved": 13434,
+        "jpcite_cost_jpy": 3,
         "compression_ratio": 0.0404,
         "input_context_reduction_rate": 0.9596,
         "source_tokens_basis": "pdf_pages",
@@ -101,6 +107,7 @@ EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
             "input_token_price_jpy_per_1m": 300,
             "gross_input_savings_jpy": 4.0,
             "jpcite_billable_units": 1,
+            "jpcite_cost_jpy": 3,
             "jpcite_cost_jpy_ex_tax": 3,
             "net_savings_jpy_ex_tax": 1.0,
             "break_even_avoided_tokens": 10000,
@@ -115,6 +122,7 @@ EVIDENCE_PACKET_EXAMPLE: dict[str, Any] = {
     "evidence_value": {
         "records_returned": 1,
         "source_linked_records": 1,
+        "source_count": 1,
         "precomputed_records": 1,
         "pdf_fact_refs": 0,
         "known_gap_count": 0,

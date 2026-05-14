@@ -231,7 +231,61 @@ curl -s "https://api.jpcite.com/v1/programs/search?q=DX&limit=3" | jq '.items[].
 # Authenticated
 curl -s -H "X-API-Key: $JPCITE_API_KEY" \
      "https://api.jpcite.com/v1/programs/search?q=DX&limit=3" \
-     | jq '.items[].title'
+	 | jq '.items[].title'
+```
+
+## Sample 9 — `claude -p` prompt mode
+
+Use jpcite before asking Claude to reason over a Japanese public-program question. The packet is the small input Claude reads instead of repeated PDF/search context.
+
+```bash
+packet="$(
+  curl -sS -X POST "https://api.jpcite.com/v1/evidence/packets/query" \
+    -H "X-API-Key: ${JPCITE_API_KEY}" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "query_text": "東京都 製造業 設備投資 補助金",
+      "limit": 5,
+      "include_compression": true,
+      "source_tokens_basis": "pdf_pages",
+      "source_pdf_pages": 30,
+      "input_token_price_jpy_per_1m": 300
+    }'
+)"
+
+echo "$packet" | jq '{jpcite_cost_jpy, estimated_tokens_saved, source_count, known_gaps}'
+
+claude -p "次の jpcite Evidence Packet だけを根拠に、候補制度、確認質問、known_gaps を日本語で短く整理して。専門判断として断定しないこと。
+
+$packet"
+```
+
+## Sample 10 — GitHub Actions curl gate
+
+```yaml
+jobs:
+  monthly-client-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build compact evidence before agent prompt
+        env:
+          JPCITE_API_KEY: ${{ secrets.JPCITE_API_KEY }}
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST "https://api.jpcite.com/v1/evidence/packets/query" \
+            -H "X-API-Key: ${JPCITE_API_KEY}" \
+            -H "X-Client-Tag: client-review-2026-05" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "query_text": "顧問先 月次 補助金 税制 期限",
+              "limit": 5,
+              "include_compression": true,
+              "source_tokens_basis": "token_count",
+              "source_token_count": 18500,
+              "input_token_price_jpy_per_1m": 300
+            }' \
+            | tee evidence-packet.json \
+            | jq '{jpcite_cost_jpy, estimated_tokens_saved, source_count, known_gaps}'
 ```
 
 ## Static markdown access (no auth, no rate limit)
@@ -245,7 +299,7 @@ https://jpcite.com/laws/{slug}               → /laws/{slug}.md
 https://jpcite.com/enforcement/{id}          → /enforcement/{id}.md
 ```
 
-Frontmatter includes `canonical`, `lang`, `est_tokens`, `fetched_at`, `source_url`, `license`. For downstream indexing of public static pages, prefer the `.md` over the `.html` because it skips the HTML parser. For AI answers over jpcite corpora, call the evidence/output endpoints first so the model receives compact source packets instead of long raw RAG context.
+Frontmatter includes `canonical`, `lang`, `est_tokens`, `fetched_at`, `source_url`, `license`. For downstream indexing of public static pages, prefer the `.md` over the `.html` because it skips the HTML parser. For AI answers over jpcite corpora, call the evidence/output endpoints first so the model receives compact source packets instead of repeatedly reading long raw context.
 
 ## Compliance checklist for agents that resell jpcite output
 

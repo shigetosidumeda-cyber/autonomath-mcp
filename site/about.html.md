@@ -16,13 +16,13 @@ license: see https://jpcite.com/tos
 
 # jpcite とは 
 
-日本の制度根拠を AI へ渡す Evidence API + MCP サービス。 
+日本の制度データを、AI が読む前に小さな根拠パケットへ圧縮する Evidence API + MCP サービス。
 
 [サービスを試す → ](index.html#path-email-trial)[料金 → ](pricing.html)
 
-## AI が使うレイヤー 
+## AI が読む前の制度データ圧縮レイヤー
 
-jpcite は回答文を生成するサービスではありません。AI が回答を書く前に、 source_url 、 source_fetched_at 、 known_gaps 、互換 / 排他ルールを小さい Evidence Packet として返す前処理レイヤーです。登録不要の匿名枠は [3 リクエスト/日 per IP ](pricing.html#api-free)、継続利用は [¥3/課金単位 (税込 ¥3.30) ](pricing.html#api-paid)です。 
+jpcite は回答文を生成するサービスではありません。AI が毎回 PDF・検索結果・官公庁ページを長く読む前に、 source_url 、 source_fetched_at 、 known_gaps 、互換 / 排他ルールを小さい Evidence Packet として返す前処理レイヤーです。登録不要の匿名枠は [3 リクエスト/日 per IP ](pricing.html#api-free)、継続利用は [¥3/課金単位 (税込 ¥3.30) ](pricing.html#api-paid)です。
 
 - 11,601 検索できる制度の数 
 - 2,286 補助金 採択事例 

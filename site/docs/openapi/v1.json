@@ -9460,13 +9460,16 @@
               "input_context_only": true,
               "input_token_price_jpy_per_1m": 300,
               "jpcite_billable_units": 1,
+              "jpcite_cost_jpy": 3,
               "jpcite_cost_jpy_ex_tax": 3,
               "net_savings_jpy_ex_tax": 1.0,
               "price_input_source": "caller_supplied",
               "provider_billing_not_guaranteed": true
             },
             "estimate_scope": "input_context_only",
+            "estimated_tokens_saved": 13434,
             "input_context_reduction_rate": 0.9596,
+            "jpcite_cost_jpy": 3,
             "packet_tokens_estimate": 566,
             "provider_billing_not_guaranteed": true,
             "savings_claim": "estimate_not_guarantee",
@@ -9507,6 +9510,7 @@
               }
             ]
           },
+          "estimated_tokens_saved": 13434,
           "evidence_value": {
             "fact_provenance_coverage_pct_avg": 0.86,
             "known_gap_count": 0,
@@ -9514,10 +9518,13 @@
             "precomputed_records": 1,
             "records_returned": 1,
             "request_time_llm_call_performed": false,
+            "source_count": 1,
             "source_linked_records": 1,
             "web_search_performed_by_jpcite": false
           },
           "generated_at": "2026-05-02T12:00:00+09:00",
+          "jpcite_cost_jpy": 3,
+          "known_gaps": [],
           "packet_id": "evp_example",
           "quality": {
             "coverage_score": 0.86,
@@ -9549,6 +9556,7 @@
               "source_url": "https://example.go.jp/program"
             }
           ],
+          "source_count": 1,
           "verification": {
             "freshness_endpoint": "/v1/meta/freshness",
             "replay_endpoint": "/v1/programs/search?q=..."
@@ -13951,6 +13959,7 @@
               }
             ]
           },
+          "estimated_tokens_saved": 13434,
           "evidence_value": {
             "fact_provenance_coverage_pct_avg": 0.86,
             "known_gap_count": 0,
@@ -13958,10 +13967,13 @@
             "precomputed_records": 1,
             "records_returned": 1,
             "request_time_llm_call_performed": false,
+            "source_count": 1,
             "source_linked_records": 1,
             "web_search_performed_by_jpcite": false
           },
           "generated_at": "2026-05-02T12:00:00+09:00",
+          "jpcite_cost_jpy": 3,
+          "known_gaps": [],
           "packet_id": "evp_example",
           "precomputed": {
             "available": true,
@@ -14003,6 +14015,7 @@
             }
           ],
           "records_returned": 1,
+          "source_count": 1,
           "usage": {
             "billing_units": 1,
             "intended_for": "llm_context_prefetch",
@@ -32069,13 +32082,16 @@
                       "input_context_only": true,
                       "input_token_price_jpy_per_1m": 300,
                       "jpcite_billable_units": 1,
+                      "jpcite_cost_jpy": 3,
                       "jpcite_cost_jpy_ex_tax": 3,
                       "net_savings_jpy_ex_tax": 1.0,
                       "price_input_source": "caller_supplied",
                       "provider_billing_not_guaranteed": true
                     },
                     "estimate_scope": "input_context_only",
+                    "estimated_tokens_saved": 13434,
                     "input_context_reduction_rate": 0.9596,
+                    "jpcite_cost_jpy": 3,
                     "packet_tokens_estimate": 566,
                     "provider_billing_not_guaranteed": true,
                     "savings_claim": "estimate_not_guarantee",
@@ -32116,6 +32132,7 @@
                       }
                     ]
                   },
+                  "estimated_tokens_saved": 13434,
                   "evidence_value": {
                     "fact_provenance_coverage_pct_avg": 0.86,
                     "known_gap_count": 0,
@@ -32123,10 +32140,13 @@
                     "precomputed_records": 1,
                     "records_returned": 1,
                     "request_time_llm_call_performed": false,
+                    "source_count": 1,
                     "source_linked_records": 1,
                     "web_search_performed_by_jpcite": false
                   },
                   "generated_at": "2026-05-02T12:00:00+09:00",
+                  "jpcite_cost_jpy": 3,
+                  "known_gaps": [],
                   "packet_id": "evp_example",
                   "quality": {
                     "coverage_score": 0.86,
@@ -32158,6 +32178,7 @@
                       "source_url": "https://example.go.jp/program"
                     }
                   ],
+                  "source_count": 1,
                   "verification": {
                     "freshness_endpoint": "/v1/meta/freshness",
                     "replay_endpoint": "/v1/programs/search?q=..."
@@ -32431,13 +32452,16 @@
                       "input_context_only": true,
                       "input_token_price_jpy_per_1m": 300,
                       "jpcite_billable_units": 1,
+                      "jpcite_cost_jpy": 3,
                       "jpcite_cost_jpy_ex_tax": 3,
                       "net_savings_jpy_ex_tax": 1.0,
                       "price_input_source": "caller_supplied",
                       "provider_billing_not_guaranteed": true
                     },
                     "estimate_scope": "input_context_only",
+                    "estimated_tokens_saved": 13434,
                     "input_context_reduction_rate": 0.9596,
+                    "jpcite_cost_jpy": 3,
                     "packet_tokens_estimate": 566,
                     "provider_billing_not_guaranteed": true,
                     "savings_claim": "estimate_not_guarantee",
@@ -32478,6 +32502,7 @@
                       }
                     ]
                   },
+                  "estimated_tokens_saved": 13434,
                   "evidence_value": {
                     "fact_provenance_coverage_pct_avg": 0.86,
                     "known_gap_count": 0,
@@ -32485,10 +32510,13 @@
                     "precomputed_records": 1,
                     "records_returned": 1,
                     "request_time_llm_call_performed": false,
+                    "source_count": 1,
                     "source_linked_records": 1,
                     "web_search_performed_by_jpcite": false
                   },
                   "generated_at": "2026-05-02T12:00:00+09:00",
+                  "jpcite_cost_jpy": 3,
+                  "known_gaps": [],
                   "packet_id": "evp_example",
                   "quality": {
                     "coverage_score": 0.86,
@@ -32520,6 +32548,7 @@
                       "source_url": "https://example.go.jp/program"
                     }
                   ],
+                  "source_count": 1,
                   "verification": {
                     "freshness_endpoint": "/v1/meta/freshness",
                     "replay_endpoint": "/v1/programs/search?q=..."
@@ -35090,6 +35119,7 @@
                       }
                     ]
                   },
+                  "estimated_tokens_saved": 13434,
                   "evidence_value": {
                     "fact_provenance_coverage_pct_avg": 0.86,
                     "known_gap_count": 0,
@@ -35097,10 +35127,13 @@
                     "precomputed_records": 1,
                     "records_returned": 1,
                     "request_time_llm_call_performed": false,
+                    "source_count": 1,
                     "source_linked_records": 1,
                     "web_search_performed_by_jpcite": false
                   },
                   "generated_at": "2026-05-02T12:00:00+09:00",
+                  "jpcite_cost_jpy": 3,
+                  "known_gaps": [],
                   "packet_id": "evp_example",
                   "precomputed": {
                     "available": true,
@@ -35142,6 +35175,7 @@
                     }
                   ],
                   "records_returned": 1,
+                  "source_count": 1,
                   "usage": {
                     "billing_units": 1,
                     "intended_for": "llm_context_prefetch",

@@ -31,7 +31,7 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/styles.css?v=20260515b">
+<link rel="stylesheet" href="/styles.css?v=20260515c">
 
 <script defer src="analytics.js?v=20260503a"></script>
 
@@ -340,11 +340,11 @@
  Stripe 経由・completely_metered・月額 minimum なし・tier なし。匿名 3 req/日 per IP は登録不要で無料 (JST 翌日 00:00 リセット)。
  </p>
 	 <p style="font-size:15px;line-height:1.7;margin:-10px 0 24px;color:var(--text-muted);max-width:760px;">
-			 AI agent (Custom GPT / Claude MCP / Cursor / Codex / Anthropic API direct) が日本公的制度・法令・判例・税務・適格事業者を扱う前に呼ぶ Evidence prefetch layer。通常の単発 API/MCP 呼び出しは 1 billable unit、batch/export は事前表示の式で算出します。jpcite 側は LLM 推論を一切しないため、agent dev の自前 LLM token と完全独立で jpcite の単価は固定式です。反復実行では月次上限・X-Cost-Cap-JPY・X-Client-Tag を組み合わせ予算と顧客別原価を管理できます。
-	 </p>
-	 <section aria-labelledby="token-cost-calc-title" style="margin:0 0 24px;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:var(--bg-alt,#fafaf9);padding:16px 18px;">
-		 <h2 id="token-cost-calc-title" style="font-size:18px;margin:0 0 8px;">長文資料を毎回 LLM に渡す場合との費用比較式</h2>
-	 <p style="font-size:14px;line-height:1.7;margin:0 0 10px;color:var(--text);">LLM に資料 chunk を毎回読ませる場合、費用は <code>投入 tokens × 利用モデルの input 単価 + output tokens</code> です。jpcite を挟む場合、費用は <code>jpcite ¥3/billable unit + Evidence Packet を読む少量 tokens</code> です。</p>
+				 AI agent (Custom GPT / Claude MCP / Claude Agent SDK / <code>claude -p</code> / Cursor / Codex) が日本公的制度・法令・判例・税務・適格事業者を扱う前に呼ぶ、AI が読む前の制度データ圧縮レイヤー。通常の単発 API/MCP 呼び出しは 1 billable unit、batch/export は事前表示の式で算出します。jpcite 側は LLM 推論を一切しないため、agent dev の自前 LLM token と完全独立で jpcite の単価は固定式です。反復実行では月次上限・X-Cost-Cap-JPY・X-Client-Tag を組み合わせ予算と顧客別原価を管理できます。
+		 </p>
+		 <section aria-labelledby="token-cost-calc-title" style="margin:0 0 24px;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:var(--bg-alt,#fafaf9);padding:16px 18px;">
+			 <h2 id="token-cost-calc-title" style="font-size:18px;margin:0 0 8px;">毎回 PDF と検索を投げる前に、根拠付きの小さい入力へ変換</h2>
+		 <p style="font-size:14px;line-height:1.7;margin:0 0 10px;color:var(--text);">LLM に資料 chunk を毎回読ませる場合、費用は <code>投入 tokens × 利用モデルの input 単価 + output tokens</code> です。jpcite を挟む場合、費用は <code>jpcite ¥3/billable unit + Evidence Packet を読む少量 tokens</code> です。Claude Agent SDK や <code>claude -p</code> の月次クレジットを直接保証するものではありませんが、長い資料投入を根拠付き packet へ置き換える設計にできます。</p>
 	 <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:var(--text-muted);">
 	 <li>数十ページの公的資料を毎回投げる反復 agent では、入力 token と遅延を下げやすい設計です。</li>
 	 <li>1 回だけの軽い質問、短い 1 ページ確認、無料検索で足りる内容では、jpcite を挟まない方が安い場合があります。</li>
@@ -436,9 +436,10 @@
    <ul style="font-size:13px;line-height:1.7;margin:0 0 8px;padding-left:18px;">
      <li>1 case あたりの参考: external provider API fee <strong>¥51-¥136.50</strong> / jpcite metered fee <strong>¥6-¥15</strong></li>
      <li>6 use case (M&amp;A DD / 補助金抽出 / 税理士措置法 / 行政書士許認可 / 信金マル経 / dev 試作) 合計参考: external provider API fee <strong>¥528</strong> / jpcite fee <strong>¥51</strong> / API fee delta <strong>¥477</strong></li>
-     <li>同じ baseline で use case #3 を 100 回反復する参考: external provider API fee <strong>¥7,650</strong> / jpcite fee <strong>¥600</strong> / monthly API fee delta <strong>¥7,050</strong> / annualized reference <strong>¥84,600</strong></li>
-     <li>同じ確認を反復する業務では、Evidence Packet を先に読むことで入力文脈を小さくできます。ただし安くなるかは model、cache、prompt、検索回数に依存します。</li>
-   </ul>
+	     <li>同じ baseline で use case #3 を 100 回反復する参考: external provider API fee <strong>¥7,650</strong> / jpcite fee <strong>¥600</strong> / monthly API fee delta <strong>¥7,050</strong> / annualized reference <strong>¥84,600</strong></li>
+	     <li>同じ確認を反復する業務では、Evidence Packet を先に読むことで入力文脈を小さくできます。ただし安くなるかは model、cache、prompt、検索回数に依存します。</li>
+	     <li>Claude Agent SDK / <code>claude -p</code> では、長文 PDF・検索結果を毎回 prompt に入れる代わりに、<code>jpcite_cost_jpy</code>、<code>estimated_tokens_saved</code>、<code>source_count</code>、<code>known_gaps</code> を見て、呼ぶ価値がある時だけ packet を渡せます。</li>
+	   </ul>
    <p style="font-size:12.5px;margin:0;color:var(--text-muted);line-height:1.6;">
      計算式・前提は <a href="/tools/cost_saving_calculator.html">Evidence cost calculator</a> で確認できます。実請求額は provider、model、cache、tool 設定、為替、prompt に依存します。業務効果、売上、利益、専門判断の価値は含みません。
    </p>
