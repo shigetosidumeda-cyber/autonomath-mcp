@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>jpcite API fee delta calculator — 普通 AI vs jpcite MCP 定量比較</title>
-<meta name="description" content="Claude Sonnet 4.5 + Anthropic web search の stated baseline と jpcite ¥3/req を比べる API fee delta calculator。売上・利益・業務成果は含みません。">
+<title>jpcite Evidence Packet cost calculator — AI回答前の根拠取得コスト比較</title>
+<meta name="description" content="Evidence Packet / Company Folder Brief が返す根拠付き成果物と、Claude Sonnet 4.5 + Anthropic web search baseline の API fee delta を前提付きで比較します。売上・利益・業務成果は含みません。">
 <link rel="canonical" href="https://jpcite.com/tools/cost_saving_calculator">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/tools/cost_saving_calculator">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/tools/cost_saving_calculator">
@@ -37,8 +37,8 @@
 </head>
 <body>
 <main>
-  <h1>jpcite API fee delta calculator</h1>
-  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>external API fee</strong> (token + Anthropic web search / OpenAI web search) と <strong>jpcite fee</strong> (¥3/billable unit) の API 料金差額を即時計算します。既定 baseline は Claude Sonnet 4.5、Anthropic web search、USD/JPY=150、jpcite ¥3。数値は stated baseline の参考比較で、provider pricing は 2026-05-13 に公式 pricing page を再確認済みです。詳細な前提は <a href="/tools/cost_saving_examples.md">API fee delta examples</a> を参照。</p>
+  <h1>jpcite Evidence Packet cost calculator</h1>
+  <p class="muted">AI に長い資料や検索結果を毎回渡す場合の <strong>external API fee</strong> (token + Anthropic web search / OpenAI web search) と、jpcite の <strong>Evidence Packet / Company Folder Brief fee</strong> (¥3/billable unit) の API fee delta を前提付きで計算します。既定 baseline は Claude Sonnet 4.5、Anthropic web search、USD/JPY=150、jpcite ¥3。数値は stated baseline の参考比較で、provider pricing は 2026-05-13 に公式 pricing page を再確認済みです。詳細な前提は <a href="/tools/cost_saving_examples.md">API fee delta examples</a> を参照。</p>
   <p class="muted">jpcite 側の fee は、Evidence Packet または Company Folder Brief が返す source_url、source_fetched_at、source_receipts、known_gaps、copy_paste_parts を LLM 回答前に使う前提です。費用差だけではなく、何を AI に渡せるかは <a href="/playground.html?flow=evidence3">Evidence Packet</a>、<a href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">Company Folder Brief</a>、<a href="/docs/api-reference/">API fields</a> で確認できます。</p>
 
   <section class="card">

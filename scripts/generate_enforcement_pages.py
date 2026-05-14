@@ -487,7 +487,7 @@ def page_html(
     if laws:
         law_lis = "".join(
             f'<li><a href="{esc(href := law_href(law, law_hrefs, domain))}"'
-            f'{law_link_rel(href, domain)}>{esc(law["law_title"])}</a></li>'
+            f"{law_link_rel(href, domain)}>{esc(law['law_title'])}</a></li>"
             for law in laws
         )
         related_law_html = (

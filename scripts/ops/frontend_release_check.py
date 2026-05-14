@@ -64,7 +64,9 @@ def sync_openapi_discovery_metadata() -> None:
         tier["path_count"] = len(spec.get("paths") or {})
         tier["size_bytes"] = path.stat().st_size
         tier["sha256_prefix"] = hashlib.sha256(spec_text.encode("utf-8")).hexdigest()[:16]
-    discovery_path.write_text(json.dumps(discovery, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    discovery_path.write_text(
+        json.dumps(discovery, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def resolve_executable(name: str) -> str:
@@ -78,10 +80,31 @@ def resolve_executable(name: str) -> str:
 
 
 def maybe_refresh_static() -> None:
-    run([PY, "scripts/export_openapi.py", "--out", "docs/openapi/v1.json", "--site-out", "site/openapi/v1.json"])
-    shutil.copyfile(REPO_ROOT / "site" / "openapi" / "v1.json", REPO_ROOT / "site" / "docs" / "openapi" / "v1.json")
+    run(
+        [
+            PY,
+            "scripts/export_openapi.py",
+            "--out",
+            "docs/openapi/v1.json",
+            "--site-out",
+            "site/openapi/v1.json",
+        ]
+    )
+    shutil.copyfile(
+        REPO_ROOT / "site" / "openapi" / "v1.json",
+        REPO_ROOT / "site" / "docs" / "openapi" / "v1.json",
+    )
     run([PY, "scripts/export_agent_openapi.py"])
-    run([PY, "scripts/export_openapi.py", "--profile", "gpt30", "--out", "site/openapi.agent.gpt30.json"])
+    run(
+        [
+            PY,
+            "scripts/export_openapi.py",
+            "--profile",
+            "gpt30",
+            "--out",
+            "site/openapi.agent.gpt30.json",
+        ]
+    )
     run([PY, "scripts/sync_mcp_public_manifests.py"])
     sync_openapi_discovery_metadata()
     run(

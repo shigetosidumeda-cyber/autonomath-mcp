@@ -48,6 +48,7 @@
         "site/",
         "tests/",
         "ops/",
+        "tools/",
         "data/",
         "README.md",
         "pyproject.toml",

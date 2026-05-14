@@ -97,9 +97,10 @@ def test_pricing_page_uses_safe_comparison_section(public_texts: dict[str, str])
 
 def test_calculator_labels_are_delta_not_business_outcome(public_texts: dict[str, str]) -> None:
     calc_html = public_texts["cost_saving_calculator.html"]
-    assert "<h1>jpcite API fee delta calculator</h1>" in calc_html
+    assert "<h1>jpcite Evidence Packet cost calculator</h1>" in calc_html
+    assert "API fee delta" in calc_html
     assert "external API fee" in calc_html
-    assert "jpcite fee" in calc_html
+    assert "Evidence Packet / Company Folder Brief fee" in calc_html
     assert "月次 API fee delta" in calc_html
     assert "労務削減" in calc_html and "含みません" in calc_html
 

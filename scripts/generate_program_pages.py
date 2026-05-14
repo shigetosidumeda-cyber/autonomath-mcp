@@ -2157,9 +2157,7 @@ def generate(
     # --- sample mode
     if sample_ids and samples_dir:
         existing_program_slugs = {
-            path.stem
-            for path in out_dir.glob("*.html")
-            if path.name not in _RESERVED_PROGRAM_HTML
+            path.stem for path in out_dir.glob("*.html") if path.name not in _RESERVED_PROGRAM_HTML
         }
         for sid in sample_ids:
             cur = conn.execute(SAMPLE_BY_ID_SQL, (sid,))

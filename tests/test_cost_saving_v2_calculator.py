@@ -127,7 +127,9 @@ def test_calculator_html_use_case_constants_match():
     txt = CALCULATOR_HTML.read_text(encoding="utf-8")
     # rough regex: capture each use case dict line
     pattern = re.compile(
-        r"\{\s*id:\s*(\d+),\s*name:\s*\"[^\"]*\",\s*in_tok:\s*(\d+),\s*out_tok:\s*(\d+),\s*search:\s*(\d+),\s*req:\s*(\d+)\s*\}"
+        r"\{\s*id:\s*(\d+),\s*name:\s*\"[^\"]*\","
+        r"(?:\s*output:\s*\"[^\"]*\",\s*)?"
+        r"in_tok:\s*(\d+),\s*out_tok:\s*(\d+),\s*search:\s*(\d+),\s*req:\s*(\d+)\s*\}"
     )
     matches = pattern.findall(txt)
     assert len(matches) == 6, f"expected 6 use cases in HTML, found {len(matches)}"

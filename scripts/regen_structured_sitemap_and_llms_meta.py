@@ -113,7 +113,11 @@ def _md5_hex(data: bytes) -> str:
 
 
 def _utc_iso_from_timestamp(timestamp: float) -> str:
-    return _dt.datetime.fromtimestamp(timestamp, _dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
+    return (
+        _dt.datetime.fromtimestamp(timestamp, _dt.UTC)
+        .isoformat(timespec="seconds")
+        .replace("+00:00", "Z")
+    )
 
 
 def _utc_now_iso() -> str:

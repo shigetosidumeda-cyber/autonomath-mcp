@@ -76,10 +76,16 @@ RULES = (
         "old_rag_nav_label",
         re.compile(
             r"LangChain\s*/\s*LlamaIndex\s*/\s*RAG|RAG\s*前の\s*Evidence Packet|"
-            r"LangChain\s*/\s*LlamaIndex\s*RAG|長い\s*RAG\s*文脈|long\s+RAG\s+context|自前\s*RAG",
+            r"LangChain\s*/\s*LlamaIndex\s*RAG|長い\s*RAG\s*文脈|long\s+RAG\s+context|"
+            r"自前\s*RAG|汎用\s*RAG|generic\s+RAG|RAG\s+answer\s+generation",
             re.IGNORECASE,
         ),
         "Use `LangChain / LlamaIndex Evidence Packet` or another evidence-prefetch label.",
+    ),
+    Rule(
+        "old_ai_vs_jpcite_calculator_title",
+        re.compile(r"普通\s*AI\s*vs\s*jpcite|API fee delta calculator", re.IGNORECASE),
+        "Use `Evidence cost calculator`; keep API fee delta as a stated-baseline metric, not the page identity.",
     ),
     Rule(
         "bpo_first_positioning",
@@ -122,7 +128,7 @@ RULES = (
     ),
     Rule(
         "old_model_search_baseline",
-        re.compile(r"model/search API fee baseline"),
+        re.compile(r"model[-/\s]*search API fee baseline|search API fee baseline"),
         "Use `external review-cost delta reference` or `external API fee baseline`.",
     ),
     Rule(

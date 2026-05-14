@@ -424,22 +424,23 @@
  </div>
  </div>
  <p style="margin:14px 0 0;font-size:12px;color:var(--text-muted);line-height:1.6;">
- 業種別の request 数と料金例は <a href="/audiences/">業種別 use case (税理士・会計士・行政書士・診断士・M&amp;A・信金)</a> ・課金根拠は <a href="/docs/pricing/">justification</a> ・月額シミュレーションは <a href="/calculator.html">calculator</a> ・前提付きの API 料金比較は <a href="/tools/cost_saving_calculator.html">API fee delta calculator</a>。
+ 業種別の request 数と料金例は <a href="/audiences/">業種別 use case (税理士・会計士・行政書士・診断士・M&amp;A・信金)</a> ・課金根拠は <a href="/docs/pricing/">justification</a> ・月額シミュレーションは <a href="/calculator.html">calculator</a> ・前提付きの API 料金比較は <a href="/tools/cost_saving_calculator.html">Evidence cost calculator</a>。
  </p>
 
  <!-- Public cost comparison: token + web search assumptions vs jpcite units -->
  <div style="margin-top:24px;border:1px dashed var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg-alt,#fafaf9);max-width:1000px;">
-   <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text);">前提付き API 料金比較 — stated baseline (2026-05-12 公開単価)</p>
+   <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text);">API 料金差額の参考比較 — stated baseline (2026-05-12 公開単価)</p>
    <p style="font-size:13.5px;line-height:1.65;margin:0 0 8px;color:var(--text-muted);">
-     baseline は Claude Sonnet 4.5 ($3 / $15 per MTok)、Anthropic web search ($10/1k)、USD/JPY=150、下記 use case の token/search 回数です。この条件で「長文資料・検索結果を毎回 AI に渡す場合」と「jpcite の Evidence Packet を先に読む場合」の API fee だけを比較します。
+     baseline は Claude Sonnet 4.5 ($3 / $15 per MTok)、Anthropic web search ($10/1k)、USD/JPY=150、下記 use case の token/search 回数です。この条件で「長文資料・検索結果を毎回 AI に渡す場合」と「jpcite の Evidence Packet を先に読む場合」の API fee delta だけを比較します。外部 provider の token + search API fee と jpcite fee 以外は含みません。
    </p>
    <ul style="font-size:13px;line-height:1.7;margin:0 0 8px;padding-left:18px;">
      <li>1 case あたりの参考: external provider API fee <strong>¥51-¥136.50</strong> / jpcite metered fee <strong>¥6-¥15</strong></li>
-     <li>6 use case (M&amp;A DD / 補助金抽出 / 税理士措置法 / 行政書士許認可 / 信金マル経 / dev 試作) 合計参考: external provider API fee <strong>¥528</strong> / jpcite fee <strong>¥51</strong></li>
+     <li>6 use case (M&amp;A DD / 補助金抽出 / 税理士措置法 / 行政書士許認可 / 信金マル経 / dev 試作) 合計参考: external provider API fee <strong>¥528</strong> / jpcite fee <strong>¥51</strong> / API fee delta <strong>¥477</strong></li>
+     <li>同じ baseline で use case #3 を 100 回反復する参考: external provider API fee <strong>¥7,650</strong> / jpcite fee <strong>¥600</strong> / monthly API fee delta <strong>¥7,050</strong> / annualized reference <strong>¥84,600</strong></li>
      <li>同じ確認を反復する業務では、Evidence Packet を先に読むことで入力文脈を小さくできます。ただし安くなるかは model、cache、prompt、検索回数に依存します。</li>
    </ul>
    <p style="font-size:12.5px;margin:0;color:var(--text-muted);line-height:1.6;">
-     計算式・前提は <a href="/tools/cost_saving_calculator.html">API fee delta calculator</a> で確認できます。実請求額は provider、model、cache、tool 設定、為替、prompt に依存します。業務効果、売上、利益、専門判断の価値は含みません。
+     計算式・前提は <a href="/tools/cost_saving_calculator.html">Evidence cost calculator</a> で確認できます。実請求額は provider、model、cache、tool 設定、為替、prompt に依存します。業務効果、売上、利益、専門判断の価値は含みません。
    </p>
  </div>
  </section>
