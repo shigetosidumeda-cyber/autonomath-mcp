@@ -240,10 +240,7 @@ def build_enforcement_groups() -> dict:
         # gracefully when no entity is parseable.
         if not name_part:
             name_part = fname[:-5]
-        if fname.startswith("case-jbaudit"):
-            ministry = "会計検査院"
-        else:
-            ministry = enf_ministry(head)
+        ministry = "会計検査院" if fname.startswith("case-jbaudit") else enf_ministry(head)
         slug = fname[:-5]
         min_buckets[ministry].append((slug, name_part, title))
     return {
@@ -297,7 +294,7 @@ def he(s: str) -> str:
 
 
 def header_html(*, brand_active: str = "") -> str:
-    return f"""<header class="site-header" role="banner">
+    return """<header class="site-header" role="banner">
  <div class="container header-inner">
  <a class="brand" href="/" aria-label="jpcite ホーム">jpcite</a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
@@ -502,7 +499,8 @@ def render_cases_index(data: dict) -> str:
         '詳細は <a href="/docs/">API reference</a> 参照。</p>\n'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
-        '<a href="/dashboard.html">API キー発行</a></p>\n</section>\n'
+        '<a href="/pricing.html#api-paid">API キー発行</a> · '
+        '<a href="/dashboard.html">既存キー管理</a></p>\n</section>\n'
     )
 
     parts.append(
@@ -658,7 +656,8 @@ def render_laws_index(data: dict) -> str:
         '詳細は <a href="/docs/">API reference</a> 参照。</p>\n'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
-        '<a href="/dashboard.html">API キー発行</a></p>\n</section>\n'
+        '<a href="/pricing.html#api-paid">API キー発行</a> · '
+        '<a href="/dashboard.html">既存キー管理</a></p>\n</section>\n'
     )
 
     parts.append(
@@ -806,7 +805,8 @@ def render_enforcement_index(data: dict) -> str:
         'で呼べます。詳細は <a href="/docs/">API reference</a> 参照。</p>\n'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
-        '<a href="/dashboard.html">API キー発行</a> · '
+        '<a href="/pricing.html#api-paid">API キー発行</a> · '
+        '<a href="/dashboard.html">既存キー管理</a> · '
         '<a href="/bookmarklet.html">ブラウザ拡張で 1 クリック検索</a></p>\n</section>\n'
     )
 

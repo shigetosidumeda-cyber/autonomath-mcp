@@ -48,8 +48,8 @@ codex mcp env jpcite JPCITE_API_KEY=jc_xxxxx
 ## 実行 (curl / Python / TypeScript)
 ### curl
 ```bash
-curl https://api.jpcite.com/v1/healthz
-# 期待: {"status":"ok","tools_default_gate":139}
+curl https://api.jpcite.com/healthz
+# 期待: {"status":"ok"}
 
 codex --version
 uvx --version
@@ -70,7 +70,7 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
 {
   "fetched_at": "2026-05-11T09:00:00Z",
   "source_url": "https://api.jpcite.com/mcp",
-  "tools_loaded_count": 139,
+  "tools_loaded_count": 151,
   "tools_sample": [
     "search_programs", "get_corp_360", "check_invoice_status",
     "list_adoptions", "search_tax_incentives",

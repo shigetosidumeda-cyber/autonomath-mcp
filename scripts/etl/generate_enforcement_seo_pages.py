@@ -650,7 +650,8 @@ def _render_index(
         'で呼べます。詳細は <a href="/docs/">API reference</a> 参照。</p>'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
-        '<a href="/dashboard.html">API キー発行</a> · '
+        '<a href="/pricing.html#api-paid">API キー発行</a> · '
+        '<a href="/dashboard.html">既存キー管理</a> · '
         '<a href="/bookmarklet.html">ブラウザ拡張で 1 クリック検索</a></p>'
         "</section>"
     )
@@ -768,7 +769,8 @@ def _render_detail(
         f'<code>check_enforcement_am(houjin_bangou="{row.houjin_bangou}")</code></p>'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
-        '<a href="/dashboard.html">API キー発行</a> · '
+        '<a href="/pricing.html#api-paid">API キー発行</a> · '
+        '<a href="/dashboard.html">既存キー管理</a> · '
         '<a href="/bookmarklet.html">ブラウザ拡張</a></p>'
         "</section>"
     )

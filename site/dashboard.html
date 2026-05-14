@@ -207,11 +207,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -241,10 +244,12 @@
  <a class="brand" href="/" aria-label="jpcite ホーム">
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
- <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="about.html">運営について</a>
- <a href="products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
+	 <nav class="site-nav" aria-label="主要ナビゲーション">
+	 <a href="about.html">運営について</a>
+	 <a href="products.html">プロダクト</a>
+	 <a href="/connect/">接続</a>
+	 <a href="/prompts/">Prompts</a>
+	 <a href="/docs/">ドキュメント</a>
  <a href="pricing.html">料金</a>
  <a href="audiences/">利用者層</a>
  <details class="nav-trust">
@@ -292,7 +297,7 @@
  <span aria-hidden="true">⚡ </span>5 分で最初の API 呼び出し
  </h2>
  <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;">
- 下のいずれか 1 つを選んでコピペするだけ。あなたの API キー (もしくは匿名 3 リクエスト/日) で即座に動きます。詳細手順は各 <a href="/integrations/">統合ガイド</a> を参照。
+ 下のいずれか 1 つを選んでコピペするだけ。あなたの API キー (もしくは匿名 3 リクエスト/日) で即座に動きます。詳細手順は <a href="/connect/">接続ガイド</a> を参照。
  </p>
  <div role="tablist" aria-label="Quick start client" style="display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:0 0 14px;">
  <button type="button" role="tab" id="qs-tab-curl" aria-selected="true" aria-controls="qs-panel-curl"
@@ -315,17 +320,18 @@
  </div>
 
  <div role="tabpanel" id="qs-panel-claude" aria-labelledby="qs-tab-claude" class="qs-panel" hidden>
-          <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ターミナルで <code>pip install jpcite-mcp</code> · <strong>2.</strong> 下を <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) に貼り付け · <strong>3.</strong> Claude Desktop 再起動。</p>
+          <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> <code>uvx autonomath-mcp</code> が使える状態にする · <strong>2.</strong> 下を <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) に貼り付け · <strong>3.</strong> Claude Desktop 再起動。PyPI package 名は legacy 維持で <code>autonomath-mcp</code>、サービス名は jpcite です。</p>
  <pre id="qs-claude-snippet" class="qs-code" aria-label="Claude Desktop config"><code>{
  "mcpServers": {
  "jpcite": {
- "command": "jpcite-mcp",
+ "command": "uvx",
+ "args": ["autonomath-mcp"],
  "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
  }
  }
 }</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-claude-snippet">コピー</button>
- <p class="qs-note"><a href="/integrations/claude-desktop.html">Claude Desktop 統合ガイド (5 分)</a></p>
+ <p class="qs-note"><a href="/connect/claude-code">Claude Desktop 統合ガイド (5 分)</a></p>
  </div>
 
  <div role="tabpanel" id="qs-panel-cursor" aria-labelledby="qs-tab-cursor" class="qs-panel" hidden>
@@ -333,11 +339,11 @@
  <pre id="qs-cursor-snippet" class="qs-code" aria-label="Cursor MCP config"><code>{
  "name": "jpcite",
  "command": "uvx",
- "args": ["jpcite-mcp"],
+ "args": ["autonomath-mcp"],
  "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"}
 }</code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-cursor-snippet">コピー</button>
- <p class="qs-note"><a href="/integrations/cursor.html">Cursor 統合ガイド (4 分)</a></p>
+ <p class="qs-note"><a href="/connect/cursor">Cursor 統合ガイド (4 分)</a></p>
  </div>
 
  <div role="tabpanel" id="qs-panel-cline" aria-labelledby="qs-tab-cline" class="qs-panel" hidden>
@@ -346,7 +352,7 @@
  "mcpServers": {
  "jpcite": {
  "command": "uvx",
- "args": ["jpcite-mcp"],
+ "args": ["autonomath-mcp"],
  "env": {"JPCITE_API_KEY": "<span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>"},
  "autoApprove": ["search_programs", "get_program", "search_laws"]
  }
@@ -359,14 +365,14 @@
  <div role="tabpanel" id="qs-panel-chatgpt" aria-labelledby="qs-tab-chatgpt" class="qs-panel" hidden>
 <p class="qs-note" style="margin:0 0 8px;"><strong>1.</strong> ChatGPT (Plus/Team/大規模利用) → My GPTs → Create · <strong>2.</strong> Configure → Actions → Import OpenAPI · <strong>3.</strong> 下の URL を貼り付け · <strong>4.</strong> Authentication → API キー → 下の値。</p>
 <pre id="qs-chatgpt-snippet" class="qs-code" aria-label="ChatGPT Custom GPT config"><code># OpenAPI URL
-https://api.jpcite.com/v1/openapi.agent.json
+	https://jpcite.com/openapi.agent.gpt30.json
 
 # Authentication
 Type: API Key
 Header name: X-API-Key
 Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span></code></pre>
  <button type="button" class="btn-ghost qs-copy" data-copy-target="qs-chatgpt-snippet">コピー</button>
- <p class="qs-note"><a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT 統合ガイド (5 分)</a></p>
+ <p class="qs-note"><a href="/connect/chatgpt">ChatGPT Custom GPT 統合ガイド (5 分)</a></p>
  </div>
  </section>
  <style>
@@ -468,6 +474,16 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <strong>新規ユーザーは <a href="/docs/getting-started/">5 分クイックスタート</a></strong> か
  <a href="pricing.html#api-paid">Pricing で API キー発行 (¥3.30/unit 完全従量)</a> へ。
  </p>
+
+ <section class="stat-card" aria-labelledby="dashboard-workflows-title" style="margin:0 0 16px;">
+ <h2 id="dashboard-workflows-title" class="dash-section-title" style="font-size:16px;margin:0 0 8px;">保存検索・アラート・Webhook</h2>
+ <p class="stat-note" style="margin:0 0 10px;">API キーを貼り付けると、保存検索、法令改正アラート、Webhook 通知の管理パネルが表示されます。検索・確認 call は税別 ¥3/billable unit (税込 ¥3.30)。通知の有料条件は有料利用前に画面上で表示します。</p>
+ <p style="margin:0;display:flex;flex-wrap:wrap;gap:8px;">
+ <a class="btn btn-secondary" href="#api-key-section">API キーを貼り付ける</a>
+ <a class="btn btn-secondary" href="/products#alerts">通知の成果物を見る</a>
+ <a class="btn btn-secondary" href="/docs/webhooks/">Webhook docs</a>
+ </p>
+ </section>
 
  <section id="login-options" aria-labelledby="login-options-title" class="stat-card" style="margin:0 0 20px;padding:18px 20px;border:1px solid var(--accent,#0066cc);background:var(--accent-soft,#f6fbff);">
  <h2 id="login-options-title" style="font-size:16px;font-weight:700;margin:0 0 8px;letter-spacing:0.01em;">
@@ -639,15 +655,15 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </nav>
 
  <section id="quota-counter" class="quota-counter" aria-labelledby="quota-counter-label" hidden>
- <p id="quota-counter-label" class="stat-label">今月の使用量 (匿名)</p>
+ <p id="quota-counter-label" class="stat-label">匿名クォータ</p>
  <p class="quota-counter-headline">
  <span class="quota-counter-value">0</span>
- <span class="unit"> / <span class="quota-counter-limit">—</span> リクエスト 今月</span>
+ <span class="unit"> / <span class="quota-counter-limit">—</span> リクエスト/日</span>
  <span class="quota-counter-pct"></span>
  </p>
  <div class="quota-counter-bar"
  role="progressbar"
- aria-label="月次 API 呼び出し上限 (JST 翌日 00:00 リセット)"
+ aria-label="匿名リクエスト上限 (JST 翌日 00:00 リセット)"
  aria-valuenow="0"
  aria-valuemin="0"
  aria-valuemax="100">
@@ -688,7 +704,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
 
  <div class="keybox" id="api-key-section">
  <p class="label">あなたの API キー</p>
- <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
+ <span class="key">jc_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
  <p class="hash-prefix">ハッシュ前置: ————————</p>
  <button class="btn-danger" id="dash-rotate-btn" type="button">キーを再発行</button>
  <button class="btn-ghost" id="dash-copy-btn" type="button">前置をコピー</button>
@@ -698,11 +714,11 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <div class="stat-card" id="billing-section" style="margin:0 0 16px">
  <p class="stat-label">請求</p>
  <p class="stat-value" style="font-size:20px" data-billing-headline>読み込み中…</p>
- <p class="stat-note" style="margin:8px 0 14px">ご利用は ¥3/課金単位 (税別 / 税込 ¥3.30) の従量課金です。請求書 (適格請求書) は Stripe ポータルからダウンロードできます。</p>
+ <p class="stat-note" style="margin:8px 0 14px">ご利用は税別 ¥3/課金単位 (税込 ¥3.30) の従量課金です。請求書 (適格請求書) は Stripe ポータルからダウンロードできます。</p>
  <button class="btn btn-primary" id="dash-billing-btn" type="button">Stripe ポータルを開く &rarr;</button>
  <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
  ご不要になられましたら、Stripe ポータルから <strong>サブスクリプションをキャンセル</strong> できます。
- キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/課金単位 従量請求が発生します。次月以降の課金は停止します。
+ キャンセル後も当月末までは API アクセス可能で、当月利用分のみ税別 ¥3/課金単位 (税込 ¥3.30) の従量請求が発生します。次月以降の課金は停止します。
  </p>
  </div>
 
@@ -710,7 +726,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <p class="stat-label">既存 API キーの利用詳細を表示 (キーを貼り付け・ワンショット閲覧)</p>
  <p class="stat-note" style="margin:0 0 12px;">
  既に発行済みの jpcite API キー (Stripe Checkout もしくは メール トライアル経由) を貼り付けると、 利用量・残予算・課金履歴を表示します。
- ブラウザの localStorage に保存され、 /v1/me/dashboard へ Bearer ヘッダとして送信されます。
+ ブラウザの localStorage に保存され、 /v1/me/dashboard へ X-API-Key ヘッダとして送信されます。
  まだ鍵をお持ちでない方は <a href="pricing.html#api-paid">Pricing</a> または <a href="trial.html">トライアル</a> から先に発行してください。
  </p>
  <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -725,7 +741,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </section>
 
  <section id="dash2-summary" class="stat-card" style="margin:0 0 16px;display:none;">
- <p class="stat-label">過去 30 日 利用量 (Bearer)</p>
+ <p class="stat-label">過去 30 日 利用量 (X-API-Key)</p>
  <p class="stat-value" id="dash2-summary-headline">— リクエスト / ¥— 支払い</p>
  <div class="quota-bar" aria-hidden="true"><div class="quota-fill" id="dash2-cap-fill" style="width:0%"></div></div>
  <p class="stat-note" id="dash2-summary-note">月内予算 (上限) を設定すると、使い切った時点で 503 + cap_reached:true で停止します。</p>
@@ -779,8 +795,8 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <section id="dash2-recommend" class="stat-card" style="margin:0 0 16px;display:none;">
  <p class="stat-label">ツール推奨 (意図 → API 経路)</p>
  <p class="stat-note" style="margin:0 0 10px;">
- 開発者向け: 自然文の意図から /v1/* エンドポイント候補を返します。
- 中小企業 は <a href="line.html">メール通知チャネル</a> と相談前プレ診断へ誘導する UI を想定。
+	 開発者向け: 自然文の意図から、長い資料を毎回 LLM に読ませる前に使う Evidence Packet / output artifact の候補 endpoint を返します。
+	 中小企業 は <a href="line.html">メール通知チャネル</a> と Evidence Intake へ誘導する UI を想定。
  </p>
  <form id="dash2-rec-form" style="display:flex;gap:8px;flex-wrap:wrap;">
  <label for="dash2-rec-intent" class="visually-hidden">意図</label>
@@ -796,7 +812,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <h2 class="dash-section-title"><span aria-hidden="true">📋 </span>法令改正・制度新設アラート</h2>
  <p class="stat-note" style="margin:0 0 12px;">
  法令改正・制度新設・行政処分などの差分を Webhook 通知 (HTTPS のみ) または メール で
- 先回り通知します。成功配信は税別 ¥3/通知 (税込 ¥3.30) の完全従量です。
+ 先回り通知します。API/MCP の検索・確認 call は税別 ¥3/billable unit (税込 ¥3.30)。通知の有料条件は有料利用前に表示します。
  <code>filter_type</code> は <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
  <code>industry_jsic</code> / <code>all</code> から選択、<code>min_severity</code> は
  <code>critical</code> (制度終了・適用条件 変更) / <code>important</code> (金額・対象変更) /
@@ -884,7 +900,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  検索条件 (q / 都道府県 / 対象事業者 / 金額帯など) を保存しておくと、
  毎日 06:00 JST に最新の制度差分を自動スキャンし、
  新着があった場合のみ <strong>ダイジェストメール</strong> を配信します。
- 各配信は <strong>税別 ¥3/配信 (税込 ¥3.30) の従量課金</strong> です (登録自体は無料)。
+ API / MCP の検索・確認 call は税別 ¥3/billable unit (税込 ¥3.30)。有料通知フローは有効化前に条件を画面で表示します。
  <strong>税理士法 §52 / 弁護士法 §72</strong> 該当の業務はおこないません — 配信内容は
  公開情報の検索結果であり、税務助言・法律判断は資格者にご確認ください。
  </p>
@@ -968,7 +984,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </form>
  <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
  q / 都道府県 / 対象事業者 / amount_max のいずれか最低 1 つが必須。
- 配信は成功通知 1 件あたり ¥3 の従量課金、登録は最大 50 件/key。
+ API/MCP の検索・確認 call は税別 ¥3/billable unit (税込 ¥3.30)、登録は最大 50 件/key。通知の有料条件は有料利用前に表示します。
  </p>
  </section>
 
@@ -1174,18 +1190,18 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
       </script>
 
  <section id="dash2-webhooks" class="stat-card" style="margin:0 0 16px;display:none;">
- <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>Webhook 通知 (成功配信ごと税別 ¥3)</h2>
+ <h2 class="dash-section-title"><span aria-hidden="true">🔔 </span>Webhook 通知</h2>
  <p class="stat-note" style="margin:0 0 12px;">
  自社の HTTPS エンドポイントに、 <code>program.created</code> / <code>program.amended</code> /
  <code>enforcement.added</code> / <code>tax_ruleset.amended</code> /
  <code>invoice_registrant.matched</code> の各イベントを 署名検証 (SHA256) 付きで POST します。
- <strong>1 回成功配信 = 税別 ¥3/通知 (税込 ¥3.30)</strong> です。失敗時の再試行は課金対象外です。
- 5 回連続で失敗すると、意図しない課金を防ぐため自動で無効化します。 詳細は
+ API/MCP の検索・確認 call は税別 ¥3/billable unit (税込 ¥3.30) です。通知の有料条件は有料利用前に表示し、失敗時の再試行は課金対象外です。
+ 5 回連続で失敗すると、意図しない配信を防ぐため自動で無効化します。 詳細は
  <a href="/docs/webhooks/">Webhook 通知 docs</a>。
  </p>
  <p class="stat-note" style="margin:0 0 12px;color:var(--text-muted);font-size:12px;">
- 本サービスは公開情報の集約 API であり、 税務助言・法律相談ではありません (§52)。
- 配信される 送信内容 は政府一次資料と公開データに基づく機械集約結果です。
+ 本サービスは一次資料 URL・取得時刻・known gaps を返す source-linked Evidence/output API であり、 税務助言・法律相談ではありません (§52)。
+ 配信される送信内容は政府一次資料と公開データに基づく機械生成の根拠 packet です。
  </p>
 
  <p id="dash2-webhooks-banner" role="status" aria-live="polite"
@@ -1531,7 +1547,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  </div>
 
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px 0;border-top:1px solid var(--border);padding-top:16px;">
-本サービスは情報検索です。 個別具体的な税務・法律判断は資格を有する専門家にご相談ください (税理士法 §52 / 弁護士法 §72)。
+	本サービスは回答生成前の evidence/output API です。個別具体的な税務・法律判断、申請書類作成、提出代行は提供しません (税理士法 §52 / 弁護士法 §72)。
 </p>
 
 	<!-- Account dashboard tabs. -->
@@ -1575,7 +1591,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    <span class="w9-key-pill jc">jc_</span> 現行発行 (Stripe Checkout)
    <span class="w9-key-pill sk">sk_</span> 過去発行 (互換)
 	   <span class="w9-key-pill am">am_</span> 旧キー互換
-	   いずれも HMAC-SHA256 hash で照合され、 GET /v1/me/api_keys で一覧取得します。 新規キーは Stripe Checkout 経由のみ発行可能。
+	   いずれも HMAC-SHA256 hash で照合され、 GET /v1/me/api_keys で一覧取得します。 Paid API key は Stripe Checkout 経由、トライアルキーはメールトライアル経由で発行します。
   </p>
   <table class="w9-table" id="w9-keys-table">
    <thead><tr>
@@ -1597,7 +1613,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <div role="tabpanel" id="w9-panel-usage" aria-labelledby="w9-tab-usage" class="w9-panel" hidden>
   <h3>利用量と上限</h3>
   <p class="w9-note">
-	   匿名 = 3 リクエスト/日/IP (JST 翌日 00:00 リセット)。 有料利用は ¥3/課金単位 (税込 ¥3.30) の完全従量で、月額上限は任意設定できます。 月次見込みは 30 日線形外挿です。
+	   匿名 = 3 リクエスト/日/IP (JST 翌日 00:00 リセット)。 有料利用は税別 ¥3/課金単位 (税込 ¥3.30) の完全従量で、月額上限は任意設定できます。 月次見込みは 30 日線形外挿です。
   </p>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
    <div class="stat-card" style="margin:0;">
@@ -1608,7 +1624,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    <div class="stat-card" style="margin:0;">
     <p class="stat-label">今月の従量利用</p>
     <p class="stat-value" style="font-size:24px;"><span id="w9-paid-used">—</span><span class="unit"> リクエスト</span></p>
-    <p class="stat-note">¥3 × 件数 / 月末 Stripe 締め</p>
+    <p class="stat-note">税別 ¥3 × 件数 / 月末 Stripe 締め</p>
    </div>
    <div class="stat-card" style="margin:0;">
     <p class="stat-label">burn rate (月次外挿)</p>
@@ -1633,7 +1649,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    <span aria-hidden="true">💳 </span>Stripe Customer Portal を開く &rarr;
   </button>
   <p class="w9-note" style="margin-top:14px;">
-	   解約: Portal → サブスクリプションをキャンセル。 月末まで API 利用可能、当月利用分のみ ¥3/件の従量請求が発生します。 次月以降は停止します。
+	   解約: Portal → サブスクリプションをキャンセル。 月末まで API 利用可能、当月利用分のみ税別 ¥3/件 (税込 ¥3.30) の従量請求が発生します。 次月以降は停止します。
   </p>
  </div>
 
@@ -1641,7 +1657,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <div role="tabpanel" id="w9-panel-saved" aria-labelledby="w9-tab-saved" class="w9-panel" hidden>
   <h3>保存条件</h3>
   <p class="w9-note">
-	   検索条件 (q / 都道府県 / 対象事業者 / 金額帯 / 顧問先) を保存できます。毎日 06:00 JST に新着差分を自動スキャンし、ダイジェストメールを成功配信 ¥3/通知で送信します。
+	   検索条件 (q / 都道府県 / 対象事業者 / 金額帯 / 顧問先) を保存できます。毎日 06:00 JST に新着差分を自動スキャンし、ダイジェストメールの有料条件は有料利用前に表示します。
   </p>
   <p>
    <a href="#saved-searches" class="btn btn-primary" style="padding:10px 18px;font-size:13px;font-weight:600;">
@@ -1657,7 +1673,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
  <div role="tabpanel" id="w9-panel-hooks" aria-labelledby="w9-tab-hooks" class="w9-panel" hidden>
   <h3>Webhook 通知</h3>
   <p class="w9-note">
-	   自社 HTTPS endpoint に program.created / program.amended / enforcement.added / tax_ruleset.amended / invoice_registrant.matched / houjin_watch.amended を SHA256 署名検証付きで POST します。 成功配信は ¥3/通知の従量請求です。5 連続失敗で自動無効化し、再試行は非課金です。
+	   自社 HTTPS endpoint に program.created / program.amended / enforcement.added / tax_ruleset.amended / invoice_registrant.matched / houjin_watch.amended を SHA256 署名検証付きで POST します。通知の有料条件は有料利用前に表示します。5 連続失敗で自動無効化し、再試行は非課金です。
   </p>
   <p>
    <a href="#dash2-webhooks" class="btn btn-primary" style="padding:10px 18px;font-size:13px;font-weight:600;">
@@ -1665,7 +1681,7 @@ Auth value: <span class="qs-key-slot">jc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
    </a>
   </p>
   <p class="w9-note" style="margin-top:14px;">
-	   仕様詳細は <a href="/docs/webhooks/">Webhook ドキュメント</a>。 上の <a href="#dash2-alerts">法令改正アラート</a> も同じ ¥3/通知の従量請求です。
+	   仕様詳細は <a href="/docs/webhooks/">Webhook ドキュメント</a>。 上の <a href="#dash2-alerts">法令改正アラート</a> も有料条件を利用前に表示します。
   </p>
  </div>
 

@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>jpcite — AI agent が日本制度を扱う前に呼ぶ Evidence infra。</title>
-<meta name="description" content="人 SaaS ではなく AI agent infrastructure。Custom GPT / Claude MCP / Cursor / Codex / Anthropic API direct から日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得。¥3/req metered、tier なし。">
+<meta name="description" content="人 SaaS ではなく AI agent infrastructure。Custom GPT / Claude MCP / Cursor / Codex / Anthropic API direct から日本の公的制度・法令・判例・税務情報を一次資料 URL・取得時刻付き Evidence Packet として取得。税別 ¥3/billable unit metered、tier なし。">
 
 <meta property="og:title" content="jpcite — 日本の制度根拠を AI に渡す Evidence API">
 <meta property="og:description" content="長いPDFや公式ページをLLMへ渡す前に、一次資料URL・取得時刻・既知の欠落を短いEvidence Packetで取得。文脈サイズ比較は条件依存。">
@@ -32,7 +32,7 @@
 <link rel="service-desc" type="application/openapi+json" title="Full OpenAPI" href="https://api.jpcite.com/v1/openapi.json">
 <link rel="service-desc" type="application/json" title="MCP server manifest" href="/server.json">
 <link type="text/plain" rel="author" href="/humans.txt">
-<link rel="alternate" type="application/rss+xml" title="jpcite お知らせ" href="/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="jpcite お知らせ・リリース" href="/rss.xml">
 <link rel="alternate" type="application/rss+xml" title="jpcite Announcements (English)" href="/en/rss.xml">
 <link rel="preconnect" href="https://api.jpcite.com" crossorigin>
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
@@ -60,10 +60,10 @@
   "inLanguage": "ja",
   "offers": [
     {"@type": "Offer", "name": "成果物作成 (API/MCP入口)", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
-    {"@type": "Offer", "name": "相談前プレ診断", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
+    {"@type": "Offer", "name": "Evidence Intake Sheet", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
     {"@type": "Offer", "name": "法令改正アラート", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
     {"@type": "Offer", "name": "埋込ウィジェット", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"},
-    {"@type": "Offer", "name": "Evidence-to-Expert Handoff", "url": "https://jpcite.com/advisors", "description": "根拠付き相談パックを専門家レビュー前の evidence brief として渡す導線"}
+    {"@type": "Offer", "name": "Review Handoff Packet", "url": "https://jpcite.com/advisors", "description": "一次資料・known gaps・確認質問をレビュー前の evidence brief として渡す導線"}
   ],
   "featureList": [
     "検索対象制度 11,601 件 / 全カタログ 14,472 件 + 採択事例 2,286 件 + 融資 108 件 + 行政処分 1,185 件を 1 つの API で横断検索",
@@ -219,8 +219,8 @@
     },
     {
       "@type": "Product",
-      "name": "jpcite 相談前プレ診断",
-      "description": "保存検索、締切リマインド、相談パック更新の通知チャネル。SME 経営者 / 士業向け。",
+      "name": "jpcite Evidence Intake Sheet",
+      "description": "保存検索、締切リマインド、Review Handoff Packet 更新の通知チャネル。SME 経営者 / 士業向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/line",
       "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
@@ -236,15 +236,15 @@
     {
       "@type": "Product",
       "name": "jpcite 埋込 Widget",
-      "description": "自社サイトに相談前プレ診断入口を設置。税理士 HP / 商工会議所 / 士業事務所向け。",
+      "description": "自社サイトに Evidence Intake Sheet 入口を設置。税理士 HP / 商工会議所 / 士業事務所向け。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/widget",
       "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
     },
     {
       "@type": "Product",
-      "name": "jpcite Evidence-to-Expert Handoff",
-      "description": "一次資料 URL・取得時刻・known gaps 付きの evidence brief を、専門家レビュー前の相談パックとして渡す導線。",
+      "name": "jpcite Review Handoff Packet",
+      "description": "一次資料 URL・取得時刻・known gaps 付きの evidence brief を、AI・社内担当者・専門家レビュー前に渡す導線。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/advisors",
       "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
@@ -304,11 +304,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -338,9 +341,11 @@
  <a class="brand" href="/" aria-label="jpcite ホーム">
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
- <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="products.html">使い方</a>
- <a href="pricing.html">料金</a>
+	 <nav class="site-nav" aria-label="主要ナビゲーション">
+	 <a href="products.html">成果物</a>
+	 <a href="/connect/">接続</a>
+	 <a href="/prompts/">Prompts</a>
+	 <a href="pricing.html">料金</a>
 	 <a href="audiences/">利用者層</a>
  <a href="/docs/">API ドキュメント</a>
  <a href="about.html">会社</a>
@@ -372,8 +377,8 @@
 
  <section class="hero" aria-labelledby="hero-title">
  <div class="container">
-	 <h1 id="hero-title">ChatGPT や Claude に、日本の制度を正しく引用させる API。</h1>
-	 <p class="hero-sub">あなたが普段使う AI ツール (Claude / Cursor / ChatGPT / Codex 等) に jpcite を 1 行追加するだけで、補助金・法令・行政処分の最新情報を <strong>一次資料 URL 付き</strong> で答えるようになります。AI の頭脳は AI 側、jpcite は「国の一次資料の蛇口」(Evidence prefetch layer) に徹します。1 call = ¥3 完全従量・匿名 3 req/日無料。</p>
+	 <h1 id="hero-title">AI が答える前に、日本の制度根拠を Evidence Packet で返す API。</h1>
+			 <p class="hero-sub">Claude / Cursor / ChatGPT / Codex から 1 行で呼び出すと、補助金・法令・行政処分などの収録済み公表情報を <strong>一次資料 URL・取得時刻・known gaps 付きの成果物</strong> として返します。AI の推論は AI 側、jpcite は判断前に差し込む evidence/output layer に徹します。通常 1 call = 1 billable unit = 税別 ¥3 / 税込 ¥3.30、匿名 3 req/日/IP 無料。</p>
 
  <figure class="hero-stack" aria-labelledby="hero-stack-title" style="margin:18px 0 18px;padding:18px 20px;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:var(--bg-alt,#fafaf9);">
 	 <figcaption id="hero-stack-title" style="font-size:13px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 12px;">3 段構造 — 人 → AI agent → jpcite</figcaption>
@@ -386,49 +391,117 @@
 	 </ol>
  </figure>
 
-	 <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">jpcite 側は LLM 推論を行わず、検索・構造化・出典メタデータ返却に徹します。agent dev の billing は自前 LLM token と独立で、jpcite は ¥3/unit 固定式。Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions、自前 RAG は REST から呼び出します。</p>
+	 <p class="hero-example" style="margin:18px 0 14px;font-size:15px;line-height:1.7;color:var(--text-soft);">jpcite 側は LLM 推論を行わず、検索・構造化・出典メタデータ返却に徹します。agent dev の billing は自前 LLM token と独立で、jpcite は税別 ¥3/billable unit 固定式。Claude Desktop / Cursor / Cline は MCP、ChatGPT Custom GPT は OpenAPI Actions、社内 AI・業務システムは REST から呼び出します。</p>
 
  <div class="cta-row">
-	 <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">匿名 3 req/日で動作確認 →</a>
-	 <a href="/connect/claude-code.html" data-cta-variant="hero-connect-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">AI agent dev: 1 行で接続 (Claude/Cursor/ChatGPT/Codex) →</a>
+	 <a class="btn btn-primary" href="/playground.html?flow=evidence3" data-cta-variant="hero-evidence3-primary">匿名 3 req/日/IP で動作確認 →</a>
+	 <a href="/connect/" data-cta-variant="hero-connect-secondary" style="align-self:center;font-size:15px;color:var(--text);text-decoration:underline;text-underline-offset:3px;">AI agent dev: 接続ガイド (Claude/Cursor/ChatGPT/Codex) →</a>
  <a href="/pricing.html" data-cta-variant="hero-pricing-tertiary" style="align-self:center;font-size:14px;color:var(--text-muted);text-decoration:underline;text-underline-offset:3px;">料金: ¥3 per billable unit (税込 ¥3.30、完全従量) →</a>
  </div>
 
  <section aria-labelledby="hero-metrics-title" style="margin:24px 0 18px;">
- <h2 id="hero-metrics-title" style="font-size:14px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 12px;">主要 metrics (2026-05-11 snapshot)</h2>
+ <h2 id="hero-metrics-title" style="font-size:14px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 12px;">主要 metrics (current public catalog snapshot)</h2>
  <div class="hero-metrics-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;">
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg,#fff);">
  <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">11,601</p>
  <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">programs (S=114 / A=1,340)</p>
  </div>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg,#fff);">
- <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">6,493</p>
- <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">laws 全文 + 9,484 catalog</p>
+ <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">9,484</p>
+ <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">laws catalog (6,493 full text)</p>
  </div>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg,#fff);">
  <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">8</p>
  <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">業法 fence (envelope 自動)</p>
  </div>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg,#fff);">
- <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">139</p>
- <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">MCP tools (default gate)</p>
+ <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">151</p>
+ <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">MCP tools (advertised; availability on /status)</p>
  </div>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg,#fff);">
- <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">218</p>
+ <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">302</p>
  <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">REST paths (OpenAPI)</p>
  </div>
  </div>
  </section>
 
- <section aria-labelledby="hero-agent-devs-title" style="margin:24px 0 18px;padding:18px 20px;border:2px solid var(--accent,#0066cc);border-radius:12px;background:var(--bg,#fff);color:var(--text);">
+ <section aria-labelledby="output-gallery-title" style="margin:28px 0 20px;">
+ <p style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 8px;">v0.4.0 output surface</p>
+ <h2 id="output-gallery-title" style="font-size:22px;line-height:1.35;margin:0 0 8px;">増えた機能は、12 種類の「保存できるアウトプット」として使えます。</h2>
+ <p style="font-size:14px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);">302 REST paths / 151 MCP tools / 9 dataset は部品名です。フロントでは、ユーザーが受け取る成果物単位で選べるように整理しています。</p>
+ <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;">
+ <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+ <h3 style="font-size:15px;margin:0 0 6px;">Evidence Packet</h3>
+ <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">一次資料 URL、取得時刻、known gaps、業法 fence、corpus snapshot を AI に渡せる JSON/Markdown で返します。</p>
+ </article>
+ <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+ <h3 style="font-size:15px;margin:0 0 6px;">会社フォルダ</h3>
+ <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">法人番号・T 番号・会社名から、同定、適格事業者、行政処分、採択履歴、次の質問を 1 社単位でまとめます。</p>
+ </article>
+ <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+ <h3 style="font-size:15px;margin:0 0 6px;">公開情報 DD</h3>
+ <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">M&amp;A、融資、取引開始前の裏取り用に、公開情報、処分履歴、補助金履歴、未確認範囲を分けて出します。</p>
+ </article>
+ <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+ <h3 style="font-size:15px;margin:0 0 6px;">顧問先月次レビュー</h3>
+ <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">顧問先ごとに制度候補、税制変更、締切、確認質問を月次で再生成します。</p>
+ </article>
+	 <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+	 <h3 style="font-size:15px;margin:0 0 6px;">申請戦略パック</h3>
+	 <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">地域・業種・投資額から候補制度、除外条件、併用注意、必要資料、面談質問を下書き化します。</p>
+	 </article>
+	 <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+	 <h3 style="font-size:15px;margin:0 0 6px;">併用・排他チェック表</h3>
+	 <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">制度 ID リストから、併用不可、前提制度不足、unknown、確認すべき一次資料を表にします。</p>
+	 </article>
+	 <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+	 <h3 style="font-size:15px;margin:0 0 6px;">インボイス取引先確認表</h3>
+	 <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">T 番号・法人番号・取引先 CSV から、登録状態、法人同定、変更履歴、再確認行を返します。</p>
+	 </article>
+	 <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+	 <h3 style="font-size:15px;margin:0 0 6px;">Source Receipt</h3>
+	 <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">source URL・制度 ID・法令 ID ごとに、取得時刻、content hash、known gaps、再確認対象を残します。</p>
+	 </article>
+	 <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+	 <h3 style="font-size:15px;margin:0 0 6px;">法令・判例引用候補</h3>
+	 <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">法令名・条文・争点キーワードから、AI 回答やレビュー資料に渡す引用候補を出します。</p>
+	 </article>
+ <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+ <h3 style="font-size:15px;margin:0 0 6px;">改正・保存検索通知</h3>
+ <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">法令改正、制度変更、保存検索の差分をメール、RSS、Webhook で受け取れます。</p>
+ </article>
+ <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+ <h3 style="font-size:15px;margin:0 0 6px;">費用・支払い制御</h3>
+ <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">本番の有料 API key は Stripe Checkout で即時発行。Credit Wallet、x402、Idempotency-Key、X-Cost-Cap-JPY は agent の自動実行と上限管理に使う API rail です。</p>
+ </article>
+ <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
+ <h3 style="font-size:15px;margin:0 0 6px;">Agent handoff</h3>
+ <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">Claude / Cursor / ChatGPT / Codex / Slack bot が同じ evidence を参照できるように、REST・MCP・OpenAPI をそろえています。</p>
+ </article>
+ </div>
+	 <p style="margin:14px 0 0;font-size:14px;line-height:1.7;"><a class="btn btn-primary" href="/products.html">成果物カタログで出力別に見る →</a> <a href="/playground.html?flow=evidence3" style="margin-left:12px;text-decoration:underline;text-underline-offset:3px;">Playground で Evidence Packet を見る →</a></p>
+	 </section>
+
+	 <section aria-labelledby="token-cost-title" style="margin:24px 0 18px;padding:18px 20px;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:var(--bg,#fff);">
+	 <p style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 8px;">Why this can be cheaper than sending long source text to an LLM</p>
+	 <h2 id="token-cost-title" style="font-size:20px;line-height:1.35;margin:0 0 10px;">長い資料を毎回 AI に読ませず、必要な根拠だけを小さな packet にして渡します。</h2>
+	 <p style="font-size:14px;line-height:1.75;margin:0 0 12px;color:var(--text);">長文投入型の AI ワークフローは、検索で拾った長文 chunk をそのまま LLM に投入しがちです。jpcite は回答生成をせず、一次資料 URL・取得時刻・known gaps・引用候補だけを Evidence Packet として返します。AI 側はその短い根拠束を読むだけなので、反復業務では入力 token、遅延、出典確認のやり直しを減らせます。</p>
+	 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;font-size:13px;line-height:1.65;">
+	 <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);"><strong>長文資料を毎回 LLM に渡す場合</strong><br>LLM cost ≒ raw docs tokens × model input price + output tokens。資料量が増えるほど毎回の入力 cost が膨らみます。</div>
+	 <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);"><strong>jpcite</strong><br>Cost ≒ jpcite ¥3/billable unit + Evidence Packet を読む少量 token。根拠取得と LLM 推論の費用を分けて管理できます。</div>
+	 </div>
+	 <p style="font-size:13px;line-height:1.65;color:var(--text-muted);margin:12px 0 0;">小さな一回限りの質問では無料検索の方が安い場合があります。jpcite が効くのは、同じ種類の公的根拠確認を何度も行う agent、士業・経理・DD・審査ワークフローです。</p>
+	 </section>
+
+	 <section aria-labelledby="hero-agent-devs-title" style="margin:24px 0 18px;padding:18px 20px;border:2px solid var(--accent,#0066cc);border-radius:12px;background:var(--bg,#fff);color:var(--text);">
  <h2 id="hero-agent-devs-title" style="font-size:18px;font-weight:700;margin:0 0 10px;color:var(--text);">Claude / Cursor / ChatGPT に jpcite を 1 行で追加する</h2>
- <p style="font-size:14px;line-height:1.7;margin:0 0 12px;color:var(--text);">jpcite は回答生成前に一次資料 URL・取得時刻・known gaps を構造化して返す evidence layer です。Claude Desktop・Cursor・ChatGPT Custom GPT・Codex・自前 RAG のどの環境でも、1 行追加で日本公的制度 11,601 + 法令 6,493 + 採択 2,286 + 行政処分 1,185 + 適格事業者 13,801 が evidence packet として届きます (AI の頭脳は AI 側、jpcite は retrieval 層に徹する設計)。</p>
+ <p style="font-size:14px;line-height:1.7;margin:0 0 12px;color:var(--text);">jpcite は回答生成前に一次資料 URL・取得時刻・known gaps を構造化して返す evidence layer です。Claude Desktop・Cursor・ChatGPT Custom GPT・Codex・自社 AI ワークフローから、1 行追加で日本公的制度 11,601 + 法令 catalog 9,484 (全文対応 6,493) + 採択 2,286 + 行政処分 1,185 + 適格事業者 13,801 を evidence packet として取得できます。公開カタログは <a href="/programs/">制度</a>・<a href="/laws/">法令</a>・<a href="/enforcement/">行政処分</a>・<a href="/prompts/">Prompts</a> から確認できます。現在の availability は <a href="/status.html">Status</a> を正とします (AI の頭脳は AI 側、jpcite は根拠取得に徹する設計)。</p>
  <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;font-size:13px;line-height:1.65;color:var(--text);">
- <li><a href="/integrations/openai-custom-gpt.html"><strong>ChatGPT Custom GPT</strong></a> — OpenAPI Action import (34 paths agent-safe subset)</li>
- <li><a href="/integrations/claude-desktop.html"><strong>Claude Desktop / MCP</strong></a> — <code>uvx autonomath-mcp</code> 1 行で 151 tool 解禁</li>
- <li><a href="/integrations/cursor.html"><strong>Cursor</strong></a> — <code>.cursor/mcp.json</code> に貼って再起動</li>
- <li><a href="/integrations/cline.html"><strong>Cline / Codex</strong></a> — VS Code 拡張から MCP server 追加</li>
- <li><a href="/docs/getting-started/"><strong>Anthropic API direct</strong></a> — REST API を自前 RAG 前段に</li>
+ <li><a href="/connect/chatgpt.html"><strong>ChatGPT Custom GPT</strong></a> — OpenAPI Actions から GPT 向け 30-path subset を利用</li>
+ <li><a href="/connect/claude-code.html"><strong>Claude Code / MCP</strong></a> — <code>uvx autonomath-mcp</code> 1 行で 151 tool 解禁</li>
+ <li><a href="/connect/cursor.html"><strong>Cursor</strong></a> — MCP 設定に貼って再起動</li>
+ <li><a href="/connect/codex.html"><strong>Codex</strong></a> — agent workflow から MCP server 追加</li>
+ <li><a href="/docs/getting-started/"><strong>REST direct</strong></a> — 302 REST paths を自社 AI・業務システムの根拠取得に</li>
  </ul>
  </section>
 
@@ -447,7 +520,7 @@
  </tr>
  </thead>
  <tbody>
- <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">税理士事務所</td><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">顧問先 100 社の月次レビュー</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">100-150/月</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">¥300-¥450/月</td></tr>
+ <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">税理士事務所</td><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">顧問先 100 社の月次レビュー</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">1,800/月</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">¥5,400/月</td></tr>
  <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">会計士事務所</td><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">監査 10 社のピーク期確認</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">200-400/期</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">¥600-¥1,200/期</td></tr>
  <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">行政書士</td><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">月 25 案件の事前確認</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">250-500/月</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">¥750-¥1,500/月</td></tr>
  <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">中小企業診断士</td><td style="padding:8px 12px;border-bottom:1px solid var(--border,#e5e7eb);">50 社スクリーニング + 個社深掘り</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">80-110/月</td><td style="padding:8px 12px;text-align:right;border-bottom:1px solid var(--border,#e5e7eb);">¥240-¥330/月</td></tr>
@@ -457,19 +530,19 @@
  </table>
  </div>
  </div>
- <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted);line-height:1.6;">request 数の考え方と envelope 仕様は <a href="/audiences/">業種別 use case 詳細</a> ・ <a href="/docs/pricing/">課金根拠</a> を参照。最終判断は 8 業法の有資格者 (税理士法§52 / 弁護士法§72 / 行政書士法§1 / 司法書士法§3 / 公認会計士法§47条の2 / 社労士法§27 / 中小企業診断士登録規則 / 弁理士法§75)。</p>
+ <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted);line-height:1.6;">request 数の考え方と envelope 仕様は <a href="/audiences/">業種別 use case 詳細</a> ・ <a href="/docs/pricing/">課金根拠</a> を参照。最終判断は 8 業法の有資格者 (税理士法§52 / 弁護士法§72 / 公認会計士法§47条の2 / 行政書士法§1の2・§19 / 司法書士法§3 / 社会保険労務士法§27 / 弁理士法§75 / 労働基準法§36)。</p>
  </section>
  <ul class="hero-products" style="margin:18px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr;gap:6px;font-size:14px;line-height:1.7;">
- <li><a href="/products.html#company-folder" style="font-weight:600;">会社フォルダ作成パック</a>: 1 社 ¥59.40 (18 req)</li>
- <li><a href="/products.html#monthly-review" style="font-weight:600;">顧問先月次レビュー</a>: 100 社月 ¥5,940</li>
- <li><a href="/products.html#bpo-intake" style="font-weight:600;">BPO 1000 案件 triage</a>: 月 ¥52,800</li>
- <li><a href="/products.html#public-dd" style="font-weight:600;">公開情報 DD</a>: 200 社月 ¥31,020</li>
- <li><a href="/products.html#pre-consult" style="font-weight:600;">相談前プレ診断</a>: 50 件月 ¥1,320</li>
+ <li><a href="/products#company-folder" style="font-weight:600;">会社フォルダ作成パック</a>: 1 社 ¥59.40 (18 req)</li>
+ <li><a href="/products#monthly-review" style="font-weight:600;">顧問先月次レビュー</a>: 100 社月 ¥5,940</li>
+ <li><a href="/products#application-strategy-pack" style="font-weight:600;">一括 1000 案件 triage</a>: 月 ¥52,800</li>
+ <li><a href="/products#public-dd" style="font-weight:600;">公開情報 DD</a>: 200 社月 ¥31,020</li>
+ <li><a href="/products#application-strategy-pack" style="font-weight:600;">相談前プレ診断</a>: 50 件月 ¥1,320</li>
  </ul>
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
  <span class="chip-success">匿名</span>curl で動作確認 (登録不要) ·
 	 <span class="chip-success">Playground</span>成果物プレビュー確認 ·
-	 <span class="chip-success">自動化</span>API/MCP は月次レビュー・DD・BPO一括処理の実行手段
+	 <span class="chip-success">自動化</span>API/MCP は月次レビュー・DD・一括処理の実行手段
  </p>
 	 <p class="hero-note">匿名で <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> API/MCP 呼び出し/日まで無料。通常の 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30。最低金額・契約期間なし、いつでも解約可能。</p>
  <ul class="trust-strip-blocks" aria-label="出典の信頼指標">
@@ -633,7 +706,7 @@
 
 	 <article class="card" aria-labelledby="pillar-api">
 	 <h3 id="pillar-api">会社フォルダ作成パック</h3>
-	 <p class="card-lead">顧問先 / 取引先 / BPO 一次調査</p>
+	 <p class="card-lead">顧問先 / 取引先 / 一次調査</p>
 	 <p>法人番号・T番号・会社名から、法人同定、インボイス、採択履歴、行政処分候補、known gaps、次に聞く質問を会社フォルダに貼りやすい形で整理します。</p>
 	 <ul class="card-list">
 	 <li>会社フォルダ README / CRM メモ / 顧問先質問票に転記</li>
@@ -645,7 +718,7 @@
 
 	 <article class="card" aria-labelledby="pillar-line">
 	 <h3 id="pillar-line">顧問先月次レビュー</h3>
-	 <p class="card-lead">税理士 / 社労士 / 診断士 / BPO</p>
+	 <p class="card-lead">税理士 / 社労士 / 診断士 / 事務所チーム</p>
 	 <p>顧問先ごとに、税制・補助金・助成金・融資候補、締切、変更点、known gaps、顧問先に送る確認文面を月次でまとめます。</p>
 	 <ul class="card-list">
 	 <li>決算前確認、助成金ヒアリング、保存検索の反復運用</li>
@@ -656,7 +729,7 @@
 
 	 <article class="card" aria-labelledby="pillar-alerts">
 	 <h3 id="pillar-alerts">申請戦略パック</h3>
-	 <p class="card-lead">行政書士 / 診断士 / 補助金BPO</p>
+	 <p class="card-lead">行政書士 / 診断士 / 補助金コンサル</p>
 	 <p>地域・業種・投資額・資金使途から、候補制度、併用注意、必要資料、申請前に聞く質問を提案前の下書きとして整理します。</p>
 	 <ul class="card-list">
 	 <li>採択・受給の保証ではなく、申請前確認の根拠整理</li>
@@ -666,24 +739,24 @@
 	 </article>
 
 	 <article class="card" aria-labelledby="pillar-widget">
-	 <h3 id="pillar-widget">相談前プレ診断票</h3>
+	 <h3 id="pillar-widget">Evidence Intake Sheet</h3>
 	 <p class="card-lead">事務所サイト / 相談入口</p>
-	 <p>来訪者の地域・業種・投資予定を、候補制度、根拠URL、known gaps、専門家に聞く質問付きの相談票に変換します。</p>
+	 <p>来訪者の地域・業種・投資予定を、候補制度、根拠 URL、known gaps、確認質問付きの evidence intake に変換します。</p>
 	 <ul class="card-list">
-	 <li>Widget は検索だけで終わらせず、相談前パックの入口として使う</li>
-	 <li>相談者と専門家の双方にコピーできる質問票を出力</li>
+	 <li>Widget は検索だけで終わらせず、レビュー前の根拠整理入口として使う</li>
+	 <li>相談者・社内担当者・専門家レビュー担当に渡せる確認票を出力</li>
 	 </ul>
 	 <p style="margin:14px 0 0;"><a href="widget.html">診断入口を見る →</a></p>
 	 </article>
 
  <article class="card" aria-labelledby="pillar-advisors">
- <h3 id="pillar-advisors">根拠付き相談パック</h3>
- <p class="card-lead">Evidence-to-Expert Handoff</p>
- <p><strong>相談者側</strong>: 一次資料 URL・取得時刻・known gaps・質問リストを相談前に整理。</p>
- <p><strong>専門家側</strong>: 自然候補の表示順は掲載費・成約額に非連動。弁護士カテゴリでは成果課金なし。</p>
+ <h3 id="pillar-advisors">Review Handoff Packet</h3>
+ <p class="card-lead">Evidence-to-Review Handoff</p>
+ <p><strong>依頼前</strong>: 一次資料 URL・取得時刻・known gaps・質問リストをレビュー前に整理。</p>
+ <p><strong>レビュー側</strong>: AI・社内担当者・専門家が同じ根拠束を見て確認できる。自然候補の表示順は掲載費・成約額に非連動。</p>
  <ul class="card-list">
- <li>相談前の evidence brief を作成</li>
- <li>専門家候補には表示根拠を付与</li>
+ <li>レビュー前の evidence brief を作成</li>
+ <li>確認先候補には表示根拠を付与</li>
  <li>専門業務・申請代行の最終判断は対象外</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="advisors.html">Handoff を見る →</a></p>
@@ -691,7 +764,7 @@
 
  <article class="card" aria-labelledby="pillar-cta" style="background:var(--bg-alt);border-color:var(--accent);">
 	 <h3 id="pillar-cta">自動化実行</h3>
-	 <p class="card-lead">AI agent / BPO / 社内システム</p>
+	 <p class="card-lead">AI agent / 士業システム / 社内システム</p>
 	 <p>上記の成果物を、OpenAPI / MCP / batch / webhook から繰り返し作成します。実行前見積もり、月次上限、顧客別タグで運用できます。</p>
 	 <ul class="card-list">
 	 <li>cost preview で事前見積もり</li>
@@ -772,9 +845,9 @@
  </article>
 
  <article class="card audience-card" aria-labelledby="aud-smb">
- <h3 id="aud-smb">中小企業 (相談前プレ診断)</h3>
+ <h3 id="aud-smb">中小企業 (Evidence Intake)</h3>
  <p class="card-lead audience-context">Web で確認、通知はメールで受け取る</p>
- <p class="audience-pitch">小規模事業向けの相談前プレ診断。今すぐ使う導線は Playground / API / Widget です。保存検索・締切リマインド・相談パック更新はメール通知から始められます。</p>
+ <p class="audience-pitch">小規模事業向けの Evidence Intake。今すぐ使う導線は Playground / API / Widget です。保存検索・締切リマインド・Review Handoff Packet 更新はメール通知から始められます。</p>
  <ul class="card-list">
  <li>一次資料・未確認点・専門家への質問を整理</li>
  <li>保存検索と締切通知はメールで受け取れる</li>
@@ -850,8 +923,8 @@
  </div>
  <p style="margin:0 0 14px;font-size:13px;color:var(--text-muted);line-height:1.6;"><code>source_url</code>・<code>source_fetched_at</code>・<code>known_gaps</code> は Evidence Packet に含まれ、比較基準を渡した場合だけ <code>input-context estimates</code> (入力文脈の削減率、 採算ライン到達 (break-even) 判定、 AI 向け推奨フラグ) を参考値として返します。</p>
 
- <p style="margin:14px 0 14px;font-size:15px;line-height:1.7;">ブラウザ完結なら <a href="/playground.html?flow=evidence3"><strong>Playground で3回検証を始める</strong></a> · 詳細手順は <a href="/docs/getting-started/">5 分クイックスタート</a>。 Claude Desktop / Cursor / Cline からも同じ endpoint を呼べます。</p>
- <p class="demo-note" style="font-size:14px;margin:0 0 14px;">AI ツール統合の例 → <a href="/integrations/claude-desktop.html">Claude Desktop</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
+	 <p style="margin:14px 0 14px;font-size:15px;line-height:1.7;">ブラウザ完結なら <a href="/playground.html?flow=evidence3"><strong>Playground で3回検証を始める</strong></a> · 詳細手順は <a href="/docs/getting-started/">5 分クイックスタート</a>。 Claude Code / Cursor / ChatGPT / Codex からも同じ endpoint を呼べます。</p>
+	 <p class="demo-note" style="font-size:14px;margin:0 0 14px;">AI ツール統合の例 → <a href="/connect/">接続ガイド</a> · <a href="/connect/claude-code.html">Claude Code</a> · <a href="/connect/cursor.html">Cursor</a> · <a href="/connect/codex.html">Codex</a></p>
  <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">これは検索インデックスです。 法律相談 / 税務相談 / 申請代行は提供しません。 詳細は <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">利用規約</a>。</p>
  </div>
  </section>
@@ -1010,9 +1083,9 @@
  </article>
 
  <article class="card">
- <h3>(c) 鮮度メタデータ — 中央値 7 日 / 半減期 7 日未満</h3>
- <p class="card-lead">毎日 出典 URL 死活監視 + 法令差分日次走査</p>
- <p>出典の最終取得日は中央値 7 日 (50% の行は直近 7 日以内に再取得)、 鮮度の半減期は 7 日未満。 「最終更新」のような誤誘導はせず、 取得した日 (出典取得) として開示します。 毎晩、 出典 URL の死活監視を自動実行し、 法改正の差分は日次走査。 締切間近の制度・廃止された URL は鮮度メタデータで識別できます。 鮮度の現状は <a href="/data-freshness.html">データ鮮度ページ</a> で公開。</p>
+ <h3>(c) 鮮度メタデータ — per-source live 開示</h3>
+ <p class="card-lead">取得時刻・known gaps・鮮度分布を公開</p>
+ <p>出典の最終取得日は「jpcite が出典を取得した日」として行ごとに開示し、「最終更新」のような誤誘導はしません。 鮮度の現状、古い出典、監視対象の内訳は <a href="/data-freshness.html">データ鮮度ページ</a> と <code>/v1/meta/freshness</code> を正とし、締切間近の制度・廃止された URL は鮮度メタデータで識別できます。</p>
  </article>
 
  <article class="card">
@@ -1045,24 +1118,24 @@
  <article class="card" aria-labelledby="who-dev">
  <h3 id="who-dev">開発者 / AI エンジニア</h3>
  <p class="card-lead">推奨: 会社フォルダ / Evidence成果物</p>
- <p>AI・RAG・SaaS に組み込みたい。OpenAPI 3.1、stdio 接続 (MCP)、¥3/課金単位 従量、登録不要の 3 リクエスト/日 で評価できる。</p>
+ <p>AI agent・SaaS・社内システムに組み込みたい。OpenAPI 3.1、stdio 接続 (MCP)、¥3/課金単位 従量、登録不要の 3 リクエスト/日 で評価できる。</p>
  </article>
 
  <article class="card" aria-labelledby="who-sme">
  <h3 id="who-sme">中小企業経営者</h3>
- <p class="card-lead">推奨: 相談前プレ診断票 + 根拠付き相談パック</p>
+ <p class="card-lead">推奨: Evidence Intake Sheet + Review Handoff Packet</p>
  <p>自社が使える補助金を知りたい、申請まで相談したい。Playground / API で候補を見つけ、一次資料・未確認点・専門家への質問を整理して相談へ進む。保存検索と締切通知はメールで受け取れる。</p>
  </article>
 
  <article class="card" aria-labelledby="who-shigyo">
  <h3 id="who-shigyo">士業 (税理士 / 社労士 / 診断士)</h3>
- <p class="card-lead">推奨: 法令改正アラート + 相談前プレ診断票 + 専門家登録</p>
+ <p class="card-lead">推奨: 法令改正アラート + Evidence Intake Sheet + Review Handoff</p>
  <p>法改正に気づきやすくする、事務所サイトで集客、jpcite 経由で案件を受ける。 アラートは 1 通知ごと、ウィジェットは正常処理された検索リクエストごとに ¥3 従量。専門家は弁護士カテゴリを除き成約時のみ支払い。</p>
  </article>
 
  <article class="card" aria-labelledby="who-biz">
  <h3 id="who-biz">事業会社 (コンプラ / 経理)</h3>
- <p class="card-lead">推奨: 法令改正アラート + API (社内 RAG)</p>
+ <p class="card-lead">推奨: 法令改正アラート + API (社内ワークフロー)</p>
  <p>インボイス・電帳法・景表法の変更に社内でキャッチアップ。アラートで気づき、社内ツールから API を叩いて詳細を引く。</p>
  </article>
 
@@ -1104,14 +1177,14 @@
  <td>¥3.30 / 通知</td>
  </tr>
  <tr>
- <th scope="row">相談前プレ診断 (Widget入口)</th>
+ <th scope="row">Evidence Intake Sheet (Widget入口)</th>
  <td>Widget は公開APIの匿名枠とは別</td>
  <td>¥3 / 正常処理された検索リクエスト (税別)</td>
  <td>¥3.30 / 正常処理された検索リクエスト</td>
  </tr>
  <tr>
- <th scope="row">根拠付き相談パック</th>
- <td>相談者は直接課金なし</td>
+ <th scope="row">Review Handoff Packet</th>
+ <td>依頼者は直接課金なし</td>
  <td>¥3,000 / 成約 (専門家払い、弁護士カテゴリ除く)</td>
  <td>¥3,300 / 成約</td>
  </tr>
@@ -1142,7 +1215,7 @@
 
  <section class="features"><div class="container" style="text-align:center;padding:48px 0;">
  <h2>すぐ動かしてみる</h2>
- <p>登録不要・ 3 リクエスト/日 まで無料。 Claude Desktop / Cursor から uvx 1 行で。</p>
+ <p>登録不要・ 3 リクエスト/日/IP まで無料。 Claude Desktop / Cursor から uvx 1 行で。</p>
  <p>
  <a class="btn btn-primary" href="/docs/getting-started/">スタートガイド →</a>
  &nbsp;·&nbsp;
@@ -1160,7 +1233,7 @@
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="about.html">運営について</a>
- <a href="products.html">プロダクト</a>
+ <a href="products.html">成果物</a>
  <a href="pricing.html">料金</a>
  <a href="/docs/">ドキュメント</a>
  <a href="trust.html">信頼</a>
@@ -1210,7 +1283,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- ====================================================================== -->
 <section id="webmcp-surface" aria-label="WebMCP agent tool surface" hidden style="margin:0;padding:0;">
  <form toolname="search_jpcite_programs"
-       tooldescription="補助金検索 — 日本の公的制度 (補助金・融資・税制・認定) を一次資料 URL 付き Evidence Packet で検索する。"
+       tooldescription="制度根拠取得 — 日本の公的制度 (補助金・融資・税制・認定) について、一次資料 URL 付き Evidence Packet を返す。"
        action="https://api.jpcite.com/v1/programs/search"
        method="get"
        data-webmcp-decl="1">

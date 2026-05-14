@@ -140,6 +140,80 @@
   footer.site { margin-top:32px; padding:16px 24px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); }
   footer.site a { color:var(--accent); }
 </style>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -154,7 +228,7 @@
     の 7 section で構成されます。
   </p>
 
-  <!-- pack_id lookup form ------------------------------------------------ -->
+  <!-- pack_id lookup form -->
   <section class="lookup" aria-labelledby="lookup-heading">
     <h2 id="lookup-heading" style="margin-top:0;border-bottom:none;font-size:15px;">pack_id ルックアップ</h2>
     <label for="pack-id">artifact ID (pack_id)</label>
@@ -166,7 +240,7 @@
     <p class="err" id="lookup-err" role="alert"></p>
   </section>
 
-  <!-- known pack list --------------------------------------------------- -->
+  <!-- known pack list -->
   <section class="list" aria-labelledby="list-heading">
     <h2 id="list-heading" style="margin-top:0;border-bottom:none;font-size:15px;">既知の artifact (demo)</h2>
     <ul>
@@ -184,7 +258,7 @@
     確認してください。
   </p>
 
-  <!-- 1. overview ------------------------------------------------------- -->
+  <!-- 1. overview -->
   <section class="artifact-section" id="section-overview">
     <h2>1. overview</h2>
     <table>
@@ -199,7 +273,7 @@
     </table>
   </section>
 
-  <!-- 2. programs ------------------------------------------------------- -->
+  <!-- 2. programs -->
   <section class="artifact-section" id="section-programs">
     <h2>2. programs <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
     <div class="cards">
@@ -213,7 +287,7 @@
     </div>
   </section>
 
-  <!-- 3. laws ----------------------------------------------------------- -->
+  <!-- 3. laws -->
   <section class="artifact-section" id="section-laws">
     <h2>3. laws <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
     <div class="cards">
@@ -226,7 +300,7 @@
     </div>
   </section>
 
-  <!-- 4. cases ---------------------------------------------------------- -->
+  <!-- 4. cases -->
   <section class="artifact-section" id="section-cases">
     <h2>4. cases <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
     <div class="cards">
@@ -239,7 +313,7 @@
     </div>
   </section>
 
-  <!-- 5. enforcement ---------------------------------------------------- -->
+  <!-- 5. enforcement -->
   <section class="artifact-section" id="section-enforcement">
     <h2>5. enforcement <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
     <table>
@@ -256,7 +330,7 @@
     </table>
   </section>
 
-  <!-- 6. amendments ----------------------------------------------------- -->
+  <!-- 6. amendments -->
   <section class="artifact-section" id="section-amendments">
     <h2>6. amendments <span style="font-size:13px;color:#666;font-weight:400;">(1)</span></h2>
     <div class="cards">
@@ -269,7 +343,7 @@
     </div>
   </section>
 
-  <!-- 7. provenance ----------------------------------------------------- -->
+  <!-- 7. provenance -->
   <section class="artifact-section" id="section-provenance">
     <h2>7. provenance <span style="font-size:13px;color:#666;font-weight:400;">(2)</span></h2>
     <div class="receipt">https://www.it-hojo.jp/2026/ &middot; fetched_at=2026-05-11T08:55:12+09:00 &middot; hash=sha256:demo-aa00 &middot; license=gov_standard</div>

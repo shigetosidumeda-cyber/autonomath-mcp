@@ -242,11 +242,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -307,10 +310,11 @@
  <div class="container">
  <h1>法令改正アラート — インボイス・電帳法・補助金の変更に気づきやすくする</h1>
  <p class="lead">
- あなたの業種・都道府県・関心領域に絞って、検出した制度変更をメールでお届けします。
+ あなたの業種・都道府県・関心領域に絞って、検出した制度変更をメールで受け取れます。有料 key 発行後は同じイベントを HTTPS Webhook でも受け取れます。
  すべて一次資料 (省庁・公庫・e-Gov・国税庁・裁判所) の URL 付き。
  </p>
- <p class="tag">通知先はメールのみです。月次サマリーは無料。リアルタイム通知は最大1日1通、1通あたり ¥3 (税込 ¥3.30) 完全従量。配信が0件の月は ¥0。</p>
+ <p class="tag">このページの申込フォームはメール通知用です。構造化イベント連携は有料 key 発行後に Dashboard または Webhook API から HTTPS Webhook を登録します。リアルタイム通知は最大1日1通、1通あたり ¥3 (税込 ¥3.30) 完全従量。配信が0件の月は ¥0。</p>
+ <p class="tag" style="margin-top:8px;">Webhook payload は判断文ではなく、差分・severity・source_url・observed_at を含む構造化通知です。</p>
  </div>
 </section>
 
@@ -387,12 +391,13 @@
  <label id="plan-paid-label">
  <input type="radio" name="plan" value="paid">
  <span class="plan-price">リアルタイム通知 — 1通 ¥3 (税込 ¥3.30) 完全従量</span>
- <div class="plan-desc">検出した変更を関心領域に絞ってメール配信。最大1日1通、配信が0件の月は ¥0。</div>
+ <div class="plan-desc">検出した変更を関心領域に絞ってメール配信。Webhook は有料 key 発行後に Dashboard または Webhook API で設定できます。最大1日1通、配信が0件の月は ¥0。</div>
  </label>
  </fieldset>
 
  <button class="btn btn-primary" type="submit" style="width:100%; padding:12px; font-size:15px; margin-top:4px;">メールで購読する</button>
  <p class="signup-status" id="signup-status" role="status" aria-live="polite"></p>
+ <p class="hint" style="margin-top:10px;">Webhook 通知は有料 key 発行後に Dashboard または <a href="/docs/webhooks.html">Webhook docs</a> から登録できます。</p>
  <p class="hint" style="margin-top:14px;">
  購読をもって <a href="tos.html">利用規約</a> ・
  <a href="privacy.html">プライバシーポリシー</a> ・

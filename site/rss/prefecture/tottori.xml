@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>とっとり産業支援ナビ-補助金・支援の総合窓口/とりネット/鳥取県公式サイト</title>
@@ -146,15 +146,6 @@
   </item>
 
   <item>
-    <title>企業支援課</title>
-    <link>https://jpcite.com/programs/kigyou-shien-ka-a2dd94.html</link>
-    <description>Tier A / 鳥取県 / 鳥取県 / support 出典: https://www.pref.tottori.lg.jp/kigyou-shien/</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-606532a73f</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
     <title>経営支援課トップ</title>
     <link>https://jpcite.com/programs/keiei-shien-ka-toppu-709087.html</link>
     <description>Tier A / 鳥取県 / 鳥取県 / support 出典: https://www.pref.tottori.lg.jp/keieishien/</description>
@@ -205,33 +196,6 @@
     <description>Tier A / 鳥取県 / 鳥取県 / subsidy 出典: https://www.pref.tottori.lg.jp/265154.htm</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-a82b1b6bcc</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>特別支援教育課</title>
-    <link>https://jpcite.com/programs/tokubetsu-shien-kyouikuka-7cbc64.html</link>
-    <description>Tier A / 鳥取県 / 鳥取県 / support 出典: https://www.pref.tottori.lg.jp/tokubetushien/</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-ac77e8749e</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>職員支援課</title>
-    <link>https://jpcite.com/programs/shokuin-shien-ka-676a66.html</link>
-    <description>Tier A / 鳥取県 / 鳥取県 / support 出典: https://www.pref.tottori.lg.jp/shokuinshien/</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-af720c5143</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>経営支援課</title>
-    <link>https://jpcite.com/programs/keiei-shien-ka-0bf0fd.html</link>
-    <description>Tier A / 鳥取県 / 鳥取県 / support 出典: https://www.pref.tottori.lg.jp/keieishien/</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-bc98d0a6f0</guid>
     <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
   </item>
 
@@ -434,6 +398,15 @@
   </item>
 
   <item>
+    <title>農業用施設補修用原材料支給</title>
+    <link>https://jpcite.com/programs/nougyouyou-shisetsu-hoshuuyou-genzairyou-shikyuu-280c18.html</link>
+    <description>Tier C / 鳥取県 / subsidy / 上限 100万円 出典: https://www.city.kurayoshi.lg.jp/gyosei/soshiki/keizaikankobu/nourinка/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2cf0807da1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>スキルアップ研修（長期研修）</title>
     <link>https://jpcite.com/programs/sukiruappu-kenshuu-chouki-kenshuu-4b9edf.html</link>
     <description>Tier B / 鳥取県 / subsidy / 上限 150万円 出典: https://www.town.kotoura.tottori.jp/docs/2023082500044/</description>
@@ -475,15 +448,6 @@
     <description>Tier B / 鳥取県 / subsidy / 上限 300万円 出典: https://www.pref.tottori.lg.jp/279128.htm</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-4a2f740da2</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>環境保全型農業直接支払交付金</title>
-    <link>https://jpcite.com/programs/kankyouhozen-kata-nougyou-chokusetsu-shiharai-koufukin-17d180.html</link>
-    <description>Tier C / 鳥取県 / 鳥取県鳥取市 / subsidy 出典: https://www.city.tottori.lg.jp/www/contents/1531790295049/index.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-4b83512e25</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -601,6 +565,15 @@
     <description>Tier C / 鳥取県 / subsidy / 上限 250万円 出典: https://www.city.kurayoshi.lg.jp/gyosei/soshiki/keizaikankobu/nourinка/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-d751634b73</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>多面的機能支払制度</title>
+    <link>https://jpcite.com/programs/tamenteki-kinou-shiharai-seido-73bf66.html</link>
+    <description>Tier C / 鳥取県 / subsidy / 上限 100万円 出典: https://www.city.kurayoshi.lg.jp/gyosei/soshiki/keizaikankobu/nourinка/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-dc6c55528d</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

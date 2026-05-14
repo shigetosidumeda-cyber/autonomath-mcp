@@ -39,7 +39,7 @@ AutonoMath
 ```
 AutonoMath exposes Japanese institutional public data via 151 MCP tools at default gates (protocol 2025-06-18, stdio): 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis 担保 / 個人保証人 / 第三者保証人 decomposition + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; aggregator-only rows are excluded from public sourcing. ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 
-Disclaimer (税理士法 §52 fence): information retrieval only. Does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法). Verify primary-source URLs and consult licensed professionals.
+Disclaimer (税理士法 §52 fence): information retrieval only. Does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1の2), or 労務判断 (社労士法). Verify primary-source URLs and consult licensed professionals.
 ```
 
 ### GitHub URL
@@ -178,7 +178,7 @@ Honest figures verified 2026-04-29 (v0.3.2):
 
 ## §52 disclaimer fence (also in description; restated here)
 
-> AutonoMath is information retrieval over published Japanese primary sources. It does not provide tax advice or filing representation (税理士法 §52), legal advice (弁護士法 §72), application representation (行政書士法 §1), or labour determinations (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
+> AutonoMath is information retrieval over published Japanese primary sources. It does not provide tax advice or filing representation (税理士法 §52), legal advice (弁護士法 §72), application representation (行政書士法 §1の2), or labour determinations (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
 
 ---
 

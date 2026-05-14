@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>共生の地域づくり助成事業</title>
@@ -551,24 +551,6 @@
   </item>
 
   <item>
-    <title>稲作カメムシ防除対策支援</title>
-    <link>https://jpcite.com/programs/inasaku-kamemushi-boujo-taisaku-shien-21725d.html</link>
-    <description>Tier C / 茨城県 出典: https://www.city.tsukubamirai.lg.jp/section.php?code=9</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-078cb76c82</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>行方市（公共下水道・農業集落排水）排水設備接続支援補助金</title>
-    <link>https://jpcite.com/programs/namegata-shi-koukyou-gesuidou-nougyou-shuuraku-haisui-5590ff.html</link>
-    <description>Tier C / 茨城県 出典: https://www.city.namegata.ibaraki.jp/section.php?code=14</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-090825286a</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>つくば市_新規就農者経営支援補助金</title>
     <link>https://jpcite.com/programs/mun-082201-001-tsukuba-shi-shinki-shuunou-mono-keiei-shien-a085c8.html</link>
     <description>Tier B / 茨城県 / subsidy / 上限 150万円 出典: https://www1.g-reiki.net/tsukuba/reiki_honbun/e019RG00000967.html</description>
@@ -583,24 +565,6 @@
     <description>Tier B / 茨城県 / 茨城県筑西市 / subsidy / 上限 150万円 出典: https://www.city.chikusei.lg.jp/shurou-sangyou/nougyou/page001445.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-0a2560819f</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>農業用ハウス被覆資材張替事業費補助金</title>
-    <link>https://jpcite.com/programs/nougyouyou-hausu-hifuku-shizai-harikai-jigyou-hi-hojokin-643f95.html</link>
-    <description>Tier C / 茨城県 出典: https://www.city.kamisu.ibaraki.jp/business/maff/1012045/index.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-0a5d8798dc</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>認定農業者育成確保資金利子助成金・農業経営基盤強化資金利子助成金</title>
-    <link>https://jpcite.com/programs/nintei-nougyou-mono-ikusei-kakuho-shikin-rishi-joseikin-b7c5c0.html</link>
-    <description>Tier C / 茨城県 出典: https://www.city.ibaraki-koga.lg.jp/soshiki/nousei/8/1972.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-0d448fff68</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -659,15 +623,6 @@
   </item>
 
   <item>
-    <title>公共下水道受益者負担金制度</title>
-    <link>https://jpcite.com/programs/koukyou-gesuidou-juekishafutan-kin-seido-3e31dd.html</link>
-    <description>Tier C / 茨城県 / 上限 10万円 出典: https://www.town.ibaraki-yachiyo.lg.jp/page/page001238.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1ae4b457c4</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>坂東市_食と農のチャレンジ事業費補助金</title>
     <link>https://jpcite.com/programs/bandou-shi-kutto-nou-no-charenji-jigyou-hi-hojokin-0a35cd.html</link>
     <description>Tier C / 茨城県 / subsidy / 上限 50万円 出典: https://www.city.bando.lg.jp/data/doc/1408928266_doc_59_0.pdf</description>
@@ -682,15 +637,6 @@
     <description>Tier B / 茨城県 / subsidy / 上限 50万円 出典: https://www.city.hitachiota.ibaraki.jp/data/doc/1650355980_doc_173_0.pdf</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-1d4910d2e1</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>公共下水道・農業集落排水の接続支援補助制度</title>
-    <link>https://jpcite.com/programs/koukyou-gesuidou-nougyou-shuuraku-haisui-no-setsuzoku-shien-9dee4b.html</link>
-    <description>Tier B / 茨城県 / 上限 41万円 出典: https://www.city.ryugasaki.ibaraki.jp/kurashi/seikatsu/suido/setsuzokushienhojo.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1e890a2d95</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -713,29 +659,11 @@
   </item>
 
   <item>
-    <title>下水道等接続工事費補助金</title>
-    <link>https://jpcite.com/programs/gesuidou-nado-setsuzoku-koujihi-hojokin-45fc81.html</link>
-    <description>Tier B / 茨城県 / 上限 35万円 出典: https://www.city.hokota.lg.jp/page/page004984.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-2154b87135</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>常陸大宮市新規就農者経営助成金</title>
     <link>https://jpcite.com/programs/hitachioomiya-shi-shinki-shuunou-mono-keiei-joseikin-f8abc7.html</link>
     <description>Tier B / 茨城県 / subsidy / 上限 180万円 出典: https://www.city.hitachiomiya.lg.jp/kurashi_gyousei/business/nouti/nougyou/page007044.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-23c8a961e7</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>青年就農給付金</title>
-    <link>https://jpcite.com/programs/seinen-shuunou-kyuufukin-dc2e1d.html</link>
-    <description>Tier C / 茨城県 出典: https://www.town.ibaraki.lg.jp/city-promotion/ibarakimatikurasi/work/002627.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-2433838df1</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -754,15 +682,6 @@
     <description>Tier B / 茨城県 / subsidy / 上限 180万円 出典: https://www.city.kasama.lg.jp/page/dir001768.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-271d94b80f</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>茨城町就業者移住支援金</title>
-    <link>https://jpcite.com/programs/ibaraki-machi-shuugyou-mono-ijuu-shien-kin-ff9a27.html</link>
-    <description>Tier C / 茨城県 出典: https://www.town.ibaraki.lg.jp/gyousei/gyousei/machinotorikumi/002746.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-277cd45587</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -848,15 +767,6 @@
   </item>
 
   <item>
-    <title>排水設備設置工事資金助成制度</title>
-    <link>https://jpcite.com/programs/haisui-setsubi-setchi-kouji-shikin-josei-seido-2999a4.html</link>
-    <description>Tier B / 茨城県 / 上限 35万円 出典: https://www.city.omitama.lg.jp/0017/info-0000007009-0.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-3b22a341f2</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>神栖市魅力ある産地づくり支援事業費補助金</title>
     <link>https://jpcite.com/programs/kamisu-shi-miryoku-aru-sanchi-zukuri-shien-jigyou-hi-hojokin-89a00a.html</link>
     <description>Tier C / 茨城県 / 茨城県神栖市 / subsidy / 上限 50万円 出典: https://www.city.kamisu.ibaraki.jp/_res/projects/default_project/_page_/001/002/745/1002745.pdf</description>
@@ -907,6 +817,96 @@
     <description>Tier B / 茨城県 / 茨城県下妻市 / subsidy 出典: https://www.city.shimotsuma.lg.jp/kanko-business-sangyo/nogyo/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-446b6195c8</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>令和7年度合併浄化槽設置費補助金</title>
+    <link>https://jpcite.com/programs/reiwa-7-nendo-gappei-joukasou-setchi-hi-hojokin-851125.html</link>
+    <description>Tier B / 茨城県 / 茨城県古河市 / subsidy / 上限 54万円 出典: https://www.city.ibaraki-koga.lg.jp/soshiki/kankyo/shinseitodokede/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-44e6f5046d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鹿嶋市認定農業者育成推進資金利子助成補助金</title>
+    <link>https://jpcite.com/programs/kashima-shi-nintei-nougyou-mono-ikusei-suishin-shikin-rishi-55492e.html</link>
+    <description>Tier A / 茨城県 / loan / 上限 1,800万円 出典: https://city.kashima.ibaraki.jp/13reiki/reiki_honbun/e021RG00000408.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-450b6e062d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>常陸太田市_地域おこし協力隊制度（農業・林業・畜産分野）</title>
+    <link>https://jpcite.com/programs/hitachiootashi-chiiki-okoshi-kyouryoku-tai-seido-nougyou-2a61a2.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 100万円 出典: https://www.city.hitachiota.ibaraki.jp/data/doc/1650355980_doc_173_0.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-46ee386f2b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>常陸太田市就農者等家賃助成金</title>
+    <link>https://jpcite.com/programs/hitachiootashi-shuunou-mono-nado-yachin-joseikin-4848e1.html</link>
+    <description>Tier C / 茨城県 / 市町村 / subsidy / 上限 48万円 出典: https://www.city.hitachiota.ibaraki.jp/page/page005193.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-478df1e72a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業者活動支援給付金（認定農業者等への物価高騰支援）</title>
+    <link>https://jpcite.com/programs/nougyou-mono-katsudou-shien-kyuufukin-nintei-nougyou-mono-6b2f56.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 18万円 出典: https://www.city.ibaraki.osaka.jp/oshirase/68453.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-497e0686bd</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>石岡市朝日里山ファーム新規就農研修</title>
+    <link>https://jpcite.com/programs/ishioka-shi-asahi-satoyama-faamu-shinki-shuunou-kenshuu-55179f.html</link>
+    <description>Tier B / 茨城県 / 市町村 / subsidy 出典: https://www.city.ishioka.lg.jp/shigoto_sangyo_machi/nouringyo/nogyo/page004509.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4c5d982c42</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>神栖市_茨城かんしょトップランナー産地拡大事業（荒廃農地再生費用補助）</title>
+    <link>https://jpcite.com/programs/kamisu-shi-ibaraki-kansho-toppurannaa-sanchi-kakudai-jigyou-a082de.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 20万円 出典: https://www.city.kamisu.ibaraki.jp/_res/projects/default_project/_page_/001/010/897/kamisu_230615_p0809m.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4ff9308063</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>結城市移住支援金制度</title>
+    <link>https://jpcite.com/programs/yuuki-shi-ijuu-shien-kin-seido-24cf92.html</link>
+    <description>Tier C / 茨城県 / 茨城県結城市 / subsidy / 上限 100万円 出典: https://iju.pref.ibaraki.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-500339ea8b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>経営力強化保証</title>
+    <link>https://jpcite.com/programs/keiei-chikara-kyouka-hoshou-55814b.html</link>
+    <description>Tier A / 茨城県 / loan / 上限 28,000万円 出典: https://www.cgc-hokkaido.or.jp/system/strengthen.php</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-54320edbf0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>神栖市_茨城かんしょトップランナー産地拡大事業（規模拡大のための農地貸付協力金）</title>
+    <link>https://jpcite.com/programs/kamisu-shi-ibaraki-kansho-toppurannaa-sanchi-kakudai-jigyou-e21340.html</link>
+    <description>Tier B / 茨城県 / subsidy / 上限 20万円 出典: https://www.city.kamisu.ibaraki.jp/_res/projects/default_project/_page_/001/010/897/kamisu_230615_p0809m.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5581524c2f</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

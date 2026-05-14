@@ -75,6 +75,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
 from jpintel_mcp.db.session import connect  # noqa: E402
+from jpintel_mcp.utils.slug import program_static_url  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.weekly_digest")
 
@@ -94,7 +95,7 @@ _WEEKLY_WINDOW_HOURS = 7 * 24 - 4
 # back to the dashboard for the full set.
 _TOP_K_HITS = 10
 
-# Public origin for `/programs/{slug}` deep links. Falls back to the
+# Public origin for `/programs/{slug}.html` deep links. Falls back to the
 # canonical jpcite.com when settings are missing (test env).
 _PUBLIC_ORIGIN = "https://jpcite.com"
 
@@ -119,6 +120,15 @@ _PLAINTEXT_LINE_CAP = 200
 # evidence_packet API surface (in-flight at the time this cron landed —
 # the URL reference is stable regardless of whether the route is live yet).
 _EVIDENCE_PACKET_PATH_FMT = "/v1/evidence/packets/program/{program_id}"
+
+
+def _program_public_url(row: dict[str, Any]) -> str:
+    """Return a safe public program link for digest surfaces."""
+    unified_id = row.get("unified_id")
+    primary_name = row.get("primary_name")
+    if primary_name and unified_id:
+        return f"{_PUBLIC_ORIGIN}{program_static_url(str(primary_name), str(unified_id))}"
+    return f"{_PUBLIC_ORIGIN}/dashboard.html#saved-searches"
 
 
 def _evidence_packet_endpoint(program_id: str | None) -> str | None:
@@ -291,7 +301,7 @@ def _render_plaintext(
         prefix = f"[{marker}] " if marker else "        "
         amt = _format_amount(h.get("amount_max_man_yen"))
         pref = h.get("prefecture") or "全国"
-        url = f"{_PUBLIC_ORIGIN}/programs/{h.get('unified_id')}"
+        url = _program_public_url(h)
         lines.append(f"{prefix}{h.get('primary_name', '')} — {pref}{amt}")
         lines.append(f"        {url}")
         # Evidence Packet endpoint reference for NEW / MODIFIED only.
@@ -354,7 +364,7 @@ def _render_html(
         marker_html = f"<strong>[{marker}]</strong> " if marker else ""
         amt = _format_amount(h.get("amount_max_man_yen"))
         pref = h.get("prefecture") or "全国"
-        url = f"{_PUBLIC_ORIGIN}/programs/{h.get('unified_id')}"
+        url = _program_public_url(h)
         name = h.get("primary_name", "") or ""
         # Evidence Packet endpoint reference for NEW / MODIFIED rows. The
         # link is rendered as a clickable <a> anchor so the email client
@@ -420,7 +430,7 @@ def _render_json(
             "prefecture": h.get("prefecture"),
             "amount_max_man_yen": h.get("amount_max_man_yen"),
             "delta": marker,
-            "url": f"{_PUBLIC_ORIGIN}/programs/{h.get('unified_id')}",
+            "url": _program_public_url(h),
         }
         # Attach the Evidence Packet reference for NEW / MODIFIED. We
         # always emit the field (cheaper than a `payload_template` flag

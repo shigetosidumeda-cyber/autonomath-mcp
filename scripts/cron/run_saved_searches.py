@@ -53,6 +53,7 @@ import urllib.request
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 # Allow running as a script without `pip install -e .`. Mirrors the
 # import preamble in scripts/cron/expire_trials.py.
@@ -65,6 +66,7 @@ from jpintel_mcp.billing.delivery import record_metered_delivery  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
+from jpintel_mcp.utils.slug import program_static_url  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.saved_searches")
 
@@ -86,7 +88,7 @@ _FREQUENCY_INTERVALS_HOURS: dict[str, int] = {
     "weekly": 7 * 24 - 4,  # 6d 20h same reason
 }
 
-# Public origin for `/programs/{slug}` deep links. Falls back to the
+# Public origin for `/programs/{slug}.html` deep links. Falls back to the
 # jpcite.com canonical when settings is incomplete (test env).
 _PUBLIC_ORIGIN = "https://jpcite.com"
 
@@ -177,15 +179,13 @@ def _build_search_sql(query: dict[str, Any]) -> tuple[str, list[Any]]:
     return sql, params
 
 
-def _slugify(unified_id: str) -> str:
-    """Public-page slug. The static generator emits `/programs/{unified_id}`
-    so we mirror that contract — no kana/Hepburn transformation here.
-    """
-    return unified_id
-
-
-def _public_url(unified_id: str) -> str:
-    return f"{_PUBLIC_ORIGIN}/programs/{_slugify(unified_id)}"
+def _public_url(primary_name: str | None, unified_id: str | None) -> str:
+    """Return a safe public program link for saved-search digests."""
+    if primary_name and unified_id:
+        return f"{_PUBLIC_ORIGIN}{program_static_url(primary_name, unified_id)}"
+    if unified_id:
+        return f"{_PUBLIC_ORIGIN}/programs/share.html?ids={quote(unified_id, safe='')}"
+    return f"{_PUBLIC_ORIGIN}/dashboard.html#saved-searches"
 
 
 # ---------------------------------------------------------------------------
@@ -248,7 +248,7 @@ def _render_digest_payload(
                 "authority_name": m.get("authority_name") or "",
                 "amount_max_man_yen": m.get("amount_max_man_yen"),
                 "subsidy_rate": m.get("subsidy_rate"),
-                "url": _public_url(m["unified_id"]),
+                "url": _public_url(m.get("primary_name"), m.get("unified_id")),
                 "official_url": m.get("official_url") or "",
             }
             for m in matches[:max_matches]

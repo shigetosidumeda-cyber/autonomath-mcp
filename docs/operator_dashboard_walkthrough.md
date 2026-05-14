@@ -20,7 +20,7 @@ Plus 2 read-only CLI helpers:
 
 ## 1. dashboard.html (B3) — paid-customer view, operator perspective
 
-URL: `https://jpcite.com/dashboard.html` (requires API key in `Authorization: Bearer …`).
+URL: `https://jpcite.com/dashboard.html` (requires API key in `X-API-Key`).
 
 ### 1.1 What operator should look at, daily
 

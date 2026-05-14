@@ -342,11 +342,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -408,7 +411,7 @@
  <h1>公開件数</h1>
  <p class="sub">jpcite が公開しているデータセットの件数と、各データセットの最終更新日。サイト内の数字はすべてこのページの値を出典とします。生成 1 日 1 回。</p>
 
- <!-- Public Counts ------------------------------------------------------- -->
+ <!-- Public Counts -->
  <section class="stats-section" aria-labelledby="public-counts-h">
  <h2 id="public-counts-h">公開件数</h2>
  <p class="desc">公的機関 (省庁・自治体・公庫など) の一次資料から取り込んだ件数。集約サイトは出典として採用していません。</p>
@@ -430,7 +433,7 @@
  <p class="footer-note">最終データ更新: <code>2026-04-29T09:15:04.894483+00:00</code></p>
  </section>
 
- <!-- Coverage (live) ---------------------------------------------------- -->
+ <!-- Coverage (live) -->
  <section class="stats-section" aria-labelledby="coverage-h">
  <h2 id="coverage-h">ライブ件数 (5 分キャッシュ)</h2>
  <p class="desc">API 経由で取得したライブ件数。上の「公開件数」が日次スナップショット、こちらは API のリアルタイム値です。</p>
@@ -449,7 +452,7 @@
  <p class="err" id="coverage-err" hidden></p>
  </section>
 
- <!-- Freshness ----------------------------------------------------------- -->
+ <!-- Freshness -->
  <section class="stats-section" aria-labelledby="freshness-h">
  <h2 id="freshness-h">鮮度 — 出典の取得時期</h2>
  <p class="desc">各データセットを jpcite が出典から取り込んだ日付の最古・最新・行間平均インターバル。古いほど鮮度が下がり、平均インターバルが大きいほど取得頻度が低いことを示します (景表法・消費者契約法の観点から「最終更新」と表記せず「出典取得」を用います)。</p>
@@ -464,7 +467,7 @@
  <p class="err" id="freshness-err" hidden></p>
  </section>
 
- <!-- Usage --------------------------------------------------------------- -->
+ <!-- Usage -->
  <section class="stats-section" aria-labelledby="usage-h">
  <h2 id="usage-h">Usage — 過去 30 日の API 利用量</h2>
  <p class="desc">認証済み API キー経由の累積リクエスト数。匿名 (X-API-Key 無し) は集計対象外。グラフは日次、ラインは累積。</p>

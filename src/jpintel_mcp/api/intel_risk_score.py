@@ -33,7 +33,7 @@ Sensitive surface (与信判断 territory)
 A 0-100 risk score sits adjacent to 与信判断 / 信用調査 / 業法 territory.
 The disclaimer is **strictly stronger** than the houjin/full fence:
 explicit "this is NOT a credit rating" + 弁護士法 §72 + 税理士法 §52 +
-行政書士法 §1 fence verbatim. The customer LLM is expected to render
+行政書士法 §1の2 fence verbatim. The customer LLM is expected to render
 this verbatim alongside the score.
 """
 
@@ -153,7 +153,7 @@ _DISCLAIMER = (
     "+ invoice_registrants + am_amendment_diff + houjin_master を機械的に "
     "SQL 集計した **公開情報の rules-based 0-100 指標** であり、"
     "**THIS IS NOT A CREDIT RATING / 信用格付けではありません**。 "
-    "弁護士法 §72 (法律事務) ・税理士法 §52 (税務代理) ・行政書士法 §1 "
+    "弁護士法 §72 (法律事務) ・税理士法 §52 (税務代理) ・行政書士法 §1の2 "
     "(申請代理) ・割賦販売法 ・貸金業法 ・銀行法 のいずれの 与信判断 にも "
     "該当しません。 業法上の与信判断・反社チェック・信用情報照会は資格を "
     "有する 弁護士・税理士・行政書士・信用調査機関へ。 投資判断・取引判断・"

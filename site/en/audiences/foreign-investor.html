@@ -97,6 +97,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -127,7 +201,7 @@
  </nav>
  <h1 id="hero-title">jpcite for foreign investors (FDI)</h1>
  <p class="hero-sub">Japan tax-treaty matrix (33 countries) + FDI-relevant subsidies + 外為法 prior notification + English law full text — primary-source citations on every row, ¥3/billable unit metered.</p>
- <p class="hero-tag">Built for foreign corporate development teams, in-house counsel, JETRO consultants, and cross-border tax advisors. When your LLM agent or DD pipeline needs Japan-side withholding-tax rates, sector-based 外為法 filing thresholds, or which METI / JETRO subsidies a foreign-owned KK can apply for — jpcite returns structured rows with the MoF / NTA / METI / JETRO source URL attached. Anonymous 3 req/day free per IP, no signup.</p>
+ <p class="hero-tag">Built for foreign corporate development teams, in-house counsel, JETRO consultants, and cross-border tax advisors. When your LLM agent or DD pipeline needs Japan-side withholding-tax rates, sector-based 外為法 filing thresholds, or which METI / JETRO subsidy records may be relevant to a foreign-owned KK — jpcite returns structured rows with the MoF / NTA / METI / JETRO source URL attached. Anonymous 3 req/day free per IP, no signup.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -398,56 +472,6 @@ for row in r2.json["items"]:
  <article class="card">
  <h3>r/JapanFinance citation pattern</h3>
  <p>Common questions on <a href="https://www.reddit.com/r/JapanFinance/" rel="noopener noreferrer" target="_blank">r/JapanFinance</a> like "WHT on Japan-US dividends" or "qualified-invoice issuer status of &lt;houjin_bangou&gt;" route to <code>get_tax_treaty</code> and <code>search_invoice_registrants</code> respectively. Always cite the MoF / NTA primary URL returned in the response, not jpcite itself — we are an indexer, the regulator is the source.</p>
- </article>
-
- <article class="card">
- <h3>JETRO IBSC service-directory pattern</h3>
- <p>For JETRO IBSC's Tools-for-Foreign-Investors directory, jpcite surfaces the structured-data face of the same MoF / METI / JETRO data IBSC consultants narrate. Use jpcite when you need machine-queryable rows; route to JETRO IBSC for narrative consulting and on-the-ground handholding.</p>
- </article>
-
- <article class="card">
- <h3>Citation safety (LLM-side)</h3>
- <p>Every response carries a <code>source_url</code> + <code>license</code> field. Treaty rows are <code>license: gov_standard</code> (政府標準利用規約 v2.0). Subsidy rows are mixed (mostly <code>gov_standard</code> + <code>pdl_v1.0</code> for NTA invoice corpus). Cite the source_url verbatim in your AI response.</p>
- </article>
-
- <article class="card">
- <h3>llms.en.txt index</h3>
- <p>Machine-readable index for LLM crawlers: <a href="../llms.txt">/en/llms.txt</a>. Includes per-route examples for the FDI cohort (treaty / subsidy / 外為法 / invoice / law).</p>
- </article>
-
- </div>
- </div>
- </section>
-
-</main>
-
-<div class="container">
-</div>
-
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
- <p class="footer-tag">Japanese public-program API</p>
- </div>
- <nav class="footer-nav" aria-label="Footer">
- <a href="../about.html">About</a>
- <a href="../getting-started.html">Getting started</a>
- <a href="../pricing.html">Pricing</a>
- <a href="../tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
- </div>
-</footer>
-
-<script src="/assets/trust-strip.en.js" defer></script>
-
-</body>
-</html>
-ons on <a href="https://www.reddit.com/r/JapanFinance/" rel="noopener noreferrer" target="_blank">r/JapanFinance</a> like "WHT on Japan-US dividends" or "qualified-invoice issuer status of &lt;houjin_bangou&gt;" route to <code>get_tax_treaty</code> and <code>search_invoice_registrants</code> respectively. Always cite the MoF / NTA primary URL returned in the response, not jpcite itself — we are an indexer, the regulator is the source.</p>
  </article>
 
  <article class="card">

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>Notifications — jpcite</title>
-<meta name="description" content="jpcite notification channel for saved searches, advisory-pack updates, and deadline reminders. LINE integration is being prepared as a notification route, not as the primary paid search UI.">
+<meta name="description" content="jpcite notification channels for saved searches, advisory-pack updates, and deadline reminders. Current notifications start with email. Use REST/MCP, Playground, or the widget for searches today.">
 
 <meta property="og:title" content="Notifications — jpcite">
 <meta property="og:description" content="Receive saved-search, advisory-pack, and deadline updates; use REST/MCP, Playground, or the widget for search.">
@@ -58,7 +58,7 @@
   .line-page .lead { font-size: 17px; color: var(--text-muted); margin: 0 0 32px; max-width: 720px; }
   .line-page h2 { font-size: 20px; margin: 36px 0 10px; font-weight: 700; }
   .line-page p, .line-page ul { max-width: 720px; }
-  .line-page .waitlist-box { border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 24px 0; max-width: 720px; background: var(--bg-alt); }
+  .line-page .status-box { border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; margin: 24px 0; max-width: 720px; background: var(--bg-alt); }
 </style>
 
 <script defer src="../analytics.js?v=20260503a"></script>
@@ -114,11 +114,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -161,11 +164,11 @@
  <div class="container">
 
  <h1>Notifications</h1>
- <p class="lead">jpcite search and evidence generation currently live in REST/MCP, Playground, dashboard workflows, and the embeddable widget. LINE is treated as a future notification route for saved searches and deadline reminders, not as the primary paid search product.</p>
+ <p class="lead">Current notifications start with email. jpcite search and evidence generation live in REST/MCP, Playground, dashboard workflows, and the embeddable widget; notifications are reminders and update channels, not a paid questioning surface.</p>
 
- <div class="waitlist-box">
- <p style="margin:0 0 8px;font-weight:600;">Status: notification channel in preparation</p>
- <p style="margin:0;">For live search, use the <a href="getting-started.html">REST/MCP API</a>, <a href="playground.html">Playground</a>, or the <a href="widget.html">embeddable widget</a>. To receive availability updates for LINE notifications, email <a href="mailto:info@bookyou.net?subject=jpcite%20notification%20channel">info@bookyou.net</a>.</p>
+ <div class="status-box">
+ <p style="margin:0 0 8px;font-weight:600;">Status: email notification requests are open</p>
+ <p style="margin:0;">For live search, use the <a href="getting-started.html">REST/MCP API</a>, <a href="playground.html">Playground</a>, or the <a href="widget.html">embeddable widget</a>. To receive saved-search and deadline notifications, email <a href="mailto:info@bookyou.net?subject=jpcite%20notifications">info@bookyou.net</a>.</p>
  </div>
 
  <h2>What the channel is for</h2>
@@ -179,7 +182,7 @@
  <h2>Pricing</h2>
  <ul>
  <li>REST/MCP and normal search pricing remains on the <a href="pricing.html">Pricing page</a>.</li>
- <li>Notification delivery pricing will be shown before the notification channel is enabled.</li>
+ <li>Current API, Playground, and widget pricing is listed on the Pricing page; paid notification terms are shown before use.</li>
  <li>No visitor-facing payment is required just to view public search results or source links.</li>
  </ul>
 

@@ -93,7 +93,7 @@ _PROGRAM_FULL_DISCLAIMER = (
     "本 response は jpcite の単一 program に対する複数 corpus (meta / "
     "eligibility predicate / amendment 履歴 / 採択履歴 / 類似制度 / 法令引用 / "
     "監査 anchor) の機械的 aggregation で、税理士法 §52 (税務代理) ・"
-    "行政書士法 §1 (申請代理) ・弁護士法 §72 (法律事務) の代替ではありません。"
+    "行政書士法 §1の2 (申請代理) ・弁護士法 §72 (法律事務) の代替ではありません。"
     "eligibility predicate は rule-based 抽出のため partial coverage の可能性 "
     "あり (missing axis = unknown, NOT no constraint)。 確定判断は資格を有する "
     "税理士・行政書士・中小企業診断士に primary source 確認の上ご相談ください。"

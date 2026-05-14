@@ -159,6 +159,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -242,21 +316,21 @@
  </section>
 
  <section id="quota-counter" class="quota-counter" aria-labelledby="quota-counter-label" hidden>
- <p id="quota-counter-label" class="stat-label">This month's quota (anonymous)</p>
+ <p id="quota-counter-label" class="stat-label">Anonymous daily allowance</p>
  <p class="quota-counter-headline">
  <span class="quota-counter-value">0</span>
- <span class="unit"> / <span class="quota-counter-limit">—</span> calls this month</span>
+ <span class="unit"> / <span class="quota-counter-limit">—</span> calls today</span>
  <span class="quota-counter-pct"></span>
  </p>
  <div class="quota-counter-bar"
  role="progressbar"
- aria-label="Monthly API call quota (resets JST first-of-month 00:00)"
+ aria-label="Anonymous daily API call allowance (resets JST 00:00)"
  aria-valuenow="0"
  aria-valuemin="0"
  aria-valuemax="100">
  <div class="quota-counter-fill"></div>
  </div>
- <p class="quota-counter-note">resets at 00:00 JST on the 1st of each month</p>
+ <p class="quota-counter-note">resets at 00:00 JST daily</p>
  </section>
 
  <p id="dash-period-end" class="stat-note" hidden
@@ -269,7 +343,7 @@
  <p class="stat-label">This month</p>
  <p class="stat-value">— <span class="unit">calls</span></p>
  <div class="quota-bar" aria-hidden="true"><div class="quota-fill" style="width:0%"></div></div>
- <p class="stat-note">Loading… Usage is metered ¥3/billable unit (¥3.30 incl.). No monthly cap.</p>
+ <p class="stat-note">Loading… Usage is metered ¥3/billable unit (¥3.30 incl.). Monthly caps can be set below.</p>
  </div>
  <div class="stat-card">
  <p class="stat-label">Last 7 days</p>
@@ -292,7 +366,7 @@
 
  <div class="keybox" id="api-key-section">
  <p class="label">Your API key</p>
- <span class="key">am_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
+ <span class="key">jc_&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span>
  <p class="hash-prefix">hash prefix: ————————</p>
  <button class="btn-danger" id="dash-rotate-btn" type="button">Rotate key</button>
  <button class="btn-ghost" id="dash-copy-btn" type="button">Copy prefix</button>
@@ -302,7 +376,7 @@
  <div class="stat-card" id="billing-section" style="margin:0 0 16px">
  <p class="stat-label">Billing</p>
  <p class="stat-value" style="font-size:20px" data-billing-headline>Loading…</p>
- <p class="stat-note" style="margin:8px 0 14px">Pay-as-you-go: ¥3/billable unit tax exclusive (¥3.30 incl.). No fixed monthly fee, no minimum, no tier. Qualified invoices download from the Stripe Customer Portal.</p>
+ <p class="stat-note" style="margin:8px 0 14px">Pay-as-you-go: ¥3/billable unit tax exclusive (¥3.30 incl.). No fixed monthly fee, no minimum, no tier. Qualified invoices download from the Stripe Customer Portal. Stripe metered billing is the primary rail; optional Credit Wallet or x402 rails appear only when enabled for your account.</p>
  <a class="btn btn-primary" id="dash-billing-btn" href="#" role="button" style="min-height:44px;display:inline-flex;align-items:center;">Open Stripe Customer Portal &rarr;</a>
  <p class="stat-note" style="margin:14px 0 0;color:var(--text-muted);">
  When you no longer need the service, <strong>cancel the subscription</strong> via the Stripe Customer Portal.
@@ -311,7 +385,7 @@
  </div>
 
  <!-- ============================================================== -->
- <!-- Bearer-authenticated views (paste-key flow).                    -->
+	 <!-- X-API-Key authenticated views (paste-key flow).                  -->
  <!-- dashboard_v2.js reads localStorage.am_api_key.                  -->
  <!-- ============================================================== -->
 
@@ -319,7 +393,7 @@
  <p class="stat-label">Usage details (paste API key)</p>
  <p class="stat-note" style="margin:0 0 12px;">
  Paste your API key. It is stored in browser localStorage and sent to
- /v1/me/dashboard as a Bearer token. For server-side cookie sessions,
+	 /v1/me/dashboard with the X-API-Key header. For server-side cookie sessions,
  use the <code>Sign in</code> flow instead.
  </p>
  <form id="dash2-key-form" autocomplete="off" style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -334,7 +408,7 @@
  </section>
 
  <section id="dash2-summary" class="stat-card" style="margin:0 0 16px;display:none;">
- <p class="stat-label">30-day usage (Bearer)</p>
+ <p class="stat-label">30-day usage (API key)</p>
  <p class="stat-value" id="dash2-summary-headline">— calls / ¥— spent</p>
  <div class="quota-bar" aria-hidden="true"><div class="quota-fill" id="dash2-cap-fill" style="width:0%"></div></div>
  <p class="stat-note" id="dash2-summary-note">Set a monthly spend cap. The API returns 503 with cap_reached:true once you hit it.</p>
@@ -402,16 +476,15 @@
  </section>
 
  <!-- ============================================================== -->
- <!-- Amendment-alert subscriptions (free for all users).             -->
- <!-- Wired to /v1/me/alerts/* via dashboard_v2.js (Bearer auth).     -->
+ <!-- Amendment-alert subscriptions.                                  -->
+ <!-- Wired to /v1/me/alerts/* via dashboard_v2.js (X-API-Key auth).  -->
  <!-- ============================================================== -->
 
  <section id="dash2-alerts" class="stat-card" style="margin:0 0 16px;display:none;">
- <h2 style="font-size:16px;font-weight:700;margin:0 0 8px;color:var(--text);">Law-revision &amp; new-program alerts (free for all customers)</h2>
+ <h2 style="font-size:16px;font-weight:700;margin:0 0 8px;color:var(--text);">Law-revision &amp; new-program alerts</h2>
  <p class="stat-note" style="margin:0 0 12px;">
  Proactive Webhook (HTTPS only) or Email notifications on law revisions, new
- programs, and enforcement actions. Subscriptions are <strong>free</strong>
- (no add-on charge on top of ¥3/billable unit; available with or without a paid plan).
+ programs, and enforcement actions. API/MCP search and verification calls are metered at ¥3/billable unit; paid notification terms are shown before any paid notification flow.
  <code>filter_type</code>: <code>tool</code> / <code>law_id</code> / <code>program_id</code> /
  <code>industry_jsic</code> / <code>all</code>. <code>min_severity</code>:
  <code>critical</code> (program ended / eligibility changed) /
@@ -469,73 +542,6 @@
  <option value="critical">critical (program ended / eligibility)</option>
  <option value="important" selected>important (amount / scope)</option>
  <option value="info">info (cosmetic incl.)</option>
- </select>
- </div>
- <div>
- <label for="dash2-alerts-webhook" class="stat-note" style="margin:0 0 4px;display:block;">webhook_url (https only, optional)</label>
- <input id="dash2-alerts-webhook" type="url"
- placeholder="https://hooks.example.com/jpcite"
- pattern="https://.*"
- style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;min-height:44px;">
- </div>
- <div>
- <label for="dash2-alerts-email" class="stat-note" style="margin:0 0 4px;display:block;">email (optional)</label>
- <input id="dash2-alerts-email" type="email"
- placeholder="ops@example.com"
- style="width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;min-height:44px;">
- </div>
- <div>
- <button type="submit" id="dash2-alerts-submit" class="btn btn-primary"
- style="width:100%;padding:12px 14px;min-height:44px;">Add</button>
- </div>
- </form>
- <p class="stat-note" style="margin:10px 0 0;color:var(--text-muted);">
- At least one of webhook_url or email is required.
- Private network IPs (10.*, 172.16-31.*, 192.168.*, 127.*, ::1) are rejected at registration.
- </p>
- </section>
-
- <div class="actions-row">
- <a href="getting-started.html">Docs</a>
- <a href="mailto:info@bookyou.net">Contact support</a>
- <a href="../tos.html">Terms</a>
- <a href="privacy.html">Privacy</a>
- </div>
-
- </div>
- </section>
-</main>
-
-<div class="container">
-</div>
-
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
- <p class="footer-tag">Japanese public-program API</p>
- </div>
- <nav class="footer-nav" aria-label="Footer">
- <a href="about.html">About</a>
- <a href="getting-started.html">Getting started</a>
- <a href="pricing.html">Pricing</a>
- <a href="../tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
- </div>
-</footer>
-
-<script src="/assets/feedback-widget.js" defer></script>
-<script src="../dashboard_init.js" defer></script>
-
-<script src="/assets/trust-strip.en.js" defer></script>
-
-</body>
-</html>
-option>
  </select>
  </div>
  <div>

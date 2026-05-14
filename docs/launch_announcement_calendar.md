@@ -48,7 +48,7 @@
 - [ ] `data/jpintel.db` `data/autonomath.db` `.bak.*` `.venv/` `.wrangler/` が `.gitignore` に入っているか確認
 - [ ] private → public に変更
 - [ ] GitHub topic tag 設定: `mcp`, `claude`, `python`, `api`, `japan`, `government-data`, `subsidy`
-- [ ] GitHub release `v0.3.0` 作成 (CHANGELOG copy)
+- [ ] GitHub release `v0.4.0` 作成 (CHANGELOG copy)
 - [ ] GitHub URL を press kit に反映 (現状 placeholder)
 
 **所要**: 3-4h

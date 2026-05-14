@@ -1353,6 +1353,7 @@ def _related_programs(
     row: dict[str, Any],
     target_types: list[str],
     limit: int = 8,
+    publishable_slugs: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Return up to `limit` related programs, target_types match first, then program_kind.
 
@@ -1417,6 +1418,8 @@ def _related_programs(
         if not _is_public_title_quality_ok(public_name):
             continue
         rp_slug = slugify(d["primary_name"] or "", d["unified_id"])
+        if publishable_slugs is not None and rp_slug not in publishable_slugs:
+            continue
         shaped.append(
             {
                 "slug": rp_slug,
@@ -1430,6 +1433,16 @@ def _related_programs(
         if len(shaped) >= limit:
             break
     return shaped
+
+
+def _publishable_program_slugs(rows: list[dict[str, Any]]) -> set[str]:
+    """Return slugs that this generator run can emit as static program pages."""
+    slugs: set[str] = set()
+    for row in rows:
+        if not _is_public_title_quality_ok(row.get("primary_name")):
+            continue
+        slugs.add(slugify(row.get("primary_name") or "", row["unified_id"]))
+    return slugs
 
 
 # ---------------------------------------------------------------------------
@@ -1689,7 +1702,18 @@ _QA_TOPICS: dict[str, dict[str, Any]] = {
 }
 
 
-def _related_qa_for_program(row: dict[str, Any]) -> list[dict[str, str]]:
+def _static_public_path_exists(site_root: Path, public_path: str) -> bool:
+    target = site_root / public_path.lstrip("/")
+    return (
+        target.exists()
+        or (target.suffix == "" and target.with_suffix(".html").exists())
+        or (target / "index.html").exists()
+    )
+
+
+def _related_qa_for_program(
+    row: dict[str, Any], site_root: Path = REPO_ROOT / "site"
+) -> list[dict[str, str]]:
     """Pick 3-5 deterministic QA links based on program_kind + primary_name keywords.
 
     Returns a list of {topic_slug, qa_slug, label, h1, url} dicts. Empty if no
@@ -1753,6 +1777,9 @@ def _related_qa_for_program(row: dict[str, Any]) -> list[dict[str, str]]:
             key = f"{topic_slug}/{qa_slug}"
             if key in seen:
                 continue
+            url = f"/qa/{topic_slug}/{qa_slug}.html"
+            if not _static_public_path_exists(site_root, url):
+                continue
             seen.add(key)
             out.append(
                 {
@@ -1760,7 +1787,7 @@ def _related_qa_for_program(row: dict[str, Any]) -> list[dict[str, str]]:
                     "topic_label": topic["label"],
                     "qa_slug": qa_slug,
                     "h1": h1,
-                    "url": f"/qa/{topic_slug}/{qa_slug}.html",
+                    "url": url,
                 }
             )
             if len(out) >= 5:
@@ -1774,6 +1801,7 @@ def render_row(
     domain: str,
     related: list[dict[str, Any]],
     acceptance_stats: dict[str, Any] | None = None,
+    site_root: Path = REPO_ROOT / "site",
 ) -> tuple[str, str, dict[str, Any]]:
     """Return (slug, html, standalone_json_ld_doc)."""
     original_name = row.get("primary_name") or ""
@@ -1840,7 +1868,7 @@ def render_row(
         source_domain=source_domain,
         source_org=source_org,
         related_programs=related_public,
-        related_qa=_related_qa_for_program(row),
+        related_qa=_related_qa_for_program(row, site_root=site_root),
         acceptance_stats=acceptance_stats,
         json_ld_pretty=json.dumps(json_ld, ensure_ascii=False, indent=2).replace("</", "<\\/"),
     )
@@ -2128,6 +2156,11 @@ def generate(
 
     # --- sample mode
     if sample_ids and samples_dir:
+        existing_program_slugs = {
+            path.stem
+            for path in out_dir.glob("*.html")
+            if path.name not in _RESERVED_PROGRAM_HTML
+        }
         for sid in sample_ids:
             cur = conn.execute(SAMPLE_BY_ID_SQL, (sid,))
             row = cur.fetchone()
@@ -2137,7 +2170,9 @@ def generate(
             row_d = dict(row)
             try:
                 tts = _parse_json_list(row_d.get("target_types_json"))
-                related = _related_programs(conn, row_d, tts, limit=8)
+                related = _related_programs(
+                    conn, row_d, tts, limit=8, publishable_slugs=existing_program_slugs
+                )
                 slug, html, standalone = render_row(
                     row_d,
                     ctx,
@@ -2161,7 +2196,9 @@ def generate(
         return written, skipped, errors
 
     # --- bulk mode
-    for row in _iter_rows(conn, limit, tiers=tiers, bad_urls=bad_urls):
+    rows = list(_iter_rows(conn, limit, tiers=tiers, bad_urls=bad_urls))
+    publishable_slugs = _publishable_program_slugs(rows)
+    for row in rows:
         try:
             if not _is_public_title_quality_ok(row.get("primary_name")):
                 LOG.info(
@@ -2171,7 +2208,9 @@ def generate(
                 )
                 continue
             tts = _parse_json_list(row.get("target_types_json"))
-            related = _related_programs(conn, row, tts, limit=8)
+            related = _related_programs(
+                conn, row, tts, limit=8, publishable_slugs=publishable_slugs
+            )
             slug, html, standalone = render_row(
                 row,
                 ctx,

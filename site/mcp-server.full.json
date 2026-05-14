@@ -296,7 +296,7 @@
     },
     {
       "name": "program_risk_score_am",
-      "description": "[PROGRAM-REVIEW-4D] いつ使うか: 制度 × 業法 × 行政処分 × 取消理由の 4 軸 review score (0-100) を返す。weighted: 業法 0.5 / 行政処分 0.3 / 取消理由 0.2。入力: program_id (unified_id)。出力: top_review_signal + all_axes[]、weights、_disclaimer。エラー: program_id 未指定 → invalid_enum、precompute 不在 → axis_count=0 で返却 (200 OK)。1 ¥3/billable unit。NO LLM。§52 / §47条の2 / §1 sensitive — 行政書士法 §1 / 税理士法 §52 の boundary を crossed 制度を識別する用途。"
+      "description": "[PROGRAM-REVIEW-4D] いつ使うか: 制度 × 業法 × 行政処分 × 取消理由の 4 軸 review score (0-100) を返す。weighted: 業法 0.5 / 行政処分 0.3 / 取消理由 0.2。入力: program_id (unified_id)。出力: top_review_signal + all_axes[]、weights、_disclaimer。エラー: program_id 未指定 → invalid_enum、precompute 不在 → axis_count=0 で返却 (200 OK)。1 ¥3/billable unit。NO LLM。§52 / §47条の2 / §1 sensitive — 行政書士法 §1の2 / 税理士法 §52 の boundary を crossed 制度を識別する用途。"
     },
     {
       "name": "supplier_chain_am",
@@ -332,7 +332,7 @@
     },
     {
       "name": "programs_by_corporate_form_am",
-      "description": "[CORPORATE-FORM-AM] 法人格 × 制度 適用 matcher。NO LLM, ¥3/billable unit metered. `_disclaimer` 必須。\n\nWHAT: `source-derived dataset` の\n``$.target_entity_types`` 軸 (5,702 rows) を法人格 short code に\n正規化し、与えられた form (株式会社 / 合同会社 / NPO / 一般社団 /\n公益社団 / 学校 / 医療 / 個人事業主 等) に該当する program を\n返却。``industry_jsic`` を与えると ``$.industries_jsic`` で\nさらに絞り込み。\n\nWHEN:\n  - 「私の法人格 (合同会社) で使える制度を narrow したい」\n  - 「個人事業主 NG 制度を frame out したい」\n  - 「NPO 法人で建設業向け補助金を探したい (form=npo, industry_jsic=D)」\n\nWHEN NOT:\n  - 法人格 不明 / 検索 → search_programs (free-text)\n  - 都道府県 軸 → programs_by_region_am\n  - 個別 program の form 適用表 → program_eligibility_by_form_am\n\nRETURNS (envelope):\n  {\n    applied_filters: {form_code, form_label, form_entity_class,\n                      industry_jsic, limit},\n    programs: [\n      {unified_id, primary_name, tier, prefecture, program_kind,\n       amount_max_man_yen, source_url,\n       predicate_target_entity_types, predicate_industries_jsic,\n       predicate_prefectures, predicate_funding_purposes,\n       predicate_confidence, predicate_extraction_method},\n      ...\n    ],\n    count, total, results,  # all = same list (FastMCP convention)\n    _disclaimer,             # 税理士法 §52 / 行政書士法 §1 fence\n    _form_caveat,            # predicate-axis precision note\n    _next_calls: [...]       # composition hints\n  }"
+      "description": "[CORPORATE-FORM-AM] 法人格 × 制度 適用 matcher。NO LLM, ¥3/billable unit metered. `_disclaimer` 必須。\n\nWHAT: `source-derived dataset` の\n``$.target_entity_types`` 軸 (5,702 rows) を法人格 short code に\n正規化し、与えられた form (株式会社 / 合同会社 / NPO / 一般社団 /\n公益社団 / 学校 / 医療 / 個人事業主 等) に該当する program を\n返却。``industry_jsic`` を与えると ``$.industries_jsic`` で\nさらに絞り込み。\n\nWHEN:\n  - 「私の法人格 (合同会社) で使える制度を narrow したい」\n  - 「個人事業主 NG 制度を frame out したい」\n  - 「NPO 法人で建設業向け補助金を探したい (form=npo, industry_jsic=D)」\n\nWHEN NOT:\n  - 法人格 不明 / 検索 → search_programs (free-text)\n  - 都道府県 軸 → programs_by_region_am\n  - 個別 program の form 適用表 → program_eligibility_by_form_am\n\nRETURNS (envelope):\n  {\n    applied_filters: {form_code, form_label, form_entity_class,\n                      industry_jsic, limit},\n    programs: [\n      {unified_id, primary_name, tier, prefecture, program_kind,\n       amount_max_man_yen, source_url,\n       predicate_target_entity_types, predicate_industries_jsic,\n       predicate_prefectures, predicate_funding_purposes,\n       predicate_confidence, predicate_extraction_method},\n      ...\n    ],\n    count, total, results,  # all = same list (FastMCP convention)\n    _disclaimer,             # 税理士法 §52 / 行政書士法 §1の2 fence\n    _form_caveat,            # predicate-axis precision note\n    _next_calls: [...]       # composition hints\n  }"
     },
     {
       "name": "program_eligibility_by_form_am",
@@ -516,15 +516,15 @@
     },
     {
       "name": "recommend_similar_program",
-      "description": "Vector k-NN over source-derived datasetS (programs). Re-ranked by cosine + verification_count + source-derived dataset (W22-9). NOT an 採択 forecast — 行政書士法 §1 / 税理士法 §52 fence; the LLM must surface the disclaimer envelope."
+      "description": "Vector k-NN over source-derived datasetS (programs). Re-ranked by cosine + verification_count + source-derived dataset (W22-9). NOT an 採択 forecast — 行政書士法 §1の2 / 税理士法 §52 fence; the LLM must surface the disclaimer envelope."
     },
     {
       "name": "recommend_similar_case",
-      "description": "Vector k-NN over source-derived datasetC (source-derived dataset). Cosine distance with optional density boost. NOT an 採択 forecast — 行政書士法 §1 / 税理士法 §52 fence; the LLM must surface the disclaimer envelope."
+      "description": "Vector k-NN over source-derived datasetC (source-derived dataset). Cosine distance with optional density boost. NOT an 採択 forecast — 行政書士法 §1の2 / 税理士法 §52 fence; the LLM must surface the disclaimer envelope."
     },
     {
       "name": "recommend_similar_court_decision",
-      "description": "Vector k-NN over source-derived datasetJ (court_decisions). Cosine distance with optional density boost. NOT a legal opinion — 弁護士法 §72 / 行政書士法 §1 fence; the LLM must surface the disclaimer envelope."
+      "description": "Vector k-NN over source-derived datasetJ (court_decisions). Cosine distance with optional density boost. NOT a legal opinion — 弁護士法 §72 / 行政書士法 §1の2 fence; the LLM must surface the disclaimer envelope."
     },
     {
       "name": "programs_by_region_am",
@@ -636,7 +636,7 @@
     },
     {
       "name": "upcoming_rounds_for_my_profile_am",
-      "description": "[UPCOMING-ROUNDS] Match every source-derived dataset closing in the next horizon_days against the calling key's client_profiles via JSIC × prefecture × target_types × last_active_program overlap. Authenticated only — anon receives empty match list. Single ¥3/billable unit. NO LLM. 行政書士法 §1 sensitive — pure schedule data, not 申請代理."
+      "description": "[UPCOMING-ROUNDS] Match every source-derived dataset closing in the next horizon_days against the calling key's client_profiles via JSIC × prefecture × target_types × last_active_program overlap. Authenticated only — anon receives empty match list. Single ¥3/billable unit. NO LLM. 行政書士法 §1の2 sensitive — pure schedule data, not 申請代理."
     },
     {
       "name": "validate",

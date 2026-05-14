@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>特高支援金（長野県特別高圧受電事業者電気料金負担軽減支援金）／長野県</title>
@@ -551,15 +551,6 @@
   </item>
 
   <item>
-    <title>新規就農者支援制度（予高地区）</title>
-    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-seido-arakajime-kouchi-ku-08b868.html</link>
-    <description>Tier B / 長野県 / 上限 150万円 出典: https://www.city.suzaka.nagano.jp/soshiki/5010/3/87.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-0f25c40c7e</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>小諸市 新規就農者就農準備支援事業</title>
     <link>https://jpcite.com/programs/komoro-shi-shinki-shuunou-mono-shuunou-junbi-shien-jigyou-cddb42.html</link>
     <description>Tier B / 長野県 / 市町村 / subsidy / 上限 100万円 出典: https://www1.g-reiki.net/komoro/reiki_honbun/e709RG00000816.html</description>
@@ -574,15 +565,6 @@
     <description>Tier B / 長野県 / 市町村 / subsidy / 上限 180万円 出典: https://www1.g-reiki.net/komoro/reiki_honbun/e709RG00000816.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-134b14f381</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>鳥獣被害防止対策補助事業</title>
-    <link>https://jpcite.com/programs/choujuu-higai-boushitaisaku-hojo-jigyou-1797e2.html</link>
-    <description>Tier C / 長野県 出典: https://www.town.iizuna.nagano.jp/docs/2595.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-13f434225a</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -632,15 +614,6 @@
   </item>
 
   <item>
-    <title>農業振興事業補助金</title>
-    <link>https://jpcite.com/programs/nougyou-shinkou-jigyou-hojokin-1ecfed.html</link>
-    <description>Tier C / 長野県 出典: https://www.city.shiojiri.lg.jp/qa/43102.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-177b54ac1f</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>中野市 新規参入者営農支援事業</title>
     <link>https://jpcite.com/programs/nakanoshi-shinkisannyuusha-einou-shien-jigyou-06eaa3.html</link>
     <description>Tier B / 長野県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.nakano.nagano.jp/docs/2014011601833/</description>
@@ -655,33 +628,6 @@
     <description>Tier A / 長野県 / 長野県飯綱町 / subsidy / 上限 20万円 出典: https://www.town.iizuna.nagano.jp/docs/2595.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-1ba4bb4e92</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>農業用アシストスーツ等導入支援事業補助金</title>
-    <link>https://jpcite.com/programs/nougyouyou-ashisutosuutsu-nado-dounyuu-shien-jigyou-hojokin-b9df74.html</link>
-    <description>Tier C / 長野県 出典: https://www.town.iizuna.nagano.jp/docs/2595.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1e8daf452f</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>有害鳥獣被害対策事業補助金（農作物被害防止）</title>
-    <link>https://jpcite.com/programs/yuugai-choujuu-higai-taisaku-jigyou-hojokin-nousakubutsu-e1a0e0.html</link>
-    <description>Tier B / 長野県 / 上限 10万円 出典: https://www.city.shiojiri.lg.jp/soshiki/62/2568.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1fe4aa4b15</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>新規就農者支援（新規就農研修給付金）</title>
-    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-shinki-shuunou-kenshuu-kyuufukin-912a86.html</link>
-    <description>Tier B / 長野県 出典: https://www.city.suzaka.nagano.jp/soshiki/5010/3/569.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-207ce76371</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -704,29 +650,11 @@
   </item>
 
   <item>
-    <title>新規就農者定着支援事業（住久市独自事業）</title>
-    <link>https://jpcite.com/programs/shinki-shuunou-mono-teichaku-shien-jigyou-sumihisa-shi-467259.html</link>
-    <description>Tier C / 長野県 出典: https://www.city.saku.nagano.jp/machizukuri/nogyo/sangyo/sinksyuunou/index.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-21dfd8bc56</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>農業エネルギーコスト削減促進事業</title>
     <link>https://jpcite.com/programs/nougyou-enerugiikosuto-sakugen-sokushin-jigyou-0567c6.html</link>
     <description>Tier C / 長野県 / 長野県 / subsidy / 上限 500万円 出典: https://www.pref.nagano.lg.jp/nosei/documents/pr_4.pdf</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-22120dd09e</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>新規就農者定着支援事業（住久市独自事業）</title>
-    <link>https://jpcite.com/programs/shinki-shuunou-mono-teichaku-shien-jigyou-sumihisa-shi-ac7740.html</link>
-    <description>Tier C / 長野県 / 長野県佐久市 / subsidy 出典: https://www.city.saku.nagano.jp/machizukuri/nogyo/sangyo/sinksyuunou/index.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-22a9b01485</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -848,24 +776,6 @@
   </item>
 
   <item>
-    <title>地域奨励作物支援事業</title>
-    <link>https://jpcite.com/programs/chiiki-shourei-sakumotsu-shien-jigyou-470887.html</link>
-    <description>Tier C / 長野県 出典: https://www.town.iizuna.nagano.jp/docs/2595.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-420a4d5473</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>中野市遊休農地対策事業補助金</title>
-    <link>https://jpcite.com/programs/nakanoshi-yuukyuu-nouchi-taisaku-jigyou-hojokin-cb8f20.html</link>
-    <description>Tier B / 長野県 / 上限 25万円 出典: https://www.city.nakano.nagano.jp/docs/2014011601796/</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-430cf79576</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>松本市未来を担う農業経営者支援事業補助金</title>
     <link>https://jpcite.com/programs/matsumotoshi-mirai-wo-ninau-nougyou-keieisha-shien-jigyou-48a2f1.html</link>
     <description>Tier C / 長野県 / 長野県松本市 / subsidy / 上限 200万円 出典: https://www.city.matsumoto.nagano.jp/material/files/group/13/2024nougyoukeieisya_youkou.pdf</description>
@@ -893,20 +803,110 @@
   </item>
 
   <item>
-    <title>国際水準ＧＡＰ認証取得事業補助金</title>
-    <link>https://jpcite.com/programs/kokusai-suijun-g-a-p-ninshou-shutoku-jigyou-hojokin-0f1931.html</link>
-    <description>Tier C / 長野県 出典: https://www.town.iizuna.nagano.jp/docs/2595.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-4955c47a33</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>須坂市_就農研修給付金（移住者型）</title>
     <link>https://jpcite.com/programs/mun-202029-002-suzaka-shi-shuunou-kenshuu-kyuufukin-ijuusha-d030c6.html</link>
     <description>Tier B / 長野県 / subsidy / 上限 150万円 出典: https://www.noukatsu-nagano.net/farming-info/suzaka/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-4bf289b17f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>長野県中小企業省エネルギー設備導入支援補助金</title>
+    <link>https://jpcite.com/programs/naganoken-chuushoukigyou-shouene-rugii-setsubi-dounyuu-cb6971.html</link>
+    <description>Tier C / 長野県 / subsidy / 上限 200万円 出典: https://www.pref.nagano.lg.jp/ondanka/sangyo/shouene-setsubi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4c59dcd965</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>野鼠一斉駆除薬剤費補助</title>
+    <link>https://jpcite.com/programs/nonezumi-issei-kujo-yakuzai-hi-hojo-4a43df.html</link>
+    <description>Tier B / 長野県 / 長野県飯綱町 / subsidy 出典: https://www.town.iizuna.nagano.jp/docs/2595.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4de773a988</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>飯田市 意欲ある農業者支援事業</title>
+    <link>https://jpcite.com/programs/iidashi-iyoku-aru-nougyou-mono-shien-jigyou-107b80.html</link>
+    <description>Tier C / 長野県 / 市町村 / subsidy / 上限 50万円 出典: https://www.city.iida.lg.jp/soshiki/22/iyokuarunougyousyahojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4f4ed582a0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>松本市_松本市新規就農者住宅支援事業</title>
+    <link>https://jpcite.com/programs/matsumotoshi-matsumotoshi-shinki-shuunou-mono-juutaku-shien-d27e12.html</link>
+    <description>Tier B / 長野県 / subsidy / 上限 100万円 出典: https://www.city.matsumoto.nagano.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4f6bd3fc0d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>松本市_認定農業者制度</title>
+    <link>https://jpcite.com/programs/matsumotoshi-nintei-nougyou-mono-seido-bcee23.html</link>
+    <description>Tier B / 長野県 / subsidy / 上限 100万円 出典: https://www.city.matsumoto.nagano.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-51a3e66dcb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規後継者・定年帰農者等の支援（新規後継者）</title>
+    <link>https://jpcite.com/programs/shinki-koukeisha-teinen-kinou-mono-nado-no-shien-shinki-c300fb.html</link>
+    <description>Tier A / 長野県 / 長野県富士見町 / subsidy / 上限 60万円 出典: https://www.town.fujimi.lg.jp/page/teinen-kinousya.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-530ed02b7c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>飯田市_意欲ある農業者支援事業</title>
+    <link>https://jpcite.com/programs/mun-202053-001-iidashi-iyoku-aru-nougyou-mono-shien-jigyou-4f655d.html</link>
+    <description>Tier C / 長野県 / subsidy / 上限 50万円 出典: https://www.city.iida.lg.jp/soshiki/22/iyokuarunougyousyahojyo.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-558b64eb6d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>松本市子ども・若者農業体験支援事業補助金</title>
+    <link>https://jpcite.com/programs/matsumotoshi-kodomo-wakamono-nougyou-taiken-shien-jigyou-07aa76.html</link>
+    <description>Tier A / 長野県 / 長野県松本市 / subsidy / 上限 30万円 出典: https://www.city.matsumoto.nagano.jp/soshiki/72/3143.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-595fb52a46</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>松本市 スマート農業推進事業補助金</title>
+    <link>https://jpcite.com/programs/matsumotoshi-sumaato-nougyou-suishin-jigyou-hojokin-6fd2f7.html</link>
+    <description>Tier B / 長野県 / 市町村 / subsidy / 上限 200万円 出典: https://www.city.matsumoto.nagano.jp/soshiki/72/89931.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6559e72fc3</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>塩尻市農作業標準賃金・農業機械作業標準料金表</title>
+    <link>https://jpcite.com/programs/shiojiri-shi-nousagyou-hyoujun-chingin-nougyou-kikai-sagyou-7d6b7f.html</link>
+    <description>Tier B / 長野県 / 長野県塩尻市 / subsidy 出典: https://www.city.shiojiri.lg.jp/soshiki/51/2579.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-682bc7086c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業振興事業補助金</title>
+    <link>https://jpcite.com/programs/nougyou-shinkou-jigyou-hojokin-4a7a4c.html</link>
+    <description>Tier B / 長野県 / 長野県塩尻市 / subsidy / 上限 8万円 出典: https://www.city.shiojiri.lg.jp/qa/43102.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-687b0b07cc</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

@@ -15,16 +15,16 @@ source_url: https://laws.e-gov.go.jp/law/337M50000400014
 
 # chushokigyo-shinyo-hoken_2
 
-# 中小企業信用保険法施行規則 
-法令番号 昭和37年通商産業省令第14号 施行日 2026-01-01 最終改正 2025-12-26 所管 meti カテゴリ 産業政策 e-Gov 法令 ID 337M50000400014 ステータス active 
+# 中小企業信用保険法施行規則
+法令番号 昭和37年通商産業省令第14号 施行日 2026-01-01 最終改正 2025-12-26 所管 meti カテゴリ 産業政策 e-Gov 法令 ID 337M50000400014 ステータス active
 
-条文データを読み込み中です。 
+条文データを読み込み中です。
 
-## 関連する公的支援制度 
+## 関連する公的支援制度
 
-- [京都府 開業・経営承継支援資金（承継無保証人型） ](/programs/?id=UNI-fbbe570e2e)(reference, [derived:fts]) 
+- [京都府 開業・経営承継支援資金（承継無保証人型） ](/programs/share.html?ids=UNI-fbbe570e2e)(reference, [derived:fts])
 
-## 出典とライセンス 
+## 出典とライセンス
 
 e-Gov 出典 : [https://laws.e-gov.go.jp/law/337M50000400014 ](https://laws.e-gov.go.jp/law/337M50000400014)
 

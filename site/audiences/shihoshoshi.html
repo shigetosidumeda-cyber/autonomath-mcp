@@ -87,7 +87,7 @@
     {"@type": "Question", "name": "成年後見業務支援は可能ですか?", "acceptedAnswer": {"@type": "Answer", "text": "成年後見・任意後見・関連補助金等の制度情報の検索と一次 URL 引用は可能です。後見人選任申立書面の作成や後見人候補者の判断は jpcite では一切行いません。司法書士本人の業務範囲です。"}},
     {"@type": "Question", "name": "反社チェックの代替になりますか?", "acceptedAnswer": {"@type": "Answer", "text": "法人の行政処分履歴や補助金除外情報の事実検索は可能ですが、個人信用情報や反社データベースは一切扱いません (APPI 配慮)。反社チェック相当の判断は司法書士本人が責任を持って行ってください。"}},
     {"@type": "Question", "name": "pricing は?", "acceptedAnswer": {"@type": "Answer", "text": "¥3 / 課金単位 完全従量 (税込 ¥3.30)。anonymous は IP ベースで 3 req/日 free、JST 翌日 00:00 リセット。tier・seat・年間最低額は一切ありません。"}},
-    {"@type": "Question", "name": "他の sensitive cohort (税理士・公認会計士・補助金 consultant) との違いは?", "acceptedAnswer": {"@type": "Answer", "text": "各 cohort 専用の persona prompt と tool routing が分かれています。司法書士向けは登記・供託・簡裁訴訟代理 (司法書士法 §3) を fence、税理士向けは税務代理・税務相談 (税理士法 §52) を fence、公認会計士向けは監査・会計参与 (公認会計士法 §47条の2) を fence、補助金 consultant 向けは行政書士法 §1 業務範囲を fence します。"}}
+    {"@type": "Question", "name": "他の sensitive cohort (税理士・公認会計士・補助金 consultant) との違いは?", "acceptedAnswer": {"@type": "Answer", "text": "各 cohort 専用の persona prompt と tool routing が分かれています。司法書士向けは登記・供託・簡裁訴訟代理 (司法書士法 §3) を fence、税理士向けは税務代理・税務相談 (税理士法 §52) を fence、公認会計士向けは監査・会計参与 (公認会計士法 §47条の2) を fence、補助金 consultant 向けは行政書士法 §1の2・§19 業務範囲を fence します。"}}
   ]
 }
 </script>
@@ -143,11 +143,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -320,7 +323,7 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
 
  <details style="margin-bottom:12px;padding:16px;border:1px solid var(--border);border-radius:6px;">
  <summary style="font-weight:600;cursor:pointer;">Q5. 他の sensitive cohort (税理士・公認会計士・補助金 consultant) との違いは?</summary>
- <p style="margin-top:12px;line-height:1.8;">各 cohort 専用の persona prompt と tool routing が分かれています。司法書士向けは登記・供託・簡裁訴訟代理 (司法書士法 §3) を fence、税理士向けは税務代理・税務相談 (税理士法 §52) を fence、公認会計士向けは監査・会計参与 (公認会計士法 §47条の2) を fence、補助金 consultant 向けは行政書士法 §1 業務範囲を fence します。</p>
+ <p style="margin-top:12px;line-height:1.8;">各 cohort 専用の persona prompt と tool routing が分かれています。司法書士向けは登記・供託・簡裁訴訟代理 (司法書士法 §3) を fence、税理士向けは税務代理・税務相談 (税理士法 §52) を fence、公認会計士向けは監査・会計参与 (公認会計士法 §47条の2) を fence、補助金 consultant 向けは行政書士法 §1の2・§19 業務範囲を fence します。</p>
  </details>
 
  </div>
@@ -334,13 +337,13 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
  <li><strong>司法書士法 §3</strong>: 登記・供託・簡裁訴訟代理は司法書士独占業務、jpcite は代行不可。</li>
  <li><strong>税理士法 §52</strong>: 税務代理・税務相談を行わない。</li>
  <li><strong>弁護士法 §72</strong>: 法律判断・訴訟代理を行わない。</li>
- <li><strong>行政書士法 §1</strong>: 申請書面 generation を行わない。</li>
+ <li><strong>行政書士法 §1の2・§19</strong>: 申請書面 generation を行わない。</li>
  </ul>
  </div>
  </section>
 
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px auto;max-width:920px;padding:0 24px;">
-本サービスは情報検索です。登記・供託・簡裁訴訟代理は司法書士法 §3 司法書士独占業務であり、jpcite は代行を一切行いません。税務代理 (税理士法 §52)・法律判断 (弁護士法 §72)・官公署提出書類作成 (行政書士法 §1) も同様、有資格者の業務範囲を侵しません。
+本サービスは情報検索です。登記・供託・簡裁訴訟代理は司法書士法 §3 司法書士独占業務であり、jpcite は代行を一切行いません。税務代理 (税理士法 §52)・法律判断 (弁護士法 §72)・官公署提出書類作成 (行政書士法 §1の2・§19) も同様、有資格者の業務範囲を侵しません。
 </p>
 
  <section class="features" aria-labelledby="cost-title">

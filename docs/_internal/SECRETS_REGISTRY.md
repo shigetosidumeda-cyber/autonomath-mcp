@@ -27,6 +27,7 @@
 | Anonymous rate limit | Fly secrets | `RATE_LIMIT_FREE_PER_DAY` | 同上 |
 | Invoice metadata | Fly secrets | `INVOICE_FOOTER_JA`, `INVOICE_REGISTRATION_NUMBER` | 同上 |
 | Autonomath DB url/sha/pepper | Fly secrets | `AUTONOMATH_DB_URL`, `AUTONOMATH_DB_SHA256`, `AUTONOMATH_API_HASH_PEPPER` | 同上 |
+| Pages Functions edge auth | Fly secrets + Cloudflare Pages secret | `JPCITE_EDGE_AUTH_SECRET` | `fly secrets list -a autonomath-api`; `npx wrangler pages secret list --project-name autonomath` |
 | Cloudflare oauth (Wrangler) | `~/.wrangler/config/default.toml` | (oauth_token, scopes: write/admin) | `npx wrangler whoami` |
 | Fly machine auth | `~/.fly/config.yml` | `access_token` | `fly auth whoami` |
 | GitHub repo auth | `~/.config/gh/hosts.yml` | (gho_*) | `gh auth status` |
@@ -42,6 +43,7 @@
 |---|---|---|
 | `API_KEY_SALT` | production では必須 | placeholder 不可、32 chars 以上。rotate は全 API key 再発行級。 |
 | `JPCITE_SESSION_SECRET` | production では必須 | HS256 session cookie signing secret。placeholder 不可、32 chars 以上。Google/GitHub login session forge 防止。 |
+| `JPCITE_EDGE_AUTH_SECRET` | production では必須 | Cloudflare Pages Function → Fly API の private edge auth header。Fly secret と Pages secret の両方に同値を設定する。 |
 | `AUDIT_SEAL_SECRET` または `JPINTEL_AUDIT_SEAL_KEYS` | production ではどちらか 1 つ必須 | `JPINTEL_AUDIT_SEAL_KEYS` が rotation list。`AUDIT_SEAL_SECRET` は legacy single-key fallback。 |
 | `STRIPE_SECRET_KEY` | production では必須 | live Stripe API secret。 |
 | `STRIPE_WEBHOOK_SECRET` | production では必須 | live webhook signing secret。 |
@@ -61,6 +63,7 @@ AUDIT_SEAL_SECRET,
 GITHUB_OAUTH_CLIENT_ID, GITHUB_OAUTH_CLIENT_SECRET,
 GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET,
 INVOICE_FOOTER_JA, INVOICE_REGISTRATION_NUMBER,
+JPCITE_EDGE_AUTH_SECRET,
 JPCITE_SESSION_SECRET,
 JPINTEL_CORS_ORIGINS, JPINTEL_ENV,
 RATE_LIMIT_FREE_PER_DAY,

@@ -1,11 +1,11 @@
 (()=>{'use strict';const API_BASE=(typeof window!=='undefined'&&window.JPCITE_API_BASE)||(typeof window!=='undefined'&&window.location&&window.location.hostname==='jpcite.com'?'https://api.jpcite.com':'');const api=(p)=>API_BASE.replace(/\/$/,'')+p;const KEY_NAME='am_api_key';const $=(sel,root=document)=>root.querySelector(sel);const escapeHtml=(s)=>String(s).replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let storageMode='localStorage';const memStore=Object.create(null);const store={get(){try{const v=localStorage.getItem(KEY_NAME);if(v){storageMode='localStorage';return v;}}catch(_){}
 try{const v=sessionStorage.getItem(KEY_NAME);if(v){storageMode='sessionStorage';return v;}}catch(_){}
 if(memStore[KEY_NAME]){storageMode='memory';return memStore[KEY_NAME];}
-return'';},set(v){try{localStorage.setItem(KEY_NAME,v);storageMode='localStorage';return;}catch(_){}
+	return'';},set(v){try{localStorage.setItem(KEY_NAME,v);storageMode='localStorage';return;}catch(_){}
 try{sessionStorage.setItem(KEY_NAME,v);storageMode='sessionStorage';return;}catch(_){}
 memStore[KEY_NAME]=v;storageMode='memory';},clear(){try{localStorage.removeItem(KEY_NAME);}catch(_){}
-try{sessionStorage.removeItem(KEY_NAME);}catch(_){}
-delete memStore[KEY_NAME];},mode(){return storageMode;},};function authHeader(){const k=store.get();return k?{'Authorization':`Bearer ${k}`}:{};}
+	try{sessionStorage.removeItem(KEY_NAME);}catch(_){}
+	delete memStore[KEY_NAME];},mode(){return storageMode;},};function authHeader(){const k=store.get();return k?{'X-API-Key':k}:{};}
 function _readCookie(name){if(typeof document==='undefined'||!document.cookie)return'';const parts=document.cookie.split(';');for(let i=0;i<parts.length;i++){const seg=parts[i].trim();if(!seg)continue;const eq=seg.indexOf('=');const k=eq<0?seg:seg.slice(0,eq);if(k===name){return eq<0?'':decodeURIComponent(seg.slice(eq+1));}}
 return'';}
 function csrfHeaders(){const tok=_readCookie('am_csrf');return tok?{'X-CSRF-Token':tok}:{};}
@@ -93,7 +93,7 @@ function yieldToMain(){return new Promise((r)=>setTimeout(r,0));}
 async function loadAll(){if(!store.get()){showSections(false);setStatus('API key 未保存 — 上記フォームから貼り付けてください。');return;}
 setStatus('読み込み中…');showSections(true);try{await loadSummary();await yieldToMain();await loadToolUsage();await yieldToMain();await loadBillingHistory();await yieldToMain();try{await loadAlerts();}catch(e){if(e.status!==401){const tbody=document.getElementById('dash2-alerts-tbody');if(tbody){tbody.innerHTML='<tr><td colspan="7" style="padding:14px 4px;color:var(--danger);">'+'subscription 一覧取得に失敗: '+escapeHtml(e.message||String(e))+'</td></tr>';}}else{throw e;}}
 setStatus('読み込み完了。');}catch(e){if(e.status===401){store.clear();showSections(false);setStatus('API key が無効でした。再度入力してください。',true);}else{setStatus(`エラー: ${e.message || e}`,true);}}}
-function bind(){const form=$('#dash2-key-form');if(form){form.addEventListener('submit',(e)=>{e.preventDefault();const inp=$('#dash2-key-input');const v=(inp&&inp.value||'').trim();if(!v)return;store.set(v);if(inp)inp.value='';renderStorageWarning();try{if(typeof window.jpciteTrack==='function'){window.jpciteTrack('dashboard_signin_success',{mode:'bearer_localstorage',});}}catch(_e){}
+	function bind(){const form=$('#dash2-key-form');if(form){form.addEventListener('submit',(e)=>{e.preventDefault();const inp=$('#dash2-key-input');const v=(inp&&inp.value||'').trim();if(!v)return;store.set(v);if(inp)inp.value='';renderStorageWarning();try{if(typeof window.jpciteTrack==='function'){window.jpciteTrack('dashboard_signin_success',{mode:'x_api_key_localstorage',});}}catch(_e){}
 loadAll();});}
 const clearBtn=$('#dash2-key-clear');if(clearBtn){clearBtn.addEventListener('click',()=>{store.clear();showSections(false);setStatus('API key を削除しました。');const warn=document.getElementById('dash2-key-storage-warning');if(warn)warn.remove();});}
 const recForm=$('#dash2-rec-form');if(recForm){recForm.addEventListener('submit',async(e)=>{e.preventDefault();const intent=($('#dash2-rec-intent')||{}).value||'';if(!intent.trim())return;try{await recommendTool(intent.trim());}

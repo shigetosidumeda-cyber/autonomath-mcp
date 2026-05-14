@@ -15,7 +15,7 @@ Hard constraints (memory `feedback_no_operator_llm_api`)
   「採択確実」「採択保証」「採択率予測」 phrasing per 景表法 fence in the
   sibling `score_application_probability` MCP tool. Final go/no-go is the
   customer LLM's responsibility, with 確定判断 deferred to qualified
-  行政書士 / 中小企業診断士 (行政書士法 §1).
+  行政書士 / 中小企業診断士 (行政書士法 §1の2).
 
 Graceful degradation
 --------------------
@@ -73,7 +73,7 @@ _DISCLAIMER = (
     "「採択率予測」 ではない。output field 名は `probability_estimate` (estimate) "
     "であり `probability_forecast` ではない。本 estimate を「採択保証」「採択確実」"
     "として広告・営業に使用することは景表法 (不当景品類及び不当表示防止法) 違反の"
-    "リスクがあるため禁止。申請可否判断 (行政書士法 §1) の代替ではなく、確定判断は"
+    "リスクがあるため禁止。申請可否判断 (行政書士法 §1の2) の代替ではなく、確定判断は"
     "資格を有する行政書士・中小企業診断士へ。"
 )
 
@@ -801,7 +801,7 @@ _MATCH_DISCLAIMER = (
     "**ヒューリスティック・マッチング** であり、「採択確実」「採択保証」"
     "「補助金受給確約」 ではない。match_score は tier 重み + verification_count "
     "+ density + キーワード一致 + (利用可能な場合) sqlite-vec 類似度 の合成スコア。"
-    "申請可否判断 (行政書士法 §1) / 税務助言 (税理士法 §52) の代替ではなく、確定判断は"
+    "申請可否判断 (行政書士法 §1の2) / 税務助言 (税理士法 §52) の代替ではなく、確定判断は"
     "資格を有する行政書士・税理士・中小企業診断士へ。"
 )
 

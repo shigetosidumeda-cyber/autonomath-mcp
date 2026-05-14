@@ -46,7 +46,7 @@ Related references:
 **You are here** if any of these fire:
 
 ```text
-A. UptimeRobot 502/504 alert on api.jpcite.com/v1/healthz (3 × 60s).
+A. UptimeRobot 502/504 alert on api.jpcite.com/healthz (3 × 60s).
 B. Fly proxy log: "could not find a good candidate within 40 attempts at load balancing".
 C. Cron alert from scripts/cron/db_boot_hang_alert.py (Telegram).
 D. flyctl status -a autonomath-api shows CHECKS: 0/1 with instance_state=started.
@@ -299,7 +299,7 @@ otherwise re-confirm spacing:
 ```bash
 for i in $(seq 1 5); do
   date -u +%H:%M:%SZ
-  curl --max-time 30 -fsSI https://api.jpcite.com/v1/healthz | head -1
+  curl --max-time 30 -fsSI https://api.jpcite.com/healthz | head -1
   sleep 60
 done
 ```

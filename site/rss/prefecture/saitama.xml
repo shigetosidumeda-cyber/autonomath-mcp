@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>称 制 度 概 要 割合 割合 割合 割合 所管省庁等 県担当部局 県担当課 電話番号 リンクページ</title>
@@ -300,7 +300,7 @@
 
   <item>
     <title>八潮市道路陥没事故に係る県内中小企業等向け支援制度について</title>
-    <link>https://jpcite.com/programs/yashio-shidou-michi-kanbotsu-jiko-ni-kakaru-kennai-59616a.html</link>
+    <link>https://jpcite.com/programs/yashio-shidou-michi-kanbotsu-jiko-ni-kakaru-kennai-60446a.html</link>
     <description>Tier A / 埼玉県 / 埼玉県 / support 出典: https://www.pref.saitama.lg.jp/a0801/kigyoushien_yashio.html</description>
     <category>support</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-ebfc16e05a</guid>
@@ -686,15 +686,6 @@
   </item>
 
   <item>
-    <title>遊休農地解消事業</title>
-    <link>https://jpcite.com/programs/yuukyuu-nouchi-kaishou-jigyou-0cc3cd.html</link>
-    <description>Tier C / 埼玉県 出典: https://www.city.fukaya.saitama.jp/business/nougyo/nogyoshaenosien/1541138931205.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-01a8be2817</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>本庄市_新規就農者農業用機械等導入支援事業</title>
     <link>https://jpcite.com/programs/mun-112097-002-honjou-shi-shinki-shuunou-mono-nougyouyou-5735f5.html</link>
     <description>Tier B / 埼玉県 / subsidy / 上限 150万円 出典: https://www.city.honjo.lg.jp/soshiki/keizaikankyo/nousei/hojyokin/17647.html</description>
@@ -727,15 +718,6 @@
     <description>Tier B / 埼玉県 / subsidy / 上限 250万円 出典: https://www.city.fukaya.saitama.jp/soshiki/sangyoshinko/nougyoshinkou/tanto/ibento/1594975775525.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-0d5b198576</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>寄居町有害鳥獣防除対策事業補助金</title>
-    <link>https://jpcite.com/programs/yorii-chouyuu-gaichou-kemono-boujo-taisaku-jigyou-hojokin-6e0949.html</link>
-    <description>Tier C / 埼玉県 出典: https://www.town.yorii.saitama.jp/soshiki/12/denkisakuhojo.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-0f33e631e9</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -808,15 +790,6 @@
     <description>Tier B / 埼玉県 / subsidy / 上限 4万円 出典: https://www.pref.saitama.lg.jp/a0812/r7-hojyo.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-22ce43bd5c</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>明日の農業担い手育成塾推進事業（埼玉県）</title>
-    <link>https://jpcite.com/programs/ashita-no-nougyou-ninaite-ikusei-juku-suishin-jigyou-03976c.html</link>
-    <description>Tier B / 埼玉県 / 上限 750万円 出典: https://www.pref.saitama.lg.jp/a0903/ninaitejuku.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-24c625f218</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +880,33 @@
     <description>Tier C / 埼玉県 / subsidy 出典: https://www.saitamadx.com/fund</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-3efd7d425b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>深谷市6次産業化支援施策</title>
+    <link>https://jpcite.com/programs/fukayashi-6-tsugi-sangyouka-shien-shisaku-5846ee.html</link>
+    <description>Tier C / 埼玉県 / 農林水産省 / subsidy 出典: https://www.city.fukaya.saitama.jp/material/files/group/9/6jisangyoukakousou.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4074f290b5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>春日部市_小平地区ほ場整備事業</title>
+    <link>https://jpcite.com/programs/kasukabeshi-kodaira-chiku-ho-ba-seibi-jigyou-0cb16d.html</link>
+    <description>Tier B / 埼玉県 / subsidy / 上限 100万円 出典: https://www.city.kasukabe.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-44c795c0ed</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>深谷市_新規就農支援</title>
+    <link>https://jpcite.com/programs/fukayashi-shinki-shuunou-shien-e7f62b.html</link>
+    <description>Tier B / 埼玉県 / subsidy / 上限 100万円 出典: https://www.city.fukaya.saitama.jp/soshiki/sangyoshinko/nougyoshinkou/tanto/ibento/1594975775525.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-460fe356ee</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

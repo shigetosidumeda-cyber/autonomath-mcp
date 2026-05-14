@@ -15,20 +15,20 @@ source_url: https://laws.e-gov.go.jp/law/404M50002000026
 
 # rodojikan-nado-no_3
 
-# 労働時間等の設定の改善に関する特別措置法施行規則 
-法令番号 平成4年労働省令第26号 施行日 2024-04-01 最終改正 2023-03-30 所管 mhlw カテゴリ 労働 e-Gov 法令 ID 404M50002000026 ステータス active 
+# 労働時間等の設定の改善に関する特別措置法施行規則
+法令番号 平成4年労働省令第26号 施行日 2024-04-01 最終改正 2023-03-30 所管 mhlw カテゴリ 労働 e-Gov 法令 ID 404M50002000026 ステータス active
 
-条文データを読み込み中です。 
+条文データを読み込み中です。
 
-## 出典とライセンス 
+## 出典とライセンス
 
 e-Gov 出典 : [https://laws.e-gov.go.jp/law/404M50002000026 ](https://laws.e-gov.go.jp/law/404M50002000026)
 
-本ページに表示される法令本文は、デジタル庁 e-Gov 法令検索(https://laws.e-gov.go.jp/) を出典とし、クリエイティブ・コモンズ表示 4.0 国際 (CC-BY 4.0) の下で提供されています。公式な法的効力を持つのは e-Gov 上の原本であり、本サイトの表示は参照用です。 
+本ページに表示される法令本文は、デジタル庁 e-Gov 法令検索(https://laws.e-gov.go.jp/) を出典とし、クリエイティブ・コモンズ表示 4.0 国際 (CC-BY 4.0) の下で提供されています。公式な法的効力を持つのは e-Gov 上の原本であり、本サイトの表示は参照用です。
 
-## Cite this in AI / 引用 
+## Cite this in AI / 引用
 
-AI 回答に本法令を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。一次資料は e-Gov 法令検索 (CC-BY 4.0)。 
-> 労働時間等の設定の改善に関する特別措置法施行規則 (出典: https://jpcite.com/laws/rodojikan-nado-no_3、jpcite が e-Gov 一次資料を機械可読化) 
+AI 回答に本法令を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。一次資料は e-Gov 法令検索 (CC-BY 4.0)。
+> 労働時間等の設定の改善に関する特別措置法施行規則 (出典: https://jpcite.com/laws/rodojikan-nado-no_3、jpcite が e-Gov 一次資料を機械可読化)
 
 URL をコピー [https://jpcite.com/laws/rodojikan-nado-no_3 ](https://jpcite.com/laws/rodojikan-nado-no_3)

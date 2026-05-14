@@ -5,8 +5,8 @@
   that doubles as an AI agent "golden route"). Aggregates the cases / laws /
   enforcement-cases shards plus a small curated set of root pages that carry
   JSON-LD (about, pricing, facts, dashboard, calculator, audiences/*, et al.).
-* llms-meta.json — Machine-readable index of the llms.txt cohort + 4 well-known
-  discovery surfaces. Enumerates every heading anchor in llms-full.txt /
+* llms-meta.json — Machine-readable index of 4 llms.txt cohort files plus
+  4 well-known discovery surfaces. Enumerates every heading anchor in llms-full.txt /
   llms-full.en.txt / llms.txt / llms.en.txt so AI agents can range-request a
   single section without re-fetching the whole 400KB+ corpus.
 
@@ -40,7 +40,10 @@ SHARD_FILES = [
 STRUCTURED_ROOT_PAGES: list[tuple[str, str, float]] = [
     # (path, changefreq, priority)
     ("/about.html", "weekly", 0.9),
-    ("/pricing.html", "weekly", 0.9),
+    ("/pricing", "weekly", 0.9),
+    ("/products", "weekly", 0.9),
+    ("/connect/", "weekly", 0.8),
+    ("/prompts/", "weekly", 0.8),
     ("/facts.html", "weekly", 0.9),
     ("/calculator.html", "monthly", 0.6),
     ("/calculator/", "monthly", 0.6),
@@ -50,7 +53,7 @@ STRUCTURED_ROOT_PAGES: list[tuple[str, str, float]] = [
     ("/advisors.html", "monthly", 0.6),
     ("/alerts.html", "monthly", 0.6),
     ("/bookmarklet.html", "monthly", 0.5),
-    ("/blog/v0.3.4-release.html", "monthly", 0.5),
+    ("/blog/v0.3.4-release", "monthly", 0.5),
     ("/audiences/", "weekly", 0.8),
     ("/audiences/smb.html", "weekly", 0.8),
     ("/audiences/dev.html", "weekly", 0.8),
@@ -107,6 +110,14 @@ def _sha256_hex(data: bytes) -> str:
 
 def _md5_hex(data: bytes) -> str:
     return hashlib.md5(data, usedforsecurity=False).hexdigest()
+
+
+def _utc_iso_from_timestamp(timestamp: float) -> str:
+    return _dt.datetime.fromtimestamp(timestamp, _dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _utc_now_iso() -> str:
+    return _dt.datetime.now(_dt.UTC).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
 def _enumerate_anchors(text: str) -> tuple[list[dict], int, int]:
@@ -179,7 +190,7 @@ def _file_meta(path: Path, lang: str) -> dict:
         text = ""
     anchors, h2_count, total_anchors = _enumerate_anchors(text) if text else ([], 0, 0)
     stat = path.stat()
-    last_modified = _dt.datetime.utcfromtimestamp(stat.st_mtime).isoformat(timespec="seconds") + "Z"
+    last_modified = _utc_iso_from_timestamp(stat.st_mtime)
     return {
         "file": "/" + path.name,
         "lang": lang,
@@ -200,7 +211,7 @@ def _wellknown_meta(rel_path: str, label: str) -> dict:
         return {"file": rel_path, "kind": label, "exists": False}
     raw = path.read_bytes()
     stat = path.stat()
-    last_modified = _dt.datetime.utcfromtimestamp(stat.st_mtime).isoformat(timespec="seconds") + "Z"
+    last_modified = _utc_iso_from_timestamp(stat.st_mtime)
     return {
         "file": rel_path,
         "kind": label,
@@ -269,16 +280,18 @@ def build_llms_meta() -> tuple[dict, int]:
         "publisher_legal_entity": "Bookyou株式会社",
         "publisher_invoice_id": "T8010001213708",
         "canonical": "https://jpcite.com",
-        "generated_at": _dt.datetime.utcnow().isoformat(timespec="seconds") + "Z",
+        "generated_at": _utc_now_iso(),
         "generator": "scripts/regen_structured_sitemap_and_llms_meta.py",
         "description": (
-            "Machine-readable index of the llms.txt cohort plus the 4 well-known "
+            "Machine-readable index of 4 llms.txt cohort files plus 4 well-known "
             "discovery surfaces (sitemap-llms.xml, .well-known/mcp.json, agents.json, "
             "ai-plugin.json). AI agents can use this index to range-fetch a single "
             "section anchor without re-pulling the whole llms-full.txt body."
         ),
-        "license": "CC BY 4.0 (this index file). Underlying program/law data: see /licensing.html.",
-        "total_files": len(llms_files) + len(cohort),
+        "license": "CC BY 4.0 (this index file). Underlying program/law data: see /data-licensing.html.",
+        "total_files": len(llms_files),
+        "total_discovery_surfaces": len(cohort),
+        "total_indexed_surfaces": len(llms_files) + len(cohort),
         "total_section_anchors": total_section_anchors,
         "files": llms_files,
         "discovery_surfaces": cohort,
@@ -345,7 +358,9 @@ def main() -> int:
 
     print(f"sitemap-structured.xml: {url_count} URLs", file=sys.stderr)
     print(
-        f"llms-meta.json: {anchor_count} section_anchors across {meta['total_files']} files",
+        "llms-meta.json: "
+        f"{anchor_count} section_anchors across {meta['total_files']} llms files "
+        f"+ {meta['total_discovery_surfaces']} discovery surfaces",
         file=sys.stderr,
     )
     return 0

@@ -15,26 +15,26 @@ source_url: https://laws.e-gov.go.jp/law/412M50000242006
 
 # suisan-gyo-kyodokumiai_6
 
-# 水産業協同組合法施行令第三十条第三項から第五項までの規定による主務大臣に対する報告等に関する命令 
-法令番号 平成12年総理府・大蔵省・農林水産省令第6号 施行日 2003-01-01 最終改正 2002-12-27 所管 meti e-Gov 法令 ID 412M50000242006 ステータス active 
+# 水産業協同組合法施行令第三十条第三項から第五項までの規定による主務大臣に対する報告等に関する命令
+法令番号 平成12年総理府・大蔵省・農林水産省令第6号 施行日 2003-01-01 最終改正 2002-12-27 所管 meti e-Gov 法令 ID 412M50000242006 ステータス active
 
-目次 
+目次
 
 - [1 （施行期日） ](#art-1)
 
-## 第1条 （施行期日） 
+## 第1条 （施行期日）
 
-（施行期日）第一条この命令は、平成十五年一月一日から施行する。 
+（施行期日）第一条この命令は、平成十五年一月一日から施行する。
 
-## 出典とライセンス 
+## 出典とライセンス
 
 e-Gov 出典 : [https://laws.e-gov.go.jp/law/412M50000242006 ](https://laws.e-gov.go.jp/law/412M50000242006)
 
-本ページに表示される法令本文は、デジタル庁 e-Gov 法令検索(https://laws.e-gov.go.jp/) を出典とし、クリエイティブ・コモンズ表示 4.0 国際 (CC-BY 4.0) の下で提供されています。公式な法的効力を持つのは e-Gov 上の原本であり、本サイトの表示は参照用です。 
+本ページに表示される法令本文は、デジタル庁 e-Gov 法令検索(https://laws.e-gov.go.jp/) を出典とし、クリエイティブ・コモンズ表示 4.0 国際 (CC-BY 4.0) の下で提供されています。公式な法的効力を持つのは e-Gov 上の原本であり、本サイトの表示は参照用です。
 
-## Cite this in AI / 引用 
+## Cite this in AI / 引用
 
-AI 回答に本法令を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。一次資料は e-Gov 法令検索 (CC-BY 4.0)。 
-> 水産業協同組合法施行令第三十条第三項から第五項までの規定による主務大臣に対する報告等に関する命令 (出典: https://jpcite.com/laws/suisan-gyo-kyodokumiai_6、jpcite が e-Gov 一次資料を機械可読化) 
+AI 回答に本法令を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。一次資料は e-Gov 法令検索 (CC-BY 4.0)。
+> 水産業協同組合法施行令第三十条第三項から第五項までの規定による主務大臣に対する報告等に関する命令 (出典: https://jpcite.com/laws/suisan-gyo-kyodokumiai_6、jpcite が e-Gov 一次資料を機械可読化)
 
 URL をコピー [https://jpcite.com/laws/suisan-gyo-kyodokumiai_6 ](https://jpcite.com/laws/suisan-gyo-kyodokumiai_6)

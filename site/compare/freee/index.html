@@ -125,6 +125,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -298,7 +372,7 @@
       <li><a href="/compare.html">全比較表 (6 サービス × 13 軸)</a></li>
       <li><a href="/pricing.html">料金 (¥3/billable unit 完全従量)</a></li>
       <li><a href="/docs/api-reference/">API リファレンス</a></li>
-      <li><a href="/docs/mcp-tools/">MCP tools (139)</a></li>
+      <li><a href="/docs/mcp-tools/">MCP tools (151)</a></li>
       <li><a href="/sources.html">出典・ライセンス</a></li>
       <li><a href="/facts.html">数字の検証 SQL</a></li>
     </ul>
@@ -327,52 +401,6 @@
   <div class="container footer-inner">
     <div class="footer-col">
       <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
-      <p class="footer-tag">日本の制度 API</p>
-    </div>
-    <nav class="footer-nav" aria-label="フッター">
-      <a href="/tos.html">利用規約</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/tokushoho.html">特定商取引法</a>
-      <a href="https://github.com/shigetosidumeda-cyber/autonomath-mcp" aria-label="GitHub" rel="noopener">GitHub</a>
-      <a href="mailto:info@bookyou.net">info@bookyou.net</a>
-    </nav>
-    <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
-  </div>
-</footer>
-
-<script src="/assets/trust-strip.js" defer></script>
-
-</body>
-</html>
-ources.html">出典・ライセンス</a></li>
-      <li><a href="/facts.html">数字の検証 SQL</a></li>
-    </ul>
-
-    <p class="footnote">
-      凡例: 「公開情報なし」「公開情報非公表」は、各社公式サイトに記載が確認できなかった、または当社が把握していない項目を指します。
-      機能の不在を断定するものではありません。各社 ToS や新規機能追加によって変わります。
-      本ページは公開情報に基づき、誇張を避け、訂正依頼を受け付けます。
-      訂正が必要な場合は <a href="mailto:info@bookyou.net?subject=compare/freee%20correction">info@bookyou.net</a> 宛にご連絡ください。
-    </p>
-
-  </div>
-</main>
-
-<div class="container">
-  <p class="trust-strip" style="margin:24px 0 8px;font-size:13px;color:var(--text-muted);line-height:1.7;">
-    比較は <time datetime="2026-04-29">2026-04-29</time> 時点の各社公開情報に基づきます。
-    freee 助成金AI の各サービス名は、運営者の登録商標または商標です。
-    · 運営 <a href="/about.html">Bookyou株式会社</a>
-    · <a href="/tokushoho.html">特商法表記</a> / <a href="/tos.html">利用規約</a> / <a href="/privacy.html">プライバシー</a>
-    · 修正提案 <a href="mailto:info@bookyou.net?subject=compare/freee%20correction">info@bookyou.net</a>
-  </p>
-</div>
-
-<footer class="site-footer" role="contentinfo">
-  <div class="container footer-inner">
-    <div class="footer-col">
-      <p class="footer-brand">jpcite</p>
       <p class="footer-tag">日本の制度 API</p>
     </div>
     <nav class="footer-nav" aria-label="フッター">

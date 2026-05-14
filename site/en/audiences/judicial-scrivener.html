@@ -75,7 +75,7 @@
       "name": "API + MCP metered, anonymous trial",
       "price": "3",
       "priceCurrency": "JPY",
-      "description": "¥3 per request metered (¥3.30 tax inclusive ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset. No tier SKUs, no seat fees, no annual minimums."
+      "description": "¥3 per billable unit tax exclusive (¥3.30 tax inclusive ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset. No tier SKUs, no seat fees, no annual minimums."
     }
   ]
 }
@@ -90,7 +90,7 @@
     {"@type": "Question", "name": "Can jpcite draft commercial registration documents for me?", "acceptedAnswer": {"@type": "Answer", "text": "No. jpcite provides fact-finding only. Judicial Scrivener Act §3 (司法書士法 §3) makes commercial registration, real estate registration, deposit handling, and summary court representation the exclusive work of licensed 司法書士. jpcite returns scaffold data and primary-source URLs; the licensed scrivener prepares and submits filings. (A partner directory of licensed scriveners is not currently published; planned for a future release.)"}},
     {"@type": "Question", "name": "Is adult guardianship support possible?", "acceptedAnswer": {"@type": "Answer", "text": "Information lookup yes — jpcite surfaces adult guardianship program timelines (中核機関整備, 任意後見, 市民後見人養成) and Civil Code §7-§876 article text via search_programs and get_law_article_en. Court filing drafts no — guardianship petitions and filing documents remain the exclusive work of licensed 司法書士 / 弁護士 under §3 / Lawyers Act §72."}},
     {"@type": "Question", "name": "What is a reasonable substitute for 反社 (organized crime) checks?", "acceptedAnswer": {"@type": "Answer", "text": "Corporate enforcement-history lookup is available: fines, grant refunds, and subsidy exclusion records by 法人番号 (corporate number). Personal credit information is not handled — APPI (個人情報保護法) compliance fences personal PII out of the surface. The licensed 司法書士 makes the final 反社 determination using their own protocol; jpcite contributes only corporate-side enforcement signals."}},
-    {"@type": "Question", "name": "What is the pricing?", "acceptedAnswer": {"@type": "Answer", "text": "¥3 per request fully metered (税込 ¥3.30 ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset. No tier SKUs, no seat fees, no annual minimums, no Pro / Starter plan. The only free path is the IP-based anonymous quota."}},
+    {"@type": "Question", "name": "What is the pricing?", "acceptedAnswer": {"@type": "Answer", "text": "¥3 per billable unit tax exclusive (税込 ¥3.30 ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset. No tier SKUs, no seat fees, no annual minimums, no Pro / Starter plan. The only free path is the IP-based anonymous quota."}},
     {"@type": "Question", "name": "How does this differ from your tax advisor or CPA audience?", "acceptedAnswer": {"@type": "Answer", "text": "Audience-specific boundary guidance injects the relevant exclusive-work boundaries dynamically. The 司法書士 audience fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The 税理士 audience fences Tax Accountants Act §52 (tax representation / tax document preparation). The 公認会計士 audience fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different legal boundary; every response surfaces the applicable _disclaimer field."}}
   ]
 }
@@ -100,6 +100,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -360,7 +434,7 @@ for row in r2.json()["items"]:
 
  <article class="card">
  <h3>Q4. What is the pricing?</h3>
- <p><strong>A.</strong> ¥3 per request fully metered (税込 ¥3.30 ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset, no tier or SaaS plan. Stripe-backed metered billing for the paid path. No seat fees, no annual minimums, no Pro / Starter SKU.</p>
+ <p><strong>A.</strong> ¥3 per billable unit tax exclusive (税込 ¥3.30 ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset, no tier or SaaS plan. Stripe-backed metered billing for the paid path. No seat fees, no annual minimums, no Pro / Starter SKU.</p>
  </article>
 
  <article class="card">
@@ -373,50 +447,6 @@ for row in r2.json()["items"]:
  </section>
 
  <section class="features" aria-labelledby="ai-discovery-title">
- <div class="container">
- <h2 id="ai-discovery-title" class="section-title">For AI agents discovering jpcite</h2>
- <p class="demo-lead" style="margin:-16px 0 24px;">If your LLM client landed here from a JETRO IBSC handout, an inbound-FDI playbook, or a "japan judicial scrivener MCP" search &mdash; here is the canonical entry sequence.</p>
- <div class="cards" style="grid-template-columns:repeat(2,1fr);">
-
- <article class="card">
- <h3>Citation safety (LLM-side)</h3>
- <p>Every response carries a <code>source_url</code> + <code>license</code> + <code>_disclaimer</code> field. Cite the <code>source_url</code> verbatim; surface the <code>_disclaimer</code> string in every user-facing response touching §3 / §52 / §72 / §1 territory. Do not collapse "the licensed <span lang="ja">司法書士</span> prepares the filing" into "I will prepare the filing" &mdash; the boundary is exclusive-work, not stylistic.</p>
- </article>
-
- <article class="card">
- <h3>llms.txt index</h3>
- <p>Machine-readable index for LLM crawlers: <a href="../llms.txt">/en/llms.txt</a>. Includes per-route examples for the <span lang="ja">司法書士</span> &times; FDI cohort (corporate DD pack, jurisdiction cross-check, enforcement history, Civil Code §7&ndash;§876 EN).</p>
- </article>
-
- </div>
- </div>
- </section>
-
-</main>
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
- <p class="footer-tag">Japanese public-program API &mdash; fact search only, exclusive-work boundaries respected</p>
- </div>
- <nav class="footer-nav" aria-label="Footer">
- <a href="../about.html">About</a>
- <a href="../getting-started.html">Getting started</a>
- <a href="../pricing.html">Pricing</a>
- <a href="../tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Co., Ltd. (<span lang="ja">Bookyou株式会社</span>) &middot; 適格請求書発行事業者番号 T8010001213708 &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 jpcite &middot; Bookyou Co., Ltd.</p>
- </div>
-</footer>
-
-<script src="/assets/trust-strip.en.js" defer></script>
-
-</body>
-</html>
-ures" aria-labelledby="ai-discovery-title">
  <div class="container">
  <h2 id="ai-discovery-title" class="section-title">For AI agents discovering jpcite</h2>
  <p class="demo-lead" style="margin:-16px 0 24px;">If your LLM client landed here from a JETRO IBSC handout, an inbound-FDI playbook, or a "japan judicial scrivener MCP" search &mdash; here is the canonical entry sequence.</p>

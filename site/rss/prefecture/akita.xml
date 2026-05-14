@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>あきた企業立地促進助成事業（事業集約型）補助金の指定について（令和６年６月１９日） | 美の国あきたネット</title>
@@ -641,15 +641,6 @@
   </item>
 
   <item>
-    <title>由利本荘市農業6次産業化支援事業補助金</title>
-    <link>https://jpcite.com/programs/yurihonjou-shi-nougyou-6-tsugi-sangyouka-shien-jigyou-869319.html</link>
-    <description>Tier C / 秋田県 出典: https://www.city.yurihonjo.lg.jp/dd.aspx?menuid=1003462</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-104b2f941c</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>令和7年度獣害防止対策事業費補助金</title>
     <link>https://jpcite.com/programs/reiwa-7-nendo-juugai-boushitaisaku-jigyou-hi-hojokin-e74086.html</link>
     <description>Tier B / 秋田県 / subsidy / 上限 250万円 出典: https://www.city.yokote.lg.jp/sangyo/norin/noringyoshanomuke/saigai/</description>
@@ -677,11 +668,11 @@
   </item>
 
   <item>
-    <title>農作物等鳥獣害防止対策事業補助金</title>
-    <link>https://jpcite.com/programs/nousakubutsu-nado-choujuugai-boushitaisaku-jigyou-hojokin-8d2e40.html</link>
-    <description>Tier C / 秋田県 出典: https://www.city.yurihonjo.lg.jp/dd.aspx?menuid=1011865&amp;ext=pdf</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1560ea6664</guid>
+    <title>ドローンオペレーター育成費補助金</title>
+    <link>https://jpcite.com/programs/doroon-opereetaa-ikusei-hi-hojokin-a5980d.html</link>
+    <description>Tier C / 秋田県 / subsidy / 上限 10万円 出典: https://www.city.katagami.lg.jp/soshiki/sangyoshinkobu/norinsuisanshinko/nosei/norinsinko/4/drone/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1afc79cb62</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -691,6 +682,15 @@
     <description>Tier C / 秋田県 / 秋田県大館市 / subsidy / 上限 10万円 出典: https://www.city.odate.lg.jp/material/files/group/14/jyuugaiboushisaku.pdf</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-20ebdb9cd2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>稼げる力！農業生産体制強化応援事業</title>
+    <link>https://jpcite.com/programs/kasege-ru-chikara-nougyou-seisan-taisei-kyouka-ouen-jigyou-2c02e2.html</link>
+    <description>Tier C / 秋田県 / subsidy / 上限 100万円 出典: https://www.city.katagami.lg.jp/soshiki/sangyoshinkobu/norinsuisanshinko/nosei/norinsinko/4/1/2023060700001/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2848292422</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -758,11 +758,11 @@
   </item>
 
   <item>
-    <title>秋田市資格取得助成事業補助金</title>
-    <link>https://jpcite.com/programs/akitashi-shikaku-shutoku-josei-jigyou-hojokin-4f960d.html</link>
-    <description>Tier C / 秋田県 出典: https://www.city.akita.lg.jp/</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-4b3c53729c</guid>
+    <title>移住体験ツアー（就農向け）</title>
+    <link>https://jpcite.com/programs/ijuu-taiken-tsuaa-shuunou-muke-0915ef.html</link>
+    <description>Tier C / 秋田県 / subsidy / 上限 100万円 出典: https://www.city.noshiro.lg.jp/gyousei/sonota/shuunou_shien</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-46df57a5c5</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -799,24 +799,6 @@
     <description>Tier B / 秋田県 / subsidy / 上限 1,000万円 出典: https://akita-agri-navi.com/farmingsupport/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-56d38c9e7b</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>狩猟免許等取得支援</title>
-    <link>https://jpcite.com/programs/shuryou-menkyo-nado-shutoku-shien-d8ffac.html</link>
-    <description>Tier B / 秋田県 / 上限 5万円 出典: https://www.city.yokote.lg.jp/shigoto/1001165/1009195.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-58e924f20f</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>令和5年度農作物等獣害被害防止対策事業費補助金</title>
-    <link>https://jpcite.com/programs/reiwa-5-nendo-nousakubutsu-nado-juugai-higai-boushitaisaku-135c8f.html</link>
-    <description>Tier B / 秋田県 / 上限 15万円 出典: https://www.city.yokote.lg.jp/shigoto/1001165/1001371/1005026.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-64b83f7cad</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +889,24 @@
     <description>Tier B / 秋田県 / incentive / 上限 300万円 出典: https://www.smrj.go.jp/sme/funding/regional_fund/fbrion00000047w8-att/jver9n000000dwf9.pdf</description>
     <category>incentive</category>
     <guid isPermaLink="false">jpcite:program:UNI-72e2443468</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>秋田_夢ある園芸産地創造事業</title>
+    <link>https://jpcite.com/programs/pref-05-002-akita-yume-aru-engei-sanchi-souzou-jigyou-1730a8.html</link>
+    <description>Tier B / 秋田県 / subsidy / 上限 1,000万円 出典: https://www.pref.akita.lg.jp/pages/archive/81993</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-758047ae7b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>潟上市農業生産体制強化応援事業</title>
+    <link>https://jpcite.com/programs/katagami-shi-nougyou-seisan-taisei-kyouka-ouen-jigyou-0d747f.html</link>
+    <description>Tier B / 秋田県 / subsidy / 上限 100万円 出典: https://www.city.katagami.lg.jp/soshiki/sangyoushinkoubu/nourinsuisanshinkouka/nosei/norinshinko/4134.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-7a979e2a2e</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

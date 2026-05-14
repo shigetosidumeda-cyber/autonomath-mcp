@@ -304,11 +304,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -387,14 +390,14 @@
 
  <div class="calc-shell">
 
- <!-- Input ----------------------------------------------------- -->
+ <!-- Input -->
  <form class="calc-form" id="roi-form" autocomplete="off" novalidate
  aria-label="カバレッジ試算 入力フォーム">
  <h2>入力</h2>
 
  <div class="field">
  <label for="clients">顧問先数</label>
- <span class="hint">税理士事務所が抱える法人 / 個人クライアント数。</span>
+ <span class="hint" id="clients-hint">税理士事務所が抱える法人 / 個人クライアント数。</span>
  <input id="clients" name="clients" type="number" min="0" step="1"
  value="50" inputmode="numeric"
  aria-describedby="clients-hint">
@@ -411,7 +414,7 @@
 
  </form>
 
- <!-- Output ---------------------------------------------------- -->
+ <!-- Output -->
  <aside class="calc-output" aria-live="polite" aria-atomic="true"
  aria-label="カバレッジ試算 結果">
  <h2>試算結果 (月次)</h2>
@@ -486,7 +489,7 @@
  <tr>
  <th scope="row">データ鮮度の運用目安</th>
  <td class="num">nightly liveness</td>
- <td><a href="/data-freshness.html">/data-freshness.html</a> — tier S/A は median 7 日以内。各行の `source_fetched_at` と known gaps を確認してください</td>
+ <td><a href="/data-freshness.html">/data-freshness.html</a> — per-source の鮮度分布を公開。各行の `source_fetched_at` と known gaps を確認してください</td>
  </tr>
  </tbody>
  </table>
@@ -503,7 +506,7 @@
  個別クエリの返却件数は対象制度・地域・キーワードにより変動します。
  トークン削減・AI コスト全体の増減はモデル・プロンプト・キャッシュ・クエリ分布で大きく変動するため、
  当社ベンチ範囲外への外挿はできません ( <a href="/qa/llm-evidence/context-savings.html">context savings の説明</a> 参照)。
- jpcite は税理士法 §52 / §72 の遵守のため、 個別税務助言は提供せず、 一次資料の検索・整理に限定します。
+ jpcite は税理士法 §52 / 弁護士法 §72 の遵守のため、 個別税務助言・法律助言は提供せず、 一次資料の検索・整理に限定します。
  税理士業務 / 会計士業務 の判断は必ず資格者にご相談ください。
  </p>
 
@@ -558,7 +561,7 @@
   // the server side and returns merged results with citations.
   var DB_JOIN_COUNT = 8; // programs + 採択 + 融資 + 法令 + 税制 + 行政処分 + 適格事業者 + 入札
   var SOURCES_PER_REQUEST_MEDIAN = 4; // source-linked URLs returned per typical evidence request (catalog median)
-  var FRESHNESS_DAYS = 7; // median freshness for tier S/A program rows
+  var FRESHNESS_DAYS = 30; // conservative freshness review window
 
   function $(id) { return document.getElementById(id); }
   function num(el) {
@@ -613,7 +616,7 @@
     // Coverage outputs — these are catalog values, not estimates.
     $("out-dbs").firstChild.nodeValue = fmtNum(DB_JOIN_COUNT) + " DB";
     $("out-sources").firstChild.nodeValue = fmtNum(SOURCES_PER_REQUEST_MEDIAN) + " 本";
-    $("out-freshness").firstChild.nodeValue = fmtNum(FRESHNESS_DAYS) + " 日以内";
+    $("out-freshness").firstChild.nodeValue = fmtNum(FRESHNESS_DAYS) + " 日以内の確認目安";
 
     // Plain-language summary — coverage framing, not saving framing.
     var s = $("summary-line");

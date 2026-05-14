@@ -251,6 +251,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -521,64 +595,6 @@
  <dt id="faq-tax-application" style="font-weight:600;font-size:16px;">Q. Do tax incentives require a separate application?</dt>
  <dd style="margin:8px 0 0;font-size:14.5px;line-height:1.7;color:var(--text-muted);">
  Most tax incentives are <strong>two-step</strong>: (1) prior certification (e.g., Management Capability Enhancement Plan), and (2) filing the relevant attachment with the annual tax return. Some, such as the R&amp;D Tax Credit, do not require prior certification. jpcite's <code>GET /v1/tax_rulesets/search</code> returns <strong>50 structured tax_rulesets</strong> with requirements, application procedure, and eligible asset types.
- </dd>
- </div>
-
- </dl>
- </section>
-
- <section aria-labelledby="next-title" style="margin-top:40px;">
- <h2 id="next-title" class="section-title">Read next</h2>
- <ul style="margin:0;padding-left:20px;line-height:2;font-size:15px;">
- <li><a href="getting-started.html">Getting started</a> &mdash; from API key to first call</li>
- <li><a href="pricing.html">Pricing</a> &mdash; ¥3/billable unit metered, anonymous 3/day/IP free</li>
- <li><a href="facts.html">Facts</a> &mdash; sources for every number on this site (program counts, entities, facts)</li>
- <li><a href="products.html">Products</a> &mdash; REST + MCP surface overview</li>
- <li><a href="../glossary.html" hreflang="ja">Japanese glossary</a> &mdash; the original 用語集 with 5-term comparison table</li>
- </ul>
- </section>
-
- <p style="margin:32px 0 0;font-size:13px;color:var(--text-muted);">
- For terminology disagreements or terms you would like added, contact <a href="mailto:info@bookyou.net">info@bookyou.net</a>. This page is updated as cited laws and public guidelines change (changefreq: monthly).
- </p>
-
- </div>
-</main>
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
- <p class="footer-tag">Japanese public-program API</p>
- </div>
- <nav class="footer-nav" aria-label="Footer">
- <a href="about.html">About</a>
- <a href="getting-started.html">Getting started</a>
- <a href="pricing.html">Pricing</a>
- <a href="glossary.html" aria-current="page">Glossary</a>
- <a href="facts.html">Facts</a>
- <a href="tos.html">Terms</a>
- <a href="privacy.html">Privacy</a>
- <a href="tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Inc. &middot; <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
- </div>
-</footer>
-
-<script src="/assets/feedback-widget.js" defer></script>
-<script defer>
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.jpciteFeedback) {
-    window.jpciteFeedback.mount('body', { position: 'bottom-right' });
-  }
-});
-</script>
-
-</body>
-</html>
-> returns <strong>50 structured tax_rulesets</strong> with requirements, application procedure, and eligible asset types.
  </dd>
  </div>
 

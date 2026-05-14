@@ -105,7 +105,7 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 #### `auth_required`
 - HTTP: 401
 - 認証不要の endpoint で認証 header が必要なルートに当たった (e.g. `/v1/me`)。
-- 復旧: `Authorization: Bearer <api_key>` を付与。
+- 復旧: `X-API-Key: <api_key>` を付与。
 
 #### `auth_invalid`
 - HTTP: 401
@@ -127,7 +127,7 @@ REST API + MCP は **20 種類の closed-enum error code** を返す。すべて
 
 #### `route_not_found`
 - HTTP: 404
-- endpoint path 未定義。 typo / 旧 SDK の v1.0 path と新 v0.3 path の不一致。
+- endpoint path 未定義。 typo / 旧 SDK の v1.0 path と現行 v1 path の不一致。
 - 復旧: `https://api.jpcite.com/v1/openapi.json` で path 一覧確認。
 
 #### `method_not_allowed`

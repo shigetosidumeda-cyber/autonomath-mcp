@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>Changelog — jpcite リリース履歴</title>
-<meta name="description" content="jpcite のリリース履歴。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠、BREAKING: で互換性破壊を明示。最新は v0.3.4 (2026-05-05)。">
+<meta name="description" content="jpcite のリリース履歴。Keep a Changelog 1.1.0 + Semantic Versioning 2.0.0 準拠、BREAKING: で互換性破壊を明示。最新は v0.4.0 (2026-05-12)。">
 <meta name="author" content="jpcite">
 <meta name="publisher" content="jpcite">
 <meta name="robots" content="index, follow, max-image-preview:large">
 
 <meta property="og:title" content="Changelog — jpcite リリース履歴">
-<meta property="og:description" content="API / MCP / SDK の更新内容。最新は v0.3.4 (2026-05-05) — Bulk endpoint / クレジット前払 / Merkle 監査 / 英訳法令 / Reference agent npm。">
+<meta property="og:description" content="API / MCP / SDK の更新内容。最新は v0.4.0 (2026-05-12) — monitoring substrate / AMS bench / discoverability cron。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/changelog/">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -21,7 +21,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Changelog — jpcite リリース履歴">
-<meta name="twitter:description" content="最新は v0.3.4 (2026-05-05)。¥3/billable unit のまま、tier なし。">
+<meta name="twitter:description" content="最新は v0.4.0 (2026-05-12)。¥3/billable unit のまま、tier なし。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/changelog/">
@@ -55,9 +55,9 @@
   "hasPart": [
     {
       "@type": "TechArticle",
-      "headline": "jpcite v0.3.4 — 5 つの新機能",
-      "datePublished": "2026-05-05",
-      "url": "https://jpcite.com/blog/v0.3.4-release.html"
+      "headline": "jpcite v0.4.0 — monitoring + discoverability release",
+      "datePublished": "2026-05-12",
+      "url": "https://jpcite.com/changelog/"
     }
   ]
 }
@@ -142,11 +142,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -215,10 +218,10 @@
  <h2>最新リリース</h2>
  <ul class="release-list">
  <li>
- <span class="ver">v0.3.4</span><span class="date">2026-05-05</span>
- <h3>5 つの新機能 — Bulk endpoint / クレジット前払 / Merkle 監査 / 英訳法令 / Reference agent npm</h3>
- <p>1 リクエストで 100 件まで取れる Bulk endpoint、Stripe 前払クレジット (¥30万・¥100万・¥300万)、Merkle 監査チェーン、e-Gov 英訳法令 + 租税条約、<code>@jpcite/agents</code> 参考エージェント npm を追加。料金は ¥3/billable unit のまま。</p>
- <p><a class="more" href="/blog/v0.3.4-release.html">詳細を見る →</a></p>
+ <span class="ver">v0.4.0</span><span class="date">2026-05-12</span>
+ <h3>Monitoring + AMS bench + discoverability cron</h3>
+ <p>Wave 43 corpus expansion と Wave 43.5 monitoring substrate を反映した minor release。MCP / OpenAPI manifest を v0.4.0 に揃え、6-stage agent-funnel KPI、operator-only AI mention share bench、横断常駐 cron を追加。料金は ¥3/billable unit、public tool count は 151 のまま。</p>
+ <p><a class="more" href="https://github.com/bookyou/jpcite/blob/main/CHANGELOG.md">GitHub CHANGELOG.md を見る →</a></p>
  </li>
  </ul>
 

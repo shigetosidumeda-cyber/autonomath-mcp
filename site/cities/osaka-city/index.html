@@ -153,6 +153,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 <a href="#main" class="skip-link">本文へスキップ</a>
@@ -270,46 +344,6 @@
         <span class="city-program-meta">tier C ・ 補助金・交付金 ・ 金額非公表</span>
         <span class="city-program-authority muted">提供: 大阪市（開設者）、農林水産大臣（認定）</span>
         <a class="city-program-source" href="https://www.city.osaka.lg.jp/shijo/page/0000389088.html" rel="external nofollow noopener">出典ページ</a>
-      </li>
-    </ol>
-  </section>
-
-  <section class="city-related" aria-labelledby="related-title">
-    <h2 id="related-title">関連リンク</h2>
-    <ul>
-      <li><a href="/prefectures/osaka.html">大阪府 の補助金・融資・税制 一覧</a> (上位 hub)</li>
-      <li><a href="/cross/osaka/">大阪府 から申請できる 全国 補助金</a> (国制度の県内適合)</li>
-      <li><a href="/cities/">政令指定都市別 補助金 インデックス (20市)</a></li>
-      <li><a href="/programs/">全制度を検索する</a></li>
-    </ul>
-  </section>
-
-  <section class="city-api" aria-labelledby="api-title">
-    <h2 id="api-title">大阪市データを API / MCP で取得</h2>
-    <p>本ページに掲載した大阪市の制度データは、jpcite REST API および MCP サーバーから
-    機械可読な形式で取得できます。Claude Desktop / Cursor / Cline などの MCP クライアント、または
-    ChatGPT Custom GPT の OpenAPI Actions から呼び出せます。</p>
-    <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
-  "https://api.jpcite.com/v1/programs/search?prefecture=大阪府&amp;municipality=大阪市&amp;limit=20"</code></pre>
-  </section>
-
-  <p class="disclaimer">本ページは jpcite が一次情報を集約・構造化したプレビューであり、法的助言・税務助言・申請代行を構成するものではありません。
-  制度の最新内容・申請可否・併用可否は所管官公庁・自治体の一次情報および有資格者の助言で必ず確認してください。
-  最終取得日: <time datetime="2026-05-04">2026-05-04</time>。</p>
-  </article>
-</main>
-<footer class="site-footer" role="contentinfo">
-  <div class="container">
-    <p>&copy; 2026 jpcite ・
-    <a href="/about.html">運営者情報</a> ・
-    <a href="/privacy.html">プライバシーポリシー</a> ・
-    <a href="/tokushoho.html">特定商取引法に基づく表記</a></p>
-    <p class="muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
-  </div>
-</footer>
-</body>
-</html>
-r">出典ページ</a>
       </li>
     </ol>
   </section>

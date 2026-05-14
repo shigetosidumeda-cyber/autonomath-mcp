@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>【募集開始】令和７年度福島県水素エネルギー普及拡大事業（燃料電池小型トラック導入促進事業）補助金について - 福島県ホームページ</title>
@@ -452,15 +452,6 @@
   </item>
 
   <item>
-    <title>伊達市農地流動化促進助成金</title>
-    <link>https://jpcite.com/programs/date-shi-nouchi-ryuudouka-sokushin-joseikin-f2e4bc.html</link>
-    <description>Tier C / 福島県 出典: https://www.city.date.hokkaido.jp/hotnews/detail/00006845.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-149335bd4e</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>郡山市新規就農者等住居費支援事業</title>
     <link>https://jpcite.com/programs/kouriyama-shi-shinki-shuunou-mono-nado-juukyo-hi-shien-c64039.html</link>
     <description>Tier C / 福島県 / subsidy / 上限 2万円 出典: https://www.city.koriyama.lg.jp/soshiki/nougyouseisaku/114170.html</description>
@@ -565,15 +556,6 @@
     <description>Tier B / 福島県 / 農林水産省 / subsidy / 上限 1,000万円 出典: https://www.maff.go.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-353ed5c483</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>担い手づくり総合支援事業（国名称：農地利用効率化等支援交付金）</title>
-    <link>https://jpcite.com/programs/ninaite-zukuri-sougou-shien-jigyou-kokumei-shou-nouchi-5c6358.html</link>
-    <description>Tier B / 福島県 / 上限 300万円 出典: https://www.city.koriyama.lg.jp/soshiki/111/100639.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-39607c22fe</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -830,15 +812,6 @@
   </item>
 
   <item>
-    <title>ふくしまのももブランド強化安定生産対策事業（福島県）</title>
-    <link>https://jpcite.com/programs/fukushimanomomo-burando-kyouka-antei-seisan-taisaku-jigyou-11e9d0.html</link>
-    <description>Tier A / 福島県 出典: https://www.pref.fukushima.lg.jp/sec/36035c/momo-jigyou.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-80b8d3c7b8</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>伊達市農地流動化促進助成金</title>
     <link>https://jpcite.com/programs/date-shi-nouchi-ryuudouka-sokushin-joseikin-5fd7e2.html</link>
     <description>Tier B / 福島県 / 福島県伊達市 / subsidy 出典: https://www.city.date.hokkaido.jp/hotnews/detail/00006845.html</description>
@@ -853,6 +826,15 @@
     <description>Tier C / 福島県 / subsidy / 上限 100万円 出典: https://www.city.kitakata.fukushima.jp/soshiki/nougyoushinkou/6jisangyo-ken.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-823c17b80b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>機構集積協力金（地域集積協力金・集約化奨励金）</title>
+    <link>https://jpcite.com/programs/kikou-shuuseki-kyouryoku-kin-chiiki-shuuseki-kyouryoku-kin-3e9558.html</link>
+    <description>Tier C / 福島県 / subsidy / 上限 200万円 出典: https://www.city.iwaki.lg.jp/www/contents/1001000000000/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-83865d5867</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -902,11 +884,29 @@
   </item>
 
   <item>
-    <title>伊達市農業の有する多面的機能の発揮の促進に関する計画</title>
-    <link>https://jpcite.com/programs/date-shi-nougyou-no-yuusu-ru-tamenteki-kinou-no-hakki-no-6c89b2.html</link>
-    <description>Tier C / 福島県 出典: https://www.city.date.hokkaido.jp/hotnews/detail/00004309.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-8c16c7616e</guid>
+    <title>アグリビジネス連携事業補助金（市内農畜産物販路開拓事業）</title>
+    <link>https://jpcite.com/programs/aguribijinesu-renkei-jigyou-hojokin-shinai-nouchikusan-44fc34.html</link>
+    <description>Tier C / 福島県 / subsidy / 上限 30万円 出典: https://www.city.shirakawa.fukushima.jp/page/page006757.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8c41d22ffa</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>地震等により被災した農地等の修繕費に係る支援</title>
+    <link>https://jpcite.com/programs/jishin-nado-niyori-hisai-shita-nouchi-nado-no-shuuzen-hi-ni-429ceb.html</link>
+    <description>Tier C / 福島県 / subsidy / 上限 100万円 出典: https://www.city.sukagawa.fukushima.jp/soshiki/nousei/jyosei/1003360.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8de3aabba5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>郡山市地域計画担い手確保支援事業</title>
+    <link>https://jpcite.com/programs/kouriyama-shi-chiiki-keikaku-ninaite-kakuho-shien-jigyou-bc7d1e.html</link>
+    <description>Tier B / 福島県 / subsidy / 上限 100万円 出典: https://www.city.koriyama.lg.jp/soshiki/111/110352.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-95e9ca9f5e</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

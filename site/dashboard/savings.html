@@ -51,7 +51,7 @@
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>Savings — jpcite ダッシュボード</title>
-<meta name="description" content="今月 jpcite が解放した verify 時間 / 円換算 / token 差分を表示。真の価値は audit-grade citation。">
+<meta name="description" content="今月 jpcite が解放した verify 時間 / 円換算 / token 差分を表示。真の価値は source-linked citation trail。">
 <meta name="robots" content="noindex,nofollow">
 
 <link rel="canonical" href="https://jpcite.com/dashboard/savings">
@@ -206,11 +206,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -244,7 +247,7 @@
    </div>
 
    <h1 class="save-title" data-i18n="title">あなたの今月の節約 (時間 + token)</h1>
-   <p class="save-sub" data-i18n="sub">jpcite の真の価値は <strong>verify 時間の解放</strong> と <strong>audit-grade citation</strong>。token math 単独では net loss でも、税理士単価換算の時間節約で大幅プラスに転じます。個別結果は使用パターンに依存します。</p>
+   <p class="save-sub" data-i18n="sub">jpcite の真の価値は <strong>verify 時間の解放</strong> と <strong>source-linked citation trail</strong>。token math 単独では net loss でも、税理士単価換算の時間節約で大幅プラスに転じます。個別結果は使用パターンに依存します。</p>
 
    <div class="disclosure" data-i18n="disclosure"><strong>個別結果は使用パターンに依存します。</strong> 下記は W28-4 sim 実測 (Claude Opus 4.7、6,000 query/月) を default 値として表示。実 API キー入力で実数に置換されます。</div>
 
@@ -263,11 +266,11 @@
    <!-- HERO: time saving (main display, real value) -->
    <div class="hero-card" role="region" aria-label="Time saved">
     <p class="hero-label"><span data-i18n="hero_label">verify 時間 解放 (30 日)</span>
-     <span class="tip-wrap"><span class="tip" tabindex="0">?</span><span class="tip-body" data-i18n="tip_hero">law verify + cite + audit trail を 1 query あたり 30 秒削減 (workflow amortize)。jpcite の audit-grade citation が再現可能根拠を即提示し、調査・レビュー往復を圧縮します。税理士単価 ¥8,000/h で換算。</span></span>
+     <span class="tip-wrap"><span class="tip" tabindex="0">?</span><span class="tip-body" data-i18n="tip_hero">law verify + cite + audit trail を 1 query あたり 30 秒削減 (workflow amortize)。jpcite の source-linked citation trail が再現可能根拠を即提示し、調査・レビュー往復を圧縮します。税理士単価 ¥8,000/h で換算。</span></span>
     </p>
     <p class="hero-value"><span id="v-hours">50</span><span style="font-size:0.55em; margin-left:6px; font-weight:700;" data-i18n="hours_unit">時間 / 月</span></p>
     <p class="hero-sub"><span data-i18n="hero_sub_prefix">税理士単価 ¥8,000/h 換算 = </span><span id="v-time-jpy">¥400,000</span><span data-i18n="hero_sub_suffix"> / 月</span></p>
-    <p class="hero-note" data-i18n="hero_note">真の価値は audit-grade citation。一次資料 URL + 法令 §条 + 取得日時の trail で、reviewer・税務調査・監査人に対して再現可能な根拠を即提示できます。</p>
+    <p class="hero-note" data-i18n="hero_note">真の価値は source-linked citation trail。一次資料 URL + 法令 §条 + 取得日時の trail で、reviewer・専門家レビューに対して再現可能な根拠を即提示できます。</p>
    </div>
 
    <!-- SUB: token saving (raw) + jpcite cost -->
@@ -288,7 +291,7 @@
     </div>
     <div class="stat-card negative" id="stat-roi">
      <p class="label"><span data-i18n="stat_roi">Token-only net</span>
-      <span class="tip-wrap"><span class="tip" tabindex="0">?</span><span class="tip-body" data-i18n="tip_roi">honest disclosure: <strong>raw token math では net loss</strong> (Opus 4.7、6,000 q/月で -71% / -¥14,144)。真の価値は audit-grade citation と verify 時間の解放にあります。下のカードの合算 net を参照してください。</span></span>
+      <span class="tip-wrap"><span class="tip" tabindex="0">?</span><span class="tip-body" data-i18n="tip_roi">honest disclosure: <strong>raw token math では net loss</strong> (Opus 4.7、6,000 q/月で -71% / -¥14,144)。真の価値は source-linked citation trail と verify 時間の解放にあります。下のカードの合算 net を参照してください。</span></span>
      </p>
      <p class="value"><span id="v-roi">—</span><span class="unit">%</span></p>
      <p class="delta" id="v-roi-delta"></p>
@@ -324,7 +327,7 @@
     計算式 (W28-4 sim 実測 anchor、Claude Opus 4.7、6,000 query/月 baseline):<br>
     USD 節約 = <code>$0.006285/query</code> (W28-4 実測、$37.71 / 6,000) / FX = <code>¥150/$</code> / jpcite = <code>¥3.30 × calls</code>。<br>
     時間節約: <code>0.5 min/query × ¥8,000/h</code> (税理士単価) → 6,000 q/月 = 50h = ¥400,000。<br>
-    <strong>honest disclosure:</strong> raw token math では 6,000 q/月で net <strong>-¥14,144 (-71%)</strong>。真の価値は audit-grade citation + verify 時間の解放です。
+    <strong>honest disclosure:</strong> raw token math では 6,000 q/月で net <strong>-¥14,144 (-71%)</strong>。真の価値は source-linked citation trail + verify 時間の解放です。
    </p>
 
   </div>
@@ -357,7 +360,7 @@
     ja: {
       back: 'ダッシュボードに戻る',
       title: 'あなたの今月の節約 (時間 + token)',
-      sub: 'jpcite の真の価値は <strong>verify 時間の解放</strong> と <strong>audit-grade citation</strong>。token math 単独では net loss でも、税理士単価換算の時間節約で大幅プラスに転じます。個別結果は使用パターンに依存します。',
+      sub: 'jpcite の真の価値は <strong>verify 時間の解放</strong> と <strong>source-linked citation trail</strong>。token math 単独では net loss でも、税理士単価換算の時間節約で大幅プラスに転じます。個別結果は使用パターンに依存します。',
       disclosure: '<strong>個別結果は使用パターンに依存します。</strong> 下記は W28-4 sim 実測 (Claude Opus 4.7、6,000 query/月) を default 値として表示。実 API キー入力で実数に置換されます。',
       key_label: 'API キー (X-API-Key)',
       key_save: '保存して読み込み',
@@ -366,11 +369,11 @@
       hero_label: 'verify 時間 解放 (30 日)',
       hero_sub_prefix: '税理士単価 ¥8,000/h 換算 = ',
       hero_sub_suffix: ' / 月',
-      hero_note: '真の価値は audit-grade citation。一次資料 URL + 法令 §条 + 取得日時の trail で、reviewer・税務調査・監査人に対して再現可能な根拠を即提示できます。',
+      hero_note: '真の価値は source-linked citation trail。一次資料 URL + 法令 §条 + 取得日時の trail で、reviewer・専門家レビューに対して再現可能な根拠を即提示できます。',
       hours_unit: '時間 / 月',
-      tip_hero: 'law verify + cite + audit trail を 1 query あたり 30 秒削減 (workflow amortize)。jpcite の audit-grade citation が再現可能根拠を即提示し、調査・レビュー往復を圧縮します。税理士単価 ¥8,000/h で換算。',
+      tip_hero: 'law verify + cite + audit trail を 1 query あたり 30 秒削減 (workflow amortize)。jpcite の source-linked citation trail が再現可能根拠を即提示し、調査・レビュー往復を圧縮します。税理士単価 ¥8,000/h で換算。',
       tip_tokens: 'raw token math: 直叩き Opus 4.7 で 1 query 約 4,500 in + 800 out を消費。jpcite はこれを 1 req に圧縮。token saving 自体は small but positive。',
-      tip_roi: 'honest disclosure: raw token math では net loss (Opus 4.7、6,000 q/月で -71% / -¥14,144)。真の価値は audit-grade citation と verify 時間の解放にあります。',
+      tip_roi: 'honest disclosure: raw token math では net loss (Opus 4.7、6,000 q/月で -71% / -¥14,144)。真の価値は source-linked citation trail と verify 時間の解放にあります。',
       stat_tokens: 'Token 節約 (raw, 30d)',
       stat_usd: 'USD 節約 (raw, 30d)',
       stat_cost: 'jpcite コスト (30d)',
@@ -381,7 +384,7 @@
       chart_desc: '各日の (時間節約 + token 節約) − (jpcite ¥3.30 × calls) の差分。time saving 込み。',
       legend_save: '節約 (saving)',
       legend_loss: '損失 (loss)',
-      formula: '計算式 (W28-4 sim 実測 anchor、Claude Opus 4.7、6,000 query/月 baseline): USD 節約 = $0.006285/query (W28-4 実測、$37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls。 時間節約: 0.5 min/query × ¥8,000/h (税理士単価) → 6,000 q/月 = 50h = ¥400,000。 honest disclosure: raw token math では 6,000 q/月で net -¥14,144 (-71%)。真の価値は audit-grade citation + verify 時間の解放です。',
+      formula: '計算式 (W28-4 sim 実測 anchor、Claude Opus 4.7、6,000 query/月 baseline): USD 節約 = $0.006285/query (W28-4 実測、$37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls。 時間節約: 0.5 min/query × ¥8,000/h (税理士単価) → 6,000 q/月 = 50h = ¥400,000。 honest disclosure: raw token math では 6,000 q/月で net -¥14,144 (-71%)。真の価値は source-linked citation trail + verify 時間の解放です。',
       footer_tag: '日本の制度 API',
       no_key: 'API キーを入力してください。',
       loading: '/v1/me/usage を取得中…',
@@ -397,7 +400,7 @@
     en: {
       back: 'Back to dashboard',
       title: 'Your savings this month (time + tokens)',
-      sub: 'jpcite\'s real value is <strong>verify-time freed</strong> and <strong>audit-grade citation</strong>. Token math alone may be net-negative, but tax-accountant-rate time savings flip it strongly positive. Individual results depend on usage patterns.',
+      sub: 'jpcite\'s real value is <strong>verify-time freed</strong> and <strong>source-linked citation trail</strong>. Token math alone may be net-negative, but tax-accountant-rate time savings flip it strongly positive. Individual results depend on usage patterns.',
       disclosure: '<strong>Individual results depend on usage patterns.</strong> Defaults below reflect the W28-4 sim measurements (Claude Opus 4.7, 6,000 queries/month). Real numbers replace these once you enter your API key.',
       key_label: 'API key (X-API-Key)',
       key_save: 'Save & load',
@@ -406,11 +409,11 @@
       hero_label: 'Verify time freed (30d)',
       hero_sub_prefix: 'At ¥8,000/h tax-accountant rate = ',
       hero_sub_suffix: ' / month',
-      hero_note: 'Real value is audit-grade citation. Primary-source URL + statute §article + fetched-at trail give reviewers, tax audits, and auditors a reproducible basis on demand.',
+      hero_note: 'Real value is source-linked citation trail. Primary-source URL + statute §article + fetched-at trail give reviewers and professional review workflows a reproducible basis on demand.',
       hours_unit: 'hours / month',
-      tip_hero: 'About 30 sec/query of law verify + cite + audit-trail work is freed (amortized over the workflow) by jpcite\'s audit-grade citation, which presents reproducible evidence on demand. Converted at ¥8,000/h tax-accountant rate.',
+      tip_hero: 'About 30 sec/query of law verify + cite + audit-trail work is freed (amortized over the workflow) by jpcite\'s source-linked citation trail, which presents reproducible evidence on demand. Converted at ¥8,000/h tax-accountant rate.',
       tip_tokens: 'Raw token math: direct Opus 4.7 spends ~4,500 in + 800 out per query; jpcite compresses this into one request. Token saving itself is small but positive.',
-      tip_roi: 'Honest disclosure: raw token math is net-negative (Opus 4.7, 6,000 q/mo: -71% / -¥14,144). Real value is audit-grade citation and verify-time freed.',
+      tip_roi: 'Honest disclosure: raw token math is net-negative (Opus 4.7, 6,000 q/mo: -71% / -¥14,144). Real value is source-linked citation trail and verify-time freed.',
       stat_tokens: 'Tokens saved (raw, 30d)',
       stat_usd: 'USD saved (raw, 30d)',
       stat_cost: 'jpcite cost (30d)',
@@ -421,7 +424,7 @@
       chart_desc: 'Per-day (time + token saving) − (jpcite ¥3.30 × calls). Time saving included.',
       legend_save: 'Saving',
       legend_loss: 'Loss',
-      formula: 'Formula (W28-4 sim anchor, Claude Opus 4.7, 6,000 queries/mo baseline): USD saved = $0.006285/query (W28-4 measured, $37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls. Time saving: 0.5 min/query × ¥8,000/h (tax-accountant rate) → 6,000 q/mo = 50h = ¥400,000. Honest disclosure: raw token math at 6,000 q/mo nets -¥14,144 (-71%). Real value is audit-grade citation + verify-time freed.',
+      formula: 'Formula (W28-4 sim anchor, Claude Opus 4.7, 6,000 queries/mo baseline): USD saved = $0.006285/query (W28-4 measured, $37.71 / 6,000) / FX = ¥150/$ / jpcite = ¥3.30 × calls. Time saving: 0.5 min/query × ¥8,000/h (tax-accountant rate) → 6,000 q/mo = 50h = ¥400,000. Honest disclosure: raw token math at 6,000 q/mo nets -¥14,144 (-71%). Real value is source-linked citation trail + verify-time freed.',
       footer_tag: 'Public-program API for Japan',
       no_key: 'Please enter your API key.',
       loading: 'Fetching /v1/me/usage…',

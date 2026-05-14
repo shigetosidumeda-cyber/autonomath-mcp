@@ -415,7 +415,7 @@ def test_status_probe_build_snapshot_is_public_redacted(monkeypatch) -> None:
 
     _assert_public_status_schema(snapshot)
     assert snapshot["components"]["api"]["error_category"] == "timeout"
-    assert snapshot["components"]["billing"]["error_category"] == "external_dependency_unavailable"
+    assert snapshot["components"]["billing"]["error_category"] is None
     assert snapshot["components"]["data-freshness"]["error_category"] is None
     assert snapshot["components"]["data-freshness"]["last_updated_at"] == "2026-05-12"
     assert snapshot["components"]["data-freshness"]["max_age_days"] == 2

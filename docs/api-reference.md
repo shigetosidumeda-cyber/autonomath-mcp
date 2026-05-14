@@ -253,22 +253,32 @@ curl -X POST "https://api.jpcite.com/v1/evidence/packets/query" \
 
 ## 認証
 
-API key は次のいずれかで送る:
+API key は `X-API-Key` header で送る:
 
 ```
 X-API-Key: YOUR_API_KEY
-Authorization: Bearer YOUR_API_KEY
 ```
 
-API key 不在は匿名扱い、無効 key は `401 Unauthorized`。
+API key 不在は匿名扱い、無効 key は `401 Unauthorized`。旧互換 header は公開 docs の推奨経路ではありません。
 
-AI agent / BPO / 士業システムが継続利用する場合は、次の任意 header も併用する:
+AI agent / 士業システム / 社内ワークフローが継続利用する場合は、次の任意 header も併用する:
 
 | Header | 用途 |
 |---|---|
 | `X-Client-Tag` | paid key 利用時に、顧客・会社フォルダ・案件単位で使用量を分けて追うための 32 文字以内タグ |
 | `Idempotency-Key` | 同じ POST を再試行する時の二重実行・二重課金防止。batch / fanout 系では必須になる場合がある |
 | `X-Cost-Cap-JPY` | billable POST の予算上限。`/v1/cost/preview` の `predicted_total_yen` 以上を指定すると、想定外の広がりを止められる |
+
+### Payment-control outputs
+
+Wallet / x402 / cost preview は無料クレジットではなく、AI agent が実行前に「この呼び出しは払えるか」「上限を超えないか」「再送で二重課金されないか」を判断するための payment-control output です。
+
+| Output | 使いどころ |
+|---|---|
+| `/v1/cost/preview` | 実行予定の endpoint / MCP call から billable units と予測金額を先に返す |
+| `X-Cost-Cap-JPY` | 実行時に予算上限を指定し、予測外の fanout / batch を止める |
+| `Idempotency-Key` | 同じ POST の再送・retry を同一実行として扱い、二重課金を避ける |
+| x402 payment proof | agent-to-agent / wallet 経由の支払い証跡を payload と request に紐付ける |
 
 ## Rate limit
 
@@ -414,7 +424,7 @@ IP は raw 保存せずハッシュ化します。詳細は [pricing.md](./prici
 
 3 回到達して全項目が想定通りなら、税込概算 ¥3.30/billable unit で「データ統合 + 一次出典 + 鮮度 + 入力文脈削減見込み」が得られるかを判断できます。ブラウザで順に検証する場合は <https://jpcite.com/playground?flow=evidence3>。個別 field の詳細仕様は [Context Compression 章](#context-compression-workload-dependent-estimate) と [pricing.md `break_even_met` の正しい読み方](./pricing.md) を参照。
 
-継続利用に移る場合は、同じ endpoint を `X-API-Key` または `Authorization: Bearer` 付きで呼び、案件単位の `X-Client-Tag` を固定する。POST の再試行では `Idempotency-Key`、広い batch / fanout では `X-Cost-Cap-JPY` を付ける。
+継続利用に移る場合は、同じ endpoint を `X-API-Key` 付きで呼び、案件単位の `X-Client-Tag` を固定する。POST の再試行では `Idempotency-Key`、広い batch / fanout では `X-Cost-Cap-JPY` を付ける。
 
 ---
 
@@ -1384,7 +1394,7 @@ curl -X GET "https://api.jpcite.com/v1/me/billing_history" \
 
 Set the customer's self-serve monthly spend cap.
 
-Authenticated with `X-API-Key` or `Authorization: Bearer`.
+Authenticated with `X-API-Key`.
 Anonymous callers (no key) cannot set a cap because the anonymous tier is
 already gated by the 3 req/日 free quota — there is nothing to cap.
 

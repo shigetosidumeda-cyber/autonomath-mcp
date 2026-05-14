@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>対象者 主な要件 対象経費 補助額・率 問い合わせ 制度名 内容 問い合わせ</title>
@@ -484,6 +484,15 @@
     <description>Tier C / 石川県 / 石川県 環境部 出典: https://www.pref.ishikawa.lg.jp/ontai/pp/cev5.html</description>
     <category>制度</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-28ad1a1f1f</guid>
+    <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>eスポーツ金沢モデル</title>
+    <link>https://jpcite.com/programs/e-supootsu-kanazawa-moderu-4ff04f.html</link>
+    <description>Tier C / 石川県 / 金沢市 産業政策課 / 産学官連携 出典: https://www4.city.kanazawa.lg.jp/soshikikarasagasu/sangyoseisakuka/gyomuannai/3/6556.html</description>
+    <category>制度</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ext-c5d079d1b0</guid>
     <pubDate>Thu, 23 Apr 2026 21:59:48 +0000</pubDate>
   </item>
 

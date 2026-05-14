@@ -69,7 +69,7 @@ _DISCLAIMER = (
     "政府標準利用規約 v2.0 のもとで autonomath.am_fdi_country (migration 266) "
     "に集約したもので、visa / 最低資本要件 / 業種制限 / 二国間促進プログラム は"
     "公表時点情報です。最新かつ確定的な要件は各 source_url の原典 (mofa_source_url / "
-    "jetro_source_url) で必ず確認してください。本 API は弁護士法 §72 / 行政書士法 §1 / "
+    "jetro_source_url) で必ず確認してください。本 API は弁護士法 §72 / 行政書士法 §1の2 / "
     "出入国管理及び難民認定法 関連の役務 (申請取次行政書士等) には該当しません。"
 )
 

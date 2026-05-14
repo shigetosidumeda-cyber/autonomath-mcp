@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>その他知事が必要と認める事項を公表すること</title>
@@ -331,15 +331,6 @@
     <description>Tier A / 兵庫県 / 兵庫県 / support 出典: https://web.pref.hyogo.lg.jp/kf10/shuroushien/dream.html</description>
     <category>support</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-aa8e07325e</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>page top</title>
-    <link>https://jpcite.com/programs/page-top-b16395.html</link>
-    <description>Tier A / 兵庫県 / 兵庫県 / support 出典: https://web.pref.hyogo.lg.jp/kf10/shuroushien/nukumorimarushe.html</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-b5747ac150</guid>
     <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
   </item>
 
@@ -812,15 +803,6 @@
   </item>
 
   <item>
-    <title>丹波市中小企業者物価高騰対策支援金</title>
-    <link>https://jpcite.com/programs/tanba-shichuu-shoukigyou-mono-bukkadaka-tou-taisaku-shien-6c917f.html</link>
-    <description>Tier C / 兵庫県 出典: https://www.city.tamba.lg.jp/</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-0fe3bab2d0</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>ステップアップ支援補助金</title>
     <link>https://jpcite.com/programs/suteppuappu-shien-hojokin-917c02.html</link>
     <description>Tier C / 兵庫県 / 兵庫県豊岡市 / subsidy 出典: https://www.city.toyooka.lg.jp/sangyo/kigyoshien/kigyohojokin/1007530.html</description>
@@ -902,11 +884,29 @@
   </item>
 
   <item>
-    <title>認定新規就農者制度</title>
-    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-825146.html</link>
-    <description>Tier C / 兵庫県 / 兵庫県豊岡市 / subsidy 出典: https://www.city.toyooka.lg.jp/sangyo/1021071/1023680/1023754/1023758/index.html</description>
+    <title>兵庫県 事業承継支援貸付</title>
+    <link>https://jpcite.com/programs/hyougoken-jigyou-shoukei-shien-kashitsuke-cbc75f.html</link>
+    <description>Tier A / 兵庫県 / loan / 上限 28,000万円 出典: https://web.pref.hyogo.lg.jp/sr08/documents/jigyousyoukei.pdf</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2edce9ccf4</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>丹波市農業補助金交付要綱</title>
+    <link>https://jpcite.com/programs/tanba-shi-nougyou-hojokin-koufu-youkou-726c21.html</link>
+    <description>Tier B / 兵庫県 / 兵庫県丹波市 / subsidy / 上限 50万円 出典: https://www.city.tamba.lg.jp/section/reiki/reiki_honbun/r394RG00000772.html</description>
     <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-2bb001c72a</guid>
+    <guid isPermaLink="false">jpcite:program:UNI-2fe9c13ee5</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>加東市就農研修支援事業</title>
+    <link>https://jpcite.com/programs/katou-shi-shuunou-kenshuu-shien-jigyou-b82880.html</link>
+    <description>Tier B / 兵庫県 / training / 上限 120万円 出典: https://www.city.kato.lg.jp/kakukanogoannai/sangyoushinkoubu/noseika/noseikakari/15621.html</description>
+    <category>training</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3e9f4d46fa</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

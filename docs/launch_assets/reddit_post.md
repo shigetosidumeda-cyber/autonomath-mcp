@@ -68,8 +68,8 @@ ChatGPT, Gemini) in a single call.
 
 **Pricing:**
 
-¥3/billable unit (~$0.02), pure metered. No tiers, no seats. Anonymous gets 50
-req/month free per IP. Stripe metered + Stripe Tax for JP invoice
+¥3/billable unit (~$0.02), pure metered. No tiers, no seats. Anonymous gets
+3 req/day/IP free, JST daily reset. Stripe metered + Stripe Tax for JP invoice
 compliance.
 
 **Tech:**
@@ -82,7 +82,7 @@ hojyokin-portal, etc.) banned from source_url for trust reasons.
 
 - `pip install autonomath-mcp` then add to Claude Desktop config
 - curl https://api.jpcite.com/v1/programs/search?q=...
-- 3 req/day free, no signup
+- 3 req/day/IP free, no signup
 
 Repo: https://github.com/[USERNAME]/[REPO]
 Docs: https://jpcite.com/docs/

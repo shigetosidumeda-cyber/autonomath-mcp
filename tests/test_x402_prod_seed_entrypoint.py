@@ -29,16 +29,35 @@ calls without forcing a 9 GB R2 download in CI.
 """
 from __future__ import annotations
 
+import contextlib
+import importlib.util
+import io
 import json
 import sqlite3
-import subprocess
-import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 ENTRYPOINT = REPO_ROOT / "entrypoint.sh"
 SEED_SCRIPT = REPO_ROOT / "scripts/etl/seed_x402_endpoints.py"
 MIGRATION = REPO_ROOT / "scripts/migrations/282_x402_payment.sql"
+
+
+def _load_seed_module():
+    spec = importlib.util.spec_from_file_location("seed_x402_endpoints_test", SEED_SCRIPT)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _run_seed(db: Path) -> dict:
+    module = _load_seed_module()
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = module.main(["--db", str(db)])
+    assert rc == 0
+    last_line = stdout.getvalue().strip().splitlines()[-1]
+    return json.loads(last_line)
 
 
 def _entrypoint_text() -> str:
@@ -49,7 +68,9 @@ def test_entrypoint_invokes_seed_x402_endpoints_after_schema_guard() -> None:
     text = _entrypoint_text()
     assert "[W48.x402]" in text, "W48.x402 banner missing"
     invocation = "python /app/scripts/etl/seed_x402_endpoints.py"
+    invocation_with_db = 'python /app/scripts/etl/seed_x402_endpoints.py --db "$DB_PATH"'
     assert invocation in text, f"missing {invocation!r}"
+    assert invocation_with_db in text, f"missing {invocation_with_db!r}"
     # Must run AFTER schema_guard on autonomath.db AND BEFORE final exec.
     guard_marker = 'python /app/scripts/schema_guard.py "$DB_PATH" autonomath'
     exec_marker = 'exec "$@"'
@@ -61,7 +82,9 @@ def test_entrypoint_invokes_seed_x402_endpoints_after_schema_guard() -> None:
 
 def test_entrypoint_seed_block_is_best_effort_not_boot_fatal() -> None:
     """A seed failure must not exit 1 — boot continues; /v1/* gated stays 404."""
-    runtime = _block_runtime_lines(_entrypoint_text())
+    text = _entrypoint_text()
+    assert "set -euo pipefail" in text, "pipeline failure must reach the best-effort err handler"
+    runtime = _block_runtime_lines(text)
     assert "exit 1" not in runtime, "W48.x402 block must not exit-1 on seed failure"
     assert "err " in runtime or "err\t" in runtime, "block must err-log on failure"
     # The narrative phrasing lives in the comment header; runtime line must
@@ -141,19 +164,7 @@ def test_seed_script_idempotent_against_fresh_schema(tmp_path: Path) -> None:
     finally:
         conn.close()
 
-    def _run() -> dict:
-        proc = subprocess.run(
-            [sys.executable, str(SEED_SCRIPT), "--db", str(db)],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=False,
-        )
-        assert proc.returncode == 0, f"seed exited rc={proc.returncode}\n{proc.stderr}"
-        last_line = proc.stdout.strip().splitlines()[-1]
-        return json.loads(last_line)
-
-    first = _run()
+    first = _run_seed(db)
     assert first["dim"] == "V" and first["wave"] == 47
     active_first = [ep for ep in first["endpoints"] if not ep["action"].startswith("retired_")]
     retired_first = [ep for ep in first["endpoints"] if ep["action"].startswith("retired_")]
@@ -163,7 +174,7 @@ def test_seed_script_idempotent_against_fresh_schema(tmp_path: Path) -> None:
         {"endpoint_path": "/v1/programs/search", "action": "retired_absent"}
     ]
 
-    second = _run()
+    second = _run_seed(db)
     active_second = [ep for ep in second["endpoints"] if not ep["action"].startswith("retired_")]
     assert len(active_second) == 4
     assert {ep["action"] for ep in active_second} == {"noop"}, (
@@ -215,15 +226,7 @@ def test_seed_script_disables_retired_programs_search_row(tmp_path: Path) -> Non
     finally:
         conn.close()
 
-    proc = subprocess.run(
-        [sys.executable, str(SEED_SCRIPT), "--db", str(db)],
-        capture_output=True,
-        text=True,
-        timeout=30,
-        check=False,
-    )
-    assert proc.returncode == 0, proc.stderr
-    report = json.loads(proc.stdout.strip().splitlines()[-1])
+    report = _run_seed(db)
     by_path = {ep["endpoint_path"]: ep["action"] for ep in report["endpoints"]}
     assert by_path["/v1/programs/search"] == "retired_disabled"
 

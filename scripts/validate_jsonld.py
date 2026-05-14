@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """validate_jsonld: extract <script type="application/ld+json"> blocks from site/**/*.html
-and verify each is parseable JSON. Reports invalid blocks; exits 1 if any invalid.
+and verify each published block is parseable JSON.
+
+Source templates under ``site/_templates`` intentionally contain Jinja
+placeholders such as ``{{ json_ld_pretty | safe }}``; those are not published
+HTML and are rendered before deploy. This gate validates the generated/static
+surface only.
 """
 
 from __future__ import annotations
@@ -20,7 +25,11 @@ JSONLD_RE = re.compile(
 
 
 def main() -> int:
-    targets = list((ROOT / "site").rglob("*.html"))
+    targets = [
+        path
+        for path in (ROOT / "site").rglob("*.html")
+        if "_templates" not in path.relative_to(ROOT / "site").parts
+    ]
     invalid: list[str] = []
     total_blocks = 0
 

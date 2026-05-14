@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>【募集中】山口県レジ袋収益金環境保全活動助成金</title>
@@ -70,15 +70,6 @@
     <description>Tier A / 山口県 / 山口県 / subsidy 出典: https://www.pref.yamaguchi.lg.jp/soshiki/19/130363.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-43a00cd23a</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>やまぐち若者定住応援事業補助金の申請様式等について</title>
-    <link>https://jpcite.com/programs/yamaguchi-wakamono-teijuu-ouen-jigyou-hojokin-no-shinsei-c6f521.html</link>
-    <description>Tier A / 山口県 / 山口県 / subsidy 出典: https://www.pref.yamaguchi.lg.jp/soshiki/30/309124.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-47738c1a38</guid>
     <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
   </item>
 
@@ -290,6 +281,15 @@
   </item>
 
   <item>
+    <title>定住支援金（農業・漁業）</title>
+    <link>https://jpcite.com/programs/teijuu-shien-kin-nougyou-gyogyou-2cd7a3.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 20万円 出典: https://www.city.kudamatsu.lg.jp/sangyo/nougyou/shien/ijyu_shien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-098a631c92</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>山口 新規農業就業者定着促進事業 定着支援給付金</title>
     <link>https://jpcite.com/programs/yamaguchi-shinki-nougyou-shuugyou-mono-teichaku-sokushin-9980ab.html</link>
     <description>Tier B / 山口県 / 都道府県 / grant / 上限 150万円 出典: https://www.pref.yamaguchi.lg.jp/soshiki/103/22373.html</description>
@@ -317,11 +317,29 @@
   </item>
 
   <item>
+    <title>認定新規就農者制度（青年等就農計画認定）</title>
+    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-seinen-nado-shuunou-bc33ec.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.kudamatsu.lg.jp/sangyo/nougyou/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-13f28bdb39</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>山口市移住就農促進事業</title>
     <link>https://jpcite.com/programs/yamaguchishi-ijuu-shuunou-sokushin-jigyou-ed60d9.html</link>
     <description>Tier B / 山口県 / subsidy / 上限 150万円 出典: https://www.sumusumuyamaguchi.jp/career/agriculture/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-145d56fc33</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>周南地域就農ゆめツアー</title>
+    <link>https://jpcite.com/programs/shuunan-chiiki-shuunou-yume-tsuaa-de0c2f.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.kudamatsu.lg.jp/sangyo/nougyou/shien/yume_tour.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-193538fea2</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -344,11 +362,47 @@
   </item>
 
   <item>
+    <title>農業省エネ対策事業</title>
+    <link>https://jpcite.com/programs/nougyou-shouene-taisaku-jigyou-5c754a.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.hagi.lg.jp/soshiki/45/45.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-29d3753c66</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>移住就業支援金（農業・漁業）</title>
+    <link>https://jpcite.com/programs/ijuu-shuugyou-shien-kin-nougyou-gyogyou-9cebe5.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 30万円 出典: https://www.city.kudamatsu.lg.jp/sangyo/nougyou/shien/ijyu_shien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-3f21c56bd0</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>土づくり対策事業</title>
+    <link>https://jpcite.com/programs/tsuchi-zukuri-taisaku-jigyou-be429b.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.hagi.lg.jp/soshiki/45/45.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-49e1ea8195</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>山口市農業機械導入支援</title>
     <link>https://jpcite.com/programs/yamaguchishi-nougyou-kikai-dounyuu-shien-f34df2.html</link>
     <description>Tier C / 山口県 / 市町村 / subsidy / 上限 40万円 出典: https://www.city.yamaguchi.lg.jp/soshiki/64/118223.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-4d28a64f5a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>現地就農体験等支援事業補助金</title>
+    <link>https://jpcite.com/programs/genchi-shuunou-taiken-nado-shien-jigyou-hojokin-e8c259.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 3万円 出典: https://www.city.hagi.lg.jp/soshiki/45/h51748.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4da3cda30c</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -398,11 +452,29 @@
   </item>
 
   <item>
+    <title>認定農業者制度（農業経営改善計画認定）</title>
+    <link>https://jpcite.com/programs/nintei-nougyou-mono-seido-nougyou-keiei-kaizen-keikaku-701e15.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.kudamatsu.lg.jp/sangyo/nougyou/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-6030c47e80</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>山口_定着支援給付金</title>
     <link>https://jpcite.com/programs/pref-35-001-yamaguchi-teichaku-shien-kyuufukin-e2c3e1.html</link>
     <description>Tier B / 山口県 / subsidy / 上限 150万円 出典: https://www.pref.yamaguchi.lg.jp/soshiki/103/22373.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-6507b16e1d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業スタートアップ応援事業（指導農家支援）</title>
+    <link>https://jpcite.com/programs/nougyou-sutaatoappu-ouen-jigyou-shidou-nouka-shien-65cf60.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 36万円 出典: https://www.city.hagi.lg.jp/soshiki/45/h51748.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-651ae45037</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -443,11 +515,20 @@
   </item>
 
   <item>
-    <title>空き物件活用ビジネス支援事業費補助金</title>
-    <link>https://jpcite.com/programs/aki-bukken-katsuyou-bijinesu-shien-jigyou-hi-hojokin-5911c3.html</link>
-    <description>Tier B / 山口県 / 上限 100万円 出典: https://www.city.shimonoseki.lg.jp/soshiki/57/58845.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-846f299363</guid>
+    <title>農大生等現地研修支援事業補助金</title>
+    <link>https://jpcite.com/programs/noudai-nama-nado-genchi-kenshuu-shien-jigyou-hojokin-4cf709.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 18万円 出典: https://www.city.hagi.lg.jp/soshiki/45/h51748.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-81f0d6fc0b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鳥獣防除柵等設置補助金</title>
+    <link>https://jpcite.com/programs/choujuu-boujo-saku-nado-setchi-hojokin-fce3b7.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 15万円 出典: https://www.city.kudamatsu.lg.jp/sangyo/nougyou/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-843fdbba88</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -479,6 +560,33 @@
   </item>
 
   <item>
+    <title>パイプハウス設置助成事業</title>
+    <link>https://jpcite.com/programs/paipuhausu-setchi-josei-jigyou-7f4447.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.kudamatsu.lg.jp/sangyo/nougyou/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8765cfbfe7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>就農相談会等出展支援事業</title>
+    <link>https://jpcite.com/programs/shuunou-soudan-kai-nado-shutten-shien-jigyou-f682bb.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.hagi.lg.jp/soshiki/45/45.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-8a8c1af101</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>鳥獣被害に強い集落づくり支援事業</title>
+    <link>https://jpcite.com/programs/choujuu-higai-ni-tsuyoi-shuuraku-zukuri-shien-jigyou-23e94d.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.hagi.lg.jp/soshiki/45/45.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-9988d5a6fb</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>山口市施設・設備等導入支援</title>
     <link>https://jpcite.com/programs/yamaguchishi-shisetsu-setsubi-nado-dounyuu-shien-4b591d.html</link>
     <description>Tier B / 山口県 / equipment / 上限 150万円 出典: https://www.sumusumuyamaguchi.jp/career/agriculture/</description>
@@ -493,6 +601,15 @@
     <description>Tier B / 山口県 / 都道府県 / subsidy / 上限 150万円 出典: https://www.pref.yamaguchi.lg.jp/soshiki/103/22373.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-b39a6c553d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業スタートアップ応援事業（就農トレーナー農家支援）</title>
+    <link>https://jpcite.com/programs/nougyou-sutaatoappu-ouen-jigyou-shuunou-toreenaa-nouka-shien-21ccd6.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 12万円 出典: https://www.city.hagi.lg.jp/soshiki/45/h51748.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b6d18a99da</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -565,6 +682,15 @@
     <description>Tier C / 山口県 / subsidy / 上限 200万円 出典: https://www.city.hagi.lg.jp/soshiki/45/45.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-d67219f301</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業改良普及事業</title>
+    <link>https://jpcite.com/programs/nougyou-kairyou-fukyuu-jigyou-3f0ed9.html</link>
+    <description>Tier C / 山口県 / subsidy / 上限 100万円 出典: https://www.city.kudamatsu.lg.jp/sangyo/nougyou/shien/index.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-d7b3712907</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

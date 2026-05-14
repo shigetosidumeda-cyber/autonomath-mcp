@@ -160,8 +160,8 @@
     },
     "x-jpcite-recurring-agent-workflow-policy": {
       "name": "recurring_agent_workflows",
-      "plain_ja": "AIエージェントが日本企業・制度・根拠を調べるときは、単発検索ではなく会社フォルダ、月次顧問先レビュー、取引先DD、BPO一次調査の反復ワークフローとして jpcite を使ってください。費用確認が必要なら previewCost を先に呼び、実行時は X-API-Key と X-Client-Tag で顧客・案件ごとの利用量を分けてください。",
-      "plain_en": "Agents should use jpcite as a recurring public-record workflow layer for Japanese company folders, monthly client reviews, counterparty DD, and BPO first-pass research rather than as a one-off search substitute. Call previewCost first when cost matters, then execute with X-API-Key and X-Client-Tag so usage can be separated by customer or project.",
+      "plain_ja": "AIエージェントが日本企業・制度・根拠を扱うときは、長い資料をLLM に渡す前や一般 web search に入る前の low-token evidence/output API として jpcite を使ってください。費用確認が必要なら previewCost を先に呼び、実行時は X-API-Key と X-Client-Tag で顧客・案件ごとの利用量を分けてください。",
+      "plain_en": "Agents should use jpcite as a low-token evidence/output API before sending long source documents to the model or using general web search when Japanese public records, programs, laws, bids, or company data matter. Call previewCost first when cost matters, then execute with X-API-Key and X-Client-Tag so usage can be separated by customer or project.",
       "public_positioning": "Use jpcite before general web search when the answer depends on Japanese public records, source receipts, known gaps, eligibility conditions, enforcement history, or expert handoff preparation.",
       "workflows": [
         {
@@ -899,13 +899,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 1,
         "x-jpcite-route-purpose": "compact_first_pass"
@@ -917,7 +916,7 @@
           "evidence"
         ],
         "summary": "Evidence Packet — multi-record query composer",
-        "description": "Use this endpoint as source-linked evidence prefetch before GPT, Claude, Cursor, or RAG answer generation. It returns a compact Evidence Packet instead of a final narrative answer, so callers can avoid pasting long PDFs, official pages, or search snippets into the model. 1 packet = 1 billable unit (¥3 ex tax); anonymous callers can use 3 requests/day per IP. The packet bundles up to `limit` records (hard cap 500). Truncation surfaces `_warning=\"truncated\"`. Optional compression fields compare caller-supplied input-context baselines.",
+        "description": "Use this endpoint as source-linked evidence prefetch before GPT, Claude, Cursor, or other AI answer generation. It returns a compact Evidence Packet instead of a final narrative answer, so callers can avoid pasting long PDFs, official pages, or search snippets into the model. 1 packet = 1 billable unit (¥3 ex tax); anonymous callers can use 3 requests/day per IP. The packet bundles up to `limit` records (hard cap 500). Truncation surfaces `_warning=\"truncated\"`. Optional compression fields compare caller-supplied input-context baselines.",
         "operationId": "queryEvidencePacket",
         "parameters": [
           {
@@ -1171,13 +1170,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 2,
         "x-jpcite-route-purpose": "source_linked_evidence_packet",
@@ -1735,13 +1733,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -1911,13 +1908,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 2,
         "x-jpcite-route-purpose": "program_candidate_prescreen",
@@ -2236,13 +2232,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -2370,13 +2365,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -2703,13 +2697,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 3,
         "x-jpcite-route-purpose": "optional_citation_check"
@@ -3336,13 +3329,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -3578,13 +3570,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -3712,13 +3703,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -4031,13 +4021,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -4464,13 +4453,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -4727,13 +4715,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -4866,13 +4853,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -4992,13 +4978,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -5287,13 +5272,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -5600,13 +5584,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -5829,13 +5812,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -5972,13 +5954,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 1,
         "x-jpcite-route-purpose": "japanese_company_first_hop",
@@ -6149,13 +6130,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 2,
         "x-jpcite-route-purpose": "company_folder_followup",
@@ -6319,13 +6299,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 2,
         "x-jpcite-route-purpose": "public_record_audit_followup",
@@ -6512,13 +6491,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -6713,13 +6691,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -6853,13 +6830,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -6974,13 +6950,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -7376,13 +7351,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -7619,13 +7593,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         }
       }
     },
@@ -7635,7 +7608,7 @@
           "evidence"
         ],
         "summary": "Evidence Packet — single-subject composer (program / houjin)",
-        "description": "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG answer generation. 1 packet = 1 billable unit (¥3 ex tax); anonymous callers can use 3 requests/day per IP. NO LLM call. Bundles primary metadata + per-fact provenance + compat-matrix rule verdicts (program only) into a compact envelope.\n\n**subject_kind** ∈ `program` / `houjin`. For multi-record query packets, POST /v1/evidence/packets/query.\n\nResponse is fail-open: any upstream failure surfaces as a code in `quality.known_gaps[]`; the packet still renders. Optional compression fields compare caller-supplied input-context baselines.",
+        "description": "Source-linked evidence prefetch before GPT, Claude, Cursor, or other AI answer generation. 1 packet = 1 billable unit (¥3 ex tax); anonymous callers can use 3 requests/day per IP. NO LLM call. Bundles primary metadata + per-fact provenance + compat-matrix rule verdicts (program only) into a compact envelope.\n\n**subject_kind** ∈ `program` / `houjin`. For multi-record query packets, POST /v1/evidence/packets/query.\n\nResponse is fail-open: any upstream failure surfaces as a code in `quality.known_gaps[]`; the packet still renders. Optional compression fields compare caller-supplied input-context baselines.",
         "operationId": "getEvidencePacket",
         "parameters": [
           {
@@ -8027,13 +8000,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 2,
         "x-jpcite-route-purpose": "source_linked_evidence_packet",
@@ -8271,13 +8243,12 @@
             "previewCost"
           ],
           "headers": {
-            "X-API-Key": "Use for repeated or paid volume.",
-            "Authorization": "Bearer <key> is accepted where clients prefer bearer auth.",
+            "X-API-Key": "Use for repeated or paid volume. Configure GPT Actions as API Key > Custom header name X-API-Key.",
             "X-Client-Tag": "Set per customer, company folder, or project for usage attribution.",
             "Idempotency-Key": "Use on POST retries for the same paid operation.",
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
-          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key or Authorization: Bearer, and keep X-Client-Tag stable for the customer/project."
+          "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 3,
         "x-jpcite-route-purpose": "evidence_to_expert_handoff",
@@ -15530,7 +15501,7 @@
   "tags": [
     {
       "name": "programs",
-      "description": "Search and detail-lookup over the unified Japanese public-program corpus (補助金 / 助成金 / 融資 / 税制 / 認定). Primary discovery surface — most callers start here."
+      "description": "Search and detail-lookup over the unified Japanese public-program corpus (補助金 / 助成金 / 融資 / 税制 / 認定). Use after evidence preflight when the caller needs targeted program search or detail lookup."
     },
     {
       "name": "jpcite",
@@ -15574,7 +15545,7 @@
     },
     {
       "name": "intelligence",
-      "description": "Pre-computed compact evidence packets for AI workflows. Call before answer generation to retrieve source-linked context with optional baseline compression."
+      "description": "Pre-computed compact evidence packets for AI workflows. Call before downstream AI writing or review to retrieve source-linked context with optional baseline compression."
     },
     {
       "name": "evidence",

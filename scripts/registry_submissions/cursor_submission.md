@@ -75,7 +75,7 @@ Coverage: 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,
 
 Major public rows carry source_url + fetched_at where available; known aggregator sources are excluded where detected. ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 
-Disclaimer (税理士法 §52 fence): information retrieval only. Does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
+Disclaimer (税理士法 §52 fence): information retrieval only. Does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1の2), or 労務判断 (社労士法).
 ```
 
 ### Install snippet — Cursor MCP config (paste into Cursor → Settings → MCP)
@@ -203,7 +203,7 @@ https://jpcite.com/tos
 
 ## §52 disclaimer fence (also in long description; restated here)
 
-> AutonoMath is information retrieval over published Japanese primary sources. It does not provide tax advice or filing representation (税理士法 §52), legal advice (弁護士法 §72), application representation (行政書士法 §1), or labour determinations (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
+> AutonoMath is information retrieval over published Japanese primary sources. It does not provide tax advice or filing representation (税理士法 §52), legal advice (弁護士法 §72), application representation (行政書士法 §1の2), or labour determinations (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
 
 ---
 

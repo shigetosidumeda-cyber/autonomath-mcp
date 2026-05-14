@@ -68,14 +68,14 @@ router = APIRouter(tags=["regions"])
 
 # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): /v1/programs/by_region は 補助金 + 融資 +
 # 税優遇 を含む programs corpus を 5 桁地方公共団体コードで列挙する surface な
-# ため、税理士法 §52 (税務代理) ・行政書士法 §1 (申請代理) ・中小企業診断士の経営助言
+# ため、税理士法 §52 (税務代理) ・行政書士法 §1の2 (申請代理) ・中小企業診断士の経営助言
 # の代替ではないことを明示する。/v1/regions/{code}/coverage と /v1/regions/search は
 # 純粋な metadata 解決 (operator 用) であり業法 fence の対象外。
 _DISCLAIMER_BY_REGION = (
     "本 by_region surface は am_region (5,990 行) で resolve した 5 桁"
     "地方公共団体コードに対し、jpintel programs corpus を national / "
     "prefecture / municipality 階層で列挙した機械的 hit-map です。"
-    "税理士法 §52 (税務代理) ・行政書士法 §1 (申請代理) ・中小企業診断士の経営助言の"
+    "税理士法 §52 (税務代理) ・行政書士法 §1の2 (申請代理) ・中小企業診断士の経営助言の"
     "代替ではなく、個別案件の適用可否は各 official_url の一次情報を必ずご確認ください。"
 )
 

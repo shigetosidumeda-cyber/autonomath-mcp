@@ -37,7 +37,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | 「日本 RAG API の design 哲学 + MCP integration の 1 行 install」。Evidence Packet (`source_url + fetched_at + content_hash`) 必須化と FTS5 + sqlite-vec の 2 階建て検索が技術系 reader に刺さる。`uvx autonomath-mcp` 1 行で Claude Code に追加できる点を tag `mcp` `claudecode` `rag` で拾われる。 |
+| 載りやすい angle | 「日本 Evidence Packet API の design 哲学 + MCP integration の 1 行 install」。Evidence Packet (`source_url + fetched_at + content_hash`) 必須化と FTS5 + sqlite-vec の 2 階建て検索が技術系 reader に刺さる。`uvx autonomath-mcp` 1 行で Claude Code に追加できる点を tag `mcp` `claudecode` `retrieval` で拾われる。 |
 | 既存 draft 流用度 | **流用可** (zenn_jpcite_mcp.md は zenn 用 frontmatter 完備、type: tech、topics 6 個入り) |
 | publish 手順 | (1) zenn.dev signup → GitHub 連携 → (2) `npx zenn-cli@latest init` で local repo に jpcite repo を bind → (3) `articles/<slug>.md` に既存 draft を置き `git push` → publication = "true" で即時公開 → (4) Topics Feed (`zenn.dev/topics/mcp`) に自動掲載 |
 | review SLA | 即時公開 (editor review なし) |
@@ -49,12 +49,12 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | 「Stripe metered billing で `¥3/req` 完全従量 API を作る → SQLite FTS5 trigram + sqlite-vec で 9.4 GB を p50 50ms」。Zenn より「実装 how-to」志向、tag `Python` `FastAPI` `Stripe` `MCP` `RAG` `SQLite` で流入。新規執筆推奨だが zenn draft の technical sections (アーキテクチャ + ライセンスとデータ源) を 70% 流用可。 |
+| 載りやすい angle | 「Stripe metered billing で `¥3/req` 完全従量 API を作る → SQLite FTS5 trigram + sqlite-vec で 9.4 GB を p50 50ms」。Zenn より「実装 how-to」志向、tag `Python` `FastAPI` `Stripe` `MCP` `SQLite` で流入。新規執筆推奨だが zenn draft の technical sections (アーキテクチャ + ライセンスとデータ源) を 70% 流用可。 |
 | 既存 draft 流用度 | **改稿要** (zenn draft をベースに「how-to」体に書き換え、frontmatter / topics 規約に揃える) |
 | publish 手順 | (1) qiita.com signup (GitHub / Google) → (2) editor で markdown 記事作成 → (3) tags 5 個まで指定 → (4) 公開ボタンで即時 |
 | review SLA | 即時公開 |
 | fee | free |
-| 期待 reach | 日本 dev 月間 1,000 万 UU 規模、人気 tag (Python / FastAPI) で `LGTM` がつけば feed トップ露出。`MCP` `RAG` tag は新興、累積 5,000-2 万 PV/月 想定 |
+| 期待 reach | 日本 dev 月間 1,000 万 UU 規模、人気 tag (Python / FastAPI) で `LGTM` がつけば feed トップ露出。`MCP` / agent workflow 文脈は新興、累積 5,000-2 万 PV/月 想定 |
 | 失敗時 fallback | LGTM 伸びない場合は tag を `OpenAPI` `Cloudflare` `Fly` 追加。または「9.4 GB SQLite を Fly.io で運用する話」と切り口を変えて再投稿 |
 
 ### A3. note (note.com)
@@ -73,7 +73,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | "Japanese public-info RAG MCP server — 151 tools, 9.4 GB SQLite FTS5, 1-line `uvx` install for Claude Code / Cursor". 英語圏 AI dev 向けに 「Japan-specific RAG benchmark」「MCP design patterns」軸で出す。 |
+| 載りやすい angle | "Japanese public-info Evidence Packet MCP server — 151 tools, 9.4 GB SQLite FTS5, 1-line `uvx` install for Claude Code / Cursor". 英語圏 AI dev 向けに 「Japan-specific evidence benchmark」「MCP design patterns」軸で出す。 |
 | 既存 draft 流用度 | **改稿要** (zenn draft 全文英訳 + Japan-specific 文脈の説明追加 / 英語 reader 向けに「なぜ日本特化が necessary か」の framing を冒頭に挿入) |
 | publish 手順 | (1) dev.to signup (GitHub) → (2) "Create new post" → markdown editor → (3) tags `mcp` `ai` `rag` `python` `showdev` → (4) Publish |
 | review SLA | 即時公開 (community moderation あり、spam フラグ無ければ即) |
@@ -107,7 +107,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 | review SLA | 2-4 週 (業界紙標準、月刊紙の編集締切に依存) |
 | fee | none (寄稿料 0 円が業界標準、原稿掲載は無料、有料記事広告は別枠で organic only 方針より除外) |
 | 期待 reach | 税理士新聞 発行部数 約 3.5 万、web 月間 数十万 PV。掲載されれば顧問契約士業の cohort #2 「税理士 (kaikei pack)」を直撃 |
-| 失敗時 fallback | reject なら angle を「業法 fence 7 本の disclaimer 自動付与」に絞り直し、月刊 税理 (中央経済社) / 税理士界 (日税連機関誌) に転載 |
+| 失敗時 fallback | reject なら angle を「業法 fence 8 本の disclaimer 自動付与」に絞り直し、月刊 税理 (中央経済社) / 税理士界 (日税連機関誌) に転載 |
 
 ### B2. TKC 月報 (TKC Journal)
 
@@ -217,7 +217,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | "Show HN: jpcite — Japanese public-info MCP server (11k+ subsidies, 9k+ laws, 1-line `uvx` for Claude Code)". HN は (a) MCP / Claude Code 文脈 (b) "Show HN" (c) Japan-specific RAG 視点で front page 到達可能性あり。Evidence Packet design (`source_url + fetched_at + content_hash`) + 8 業法 fence は LLM hallucination + legal compliance 文脈で関心を引く。 |
+| 載りやすい angle | "Show HN: jpcite — Japanese public-info MCP server (11k+ subsidies, 9k+ laws, 1-line `uvx` for Claude Code)". HN は (a) MCP / Claude Code 文脈 (b) "Show HN" (c) Japan-specific evidence layer 視点で front page 到達可能性あり。Evidence Packet design (`source_url + fetched_at + content_hash`) + 8 業法 fence は LLM hallucination + legal compliance 文脈で関心を引く。 |
 | 既存 draft 流用度 | **改稿要** (zenn draft を英訳し、3-paragraph 短縮版を HN 本文に / submit link は `https://jpcite.com` に / コメント欄で長文 detail) |
 | publish 手順 | (1) news.ycombinator.com signup (account age ≥ 30d 必要、karma 不問) → (2) "submit" → title "Show HN: jpcite — ..." → URL = `https://jpcite.com` → (3) 投稿後 30 分間 first-page chance、コメント返信で karma 集約 |
 | review SLA | 即時公開 (community vote ベース、flag 多いと shadow ban) |
@@ -241,7 +241,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | "MCP server design: source_url + fetched_at + content_hash on every tool response, anti-hallucination by construction". Lobste.rs はインバイト制 / 技術コミュニティ高品質、AI hallucination + API design + Japanese RAG benchmarks の 3 軸が刺さる。 |
+| 載りやすい angle | "MCP server design: source_url + fetched_at + content_hash on every tool response, anti-hallucination by construction". Lobste.rs はインバイト制 / 技術コミュニティ高品質、AI hallucination + API design + Japanese evidence benchmarks の 3 軸が刺さる。 |
 | 既存 draft 流用度 | **改稿要** (dev.to + Hashnode 版を 1,500 字程度に短縮、技術 design pattern に絞る) |
 | publish 手順 | (1) Lobste.rs invite 取得 (既存ユーザ紹介必要、organic 経路では Twitter / Mastodon で Lobsters ユーザに依頼) → (2) submit → URL + Tags (`programming` `ai` `databases`) → (3) コミュニティ vote |
 | review SLA | 即時公開 (invite 取得後) |
@@ -289,7 +289,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
   - 中小企業診断士界 = 認定支援機関 + 中小企業支援法
   - 弁護士ドットコム = §72 + disclaimer chain ToS 継承
   - 信用金庫月報 = 取引先 monitor + 融資前 DD
-- 技術系も Zenn (MCP architecture) / Qiita (Stripe + FTS5 how-to) / dev.to (Japan RAG benchmark) / Hashnode (Evidence Packet design pattern) / HN (Show HN: 1-line install) / Lobsters (anti-hallucination by construction) で重複を避ける
+- 技術系も Zenn (MCP architecture) / Qiita (Stripe + FTS5 how-to) / dev.to (Japan evidence benchmark) / Hashnode (Evidence Packet design pattern) / HN (Show HN: 1-line install) / Lobsters (anti-hallucination by construction) で重複を避ける
 
 ---
 

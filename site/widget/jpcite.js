@@ -1,6 +1,6 @@
 /*!
  * jpcite Embed Widget SDK
- * 補助金検索 widget — 税理士事務所・商工会議所・中小企業支援サイト向け
+ * 制度根拠 widget — 税理士事務所・商工会議所・中小企業支援サイト向け
  *
  * Usage (auto-init):
  *   <script src="https://jpcite.com/widget/jpcite.js"></script>
@@ -57,7 +57,7 @@
     ja: {
       search: "検索",
       searching: "検索中...",
-      no_results: "該当する制度が見つかりませんでした。",
+      no_results: "現在の jpcite 収録範囲では一致候補を確認できませんでした。制度が存在しない・対象外であることの判断ではありません。",
       error_origin: "この診断入口はこのサイトで有効化されていません。",
       error_quota: "この widget key の請求状態を確認できません。サイト運営者へお問い合わせください。",
       error_billing: "利用量を記録できませんでした。少し時間を置いて再度お試しください。",
@@ -82,7 +82,7 @@
     en: {
       search: "Search",
       searching: "Searching...",
-      no_results: "No matching programs found.",
+      no_results: "No candidate was observed in the current jpcite corpus. This is not a finding that no program exists or that you are ineligible.",
       error_origin: "This origin is not allowed for this key.",
       error_quota: "This widget key's billing state could not be confirmed. Contact the site owner.",
       error_billing: "Usage could not be recorded. Please try again shortly.",

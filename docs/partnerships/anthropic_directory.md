@@ -25,7 +25,7 @@ API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Strip
 |------|------------------|------|
 | MCP Official Registry | `Settings → Extensions → Browse → Install` 1 click | `mcp publish server.json` |
 | DXT Bundle (`autonomath-mcp.mcpb`) | URL から `.mcpb` をダウンロード → ダブルクリック | `bash scripts/build_mcpb.sh` |
-| PyPI | `uvx autonomath-mcp` で manual config | 既存 `autonomath-mcp` v0.3.0 |
+| PyPI | `uvx autonomath-mcp` で manual config | 現行の `autonomath-mcp` package |
 
 `server.json` は既に整備済 (Schema `2025-12-11`、Protocol `2025-06-18`)。
 

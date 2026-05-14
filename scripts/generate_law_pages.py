@@ -66,6 +66,12 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from jpintel_mcp.utils.slug import program_static_url
+except ImportError:  # pragma: no cover - checkout-only fallback
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+    from jpintel_mcp.utils.slug import program_static_url
+
 _LOG = logging.getLogger("generate_law_pages")
 _JST = timezone(timedelta(hours=9))
 _DEFAULT_DOMAIN = "jpcite.com"
@@ -291,13 +297,11 @@ def _load_program_law_refs_index(
 def _load_program_slugs(
     jpintel_db: sqlite3.Connection | None, program_ids: list[str]
 ) -> dict[str, dict[str, str]]:
-    """Map program_unified_id → {slug, name} for backlinks.
+    """Map program_unified_id → {static_url, name} for backlinks.
 
-    The jpintel.db.programs schema does not store a precomputed slug — the
-    per-program SEO page generator derives it at render time from the
-    primary_name via pykakasi. We do not depend on pykakasi here (keeps
-    `generate_law_pages.py` stdlib-only); we surface the program by name
-    and fall through to a query-string anchor so the link still resolves.
+    The static program URL is derived from primary_name + unified_id by the
+    same helper used by the program-page generator and API runtime. If a row
+    lacks primary_name, callers fall back to share.html by unified_id.
     """
     if jpintel_db is None or not program_ids:
         return {}
@@ -312,9 +316,11 @@ def _load_program_slugs(
         sql = f"SELECT unified_id, primary_name FROM programs WHERE unified_id IN ({placeholders})"
         try:
             for row in jpintel_db.execute(sql, batch):
+                name = row["primary_name"] or ""
+                unified_id = row["unified_id"]
                 out[row["unified_id"]] = {
-                    "slug": "",
-                    "name": row["primary_name"] or row["unified_id"],
+                    "static_url": program_static_url(name, unified_id) if name else "",
+                    "name": name or unified_id,
                 }
         except sqlite3.Error as exc:  # pragma: no cover - defensive
             _LOG.warning("program_meta load failed: %s", exc)
@@ -645,10 +651,8 @@ def _render_related_programs(
         seen.add(pid)
         meta = program_meta.get(pid)
         name = meta["name"] if meta else pid
-        slug_ja = meta["slug"] if meta else ""
-        href = f"/programs/{slug_ja}" if slug_ja else f"/programs/?id={pid}"
-        if lang == "en":
-            href = "/en" + href
+        static_url = meta["static_url"] if meta else ""
+        href = static_url or f"/programs/share.html?ids={pid}"
         kind = ref.get("ref_kind") or ""
         article = ref.get("article_citation") or ""
         suffix_parts = [p for p in (kind, article) if p]

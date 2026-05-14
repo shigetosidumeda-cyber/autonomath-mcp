@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>地域中小企業支援協議会について - 福岡県庁ホームページ</title>
@@ -830,15 +830,6 @@
   </item>
 
   <item>
-    <title>令和5年度大川市がんばる農業支援事業（園芸施設整備支援事業）</title>
-    <link>https://jpcite.com/programs/reiwa-5-nendo-ookawa-shi-ganbaru-nougyou-shien-jigyou-engei-78f8c8.html</link>
-    <description>Tier B / 福岡県 / 上限 150万円 出典: https://www.city.okawa.lg.jp/s039/010/010/120/20230511174612.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-138b140f17</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>高能力牛群改良推進事業 博多和牛ブランド強化対策事業（福岡県）</title>
     <link>https://jpcite.com/programs/kounou-chikara-gyuugun-kairyou-suishin-jigyou-hakata-wagyuu-ed9fd9.html</link>
     <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/agri-guide1.html</description>
@@ -907,6 +898,15 @@
     <description>Tier B / 福岡県 / 福岡県糸島市 / subsidy / 上限 3万円 出典: https://www.city.itoshima.lg.jp/s024/050/080/nougyoukensyuu.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-28365e726b</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>水田農業担い手機械導入支援事業（福岡県）</title>
+    <link>https://jpcite.com/programs/suiden-nougyou-ninaite-kikai-dounyuu-shien-jigyou-fukuokaken-477bc0.html</link>
+    <description>Tier B / 福岡県 / 福岡県 / subsidy 出典: https://www.pref.fukuoka.lg.jp/contents/agri-guide1.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-2b30ba5be2</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

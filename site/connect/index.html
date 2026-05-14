@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI agent 接続ガイド — Claude / Cursor / ChatGPT / Codex | jpcite</title>
+<meta name="description" content="Claude, Cursor, ChatGPT, Codex に jpcite を接続し、Evidence Packet、会社フォルダ、公開情報 DD を AI agent へ渡す設定ガイド。MCP は uvx autonomath-mcp、ChatGPT は openapi.agent.gpt30.json + X-API-Key。">
+<meta property="og:title" content="AI agent 接続ガイド — jpcite">
+<meta property="og:description" content="Claude、Cursor、ChatGPT、Codex に jpcite を接続する設定ガイド。MCP は uvx autonomath-mcp、ChatGPT は openapi.agent.gpt30.json + X-API-Key。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/connect/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI agent 接続ガイド — jpcite">
+<meta name="twitter:description" content="Claude / Cursor / ChatGPT / Codex から Evidence Packet、会社フォルダ、公開情報 DD を呼び出す接続ガイド。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+<link rel="canonical" href="https://jpcite.com/connect/">
+<link rel="stylesheet" href="/styles.css?v=20260511a">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "AI agent 接続ガイド",
+  "description": "Claude、Cursor、ChatGPT、Codex に jpcite を接続し、Evidence Packet、会社フォルダ、公開情報 DD を AI agent へ渡す設定ガイド。",
+  "url": "https://jpcite.com/connect/",
+  "inLanguage": "ja",
+  "publisher": {"@type": "Organization", "name": "Bookyou株式会社", "url": "https://jpcite.com"}
+}
+</script>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
+</head>
+<body>
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="jpcite home"><span class="brand-mark">jp</span><span class="brand-name">jpcite</span></a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/products.html">成果物</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/docs/">API ドキュメント</a>
+      <a href="/status.html">稼働状況</a>
+    </nav>
+  </div>
+</header>
+<main id="main" class="pricing-page">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+      <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+      <span aria-current="page">AI agent 接続</span>
+    </nav>
+    <h1>Claude / Cursor / ChatGPT / Codex に jpcite を接続する</h1>
+    <p class="lead">jpcite は回答生成前に一次資料 URL・取得時刻・known gaps・8 業法 fence を返す evidence layer です。接続後は Evidence Packet、会社フォルダ、公開情報 DD、月次レビュー、保存検索通知を普段の AI agent から呼び出せます。</p>
+
+    <section aria-labelledby="connect-matrix-title">
+      <h2 id="connect-matrix-title" class="section-title" style="font-size:22px;">接続先別の最短ルート</h2>
+      <div class="table-wrap">
+        <table class="pricing-table">
+          <thead>
+            <tr>
+              <th scope="col">接続先</th>
+              <th scope="col">方式</th>
+              <th scope="col">貼り付けるもの</th>
+              <th scope="col">認証</th>
+              <th scope="col">手順</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Claude Code / Claude Desktop</th>
+              <td>MCP stdio</td>
+              <td><code>uvx autonomath-mcp</code></td>
+              <td><code>JPCITE_API_KEY</code> 任意</td>
+              <td><a href="/connect/claude-code.html">Claude 接続ガイド</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Cursor</th>
+              <td>MCP stdio</td>
+              <td><code>uvx autonomath-mcp</code></td>
+              <td><code>JPCITE_API_KEY</code> 任意</td>
+              <td><a href="/connect/cursor.html">Cursor 接続ガイド</a></td>
+            </tr>
+            <tr>
+              <th scope="row">ChatGPT Custom GPT</th>
+              <td>OpenAPI Actions</td>
+              <td><code>https://jpcite.com/openapi.agent.gpt30.json</code></td>
+              <td>API Key / Custom header <code>X-API-Key</code></td>
+              <td><a href="/connect/chatgpt.html">ChatGPT 接続ガイド</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Codex / Agents SDK</th>
+              <td>Hosted MCP / HTTP MCP</td>
+              <td><code>https://api.jpcite.com/mcp</code></td>
+              <td>header <code>X-API-Key</code> 任意</td>
+              <td><a href="/connect/codex.html">Codex 接続ガイド</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="connect-billing-title" style="margin-top:32px;">
+      <h2 id="connect-billing-title" class="section-title" style="font-size:22px;">試用と課金</h2>
+      <div class="pricing-grid" style="grid-template-columns:repeat(3,1fr);">
+        <article class="price-card">
+          <h2>匿名評価</h2>
+          <p class="tier-desc">登録不要。3 req/日/IP で Playground、curl、MCP の疎通確認ができます。</p>
+          <a class="btn btn-secondary" href="/playground.html?flow=evidence3">Playground で試す</a>
+        </article>
+        <article class="price-card">
+          <h2>メールトライアル</h2>
+          <p class="tier-desc">14 日 / 200 req、カード不要。初期検証や顧問先レビューの試算向けです。</p>
+          <a class="btn btn-secondary" href="/trial.html">トライアルを発行</a>
+        </article>
+        <article class="price-card highlight">
+          <h2>有料 API key</h2>
+          <p class="tier-desc">Stripe Checkout で即時発行。通常 call は税別 ¥3/billable unit (税込 ¥3.30)、月額固定なし。</p>
+          <a class="btn btn-primary" href="/pricing.html#api-paid">API key を発行</a>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="connect-output-title" style="margin-top:32px;">
+      <h2 id="connect-output-title" class="section-title" style="font-size:22px;">接続後に作れるアウトプット</h2>
+      <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin:0 0 12px;">302 REST paths / 151 MCP tools は部品名です。ユーザーには Evidence Packet、会社フォルダ、公開情報 DD、顧問先月次レビュー、申請戦略パック、改正・保存検索通知として届きます。</p>
+      <p><a class="btn btn-secondary" href="/products.html">成果物カタログ</a> <a class="btn btn-secondary" href="/dashboard.html">Dashboard</a> <a class="btn btn-secondary" href="/status.html">Status</a> <a class="btn btn-secondary" href="/prompts/">Prompts</a></p>
+    </section>
+  </div>
+</main>
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <p class="footer-brand">jpcite</p>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/pricing.html">料金</a>
+      <a href="/legal-fence.html">8 業法 fence</a>
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

@@ -80,6 +80,7 @@ DEFAULT_AUTONOMATH_DB = Path(
     get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db"))
 )
 DEFAULT_OUT_DIR = REPO_ROOT / "site" / "rss"
+DEFAULT_SITE_DIR = REPO_ROOT / "site"
 DEFAULT_DOMAIN = "jpcite.com"
 _STATIC_BAD_URLS = load_static_bad_urls()
 
@@ -263,6 +264,10 @@ def _program_slug(primary_name: str | None, unified_id: str) -> str:
         return sha1(unified_id.encode("utf-8")).hexdigest()[:6]
 
 
+def _program_page_exists(site_dir: Path, slug: str) -> bool:
+    return (site_dir / "programs" / f"{slug}.html").is_file()
+
+
 # ---------------------------------------------------------------------------
 # RSS rendering. We use jinja2 for spec-clarity even though hand-built
 # string concat would be 30 lines shorter — jinja2 makes the template readable
@@ -325,7 +330,7 @@ def _render_rss(
 # ---------------------------------------------------------------------------
 # Data loaders
 # ---------------------------------------------------------------------------
-def _load_tier_s_programs(jpintel_conn: sqlite3.Connection) -> list[ProgramItem]:
+def _load_tier_s_programs(jpintel_conn: sqlite3.Connection, *, site_dir: Path) -> list[ProgramItem]:
     cur = jpintel_conn.execute(
         """
         SELECT unified_id, primary_name, tier, prefecture, authority_name,
@@ -353,6 +358,9 @@ def _load_tier_s_programs(jpintel_conn: sqlite3.Connection) -> list[ProgramItem]
         ) = r
         if not _source_host_allowed(source_url):
             continue
+        slug = _program_slug(primary_name, unified_id)
+        if not _program_page_exists(site_dir, slug):
+            continue
         out.append(
             ProgramItem(
                 unified_id=unified_id,
@@ -364,7 +372,7 @@ def _load_tier_s_programs(jpintel_conn: sqlite3.Connection) -> list[ProgramItem]
                 amount_max_man_yen=amount_max_man_yen,
                 source_url=source_url,
                 source_fetched_at=source_fetched_at,
-                slug=_program_slug(primary_name, unified_id),
+                slug=slug,
             )
         )
         if len(out) >= _MAX_ITEMS:
@@ -374,6 +382,8 @@ def _load_tier_s_programs(jpintel_conn: sqlite3.Connection) -> list[ProgramItem]
 
 def _load_prefecture_programs(
     jpintel_conn: sqlite3.Connection,
+    *,
+    site_dir: Path,
 ) -> dict[str, list[ProgramItem]]:
     """Return ``{prefecture_ja: [programs newest first, capped at MAX]}``."""
     by_pref: dict[str, list[ProgramItem]] = defaultdict(list)
@@ -406,6 +416,9 @@ def _load_prefecture_programs(
         ) = row
         if not _source_host_allowed(source_url):
             continue
+        slug = _program_slug(primary_name, unified_id)
+        if not _program_page_exists(site_dir, slug):
+            continue
         if len(by_pref[prefecture]) >= _MAX_ITEMS:
             continue
         by_pref[prefecture].append(
@@ -419,7 +432,7 @@ def _load_prefecture_programs(
                 amount_max_man_yen=amount_max_man_yen,
                 source_url=source_url,
                 source_fetched_at=source_fetched_at,
-                slug=_program_slug(primary_name, unified_id),
+                slug=slug,
             )
         )
     return by_pref
@@ -544,7 +557,7 @@ def build_tier_s_feed(programs: list[ProgramItem], *, domain: str, lastmod: date
         title="jpcite — Tier S 制度 (補助金/融資/税制/認定 高信頼)",
         description=(
             "jpcite Tier S 制度 (出典リンク + 高信頼バッジ) の最新 100 件。"
-            "週次再生成、ID/鮮度安定。"
+            "定期再生成、ID/鮮度安定。"
         ),
         feed_url=f"https://{domain}/rss/programs-tier-s.xml",
         home_url=f"https://{domain}/",
@@ -612,6 +625,7 @@ def run(
     jpintel_db: Path,
     autonomath_db: Path,
     out_dir: Path,
+    site_dir: Path,
     domain: str,
     dry_run: bool,
     lastmod: datetime,
@@ -630,14 +644,14 @@ def run(
     jpintel_uri = f"file:{jpintel_db}?mode=ro"
     j_conn = sqlite3.connect(jpintel_uri, uri=True)
     try:
-        tier_s = _load_tier_s_programs(j_conn)
+        tier_s = _load_tier_s_programs(j_conn, site_dir=site_dir)
         counters["tier_s_items"] = len(tier_s)
         feed_a = build_tier_s_feed(tier_s, domain=domain, lastmod=lastmod)
         if _write_if_changed(out_dir / "programs-tier-s.xml", feed_a, dry_run=dry_run):
             counters["wrote"] += 1
 
         # ---- C. Prefecture feeds (jpintel.db) ----
-        by_pref = _load_prefecture_programs(j_conn)
+        by_pref = _load_prefecture_programs(j_conn, site_dir=site_dir)
         for pref_ja, slug in PREFECTURE_SLUG.items():
             programs = by_pref.get(pref_ja, [])
             if not programs:
@@ -685,6 +699,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--jpintel-db", type=Path, default=DEFAULT_JPINTEL_DB)
     p.add_argument("--autonomath-db", type=Path, default=DEFAULT_AUTONOMATH_DB)
     p.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR)
+    p.add_argument("--site-dir", type=Path, default=DEFAULT_SITE_DIR)
     p.add_argument("--domain", default=DEFAULT_DOMAIN)
     p.add_argument("--dry-run", action="store_true")
     # Test-only override so byte-identical idempotency can be asserted
@@ -710,6 +725,7 @@ def main(argv: list[str] | None = None) -> int:
             jpintel_db=args.jpintel_db,
             autonomath_db=args.autonomath_db,
             out_dir=args.out_dir,
+            site_dir=args.site_dir,
             domain=args.domain,
             dry_run=bool(args.dry_run),
             lastmod=lastmod,

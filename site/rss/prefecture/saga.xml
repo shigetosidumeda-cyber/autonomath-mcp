@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>県の補助金交付要綱名 細事項名</title>
@@ -191,15 +191,6 @@
   </item>
 
   <item>
-    <title>【受付終了しました】令和8年度技術力強化支援補助金の受付を開始します</title>
-    <link>https://jpcite.com/programs/uketsuke-shuuryou-shimashita-reiwa-8-nendo-gijutsuryoku-74b70f.html</link>
-    <description>Tier A / 佐賀県 / 佐賀県 / subsidy 出典: https://www.pref.saga.lg.jp/kiji00395900/index.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-41b01d661f</guid>
-    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
-  </item>
-
-  <item>
     <title>医療的ケア児支援補助金</title>
     <link>https://jpcite.com/programs/iryou-teki-kea-ji-shien-hojokin-9ca49b.html</link>
     <description>Tier A / 佐賀県 / 佐賀県 / subsidy 出典: https://www.pref.saga.lg.jp/list06355.html</description>
@@ -308,15 +299,6 @@
   </item>
 
   <item>
-    <title>【受付終了しました】医療・福祉・保育施設等物価高騰対応支援金の申請受付を開始しました</title>
-    <link>https://jpcite.com/programs/uketsuke-shuuryou-shimashita-iryou-fukushi-hoikushisetsu-4b6882.html</link>
-    <description>Tier A / 佐賀県 / 佐賀県 / support 出典: https://www.pref.saga.lg.jp/kiji003112486/index.html</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-f9cb4e8a33</guid>
-    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
-  </item>
-
-  <item>
     <title>佐賀県障害福祉従事者処遇改善緊急支援事業費補助金について</title>
     <link>https://jpcite.com/programs/sagaken-shougai-fukushi-juujisha-shoguu-kaizen-kinkyuu-4c8763.html</link>
     <description>Tier A / 佐賀県 / 佐賀県 / subsidy 出典: https://www.pref.saga.lg.jp/kiji003117927/index.html</description>
@@ -403,6 +385,15 @@
     <description>Tier B / 佐賀県 / training / 上限 3万円 出典: https://www1.g-reiki.net/karatsu/reiki_honbun/r079RG00001835.html</description>
     <category>training</category>
     <guid isPermaLink="false">jpcite:program:UNI-0a1020cbbe</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>さが園芸888整備支援事業（園芸補助・施設・機械等）</title>
+    <link>https://jpcite.com/programs/saga-engei-888-seibi-shien-jigyou-engei-hojo-shisetsu-kikai-b70569.html</link>
+    <description>Tier B / 佐賀県 / subsidy / 上限 4,680万円 出典: https://www.city.saga-kashima.lg.jp/main/3073.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-0f3c8acb10</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -524,6 +515,15 @@
   </item>
 
   <item>
+    <title>経営所得安定対策事業</title>
+    <link>https://jpcite.com/programs/keiei-shotoku-antei-taisaku-jigyou-b87b83.html</link>
+    <description>Tier B / 佐賀県 / subsidy / 上限 100万円 出典: https://www.city.saga-kashima.lg.jp/main/94.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-384845d8f2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>白石農業生産基盤改善対策事業費補助金（農地の区画拡大・暗渠排水整備）</title>
     <link>https://jpcite.com/programs/shiroishi-nougyou-seisan-kiban-kaizen-taisaku-jigyou-hi-c6cf4e.html</link>
     <description>Tier C / 佐賀県 / 佐賀県白石町 / subsidy 出典: https://www.town.shiroishi.lg.jp/chousei_machi/nousanshou/nouson_seibi/_1359.html</description>
@@ -560,6 +560,15 @@
   </item>
 
   <item>
+    <title>トレーニングファーム研修</title>
+    <link>https://jpcite.com/programs/toreeningufaamu-kenshuu-b1742b.html</link>
+    <description>Tier B / 佐賀県 / subsidy / 上限 100万円 出典: https://www.city.saga-kashima.lg.jp/main/94.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-4fecd24f6a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>新規就農研修者家賃助成事業</title>
     <link>https://jpcite.com/programs/shinki-shuunou-kenshuu-mono-yachin-josei-jigyou-e3c8f2.html</link>
     <description>Tier B / 佐賀県 / subsidy / 上限 5万円 出典: https://www.city.takeo.lg.jp/benri/shushoku/shunoshien/</description>
@@ -569,29 +578,20 @@
   </item>
 
   <item>
-    <title>未来につなぐ唐津移住支援事業補助金</title>
-    <link>https://jpcite.com/programs/mirai-nitsunagu-karatsu-ijuu-shien-jigyou-hojokin-fd9db6.html</link>
-    <description>Tier C / 佐賀県 出典: https://www.city.karatsu.lg.jp/page/32493.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-6c42f40a03</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>担い手(認定農業者・集落営農組織)等を対象とした各種制度・事業</title>
-    <link>https://jpcite.com/programs/ninaite-nintei-nougyou-mono-shuuraku-einou-soshiki-nado-wo-256d49.html</link>
-    <description>Tier C / 佐賀県 出典: https://www.pref.saga.lg.jp/kiji00344397/index.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-78cdfc8233</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>佐賀市トレーニングファーム居住支援</title>
     <link>https://jpcite.com/programs/sagashi-toreeningufaamu-kyojuu-shien-27eaa9.html</link>
     <description>Tier B / 佐賀県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.saga.lg.jp/main/39486.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-7e2cd60d68</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農地中間管理事業（人と農地の問題解決）</title>
+    <link>https://jpcite.com/programs/nouchi-chuukan-kanri-jigyou-nin-to-nouchi-no-mondaikaiketsu-4dd542.html</link>
+    <description>Tier B / 佐賀県 / subsidy / 上限 100万円 出典: https://www.city.saga-kashima.lg.jp/main/94.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-81ca747bdb</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -668,15 +668,6 @@
   </item>
 
   <item>
-    <title>唐津市地方創生移住支援事業補助金</title>
-    <link>https://jpcite.com/programs/karatsu-shi-chihou-sousei-ijuu-shien-jigyou-hojokin-a7c4d0.html</link>
-    <description>Tier C / 佐賀県 出典: https://www.city.karatsu.lg.jp/page/2234.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-b9e04008f8</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>白石町下水道等接続事業費補助金</title>
     <link>https://jpcite.com/programs/shiroishi-machi-gesuidou-nado-setsuzoku-jigyou-hi-hojokin-6fe73f.html</link>
     <description>Tier B / 佐賀県 / 佐賀県白石町 / subsidy / 上限 7万円 出典: https://www.town.shiroishi.lg.jp/jyuumin/seikatsu/jyougesuidou/gesuidou/_1035.html</description>
@@ -705,28 +696,10 @@
 
   <item>
     <title>認定新規就農者制度</title>
-    <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-84e607.html</link>
-    <description>Tier B / 佐賀県 / 上限 150万円 出典: https://www.city.saga.lg.jp/main/24433.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-cdf85b84be</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>認定新規就農者制度</title>
     <link>https://jpcite.com/programs/nintei-shinki-shuunou-mono-seido-7210dc.html</link>
     <description>Tier B / 佐賀県 / 佐賀県佐賀市 / subsidy / 上限 150万円 出典: https://www.city.saga.lg.jp/main/24433.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-e2563a2d05</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>明日の農業者チャレンジ支援事業（縁元就農）</title>
-    <link>https://jpcite.com/programs/ashita-no-nougyou-mono-charenji-shien-jigyou-heri-motonari-3e4c24.html</link>
-    <description>Tier C / 佐賀県 出典: https://www.city.karatsu.lg.jp/page/3260.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-e57e21d6e0</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -754,6 +727,15 @@
     <description>Tier B / 佐賀県 / subsidy / 上限 150万円 出典: https://www.city.saga.lg.jp/main/109132.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-f10a564771</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>農業機械化研修</title>
+    <link>https://jpcite.com/programs/nougyou-kikaika-kenshuu-083d10.html</link>
+    <description>Tier B / 佐賀県 / subsidy / 上限 100万円 出典: https://www.city.saga-kashima.lg.jp/main/94.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f1b0fa5254</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

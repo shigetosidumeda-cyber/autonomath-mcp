@@ -39,6 +39,8 @@ def test_api_proxy_strips_spoofable_client_ip_headers_before_forwarding() -> Non
     src = _read("functions/api_proxy.ts")
     assert 'fwdHeaders.delete("fly-client-ip")' in src
     assert 'fwdHeaders.delete("x-forwarded-for")' in src
+    assert 'fwdHeaders.delete("x-edge-auth")' in src
+    assert 'headerName.toLowerCase().startsWith("cf-")' in src
     _assert_before(
         src,
         'fwdHeaders.delete("fly-client-ip")',
@@ -48,6 +50,60 @@ def test_api_proxy_strips_spoofable_client_ip_headers_before_forwarding() -> Non
         src,
         'fwdHeaders.delete("x-forwarded-for")',
         "fetchWithTimeout(upstreamUrl, init, UPSTREAM_FETCH_TIMEOUT_MS)",
+    )
+
+
+def test_api_proxy_api_aliases_and_public_headers_stay_aligned() -> None:
+    src = _read("functions/api_proxy.ts")
+
+    assert "ROOT_API_PATH_ALIASES" in src
+    assert '"/api/healthz": "/healthz"' in src
+    assert '"/api/readyz": "/readyz"' in src
+    assert '"/api/programs": "/v1/programs/search"' in src
+    assert '"/api/programs/": "/v1/programs/search"' in src
+    assert '"/api/healthz": "/v1/healthz"' not in src
+    assert "GET  https://jpcite.com/api/programs/search?q=..." in src
+    assert "X-Rate-Limit-Hint" in src
+    assert "X-Upstream-Canonical" in src
+    assert "Idempotency-Key" in src
+    assert "X-Cost-Cap-JPY" in src
+
+
+def test_api_proxy_mints_signed_xff_for_origin_identity() -> None:
+    src = _read("functions/api_proxy.ts")
+
+    assert "JPCITE_EDGE_AUTH_SECRET?: string" in src
+    assert "async function mintEdgeAuth" in src
+    assert "callerIp: string" in src
+    assert "const payload = `v1:${nowSeconds}:${callerIp}`" in src
+    assert 'context.request.headers.get("CF-Connecting-IP")' in src
+    assert 'fwdHeaders.set("X-Forwarded-For", callerIp)' in src
+    assert 'fwdHeaders.set(\n      "X-Edge-Auth",' in src
+    _assert_before(
+        src,
+        'fwdHeaders.delete("x-forwarded-for")',
+        'fwdHeaders.set("X-Forwarded-For", callerIp)',
+    )
+
+
+def test_edge_anon_limiter_exempts_public_specs_and_preflight() -> None:
+    src = _read("functions/anon_rate_limit_edge.ts")
+
+    assert 'path === "/healthz"' in src
+    assert 'path === "/v1/healthz"' not in src
+    for path in (
+        "/api/openapi.json",
+        "/api/openapi.agent.json",
+        "/api/mcp-server.json",
+        "/api/mcp-server.full.json",
+        "/api/rum_beacon",
+    ):
+        assert path in src
+    assert 'context.request.method === "OPTIONS") return context.next()' in src
+    _assert_before(
+        src,
+        'context.request.method === "OPTIONS") return context.next()',
+        "const kv = context.env.JPCITE_ANON_KV;",
     )
 
 
@@ -128,6 +184,8 @@ def test_pages_routes_document_api_v1_and_x402_handler_expectations() -> None:
     assert 'path === "/x402/verify" && method === "POST"' in x402_src
     assert 'if (path.startsWith("/v1/")) return true;' in x402_src
     assert 'if (path.startsWith("/api/")) return true;' in x402_src
+    assert 'path === "/healthz"' in x402_src
+    assert 'path === "/v1/healthz"' not in x402_src
 
 
 def test_status_static_headers_are_noindex_nofollow() -> None:
@@ -161,8 +219,12 @@ def test_origin_anon_limiter_does_not_trust_bare_x_forwarded_for() -> None:
     start = src.index("def _client_ip(request: Request) -> str:")
     end = src.index("\ndef _normalize_ip_to_prefix", start)
     body = src[start:end]
+    assert "signed_xff = _signed_edge_forwarded_for(request)" in body
     assert 'request.headers.get("fly-client-ip")' in body
-    assert 'request.headers.get("x-forwarded-for")' not in body
+    assert 'request.headers.get("x-forwarded-for", "").strip()' in src
+    assert "_verify_signed_edge_header" in src
+    assert "caller_ip=caller_ip" in src
+    _assert_before(body, "signed_xff =", "fly_ip =")
     _assert_before(body, "fly_ip =", "if request.client:")
 
 

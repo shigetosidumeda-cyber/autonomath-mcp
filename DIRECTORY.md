@@ -27,7 +27,7 @@ Post-launch canonical layout. Read this in 2 minutes before touching the tree.
 | `docs/_internal/` | Operator-only runbooks + plans | operator-only |
 | `site/` | Cloudflare Pages static site (HTML + SSG output) | live |
 | `sdk/` | Python + TypeScript SDKs + plugins (freee / MF / kintone / slack / email / excel / google-sheets) | live |
-| `dist/` | Build artifacts: wheels, sdist, mcpb (v0.2.0 → v0.3.2) | build-output |
+| `dist/` | Build artifacts: wheels, sdist, mcpb; canonical release manifests/static distribution surfaces are v0.4.0 | build-output |
 | `dxt/` | DXT bundle assets (`manifest.json`, icon) | live |
 | `overrides/` | MkDocs theme partials | live |
 | `monitoring/` | Sentry rules + SLA targets + uptime metrics + SEO metrics | live |

@@ -27,7 +27,7 @@ human at PR time.
 ## 2. Capitalisation
 
 - **Sentence case** for all messages.
-  - Yes: "No matching programs found."
+  - Yes: "No candidate was observed in the current jpcite corpus."
   - No: "No Matching Programs Found."
 - **Tool names stay snake_case** (e.g. `search_tax_incentives`) — they
   are referenced as identifiers, not English nouns.

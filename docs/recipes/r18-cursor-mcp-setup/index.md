@@ -41,8 +41,8 @@ Cursor 0.42 以降 (MCP 対応) を使う agent dev / 補助金 SaaS 開発者 /
 ## 実行 (curl / Python / TypeScript)
 ### curl
 ```bash
-curl https://api.jpcite.com/v1/healthz
-# 期待: {"status":"ok","tools_default_gate":139,"corpus_snapshot_id":"2026-05-07"}
+curl https://api.jpcite.com/healthz
+# 期待: {"status":"ok"}
 
 which uvx
 uvx --version

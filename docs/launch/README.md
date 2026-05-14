@@ -1,6 +1,6 @@
 # Launch posts — drafts only
 
-12 draft launch posts for jpcite (autonomath-mcp v0.3.0). Operator-only directory; not published.
+12 draft launch posts for jpcite (autonomath-mcp v0.4.0). Operator-only directory; not published.
 
 ## File index
 

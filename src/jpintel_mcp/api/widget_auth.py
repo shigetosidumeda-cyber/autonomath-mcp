@@ -49,8 +49,8 @@ import threading
 import time
 from collections import deque
 from datetime import UTC, datetime
-from urllib.parse import urlparse
 from typing import Annotated, Any
+from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
 from fastapi import (
@@ -218,7 +218,7 @@ def _validate_origin_pattern(entry: str) -> bool:
     if parsed.username or parsed.password:
         return False
     try:
-        parsed.port
+        _ = parsed.port
     except ValueError:
         return False
     return not (parsed.path or parsed.params or parsed.query or parsed.fragment)
@@ -1194,7 +1194,7 @@ def _enable_widget_key(conn: sqlite3.Connection, subscription_id: str | None) ->
 
 
 # ---------------------------------------------------------------------------
-# Usage endpoint (Bearer admin)
+# Usage endpoint (admin key)
 # ---------------------------------------------------------------------------
 
 
@@ -1204,7 +1204,7 @@ def widget_usage(
     conn: DbDep,
     authorization: Annotated[str | None, Header()] = None,
 ) -> JSONResponse:
-    """Owner-visible usage for their widget key. Bearer admin required.
+    """Owner-visible usage for their widget key. Admin key required.
 
     The dashboard consumes this via a scheduled fetch, so the endpoint returns
     stable JSON-first fields for current-month usage.

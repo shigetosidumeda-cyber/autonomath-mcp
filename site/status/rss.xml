@@ -5,7 +5,23 @@
 <link>https://jpcite.com/status/</link>
 <description>jpcite Service Status - api / mcp / billing / data-freshness / dashboard</description>
 <language>ja</language>
-<lastBuildDate>Sun, 11 May 2026 00:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 <atom:link href="https://jpcite.com/status/rss.xml" rel="self" type="application/rss+xml" />
+<item>
+<title>mcp degraded</title>
+<link>https://jpcite.com/status/</link>
+<description>mcp is degraded. Public category: external_dependency_unavailable.</description>
+<guid isPermaLink="false">jpcite:status:mcp:2026-05-14T04:27:47+09:00</guid>
+<pubDate>Wed, 13 May 2026 19:27:47 +0000</pubDate>
+<category>degraded</category>
+</item>
+<item>
+<title>data-freshness degraded</title>
+<link>https://jpcite.com/status/</link>
+<description>data-freshness is degraded.</description>
+<guid isPermaLink="false">jpcite:status:data-freshness:2026-05-14T04:27:47+09:00</guid>
+<pubDate>Wed, 13 May 2026 19:27:47 +0000</pubDate>
+<category>degraded</category>
+</item>
 </channel>
 </rss>

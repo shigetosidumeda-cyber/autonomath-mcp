@@ -3,7 +3,7 @@
 Covers the 5 endpoints in :mod:`jpintel_mcp.api.credit_wallet`:
 
   * GET  /v1/wallet/balance       — 200 + zero-balance on first call
-  * POST /v1/wallet/topup         — config + immediate top-up reflected in balance
+  * POST /v1/wallet/topup         — config update + internal-only immediate top-up
   * GET  /v1/wallet/transactions  — paginated ledger + txn_type filter
   * GET  /v1/wallet/alerts        — alert ledger + billing_cycle filter
   * POST /v1/wallet/charge        — internal-token gate + 50/80/100 alert trigger
@@ -13,7 +13,7 @@ Verifications:
   2. /charge without X-Internal-Token → 403.
   3. /charge with insufficient balance → 402.
   4. /charge crossing 50/80/100 thresholds fires exactly those alerts, once per cycle.
-  5. /topup with immediate_amount records a topup txn and credits balance once.
+  5. /topup immediate_amount is forbidden to public callers and token-gated for internal callers.
   6. /transactions filter + pagination works.
   7. LLM SDK import = 0 in the new module.
 """
@@ -137,7 +137,79 @@ def test_topup_anonymous_returns_401(client: TestClient, wallet_am_db) -> None:
     assert r.status_code == 401, r.text
 
 
-def test_topup_sets_config_and_credits_immediate(
+def test_topup_sets_config_without_public_credit(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    payload = {
+        "auto_topup_threshold": 500,
+        "auto_topup_amount": 3000,
+        "monthly_budget_yen": 10_000,
+        "note": "initial pre-pay",
+    }
+    r = client.post(
+        "/v1/wallet/topup",
+        json=payload,
+        headers={"X-API-Key": paid_key},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["balance_yen"] == 0
+    assert body["auto_topup_threshold"] == 500
+    assert body["auto_topup_amount"] == 3000
+    assert body["monthly_budget_yen"] == 10_000
+    assert body["topup_requested_yen"] == 0
+    assert body["topup_recorded_yen"] == 0
+    assert body["idempotent_replay"] is False
+    assert body["_billing_unit"] == 0
+
+    # The balance endpoint should reflect the same state.
+    r2 = client.get("/v1/wallet/balance", headers={"X-API-Key": paid_key})
+    assert r2.status_code == 200
+    assert r2.json()["balance_yen"] == 0
+    assert r2.json()["_billing_unit"] == 0
+
+    with sqlite3.connect(wallet_am_db) as conn:
+        balance, topups = conn.execute(
+            "SELECT w.balance_yen, COUNT(t.txn_id) "
+            "FROM am_credit_wallet w "
+            "LEFT JOIN am_credit_transaction_log t "
+            "  ON t.wallet_id = w.wallet_id AND t.txn_type = 'topup' "
+            "GROUP BY w.wallet_id"
+        ).fetchone()
+    assert balance == 0
+    assert topups == 0
+
+
+def test_topup_immediate_forbidden_without_internal_token(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    r = client.post(
+        "/v1/wallet/topup",
+        json={"immediate_amount": 2_500},
+        headers={"X-API-Key": paid_key, "Idempotency-Key": "wallet-topup-public"},
+    )
+
+    assert r.status_code == 403, r.text
+    assert r.json()["detail"] == "wallet_topup_forbidden"
+
+
+def test_topup_immediate_internal_requires_idempotency_key(
+    client: TestClient, paid_key: str, wallet_am_db
+) -> None:
+    r = client.post(
+        "/v1/wallet/topup",
+        json={"immediate_amount": 2_500},
+        headers={
+            "X-API-Key": paid_key,
+            "X-Internal-Token": "test-internal-token-secret",
+        },
+    )
+
+    assert r.status_code == 428, r.text
+    assert r.json()["detail"] == "idempotency_key_required"
+
+
+def test_topup_internal_credits_immediate_once(
     client: TestClient, paid_key: str, wallet_am_db
 ) -> None:
     payload = {
@@ -150,25 +222,24 @@ def test_topup_sets_config_and_credits_immediate(
     r = client.post(
         "/v1/wallet/topup",
         json=payload,
-        headers={"X-API-Key": paid_key, "Idempotency-Key": "wallet-topup-initial"},
+        headers={"X-API-Key": paid_key},
+    )
+    assert r.status_code == 403, r.text
+
+    r = client.post(
+        "/v1/wallet/topup",
+        json=payload,
+        headers={
+            "X-API-Key": paid_key,
+            "X-Internal-Token": "test-internal-token-secret",
+            "Idempotency-Key": "wallet-topup-initial",
+        },
     )
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["balance_yen"] == 2_500
-    assert body["auto_topup_threshold"] == 500
-    assert body["auto_topup_amount"] == 3000
-    assert body["monthly_budget_yen"] == 10_000
     assert body["topup_requested_yen"] == 2_500
     assert body["topup_recorded_yen"] == 2_500
-    assert body["idempotent_replay"] is False
-    assert body["_billing_unit"] == 0
-
-    # The balance endpoint should reflect the same state.
-    r2 = client.get("/v1/wallet/balance", headers={"X-API-Key": paid_key})
-    assert r2.status_code == 200
-    assert r2.json()["balance_yen"] == 2_500
-    assert r2.json()["_billing_unit"] == 0
-
     with sqlite3.connect(wallet_am_db) as conn:
         balance, topups = conn.execute(
             "SELECT w.balance_yen, COUNT(t.txn_id) "
@@ -181,19 +252,6 @@ def test_topup_sets_config_and_credits_immediate(
     assert topups == 1
 
 
-def test_topup_immediate_requires_idempotency_key(
-    client: TestClient, paid_key: str, wallet_am_db
-) -> None:
-    r = client.post(
-        "/v1/wallet/topup",
-        json={"immediate_amount": 2_500},
-        headers={"X-API-Key": paid_key},
-    )
-
-    assert r.status_code == 428, r.text
-    assert r.json()["detail"] == "idempotency_key_required"
-
-
 def test_topup_idempotency_key_dedupes_body_retry(
     client: TestClient, paid_key: str, wallet_am_db
 ) -> None:
@@ -204,7 +262,11 @@ def test_topup_idempotency_key_dedupes_body_retry(
         "immediate_amount": 2_500,
         "note": "retryable topup",
     }
-    headers = {"X-API-Key": paid_key, "Idempotency-Key": "wallet-topup-retry"}
+    headers = {
+        "X-API-Key": paid_key,
+        "X-Internal-Token": "test-internal-token-secret",
+        "Idempotency-Key": "wallet-topup-retry",
+    }
 
     first = client.post("/v1/wallet/topup", json=payload, headers=headers)
     second = client.post("/v1/wallet/topup", json=payload, headers=headers)
@@ -239,7 +301,11 @@ def test_topup_idempotency_key_dedupes_body_retry(
 def test_topup_same_idempotency_key_rejects_changed_payload(
     client: TestClient, paid_key: str, wallet_am_db
 ) -> None:
-    headers = {"X-API-Key": paid_key, "Idempotency-Key": "wallet-topup-conflict"}
+    headers = {
+        "X-API-Key": paid_key,
+        "X-Internal-Token": "test-internal-token-secret",
+        "Idempotency-Key": "wallet-topup-conflict",
+    }
     first = client.post(
         "/v1/wallet/topup",
         json={"immediate_amount": 2_500, "note": "first topup"},
@@ -543,7 +609,11 @@ def test_charge_alert_trigger_50_80_100(
             "monthly_budget_yen": 100,
             "immediate_amount": 1000,
         },
-        headers={**headers, "Idempotency-Key": "wallet-alert-prefund"},
+        headers={
+            **headers,
+            "X-Internal-Token": "test-internal-token-secret",
+            "Idempotency-Key": "wallet-alert-prefund",
+        },
     )
     assert r.status_code == 200, r.text
 

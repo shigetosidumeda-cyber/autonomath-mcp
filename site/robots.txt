@@ -8,8 +8,8 @@
 #     MistralAI-User / cohere-ai / Diffbot / DuckAssistBot / GoogleOther /
 #     Google-CloudVertexBot): unrestricted public docs + llms.txt + openapi
 #   - Live-fetch AI (ChatGPT-User / Claude-User / OAI-SearchBot / Claude-SearchBot /
-#     YouBot): unrestricted public; explicit /v1/* API surface allowed because
-#     these are user-initiated agent fetches, not training-set scrapers
+#     YouBot): unrestricted public docs + API discovery aliases; live API calls
+#     belong on api.jpcite.com or the /api proxy, not crawlable static paths
 #   - Social link unfurlers (Twitterbot / LinkedInBot / FacebookBot / Slackbot /
 #     Discordbot / TelegramBot / WhatsApp): allowed for OG card rendering
 #   - SEO aggregators (AhrefsBot / SemrushBot / MJ12bot / DotBot / PetalBot /
@@ -88,10 +88,6 @@ Allow: /.well-known/openapi-discovery.json
 Allow: /.well-known/ai-plugin.json
 Allow: /.well-known/agents.json
 Allow: /.well-known/
-Allow: /v1/programs
-Allow: /v1/laws
-Allow: /v1/cases
-Allow: /v1/meta/federation
 Disallow: /admin/
 Disallow: /_internal/
 Disallow: /dashboard.html

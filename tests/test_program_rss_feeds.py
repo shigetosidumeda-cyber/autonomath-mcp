@@ -250,8 +250,29 @@ def autonomath_db(tmp_path: Path) -> Path:
     return db_path
 
 
-def _generate(jpintel_db: Path, autonomath_db: Path, out_dir: Path) -> int:
+def _generate(
+    jpintel_db: Path,
+    autonomath_db: Path,
+    out_dir: Path,
+    *,
+    missing_program_ids: set[str] | None = None,
+) -> int:
     import generate_program_rss_feeds as mod  # type: ignore[import-not-found]
+
+    missing_program_ids = missing_program_ids or set()
+    site_dir = out_dir.parent / "site"
+    program_dir = site_dir / "programs"
+    program_dir.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(jpintel_db))
+    try:
+        rows = conn.execute("SELECT unified_id, primary_name FROM programs").fetchall()
+    finally:
+        conn.close()
+    for unified_id, primary_name in rows:
+        if unified_id in missing_program_ids:
+            continue
+        slug = mod._program_slug(primary_name, unified_id)
+        (program_dir / f"{slug}.html").write_text("<!doctype html><title>program</title>", encoding="utf-8")
 
     return mod.main(
         [
@@ -261,6 +282,8 @@ def _generate(jpintel_db: Path, autonomath_db: Path, out_dir: Path) -> int:
             str(autonomath_db),
             "--out-dir",
             str(out_dir),
+            "--site-dir",
+            str(site_dir),
             "--lastmod",
             "2026-05-01T00:00:00+00:00",
         ]
@@ -285,6 +308,21 @@ def test_tier_s_feed_item_count(jpintel_db: Path, autonomath_db: Path, tmp_path:
     assert "www.smart-hojokin.jp" not in body
     # Excluded row must not leak in.
     assert "UNI-EXC-001" not in body
+
+
+def test_program_feeds_skip_missing_static_pages(
+    jpintel_db: Path, autonomath_db: Path, tmp_path: Path
+):
+    out = tmp_path / "rss"
+    rc = _generate(jpintel_db, autonomath_db, out, missing_program_ids={"UNI-S-003"})
+    assert rc == 0
+    body = (out / "programs-tier-s.xml").read_text(encoding="utf-8")
+    tokyo = (out / "prefecture" / "tokyo.xml").read_text(encoding="utf-8")
+
+    assert "UNI-S-001" in body
+    assert "UNI-S-003" not in body
+    assert "UNI-S-001" in tokyo
+    assert "UNI-S-003" not in tokyo
 
 
 # --- 2. Amendment RSS reverse-chrono ordering -------------------------------

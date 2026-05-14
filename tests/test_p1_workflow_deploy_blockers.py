@@ -3,6 +3,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import yaml
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOWS = REPO_ROOT / ".github" / "workflows"
 
@@ -12,12 +14,16 @@ STRIPE_BACKFILL = WORKFLOWS / "stripe-backfill-30min.yml"
 IDEMPOTENCY_SWEEP = WORKFLOWS / "idempotency-sweep-hourly.yml"
 INGEST_DAILY = WORKFLOWS / "ingest-daily.yml"
 PAGES_DEPLOY_MAIN = WORKFLOWS / "pages-deploy-main.yml"
+DEPLOY = WORKFLOWS / "deploy.yml"
 PAGES_PREVIEW = WORKFLOWS / "pages-preview.yml"
 PAGES_REGENERATE = WORKFLOWS / "pages-regenerate.yml"
 PAGES_CATCH_ALL_FUNCTION = REPO_ROOT / "functions" / "[[path]].ts"
 PAGES_ROUTES = REPO_ROOT / "site" / "_routes.json"
 STATUS_PROBE_CRON = WORKFLOWS / "status-probe-cron.yml"
 STATUS_UPDATE = WORKFLOWS / "status_update.yml"
+REFRESH_SOURCES_DAILY = WORKFLOWS / "refresh-sources-daily.yml"
+NARRATIVE_SLA_BREACH = WORKFLOWS / "narrative-sla-breach-hourly.yml"
+CHAOS_24_7 = WORKFLOWS / "chaos-24-7.yml"
 EVOLUTION_DASHBOARD = WORKFLOWS / "evolution-dashboard-weekly.yml"
 PRODUCTION_GATE_DASHBOARD = WORKFLOWS / "production-gate-dashboard-daily.yml"
 
@@ -41,6 +47,13 @@ DASHBOARD_PAGES_WORKFLOWS = [
 
 def _text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def _workflow_yaml(path: Path) -> dict:
+    data = yaml.safe_load(_text(path))
+    if True in data and "on" not in data:
+        data["on"] = data.pop(True)
+    return data
 
 
 def _dry_run_input_block(path: Path) -> str:
@@ -109,6 +122,14 @@ def test_pages_deploy_fails_closed_when_cloudflare_secrets_missing() -> None:
     assert "Skipping Cloudflare Pages deploy" not in text
 
 
+def test_deploy_live_fly_secret_gate_requires_edge_auth_secret() -> None:
+    text = _text(DEPLOY)
+    step = text[text.index("Verify live Fly secret names before deploy") :]
+
+    assert "JPCITE_EDGE_AUTH_SECRET" in step
+    assert "Missing required Fly secret names for autonomath-api" in step
+
+
 def test_pages_workflows_serialize_and_avoid_preview_main_publish() -> None:
     preview = _text(PAGES_PREVIEW)
     preview_push_block = re.search(
@@ -132,6 +153,97 @@ def test_status_probe_cron_can_import_src_package() -> None:
     for workflow in (STATUS_PROBE_CRON, STATUS_UPDATE):
         text = _text(workflow)
         assert "PYTHONPATH: src" in text or "pip install -e" in text
+
+
+def test_status_probe_cron_is_only_scheduled_status_writer() -> None:
+    status_probe = _workflow_yaml(STATUS_PROBE_CRON)
+    legacy_status_update = _workflow_yaml(STATUS_UPDATE)
+
+    assert status_probe["on"] == {
+        "schedule": [{"cron": "*/5 * * * *"}],
+        "workflow_dispatch": {},
+    }
+    assert legacy_status_update["on"] == {"workflow_dispatch": {}}
+
+
+def test_status_probe_workflow_permissions_are_minimal_for_commit_and_dispatch() -> None:
+    for workflow in (STATUS_PROBE_CRON, STATUS_UPDATE):
+        parsed = _workflow_yaml(workflow)
+        assert parsed["permissions"] == {
+            "contents": "write",
+            "actions": "write",
+        }
+
+
+def test_status_probe_workflows_commit_all_public_status_artifacts_and_dispatch_pages() -> None:
+    for workflow in (STATUS_PROBE_CRON, STATUS_UPDATE):
+        text = _text(workflow)
+        assert "actions: write" in text
+        assert "group: status-probe-${{ github.ref }}" in text
+        assert "site/status/status.json" in text
+        assert "site/status/status_components.json" in text
+        assert "--badge-out site/status/badge.svg" in text
+        assert "git push origin" in text
+        assert "GITHUB_TOKEN pushes do not trigger downstream push workflows" in text
+        assert "gh workflow run pages-deploy-main.yml --ref" in text
+
+    pages_deploy = _text(PAGES_DEPLOY_MAIN)
+    assert "- \"site/**\"" in pages_deploy
+
+
+def test_pages_deploy_main_triggers_on_pages_functions_changes() -> None:
+    text = _text(PAGES_DEPLOY_MAIN)
+    push_block = re.search(
+        r"  push:\n(?P<body>.*?)(?=^  workflow_dispatch:|^concurrency:)",
+        text,
+        re.MULTILINE | re.DOTALL,
+    )
+    assert push_block is not None
+    body = push_block.group("body")
+    assert '- "functions/**"' in body
+    assert '- "functions/package*.json"' in body
+    assert '- "functions/tsconfig.json"' in body
+
+
+def test_pages_deploy_main_typechecks_functions_before_publish() -> None:
+    text = _text(PAGES_DEPLOY_MAIN)
+    typecheck_step = text.index("Typecheck Pages Functions")
+    publish_step = text.index("Publish to Cloudflare Pages")
+
+    assert typecheck_step < publish_step
+    assert "npm ci --prefix functions" in text
+    assert "npm run --prefix functions typecheck" in text
+
+
+def test_refresh_sources_daily_hydrates_live_db_or_writes_skipped_reports() -> None:
+    text = _text(REFRESH_SOURCES_DAILY)
+
+    assert "Install flyctl" in text
+    assert "Hydrate jpintel.db from Fly volume" in text
+    assert "FLY_API_TOKEN" in text
+    assert "sqlite3 /data/jpintel.db" in text
+    assert "mv jpintel.live.db data/jpintel.db" in text
+    assert "python scripts/refresh_sources.py --db data/jpintel.db" in text
+    assert "if: steps.hydrate_db.outputs.ready == 'true'" in text
+    assert "Write skipped reports when DB unavailable" in text
+    assert "missing_fly_api_token_or_db" in text
+
+
+def test_narrative_sla_breach_remote_command_is_shell_wrapped() -> None:
+    text = _text(NARRATIVE_SLA_BREACH)
+
+    assert '-C "sh -lc ' in text
+    assert "exec /opt/venv/bin/python /app/scripts/cron/narrative_report_sla_breach.py" in text
+
+
+def test_chaos_24_7_uses_runner_side_toxiproxy_wait_and_module_uvicorn() -> None:
+    text = _text(CHAOS_24_7)
+
+    assert "Wait for Toxiproxy" in text
+    assert "curl -fsS http://127.0.0.1:8474/version" in text
+    assert "python -m uvicorn jpintel_mcp.api.main:app" in text
+    assert "wget -q --spider" not in text
+    assert ".venv/bin/uvicorn" not in text
 
 
 def test_pages_source_backed_route_smoke_is_hard_gate() -> None:

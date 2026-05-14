@@ -55,7 +55,31 @@ jobs:
       - name: Install package
         run: pip install -e .
 
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Hydrate jpintel.db from Fly volume
+        id: hydrate_db
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${FLY_API_TOKEN:-}" ]; then
+            echo "::warning::FLY_API_TOKEN not set; writing skipped reports."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          mkdir -p data
+          rm -f data/jpintel.db data/jpintel.live.db
+          flyctl ssh console -a autonomath-api -C \
+            "sqlite3 /data/jpintel.db \".backup /data/jpintel.live.db\""
+          flyctl ssh sftp get /data/jpintel.live.db -a autonomath-api
+          mv jpintel.live.db data/jpintel.db
+          ls -la data/jpintel.db
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
       - name: Run S/A liveness pass
+        if: steps.hydrate_db.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_DRY_RUN: ${{ github.event.inputs.dry_run }}
@@ -69,7 +93,19 @@ jobs:
           if [ -n "${INPUT_MAX_ROWS:-}" ]; then
             ARGS+=(--max-rows "${INPUT_MAX_ROWS}")
           fi
-          python scripts/refresh_sources.py "${ARGS[@]}"
+          python scripts/refresh_sources.py --db data/jpintel.db "${ARGS[@]}"
+
+      - name: Write skipped reports when DB unavailable
+        if: steps.hydrate_db.outputs.ready != 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p data
+          cat > data/refresh_sources_report.json <<'JSON'
+          {"status":"skipped","reason":"missing_fly_api_token_or_db","rows":[]}
+          JSON
+          cat > data/source_freshness_report.json <<'JSON'
+          {"status":"skipped","reason":"missing_fly_api_token_or_db","tiers":["S","A"]}
+          JSON
 
       - uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:

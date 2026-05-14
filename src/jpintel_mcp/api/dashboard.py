@@ -225,7 +225,7 @@ def get_dashboard(
 ) -> DashboardSummary:
     """30-day usage summary for the calling key.
 
-    Bearer-authenticated. The series is filled with zeros for days with no
+    API-key authenticated. The series is filled with zeros for days with no
     usage so the UI can render a contiguous bar chart without client-side
     gap-filling.
     """

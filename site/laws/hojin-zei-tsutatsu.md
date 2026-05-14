@@ -15,14 +15,14 @@ source_url: https://www.nta.go.jp/law/tsutatsu/kihon/hojin/
 
 # hojin-zei-tsutatsu
 
-# 法人税基本通達 
+# 法人税基本通達
 
-略称: 法人税通達 
-法令番号 昭和44年直審(法)25 所管 国税庁 カテゴリ 税制 ステータス active 
+略称: 法人税通達
+法令番号 昭和44年直審(法)25 所管 国税庁 カテゴリ 税制 ステータス active
 
-条文データを読み込み中です。 
+条文データを読み込み中です。
 
-## 出典とライセンス 
+## 出典とライセンス
 
 e-Gov 出典 : [https://www.nta.go.jp/law/tsutatsu/kihon/hojin/ ](https://www.nta.go.jp/law/tsutatsu/kihon/hojin/)
 

@@ -74,7 +74,7 @@ router = APIRouter(tags=["timeline-trend"])
 _DISCLAIMER_TIMELINE = (
     "本 timeline / trend は jpi_adoption_records (201,845 行) + "
     "am_application_round (1,256 行) + jpintel programs (11,601 行) の機械的集計であり、"
-    "税理士法 §52 (税務代理) ・公認会計士法 §47条の2 (監査) ・行政書士法 §1 (申請代理) ・"
+    "税理士法 §52 (税務代理) ・公認会計士法 §47条の2 (監査) ・行政書士法 §1の2 (申請代理) ・"
     "中小企業診断士の経営助言の代替ではない。trend_flag は採択件数の最小二乗回帰の符号 "
     "(slope > 0.5 ⇒ increasing, < -0.5 ⇒ decreasing, それ以外 ⇒ stable) であり、"
     "LLM 推論は含まれない。倍率は (applicants / adopted) の proxy 推定で、"
@@ -84,7 +84,7 @@ _DISCLAIMER_TIMELINE = (
 _DISCLAIMER_UPCOMING = (
     "本 list は am_application_round.application_close_date が今日 (JST) から "
     "+60 日以内の round を顧問先 profile (client_profiles) と JSIC × 都道府県 × "
-    "target_types で機械照合した結果であり、行政書士法 §1 (申請代理) の代替ではない。"
+    "target_types で機械照合した結果であり、行政書士法 §1の2 (申請代理) の代替ではない。"
     "個別案件の応募可否は申請要領一次資料を必ずご確認ください。"
 )
 
@@ -1064,7 +1064,7 @@ def get_cases_timeline_trend(
         "horizon_days (default 60) that matches at least one of the calling "
         "API key's client_profiles via JSIC × prefecture × target_types × "
         "last_active_program overlap. Authenticated only — anon = 401. "
-        "NO LLM. ¥3 / call. 行政書士法 §1 fence."
+        "NO LLM. ¥3 / call. 行政書士法 §1の2 fence."
     ),
 )
 def get_upcoming_rounds_for_my_profile(

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
 <title>Cursor MCP に jpcite を 30 秒で接続 | jpcite</title>
-<meta name="description" content=".cursor/mcp.json 1 file で 151 tool 即解禁、Cursor 0.42+ 対応、anon free 3req/IP/日、paid ¥3/req metered で日本公的情報横断。">
+<meta name="description" content=".cursor/mcp.json 1 file で 151 tool 即解禁、Cursor 0.42+ 対応、anon free 3req/IP/日、paid は税別 ¥3/billable unit metered で日本公的情報横断。">
 <link rel="canonical" href="https://jpcite.com/connect/cursor">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/cursor">
@@ -126,11 +126,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -195,7 +198,7 @@
     <h2>動作確認</h2>
     <p>Cursor のチャットで以下を入力。jpcite が呼ばれ、source_url 付きの結果が返れば成功。</p>
 <pre><code aria-label="Cursor 動作確認">@jpcite search_programs q="ものづくり補助金" prefecture="東京都"</code></pre>
-    <p>Settings → MCP → jpcite の右側に tools count: 139 が表示されれば接続成功です。36協定書面の生成機能は公開提供していません。</p>
+    <p>Settings → MCP → jpcite の右側に tools count: 151 が表示されれば接続成功です。36協定書面の生成機能は公開提供していません。</p>
     <p>REST 直叩きで疎通確認する場合は <code>-G --data-urlencode</code> を必ず使うこと。日本語 query を URL に直接埋めると HTTP リクエスト行が壊れ、API は <code>{"error":{"code":"bad_request",...,"hint":"Use --data-urlencode for non-ASCII query params..."}}</code> を返します。</p>
 <pre><code aria-label="REST 動作確認 (curl)">curl -G "https://api.jpcite.com/v1/programs/search" \
   --data-urlencode "q=ものづくり補助金" \
@@ -205,14 +208,14 @@
 
   <section>
     <h2>FAQ</h2>
-    <details><summary>anonymous と paid の違いは?</summary><p>anon は IP ベースで 3 req/日 (AnonIpLimit)、API key 無し。paid は ¥3/req metered で上限なし、<code>JPCITE_API_KEY</code> 経由でカウント。</p></details>
+    <details><summary>anonymous と paid の違いは?</summary><p>anon は IP ベースで 3 req/日 (AnonIpLimit)、API key 無し。paid は税別 ¥3/billable unit metered で上限なし、<code>JPCITE_API_KEY</code> 経由でカウント。</p></details>
     <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>jc_...</code> を表示 (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> も互換)。</p></details>
     <details><summary>8 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。</p></details>
   </section>
 </main>
 <footer role="contentinfo">
   <p>powered by Bookyou株式会社 (T8010001213708) / <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-  <p><a href="/pricing.html">¥3/req metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
+  <p><a href="/pricing.html">税別 ¥3/billable unit metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
 </footer>
 </body>
 </html>

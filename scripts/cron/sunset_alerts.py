@@ -37,6 +37,7 @@ import urllib.request
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 _REPO = Path(__file__).resolve().parent.parent.parent
 _SRC = _REPO / "src"
@@ -47,6 +48,7 @@ from jpintel_mcp.billing.delivery import record_metered_delivery  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
+from jpintel_mcp.utils.slug import program_static_url  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.sunset_alerts")
 
@@ -151,6 +153,15 @@ def _resolve_program_name(jp_conn: sqlite3.Connection, entity_id: str) -> str:
     return row["primary_name"] or entity_id
 
 
+def _program_public_url(primary_name: str | None, unified_id: str | None) -> str:
+    """Return a safe public program link for sunset alert surfaces."""
+    if primary_name and unified_id and primary_name != unified_id:
+        return f"{_PUBLIC_ORIGIN}{program_static_url(primary_name, unified_id)}"
+    if unified_id:
+        return f"{_PUBLIC_ORIGIN}/programs/share.html?ids={quote(unified_id, safe='')}"
+    return _PUBLIC_ORIGIN
+
+
 def _send_slack_sunset(
     *,
     channel_url: str,
@@ -162,7 +173,7 @@ def _send_slack_sunset(
     text = (
         f":warning: *終了 / 改正検出* — {program_name}\n"
         f"項目: {diff['field_name']}  /  検出: {diff['detected_at']}\n"
-        f"<{_PUBLIC_ORIGIN}/programs/{entity_id}|詳細を確認>"
+        f"<{_program_public_url(program_name, entity_id)}|詳細を確認>"
     )
     if dry_run:
         logger.info("sunset.slack.dry_run program=%s entity=%s", program_name, entity_id)
@@ -213,7 +224,7 @@ def _send_email_sunset(
                 "prev_value": diff.get("prev_value") or "",
                 "new_value": diff.get("new_value") or "",
                 "detected_at": diff["detected_at"],
-                "url": f"{_PUBLIC_ORIGIN}/programs/{entity_id}",
+                "url": _program_public_url(program_name, entity_id),
                 "disclaimer": (
                     "本通知はjpciteによる公開情報の検索結果です。"
                     "個別具体的な税務助言・法律判断は税理士法 §52 / 弁護士法 §72 に基づき"

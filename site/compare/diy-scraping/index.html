@@ -173,11 +173,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -225,7 +228,7 @@
     </nav>
 
     <h1>jpcite vs 自前スクレイピング (DIY): 機能・価格・データ範囲の比較 (2026)</h1>
-    <p class="lead">「制度 DB は自分で crawl すれば作れるのでは」と検討中の開発者向け。技術的には作れます — 当社もそうしました。ただし、本気で本番品質に持っていく場合の工数 (ソース 1,500+ / 失効監視 / dedup / license 管理 / 政府サイト改修追従)を踏まえると、買う方が早いケースが多いという honest な比較です。</p>
+    <p class="lead">「制度 DB は自分で crawl すれば作れるのでは」と検討中の開発者向け。技術的には作れます — 当社もそうしました。ただし、本気で本番品質に持っていく場合の工数 (ソース 1,500+ / 失効監視 / dedup / license 管理 / 政府サイト改修追従)を踏まえると、API 利用が早い場合があるという honest な比較です。</p>
 
     <div class="compare-disclaimer">
       <strong>本ページは公開情報をもとに当社が作成しています。</strong>
@@ -357,7 +360,7 @@
 
     <h2>移行 / 併用ガイド</h2>
     <div class="compare-migration">
-      <p><strong>買って始め、作るかは後で判断</strong>: まず当社 API で小さく検証し、必要なデータ範囲を確認してから、本当にデータの一部だけが必要 (例: 自社業種の補助金 50 件分だけ) と分かった段階で、そのスライスだけ自前で crawl する、というハイブリッド戦略が現実的です。当社の OpenAPI 3.1 spec は <a href="/docs/api-reference/">API リファレンス</a> 経由で公開、MCP tool 仕様も <a href="/docs/mcp-tools/">MCP tools</a> で読めるため、後から自前に切り替える際の移植も比較的容易です。</p><p><strong>license の落とし穴</strong>: 自前 crawler の最大の罠は<strong>出典管理</strong>です。集約サイト (noukaweb / hojyokin-portal / biz.stayway 等) を <code>source_url</code> にすると古い金額・終了済み制度を孫引きしてしまい、景表法 / 善管注意義務リスクが顕在化します。当社は「集約サイトを出典にしない」方針を公開し、主要な公開行に<code>source_url</code> + <code>fetched_at</code> + <code>license</code> を持たせています。この運用を自前で再現するのは技術より<strong>規律の問題</strong>で、「とりあえず動くもの」と「本番に出せるもの」の差が大きい領域です。</p>
+      <p><strong>API で始め、作るかは後で判断</strong>: まず当社 API で小さく検証し、必要なデータ範囲を確認してから、本当にデータの一部だけが必要 (例: 自社業種の補助金 50 件分だけ) と分かった段階で、そのスライスだけ自前で crawl する、というハイブリッド戦略が現実的です。当社の OpenAPI 3.1 spec は <a href="/docs/api-reference/">API リファレンス</a> 経由で公開、MCP tool 仕様も <a href="/docs/mcp-tools/">MCP tools</a> で読めるため、後から自前に切り替える際の移植も比較的容易です。</p><p><strong>license の落とし穴</strong>: 自前 crawler の最大の罠は<strong>出典管理</strong>です。集約サイト (noukaweb / hojyokin-portal / biz.stayway 等) を <code>source_url</code> にすると古い金額・終了済み制度を参照する可能性があり、表示・説明責任上のリスクが残ります。当社は「集約サイトを出典にしない」方針を公開し、主要な公開行に<code>source_url</code> + <code>fetched_at</code> + <code>license</code> を持たせています。この運用を自前で再現するのは技術より<strong>規律の問題</strong>で、「とりあえず動くもの」と「本番に出せるもの」の差が大きい領域です。</p>
     </div>
 
     <h2>関連ページ</h2>
@@ -365,7 +368,7 @@
       <li><a href="/compare.html">全比較表 (6 サービス × 13 軸)</a></li>
       <li><a href="/pricing.html">料金 (¥3/billable unit 完全従量)</a></li>
       <li><a href="/docs/api-reference/">API リファレンス</a></li>
-      <li><a href="/docs/mcp-tools/">MCP tools (139)</a></li>
+      <li><a href="/docs/mcp-tools/">MCP tools (151)</a></li>
       <li><a href="/sources.html">出典・ライセンス</a></li>
       <li><a href="/facts.html">数字の検証 SQL</a></li>
     </ul>

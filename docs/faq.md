@@ -45,7 +45,7 @@ canonical データは **月次再 ingest** が基本。日次差分は順次導
 
 ## Q3. 法的・税務アドバイスか?
 
-**いいえ**。jpcite は検索 API です。法律相談、税務代理、行政書士業務、申請代行は提供しません。詳細: [honest_capabilities.md](./honest_capabilities.md)。
+**いいえ**。jpcite は、AI や業務システムが回答・判断を生成する前に使う Evidence/output API です。一次資料 URL、取得時刻、content_hash、known gaps、引用候補を返しますが、法律相談、税務代理、行政書士業務、申請代行、最終助言は提供しません。詳細: [honest_capabilities.md](./honest_capabilities.md)。
 
 ## Q4. 解約方法
 

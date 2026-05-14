@@ -117,6 +117,7 @@ def _wallet_api_client(
 ) -> TestClient:
     _apply(autonomath_db, MIG_281)
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(autonomath_db))
+    monkeypatch.setenv("METERING_INTERNAL_TOKEN", "dim-u-internal-token")
 
     app = FastAPI()
     app.include_router(wallet_router)
@@ -199,7 +200,7 @@ def test_wallet_topup_requires_api_key_before_balance_mutation(
     assert txns == 0
 
 
-def test_wallet_topup_immediate_amount_credits_once_for_paid_key(
+def test_wallet_topup_immediate_amount_rejects_paid_key_without_internal_token(
     tmp_path: pathlib.Path,
     seeded_db: pathlib.Path,
     paid_key: str,
@@ -216,6 +217,41 @@ def test_wallet_topup_immediate_amount_credits_once_for_paid_key(
     res = c.post(
         "/v1/wallet/topup",
         headers={"X-API-Key": paid_key, "Idempotency-Key": "dim-u-topup-credit"},
+        json={
+            "auto_topup_threshold": 1_000,
+            "auto_topup_amount": 5_000,
+            "monthly_budget_yen": 10_000,
+            "immediate_amount": 5_000,
+            "note": "initial credit",
+        },
+    )
+
+    assert res.status_code == 403, res.text
+    assert res.json()["detail"] == "wallet_topup_forbidden"
+    assert _wallet_row(am_db, key_hash) is None
+
+
+def test_wallet_topup_immediate_amount_credits_once_for_internal_billing(
+    tmp_path: pathlib.Path,
+    seeded_db: pathlib.Path,
+    paid_key: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    am_db = tmp_path / "wallet-api.db"
+    c = _wallet_api_client(
+        seeded_db=seeded_db,
+        autonomath_db=am_db,
+        monkeypatch=monkeypatch,
+    )
+    key_hash = hash_api_key(paid_key)
+
+    res = c.post(
+        "/v1/wallet/topup",
+        headers={
+            "X-API-Key": paid_key,
+            "X-Internal-Token": "dim-u-internal-token",
+            "Idempotency-Key": "dim-u-topup-credit",
+        },
         json={
             "auto_topup_threshold": 1_000,
             "auto_topup_amount": 5_000,

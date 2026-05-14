@@ -19,7 +19,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 B2B 補助金検索 SaaS / 補助金診断 SaaS / 中小企業向け資金調達プラットフォーム の開発元 (年商 ¥3-50 億規模、開発 5-30 人体制) が、自社 DB に登録された顧客企業 1,000-50,000 社の補助金マッチング結果・最新採択履歴・適格事業者状態を一括埋めて、検索 UI / レコメンド精度を上げる。月次 / 四半期で全顧客の `enrich_table` を再生成し、SaaS の `最新お知らせ` 機能 / `あなたに合う補助金 top 5` レコメンド / `事業者状態 alert` 等の機能を駆動する用途。
 
 ## 必要な前提
-- jpcite API key (¥3/req、初回 3 req/IP/日無料、bulk 利用は事前 prepay 推奨)
+- jpcite API key (¥3/billable unit、初回 3 req/IP/日無料、bulk 利用は事前 prepay 推奨)
 - `X-Client-Tag` (SaaS 顧客別計上 / parent-child sub API key で内部按分)
 - 法人番号バルク CSV (1,000-50,000 件)
 - (推奨) 顧客の業種 (JSIC 中分類) + 所在地 + 直近売上 + 従業員数

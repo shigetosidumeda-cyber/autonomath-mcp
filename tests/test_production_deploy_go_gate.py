@@ -41,6 +41,7 @@ def _minimal_repo(tmp_path: Path) -> Path:
             "AUTONOMATH_DB_URL",
             "INVOICE_FOOTER_JA",
             "INVOICE_REGISTRATION_NUMBER",
+            "JPCITE_EDGE_AUTH_SECRET",
             "JPCITE_SESSION_SECRET",
             "JPINTEL_AUDIT_SEAL_KEYS",
             "JPINTEL_CORS_ORIGINS",
@@ -278,6 +279,21 @@ def test_secret_registry_flags_missing_jpcite_session_secret(tmp_path: Path) -> 
     assert "secret_name_missing_from_registry:JPCITE_SESSION_SECRET" in check.issues
 
 
+def test_secret_registry_flags_missing_edge_auth_secret(tmp_path: Path) -> None:
+    mod = _load_module()
+    root = _minimal_repo(tmp_path)
+    registry = root / "docs" / "_internal" / "SECRETS_REGISTRY.md"
+    registry.write_text(
+        registry.read_text(encoding="utf-8").replace("JPCITE_EDGE_AUTH_SECRET\n", ""),
+        encoding="utf-8",
+    )
+
+    check = mod.check_secret_registry(root)
+
+    assert check.ok is False
+    assert "secret_name_missing_from_registry:JPCITE_EDGE_AUTH_SECRET" in check.issues
+
+
 def test_secret_registry_flags_missing_audit_seal_alternative_doc(tmp_path: Path) -> None:
     mod = _load_module()
     root = _minimal_repo(tmp_path)
@@ -304,6 +320,7 @@ def test_secret_registry_does_not_block_on_optional_secret_docs(tmp_path: Path) 
 
     assert check.ok is True
     assert "JPCITE_SESSION_SECRET" in check.evidence["required_secret_names"]
+    assert "JPCITE_EDGE_AUTH_SECRET" in check.evidence["required_secret_names"]
     assert ["AUDIT_SEAL_SECRET", "JPINTEL_AUDIT_SEAL_KEYS"] in check.evidence[
         "alternative_secret_groups"
     ]

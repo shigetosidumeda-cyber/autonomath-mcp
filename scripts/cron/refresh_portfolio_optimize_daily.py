@@ -93,16 +93,21 @@ def _candidate_programs(conn: sqlite3.Connection) -> list[sqlite3.Row]:
                 "ORDER BY tier, program_unified_id"
             )
         )
-    except sqlite3.Error:
-        return list(
-            conn.execute(
-                "SELECT canonical_id AS program_unified_id, primary_name, "
-                "       'B' AS tier, NULL AS prefecture, NULL AS jsic_major, "
-                "       NULL AS jsic_middle, NULL AS amount_min_yen, "
-                "       NULL AS amount_max_yen "
-                "FROM am_entities WHERE record_kind = 'program' LIMIT 200"
+    except sqlite3.Error as exc:
+        LOG.warning("jpi_programs walk failed: %s", exc)
+        try:
+            return list(
+                conn.execute(
+                    "SELECT canonical_id AS program_unified_id, primary_name, "
+                    "       'B' AS tier, NULL AS prefecture, NULL AS jsic_major, "
+                    "       NULL AS jsic_middle, NULL AS amount_min_yen, "
+                    "       NULL AS amount_max_yen "
+                    "FROM am_entities WHERE record_kind = 'program' LIMIT 200"
+                )
             )
-        )
+        except sqlite3.Error as fallback_exc:
+            LOG.warning("am_entities program fallback failed: %s", fallback_exc)
+            return []
 
 
 def _eligibility_pass(conn: sqlite3.Connection, houjin_bangou: str, program_id: str) -> float:

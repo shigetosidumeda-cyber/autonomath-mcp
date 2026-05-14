@@ -98,6 +98,10 @@ def is_local_target(base_url: str) -> bool:
     return "localhost" in base_url or "127.0.0.1" in base_url
 
 
+def _is_prod_url(url: str) -> bool:
+    return "jpcite.com" in url and "staging" not in url
+
+
 @pytest.fixture(scope="session")
 def headless_env() -> bool:
     """CI = headless always. Local can override via JPINTEL_E2E_HEADLESS=0."""
@@ -286,6 +290,8 @@ def seeded_api_key(base_url: str, is_local_target: bool) -> Generator[dict[str, 
     # test key), in which case we don't touch the DB at all.
     external = os.environ.get("JPINTEL_E2E_API_KEY", "").strip()
     if external:
+        if _is_prod_url(base_url):
+            pytest.skip("external JPINTEL_E2E_API_KEY is disabled against production targets")
         yield {
             "raw_key": external,
             "key_hash": "",  # unknown — we didn't compute it

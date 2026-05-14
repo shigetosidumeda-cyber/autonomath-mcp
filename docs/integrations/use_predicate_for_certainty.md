@@ -6,7 +6,7 @@ Status: customer-facing integration brief (W26-6 / W28-9 reframe 2026-05-05). **
 
 ## TL;DR
 
-For "does program X cover corp Y?" eligibility checks, call **`get_program_eligibility_predicate(program_id)`** instead of re-reading the narrative MD with `get_program_narrative`. The predicate is a tiny structured JSON the LLM evaluates with boolean logic — the customer gets a **deterministic, audit-grade verdict** ("対象 / 対象外 / 不明 (axis missing)") instead of a paraphrased paragraph the human still has to re-verify against 公募要領. Verify time per query collapses from ~30 min (read 4-section prose + cite) to ~3 min (confirm `source_url` resolves). Token compression (~50% smaller payload) is a by-product, not the headline.
+For "does program X cover corp Y?" eligibility checks, call **`get_program_eligibility_predicate(program_id)`** instead of re-reading the narrative MD with `get_program_narrative`. The predicate is a tiny structured JSON the LLM evaluates with boolean logic — the customer gets a **deterministic, source-linked review result** ("対象 / 対象外 / 不明 (axis missing)") instead of a paraphrased paragraph the human still has to re-verify against 公募要領. Verify time per query collapses from ~30 min (read 4-section prose + cite) to ~3 min (confirm `source_url` resolves). Token compression (~50% smaller payload) is a by-product, not the headline.
 
 `get_program_narrative` stays the right tool for **display** (showing the user a vetted Japanese explanation). It is **not** the right tool when the LLM only needs a verdict.
 

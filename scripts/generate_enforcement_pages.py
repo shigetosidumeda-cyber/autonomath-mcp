@@ -66,6 +66,7 @@ import sqlite3
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import quote_plus
 
 logger = logging.getLogger("jpcite.generate_enforcement_pages")
 
@@ -214,13 +215,40 @@ def lookup_laws(cur: sqlite3.Cursor, legal_basis: str | None) -> list[dict]:
         base = legal_basis
     try:
         cur.execute(
-            "SELECT unified_id, law_title, law_short_title FROM laws "
+            "SELECT unified_id, law_title, law_short_title, source_url FROM laws "
             "WHERE law_title = ? OR law_title LIKE ? LIMIT 5",
             (base, f"{base}%"),
         )
         out = [dict(r) for r in cur.fetchall()]
     except sqlite3.OperationalError:
         out = []
+    return out
+
+
+def load_static_law_hrefs(site_dir: Path) -> dict[str, str]:
+    """Map e-Gov source URLs from generated law markdown to static law URLs."""
+    laws_dir = site_dir / "laws"
+    out: dict[str, str] = {}
+    if not laws_dir.exists():
+        return out
+    for md_path in laws_dir.glob("*.md"):
+        try:
+            head = md_path.read_text(encoding="utf-8", errors="ignore")[:1200]
+        except OSError:
+            continue
+        if not head.startswith("---"):
+            continue
+        front_matter = head.split("---", 2)[1] if head.count("---") >= 2 else ""
+        source_url = ""
+        slug = md_path.stem
+        for line in front_matter.splitlines():
+            key, _, value = line.partition(":")
+            if key.strip() == "source_url":
+                source_url = value.strip()
+            elif key.strip() == "slug":
+                slug = value.strip() or slug
+        if source_url and slug and (laws_dir / f"{slug}.html").exists():
+            out[source_url] = f"/laws/{slug}"
     return out
 
 
@@ -258,7 +286,34 @@ def lookup_programs(cur: sqlite3.Cursor, hint: str | None, limit: int = 4) -> li
 # ---------------------------------------------------------------------------
 # JSON-LD
 # ---------------------------------------------------------------------------
-def build_json_ld(row: dict, domain: str, slug: str, laws: list[dict], programs: list[dict]) -> str:
+def law_href(law: dict, law_hrefs: dict[str, str], domain: str) -> str:
+    source_url = law.get("source_url") or ""
+    static_href = law_hrefs.get(source_url)
+    if static_href:
+        return f"https://{domain}{static_href}"
+    if source_url:
+        return source_url
+    title = law.get("law_title") or law.get("law_short_title") or law.get("unified_id") or ""
+    return (
+        "https://laws.e-gov.go.jp/search/elawsSearch/elaws_search/lsg0100/"
+        f"?searchKeyword={quote_plus(str(title)[:80])}"
+    )
+
+
+def law_link_rel(href: str, domain: str) -> str:
+    if href.startswith(f"https://{domain}/") or href.startswith("/"):
+        return ""
+    return ' rel="external nofollow noopener"'
+
+
+def build_json_ld(
+    row: dict,
+    domain: str,
+    slug: str,
+    laws: list[dict],
+    programs: list[dict],
+    law_hrefs: dict[str, str],
+) -> str:
     """Schema.org GovernmentAction (LegalAction is the closest fit for
     補助金返還命令 / 課徴金納付命令). We keep the @graph slim — the global
     Organization/WebSite/Service are duplicated in the common include
@@ -327,7 +382,7 @@ def build_json_ld(row: dict, domain: str, slug: str, laws: list[dict], programs:
                 "@type": "Legislation",
                 "@id": f"{url}#law",
                 "name": laws[0]["law_title"],
-                "url": f"https://{domain}/laws/{laws[0]['unified_id']}",
+                "url": law_href(laws[0], law_hrefs, domain),
             }
         )
 
@@ -372,7 +427,24 @@ def esc(s: object) -> str:
     return htmlmod.escape(str(s), quote=True)
 
 
-def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: list[dict]) -> str:
+def program_share_href(unified_id: str) -> str:
+    """Return a static-safe program URL for a UNI id.
+
+    Enforcement pages only have the program unified_id from the DB join, while
+    generated program pages are slug-based. Route through the existing share
+    page so the link resolves without guessing a slug.
+    """
+    return f"/programs/share.html?ids={esc(unified_id)}"
+
+
+def page_html(
+    row: dict,
+    domain: str,
+    slug: str,
+    laws: list[dict],
+    programs: list[dict],
+    law_hrefs: dict[str, str],
+) -> str:
     label = event_label(row.get("event_type"))
     actor = displayable_recipient(row)
     disclosed = row.get("disclosed_date") or ""
@@ -409,13 +481,13 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
     desc_parts.append("出典: 一次資料あり。jpcite が政府公表記録から取得。")
     meta_desc = "。".join(desc_parts)[:300]
 
-    json_ld = build_json_ld(row, domain, slug, laws, programs)
+    json_ld = build_json_ld(row, domain, slug, laws, programs, law_hrefs)
 
     # ---- Related law links ----
     if laws:
         law_lis = "".join(
-            f'<li><a href="https://{esc(domain)}/laws/{esc(law["unified_id"])}" '
-            f'rel="external">{esc(law["law_title"])}</a></li>'
+            f'<li><a href="{esc(href := law_href(law, law_hrefs, domain))}"'
+            f'{law_link_rel(href, domain)}>{esc(law["law_title"])}</a></li>'
             for law in laws
         )
         related_law_html = (
@@ -434,7 +506,7 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
     # ---- Related programs ----
     if programs:
         prog_lis = "".join(
-            f'<li><a href="/programs/{esc(p["unified_id"])}">{esc(p["primary_name"])}</a></li>'
+            f'<li><a href="{program_share_href(p["unified_id"])}">{esc(p["primary_name"])}</a></li>'
             for p in programs
         )
         related_prog_html = (
@@ -618,7 +690,7 @@ def page_html(row: dict, domain: str, slug: str, laws: list[dict], programs: lis
 <h2>API で取得</h2>
 <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\
  "https://api.{esc(domain)}/v1/enforcement/cases/{esc(row.get("case_id") or "")}"</code></pre>
-<p class="api-cta-line">公的記録 1,185 件をプログラムから検索: <a href="/docs/">ドキュメント</a> · <a href="/dashboard.html">API キー発行</a></p>
+<p class="api-cta-line">公的記録 1,185 件をプログラムから検索: <a href="/docs/">ドキュメント</a> · <a href="/pricing.html#api-paid">API キー発行</a> · <a href="/dashboard.html">既存キー管理</a></p>
 </section>
 {cite_in_ai_html}
 <p class="disclaimer">本ページは自動生成された公開記録の要約であり、法的助言・税務助言・信用調査・コンプライアンス判断を構成するものではありません。個別の判断は弁護士・税理士・公認会計士・行政書士等の有資格者にご相談ください。処分の現況・撤回情報は所管官公庁にお問い合わせください。</p>
@@ -766,6 +838,7 @@ def main(argv: list[str] | None = None) -> int:
     skipped = 0
     law_link_count_total = 0
     slugs_for_sitemap: list[tuple[str, str]] = []
+    law_hrefs = load_static_law_hrefs(site_dir)
 
     for r in rows:
         cid = r.get("case_id") or ""
@@ -776,7 +849,7 @@ def main(argv: list[str] | None = None) -> int:
         laws = lookup_laws(cur, r.get("legal_basis"))
         programs = lookup_programs(cur, r.get("program_name_hint"))
         law_link_count_total += len(laws)
-        html_str = page_html(r, args.domain, slug, laws, programs)
+        html_str = page_html(r, args.domain, slug, laws, programs, law_hrefs)
         out_path = enforcement_dir / f"{slug}.html"
         # Idempotent write: skip if identical
         if out_path.exists():

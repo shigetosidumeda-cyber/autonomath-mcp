@@ -78,7 +78,7 @@ _BUNDLE_DISCLAIMER = (
     "「重複受給可」の確約ではない。expected_amount は programs.amount_max_man_yen / "
     "amount_min_man_yen の rollup であり、申請時の実支給額ではない。"
     "predicate 不足 (missing axis = unknown) は eligible 扱いだが最終確認は "
-    "primary source + 行政書士・中小企業診断士へ。税理士法 §52 / 行政書士法 §1 "
+    "primary source + 行政書士・中小企業診断士へ。税理士法 §52 / 行政書士法 §1の2 "
     "の代替ではない。"
 )
 
@@ -1077,7 +1077,7 @@ def _build_envelope(
         "**Algorithm**: predicate-filtered eligible pool → conflict graph "
         "(am_funding_stack_empirical conflict_flag rows) → greedy weighted "
         "max-IS sorted by the requested objective.\n\n"
-        "**Sensitive**: 行政書士法 §1 / 税理士法 §52 — bundle is a "
+        "**Sensitive**: 行政書士法 §1の2 / 税理士法 §52 — bundle is a "
         "statistical proposal, NOT a 申請保証 / 受給保証."
     ),
     responses={

@@ -174,7 +174,7 @@ function isMeteredPath(path: string): boolean {
 
 function isExemptPath(path: string): boolean {
   return (
-    path === "/v1/healthz" ||
+    path === "/healthz" ||
     path === "/v1/readyz" ||
     path === "/v1/openapi.json" ||
     path === "/x402/discovery" ||

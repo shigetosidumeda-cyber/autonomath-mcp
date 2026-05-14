@@ -52,48 +52,62 @@
     },
     "dirty_tree_fingerprint": {
       "type": "object",
-      "description": "DEEP-56 fingerprint object. 7 required fields capturing the dirty-tree state at signoff moment so a stale ACK is detectable.",
+      "description": "DEEP-56 fingerprint object. Required fields match production_deploy_go_gate.py REQUIRED_DIRTY_TREE_FINGERPRINT_FIELDS so a stale ACK is detectable.",
       "additionalProperties": true,
       "required": [
-        "tree_sha",
-        "dirty_file_count",
-        "dirty_lane_count",
-        "lanes",
-        "untracked_count",
-        "computed_at",
-        "git_status_digest"
+        "current_head",
+        "dirty_entries",
+        "status_counts",
+        "lane_counts",
+        "path_sha256",
+        "content_sha256",
+        "content_hash_skipped_large_files"
       ],
       "properties": {
-        "tree_sha": {
-          "type": "string",
-          "description": "sha256 of `git status --porcelain=v2` byte stream.",
-          "minLength": 40
+        "current_head": {
+          "type": ["string", "null"],
+          "description": "git rev-parse HEAD at signoff. Null only when git is unavailable.",
+          "pattern": "^[0-9a-f]{40}$"
         },
-        "dirty_file_count": {
+        "dirty_entries": {
           "type": "integer",
+          "description": "Count of raw `git status --porcelain=v1 --untracked-files=all` entries.",
           "minimum": 0
         },
-        "dirty_lane_count": {
-          "type": "integer",
-          "minimum": 0
+        "status_counts": {
+          "type": "object",
+          "description": "Porcelain status counts keyed by XY status.",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
         },
-        "lanes": {
+        "lane_counts": {
+          "type": "object",
+          "description": "Dirty lane counts using scripts/ops/repo_dirty_lane_report.py taxonomy.",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "critical_lanes_present": {
           "type": "array",
           "items": { "type": "string" },
-          "description": "Sorted lane labels touched by dirty files (lane = first path segment in DEEP-50 mapping)."
+          "description": "Critical dirty lanes present at fingerprint time; produced by the canonical helper."
         },
-        "untracked_count": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "computed_at": {
+        "path_sha256": {
           "type": "string",
-          "format": "date-time",
-          "description": "UTC ISO-8601 timestamp of fingerprint computation."
+          "description": "sha256 of sorted raw porcelain lines.",
+          "pattern": "^[0-9a-f]{64}$"
         },
-        "git_status_digest": {
+        "content_sha256": {
           "type": "string",
-          "description": "Short human-readable summary like '12M 3?? 0??=15total'."
+          "description": "sha256 of status/path plus per-file content hashes for dirty entries.",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "content_hash_skipped_large_files": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Dirty files too large to content-hash; any entry blocks allow-dirty deploy."
+        },
+        "critical_dirty_lanes_reviewed": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Critical lanes the operator reviewed. Required by the gate when critical_lanes_present is non-empty."
         }
       }
     },

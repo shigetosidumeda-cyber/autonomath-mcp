@@ -12,9 +12,12 @@ Monkeypatched items to look out for:
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import importlib
 import sqlite3
 import sys
+import time
 from typing import TYPE_CHECKING
 
 import pytest
@@ -64,6 +67,13 @@ def _count_row(db: Path, ip_hash: str, day_bucket: str) -> int:
 def _testclient_hash(anon, ip: str) -> str:
     """Compute the authoritative per-IP hash production writes."""
     return anon.hash_ip(ip)
+
+
+def _edge_auth_token(secret: str, caller_ip: str = "203.0.113.99") -> str:
+    ts = str(int(time.time()))
+    payload = f"v1:{ts}:{caller_ip}"
+    sig = hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256)
+    return f"{payload}:{sig.hexdigest()}"
 
 
 # ---------------------------------------------------------------------------
@@ -309,6 +319,54 @@ def test_fly_client_ip_wins_over_xff(client: TestClient, seeded_db: Path):
     assert r.status_code == 200
     assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.77"), day_bucket) == 1
     assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.99"), day_bucket) == 0
+
+
+def test_signed_x_forwarded_for_wins_over_fly_client_ip(
+    client: TestClient,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """The jpcite.com API proxy signs the caller IP; origin must prefer it."""
+    secret = "edge-secret-for-anon-limit-test"
+    monkeypatch.setenv("JPCITE_EDGE_AUTH_SECRET", secret)
+    anon = _anon_module()
+    day_bucket = anon._jst_day_bucket()
+
+    r = client.get(
+        "/meta",
+        headers={
+            "fly-client-ip": "203.0.113.77",
+            "x-forwarded-for": "203.0.113.99, 198.51.100.10",
+            "x-edge-auth": _edge_auth_token(secret, "203.0.113.99"),
+        },
+    )
+    assert r.status_code == 200
+    assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.99"), day_bucket) == 1
+    assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.77"), day_bucket) == 0
+
+
+def test_signed_x_forwarded_for_rejects_mismatched_token_ip(
+    client: TestClient,
+    seeded_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """A signed token must be bound to the first XFF hop it authorizes."""
+    secret = "edge-secret-for-anon-limit-test"
+    monkeypatch.setenv("JPCITE_EDGE_AUTH_SECRET", secret)
+    anon = _anon_module()
+    day_bucket = anon._jst_day_bucket()
+
+    r = client.get(
+        "/meta",
+        headers={
+            "fly-client-ip": "203.0.113.77",
+            "x-forwarded-for": "203.0.113.99, 198.51.100.10",
+            "x-edge-auth": _edge_auth_token(secret, "203.0.113.88"),
+        },
+    )
+    assert r.status_code == 200
+    assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.99"), day_bucket) == 0
+    assert _count_row(seeded_db, _testclient_hash(anon, "203.0.113.77"), day_bucket) == 1
 
 
 def test_bare_x_forwarded_for_is_not_trusted(client: TestClient, seeded_db: Path):

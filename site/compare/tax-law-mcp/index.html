@@ -173,11 +173,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -249,7 +252,7 @@
 <tbody>
 <tr>
 <th scope="row">1. Distribution</th>
-<td class="col-us">PyPI <code>autonomath-mcp</code> v0.3.4 + 公式 MCP registry 登録済 + DXT bundle。</td>
+<td class="col-us">PyPI <code>autonomath-mcp</code> v0.4.0 + 公式 MCP registry 登録済 + DXT bundle。</td>
 <td>npm <code>tax-law-mcp</code> v0.5.4 (one-liner <code>npx -y tax-law-mcp</code>) + Vercel REST + 公式 MCP registry 未登録。</td>
 <td class="compare-note-cell">tax-law-mcp の install は最も簡単 (npx 1 行)。</td>
 </tr>
@@ -297,7 +300,7 @@
 </tr>
 <tr>
 <th scope="row">9. Latency / 応答性</th>
-<td class="col-us">SQLite FTS5 + sqlite-vec で 即時応答 (median <100ms)。</td>
+<td class="col-us">SQLite FTS5 + sqlite-vec で 即時応答 (median &lt;100ms)。</td>
 <td>Live scrape のため <strong>初回 30-60s</strong> (NTA / KFS Shift_JIS scrape)、cache hit 後は速い。</td>
 <td></td>
 </tr>
@@ -342,7 +345,7 @@
         <ul>
           <li><strong>pre-indexed answers + 通達 cross-ref</strong>: 50 tax_rulesets (適用要件 structured) + 28,201 law article + 3,221 通達 index を即時応答で返したい。tax-law-mcp は live scrape で 30-60s 初回 cache。</li>
           <li><strong>税制 + 補助金 + 採択事例 + 行政処分 を 1 envelope</strong> で取得し、措置法42-4 (研究開発税制) や IT導入補助金 会計処理を制度・採択と cross-ref したい。</li>
-          <li><strong>audit-grade Evidence Packet</strong> (<code>corpus_snapshot_id</code> + <code>_disclaimer</code> envelope) を 監査人 / 税務調査対応で auditor に渡したい。</li>
+          <li><strong>source-linked Evidence Packet</strong> (<code>corpus_snapshot_id</code> + <code>_disclaimer</code> envelope) を 専門家レビュー に渡したい。</li>
         </ul>
       </div>
       <div class="pick-card">
@@ -377,7 +380,7 @@
       <li><a href="/compare/jgrants-mcp/">vs jgrants-mcp-server</a></li>
       <li><a href="/compare/japan-corporate-mcp/">vs japan-corporate-mcp</a></li>
       <li><a href="/pricing.html">料金 (¥3/billable unit 完全従量)</a></li>
-      <li><a href="/docs/mcp-tools/">MCP tools (139)</a></li>
+      <li><a href="/docs/mcp-tools/">MCP tools (151)</a></li>
       <li><a href="/sources.html">出典・ライセンス</a></li>
     </ul>
 

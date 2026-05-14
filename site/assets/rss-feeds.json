@@ -7,7 +7,7 @@
   "feeds": [
     {
       "id": "announcements",
-      "title": "jpcite お知らせ",
+      "title": "jpcite お知らせ・リリース",
       "url": "https://jpcite.com/rss.xml",
       "scope": "release notes / data ingest / migrations",
       "max_items": 50,
@@ -31,7 +31,7 @@
     },
     {
       "id": "amendments",
-      "title": "jpcite 制度改正検出ログ",
+      "title": "jpcite 制度改正・変更検出",
       "url": "https://jpcite.com/rss/amendments.xml",
       "scope": "制度改正・金額・補助率・出典 URL の変更",
       "max_items": 100,

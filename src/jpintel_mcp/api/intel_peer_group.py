@@ -14,7 +14,7 @@ Hard constraints (memory `feedback_no_operator_llm_api`)
   `jpi_programs` (peer-adopted program metadata).
 * Output is statistical: similarity_score is a Jaccard-style proximity
   signal, NOT a 同業認定 / 業界 belonging guarantee. The disclaimer fences
-  the typical 景表法 / 行政書士法 §1 / 税理士法 §52 angles.
+  the typical 景表法 / 行政書士法 §1の2 / 税理士法 §52 angles.
 
 Cross-join graph
 ----------------
@@ -828,7 +828,7 @@ def _build_envelope(
         "am_geo_industry_density + am_entity_facts (corp.*) + "
         "jpi_adoption_records + jpi_programs.\n\n"
         "**Pricing:** ¥3 / call (1 unit total).\n\n"
-        "Sensitive: 景表法 / 行政書士法 §1 / 税理士法 §52 fence."
+        "Sensitive: 景表法 / 行政書士法 §1の2 / 税理士法 §52 fence."
     ),
 )
 def post_intel_peer_group(

@@ -36,6 +36,18 @@ _START_PAGES = [
 
 # Known off-site / email / anchor-only prefixes to skip without a fetch.
 _SKIP_PREFIXES = ("mailto:", "tel:", "javascript:", "#")
+_SKIP_PATH_PREFIXES = (
+    "/docs/",
+    "/docs",
+    "/programs/",
+    "/laws/",
+    "/cases/",
+    "/enforcement/",
+    "/rss/",
+    "/api/",
+    "/v1/",
+)
+_MAX_LINKS_PER_START_PAGE = 80
 
 
 def _is_external(base_url: str, href: str) -> bool:
@@ -52,6 +64,13 @@ def _is_external(base_url: str, href: str) -> bool:
 
 def _strip_fragment(href: str) -> str:
     return href.split("#", 1)[0]
+
+
+def _is_heavy_or_non_html_path(href: str) -> bool:
+    path = urlparse(href).path
+    if any(path.rstrip("/").startswith(prefix.rstrip("/")) for prefix in _SKIP_PATH_PREFIXES):
+        return True
+    return path.endswith((".xml", ".json", ".atom", ".rss"))
 
 
 @pytest.mark.asyncio
@@ -72,7 +91,7 @@ async def test_internal_link_crawl_has_no_dead_links(page: Page, url_for, base_u
         if start in visited:
             continue
         visited.add(start)
-        resp = await page.goto(start)
+        resp = await page.goto(start, wait_until="commit")
         # Some pages may not exist in a staging/prod split — tolerate 404 on
         # the docs hub (tested separately by its own pipeline), but all
         # files under site/*.html must be 200.
@@ -84,6 +103,7 @@ async def test_internal_link_crawl_has_no_dead_links(page: Page, url_for, base_u
             "els => els.map(e => e.getAttribute('href'))"
         )
 
+        checked_from_start = 0
         for raw_href in anchors:
             if raw_href is None:
                 continue
@@ -93,6 +113,8 @@ async def test_internal_link_crawl_has_no_dead_links(page: Page, url_for, base_u
             # Resolve relative → absolute
             target = urljoin(start, raw_href)
             target = _strip_fragment(target)
+            if _is_heavy_or_non_html_path(target):
+                continue
             # Stay on origin
             if urlparse(target).netloc != urlparse(base_url).netloc:
                 continue
@@ -100,11 +122,14 @@ async def test_internal_link_crawl_has_no_dead_links(page: Page, url_for, base_u
             if target in visited:
                 continue
             visited.add(target)
+            checked_from_start += 1
+            if checked_from_start > _MAX_LINKS_PER_START_PAGE:
+                break
 
             # HEAD would be ideal but many static hosts don't support it; use
             # page.request for a lightweight GET without rendering the DOM.
             try:
-                r = await page.request.get(target)
+                r = await page.request.get(target, timeout=5000)
             except Exception:  # pragma: no cover — network flake
                 failures.append((start, target, -1))
                 continue

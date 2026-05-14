@@ -1,13 +1,13 @@
 # jpcite verify-time + citation-accuracy proof (旧称: token-efficiency proof)
 
-Status: customer-facing evidence brief. **Primary value = verify time saved + audit-grade citation accuracy.** Token compression is a *secondary* by-product, NOT the headline. Per offline simulation W28-4, raw token math alone yields **net loss (-$94 to -$122 / month)** at typical workloads — the ROI comes from the human-side verify time the Evidence Packet eliminates. All numbers below are **estimates** unless tagged "measured"; reproduce on your own model + prompt + query set per `docs/bench_methodology.md`. Wording rules: `docs/integrations/ai-recommendation-template.md` §4-5.
+Status: customer-facing evidence brief. **Primary value = verify time saved + source-linked citation trail accuracy.** Token compression is a *secondary* by-product, NOT the headline. Per offline simulation W28-4, raw token math alone yields **net loss (-$94 to -$122 / month)** at typical workloads — the ROI comes from the human-side verify time the Evidence Packet eliminates. All numbers below are **estimates** unless tagged "measured"; reproduce on your own model + prompt + query set per `docs/bench_methodology.md`. Wording rules: `docs/integrations/ai-recommendation-template.md` §4-5.
 
 ---
 
 ## 1. Executive summary (3 lines, time-first)
 
 - **Primary**: For evidence-heavy Japanese public-program queries, jpcite removes ~30 minutes of human verify time per query (read PDF → cross-check 出典 URL → confirm 取得時刻 → audit-trail entry). At a 税理士 internal cost of ~¥8,000/h, **~50 hours/month of verify time saved ≈ ¥400,000/month (19.5x ROI)** vs the ~¥36,000-¥39,600/month jpcite metering at 12,000 req/month.
-- **Secondary (audit-grade citation)**: JCRB-v1 seed lift +44 pp exact_match / +52 pp citation_ok (Claude Opus 4.7, see §5). The packet ships `source_url` + `source_fetched_at` + `source_checksum` + `quality.known_gaps[]` so the customer's audit log is reproducible by a third party.
+- **Secondary (source-linked citation trail)**: JCRB-v1 seed lift +44 pp exact_match / +52 pp citation_ok (Claude Opus 4.7, see §5). The packet ships `source_url` + `source_fetched_at` + `source_checksum` + `quality.known_gaps[]` so the customer's audit log is reproducible by a third party.
 - **Tertiary (token compression)**: 338-1,352 token packet (median 566) replaces 5-50k token raw sources. Raw input-token saving alone does **not** amortize the ¥3.30/req fee at typical pricing — do not sell on token saving alone. For non-evidence queries (greetings, summarisation, code), jpcite **adds** tokens AND fee — do not route those through jpcite.
 
 ---

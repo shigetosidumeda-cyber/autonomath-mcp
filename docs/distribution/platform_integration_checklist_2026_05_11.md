@@ -1,7 +1,7 @@
 # jpcite — AI Agent Platform 掲載/登録 Checklist (8 platforms)
 
 **作成日**: 2026-05-11
-**対象**: jpcite (PyPI 名 `autonomath-mcp` v0.3.4) を AI agent エコシステムへ流す ための **operator (梅田) が手動 submission する手順書**
+**対象**: jpcite (PyPI 名 `autonomath-mcp` v0.4.0) を AI agent エコシステムへ流す ための **operator (梅田) が手動 submission する手順書**
 **前提**: Bookyou株式会社 (T8010001213708) / info@bookyou.net / canonical = `https://jpcite.com` / 100% organic + solo + zero-touch
 **Claude 自動 submission 不可**: 各 platform の認証/同意ボタン/CAPTCHA があるため、Claude (= 私) は manifest 整備までしか担当できない。本書は **user が読んで実行する** 手順書
 
@@ -38,7 +38,7 @@
 |---|---|
 | **現在の対応度** | **green** |
 | **registry URL** | (a) `https://modelcontextprotocol.io/registry` (正式) (b) `https://mcp.so/` (community) (c) `https://mcpregistry.io/` (community) |
-| **必要 manifest** | `server.json` (root 直下、`$schema=https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json` に準拠、name=`io.github.shigetosidumeda-cyber/autonomath-mcp` v0.3.4 既に整備済) |
+| **必要 manifest** | `server.json` (root 直下、`$schema=https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json` に準拠、name=`io.github.shigetosidumeda-cyber/autonomath-mcp` v0.4.0 既に整備済) |
 | **AI agent crawl 用** | `https://jpcite.com/.well-known/mcp.json` (jpcite_ai_discovery_v1.0 schema、generated_at=2026-05-07、151 tools、auth/pricing/recurring_workflows/trust_surfaces 完備) |
 | **必要 asset** | logo SVG (mark.svg) + 1024 png (推奨) + README screenshot |
 | **必要 metadata** | name / description / version / repository / packages[pypi=autonomath-mcp] / categories=[government,legal,finance,data,compliance] / license=MIT |
@@ -65,7 +65,7 @@
 | **submission 手順** | (1) ChatGPT → Explore GPTs → Create → Configure (2) Name / Description / Instructions を入力、Instructions に `site/connect/chatgpt.html` Configure テンプレ貼付 (3) Capabilities = Web Browsing OFF (jpcite が source 提供) (4) Actions → Import from URL = `https://jpcite.com/openapi.agent.gpt30.json` (5) Authentication = API Key (Auth Type: Custom, Custom Header Name: `X-API-Key`、現行 `Bearer` ではなく `X-API-Key` ヘッダが正) — ※ai-plugin.json 内の Bearer 記述と矛盾あり、ChatGPT 側は X-API-Key へ寄せる (6) Privacy policy URL に `https://jpcite.com/privacy.html` (7) Save → 公開範囲 = Public (8) GPT Store の category タグを設定 |
 | **review SLA** | Public publish 時 24-72h の human review (OpenAI policy check)、Private/Link は即時 |
 | **掲載後の更新方法** | `openapi.agent.gpt30.json` の path 変更時は GPT Builder で「Refresh schema」をクリック、Instructions 改訂は GPT Builder から直接編集 → Publish |
-| **規約遵守** | OpenAI Usage Policies: 法律/税務 助言 禁止 (jpcite Instructions に 7 業法 fence 既に記載) / 個人情報収集 禁止 (anon 経路無し) / 子供向け提供 禁止 (該当なし) |
+| **規約遵守** | OpenAI Usage Policies: 法律/税務 助言 禁止 (jpcite Instructions に 8 業法 fence 既に記載) / 個人情報収集 禁止 (anon 経路無し) / 子供向け提供 禁止 (該当なし) |
 | **失敗時の救済** | rejection 理由 typical: (a) 「provides legal/tax advice」誤検知 → Instructions に「does NOT provide legal/tax advice; references public records only」を冒頭に追記 (b) DNS verification 失敗 → CF DNS の TXT record 反映待ち (最大 24h)、`dig TXT jpcite.com` で確認 (c) Action OpenAPI schema 不適合 → `https://jpcite.com/openapi.agent.gpt30.json` の `operationId` が unique か、`servers[0].url` が `https://api.jpcite.com` か |
 | **即修正 top-3** | (1) ChatGPT Settings → Builder Profile で `jpcite.com` の domain verification 未実施 (2) ai-plugin.json の `auth.type=none` と Custom GPT が要求する `X-API-Key` の整合性確認 (3) GPT cover 画像 (1280×800 推奨) が未作成 → og.png をリサイズ |
 
@@ -104,8 +104,8 @@
 | **review SLA** | cursor.directory PR = maintainer review 1-7 日 |
 | **掲載後の更新方法** | `mcp.example.json` 改訂 → cursor.directory PR で metadata update |
 | **規約遵守** | Cursor MCP ToS: 自前 LLM call 禁止 (CLAUDE.md `No LLM API` policy 遵守、green)、stdio transport 必須 (smithery.yaml に明記、green) |
-| **失敗時の救済** | rejection 理由 typical: (a) `mcp.example.json` の JSON 構文エラー → `jq` で validate (b) `uvx autonomath-mcp` 起動失敗 → PyPI 公開 + `uvx` cache clear 確認 (c) tools count 過多 (139) → Cursor 側 UI で page 化される、問題なし |
-| **即修正 top-3** | (1) cursor.directory に PR 未提出 (2) `.cursor/mcp.example.json` の `JPCITE_API_KEY` placeholder を `"<your-jpcite-api-key>"` に書き換え (3) Cursor IDE 動作 screenshot (MCP 緑 dot + tools 139) を追加撮影 |
+| **失敗時の救済** | rejection 理由 typical: (a) `mcp.example.json` の JSON 構文エラー → `jq` で validate (b) `uvx autonomath-mcp` 起動失敗 → PyPI 公開 + `uvx` cache clear 確認 (c) tools count 過多 (151) → Cursor 側 UI で page 化される、問題なし |
+| **即修正 top-3** | (1) cursor.directory に PR 未提出 (2) `.cursor/mcp.example.json` の `JPCITE_API_KEY` placeholder を `"<your-jpcite-api-key>"` に書き換え (3) Cursor IDE 動作 screenshot (MCP 緑 dot + tools 151) を追加撮影 |
 
 ---
 
@@ -115,7 +115,7 @@
 |---|---|
 | **現在の対応度** | **yellow** (Connector / Custom Integration の Public marketplace は段階的 rollout 中、operator アカウントで private 共有は可能) |
 | **registry URL** | (a) `https://claude.ai/projects` (operator Project) (b) `https://claude.ai/directory` (Public marketplace、enterprise tier 中心、個人開発者 onboarding 段階的) |
-| **必要 manifest** | (a) MCP Connector = `https://api.jpcite.com/mcp` (HTTP transport) + `server.json` (b) Project Instructions に jpcite 7 業法 fence + workflow 貼付 |
+| **必要 manifest** | (a) MCP Connector = `https://api.jpcite.com/mcp` (HTTP transport) + `server.json` (b) Project Instructions に jpcite 8 業法 fence + workflow 貼付 |
 | **必要 asset** | logo PNG 256×256 (favicon-512 リサイズ) + 1 枚 screenshot |
 | **必要 metadata** | Project name=「jpcite — 日本公的情報リサーチ」 / description / Custom Instructions / Connector URL / API key (operator が顧客に発行する jc_ 始まりキー) |
 | **必要 verification** | (a) Claude.ai Pro/Team/Enterprise アカウント (b) Project への Connector 追加権限 (c) `https://api.jpcite.com/mcp` が CORS で `https://claude.ai` を許可 (CLAUDE.md `CORS allowlist` per JPINTEL_CORS_ORIGINS 環境変数) |

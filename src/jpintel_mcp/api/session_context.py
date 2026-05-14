@@ -71,7 +71,7 @@ _DISCLAIMER = (
     "loop の state token を 24h TTL で保持します。state token は in-process "
     "primitive のため Fly 再起動・autoscale で消失する可能性があります。 "
     "saved_context に PII / 規制値 を保存しないでください。本 surface は "
-    "税理士法 §52 ・公認会計士法 §47条の2 ・弁護士法 §72 ・行政書士法 §1 "
+    "税理士法 §52 ・公認会計士法 §47条の2 ・弁護士法 §72 ・行政書士法 §1の2 "
     "territory の判断を代替しません。"
 )
 

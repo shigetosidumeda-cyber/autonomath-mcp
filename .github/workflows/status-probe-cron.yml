@@ -28,9 +28,10 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
-  group: status-probe
+  group: status-probe-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -60,10 +61,12 @@ jobs:
             --badge-out site/status/badge.svg
 
       - name: Commit + push if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git config user.email "info@bookyou.net"
           git config user.name "jpcite-status-bot"
-          git add site/status/status.json site/status/badge.svg
+          git add site/status/status.json site/status/status_components.json site/status/badge.svg
           if git diff --cached --quiet; then
             echo "status: no diff, skipping commit"
             exit 0
@@ -73,3 +76,7 @@ jobs:
           # status_update.yml (legacy) or human pushes during the 5-min tick.
           git pull --rebase --autostash origin "${GITHUB_REF_NAME:-main}" || true
           git push origin "HEAD:${GITHUB_REF_NAME:-main}"
+          # GITHUB_TOKEN pushes do not trigger downstream push workflows.
+          # workflow_dispatch is the supported exception, so this is the one
+          # Pages deploy for the status artifact update rather than a duplicate.
+          gh workflow run pages-deploy-main.yml --ref "${GITHUB_REF_NAME:-main}"

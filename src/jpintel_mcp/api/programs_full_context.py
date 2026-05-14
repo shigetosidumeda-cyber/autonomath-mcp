@@ -105,7 +105,7 @@ _FULL_CONTEXT_DISCLAIMER = (
     "本 response は jpcite の単一 program に対する複数 corpus (programs / laws / "
     "program_law_refs / am_amendment_diff / court_decisions / case_studies / "
     "enforcement_cases / exclusion_rules) の機械的 cross-join で、"
-    "弁護士法 §72 (法令解釈) ・税理士法 §52 (税務助言) ・行政書士法 §1 (申請判断) "
+    "弁護士法 §72 (法令解釈) ・税理士法 §52 (税務助言) ・行政書士法 §1の2 (申請判断) "
     "・社労士法 §27 (労務助言) の代替ではありません。"
     "判例 / 行政処分 / 採択事例 は 1次資料の検索結果のみを surface しており、"
     "事実認定・適用判断は資格を有する弁護士・税理士・行政書士・診断士に "

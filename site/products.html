@@ -4,11 +4,11 @@
 <!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
-<title>成果物カタログ — 顧問先レビュー・DD・申請前確認 — jpcite</title>
-<meta name="description" content="jpcite の成果物カタログ。顧問先月次レビュー、会社フォルダ作成パック、申請戦略パック、公開情報DDパック、相談前プレ診断票を、入力・出力・課金理由で整理。">
+<title>成果物カタログ — Evidence Packet・会社フォルダ・DD・通知 — jpcite</title>
+<meta name="description" content="jpcite の成果物カタログ。長い PDF・公式ページ・検索結果を毎回 AI に読ませる前に、一次資料 URL・取得時刻・known gaps を小さな Evidence Packet として返す evidence/output layer。会社フォルダ、公開情報 DD、Source Receipt、引用候補、費用制御を整理。">
 
 <meta property="og:title" content="成果物カタログ — jpcite">
-<meta property="og:description" content="顧問先レビュー、会社フォルダ、申請戦略、公開情報DD、相談前プレ診断。API/MCP/Widget は成果物を作る入口です。">
+<meta property="og:description" content="長い資料を AI に渡す前に、Evidence Packet、Source Receipt、会社フォルダ、公開情報 DD、引用候補などの小さな根拠成果物へ整理します。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/products">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="成果物カタログ — jpcite">
-<meta name="twitter:description" content="士業・BPO・AI agent が保存できる成果物別に整理。">
+<meta name="twitter:description" content="AI agent・士業・社内システムが長文資料を毎回読ませる前に使う、保存できる根拠成果物カタログ。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/products">
@@ -39,7 +39,7 @@
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "name": "jpcite 成果物カタログ",
-  "description": "jpcite の成果物カタログ。API/MCP/Widget は実行手段として扱い、顧問先レビュー、会社フォルダ、申請戦略、公開情報DD、相談前プレ診断を整理します。",
+  "description": "jpcite の成果物カタログ。長い PDF・公式ページ・検索結果を毎回 LLM に投入する代わりに、一次資料 URL・取得時刻・known gaps・引用候補を小さな Evidence Packet として回答生成前に返す evidence/output layer。302 REST paths / 151 MCP tools / Widget / Webhook は実行手段です。",
   "url": "https://jpcite.com/products",
   "inLanguage": "ja",
   "publisher": {
@@ -48,37 +48,79 @@
     "url": "https://jpcite.com/"},
   "mainEntity": {
     "@type": "ItemList",
-    "numberOfItems": 5,
+    "numberOfItems": 12,
     "itemListElement": [
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "顧問先月次レビュー",
-        "url": "https://jpcite.com/pricing.html"
+        "name": "Evidence Packet",
+        "url": "https://jpcite.com/playground.html?flow=evidence3"
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "会社フォルダ作成パック",
+        "name": "会社フォルダ",
         "url": "https://jpcite.com/docs/getting-started/"
       },
       {
         "@type": "ListItem",
         "position": 3,
+        "name": "公開情報 DD",
+        "url": "https://jpcite.com/docs/getting-started/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 4,
+        "name": "顧問先月次レビュー",
+        "url": "https://jpcite.com/pricing"
+      },
+      {
+        "@type": "ListItem",
+        "position": 5,
         "name": "申請戦略パック",
         "url": "https://jpcite.com/playground.html?flow=evidence3"
       },
       {
         "@type": "ListItem",
-        "position": 4,
-        "name": "公開情報DDパック",
-        "url": "https://jpcite.com/docs/getting-started/"
+        "position": 6,
+        "name": "併用・排他チェック表",
+        "url": "https://jpcite.com/products#compatibility-check"
       },
       {
         "@type": "ListItem",
-        "position": 5,
-        "name": "相談前プレ診断票",
-        "url": "https://jpcite.com/advisors.html"
+        "position": 7,
+        "name": "インボイス取引先確認表",
+        "url": "https://jpcite.com/products#invoice-counterparty"
+      },
+      {
+        "@type": "ListItem",
+        "position": 8,
+        "name": "Source Receipt",
+        "url": "https://jpcite.com/products#source-receipt"
+      },
+      {
+        "@type": "ListItem",
+        "position": 9,
+        "name": "法令・判例引用候補",
+        "url": "https://jpcite.com/products#citation-candidates"
+      },
+      {
+        "@type": "ListItem",
+        "position": 10,
+        "name": "改正・保存検索通知",
+        "url": "https://jpcite.com/alerts.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 11,
+        "name": "費用・支払い制御",
+        "url": "https://jpcite.com/dashboard"
+      },
+      {
+        "@type": "ListItem",
+        "position": 12,
+        "name": "Agent handoff",
+        "url": "https://jpcite.com/docs/getting-started/"
       }
     ]
   }
@@ -136,11 +178,18 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Compatibility / Exclusion Table", "url": "https://jpcite.com/products#compatibility-check"},
+          {"@type": "Offer", "name": "Invoice Counterparty Check", "url": "https://jpcite.com/products#invoice-counterparty"},
+          {"@type": "Offer", "name": "Source Receipt", "url": "https://jpcite.com/products#source-receipt"},
+          {"@type": "Offer", "name": "Law / Case Citation Candidates", "url": "https://jpcite.com/products#citation-candidates"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -170,10 +219,12 @@
  <a class="brand" href="/" aria-label="jpcite ホーム">
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
- <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="about.html">運営について</a>
- <a href="products.html" aria-current="page">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
+	 <nav class="site-nav" aria-label="主要ナビゲーション">
+	 <a href="about.html">運営について</a>
+	 <a href="products.html" aria-current="page">成果物</a>
+	 <a href="/connect/">接続</a>
+	 <a href="/prompts/">Prompts</a>
+	 <a href="/docs/">ドキュメント</a>
  <a href="pricing.html">料金</a>
  <a href="audiences/">利用者層</a>
  <details class="nav-trust">
@@ -199,43 +250,118 @@
  <div class="container">
  <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
  <a href="/">ホーム</a> <span aria-hidden="true">›</span>
- <span aria-current="page">プロダクト</span>
+ <span aria-current="page">成果物</span>
  </nav>
 	 <h1>成果物カタログ</h1>
-	 <p class="lead">jpcite は「検索API」ではなく、顧問先・案件・取引先について保存できる公的根拠付き成果物を作るレイヤーです。API/MCP と Widget は作成入口、メール通知は保存検索・締切リマインドの受け取り口です。</p>
+		 <p class="lead">jpcite は「検索API」ではなく、AI が回答を書く前に必要な根拠だけを小さな Evidence Packet / output artifact として返すレイヤーです。長い PDF・公式ページ・検索結果を毎回 LLM に読ませる代わりに、一次資料 URL、取得時刻、known gaps、引用候補を保存・共有・監査できる形にまとめます。</p>
+	 <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin:-8px 0 0;">接続・インストールは <a href="/connect/">Claude / Cursor / ChatGPT / Codex 向け接続ガイド</a>、API キー発行は <a href="/pricing.html#api-paid">Pricing</a>、ブラウザ確認は <a href="/playground.html?flow=evidence3">Playground</a> から始められます。</p>
+
+ <section aria-labelledby="expanded-outputs-title" style="margin-top:28px;">
+ <h2 id="expanded-outputs-title" style="font-size:24px;margin:0 0 8px;">拡張されたアウトプット一覧</h2>
+	 <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin:0 0 14px;">302 REST paths / 151 MCP tools / 9 dataset は部品です。画面では、AI が回答を書く前に渡す小さな Evidence Packet / output artifact として整理します。どれも「入力」「返るもの」「入口」「長い文脈の代わりに渡す根拠」が分かる単位にしています。</p>
+ <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:8px;">
+ <table style="width:100%;min-width:860px;border-collapse:collapse;font-size:13px;line-height:1.55;">
+ <thead>
+ <tr style="background:var(--bg-alt);text-align:left;">
+ <th scope="col" style="padding:10px 12px;border-bottom:1px solid var(--border);">アウトプット</th>
+ <th scope="col" style="padding:10px 12px;border-bottom:1px solid var(--border);">主な入力</th>
+ <th scope="col" style="padding:10px 12px;border-bottom:1px solid var(--border);">返るもの</th>
+ <th scope="col" style="padding:10px 12px;border-bottom:1px solid var(--border);">入口</th>
+ </tr>
+ </thead>
+ <tbody>
+	 <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">Evidence Packet</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">制度ID / キーワード / 法令名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">一次資料 URL、取得時刻、known gaps、業法 fence、引用候補、packet token 見積もり</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/playground.html?flow=evidence3">Playground</a> / <a href="/docs/getting-started/">REST</a> / <a href="/connect/">MCP</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">会社フォルダ</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">法人番号 / T番号 / 会社名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">同定結果、適格事業者、行政処分、採択履歴、確認質問</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/audiences/">REST</a> / <a href="/connect/">MCP</a> / <a href="/dashboard.html">Dashboard</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">公開情報 DD</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">候補会社リスト / 取引先名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">処分履歴、補助金採択、未確認範囲、担当者向けメモ</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/audiences/">REST batch</a> / <a href="/connect/">MCP</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">顧問先月次レビュー</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">顧問先名 / 業種 / 地域</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">補助金・税制・融資候補、締切、変更点、顧問先に聞く文面</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/dashboard.html#dashboard-workflows-title">Saved search</a> / <a href="/dashboard.html#dashboard-workflows-title">Email</a> / <a href="/docs/getting-started/">API</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">申請戦略パック</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">地域 / 業種 / 投資額 / 使途</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">候補制度、除外条件、併用注意、必要資料、面談質問</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/playground.html?flow=evidence3">Playground</a> / <a href="/widget.html">Widget</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">併用・排他チェック表</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">制度IDリスト / 候補制度 / 資金使途</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">併用不可、前提制度不足、unknown、確認すべき一次資料</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/">REST</a> / <a href="/connect/">MCP</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">インボイス取引先確認表</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">T番号 / 法人番号 / 取引先CSV</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">登録状態、法人同定、変更履歴、再確認が必要な行</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/audiences/">REST</a> / <a href="/connect/">MCP</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">Source Receipt</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">source URL / 制度ID / 法令ID</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">取得時刻、content hash、known gaps、再確認対象</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">Evidence Packet / audit log</td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">法令・判例引用候補</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">法令名 / 条文 / 制度 / 争点キーワード</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">引用候補、関連条文、関連判例、専門家確認の注意</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/laws/">法令</a> / <a href="/docs/api-reference/">REST</a> / <a href="/connect/">MCP</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">改正・保存検索通知</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">監視キーワード / 法令 / 制度</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">改正差分、影響候補、通知ログ、Webhook delivery</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/dashboard.html#dashboard-workflows-title">Email</a> / <a href="/status/rss.xml">RSS</a> / <a href="/dashboard.html#dashboard-workflows-title">Webhook</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">費用・支払い制御</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">API key / Stripe / Wallet / x402 payment proof / cost cap / idempotency key</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">balance state、payable/not payable、上限判定、replay status、metered units、次に取る action</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/dashboard.html">Dashboard</a> / <a href="/pricing.html#api-paid">Stripe Checkout</a> / <a href="/docs/api-reference/">Headers</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;">Agent handoff</th><td style="padding:10px 12px;">Claude / Cursor / ChatGPT / Codex</td><td style="padding:10px 12px;">同じ evidence を複数 agent へ渡す REST・MCP・OpenAPI surface</td><td style="padding:10px 12px;"><a href="/connect/">MCP</a> / <a href="/openapi.agent.gpt30.json">OpenAPI Actions</a></td></tr>
+ </tbody>
+ </table>
+ </div>
+ </section>
 
  <section aria-labelledby="cards-title" style="margin-top:32px;">
-	 <h2 id="cards-title" class="visually-hidden">5 つの成果物</h2>
+	 <h2 id="cards-title" class="visually-hidden">成果物カード</h2>
 	 <div class="pricing-grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));">
+
+	 <article class="price-card" id="evidence-packet">
+	 <h2>Evidence Packet</h2>
+		 <p class="tier-desc">制度ID・キーワード・法令名を入れると、長い PDF や公式ページを毎回 LLM に読ませる代わりに、一次資料URL、取得時刻、known gaps、業法 fence、引用候補を小さな Evidence Packet として返します。社内レビューや AI agent の回答生成前に使えます。</p>
+	 <a class="btn btn-secondary" href="/playground.html?flow=evidence3">匿名 3 req 枠でプレビュー →</a>
+	 </article>
 
 	 <article class="price-card" id="monthly-review">
 	 <h2>顧問先月次レビュー</h2>
 	 <p class="tier-desc">顧問先名・所在地・業種を入れると、税制・補助金・融資候補、出典URL、未確認点、顧問先へ送る質問文を月次レビュー用に返します。事務所の定例確認工数を減らす対価です。</p>
-	 <a class="btn btn-secondary" href="pricing.html">費用例を見る →</a>
+		 <a class="btn btn-secondary" href="dashboard.html#dashboard-workflows-title">保存検索を見る →</a>
 	 </article>
 
 	 <article class="price-card" id="company-folder">
-	 <h2>会社フォルダ作成パック</h2>
+	 <h2>会社フォルダ</h2>
 	 <p class="tier-desc">法人番号・T番号・会社名を入れると、同定結果、インボイス確認、公開情報、質問票、watch対象を会社フォルダに保存できる形で返します。取引開始前の確認作業向けです。</p>
 	 <a class="btn btn-secondary" href="/docs/getting-started/audiences/">始め方 →</a>
 	 </article>
 
-	 <article class="price-card" id="bpo-intake">
+	 <span id="pre-consult" class="visually-hidden" aria-hidden="true"></span>
+	 <article class="price-card" id="application-strategy-pack">
 	 <h2>申請戦略パック</h2>
 	 <p class="tier-desc">地域・業種・投資額を入れると、候補制度、除外条件、必要資料、次に聞く質問を申請前の打合せ資料として返します。一次資料確認と候補整理に課金されます。</p>
-	 <a class="btn btn-secondary" href="/playground.html?flow=evidence3">無料でプレビュー →</a>
+	 <a class="btn btn-secondary" href="/playground.html?flow=evidence3">匿名 3 req 枠でプレビュー →</a>
 	 </article>
 
 	 <article class="price-card" id="public-dd">
-	 <h2>公開情報DDパック</h2>
+	 <h2>公開情報 DD</h2>
 	 <p class="tier-desc">取引先名・法人番号を入れると、公開情報、行政処分、採択履歴、未確認範囲をDDメモとして返します。融資・M&amp;A・取材前の裏取り担当向けです。</p>
 	 <a class="btn btn-secondary" href="/docs/getting-started/audiences/">DDの始め方 →</a>
 	 </article>
 
-	 <article class="price-card" id="pre-consult">
-	 <h2>相談前プレ診断票</h2>
-	 <p class="tier-desc">Widget から来た相談内容を、根拠URL、未確認点、専門家に聞く質問付きの相談票へ変換します。相談パック更新や締切リマインドはメール通知で受け取れます。</p>
-	 <a class="btn btn-secondary" href="widget.html">診断入口を見る →</a>
+	 <article class="price-card" id="compatibility-check">
+	 <h2>併用・排他チェック表</h2>
+	 <p class="tier-desc">候補制度の ID リストを入れると、併用不可、前提制度不足、unknown、確認すべき一次資料を表で返します。AI に推論させず、申請前の確認対象を分けられます。</p>
+	 <a class="btn btn-secondary" href="/docs/api-reference/">API reference →</a>
+	 </article>
+
+	 <article class="price-card" id="invoice-counterparty">
+	 <h2>インボイス取引先確認表</h2>
+	 <p class="tier-desc">T番号・法人番号・取引先 CSV から、登録状態、法人同定、変更履歴、再確認が必要な行を返します。経理・税理士レビューの前処理に使えます。</p>
+	 <a class="btn btn-secondary" href="/docs/getting-started/audiences/">取引先確認の始め方 →</a>
+	 </article>
+
+	 <article class="price-card" id="source-receipt">
+	 <h2>Source Receipt</h2>
+	 <p class="tier-desc">source URL・制度ID・法令IDごとに、取得時刻、content hash、known gaps、再確認対象をまとめます。社内説明や顧問先メモの「どこまで確認したか」に使えます。</p>
+	 <a class="btn btn-secondary" href="/sources.html">出典を見る →</a>
+	 </article>
+
+	 <article class="price-card" id="citation-candidates">
+	 <h2>法令・判例引用候補</h2>
+	 <p class="tier-desc">法令名・条文・制度・争点キーワードから、引用候補、関連条文、関連判例、専門家確認の注意を返します。AI 回答やレビュー資料の根拠候補になります。</p>
+	 <a class="btn btn-secondary" href="/laws/">法令カタログ →</a>
+	 </article>
+
+	 <article class="price-card" id="alerts">
+	 <h2>改正・保存検索通知</h2>
+	 <p class="tier-desc">監視キーワード・法令・制度を登録すると、改正差分、影響候補、通知ログ、Webhook delivery を受け取れます。メール・RSS・Webhook で保存検索の変化を追えます。</p>
+		 <a class="btn btn-secondary" href="dashboard.html#dashboard-workflows-title">通知管理を見る →</a>
+	 </article>
+
+	 <article class="price-card" id="payment-control">
+	 <h2>費用・支払い制御</h2>
+	 <p class="tier-desc">API key・Stripe・Wallet・x402 payment proof をもとに、利用量、上限、二重課金防止、支払い検証、再実行可否を返します。Wallet は無料クレジットではなく、agent が実行前に「この call は支払い可能か、上限内か、再送で二重課金されないか」を確認する payment-control output です。</p>
+	 <a class="btn btn-secondary" href="dashboard.html">管理画面を見る →</a>
+	 </article>
+
+	 <article class="price-card" id="agent-handoff">
+	 <h2>Agent handoff</h2>
+	 <p class="tier-desc">Claude・Cursor・ChatGPT・Codex へ同じ evidence を渡せるように、REST、MCP、OpenAPI surface をそろえて返します。人と agent の間で根拠の取り違えを減らします。</p>
+		 <a class="btn btn-secondary" href="/connect/">連携を始める →</a>
 	 </article>
 
  </div>
@@ -257,7 +383,7 @@
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="about.html">運営について</a>
- <a href="products.html">プロダクト</a>
+ <a href="products.html">成果物</a>
  <a href="pricing.html">料金</a>
  <a href="/docs/">ドキュメント</a>
  <a href="trust.html">信頼</a>

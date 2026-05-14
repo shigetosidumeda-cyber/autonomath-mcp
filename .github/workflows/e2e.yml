@@ -35,9 +35,13 @@ on:
   workflow_dispatch:
     inputs:
       target:
-        description: "Base URL for the browser (staging default)"
+        description: "Base URL for the browser. Defaults to repo variable JPCITE_E2E_STAGING_URL."
         required: false
-        default: "https://autonomath-api-staging.fly.dev"
+        default: ""
+      api_target:
+        description: "API base URL used by browser tests. Defaults to repo variable JPCITE_E2E_API_BASE or target."
+        required: false
+        default: ""
       run_production:
         description: "Also run @pytest.mark.production tests (manual only)"
         required: false
@@ -52,9 +56,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      # Default target = staging. PR / nightly use this; workflow_dispatch
-      # overrides via the input.
-      JPINTEL_E2E_BASE_URL: ${{ github.event.inputs.target || 'https://autonomath-api-staging.fly.dev' }}
+      # Default target = configured staging URL. Production-looking targets are
+      # allowed only for manual workflow_dispatch with run_production=true.
+      JPINTEL_E2E_BASE_URL: ${{ github.event.inputs.target || vars.JPCITE_E2E_STAGING_URL }}
+      JPINTEL_E2E_API_BASE: ${{ github.event.inputs.api_target || vars.JPCITE_E2E_API_BASE || github.event.inputs.target || vars.JPCITE_E2E_STAGING_URL }}
+      JPINTEL_E2E_ALLOW_PROD_API: ${{ github.event.inputs.run_production || 'false' }}
       # Headless always in CI — browser engine starts faster and the
       # screenshot-on-failure path doesn't need a display.
       JPINTEL_E2E_HEADLESS: "1"
@@ -62,6 +68,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Preflight E2E target
+        run: |
+          if [ -z "${JPINTEL_E2E_BASE_URL:-}" ]; then
+            echo "::error::Set repository variable JPCITE_E2E_STAGING_URL or pass workflow_dispatch target."
+            exit 1
+          fi
+          if [ -z "${JPINTEL_E2E_API_BASE:-}" ]; then
+            echo "::error::Set repository variable JPCITE_E2E_API_BASE or pass workflow_dispatch api_target."
+            exit 1
+          fi
+          case "${JPINTEL_E2E_BASE_URL} ${JPINTEL_E2E_API_BASE}" in
+            *https://jpcite.com*|*https://www.jpcite.com*|*https://api.jpcite.com*)
+              if [ "${{ github.event_name }}" != "workflow_dispatch" ] || [ "${{ github.event.inputs.run_production }}" != "true" ]; then
+                echo "::error::Production-looking E2E target or API base requires manual workflow_dispatch with run_production=true."
+                exit 1
+              fi
+              ;;
+          esac
+          curl --fail --show-error --location --head --max-time 10 "$JPINTEL_E2E_BASE_URL/" >/dev/null
+          curl --fail --show-error --location --max-time 10 "$JPINTEL_E2E_API_BASE/healthz" >/dev/null
 
       - name: Set up Python
         uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
@@ -110,7 +137,7 @@ jobs:
           if [ "${{ github.event.inputs.run_production }}" = "true" ]; then
             EXTRA="--run-production"
           fi
-          pytest tests/e2e/ -v --tb=short $EXTRA
+          pytest tests/e2e/ -v --run-e2e --tb=short $EXTRA
 
       - name: Upload failure screenshots
         if: failure()

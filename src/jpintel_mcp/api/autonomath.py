@@ -213,7 +213,7 @@ def _apply_envelope(
         # `_envelope_merge` additive_keys. Without this, sensitive REST routes
         # (/v1/am/{acceptance_stats, enforcement, loans, mutual_plans}) drop
         # the `_disclaimer` envelope on REST clients (Custom GPT etc. that do
-        # not transit MCP). 業法 fence (行政書士法 §1 / 貸金業法 §3 /
+        # not transit MCP). 業法 fence (行政書士法 §1の2 / 貸金業法 §3 /
         # 弁護士法 §72 / 保険業法 §3) requires the disclaimer reaches every
         # AI consumer regardless of transport.
         "_disclaimer",
@@ -1080,7 +1080,7 @@ def rest_search_acceptance_stats(
         content=_apply_envelope(
             # R8_DISCLAIMER_LIVE_VERIFY (2026-05-07): tool_name must use the
             # `_am` suffix so it matches the SENSITIVE_TOOLS entry
-            # ("search_acceptance_stats_am" — 行政書士法 §1 fence).
+            # ("search_acceptance_stats_am" — 行政書士法 §1の2 fence).
             # Without the suffix, disclaimer_for() returns None and the
             # `_disclaimer` envelope key never reaches the REST response.
             "search_acceptance_stats_am",

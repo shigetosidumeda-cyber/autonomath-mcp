@@ -53,7 +53,7 @@ Cursor: [tool: jpcite.search_programs called]
 
 | 手段 | 信頼性 | コスト |
 |---|---|---|
-| Cursor 標準 web search | 出典 URL は出るがアグリゲータ多 (詐欺リスク) | LLM 料金 + 検索コスト |
+| Cursor 標準 web search | 出典 URL は出るがアグリゲータ多 (一次資料担保が弱いリスク) | LLM 料金 + 検索コスト |
 | Cursor + 自前 RAG | 補助金 corpus 構築 + 維持工数 | 月数十万 |
 | Cursor + jpcite MCP | 1 次資料 URL + tier 表示 + `source_fetched_at` 付き | LLM 料金 + jpcite ¥3/call |
 

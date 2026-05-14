@@ -3,6 +3,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 
 // Stand up the env BEFORE importing modules that read it.
 process.env.FREEE_CLIENT_ID = 'test_client_id';
@@ -68,4 +69,12 @@ test('assertEnv reports missing var by name', () => {
   delete process.env.FREEE_CLIENT_ID;
   assert.throws(() => assertEnv(), /missing_env_vars/);
   process.env.FREEE_CLIENT_ID = saved;
+});
+
+test('public app does not synthesize direct program detail URLs', async () => {
+  const source = await readFile(new URL('../src/public/app.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /https:\/\/jpcite\.com\/programs\/\$\{/);
+  assert.match(source, /data\.static_url/);
+  assert.match(source, /programs\/share\.html\?ids=/);
+  assert.match(source, /https:\/\/jpcite\.com\/programs\//);
 });

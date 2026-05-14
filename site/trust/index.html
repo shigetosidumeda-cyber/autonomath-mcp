@@ -28,6 +28,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 <p class="nav">
@@ -91,53 +165,6 @@
   <dd>応答に <code>_known_gaps</code> が現れた比率。
       <code>monitoring/known_gaps_display.jsonl</code> 経由。
       閾値 95% (green) / 85% (yellow)。</dd>
-  <dt>Anchor verify success rate</dt>
-  <dd><code>audit_seal</code> の verify roundtrip 成功率
-      (発行 → 取得 → 復号 → 検証)。
-      <code>monitoring/audit_seal_roundtrip.jsonl</code> 経由。
-      閾値 99% (green) / 95% (yellow)。</dd>
-  <dt>Acceptance contract pass rate</dt>
-  <dd>有料 artifact の最低契約 (envelope keys + disclaimer + source_url +
-      source_fetched_at) を満たした応答比率。
-      <code>monitoring/acceptance_contract_pass.jsonl</code> 経由。</dd>
-</dl>
-
-<h2>免責</h2>
-<p class="meta">本 page は <strong>jpcite が自社サービスを自分で計測した</strong>結果。
-   第三者監査ではない。各行のソース JSONL は repo に常駐し、reproducible に
-   検証できる。 Public claim (例: トップページの「source_receipts 100%」) を
-   出すときは、その数字に対応する Trust Center 行を <strong>必ず引用</strong>すること。
-   CI: <code>tests/test_landing_claims_in_trust_center.py</code> がブロックする。</p>
-
-<script>
- fetch("/trust/_data/matrix_latest.json").then(r => {
-   if (!r.ok) throw new Error("no matrix yet — first cron run pending");
-   return r.json();
- }).then(j => {
-   document.getElementById("generated-at").textContent = j.generated_at;
-   document.getElementById("snapshot-id").textContent  = j.corpus_snapshot_id;
-   const tbody = document.getElementById("matrix-table");
-   for (const row of j.rows) {
-     const tr = document.createElement("tr");
-     tr.className = row.status_class;
-     tr.innerHTML = `
-       <td><strong>${esc(row.label)}</strong><br><span class="meta">${esc(row.detail || "")}</span></td>
-       <td>${esc(row.status)}</td>
-       <td><time>${esc(row.last_refreshed)}</time></td>
-       <td>${row.verified_count_real}</td>
-       <td>${row.synth_count}</td>
-       <td><code>${esc(row.anchor_file)}</code></td>`;
-     tbody.appendChild(tr);
-   }
- }).catch(e => {
-   document.getElementById("matrix-table").innerHTML =
-     `<tr><td colspan="6">${esc(e.message || String(e))}</td></tr>`;
- });
- function esc(s){return (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
-</script>
-</body>
-</html>
-ellow)。</dd>
   <dt>Anchor verify success rate</dt>
   <dd><code>audit_seal</code> の verify roundtrip 成功率
       (発行 → 取得 → 復号 → 検証)。

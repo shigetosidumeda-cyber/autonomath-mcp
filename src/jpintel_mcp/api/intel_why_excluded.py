@@ -35,7 +35,7 @@ NO LLM call inside this endpoint. Pure SQLite + Python diff + rules.
 Remediation copy is rule-based per failed-axis kind (capital reduction,
 industry pivot, prefecture relocation, etc.) — never generated text.
 
-Sensitive surface (行政書士法 §1 fence) — final 受給可否判定 belongs to
+Sensitive surface (行政書士法 §1の2 fence) — final 受給可否判定 belongs to
 qualified 行政書士 / 中小企業診断士. The disclaimer text mirrors the
 `/v1/intel/probability_radar` fence verbatim so a customer LLM can drop
 both into the same compliance template.
@@ -143,7 +143,7 @@ _DISCLAIMER = (
     "属性 (am_entities corporate_entity + houjin_master) の機械的 diff であり、"
     "「申請可否確定判断」「受給可否判定」 ではない。 missing axis は "
     "'unknown' (no constraint ではない)。 remediation_steps は規則ベースの"
-    "指針であり個別申請助言ではありません。 申請可否判断 (行政書士法 §1) /"
+    "指針であり個別申請助言ではありません。 申請可否判断 (行政書士法 §1の2) /"
     " 税務助言 (税理士法 §52) の代替ではなく、確定判断は資格を有する"
     "行政書士・税理士・中小企業診断士へ。"
 )
@@ -875,7 +875,7 @@ def _alternative_programs_for_houjin(
         "input) and returns a per-axis pass/fail diff, rules-based "
         "remediation steps, and up to 5 alternative programs from "
         "``am_recommended_programs`` (W29-8). NO LLM call, pure SQLite + "
-        "Python diff. Sensitive: 行政書士法 §1 / 税理士法 §52 fence.\n\n"
+        "Python diff. Sensitive: 行政書士法 §1の2 / 税理士法 §52 fence.\n\n"
         "**Pricing:** ¥3 / call (`_billing_unit: 1`)."
     ),
     responses={

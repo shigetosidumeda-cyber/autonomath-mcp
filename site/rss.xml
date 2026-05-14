@@ -8,7 +8,15 @@
   <language>ja</language>
   <copyright>(C) 2026 Bookyou株式会社</copyright>
   <generator>jpcite site (Bookyou株式会社)</generator>
-  <lastBuildDate>Sun, 26 Apr 2026 16:00:00 +0900</lastBuildDate>
+  <lastBuildDate>Thu, 14 May 2026 06:20:00 +0900</lastBuildDate>
+
+  <item>
+    <title>v0.4.0 リリース — 302 REST paths / 151 MCP tools / 8 成果物カタログを公開</title>
+    <link>https://jpcite.com/changelog/</link>
+    <description>2026-05-12 に v0.4.0 を公開。302 REST paths、151 MCP tools、Evidence Packet・会社フォルダ・公開情報 DD・改正通知など 8 種類の成果物面を整理し、RSS/LLM discovery/status surface を更新しました。</description>
+    <guid isPermaLink="false">jpcite:release:v0.4.0:2026-05-12</guid>
+    <pubDate>Tue, 12 May 2026 21:21:00 +0900</pubDate>
+  </item>
 
   <item>
     <title>v0.3.0 リリース — 拡張データセット + 認定支援機関データセット 取り込み完了 (8.29 GB 統合 DB)</title>

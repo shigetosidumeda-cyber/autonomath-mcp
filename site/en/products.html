@@ -50,7 +50,7 @@
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "name": "jpcite Products",
-  "description": "jpcite products organized by user input and returned artifact.",
+  "description": "jpcite output catalog. 302 REST paths / 151 MCP tools / Widget / Webhook are treated as creation surfaces for Evidence Packets, company folders, public-info DD, client reviews, alerts, cost controls, and agent handoff.",
   "url": "https://jpcite.com/en/products",
   "inLanguage": "en",
   "publisher": {
@@ -59,37 +59,55 @@
     "url": "https://jpcite.com/en/"},
   "mainEntity": {
     "@type": "ItemList",
-    "numberOfItems": 5,
+    "numberOfItems": 8,
     "itemListElement": [
       {
         "@type": "ListItem",
         "position": 1,
-        "name": "API + MCP",
-        "url": "https://jpcite.com/en/getting-started.html"
+        "name": "Evidence Packet",
+        "url": "https://jpcite.com/en/playground.html?flow=evidence3"
       },
       {
         "@type": "ListItem",
         "position": 2,
-        "name": "Email notifications",
-        "url": "https://jpcite.com/en/line.html"
+        "name": "Company Folder",
+        "url": "https://jpcite.com/en/getting-started.html"
       },
       {
         "@type": "ListItem",
         "position": 3,
-        "name": "Law-revision alerts",
-        "url": "https://jpcite.com/en/alerts.html"
+        "name": "Public-info DD",
+        "url": "https://jpcite.com/en/getting-started.html"
       },
       {
         "@type": "ListItem",
         "position": 4,
-        "name": "Embeddable widget",
-        "url": "https://jpcite.com/en/widget.html"
+        "name": "Monthly Client Review",
+        "url": "https://jpcite.com/en/pricing.html"
       },
       {
         "@type": "ListItem",
         "position": 5,
-        "name": "Advisor affiliate",
-        "url": "https://jpcite.com/en/advisors.html"
+        "name": "Application Strategy Pack",
+        "url": "https://jpcite.com/en/playground.html?flow=evidence3"
+      },
+      {
+        "@type": "ListItem",
+        "position": 6,
+        "name": "Amendment/Saved Search Alerts",
+        "url": "https://jpcite.com/en/alerts.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 7,
+        "name": "Cost/Payment Control",
+        "url": "https://jpcite.com/en/pricing.html"
+      },
+      {
+        "@type": "ListItem",
+        "position": 8,
+        "name": "Agent Handoff",
+        "url": "https://jpcite.com/en/getting-started.html"
       }
     ]
   }
@@ -100,6 +118,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -132,7 +224,41 @@
  </nav>
  <h1>Products — what you send, what you get back</h1>
  <p class="lead">Pick the workflow by input and returned artifact: an API query becomes an evidence packet, a prescreen form becomes source-linked candidate programs, a saved topic becomes a reminder, and a client inquiry becomes advisor handoff context.</p>
+ <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin:-8px 0 12px;">Connect/install paths: <a href="../connect/">Claude / Cursor / ChatGPT / Codex setup guides</a>, <a href="getting-started.html">REST quickstart</a>, and <a href="/en/playground.html?flow=evidence3">Playground preview</a>.</p>
  <p class="lead" style="font-size:15px;color:var(--text-muted);margin-top:-8px;">Audiences: <strong>tax advisors (zeirishi)</strong> / <strong>administrative scriveners (gyoseishoshi)</strong> / <strong>SMB owners</strong> / <strong>VC &amp; M&amp;A advisors</strong> / <strong>AI agent developers</strong>. <a href="audiences/">See audience playbooks &rarr;</a></p>
+
+ <section aria-labelledby="expanded-outputs-title" style="margin-top:28px;">
+ <h2 id="expanded-outputs-title" class="section-title">Expanded output surface</h2>
+ <p style="max-width:760px;color:var(--text-muted);margin:-16px 0 24px;">The 302 REST paths, 151 MCP tools, and public datasets are creation surfaces. The frontend groups them into saved outputs a user can inspect, hand off, or automate.</p>
+ <div class="table-wrap">
+ <table class="pricing-table">
+ <caption class="visually-hidden">jpcite outputs by input, returned artifact, and entry surface.</caption>
+ <thead>
+ <tr>
+ <th scope="col">Output</th>
+ <th scope="col">Main input</th>
+ <th scope="col">Returned artifact</th>
+ <th scope="col">Entry</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr><th scope="row">Evidence Packet</th><td>Program ID, keyword, or law name</td><td>Primary-source URLs, fetched_at, known gaps, professional-scope fences, citation candidates</td><td><a href="/en/playground.html?flow=evidence3">Playground</a> / REST / MCP</td></tr>
+ <tr><th scope="row">Company Folder</th><td>Corporate number, invoice number, or company name</td><td>Identity match, invoice status, enforcement records, adoption history, follow-up questions</td><td>REST / MCP</td></tr>
+ <tr><th scope="row">Public-info DD</th><td>Target company list or counterparty name</td><td>Enforcement history, subsidy adoption, unverified scope, analyst memo</td><td>REST batch / MCP</td></tr>
+ <tr><th scope="row">Monthly Client Review</th><td>Client name, industry, and region</td><td>Subsidy, tax, loan candidates, deadlines, changes, client-question draft</td><td>Saved search / Email / API</td></tr>
+ <tr><th scope="row">Application Strategy Pack</th><td>Region, industry, investment amount, and use of funds</td><td>Candidate programs, exclusion rules, stacking cautions, required docs, interview questions</td><td><a href="/en/playground.html?flow=evidence3">Playground</a> / Widget</td></tr>
+ <tr><th scope="row">Compatibility / Exclusion Table</th><td>Program IDs, candidate programs, or funding use</td><td>Mutual exclusions, missing prerequisites, unknowns, source material to verify</td><td>REST / MCP</td></tr>
+ <tr><th scope="row">Invoice Counterparty Check</th><td>Invoice number, corporate number, or vendor CSV</td><td>Registration status, identity match, history, rows needing review</td><td>REST / MCP / Dashboard</td></tr>
+ <tr><th scope="row">Source Receipt</th><td>Source URL, program ID, law ID, or article ID</td><td>Fetched time, content hash, known gaps, and recheck targets</td><td>Evidence Packet / audit log</td></tr>
+ <tr><th scope="row">Law / Case Citation Candidates</th><td>Law name, article, program, or issue keyword</td><td>Citation candidates, related articles, related cases, professional-review notes</td><td>REST / MCP</td></tr>
+ <tr><th scope="row">Amendment/Saved Search Alerts</th><td>Watch keywords, laws, or programs</td><td>Amendment diffs, impacted candidates, notification log, webhook delivery</td><td><a href="/en/dashboard.html#dashboard-workflows-title">Email</a> / <a href="/status/rss.xml">RSS</a> / <a href="/en/dashboard.html#dashboard-workflows-title">Webhook</a></td></tr>
+ <tr><th scope="row">Cost/Payment Control</th><td>API key, Stripe, wallet, or x402 payload</td><td>Usage, caps, duplicate-charge prevention, payment verification, retry status</td><td><a href="/en/pricing.html#api-paid">Stripe Checkout</a> / Headers / <a href="/en/dashboard.html">Dashboard</a></td></tr>
+ <tr><th scope="row">Agent Handoff</th><td>Claude, Cursor, ChatGPT, Codex, or another agent</td><td>Shared evidence surface across REST, MCP, and OpenAPI Actions</td><td>MCP / OpenAPI Actions</td></tr>
+ </tbody>
+ </table>
+ </div>
+ <p style="margin:16px 0 0;"><a class="btn btn-primary" href="products.html">Products</a> <a class="btn btn-secondary" href="/en/playground.html?flow=evidence3">Try the playground</a></p>
+ </section>
 
  <section aria-labelledby="compare-title">
  <h2 id="compare-title" class="section-title">Comparison</h2>
@@ -152,19 +278,19 @@
  <tbody>
  <tr>
  <th scope="row">API + MCP</th>
- <td>AI developers / enterprise RAG</td>
+ <td>AI developers / enterprise workflows</td>
  <td>Natural-language query, filters, corporate number, or program IDs</td>
  <td>Evidence packet with source URLs, fetched_at, rules, and matched records</td>
  <td>5 minutes</td>
  <td><a href="getting-started.html">Docs &rarr;</a></td>
  </tr>
  <tr>
- <th scope="row">Email notifications</th>
+ <th scope="row">Saved searches and webhooks</th>
  <td>SMB owners / sole proprietors / advisors</td>
  <td>Saved search, deadline watch, or consultation pack created elsewhere</td>
- <td>Availability notice, reminder, or handoff update when the channel launches</td>
- <td>Preparing</td>
- <td><a href="line.html">Notifications &rarr;</a></td>
+ <td>Digest email, amendment alert, webhook delivery log, and audit RSS</td>
+ <td>2 minutes</td>
+ <td><a href="/en/dashboard.html#dashboard-workflows-title">Dashboard &rarr;</a></td>
  </tr>
 <tr>
 <th scope="row">Law-revision alerts</th>
@@ -196,8 +322,8 @@
  </section>
 
  <section aria-labelledby="tree-title" style="margin-top:56px;">
- <h2 id="tree-title" class="section-title">Which output do you need?</h2>
- <p style="max-width:640px;color:var(--text-muted);margin:-16px 0 24px;">Pick the first workflow that matches the artifact you need to hand to a user, client, or private system.</p>
+ <h2 id="tree-title" class="section-title">Access paths</h2>
+ <p style="max-width:640px;color:var(--text-muted);margin:-16px 0 24px;">The table above lists the eight outputs. These cards show the delivery path to use when you already know the output you need.</p>
  <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
 
  <article class="price-card">
@@ -219,7 +345,7 @@
  <ul class="feats">
  <li>Email is a reminder channel, not a paid question surface</li>
  <li>Use the web prescreen, API, or widget for searches today</li>
- <li>Future terms will be shown before launch</li>
+ <li>Paid notification terms are shown before any paid notification flow</li>
  </ul>
  <a class="btn btn-secondary" href="line.html">Check availability &rarr;</a>
  </article>
@@ -231,7 +357,7 @@
  <ul class="feats">
  <li>Email notifications scoped to your topics</li>
  <li>Monthly digest is free</li>
- <li>Real-time delivery is ¥3/notification</li>
+ <li>Paid notification terms are shown before any paid notification flow</li>
  </ul>
  <a class="btn btn-secondary" href="alerts.html">Alerts &rarr;</a>
  </article>
@@ -266,7 +392,7 @@
  <p class="price" style="font-size:18px;">Solo: prescreen + reminders / Firm: API + Widget</p>
  <ul class="feats">
  <li>Solo / SMB: run a prescreen, then track reminders by email</li>
- <li>Firms: API for in-house RAG, widget for site conversion</li>
+ <li>Firms: API for in-house evidence workflows, widget for site conversion</li>
  <li>Advisors: alerts + widget + affiliate registration</li>
  <li>One account can support multiple workflows</li>
  </ul>

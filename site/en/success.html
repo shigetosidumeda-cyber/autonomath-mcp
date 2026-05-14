@@ -233,6 +233,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -246,7 +320,7 @@
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="../docs/">Docs</a>
  <a href="pricing.html">Pricing</a>
- <a href="../dashboard.html">Dashboard</a>
+<a href="dashboard.html">Dashboard</a>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="/success.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
@@ -281,7 +355,7 @@
  <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; Copy API key</button>
  </div>
  <div class="meta-row" aria-label="metadata">
- <span>tier: <strong id="meta-tier">—</strong></span>
+<span>plan: <strong>fully metered ¥3/billable unit (¥3.30 incl.)</strong></span>
  <span>customer_id: <strong id="meta-customer">—</strong></span>
  </div>
  </div>
@@ -298,16 +372,16 @@
  <h2>Next steps</h2>
  <ol>
  <li><a href="getting-started.html">Getting started</a> &mdash; Python / Node minimal examples, authentication, rate limits</li>
- <li><a href="../dashboard.html">Dashboard</a> &mdash; usage, key rotation, billing portal</li>
+<li><a href="dashboard.html">Dashboard</a> &mdash; usage, key rotation, billing portal</li>
  <li><a href="getting-started.html#6-mcp-claude-desktop">Claude Desktop (MCP) setup</a> &mdash; call all 151 tools directly from your agent over stdio</li>
  </ol>
  </div>
 
  <div class="next-steps" style="margin-top:18px;">
  <h2>Account management &amp; cancellation</h2>
- <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">Fully self-serve. No minimum term, no cancellation fees. Cancel from the billing portal in the Dashboard. Access continues through the current billing period; already incurred metered usage may still be billed, and future usage stops after cancellation.</p>
+ <p style="font-size:14px;color:var(--text-muted);margin:0 0 12px;">Fully self-serve. No minimum term, no cancellation fees. Cancel from the billing portal in the Dashboard. Access continues through the current billing month; current-month metered usage remains billable, and metered billing stops from the next monthly cycle. API key deletion or account-deletion requests are separate from billing cancellation.</p>
  <div class="btn-row">
- <a class="btn btn-secondary" href="../dashboard.html" style="text-decoration:none;">Open Dashboard (billing / cancel)</a>
+<a class="btn btn-secondary" href="dashboard.html" style="text-decoration:none;">Open Dashboard (billing / cancel)</a>
  <a class="btn-ghost" href="mailto:info@bookyou.net?subject=%E7%A8%8E%E5%8B%99%E4%BC%9A%E8%A8%88AI%20-%20Account%20deletion%20request" style="text-decoration:none;">Account deletion request</a>
  </div>
  <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
@@ -334,7 +408,7 @@
  One key has already been issued for this subscription. Rotate it from the Dashboard to issue a new one.
  </div>
  <div class="btn-row">
- <a class="btn btn-primary" href="../dashboard.html">Open Dashboard</a>
+<a class="btn btn-primary" href="dashboard.html">Open Dashboard</a>
  <a class="btn btn-secondary" href="getting-started.html">Getting started</a>
  </div>
  </div>
@@ -357,7 +431,7 @@
  </div>
  <div class="btn-row">
  <a class="btn btn-primary" href="pricing.html">Back to Pricing</a>
- <a class="btn btn-secondary" href="../dashboard.html">Already subscribed? Open Dashboard</a>
+<a class="btn btn-secondary" href="dashboard.html">Already subscribed? Open Dashboard</a>
  </div>
  </div>
 
@@ -481,7 +555,6 @@
 
     function renderSuccess(body) {
       var rawKey = String(body.api_key || '');
-      var tier = String(body.tier || '—');
       var customerId = String(body.customer_id || '—');
 
       // Raw key is held in sessionStorage ONLY for the success-page-to-dashboard
@@ -493,9 +566,6 @@
 
       var keyEl = $('api-key-block');
       if (keyEl) keyEl.textContent = rawKey;
-
-      var tierEl = $('meta-tier');
-      if (tierEl) tierEl.textContent = tier;
 
       var custEl = $('meta-customer');
       if (custEl) custEl.textContent = customerId;

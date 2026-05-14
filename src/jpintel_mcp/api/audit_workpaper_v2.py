@@ -11,7 +11,7 @@ Pricing: **1 req = 5 unit** (¥15 / 税込 ¥16.50). Documented in the route
 description + ``_billing_unit=5`` in the response body.
 
 Sensitive: 税理士法 §52 / 公認会計士法 §47条の2 / 弁護士法 §72 /
-行政書士法 §1. ``_disclaimer`` envelope is non-negotiable.
+行政書士法 §1の2. ``_disclaimer`` envelope is non-negotiable.
 
 NO LLM call. Pure SQLite + Python projection — mirrors the MCP-side
 composer in ``audit_workpaper_v2``.
@@ -44,7 +44,7 @@ _DISCLAIMER = (
     " am_enforcement_detail / invoice_registrants / am_amendment_diff /"
     " jpi_tax_rulesets を機械的に SQL 結合した **公開情報の監査調書サブストレート**"
     "であり、税理士法 §52 (税務代理) ・公認会計士法 §47条の2 (会計士・監査法人の業務)"
-    "・弁護士法 §72 (法律事務) ・行政書士法 §1 (申請代理) のいずれにも該当しません。"
+    "・弁護士法 §72 (法律事務) ・行政書士法 §1の2 (申請代理) のいずれにも該当しません。"
     "監査判断・税額計算・申告書作成は資格を有する税理士・公認会計士の責任で行ってください。"
     "当ツール出力をそのまま監査調書として提出することは禁止です。"
 )
@@ -292,7 +292,7 @@ def _build_workpaper(
         "the customer saves on manual fan-out (≥ 8 calls otherwise).\n\n"
         "Pure SQLite + Python projection. NO LLM call. **Sensitive:** "
         "税理士法 §52 / 公認会計士法 §47条の2 / 弁護士法 §72 / "
-        "行政書士法 §1 — see `_disclaimer` envelope."
+        "行政書士法 §1の2 — see `_disclaimer` envelope."
     ),
     responses={
         200: {"description": "Composed audit workpaper envelope."},
@@ -436,7 +436,7 @@ _WORKPAPER_SCHEMA: dict[str, Any] = {
         "税理士法 §52",
         "公認会計士法 §47条の2",
         "弁護士法 §72",
-        "行政書士法 §1",
+        "行政書士法 §1の2",
     ],
     "non_negotiable": [
         "NO LLM call inside the compose path",
@@ -458,7 +458,7 @@ _WORKPAPER_SCHEMA: dict[str, Any] = {
         "an invocation — agents can probe this before paying the 5-unit "
         "compose cost.\n\n"
         "**Pricing:** 0 unit. Pure static metadata, no SQLite open. "
-        "**Sensitive:** Same §52 / §47条の2 / §72 / 行政書士法 §1 fence "
+        "**Sensitive:** Same §52 / §47条の2 / §72 / 行政書士法 §1の2 fence "
         "as the compose endpoint."
     ),
     responses={

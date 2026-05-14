@@ -11,7 +11,7 @@ return body;}
 function buildScaffold(){const dashSection=document.querySelector('.dash .container');if(!dashSection)return;if(!$('#dash-status')){const bar=document.createElement('div');bar.id='dash-status';bar.style.cssText='margin:0 0 14px;min-height:0;';const anchor=$('.dash .sub')||$('.dash h1');if(anchor&&anchor.parentNode){anchor.parentNode.insertBefore(bar,anchor.nextSibling);}else{dashSection.prepend(bar);}}
 if(!$('#dash-signin')){const card=document.createElement('div');card.id='dash-signin';card.hidden=true;card.className='stat-card';card.style.cssText='margin:18px 0 24px;max-width:520px;';card.innerHTML=`
         <p class="stat-label" id="dash-signin-heading">サインイン (永続セッション・推奨)</p>
-        <p class="stat-note" id="dash-signin-help" style="margin:0 0 12px;">Stripe または無料トライアルで発行された API キー を貼り付けてください (<code>jc_…</code>)。鍵はサーバ側で HMAC 署名 cookie (7 日) に変換され、ブラウザに平文保存されません。即席で 1 回だけ閲覧したい場合は下の <em>利用詳細 (APIキーを貼り付け)</em> セクション (Bearer ヘッダ送信) をどうぞ。</p>
+        <p class="stat-note" id="dash-signin-help" style="margin:0 0 12px;">Stripe または無料トライアルで発行された API キー を貼り付けてください (<code>jc_…</code>)。鍵はサーバ側で HMAC 署名 cookie (7 日) に変換され、ブラウザに平文保存されません。即席で 1 回だけ閲覧したい場合は下の <em>利用詳細 (APIキーを貼り付け)</em> セクション (X-API-Key ヘッダ送信) をどうぞ。</p>
         <form id="dash-signin-form" autocomplete="off" aria-labelledby="dash-signin-heading" aria-describedby="dash-signin-help" style="display:flex;gap:8px;flex-wrap:wrap;">
           <label for="dash-signin-key" class="visually-hidden">API key</label>
           <input id="dash-signin-key" name="api_key" type="password" inputmode="text" required
@@ -42,7 +42,7 @@ const logoutLink=$('#dash-logout-link');if(logoutLink){logoutLink.addEventListen
 async function loadMe(){setAlert(null);const done=withSpinner();try{const me=await fetchJSON('/v1/me');renderMe(me);showSignedIn();loadUsage().catch((e)=>{setAlert(`usage: ${e.message || e}`);});}catch(e){const silentStatuses=new Set([0,401,403,404]);if(silentStatuses.has(e.status)){showSignedOut();}else{setAlert(e.message||'ネットワークエラー');showSignedOut();}}finally{done();}}
 function renderMe(me){_lastMe=me;const sub=document.querySelector('.dash .sub');if(sub){const prefix=me.key_hash_prefix||'—';const created=me.created_at?`  ·  since ${String(me.created_at).slice(0,10)}`:'';const cust=me.customer_id?`  ·  ${me.customer_id}`:'';sub.innerHTML=`signed in as <code>${escapeHtml(prefix)}…</code>${escapeHtml(created)}${escapeHtml(cust)}`;}
 const hashP=document.querySelector('.keybox .hash-prefix');if(hashP&&me.key_hash_prefix){hashP.textContent=`hash prefix: ${me.key_hash_prefix}`;}
-const keyEl=document.querySelector('.keybox .key');if(keyEl){const dots='•'.repeat(28);keyEl.innerHTML=`am_${dots}${escapeHtml(String(me.key_hash_prefix || '').slice(0,4))}`;}
+	const keyEl=document.querySelector('.keybox .key');if(keyEl){const dots='•'.repeat(28);keyEl.innerHTML=`jc_${dots}${escapeHtml(String(me.key_hash_prefix || '').slice(0,4))}`;}
 renderBillingCard(me);renderDunningBanner(me);renderPeriodEnd(me&&me.subscription_current_period_end);renderNewKeyReveal(me);}
 function renderPeriodEnd(iso){const wrap=document.getElementById('dash-period-end');if(!wrap)return;if(!iso||typeof iso!=='string'){wrap.hidden=true;wrap.style.display='none';return;}
 const date=String(iso).slice(0,10);if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){wrap.hidden=true;wrap.style.display='none';return;}

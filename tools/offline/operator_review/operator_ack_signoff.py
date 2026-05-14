@@ -157,17 +157,43 @@ def verify_fly_app_confirmed() -> VerifyResult:
     )
 
 
-def _read_secrets_registry(repo_root: pathlib.Path) -> tuple[set[str], set[str]]:
-    """Parse SECRETS_REGISTRY.md → (required_set, conditional_set).
+def _read_secret_contract(
+    repo_root: pathlib.Path,
+) -> tuple[set[str], set[str], list[tuple[str, ...]]]:
+    """Return production secret contract from the GO gate SOT.
+
+    The markdown registry changed from bullet lines to tables. Parsing only
+    ``- REQUIRED: NAME`` silently produced ``required=0/0`` in ACK dry-runs,
+    so this CLI imports the same constants the production GO gate enforces.
+    """
+    ops_dir = repo_root / "scripts" / "ops"
+    if str(ops_dir) not in sys.path:
+        sys.path.insert(0, str(ops_dir))
+    try:
+        import production_deploy_go_gate as gate  # type: ignore
+
+        return (
+            set(gate.REQUIRED_PRODUCTION_SECRETS),
+            set(gate.CONDITIONAL_PRODUCTION_SECRETS),
+            [tuple(group) for group in gate.ALTERNATIVE_PRODUCTION_SECRET_GROUPS],
+        )
+    except Exception:
+        return _read_secrets_registry_fallback(repo_root)
+
+
+def _read_secrets_registry_fallback(
+    repo_root: pathlib.Path,
+) -> tuple[set[str], set[str], list[tuple[str, ...]]]:
+    """Parse older SECRETS_REGISTRY.md bullet files.
 
     Convention: lines like `- REQUIRED: NAME` and `- CONDITIONAL: NAME`.
-    Tolerant of formatting drift; missing file -> two empty sets.
+    Tolerant of formatting drift; missing file -> empty sets/groups.
     """
     p = repo_root / SECRETS_REGISTRY_REL
     required: set[str] = set()
     conditional: set[str] = set()
     if not p.is_file():
-        return required, conditional
+        return required, conditional, []
     for line in p.read_text(encoding="utf-8", errors="replace").splitlines():
         s = line.strip().lstrip("-* ").strip()
         if s.upper().startswith("REQUIRED:"):
@@ -178,7 +204,49 @@ def _read_secrets_registry(repo_root: pathlib.Path) -> tuple[set[str], set[str]]
             tok = s.split(":", 1)[1].strip().split()[0:1]
             if tok:
                 conditional.add(tok[0].strip("`"))
-    return required, conditional
+    return required, conditional, []
+
+
+def _secret_name(row: Any) -> str | None:
+    """Return a Fly secret name across flyctl JSON casing variants."""
+    if not isinstance(row, dict):
+        return None
+    raw = row.get("Name") or row.get("name")
+    return str(raw) if raw else None
+
+
+def _falsey_env(value: str | None) -> bool:
+    return str(value or "").strip().lower() in {"0", "false", "no", "off"}
+
+
+def _fly_toml_env_value(repo_root: pathlib.Path, key: str) -> tuple[str | None, str | None]:
+    """Read a simple ``[env]`` value from canonical Fly config files.
+
+    The production boot gate keys APPI routing from ``AUTONOMATH_APPI_ENABLED``
+    in fly.toml. The ACK workflow must therefore accept the same deploy-time
+    source, not only an operator shell env override.
+    """
+
+    for rel in ("fly.toml", "fly.jpcite.toml"):
+        path = repo_root / rel
+        if not path.is_file():
+            continue
+        in_env = False
+        for raw_line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if line.startswith("[") and line.endswith("]"):
+                in_env = line == "[env]"
+                continue
+            if not in_env or "=" not in line:
+                continue
+            lhs, rhs = line.split("=", 1)
+            if lhs.strip() != key:
+                continue
+            value = rhs.split("#", 1)[0].strip().strip('"').strip("'")
+            return value, rel
+    return None, None
 
 
 def verify_fly_secrets_names_confirmed(repo_root: pathlib.Path) -> VerifyResult:
@@ -197,13 +265,17 @@ def verify_fly_secrets_names_confirmed(repo_root: pathlib.Path) -> VerifyResult:
         return VerifyResult(
             name, False, f"flyctl JSON parse fail: {exc}", {"stdout_head": out[:200]}
         )
-    live_names = {r.get("Name") for r in rows if isinstance(r, dict) and r.get("Name")}
-    required, conditional = _read_secrets_registry(repo_root)
+    live_names = {secret_name for r in rows if (secret_name := _secret_name(r))}
+    required, conditional, alternatives = _read_secret_contract(repo_root)
     missing_required = required - live_names
+    missing_alternatives = [
+        list(group) for group in alternatives if not any(name in live_names for name in group)
+    ]
     missing_conditional = conditional - live_names
-    passed = not missing_required  # conditional missing -> warn, not fail
+    passed = not missing_required and not missing_alternatives
     detail = (
         f"required={len(required - missing_required)}/{len(required)}, "
+        f"alternatives={len(alternatives) - len(missing_alternatives)}/{len(alternatives)}, "
         f"conditional={len(conditional - missing_conditional)}/{len(conditional)}"
     )
     return VerifyResult(
@@ -213,6 +285,7 @@ def verify_fly_secrets_names_confirmed(repo_root: pathlib.Path) -> VerifyResult:
         {
             "live_count": len(live_names),
             "missing_required": sorted(missing_required),
+            "missing_alternative_groups": missing_alternatives,
             "missing_conditional": sorted(missing_conditional),
         },
     )
@@ -223,6 +296,14 @@ def verify_appi_or_turnstile(repo_root: pathlib.Path) -> VerifyResult:
     name = "appi_disabled_or_turnstile_secret_confirmed"
     if os.environ.get("JPINTEL_APPI_DISABLED") == "1":
         return VerifyResult(name, True, "JPINTEL_APPI_DISABLED=1 in env", {"path": "env_disabled"})
+    appi_enabled, config_rel = _fly_toml_env_value(repo_root, "AUTONOMATH_APPI_ENABLED")
+    if _falsey_env(appi_enabled):
+        return VerifyResult(
+            name,
+            True,
+            f"AUTONOMATH_APPI_ENABLED={appi_enabled!r} in {config_rel}",
+            {"path": config_rel, "AUTONOMATH_APPI_ENABLED": appi_enabled},
+        )
     if _which("flyctl") is None:
         return VerifyResult(
             name, False, "flyctl missing and APPI not env-disabled", {"reason": "no_flyctl"}
@@ -234,7 +315,7 @@ def verify_appi_or_turnstile(repo_root: pathlib.Path) -> VerifyResult:
         rows = json.loads(out)
     except json.JSONDecodeError:
         return VerifyResult(name, False, "flyctl JSON parse fail", {"stdout_head": out[:200]})
-    names = {r.get("Name") for r in rows if isinstance(r, dict)}
+    names = {secret_name for r in rows if (secret_name := _secret_name(r))}
     has_turnstile = "CLOUDFLARE_TURNSTILE_SECRET" in names
     has_appi_disable_secret = "JPINTEL_APPI_DISABLED" in names
     passed = has_turnstile or has_appi_disable_secret
@@ -319,7 +400,7 @@ def verify_live_gbiz_ingest(repo_root: pathlib.Path) -> VerifyResult:
         rows = json.loads(out)
     except json.JSONDecodeError:
         return VerifyResult(name, False, "flyctl JSON parse fail", {"stdout_head": out[:200]})
-    names = {r.get("Name") for r in rows if isinstance(r, dict)}
+    names = {secret_name for r in rows if (secret_name := _secret_name(r))}
     has_token = "GBIZINFO_API_TOKEN" in names
     has_approval = "GBIZINFO_INGEST_APPROVED" in names
     # disabled = token absent OR approval flag explicitly set

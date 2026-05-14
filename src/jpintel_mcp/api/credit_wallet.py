@@ -7,7 +7,7 @@ operator-internal REST endpoints per
 ``feedback_agent_credit_wallet_design.md``:
 
   * GET  ``/v1/wallet/balance``       — current balance + auto-topup config
-  * POST ``/v1/wallet/topup``         — set auto-topup threshold + amount (+ optional one-shot)
+  * POST ``/v1/wallet/topup``         — set auto-topup threshold + amount
   * GET  ``/v1/wallet/transactions``  — paginated transaction ledger
   * GET  ``/v1/wallet/alerts``        — 50/80/100 spending-alert ledger
   * POST ``/v1/wallet/charge``        — internal-only charge (metering-side)
@@ -18,13 +18,11 @@ This module performs ZERO Anthropic / OpenAI / etc. SDK call (memory
 `feedback_no_operator_llm_api`). It also performs ZERO real money
 transfer — Stripe Portal remains the only path that touches Stripe
 secrets (memory: do not overwrite existing Stripe Portal). ``/topup``
-records the wallet's auto-topup *intent* and, when ``immediate_amount`` is
-supplied with an idempotency key, records one positive ``topup`` ledger row
-and increases balance. It does NOT call Stripe.
-``/charge`` is restricted to internal callers via an
-``X-Internal-Token`` header check matching
-``settings.metering_internal_token``; without it, the endpoint returns
-403 to prevent end-agents from minting negative balance.
+records the wallet's auto-topup *intent* for ordinary API-key callers.
+Positive immediate credits are accepted only from internal billing/metering
+callers after the payment rail has already verified funds. ``/charge`` and
+immediate ``/topup`` are restricted via an ``X-Internal-Token`` header check
+matching ``METERING_INTERNAL_TOKEN``.
 
 Auth contract
 -------------
@@ -345,7 +343,7 @@ def _replay_topup_response(
     row: sqlite3.Row,
     *,
     wallet_id: int,
-    body: "TopupRequest",
+    body: TopupRequest,
     payload_hash: str,
 ) -> JSONResponse:
     topup_amount = int(body.immediate_amount)
@@ -421,11 +419,12 @@ def _replay_charge_response(
 
 
 class TopupRequest(BaseModel):
-    """Auto-topup configuration + optional immediate top-up.
+    """Auto-topup configuration plus internal-only immediate credit.
 
-    All amounts are in JPY (integer). ``immediate_amount > 0`` records a
-    ``topup`` ledger row and increases balance. This handler does NOT touch
-    Stripe, so callers must provide an idempotency key for immediate credits.
+    All amounts are in JPY (integer). Public API-key callers may update
+    ``auto_topup_threshold``, ``auto_topup_amount``, and ``monthly_budget_yen``.
+    ``immediate_amount > 0`` is reserved for internal billing/metering callers
+    after Stripe/x402 has already verified payment.
     """
 
     auto_topup_threshold: int = Field(
@@ -444,7 +443,10 @@ class TopupRequest(BaseModel):
         0,
         ge=0,
         le=10_000_000,
-        description="Optional one-shot credit (¥) to record now as a topup txn.",
+        description=(
+            "Internal-only one-shot credit (¥) to record after the payment rail "
+            "has already verified funds."
+        ),
     )
     note: str | None = Field(None, max_length=256, description="Optional ledger note.")
     idempotency_key: str | None = Field(
@@ -546,13 +548,13 @@ def get_wallet_balance(ctx: ApiContextDep) -> JSONResponse:
 
 @router.post(
     "/topup",
-    summary="Update auto-topup config + optional one-shot credit",
+    summary="Update auto-topup config",
     description=(
         "Updates ``auto_topup_threshold`` + ``auto_topup_amount`` + "
-        "``monthly_budget_yen`` on the caller's wallet. If "
-        "``immediate_amount > 0`` is supplied with an idempotency key, records "
-        "one ``topup`` ledger row + updates balance. **This handler does NOT "
-        "call Stripe.**"
+        "``monthly_budget_yen`` on the caller's wallet. Positive "
+        "``immediate_amount`` credits are internal-only and require "
+        "``X-Internal-Token`` after Stripe/x402 payment verification. "
+        "**This handler does NOT call Stripe.**"
     ),
     responses={**COMMON_ERROR_RESPONSES, 200: {"description": "Updated wallet snapshot."}},
 )
@@ -567,6 +569,13 @@ def update_wallet_topup(
         str | None,
         Header(alias="X-Idempotency-Key", description="Optional immediate topup retry key."),
     ] = None,
+    x_internal_token: Annotated[
+        str | None,
+        Header(
+            alias="X-Internal-Token",
+            description="Internal billing token; required only for immediate credits.",
+        ),
+    ] = None,
 ) -> JSONResponse:
     owner_token_hash = _require_owner_token_hash(ctx)
     topup_amount = int(body.immediate_amount)
@@ -576,11 +585,13 @@ def update_wallet_topup(
         body.idempotency_key,
         body.request_id,
     )
-    if topup_amount > 0 and idem_hash is None:
-        raise HTTPException(
-            status_code=status.HTTP_428_PRECONDITION_REQUIRED,
-            detail="idempotency_key_required",
-        )
+    if topup_amount > 0:
+        _check_internal_token(x_internal_token, action="topup")
+        if idem_hash is None:
+            raise HTTPException(
+                status_code=status.HTTP_428_PRECONDITION_REQUIRED,
+                detail="idempotency_key_required",
+            )
     payload_hash = _topup_payload_hash(body) if topup_amount > 0 else None
 
     am = _open_am_rw()
@@ -846,19 +857,19 @@ def list_wallet_alerts(
 # ---------------------------------------------------------------------------
 
 
-def _check_internal_token(x_internal_token: str | None) -> None:
-    """Reject /charge without the operator-internal metering token."""
+def _check_internal_token(x_internal_token: str | None, *, action: str = "charge") -> None:
+    """Reject internal wallet mutations without the operator metering token."""
     expected = os.environ.get("METERING_INTERNAL_TOKEN")
     if not expected:
         # Defensive — if the token isn't configured, /charge is permanently locked.
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="wallet_charge_unavailable",
+            detail=f"wallet_{action}_unavailable",
         )
     if not x_internal_token or x_internal_token != expected:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="wallet_charge_forbidden",
+            detail=f"wallet_{action}_forbidden",
         )
 
 

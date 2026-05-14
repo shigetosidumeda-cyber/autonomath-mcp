@@ -64,7 +64,7 @@
     "credit_policy_url": "https://jpcite.com/tokushoho"
   },
   "data_provenance": {
-    "all_publish_records_have_source_url": true,
+    "most_public_searchable_records_have_source_url": true,
     "freshness_endpoint": "https://api.jpcite.com/v1/staleness",
     "freshness_page": "https://jpcite.com/data-freshness",
     "corrections_feed": "https://api.jpcite.com/v1/corrections?days=90",
@@ -72,7 +72,7 @@
     "audit_log_rss": "https://jpcite.com/audit-log.rss",
     "license_inventory_url": "https://jpcite.com/data-licensing",
     "sources_catalog_url": "https://jpcite.com/sources",
-    "license_review_queue_size": 805,
+    "license_review_queue_size": 1425,
     "license_classified_count": 97270,
     "license_total_count": 97272,
     "banned_aggregators": [

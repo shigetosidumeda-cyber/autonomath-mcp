@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>称等 詳細情報・条件等 募集期間 問合せ先 リンク先</title>
@@ -43,15 +43,6 @@
     <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/1301/20240913.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-pref-08f1067312</guid>
-    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>富山県／令和8年度「とやまの中小企業支援情報」パンフレットをご覧ください</title>
-    <link>https://jpcite.com/programs/toyamaken-reiwa-8-nendo-toyamano-chuushoukigyou-shien-664fa5.html</link>
-    <description>Tier B / 富山県 / 富山県 / subsidy 出典: https://www.pref.toyama.jp/130002/tyuusyoukigyousiennzyouhou.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-pref-09666626c1</guid>
     <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
   </item>
 
@@ -740,15 +731,6 @@
   </item>
 
   <item>
-    <title>有機農業栽培推進事業費補助金</title>
-    <link>https://jpcite.com/programs/yuuki-nougyou-saibai-suishin-jigyou-hi-hojokin-3048d8.html</link>
-    <description>Tier C / 富山県 出典: https://www.town.kamiichi.toyama.jp/page/7691.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-24c1af481a</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>富山市 経営発展支援事業</title>
     <link>https://jpcite.com/programs/toyamashi-keiei-hatten-shien-jigyou-4245f8.html</link>
     <description>Tier A / 富山県 / 市町村 / subsidy / 上限 30万円 出典: https://www.city.toyama.lg.jp/shisei/1012172/1012173.html</description>
@@ -763,15 +745,6 @@
     <description>Tier B / 富山県 / subsidy / 上限 150万円 出典: https://taff.or.jp/nou/syunou-navi/know/funds/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-34144c2e23</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>有機JAS認証継続検査費補助金</title>
-    <link>https://jpcite.com/programs/yuuki-jas-ninshou-keizokukensa-hi-hojokin-e572ae.html</link>
-    <description>Tier C / 富山県 出典: https://www.town.kamiichi.toyama.jp/page/7691.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-38b646c296</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +880,33 @@
     <description>Tier B / 富山県 / subsidy / 上限 20万円 出典: https://www.city.nanto.toyama.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-b07abd4754</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山_とやま型集落営農スマート農機導入事業</title>
+    <link>https://jpcite.com/programs/pref-16-002-toyama-toyama-kata-shuuraku-einou-sumaato-nouki-45cd64.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 300万円 出典: https://www.pref.toyama.jp/1611/sangyou/nourinsuisan/nougyou/keieitaisien/kikaiseibi.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b13b9ad797</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>富山_6次産業化チャレンジ支援事業</title>
+    <link>https://jpcite.com/programs/pref-16-104-toyama-6-tsugi-sangyouka-charenji-shien-jigyou-07f8e9.html</link>
+    <description>Tier B / 富山県 / subsidy / 上限 100万円 出典: https://www.pref.toyama.jp/1605/sangyou/nourinsuisan/nougyou/kj00022487/kj00022487-004-01.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b3458525e1</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>砺波市農業経営開始資金事業（農業次世代人材投資事業）</title>
+    <link>https://jpcite.com/programs/tonami-shi-nougyou-keiei-kaishi-shikin-jigyou-nougyou-02465b.html</link>
+    <description>Tier B / 富山県 / 市町村 / subsidy / 上限 1,000万円 出典: https://www1.g-reiki.net/tonami/reiki_honbun/r067RG00000855.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-bb460973bf</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

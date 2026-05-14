@@ -59,7 +59,7 @@
     "url": "https://jpcite.com/en/"},
   "audience": {
     "@type": "Audience",
-    "audienceType": "AI agent / SaaS / RAG developer"
+    "audienceType": "AI agent / SaaS / evidence-layer developer"
   },
   "areaServed": {
     "@type": "Country",
@@ -145,11 +145,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -237,7 +240,7 @@
  <div class="cards" style="grid-template-columns:repeat(2,1fr);">
 
  <article class="card">
- <h3>1. Japanese-program RAG in Claude Desktop</h3>
+ <h3>1. Japanese-program Evidence Packets in Claude Desktop</h3>
  <p>Add the MCP server to your config and Claude searches programs, adoptions, loans, and laws on its own. Natural-language queries like "Tokyo subsidies for construction, around 5M yen" decompose internally into <code>search_programs</code> + <code>check_exclusion</code>.</p>
  </article>
 
@@ -248,7 +251,7 @@
 
  <article class="card">
  <h3>3. GPTs Actions / Dify / LangChain</h3>
- <p>Import the OpenAPI 3.1 spec as a ChatGPT GPT Action and you have a Japanese-program search GPT instantly. Dify and LangChain take it as a REST tool.</p>
+ <p>Import the OpenAPI 3.1 spec as a ChatGPT GPT Action and you have source-linked Japanese-program evidence before GPT answers. Dify and LangChain take it as a REST tool.</p>
  </article>
 
  <article class="card">
@@ -257,8 +260,8 @@
  </article>
 
  <article class="card">
- <h3>5. Embed in enterprise RAG</h3>
- <p>Combine internal Confluence with jpcite in a single RAG. <code>combined_compliance_check</code> / <code>trace_program_to_law</code> chain program &rarr; statute &rarr; circular in one search.</p>
+ <h3>5. Add an evidence prefetch layer before answer generation</h3>
+ <p>Fetch jpcite Evidence Packets alongside internal Confluence results before the model drafts an answer. <code>combined_compliance_check</code> / <code>trace_program_to_law</code> chain program &rarr; statute &rarr; circular in one evidence flow.</p>
  </article>
 
  </div>

@@ -58,7 +58,7 @@
       <tspan> curl </tspan>
       <tspan class="flag">-H</tspan>
       <tspan> </tspan>
-      <tspan class="str">"Authorization: Bearer $KEY"</tspan>
+      <tspan class="str">"X-API-Key: $KEY"</tspan>
       <tspan> \</tspan>
     </text>
     <text class="t" x="36" y="76">

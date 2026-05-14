@@ -271,6 +271,23 @@ def test_pricing_page_uses_allowlisted_success_html_redirect():
     )
 
 
+def test_en_pricing_page_uses_allowlisted_html_redirects():
+    pricing_html = (
+        Path(__file__).resolve().parent.parent / "site" / "en" / "pricing.html"
+    ).read_text(encoding="utf-8")
+
+    assert (
+        "success_url: 'https://jpcite.com/en/success.html?session_id={CHECKOUT_SESSION_ID}'"
+        in pricing_html
+    )
+    assert "cancel_url: 'https://jpcite.com/en/pricing.html?cancelled=1'" in pricing_html
+    assert (
+        "success_url: 'https://jpcite.com/en/success?session_id={CHECKOUT_SESSION_ID}'"
+        not in pricing_html
+    )
+    assert "cancel_url: 'https://jpcite.com/en/pricing?cancelled=1'" not in pricing_html
+
+
 def test_checkout_allows_english_redirect_paths(client, stripe_env, monkeypatch, seeded_db: Path):
     """English pricing page must be able to create Checkout sessions."""
     from jpintel_mcp.api import billing as billing_mod

@@ -46,6 +46,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -227,56 +301,6 @@
  <section aria-labelledby="sec11-title">
  <h2 id="sec11-title" class="section-title">11. Revisions to this Policy</h2>
  <p>We may revise this Policy in response to amendments of laws and regulations, changes to the Service, or other reasons.</p>
- <ul class="feats">
- <li><strong>Material changes:</strong> Where we make changes that materially affect the rights and obligations of data subjects, we will give notice on this page at least thirty (30) days prior to the effective date.</li>
- <li><strong>Minor changes:</strong> Changes that do not materially affect the rights and obligations of data subjects (e.g., editorial corrections, minor changes to contact information) take effect immediately upon posting on this page.</li>
- <li><strong>Statutory amendments:</strong> Where APPI or other related laws are amended, we will revise this Policy as necessary by the effective date of such amendment.</li>
- </ul>
- </section>
-
- <section aria-labelledby="sec12-title">
- <h2 id="sec12-title" class="section-title">12. Contact</h2>
- <ul class="feats">
- <li>Operator: Bookyou Inc. (Bookyou Kabushiki Kaisha)</li>
- <li>Department: Personal Information Protection Officer</li>
- <li>Email: info@bookyou.net</li>
- <li>Hours: Reasonable hours on business days (excluding weekends, public holidays, and the Company's designated closure days)</li>
- </ul>
- </section>
-
- <section aria-labelledby="related-title">
- <h2 id="related-title" class="section-title">Related documents</h2>
- <ul class="feats">
- <li><a href="tos.html">Terms of Service</a></li>
- <li><a href="tokushoho.html">Specified Commercial Transactions Act disclosure</a></li>
- </ul>
- </section>
-
- <p style="margin-top:32px;color:#666;font-size:14px;">Last updated: 2026-05-07 (cookie/analytics disclosure + 30-day SLA wording aligned with the Japanese version; Japanese version controls)</p>
-
- </div>
-</main>
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
- <p class="footer-tag">Japanese public-program API</p>
- </div>
- <nav class="footer-nav" aria-label="Footer">
- <a href="tos.html">Terms</a>
- <a href="privacy.html" aria-current="page">Privacy</a>
- <a href="tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
- </div>
-</footer>
-
-</body>
-</html>
-ges to the Service, or other reasons.</p>
  <ul class="feats">
  <li><strong>Material changes:</strong> Where we make changes that materially affect the rights and obligations of data subjects, we will give notice on this page at least thirty (30) days prior to the effective date.</li>
  <li><strong>Minor changes:</strong> Changes that do not materially affect the rights and obligations of data subjects (e.g., editorial corrections, minor changes to contact information) take effect immediately upon posting on this page.</li>

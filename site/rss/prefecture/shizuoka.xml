@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>海外展開支援｜静岡県公式ホームページ</title>
@@ -61,15 +61,6 @@
     <description>Tier B / 静岡県 / 静岡県 / subsidy 出典: https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/1028486.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-pref-111f2c9b64</guid>
-    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>中小企業等収益力向上事業費補助金（採択後の様式等）｜静岡県公式ホームページ</title>
-    <link>https://jpcite.com/programs/chuushoukigyou-nado-shuueki-chikara-koujou-jigyou-hi-f81d7d.html</link>
-    <description>Tier B / 静岡県 / 静岡県 / subsidy 出典: https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/1047031/1066766.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-pref-2808c0af9e</guid>
     <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
   </item>
 
@@ -227,29 +218,11 @@
   </item>
 
   <item>
-    <title>【募集終了】令和7年度中小企業等収益力向上事業費補助金（米国関税対応枠）再募集について｜静岡県公式ホームページ</title>
-    <link>https://jpcite.com/programs/boshuu-shuuryou-reiwa-7-nendo-chuushoukigyou-nado-shuueki-edee1b.html</link>
-    <description>Tier B / 静岡県 / 静岡県 / subsidy / 上限 300万円 出典: https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/shienhojokin/1077292.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-pref-e0ec5d09bd</guid>
-    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
-  </item>
-
-  <item>
     <title>トライアル発注推進事業｜静岡県公式ホームページ</title>
     <link>https://jpcite.com/programs/toraiaru-hatchuu-suishin-jigyou-shizuokaken-koushiki-621785.html</link>
     <description>Tier B / 静岡県 / 静岡県 / subsidy 出典: https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/trial/index.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-pref-e8c9010180</guid>
-    <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>令和7年度中小企業等収益力向上事業費補助金（米国関税対応枠）　採択後の様式について｜静岡県公式ホームページ</title>
-    <link>https://jpcite.com/programs/reiwa-7-nendo-chuushoukigyou-nado-shuueki-chikara-koujou-74afd8.html</link>
-    <description>Tier B / 静岡県 / 静岡県 / subsidy 出典: https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/shienhojokin/1077375.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-pref-ec770898b3</guid>
     <pubDate>Wed, 29 Apr 2026 06:47:22 +0000</pubDate>
   </item>
 
@@ -785,15 +758,6 @@
   </item>
 
   <item>
-    <title>静岡県地域創生起業支援金</title>
-    <link>https://jpcite.com/programs/shizuokaken-chiiki-sousei-kigyou-shien-kin-d93e08.html</link>
-    <description>Tier C / 静岡県 / 静岡県経済産業部商工業局 / subsidy / 上限 200万円 出典: https://www.pref.shizuoka.jp/sangyoshigoto/shokogyoservice/1040895/1028150.html</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-bb5f0c79e7</guid>
-    <pubDate>Thu, 23 Apr 2026 12:00:00 +0000</pubDate>
-  </item>
-
-  <item>
     <title>静岡県中小企業省力化投資補助金</title>
     <link>https://jpcite.com/programs/shizuokaken-chuushoukigyou-shouryokuka-toushi-hojokin-e8cd71.html</link>
     <description>Tier C / 静岡県 / 静岡県経済産業部 / subsidy / 上限 500万円 出典: https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/1047031/index.html</description>
@@ -907,6 +871,42 @@
     <description>Tier B / 静岡県 / subsidy / 上限 100万円 出典: https://www.city.kakegawa.shizuoka.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-10b9022353</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>静岡市中小企業等デジタル活用事業補助金</title>
+    <link>https://jpcite.com/programs/shizuokashi-chuushoukigyou-nado-dejitaru-katsuyou-jigyou-fbaaf3.html</link>
+    <description>Tier A / 静岡県 / subsidy / 上限 50万円 出典: https://www.city.shizuoka.lg.jp/s2746/s003772.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1101f58641</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>磐田市_認定農業者制度</title>
+    <link>https://jpcite.com/programs/iwata-shi-nintei-nougyou-mono-seido-d52b03.html</link>
+    <description>Tier B / 静岡県 / subsidy / 上限 100万円 出典: https://www.city.iwata.shizuoka.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1a9671ad9a</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>浜松市_農地利用効率化等支援事業</title>
+    <link>https://jpcite.com/programs/hamamatsushi-nouchi-riyoukouritsu-ka-nado-shien-jigyou-ec6392.html</link>
+    <description>Tier B / 静岡県 / subsidy / 上限 100万円 出典: https://www.city.hamamatsu.shizuoka.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1b29354e96</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>静岡県中小企業脱炭素化支援補助金</title>
+    <link>https://jpcite.com/programs/shizuokaken-chuushoukigyou-dattan-moto-ka-shien-hojokin-bffacd.html</link>
+    <description>Tier C / 静岡県 / subsidy / 上限 200万円 出典: https://www.pref.shizuoka.jp/sangyoshigoto/kigyoshien/datsu-tanso.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1b8573f195</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

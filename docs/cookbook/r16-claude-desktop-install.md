@@ -47,10 +47,10 @@ Claude のプロンプトで「東京都で募集中の設備投資補助金を 
 | 手段 | 信頼性 | コスト |
 |---|---|---|
 | Claude 単体 (web search なし) | hallucination 60%+, 出典なし | LLM 料金のみ |
-| Claude + 公式 web search | 出典は出るが補助金ポータル混在 (詐欺リスク) | LLM 料金 + 検索コスト |
+| Claude + 公式 web search | 出典は出るが補助金ポータル混在 (一次資料担保が弱いリスク) | LLM 料金 + 検索コスト |
 | Claude + jpcite MCP | 1 次資料 URL + `source_fetched_at` 付き | LLM 料金 + jpcite ¥3/call |
 
-**install ¥0、初回 3 req/day は anonymous で無料**。詐欺リスクのあるアグリゲータ (公開アグリゲータ ban 方針については [Honest capabilities](../honest_capabilities.md) を参照) を踏まないため、税理士業務向けには必須の組み合わせ。
+**install ¥0、初回 3 req/day は anonymous で無料**。一次資料担保が弱いリスクのあるアグリゲータ (公開アグリゲータ ban 方針については [Honest capabilities](../honest_capabilities.md) を参照) を踏まないため、税理士業務向けには必須の組み合わせ。
 
 ## トラブルシュート
 

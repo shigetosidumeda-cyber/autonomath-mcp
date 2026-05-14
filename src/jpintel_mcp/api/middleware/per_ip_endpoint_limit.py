@@ -41,7 +41,7 @@ State is process-local (one ``dict`` per worker). Multi-worker drift
 is bounded by ``workers * cap``. We accept that — sharing state across
 workers needs Redis and is deferred until QPS scaling justifies it.
 
-Identity is the canonicalised client IP (Fly-Client-IP > XFF first hop
+Identity is the canonicalised client IP (signed edge XFF > Fly-Client-IP
 > request.client.host), normalised to /64 for IPv6 to match
 ``anon_limit`` and ``rate_limit``. API-key callers use a keyed bucket so
 one corporate NAT or agent platform is not capped at the anonymous IP
@@ -185,15 +185,38 @@ def _normalize_ip_to_prefix(ip: str) -> str:
 
 def _client_ip(request: Request) -> str:
     """Same priority order as ``anon_limit._client_ip``."""
+    signed_xff = _signed_edge_forwarded_for(request)
+    if signed_xff:
+        return signed_xff
     fly_ip = request.headers.get("fly-client-ip")
     if fly_ip:
         return fly_ip.strip()
-    xff = request.headers.get("x-forwarded-for")
-    if xff:
-        return xff.split(",")[0].strip()
     if request.client:
         return request.client.host
     return "unknown"
+
+
+def _signed_edge_forwarded_for(request: Request) -> str | None:
+    xff = request.headers.get("x-forwarded-for", "").strip()
+    if not xff:
+        return None
+    caller_ip = xff.split(",", 1)[0].strip()
+    if not caller_ip:
+        return None
+    try:
+        from jpintel_mcp.api.middleware.edge_header_sanitization import (
+            _edge_auth_secret,
+            _verify_signed_edge_header,
+        )
+    except Exception:
+        return None
+    secret = _edge_auth_secret()
+    token = request.headers.get("x-edge-auth", "")
+    if not secret or not token or not _verify_signed_edge_header(
+        token, secret, caller_ip=caller_ip
+    ):
+        return None
+    return caller_ip
 
 
 def _match_rule(method: str, path: str) -> _Rule | None:

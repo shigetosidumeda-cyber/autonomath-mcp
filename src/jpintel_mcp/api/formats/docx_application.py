@@ -1,13 +1,13 @@
 """DOCX 申請書 boilerplate renderer — ``?format=docx-application``.
 
-行政書士法 §1 fence (CRITICAL):
+行政書士法 §1の2 fence (CRITICAL):
 
     This renderer produces a SCAFFOLD ONLY. It deliberately does NOT fill
     placeholder fields (e.g. ``{{customer_name}}``, ``{{program_name}}``,
     ``{{requested_amount}}``). The user must:
         1. Fill placeholders themselves OR have a 行政書士 fill them.
         2. Have any 申請書 reviewed by a licensed 行政書士 if the program
-           requires 書面提出 — 行政書士法 §1 prohibits unlicensed
+           requires 書面提出 — 行政書士法 §1の2 prohibits unlicensed
            creation of 官公署提出書類.
 
     The cover page, every page footer, and the JSON ``_disclaimer``
@@ -49,12 +49,12 @@ from jpintel_mcp.api._format_dispatch import (
     DISCLAIMER_JA,
 )
 
-# 行政書士法 §1 fence. Verbatim, no paraphrase — we want grep'able text.
+# 行政書士法 §1の2 fence. Verbatim, no paraphrase — we want grep'able text.
 GYOSEISHOSHI_FENCE_JA = (
-    "【重要・行政書士法 §1 注意事項】\n"
+    "【重要・行政書士法 §1の2 注意事項】\n"
     "本ファイルは「申請書のたたき台 (scaffold)」です。jpcite は\n"
     "{{customer_name}} 等の placeholder を意図的に未記入のまま出力\n"
-    "しています。官公署提出書類の作成・代理は行政書士法 §1 により\n"
+    "しています。官公署提出書類の作成・代理は行政書士法 §1の2 により\n"
     "行政書士の独占業務です。本ファイルを実際に提出する場合は、\n"
     "(1) お客様ご自身で記入する、または (2) 行政書士の確認・代行\n"
     "を受けてください。jpcite / Bookyou株式会社は本書類の\n"
@@ -62,10 +62,10 @@ GYOSEISHOSHI_FENCE_JA = (
 )
 
 GYOSEISHOSHI_FENCE_EN = (
-    "[Notice — 行政書士法 §1 Fence] This DOCX is a SCAFFOLD ONLY. "
+    "[Notice — 行政書士法 §1の2 Fence] This DOCX is a SCAFFOLD ONLY. "
     "Placeholder fields like {{customer_name}} are intentionally left "
     "BLANK. Creating an actual 官公署提出書類 (filing) on behalf of "
-    "another party is reserved to a licensed 行政書士 under 行政書士法 §1. "
+    "another party is reserved to a licensed 行政書士 under 行政書士法 §1の2. "
     "Fill the placeholders yourself, or have a 行政書士 review the file "
     "before submission. Bookyou株式会社 disclaims all liability for the "
     "completion / filing of this document."

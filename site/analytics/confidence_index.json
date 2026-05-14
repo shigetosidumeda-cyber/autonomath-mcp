@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-05-14T04:27:47+09:00",
+  "status": "bootstrap",
+  "overall": {
+    "discovery_weighted": null,
+    "use_weighted": null
+  },
+  "per_tool": [],
+  "note": "Bootstrap public history file. Live values are fetched from https://api.jpcite.com/v1/stats/confidence when available."
+}

@@ -126,6 +126,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -156,7 +230,7 @@
  <h1>Stats</h1>
  <p class="sub">jpcite transparency dashboard: dataset row counts, freshness, and 30-day API usage. Live aggregation refreshed once per day.</p>
 
- <!-- Coverage ------------------------------------------------------------ -->
+ <!-- Coverage -->
  <section class="stats-section" aria-labelledby="coverage-h">
  <h2 id="coverage-h">Coverage &mdash; dataset row counts</h2>
  <p class="desc">Row counts in the public dataset. Aggregator (secondary) sources are <strong>0</strong> &mdash; every record is tied to a primary source.</p>
@@ -175,7 +249,7 @@
  <p class="err" id="coverage-err" hidden></p>
  </section>
 
- <!-- Freshness ----------------------------------------------------------- -->
+ <!-- Freshness -->
  <section class="stats-section" aria-labelledby="freshness-h">
  <h2 id="freshness-h">Freshness &mdash; source fetch timestamps</h2>
  <p class="desc">Per-dataset oldest / newest <code>fetched_at</code> and average row-to-row interval. Older = staler; larger interval = lower refresh frequency.</p>
@@ -190,7 +264,7 @@
  <p class="err" id="freshness-err" hidden></p>
  </section>
 
- <!-- Usage --------------------------------------------------------------- -->
+ <!-- Usage -->
  <section class="stats-section" aria-labelledby="usage-h">
  <h2 id="usage-h">Usage &mdash; API requests in the past 30 days</h2>
  <p class="desc">Cumulative requests via authenticated API keys. Anonymous traffic (no <code>X-API-Key</code>) is excluded. Bars are daily, the line is the running total.</p>
@@ -346,70 +420,6 @@
         var body = document.getElementById("freshness-body");
         if (body) body.innerHTML = "";
         showErr(document.getElementById("freshness-err"), e, loadFreshness);
-      })
-      .then(function () { clearTimeout(timer); });
-  }
-
-  function renderUsage(daily, total, since, until) {
-    var svg = document.getElementById("usage-svg");
-    if (!svg) return;
-    while (svg.firstChild) svg.removeChild(svg.firstChild);
-    var W = 600, H = 120, pad = 4;
-    var max = 0;
-    daily.forEach(function (d) { if (d.count > max) max = d.count; });
-    if (max < 1) max = 1;
-    var bw = (W - pad * 2) / daily.length;
-    daily.forEach(function (d, i) {
-      var h = (d.count / max) * (H - pad * 2);
-      var x = pad + i * bw;
-      var y = H - pad - h;
-      var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", x.toFixed(2));
-      rect.setAttribute("y", y.toFixed(2));
-      rect.setAttribute("width", Math.max(1, bw - 1).toFixed(2));
-      rect.setAttribute("height", Math.max(0, h).toFixed(2));
-      rect.setAttribute("fill", "#1e3a8a");
-      var title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-      title.textContent = d.date + ": " + d.count + " calls (cumulative " + d.cumulative + ")";
-      rect.appendChild(title);
-      svg.appendChild(rect);
-    });
-    var fr = document.getElementById("usage-axis-from");
-    var to = document.getElementById("usage-axis-to");
-    if (fr) fr.textContent = since;
-    if (to) to.textContent = until;
-    var t = document.getElementById("usage-total");
-    if (t) t.textContent = "Total: " + fmtNum(total) + " calls (past 30 days)";
-  }
-
-  function loadUsage() {
-    var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
-    fetch(BASE + "/v1/stats/usage", { signal: ctrl.signal })
-      .then(function (r) {
-        if (!r.ok) throw new Error("usage fetch failed: " + r.status);
-        return r.json();
-      })
-      .then(function (data) {
-        renderUsage(data.daily, data.total, data.since, data.until);
-      })
-      .catch(function (e) {
-        showErr(document.getElementById("usage-err"), e, loadUsage);
-      })
-      .then(function () { clearTimeout(timer); });
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    loadCoverage();
-    loadFreshness();
-    loadUsage();
-  });
-})();
-</script>
-
-</body>
-</html>
-Err(document.getElementById("freshness-err"), e, loadFreshness);
       })
       .then(function () { clearTimeout(timer); });
   }

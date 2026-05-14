@@ -15,12 +15,12 @@ source_url: https://laws.e-gov.go.jp/law/339CO0000000188
 
 # chushokigyo-taishokukin-kyosai
 
-# 中小企業退職金共済法施行令 
-法令番号 昭和39年政令第188号 施行日 2021-10-01 最終改正 2021-05-06 所管 meti カテゴリ 産業政策 e-Gov 法令 ID 339CO0000000188 ステータス active 
+# 中小企業退職金共済法施行令
+法令番号 昭和39年政令第188号 施行日 2021-10-01 最終改正 2021-05-06 所管 meti カテゴリ 産業政策 e-Gov 法令 ID 339CO0000000188 ステータス active
 
-条文データを読み込み中です。 
+条文データを読み込み中です。
 
-## 出典とライセンス 
+## 出典とライセンス
 
 e-Gov 出典 : [https://laws.e-gov.go.jp/law/339CO0000000188 ](https://laws.e-gov.go.jp/law/339CO0000000188)
 

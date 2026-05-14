@@ -34,7 +34,7 @@ export JPCITE_API_BASE=https://api.jpcite.com
 export JPCITE_API_KEY=jc_xxxx   # 任意; 未設定なら anonymous 3/日
 ```
 
-## 1. 都道府県 + 業種で補助金検索
+## 1. 都道府県 + 業種で制度根拠の Evidence Packet を取得
 
 「東京都の S/A tier 制度を 10 件」。FTS5 と `prefecture` filter を組み合わせる
 最も基本的な使い方。
@@ -95,7 +95,7 @@ curl -s "$JPCITE_API_BASE/v1/laws/search?q=中小企業基本法&limit=3" \
   -H "X-API-Key: $JPCITE_API_KEY"
 
 # 該当 unified_id で本文
-curl -s "$JPCITE_API_BASE/v1/laws/LAW-956ad0e0e4" \
+curl -s "$JPCITE_API_BASE/v1/laws/{unified_id}" \
   -H "X-API-Key: $JPCITE_API_KEY"
 ```
 
@@ -108,7 +108,7 @@ MCP:
     limit: 3
 - tool: get_law
   args:
-    unified_id: LAW-956ad0e0e4
+    unified_id: "{unified_id}"
 ```
 
 **解釈**: 条文単位で取りたい場合は MCP の条文取得ツール

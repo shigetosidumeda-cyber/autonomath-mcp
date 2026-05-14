@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
-<title>jpcite — Search Japanese institutional data via REST + MCP API.</title>
+<title>jpcite — Low-token evidence/output API before AI answers.</title>
 <meta name="description" content="Evidence prefetch for AI agents working with Japanese public-program data. Search subsidies, laws, court decisions, tax rulesets, invoice registrants, adoption cases, and enforcement records via REST + MCP API with primary-source URLs. ¥3/billable unit for normal calls, anon 3/day free.">
 
-<meta property="og:title" content="jpcite — Japanese public programs, one API.">
+<meta property="og:title" content="jpcite — Evidence Packets before AI answers.">
 <meta property="og:description" content="14,472 programs + 2,286 case studies + 108 loans + 1,185 enforcement cases + 503,930 entities + 6.12M facts. 181 exclusion rules. MCP-native (151 tools, 2025-06-18). Primary-source lineage on most public rows.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/en/">
@@ -17,7 +17,7 @@
 <meta property="og:locale:alternate" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="jpcite — Japanese public programs, one API.">
+<meta name="twitter:title" content="jpcite — Evidence Packets before AI answers.">
 <meta name="twitter:description" content="Evidence prefetch for AI agents: primary-source URLs, fetched_at, facts, and compatibility rules over Japanese public-program data. REST + MCP, 151 tools, ¥3/billable unit for normal calls.">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
@@ -25,14 +25,14 @@
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/">
 <link rel="alternate" hreflang="en" href="https://jpcite.com/en/">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/">
-<link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, English)" href="/en/llms.txt">
+<link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, English)" href="/llms.en.txt">
 <link rel="alternate" type="text/markdown; charset=utf-8" title="LLM agent discovery (llms.txt, Japanese)" href="/llms.txt">
 <link rel="service-desc" type="application/openapi+json" title="Agent-safe OpenAPI" href="https://api.jpcite.com/v1/openapi.agent.json">
 <link rel="service-desc" type="application/openapi+json" title="Full OpenAPI" href="https://api.jpcite.com/v1/openapi.json">
 <link rel="service-desc" type="application/json" title="MCP server manifest" href="/server.json">
 <link type="text/plain" rel="author" href="/humans.txt">
 <link rel="alternate" type="application/rss+xml" title="jpcite Announcements" href="/en/rss.xml">
-<link rel="alternate" type="application/rss+xml" title="jpcite お知らせ (Japanese)" href="/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="jpcite お知らせ・リリース (Japanese)" href="/rss.xml">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -170,6 +170,84 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Compatibility / Exclusion Table", "url": "https://jpcite.com/products#compatibility-check"},
+          {"@type": "Offer", "name": "Invoice Counterparty Check", "url": "https://jpcite.com/products#invoice-counterparty"},
+          {"@type": "Offer", "name": "Source Receipt", "url": "https://jpcite.com/products#source-receipt"},
+          {"@type": "Offer", "name": "Law / Case Citation Candidates", "url": "https://jpcite.com/products#citation-candidates"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -182,6 +260,7 @@
  </a>
  <nav class="site-nav" aria-label="Primary navigation">
  <a href="about.html">About</a>
+ <a href="products.html">Products</a>
  <a href="getting-started.html">Docs</a>
  <a href="pricing.html">Pricing</a>
  <a href="audiences/">Audiences</a>
@@ -269,6 +348,103 @@
  </div>
  </section>
 
+ <section class="features" aria-labelledby="output-gallery-title" style="padding-top:48px;padding-bottom:48px;">
+ <div class="container">
+ <p style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 8px;">v0.4.0 output surface</p>
+ <h2 id="output-gallery-title" class="section-title">Twelve saved outputs from the expanded surface</h2>
+ <p class="demo-lead" style="margin:-16px 0 28px;">302 REST paths / 151 MCP tools are the building blocks. The frontend now groups them by the artifact a user receives, reviews, or hands to another agent.</p>
+ <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr));">
+
+ <article class="card">
+ <h3>Evidence Packet</h3>
+ <p class="card-lead">For answer generation and audit trails</p>
+ <p>Primary-source URLs, fetched_at, known gaps, professional-scope fences, and citation candidates in JSON or Markdown.</p>
+ </article>
+
+ <article class="card">
+ <h3>Company Folder</h3>
+ <p class="card-lead">For one-company checks</p>
+ <p>Corporate-number or invoice-number lookup with identity match, invoice status, enforcement records, adoption history, and next questions.</p>
+ </article>
+
+ <article class="card">
+ <h3>Public-info DD</h3>
+ <p class="card-lead">For M&amp;A, lending, and counterparty review</p>
+ <p>Public records, enforcement history, subsidy adoption, unverified scope, and analyst notes separated for review.</p>
+ </article>
+
+ <article class="card">
+ <h3>Monthly Client Review</h3>
+ <p class="card-lead">For recurring advisory work</p>
+ <p>Regenerates program candidates, tax changes, deadlines, and client-question drafts by client, industry, and region.</p>
+ </article>
+
+ <article class="card">
+ <h3>Application Strategy Pack</h3>
+ <p class="card-lead">For pre-application meetings</p>
+ <p>Turns region, industry, investment amount, and use of funds into candidate programs, exclusion rules, stacking cautions, required docs, and interview questions.</p>
+ </article>
+
+ <article class="card">
+ <h3>Compatibility / Exclusion Table</h3>
+ <p class="card-lead">For checking combinations before advice</p>
+ <p>Turns program IDs or candidate programs into mutual exclusions, missing prerequisites, unknowns, and source material to verify.</p>
+ </article>
+
+ <article class="card">
+ <h3>Invoice Counterparty Check</h3>
+ <p class="card-lead">For accounting and tax review prep</p>
+ <p>Turns invoice numbers, corporate numbers, or vendor CSV rows into registration status, identity matches, history, and rows needing review.</p>
+ </article>
+
+ <article class="card">
+ <h3>Source Receipt</h3>
+ <p class="card-lead">For proving what was checked</p>
+ <p>Records fetched time, content hash, known gaps, and recheck targets for a source URL, program ID, law ID, or article ID.</p>
+ </article>
+
+ <article class="card">
+ <h3>Law / Case Citation Candidates</h3>
+ <p class="card-lead">For citation-first AI answers</p>
+ <p>Returns candidate law articles, related cases, and professional-review notes from law names, articles, programs, or issue keywords.</p>
+ </article>
+
+ <article class="card">
+ <h3>Amendment/Saved Search Alerts</h3>
+ <p class="card-lead">For watchlists</p>
+ <p>Delivers law amendments, program changes, saved-search diffs, notification logs, and webhook events.</p>
+ </article>
+
+ <article class="card">
+ <h3>Cost/Payment Control</h3>
+ <p class="card-lead">For automated agents</p>
+ <p>Usage, caps, duplicate-charge prevention, payment verification, and retry status via API keys, headers, wallets, or x402.</p>
+ </article>
+
+ <article class="card">
+ <h3>Agent Handoff</h3>
+ <p class="card-lead">For Claude, Cursor, ChatGPT, Codex</p>
+ <p>Shares the same evidence across REST, MCP, and OpenAPI Actions so multiple agents work from one source-backed surface.</p>
+ </article>
+
+ </div>
+ <p style="margin:18px 0 0;"><a class="btn btn-primary" href="products.html">Products</a> <a class="btn btn-secondary" href="/playground.html?flow=evidence3">Try the playground</a></p>
+ </div>
+ </section>
+
+ <section class="features" aria-labelledby="token-cost-title" style="padding-top:8px;padding-bottom:48px;">
+ <div class="container">
+ <p style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 8px;">Why this can reduce repeated document-token cost</p>
+ <h2 id="token-cost-title" class="section-title">Send the AI a compact Evidence Packet instead of raw long-context source text.</h2>
+ <p class="demo-lead" style="margin:-16px 0 18px;">jpcite does not replace the model's answer generation. It replaces repeated retrieval stuffing: source URLs, fetched_at timestamps, known gaps, and citation candidates are returned as a smaller packet that Claude, ChatGPT, Cursor, Codex, or an internal workflow can read before answering.</p>
+ <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+ <article class="card"><h3>Raw long-document input</h3><p>Cost is driven by source-document tokens sent to the external model, plus output tokens.</p></article>
+ <article class="card"><h3>jpcite</h3><p>Cost is ¥3 per billable unit plus the smaller token cost of reading the returned Evidence Packet.</p></article>
+ </div>
+ <p style="font-size:13px;line-height:1.65;color:var(--text-muted);margin:14px 0 0;">Do not claim jpcite is always cheaper. It is strongest for repeated Japanese public-record checks, batch DD, saved searches, and agent workflows where long official source text would otherwise be re-sent to the LLM.</p>
+ </div>
+ </section>
+
  <section class="features" aria-labelledby="pillars-title">
  <div class="container">
  <h2 id="pillars-title" class="section-title">What each path returns</h2>
@@ -277,7 +453,7 @@
 
  <article class="card" aria-labelledby="pillar-api">
  <h3 id="pillar-api"><span aria-hidden="true">🔌</span> API + MCP</h3>
- <p class="card-lead">AI developers / enterprise RAG</p>
+<p class="card-lead">AI developers / enterprise evidence workflows</p>
  <p>Call 151 MCP tools directly from an agent. Prefetch Evidence Packets with primary-source URLs before answer generation.</p>
  <ul class="card-list">
  <li>¥3/billable unit tax exclusive (¥3.30 tax inclusive)</li>
@@ -304,9 +480,9 @@
  <p class="card-lead">Tax / labor / compliance professionals</p>
  <p>Email notifications on amendments to invoice law, electronic-bookkeeping law, labor standards, and other tracked domains. Catch changes before deadlines bite.</p>
  <ul class="card-list">
- <li>¥3/notification tax exclusive (¥3.30 tax inclusive)</li>
- <li>Monthly digest is free</li>
- <li>Real-time notifications are paid</li>
+ <li>Outputs source-linked amendment evidence before drafting client updates</li>
+ <li>Monthly digest and real-time alerts are delivery channels</li>
+ <li>Billable API work follows the published ¥3/billable unit model</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="alerts.html">Configure alerts &rarr;</a></p>
  </article>
@@ -316,21 +492,21 @@
  <p class="card-lead">Tax-firm sites / chambers of commerce / advisory offices</p>
  <p>Add subsidy search to your own site with a single &lt;script&gt; tag. Visitors narrow down candidates without leaving your page.</p>
  <ul class="card-list">
- <li>¥3/search metered</li>
- <li>Anonymous 3 searches/day per IP free</li>
- <li>White-label ¥3/search metered</li>
+ <li>Anonymous 3 requests/day per IP free</li>
+ <li>Metered usage follows the published ¥3/billable unit model</li>
+ <li>Widget responses preserve source URLs and known gaps</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="widget.html">Embed the widget &rarr;</a></p>
  </article>
 
  <article class="card" aria-labelledby="pillar-advisors">
- <h3 id="pillar-advisors"><span aria-hidden="true">👥</span> Advisor affiliate</h3>
+ <h3 id="pillar-advisors"><span aria-hidden="true">👥</span> Review handoff</h3>
  <p class="card-lead">Certified support orgs / tax / labor / SMB consultants</p>
- <p>Marketplace that routes inbound inquiries to certified support institutions and licensed advisors. Advisors pay only on successful engagements.</p>
+ <p>Evidence-to-expert handoff for cases that need licensed or human review. jpcite prepares the source packet and open questions; the professional judgment stays outside the API.</p>
  <ul class="card-list">
- <li>Free for end users</li>
- <li>Advisor pays ¥3,000 per signed engagement</li>
- <li>No monthly fixed fee</li>
+ <li>Includes known gaps and source receipts</li>
+ <li>Does not decide tax, legal, labor, audit, or filing outcomes</li>
+ <li>Designed for review handoff, not automated advice</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="advisors.html">Register as an advisor &rarr;</a></p>
  </article>
@@ -363,8 +539,8 @@
  <p class="audience-pitch">When a client asks "which subsidies apply to us this year?", point Claude at the API. About ¥3,000/month metered. Email digest of monthly amendments included.</p>
  <ul class="card-list">
  <li>API + MCP (¥3/billable unit)</li>
- <li>Law-amendment alerts (¥3/notification)</li>
- <li>Monthly digest is free</li>
+ <li>Law-amendment alerts as delivery channels</li>
+ <li>Monthly digest is included</li>
  </ul>
  <p style="margin:14px 0 0;"><a href="audiences/tax-advisor.html">Tax advisor details &rarr;</a></p>
  </article>
@@ -448,8 +624,8 @@
  <span id="curl-copy-status" class="visually-hidden" aria-live="polite"></span>
  <small style="font-size:13px;color:var(--text-muted);">Query is URL-encoded (<code style="background:#fff;border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:12px;color:#0a0a0a;">q=IT導入</code>).</small>
  </div>
- <p class="demo-note" style="font-size:14px;margin:0 0 14px;">Using an MCP client? &rarr; <a href="/integrations/claude-desktop.html">Claude Desktop integration guide</a> · <a href="/integrations/cursor.html">Cursor</a> · <a href="/integrations/cline.html">Cline</a></p>
- <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">This is a search index. We do not provide legal advice, tax advice, or filing services. Activities reserved under 弁護士法 § 72 / 税理士法 § 52 / 行政書士法 § 1 are out of scope. See <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">Terms</a>.</p>
+ <p class="demo-note" style="font-size:14px;margin:0 0 14px;">Using an MCP client? &rarr; <a href="/connect/">Agent setup guides</a> · <a href="/connect/claude-code.html">Claude Code</a> · <a href="/connect/cursor.html">Cursor</a> · <a href="/connect/codex.html">Codex</a></p>
+ <p style="margin:14px 0 0;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--accent,#444);font-size:13px;line-height:1.6;color:var(--text-muted);">This is a source-linked evidence/output API. We do not provide legal advice, tax advice, or filing services. Activities reserved under 弁護士法 § 72 / 税理士法 § 52 / 行政書士法 § 1の2 are out of scope. See <a href="/docs/error_handling/">error_handling</a> · <a href="/docs/pricing/">pricing</a> · <a href="tos.html">Terms</a>.</p>
  </div>
  </section>
  <script>
@@ -500,7 +676,8 @@
   });
   </script>
 
- <section class="prescreen" aria-labelledby="ps-title" id="try">
+ <section class="prescreen" aria-labelledby="ps-title" id="demo">
+ <span id="try" class="visually-hidden" aria-hidden="true"></span>
  <div class="container">
  <h2 id="ps-title" class="section-title">Subsidy Prescreen — Top 5 in 3 questions</h2>
  <p class="prescreen-sub">Pick prefecture / business form / planned investment. We'll show the top 5 of <strong>11,601 active programs</strong> ranked by fit. Free, no signup, anonymous (3 requests/day/IP). One call to <code>/v1/programs/prescreen</code>.</p>
@@ -566,22 +743,22 @@
 
  <section class="features" aria-labelledby="vs-llm-title" id="vs-llm">
  <div class="container">
- <h2 id="vs-llm-title" class="section-title">Why not just ask ChatGPT?</h2>
- <p class="demo-lead" style="margin:-16px 0 28px;">Short answer: no. Three structural reasons LLMs alone can't deliver fact-grade Japanese-program judgments.</p>
+ <h2 id="vs-llm-title" class="section-title">Why use jpcite before asking an AI agent?</h2>
+ <p class="demo-lead" style="margin:-16px 0 28px;">AI agents can write quickly, but Japanese public-program work still needs current source links, fetched-at metadata, and known gaps before the final answer is drafted.</p>
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
  <article class="card" aria-labelledby="vs-llm-cutoff">
  <h3 id="vs-llm-cutoff">Stale training data</h3>
  <p class="card-lead">Calendar mismatch</p>
- <p>ChatGPT/Claude/Gemini training cutoffs run months-to-a-year stale. Japanese subsidies move on calendar deadlines ("application closed yesterday"); an LLM alone can't tell you what's <em>currently</em> open. jpcite ships <code>fetched_at</code> on searchable rows where available.</p>
+ <p>Japanese subsidies move on calendar deadlines ("application closed yesterday"). An AI workflow may need current source records and <code>fetched_at</code> metadata before it drafts a client-facing answer. jpcite ships <code>fetched_at</code> on searchable rows where available.</p>
  </article>
 
  <article class="card" aria-labelledby="vs-llm-halluc">
  <h3 id="vs-llm-halluc">Source fabrication &amp; aggregator drift</h3>
- <p class="card-lead">Misidentification = misrepresentation liability</p>
- <p>Second-tier aggregator pages can list expired programs as active, mis-state ceiling amounts, or add eligibility requirements that are not in the primary notice. Filing an application based on aggregator data and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
+ <p class="card-lead">Misidentification creates review work</p>
+ <p>Second-tier aggregator pages can list expired programs as active, mis-state ceiling amounts, or add eligibility requirements that are not in the primary notice. Using that material without checking primary sources can create client-facing errors and extra review work.</p>
  <p>jpcite <strong>bans</strong> aggregator URLs from <code>source_url</code> as a hard policy. All sources are primary: ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. Most public rows carry a primary URL; the remaining 12 (small-municipality programs) are flagged "primary URL missing" rather than backfilled with aggregators.</p>
- <p>Most public rows carry <code>source_url</code> + <code>fetched_at</code>, so you can show your client / regulator / opposing counsel exactly <em>why</em> this program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
+ <p>Most public rows carry <code>source_url</code> + <code>fetched_at</code>, so you can show your client or reviewer exactly <em>why</em> this program matched. That source trail is harder to preserve if aggregators are in the chain.</p>
  </article>
 
  <article class="card" aria-labelledby="vs-llm-rules">
@@ -591,7 +768,7 @@
  </article>
 
  </div>
- <p class="demo-lead" style="margin:28px 0 0;">In short: <strong>LLM agent + jpcite = LLM speed &times; primary-source accuracy</strong>. jpcite isn't an LLM replacement — it's the fact layer that makes LLM output easier to cite and audit.</p>
+ <p class="demo-lead" style="margin:28px 0 0;">In short: <strong>AI workflow + jpcite = faster source review with primary-source links</strong>. jpcite isn't an LLM replacement — it's the evidence layer that makes AI output easier to cite and review.</p>
  </div>
  </section>
 
@@ -602,10 +779,10 @@
 
  <article class="card">
  <h3>No aggregator sources</h3>
- <p class="card-lead">Misrepresentation-liability avoidance</p>
- <p>Second-tier aggregator pages can keep expired programs listed as active, mis-state ceiling amounts, or add eligibility requirements that are not in the primary notice. Filing on that basis and being rejected exposes the filer to <strong>misrepresentation liability</strong> from their own client.</p>
+ <p class="card-lead">Primary-source review support</p>
+ <p>Second-tier aggregator pages can keep expired programs listed as active, mis-state ceiling amounts, or add eligibility requirements that are not in the primary notice. Relying on that material without primary-source review can create client-facing errors.</p>
  <p>jpcite's policy is to <strong>never</strong> register an aggregator URL in <code>source_url</code>. Sources are restricted to ministries (METI / MAFF / SME Agency), prefectures, government finance corps (JFC / SMRJ / NEDO), and chambers of commerce. Most public rows carry a primary URL; the remaining 12 (small-municipality programs without a dedicated CMS page) are flagged "primary URL missing" rather than backfilled.</p>
- <p>Because most public rows carry <code>source_url</code> + <code>fetched_at</code>, you can show your client, the regulator, or opposing counsel exactly <em>why</em> a program matched. That audit trail isn't constructible if aggregators are in the chain.</p>
+ <p>Because most public rows carry <code>source_url</code> + <code>fetched_at</code>, you can show your client or reviewer exactly <em>why</em> a program matched. That source trail is harder to preserve if aggregators are in the chain.</p>
  </article>
 
  <article class="card">
@@ -638,19 +815,19 @@
  <article class="card" aria-labelledby="who-dev">
  <h3 id="who-dev">Developers / AI engineers</h3>
  <p class="card-lead">Recommended: API + MCP</p>
- <p>For agents, RAG pipelines, or your own SaaS. OpenAPI 3.1, stdio MCP, and Evidence Packets for citation-first workflows; token and cost impact is workload-dependent.</p>
+<p>For agents, review workflows, or your own SaaS. OpenAPI 3.1, stdio MCP, and Evidence Packets for citation-first workflows; token and cost impact is workload-dependent.</p>
  </article>
 
  <article class="card" aria-labelledby="who-sme">
  <h3 id="who-sme">SMB owners</h3>
-	 <p class="card-lead">Recommended: email notifications + advisor affiliate</p>
+		 <p class="card-lead">Recommended: email notifications + review handoff</p>
 	 <p>Want to know what your business is eligible for, and to be routed to someone who can file it. Run a web or API prescreen, keep source URLs and open questions, then receive email reminders and handoff updates.</p>
  </article>
 
  <article class="card" aria-labelledby="who-shigyo">
  <h3 id="who-shigyo">Professional advisors (tax / labor / SMB consultants)</h3>
- <p class="card-lead">Recommended: alerts + embeddable widget + advisor registration</p>
- <p>Don't miss amendments, generate inbound on your own site, accept routed cases. Alerts ¥3/notification, widget ¥3/search metered, advisor billing only on signed engagements.</p>
+ <p class="card-lead">Recommended: alerts + embeddable widget + review handoff</p>
+ <p>Don't miss amendments, prepare source-linked Evidence Packets, and hand off open questions to licensed review when needed. Billing follows the published ¥3/billable unit model.</p>
  </article>
 
  <article class="card" aria-labelledby="who-biz">

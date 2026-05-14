@@ -47,8 +47,30 @@ def _patch_all_pass(monkeypatch: pytest.MonkeyPatch, repo_root: pathlib.Path) ->
             return 0, json.dumps({"App": {"Name": "autonomath-api"}}), ""
         if "flyctl" in joined and "secrets" in joined and "list" in joined:
             rows = [
-                {"Name": "STRIPE_API_KEY"},
+                {"Name": "ADMIN_API_KEY"},
+                {"Name": "API_KEY_SALT"},
+                {"Name": "AUDIT_SEAL_SECRET"},
+                {"Name": "AUTONOMATH_API_HASH_PEPPER"},
+                {"Name": "AUTONOMATH_DB_SHA256"},
+                {"Name": "AUTONOMATH_DB_URL"},
                 {"Name": "CLOUDFLARE_TURNSTILE_SECRET"},
+                {"Name": "INVOICE_FOOTER_JA"},
+                {"Name": "INVOICE_REGISTRATION_NUMBER"},
+                {"Name": "JPCITE_EDGE_AUTH_SECRET"},
+                {"Name": "JPCITE_SESSION_SECRET"},
+                {"Name": "JPINTEL_CORS_ORIGINS"},
+                {"Name": "JPINTEL_ENV"},
+                {"Name": "RATE_LIMIT_FREE_PER_DAY"},
+                {"Name": "R2_ACCESS_KEY_ID"},
+                {"Name": "R2_BUCKET"},
+                {"Name": "R2_ENDPOINT"},
+                {"Name": "R2_SECRET_ACCESS_KEY"},
+                {"Name": "STRIPE_BILLING_PORTAL_CONFIG_ID"},
+                {"Name": "STRIPE_PRICE_PER_REQUEST"},
+                {"Name": "STRIPE_API_KEY"},
+                {"Name": "STRIPE_SECRET_KEY"},
+                {"Name": "STRIPE_TAX_ENABLED"},
+                {"Name": "STRIPE_WEBHOOK_SECRET"},
                 {"Name": "GBIZINFO_INGEST_APPROVED"},
             ]
             return 0, json.dumps(rows), ""
@@ -59,13 +81,14 @@ def _patch_all_pass(monkeypatch: pytest.MonkeyPatch, repo_root: pathlib.Path) ->
                 0,
                 json.dumps(
                     {
-                        "tree_sha": "f" * 64,
-                        "dirty_file_count": 0,
-                        "dirty_lane_count": 0,
-                        "lanes": [],
-                        "untracked_count": 0,
-                        "computed_at": "2026-05-07T00:00:00Z",
-                        "git_status_digest": "0M 0?? 0??=0total",
+                        "current_head": "a" * 40,
+                        "dirty_entries": 0,
+                        "status_counts": {},
+                        "lane_counts": {},
+                        "critical_lanes_present": [],
+                        "path_sha256": "f" * 64,
+                        "content_sha256": "e" * 64,
+                        "content_hash_skipped_large_files": [],
                     }
                 ),
                 "",
@@ -158,6 +181,17 @@ def test_all_pass_yields_schema_valid_yaml(monkeypatch, tmp_path):
     assert "signed_at" in payload["_meta"]
     assert payload["_meta"]["operator_email"] == "info@bookyou.net"
     assert "dirty_tree_fingerprint" in payload
+    fp = payload["dirty_tree_fingerprint"]
+    for key in (
+        "current_head",
+        "dirty_entries",
+        "status_counts",
+        "lane_counts",
+        "path_sha256",
+        "content_sha256",
+        "content_hash_skipped_large_files",
+    ):
+        assert key in fp
 
 
 def test_commit_writes_to_out_of_repo_path(monkeypatch, tmp_path):
@@ -305,6 +339,37 @@ def test_schema_mismatch_rejected(tmp_path):
     assert "dirty_tree_fingerprint" in missing
 
 
+def test_ack_schema_dirty_fingerprint_matches_gate_required_fields():
+    """Schema required fields must stay aligned with production GO gate."""
+    schema = json.loads((_MODULE_DIR / "ack_yaml_schema.json").read_text())
+    required = schema["properties"]["dirty_tree_fingerprint"]["required"]
+    assert required == [
+        "current_head",
+        "dirty_entries",
+        "status_counts",
+        "lane_counts",
+        "path_sha256",
+        "content_sha256",
+        "content_hash_skipped_large_files",
+    ]
+
+
+def test_appi_ack_accepts_fly_toml_disabled_without_flyctl(monkeypatch, tmp_path):
+    """ACK boolean 3 must follow the runtime APPI flag used by Fly deploys."""
+    monkeypatch.delenv("JPINTEL_APPI_DISABLED", raising=False)
+    monkeypatch.setattr(oas, "_which", lambda name: None)
+    (tmp_path / "fly.toml").write_text(
+        'app = "autonomath-api"\n\n[env]\n  AUTONOMATH_APPI_ENABLED = "0"\n',
+        encoding="utf-8",
+    )
+
+    result = oas.verify_appi_or_turnstile(tmp_path)
+
+    assert result.passed is True
+    assert "AUTONOMATH_APPI_ENABLED" in result.detail
+    assert result.raw_evidence["path"] == "fly.toml"
+
+
 def test_single_boolean_mode_returns_just_one_result(monkeypatch, tmp_path, capsys):
     """Case 10: --boolean=N mode runs ONE verify only and emits no YAML."""
     _patch_all_pass(monkeypatch, tmp_path)
@@ -346,3 +411,13 @@ def test_single_boolean_mode_returns_just_one_result(monkeypatch, tmp_path, caps
     block = text[start : end + 1]
     parsed = json.loads(block)
     assert parsed["boolean_name"] == "rollback_reconciliation_packet_ready"
+
+
+def test_secret_contract_reads_go_gate_required_names():
+    required, conditional, alternatives = oas._read_secret_contract(_REPO_ROOT)
+
+    assert "STRIPE_SECRET_KEY" in required
+    assert "JPCITE_SESSION_SECRET" in required
+    assert "JPCITE_EDGE_AUTH_SECRET" in required
+    assert "CLOUDFLARE_TURNSTILE_SECRET" in conditional
+    assert ("AUDIT_SEAL_SECRET", "JPINTEL_AUDIT_SEAL_KEYS") in alternatives

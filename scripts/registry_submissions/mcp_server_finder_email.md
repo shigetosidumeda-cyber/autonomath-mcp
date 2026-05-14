@@ -98,7 +98,7 @@ AutonoMath is an information-retrieval service over published Japanese primary s
 
 - Legal advice (弁護士法 §72)
 - Tax advice or filing representation (税理士法 §52)
-- Application representation (行政書士法 §1)
+- Application representation (行政書士法 §1の2)
 - Labour determinations (社労士法)
 
 Search results are snapshots at fetch time; rates / sunset dates / authorities are subject to change. Verify primary-source URLs and consult licensed professionals for individual cases.
@@ -130,7 +130,7 @@ https://jpcite.com
 
 ## §52 disclaimer fence (also in body; restated here)
 
-> AutonoMath is information retrieval over published Japanese primary sources. It does not provide tax advice or filing representation (税理士法 §52), legal advice (弁護士法 §72), application representation (行政書士法 §1), or labour determinations (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
+> AutonoMath is information retrieval over published Japanese primary sources. It does not provide tax advice or filing representation (税理士法 §52), legal advice (弁護士法 §72), application representation (行政書士法 §1の2), or labour determinations (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
 
 ---
 

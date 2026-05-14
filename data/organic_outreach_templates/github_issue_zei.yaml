@@ -3,7 +3,7 @@ channel: GitHub issue
 cohort: 税理士事務所
 topic: "Add jpcite-mcp to MCP catalog: 税理士法 §52 fence-aware Japanese tax & subsidy server"
 outline:
-  - jpcite-mcp tool description (139 tools at default gates) を catalog README に追加提案
+  - jpcite-mcp tool description (151 tools) を catalog README に追加提案
   - audit_seal pack + tax_rulesets v2 (50 rows) + foreign_capital_eligibility 引用
   - claude.ai cookbook / awesome-mcp / Perplexity / OpenAI / jgrants-mcp のうち rotate
   - pip install autonomath-mcp + claude_desktop_config.json snippet

@@ -1,7 +1,7 @@
 """DEEP-38 業法 fence violation detector module.
 
 Single reusable primitive that detects 7 業法 (税理士法 §52 / 弁護士法 §72 /
-行政書士法 §1 / 司法書士法 §3 / 弁理士法 §75 / 社労士法 §27 /
+行政書士法 §1の2 / 司法書士法 §3 / 弁理士法 §75 / 社労士法 §27 /
 公認会計士法 §47条の2) forbidden phrase violations in JP / EN text. Used by
 five consumers (DEEP-23 / DEEP-25 / DEEP-27 / DEEP-29 / DEEP-31), so the
 contract is intentionally minimal: pure function, dict-list output, no LLM

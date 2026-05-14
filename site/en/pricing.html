@@ -151,11 +151,11 @@
     {"@type": "Question", "name": "Are there tiers?", "acceptedAnswer": {"@type": "Answer", "text": "No. ¥3/billable unit fully metered only — no Free / Starter / Pro / Enterprise. Normal search/detail calls are 1 unit; batch/export formulas are shown before use."}},
     {"@type": "Question", "name": "Volume discount for high usage?", "acceptedAnswer": {"@type": "Answer", "text": "No. The public unit price is ¥3/billable unit (¥3.30 tax inclusive). No sales negotiation, no custom quotes."}},
     {"@type": "Question", "name": "Is signup required?", "acceptedAnswer": {"@type": "Answer", "text": "No. The first 3 req/day per IP are usable without signup (resets at JST next-day 00:00). After the anonymous allowance, issue an API key + register a card in Stripe."}},
-    {"@type": "Question", "name": "Cancellation procedure?", "acceptedAnswer": {"@type": "Answer", "text": "Just delete the API key in the dashboard, or remove the card in Stripe Customer Portal. No cancellation fee, no notice period, no retention call. The account reverts to the anonymous 3 req/day allowance immediately."}},
+    {"@type": "Question", "name": "Cancellation procedure?", "acceptedAnswer": {"@type": "Answer", "text": "Cancel the subscription from Stripe Customer Portal. API access remains valid through the end of the current billing month, and current-month usage is billed at ¥3/billable unit. Deleting or rotating an API key only disables that key; it is not a billing cancellation."}},
     {"@type": "Question", "name": "Stripe auto-billing? Qualified Japanese invoice?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. End-of-month metered usage is auto-charged to the registered card on day 1 of the following month. Stripe Tax issues a qualified Japanese invoice that meets the input-tax-credit requirements."}},
     {"@type": "Question", "name": "Corporations and sole proprietors?", "acceptedAnswer": {"@type": "Answer", "text": "Both. Same ¥3/billable unit for taxable / tax-exempt entities, corporations, and sole proprietors. Every invoice carries the qualified Japanese invoice registration — taxable entities can claim the input-tax credit."}},
     {"@type": "Question", "name": "Can I set a monthly spend cap?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set monthly_cap_yen from the dashboard or POST /v1/me/cap. For broad batch or fanout workflows, also use X-Cost-Cap-JPY, Idempotency-Key, and X-Client-Tag to control request budget, retries, and customer/project attribution."}},
-    {"@type": "Question", "name": "How is a billable unit defined?", "acceptedAnswer": {"@type": "Answer", "text": "Normal HTTP / MCP search and detail calls are 1 billable unit. Batch, export, and bulk-evaluation endpoints may bill multiple units based on deduped IDs or bundle size. /v1/healthz and /v1/me/* meta endpoints are uncounted."}},
+    {"@type": "Question", "name": "How is a billable unit defined?", "acceptedAnswer": {"@type": "Answer", "text": "Normal HTTP / MCP search and detail calls are 1 billable unit. Batch, export, and bulk-evaluation endpoints may bill multiple units based on deduped IDs or bundle size. /healthz and /v1/me/* meta endpoints are uncounted."}},
     {"@type": "Question", "name": "Data coverage?", "acceptedAnswer": {"@type": "Answer", "text": "As of April 2026: 14,472 Japanese public programs (subsidies, loans, tax incentives, certifications; 11,601 searchable), 2,286 adoption case studies, 108 loan programs with three-axis risk decomposition, 1,185 enforcement actions, e-Gov law metadata and article references (coverage varies by record), 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. Most public rows carry primary-source URL + fetched_at metadata; known aggregator pages are excluded from source fields where detected."}}
   ]
 }
@@ -173,6 +173,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -210,8 +284,17 @@
  ¥3.30 tax inclusive. <strong>No fixed monthly</strong>. <strong>No contract term</strong>. <strong>No cancellation fee</strong>.
  </p>
  <p style="font-size:15px;line-height:1.7;margin:-10px 0 24px;color:var(--text-muted);max-width:780px;">
- jpcite is an evidence prefetch layer, not a low-cost generic search API. AI agents, BPO teams, and professional-service systems can use it before answer generation, company folder creation, recurring client review, and public-record DD checks. The public price is ¥3 per billable unit, and production workflows can control spend with monthly caps, request-level cost caps, idempotency, and customer/project tags.
+ jpcite is an evidence prefetch layer, not a low-cost generic search API. AI agents, professional-service systems, and internal workflows can use it before answer generation, company folder creation, recurring client review, and public-record DD checks. The public price is ¥3 per billable unit, and production workflows can control spend with monthly caps, request-level cost caps, idempotency, and customer/project tags.
  </p>
+ <section aria-labelledby="token-cost-calc-title" style="margin:0 0 24px;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:var(--bg-alt,#fafaf9);padding:16px 18px;">
+ <h2 id="token-cost-calc-title" style="font-size:18px;margin:0 0 8px;">Cost formula versus raw long-document input</h2>
+ <p style="font-size:14px;line-height:1.7;margin:0 0 10px;color:var(--text);">If you send source chunks directly to an LLM, cost is roughly <code>raw document tokens × external model input price + output tokens</code>. With jpcite, cost is roughly <code>¥3 per billable unit + the much smaller token cost of reading a compact Evidence Packet</code>.</p>
+ <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:var(--text-muted);">
+ <li>This is most useful for repeated agents that would otherwise re-send long official PDFs, ministry pages, or search-result chunks.</li>
+ <li>It is not always cheaper for one-off lightweight questions where ordinary search or a short source page is enough.</li>
+ <li>External LLM prices can change. jpcite keeps the retrieval/evidence part fixed at ¥3 per billable unit and separate from model inference cost.</li>
+ </ul>
+ </section>
 
  <div class="hero-calc" style="margin:0 0 28px;border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;max-width:600px;">
  <table style="width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;">
@@ -256,9 +339,9 @@
  </section>
 
  <section aria-labelledby="automation-pricing-title" style="margin-top:32px;">
- <h2 id="automation-pricing-title" class="section-title">Production agent / BPO workflows: set caps first</h2>
+ <h2 id="automation-pricing-title" class="section-title">Production agent workflows: set caps first</h2>
  <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
- For recurring AI agent, BPO, CRM, or review workflows, set previews, monthly caps, request-level caps, idempotency, and customer/project tags before broad runs. Current public self-serve pricing is ¥3 tax-exclusive per billable unit.
+ For recurring AI agent, CRM, professional-service, or review workflows, set previews, monthly caps, request-level caps, idempotency, and customer/project tags before broad runs. Current public self-serve pricing is ¥3 tax-exclusive per billable unit.
  </p>
  <div class="cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;max-width:920px;">
  <article class="card" style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;">
@@ -285,12 +368,12 @@
  </thead>
  <tbody>
  <tr>
- <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">Tax/BPO: 50 client files checked 10 times/month</td>
+ <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">Tax review: 50 client files checked 10 times/month</td>
  <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">500 units</td>
  <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-weight:600;">¥1,650</td>
  </tr>
  <tr>
- <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">Subsidy BPO: 200 intake cases triaged with 3 calls each</td>
+ <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">Subsidy intake: 200 cases triaged with 3 calls each</td>
  <td style="padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);">600 units</td>
  <td style="text-align:right;padding:12px 14px;border-bottom:1px solid var(--border,#e5e7eb);font-weight:600;">¥1,980</td>
  </tr>
@@ -411,7 +494,7 @@
 
  <section aria-labelledby="api-title" style="margin-top:56px;">
  <h2 id="api-title" class="section-title">API + MCP</h2>
- <p style="margin:-12px 0 24px;color:var(--text-muted);max-width:660px;">For AI developers and enterprise RAG. 151 MCP tools plus REST. The 3 req/day per IP anonymous daily allowance is usable without signup or card.</p>
+ <p style="margin:-12px 0 24px;color:var(--text-muted);max-width:660px;">For AI developers and enterprise evidence workflows. 151 MCP tools plus REST. The 3 req/day per IP anonymous daily allowance is usable without signup or card.</p>
  <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);">
 
  <article class="price-card" aria-labelledby="api-free">
@@ -430,7 +513,7 @@
 
  <article class="price-card highlight" aria-labelledby="api-paid">
  <h2 id="api-paid">Metered</h2>
- <p class="tier-desc">Production / large RAG / agents</p>
+ <p class="tier-desc">Production / large workflows / agents</p>
  <p class="price">¥<span data-fact="price_per_req_inc_tax">3.30</span> <small style="font-size:14px;font-weight:500;color:var(--text-muted);">/ unit (tax incl.)</small></p>
  <p class="price-unit">¥<span data-fact="price_per_req">3</span>.00 tax exclusive + 10% JCT, Stripe metered</p>
  <p class="price-unit">For recurring workflows, combine monthly caps, <code>X-Cost-Cap-JPY</code>, <code>Idempotency-Key</code>, and <code>X-Client-Tag</code> to control budget and attribute usage by customer or project.</p>
@@ -440,7 +523,7 @@
  <li>fields=full (enriched + source_mentions + lineage)</li>
  <li>Months with 0 paid usage cost ¥0</li>
  <li>Qualified Japanese invoice auto-issued by Stripe</li>
- <li>Cancel anytime by removing the card in Stripe Customer Portal</li>
+<li>Cancel anytime from the Stripe Customer Portal</li>
  </ul>
  <details style="margin:12px 0 14px;font-size:13px;color:var(--text-muted);">
  <summary style="cursor:pointer;font-weight:600;color:var(--text);">Before you subscribe</summary>
@@ -448,7 +531,7 @@
  <li><strong>¥<span data-fact="price_per_req_inc_tax">3.30</span> tax inclusive</strong> per billable unit (¥<span data-fact="price_per_req">3</span> tax exclusive + 10% JCT). Normal search/detail calls are 1 unit.</li>
  <li><strong>Batch/export endpoints can bill multiple units.</strong> For example, <code>/v1/programs/batch</code> bills deduped IDs × ¥3. Each high-fan-out endpoint documents its formula and supports cost caps.</li>
  <li>Usage from JST 00:00 on day 1 to 23:59 on the last day of the month is auto-charged on day 1 of the following month.</li>
- <li>No minimum term, no cancellation fee. Removing the card returns the account to the anonymous <span data-fact="anonymous_quota_per_day">3</span> req/day allowance immediately.</li>
+<li>No minimum term, no cancellation fee. Cancel from the Stripe Customer Portal; API access remains valid through the current billing month and current-month usage is still billed.</li>
  <li>Information service only; no document drafting, no legal advice, no tax advice.</li>
  </ul>
  </details>
@@ -553,7 +636,7 @@
 	                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 	                body: JSON.stringify({
 	                  success_url: 'https://jpcite.com/en/success.html?session_id={CHECKOUT_SESSION_ID}',
-	                  cancel_url: 'https://jpcite.com/en/pricing?cancelled=1',
+                  cancel_url: 'https://jpcite.com/en/pricing.html?cancelled=1',
 	                  locale: 'en'
                 }),
                 signal: ctrl.signal
@@ -596,7 +679,7 @@
  <h2 id="not-for-title" class="section-title" style="font-size:22px;margin:0 0 14px;">When NOT to use us</h2>
  <p style="margin:0 0 14px;color:var(--text-muted);line-height:1.7;">jpcite is an <strong>information-only</strong> service. If any of the following apply, please use a different option.</p>
  <ul style="margin:0 0 0 20px;padding:0;line-height:1.9;color:var(--text);font-size:15px;">
- <li><strong>You need tax representation, tax advice, or filing on your behalf</strong> — prohibited under 税理士法 §52. Please consult a registered <a href="advisors.html">tax accountant or 社労士</a>.</li>
+ <li><strong>You need tax representation, tax advice, or filing on your behalf</strong> — prohibited under 税理士法 §52. Please consult a registered <a href="advisors.html">tax accountant</a>, or an attorney where legal advice is required.</li>
  <li><strong>You need real-time statute updates</strong> — source updates are scheduled and can lag by up to 24 hours. For instant amendment reflection, refer to e-Gov or 官報 directly.</li>
  <li><strong>You want adoption-rate guarantees</strong> — we display the rates that public agencies publish; we do not predict or guarantee adoption. The application decision rests with the applicant.</li>
  <li><strong>You require custom contracts or quotes</strong> — fully self-serve only. The published price applies to every customer equally.</li>
@@ -614,7 +697,7 @@
  <article class="card">
  <h3>Cancel anytime</h3>
  <p class="card-lead">No minimum, no cancellation fee</p>
- <p>Self-cancel from Stripe Customer Portal. The API reverts to the 3 req/day per IP anonymous daily allowance. No notice period, no retention call, no fee.</p>
+ <p>Cancel the subscription from Stripe Customer Portal. API access remains valid through the end of the current billing month, and current-month usage is billed at ¥3/billable unit. Deleting or rotating an API key only disables that key; it is not a billing cancellation.</p>
  </article>
  <article class="card">
  <h3>Statutory disclosures</h3>
@@ -641,7 +724,7 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Cancellation procedure?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Just delete the API key in the dashboard, or remove the card in Stripe Customer Portal. No cancellation fee, no notice period, no retention call. Reverts to anonymous 3 req/day immediately.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Cancel the subscription from Stripe Customer Portal. API access remains valid through the end of the current billing month, and current-month usage is billed at ¥3/billable unit. Deleting or rotating an API key only disables that key; it is not a billing cancellation.</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Stripe auto-billing? Qualified Japanese invoice?</summary>
@@ -657,7 +740,7 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">How is a billable unit defined?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Normal HTTP / MCP search and detail calls are 1 billable unit. Batch, export, and bulk-evaluation endpoints may bill multiple units based on deduped IDs or bundle size; those formulas are shown before use. <code>/v1/healthz</code> and <code>/v1/me/*</code> meta endpoints are uncounted.</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">Normal HTTP / MCP search and detail calls are 1 billable unit. Batch, export, and bulk-evaluation endpoints may bill multiple units based on deduped IDs or bundle size; those formulas are shown before use. <code>/healthz</code> and <code>/v1/me/*</code> meta endpoints are uncounted.</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">Data coverage?</summary>
@@ -669,52 +752,7 @@
  <section aria-labelledby="bottom-cta-title" style="margin-top:56px;padding:32px 24px;border:1px solid var(--accent);border-radius:12px;background:var(--accent-soft,#ecfdf5);">
  <h2 id="bottom-cta-title" class="section-title" style="margin:0 0 12px;">30 seconds to API key, 5 minutes to first call, no fixed monthly</h2>
  <p style="margin:0 0 18px;color:var(--text);font-size:16px;line-height:1.7;max-width:680px;">
- ¥3 per billable unit (¥3.30 tax incl.) fully metered. First 3 req/day per IP free. Months you do not use cost ¥0. To cancel, delete the API key in the dashboard — no fee.
- </p>
- <div style="display:flex;flex-wrap:wrap;gap:12px;">
- <a class="btn btn-primary" href="#api-paid" data-cta-variant="bottom-issue-key" style="font-size:16px;padding:13px 22px;">Issue API key</a>
- <a class="btn btn-secondary" href="../playground.html" data-cta-variant="bottom-playground" style="font-size:16px;padding:13px 22px;">Open Japanese REST playground</a>
- </div>
- </section>
-
- </div>
-</main>
-
-<div class="container">
-</div>
-
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
- <p class="footer-tag">Japanese public-program platform — ¥3 per billable unit.</p>
- </div>
- <nav class="footer-nav" aria-label="Footer">
- <a href="about.html">About</a>
- <a href="getting-started.html">Getting started</a>
- <a href="pricing.html">Pricing</a>
- <a href="tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
- </div>
-</footer>
-
-<script src="/assets/trust-strip.en.js" defer></script>
-
-</body>
-</html>
-ee-axis risk decomposition), <span data-fact="enforcement_cases_total">1,185</span> enforcement actions, e-Gov law metadata and article references (coverage varies by record), 2,065 court decisions, 362 public bids, 13,801 invoice registrants, 50 tax rulesets. Most public rows carry primary-source URL + fetched_at metadata; known aggregator pages are excluded from source fields where detected. All figures are sourced on the <a href="facts.html">fact sheet</a>.</p>
- </details>
- </div>
- </section>
-
- <section aria-labelledby="bottom-cta-title" style="margin-top:56px;padding:32px 24px;border:1px solid var(--accent);border-radius:12px;background:var(--accent-soft,#ecfdf5);">
- <h2 id="bottom-cta-title" class="section-title" style="margin:0 0 12px;">30 seconds to API key, 5 minutes to first call, no fixed monthly</h2>
- <p style="margin:0 0 18px;color:var(--text);font-size:16px;line-height:1.7;max-width:680px;">
- ¥3 per billable unit (¥3.30 tax incl.) fully metered. First 3 req/day per IP free. Months you do not use cost ¥0. To cancel, delete the API key in the dashboard — no fee.
+ ¥3 per billable unit (¥3.30 tax incl.) fully metered. First 3 req/day per IP free. Months you do not use cost ¥0. Cancel from Stripe Customer Portal; key deletion only disables that key.
  </p>
  <div style="display:flex;flex-wrap:wrap;gap:12px;">
  <a class="btn btn-primary" href="#api-paid" data-cta-variant="bottom-issue-key" style="font-size:16px;padding:13px 22px;">Issue API key</a>

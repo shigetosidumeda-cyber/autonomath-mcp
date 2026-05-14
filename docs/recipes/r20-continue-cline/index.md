@@ -42,7 +42,7 @@ VSCode / JetBrains で Continue 拡張または Cline (旧 Claude Dev) を使う
 ## 実行 (curl / Python / TypeScript)
 ### curl
 ```bash
-curl https://api.jpcite.com/v1/healthz
+curl https://api.jpcite.com/healthz
 
 which uvx
 uvx --version

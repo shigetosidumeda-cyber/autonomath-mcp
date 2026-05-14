@@ -94,8 +94,8 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "顧問先 30 社の月次 fan-out コストは?", "acceptedAnswer": {"@type": "Answer", "text": "30 顧問 × 10 req = 300 req/月 = ¥900/月 (税別) が目安。API fee delta 参考値は ¥89,100/月です。saved_searches.profile_ids で per-client fan-out 可能。"}},
-    {"@type": "Question", "name": "中小企業診断士法との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "中小企業診断士は国家資格ですが独占業務は持たないため、業法 fence は行政書士法 §1 (申請書面 generation 不可) と弁護士法 §72 (法律判断 不可) を遵守します。"}},
-    {"@type": "Question", "name": "申請 kit はそのまま提出できますか?", "acceptedAnswer": {"@type": "Answer", "text": "いいえ。scaffold (cover letter draft + 必要書類 checklist + 一次 URL) のみで、最終申請書面は診断士本人の判断で作成してください (行政書士法 §1 fence)。"}}
+    {"@type": "Question", "name": "中小企業診断士法との整合は?", "acceptedAnswer": {"@type": "Answer", "text": "中小企業診断士は国家資格ですが独占業務は持たないため、業法 fence は行政書士法 §1の2・§19 (申請書面 generation 不可) と弁護士法 §72 (法律判断 不可) を遵守します。"}},
+    {"@type": "Question", "name": "申請 kit はそのまま提出できますか?", "acceptedAnswer": {"@type": "Answer", "text": "いいえ。scaffold (cover letter draft + 必要書類 checklist + 一次 URL) のみで、最終申請書面は有資格者または利用者本人の責任で作成してください (行政書士法 §1の2・§19 fence)。"}}
   ]
 }
 </script>
@@ -134,7 +134,34 @@
       "name": "jpcite",
       "url": "https://jpcite.com",
       "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"}
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
     },
     {
       "@type": "UnitPriceSpecification",
@@ -193,7 +220,7 @@
  <section class="legal-fence" style="background:var(--bg-warning,#fff8e1);border-left:4px solid var(--accent,#d4a017);padding:20px 0;" aria-labelledby="fence-title">
  <div class="container">
  <h2 id="fence-title" class="visually-hidden">業法 fence</h2>
- <p style="font-size:15px;line-height:1.8;margin:0;color:var(--text);"><strong>行政書士法 §1 + 弁護士法 §72 fence (重要)</strong>: jpcite は<strong>申請書面の作成・提出代理・法律判断を一切行いません</strong>。本サービスは事実検索 + scaffold (cover letter draft + 必要書類 checklist) + 一次 URL 提供のみ、最終申請書面は診断士本人の判断で行政書士法 §1 範囲内で作成してください。</p>
+ <p style="font-size:15px;line-height:1.8;margin:0;color:var(--text);"><strong>行政書士法 §1の2・§19 + 弁護士法 §72 fence (重要)</strong>: jpcite は<strong>申請書面の作成・提出代理・法律判断を一切行いません</strong>。本サービスは事実検索 + scaffold (cover letter draft + 必要書類 checklist) + 一次 URL 提供のみ、最終申請書面は有資格者または利用者本人の責任で作成してください。</p>
  </div>
  </section>
 
@@ -284,7 +311,7 @@
  </section>
 
  <p class="legal-note" style="font-size:13px;color:var(--text-muted);margin:24px auto;max-width:920px;padding:0 24px;">
-本サービスは情報検索です。申請書面の作成・提出代理は行政書士法 §1 で資格者の範囲、法律判断は弁護士法 §72 で資格者の専権事項であり、jpcite は代行を一切行いません。個別具体的な判断は有資格者にご相談ください。
+本サービスは情報検索です。申請書面の作成・提出代理は行政書士法 §1の2・§19 で資格者の範囲、法律判断は弁護士法 §72 で資格者の専権事項であり、jpcite は代行を一切行いません。個別具体的な判断は有資格者にご相談ください。
 </p>
 </main>
 

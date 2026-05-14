@@ -131,7 +131,7 @@ _F2_COMMITTED = frozenset({"program", "law", "case_study"})
 _DISCLAIMER = (
     "embedding-based 類似度 surface; 出力は情報検索結果であり、税務・法務・"
     "経営判断を代替しません。最終確認は一次資料 (source_url) と専門家確認を"
-    "必ず経てください。§52 / §47条の2 / 行政書士法 §1 sensitive surface."
+    "必ず経てください。§52 / §47条の2 / 行政書士法 §1の2 sensitive surface."
 )
 
 

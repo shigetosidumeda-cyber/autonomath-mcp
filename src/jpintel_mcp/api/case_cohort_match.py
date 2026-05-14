@@ -116,7 +116,7 @@ class CohortMatchBody(BaseModel):
         "- ``sparsity_notes`` — honest disclosure of which fields are thin "
         "(amount populated on ~1.9% of case_studies, 0% of adoption_records).\n\n"
         "**Single ¥3/req billing event.** No LLM call, no destructive write. "
-        "§52 / §47条の2 / 行政書士法 §1 disclaimer envelope on every result — "
+        "§52 / §47条の2 / 行政書士法 §1の2 disclaimer envelope on every result — "
         "output is information retrieval, not 申請代理 / 税務助言 / 経営判断."
     ),
     responses={

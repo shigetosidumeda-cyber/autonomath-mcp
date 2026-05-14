@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>概要 URL</title>
@@ -218,15 +218,6 @@
   </item>
 
   <item>
-    <title>特別支援教育・児童生徒支援課</title>
-    <link>https://jpcite.com/programs/tokubetsu-shien-kyouiku-jidou-seito-shien-ka-4f46ad.html</link>
-    <description>Tier A / 山梨県 / 山梨県 / support 出典: https://www.pref.yamanashi.jp/tokushi-jiseishien/index.html</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-b81c88f70d</guid>
-    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
-  </item>
-
-  <item>
     <title>農林水産業</title>
     <link>https://jpcite.com/programs/nourinsuisangyou-bd712a.html</link>
     <description>Tier A / 山梨県 / 山梨県 / subsidy 出典: https://www.pref.yamanashi.jp/shigoto/hojo/norin/index.html</description>
@@ -380,33 +371,6 @@
   </item>
 
   <item>
-    <title>遊休農地解消支援事業</title>
-    <link>https://jpcite.com/programs/yuukyuu-nouchi-kaishou-shien-jigyou-fc658e.html</link>
-    <description>Tier B / 山梨県 / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-189a0be836</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>新規就農者支援事業</title>
-    <link>https://jpcite.com/programs/shinki-shuunou-mono-shien-jigyou-11007a.html</link>
-    <description>Tier B / 山梨県 / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-1a38215c3a</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>親元就農者経営安定支援事業</title>
-    <link>https://jpcite.com/programs/oyamoto-shuunou-mono-keiei-antei-shien-jigyou-169aa5.html</link>
-    <description>Tier C / 山梨県 出典: https://www.city.minami-alps.yamanashi.jp/docs/10757.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-205e37138c</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>耕作放棄地等流動化促進事業奨励補助金制度</title>
     <link>https://jpcite.com/programs/kousaku-houki-chi-nado-ryuudouka-sokushin-jigyou-shourei-90a869.html</link>
     <description>Tier C / 山梨県 / 山梨県南アルプス市 / subsidy 出典: https://www.city.minami-alps.yamanashi.jp/docs/2210.html</description>
@@ -421,15 +385,6 @@
     <description>Tier C / 山梨県 / subsidy / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-2681d58bef</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>山梨市木造住宅耐震改修等支援事業費補助金</title>
-    <link>https://jpcite.com/programs/yamanashishi-mokuzou-juutaku-taishin-kaishuu-nado-shien-aad099.html</link>
-    <description>Tier B / 山梨県 出典: https://www.city.yamanashi.yamanashi.jp/soshiki/20/1432.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-279894b58c</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -533,15 +488,6 @@
   </item>
 
   <item>
-    <title>世界農業遺産周遊ツアー補助金</title>
-    <link>https://jpcite.com/programs/sekai-nougyou-isan-shuuyuu-tsuaa-hojokin-6d41ae.html</link>
-    <description>Tier B / 山梨県 出典: https://www.city.fuefuki.yamanashi.jp/kanko/sangyo/kankosangyo/sekainogyoisankatsuyou.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-42cd746213</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>南アルプス市_中高年新規就農者支援事業</title>
     <link>https://jpcite.com/programs/mun-192066-001-minami-arupusu-shi-chuukounen-shinki-shuunou-6e71a6.html</link>
     <description>Tier B / 山梨県 / subsidy / 上限 150万円 出典: https://www.city.minami-alps.yamanashi.jp/docs/3357.html</description>
@@ -556,15 +502,6 @@
     <description>Tier B / 山梨県 / subsidy / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-4e7f5d10d3</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>新規就農農業後継者支援事業</title>
-    <link>https://jpcite.com/programs/shinki-shuunou-nougyou-koukeisha-shien-jigyou-934b74.html</link>
-    <description>Tier B / 山梨県 / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-53c348d73f</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -632,15 +569,6 @@
   </item>
 
   <item>
-    <title>狩猟者確保対策事業</title>
-    <link>https://jpcite.com/programs/shuryou-mono-kakuho-taisaku-jigyou-455100.html</link>
-    <description>Tier B / 山梨県 / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-6a1872b9e2</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>甲州市農福連携推進農業者支援事業費補助金</title>
     <link>https://jpcite.com/programs/koushuu-shi-nou-fuku-renkei-suishin-nougyou-mono-shien-a976e1.html</link>
     <description>Tier B / 山梨県 / 山梨県甲州市 / subsidy / 上限 10万円 出典: https://www.city.koshu.yamanashi.jp/docs/2023083000031/</description>
@@ -659,15 +587,6 @@
   </item>
 
   <item>
-    <title>農業用機械等購入補助事業</title>
-    <link>https://jpcite.com/programs/nougyouyou-kikai-nado-kounyuu-hojo-jigyou-aadb11.html</link>
-    <description>Tier B / 山梨県 / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-73b38ef08d</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>農業用機械等購入補助金</title>
     <link>https://jpcite.com/programs/nougyouyou-kikai-nado-kounyuu-hojokin-c20561.html</link>
     <description>Tier C / 山梨県 / 山梨県笛吹市 / subsidy / 上限 10万円 出典: https://www.city.fuefuki.yamanashi.jp/_res/projects/default_project/_page_/001/007/473/nougyou_kiki_hojo.pdf</description>
@@ -682,15 +601,6 @@
     <description>Tier C / 山梨県 / subsidy / 上限 10万円 出典: https://www.city.fuefuki.yamanashi.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-7dfe1f11c5</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>甲州市農福連携推進農業者支援事業費補助金</title>
-    <link>https://jpcite.com/programs/koushuu-shi-nou-fuku-renkei-suishin-nougyou-mono-shien-2f959b.html</link>
-    <description>Tier B / 山梨県 / 上限 10万円 出典: https://www.city.koshu.yamanashi.jp/docs/2023083000031/</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-7eb92bc99e</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -727,15 +637,6 @@
     <description>Tier C / 山梨県 / subsidy / 上限 100万円 出典: https://www.city.fuefuki.yamanashi.jp/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-941aa89178</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>甲州市遊休農地再生支援事業補助金</title>
-    <link>https://jpcite.com/programs/koushuu-shi-yuukyuu-nouchi-saisei-shien-jigyou-hojokin-7ba578.html</link>
-    <description>Tier C / 山梨県 出典: https://www.city.koshu.yamanashi.jp/</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-949f98f5f9</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -781,15 +682,6 @@
     <description>Tier B / 山梨県 / 山梨県笛吹市 / subsidy / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-a07bdd86c2</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>有害鳥獣被害防止電気柵等設置費補助金</title>
-    <link>https://jpcite.com/programs/yuugai-choujuu-higai-boushi-denki-saku-nado-setchi-hi-836727.html</link>
-    <description>Tier B / 山梨県 / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-a64c6ddd90</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +799,42 @@
     <description>Tier B / 山梨県 / 山梨県北杜市 / subsidy 出典: https://www.city.hokuto.yamanashi.jp/fs/4/1/2/7/3/1/_/____________27664_marked.pdf</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-e052daf356</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>北杜市_経営所得安定対策</title>
+    <link>https://jpcite.com/programs/hokuto-shi-keiei-shotoku-antei-taisaku-0b9b2c.html</link>
+    <description>Tier B / 山梨県 / subsidy / 上限 100万円 出典: https://www.city.hokuto.yamanashi.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-e328f7ff97</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>山梨_親元就農促進支援事業</title>
+    <link>https://jpcite.com/programs/pref-19-001-yamanashi-oyamoto-shuunou-sokushin-shien-jigyou-0f2e35.html</link>
+    <description>Tier B / 山梨県 / subsidy / 上限 100万円 出典: https://www.pref.yamanashi.jp/ninaite/ninaiteshien/1_shunoushien/shunouteityaku.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-e8e2cbeccf</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>甲州市_狩猟免許等取得支援事業補助金交付制度</title>
+    <link>https://jpcite.com/programs/koushuu-shi-shuryou-menkyo-nado-shutoku-shien-jigyou-dcdfc3.html</link>
+    <description>Tier A / 山梨県 / subsidy / 上限 5万円 出典: https://www.city.koshu.yamanashi.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-f7e1e5c508</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>新規就農農業後継者支援事業</title>
+    <link>https://jpcite.com/programs/shinki-shuunou-nougyou-koukeisha-shien-jigyou-e7e4e6.html</link>
+    <description>Tier B / 山梨県 / 山梨県笛吹市 / subsidy / 上限 3万円 出典: https://www.city.fuefuki.yamanashi.jp/norinshinko/sangyo/noringyo/r4nourinshinkouhojyoichiran.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-fe3861382a</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

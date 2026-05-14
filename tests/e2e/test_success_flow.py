@@ -22,7 +22,7 @@ from playwright.async_api import expect
 if TYPE_CHECKING:
     from playwright.async_api import Page
 
-_FAKE_KEY = "jpintel_test_" + "a" * 40
+_FAKE_KEY = "jc_test_" + "a" * 40
 _FAKE_RESPONSE = '{"api_key": "' + _FAKE_KEY + '", "tier": "paid", "customer_id": "cus_test_e2e"}'
 
 
@@ -41,7 +41,10 @@ async def test_success_page_renders_key_block_and_curl_when_api_succeeds(
     await page.route(re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle)
 
     # session_id must match /^cs_[a-zA-Z0-9_]+$/ per success.html's regex.
-    await page.goto(url_for("/success.html?session_id=cs_test_e2e_fake_12345"))
+    await page.goto(
+        url_for("/success.html?session_id=cs_test_e2e_fake_12345"),
+        wait_until="commit",
+    )
 
     # Success state becomes visible after the (stubbed) POST resolves.
     success = page.locator("#state-success")
@@ -73,7 +76,7 @@ async def test_success_page_renders_key_block_and_curl_when_api_succeeds(
 async def test_success_page_shows_missing_session_state_without_query(page: Page, url_for) -> None:
     # No session_id query → success.html should render the "missing" state
     # immediately (the inline script runs getSessionId() and falls through).
-    await page.goto(url_for("/success.html"))
+    await page.goto(url_for("/success.html"), wait_until="commit")
 
     missing = page.locator("#state-error-missing")
     await expect(missing).to_be_visible()
@@ -94,7 +97,10 @@ async def test_success_page_shows_unpaid_state_on_402(page: Page, url_for) -> No
         )
 
     await page.route(re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle)
-    await page.goto(url_for("/success.html?session_id=cs_test_unpaid_00001"))
+    await page.goto(
+        url_for("/success.html?session_id=cs_test_unpaid_00001"),
+        wait_until="commit",
+    )
 
     unpaid = page.locator("#state-error-unpaid")
     await expect(unpaid).to_be_visible()
@@ -115,7 +121,10 @@ async def test_success_page_shows_conflict_state_on_409(page: Page, url_for) -> 
         )
 
     await page.route(re.compile(r".*/v1/billing/keys/from-checkout.*"), _handle)
-    await page.goto(url_for("/success.html?session_id=cs_test_conflict_00001"))
+    await page.goto(
+        url_for("/success.html?session_id=cs_test_conflict_00001"),
+        wait_until="commit",
+    )
 
     conflict = page.locator("#state-error-conflict")
     await expect(conflict).to_be_visible()

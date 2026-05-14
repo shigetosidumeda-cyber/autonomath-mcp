@@ -106,9 +106,9 @@ Type the command (or paste it — keep key actions at a readable pace). Hit Ente
 ### Beat 3 — MCP in Claude Desktop (0:14–0:24) — 10 sec
 
 **Visual**
-Claude Desktop, full screen. The left sidebar shows the "autonomath" MCP server with a green connected indicator. The tool count shows "139 tools available" (visible in the MCP server detail panel; 31 core + 16 autonomath). Compose the following prompt in the chat input field — type it slowly enough that it can be read on screen:
+Claude Desktop, full screen. The left sidebar shows the "autonomath" MCP server with a green connected indicator. The tool count shows "151 tools available" (visible in the MCP server detail panel). Compose the following prompt in the chat input field — type it slowly enough that it can be read on screen:
 
-> ⚠️ 動画の再録が必要: Claude Desktop UI 内の "31 tools" 表示を 139 tools に更新するには screencast を撮り直す必要があります。copy 更新だけでは UI と narration がズレます。
+> ⚠️ 動画の再録が必要: Claude Desktop UI 内の tool count 表示を 151 tools に更新するには screencast を撮り直す必要があります。copy 更新だけでは UI と narration がズレます。
 
 ```
 東京都の中小企業が使える IT 補助金を、
@@ -119,12 +119,12 @@ Do not hit Enter yet. Hold for 1.5 seconds so the caption can be read, then hit 
 
 **Caption**
 ```
-JP: Claude Desktop に MCP 接続・139 ツール
-EN: Claude Desktop MCP · 139 tools
+JP: Claude Desktop に MCP 接続・151 ツール
+EN: Claude Desktop MCP · 151 tools
 ```
 Character counts — JP: 22 chars (OK). EN: 30 chars (OK).
 
-> ⚠️ 動画の再録が必要: burned-in caption の "31 ツール" / "31 tools" を 47 に書き換えるには、post 段階で caption を burn し直す (または再録する) 必要があります。copy 更新だけでは表示がズレます。
+> ⚠️ 動画の再録が必要: burned-in caption の tool count を 151 に書き換えるには、post 段階で caption を burn し直す (または再録する) 必要があります。copy 更新だけでは表示がズレます。
 
 **Action**
 Open Claude Desktop settings briefly to show the MCP server list (green dot next to "autonomath"). Return to chat. Type the prompt. Pause. Hit Enter.
@@ -195,7 +195,7 @@ uvx autonomath-mcp
 
 The MCP server starts clean — no error output. The startup line reads:
 ```
-jpcite MCP server ready (139 tools: 31 core + 16 autonomath, protocol 2025-06-18)
+jpcite MCP server ready (151 tools, protocol 2025-06-18)
 ```
 
 > ⚠️ 動画の再録が必要: Beat 6 の terminal に映る `autonomath-mcp` 起動ログは server 側の実行時文字列なので、screencast を撮り直さないと古い "31 tools" 表示のまま残ります。
@@ -257,7 +257,7 @@ Type `uvx autonomath-mcp` at a readable pace. Watch it boot. Hold. No further in
 ### Claude Desktop
 - [ ] jpcite MCP server configured and connected (green dot)
 - [ ] No other MCP servers connected (minimise visual noise)
-- [ ] MCP tool list visible: confirm "139 tools available" appears before recording (31 core + 16 autonomath; requires v0.2.0 server with `AUTONOMATH_ENABLED=true`)
+- [ ] MCP tool list visible: confirm "151 tools available" appears before recording (requires v0.4.0 server)
 
 ### API readiness
 - [ ] Pre-run the Beat 4 query once and save the response to `~/.cache/autonomath-screencast-takes/beat4-cached.json` as a fallback
@@ -296,7 +296,7 @@ Type `uvx autonomath-mcp` at a readable pace. Watch it boot. Hold. No further in
     -vf "fps=15,scale=640:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" \
     -loop 0 autonomath-demo-preview.gif
   ```
-- [ ] **Thumbnail frame** — capture the Beat 3 frame (Claude Desktop with green MCP dot + "139 tools available") as a 1280×720 PNG for Product Hunt gallery cover.
+- [ ] **Thumbnail frame** — capture the Beat 3 frame (Claude Desktop with green MCP dot + "151 tools available") as a 1280×720 PNG for Product Hunt gallery cover.
 
 ### Hosting
 - [ ] Upload `autonomath-demo.mp4` and `autonomath-demo.mov` to `jpcite.com/assets/` (Cloudflare Pages CDN, no YouTube dependency)

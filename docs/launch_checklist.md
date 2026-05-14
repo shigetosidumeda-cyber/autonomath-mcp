@@ -92,7 +92,7 @@ L0 Storage 4 項目 (integrity / FK 0 / 3 indexes / cache schema) が **全て P
 
 ## T-9d (2026-04-27 日) — Tools layer + envelope v2
 
-**目的**: L1+L2 (tools/list ≥ 139, /v1/am/* endpoint, Stripe pass, envelope v2, 5 critical invariants core 5本) を green 化。
+**目的**: L1+L2 (tools/list ≥ 151, /v1/am/* endpoint, Stripe pass, envelope v2, 5 critical invariants core 5本) を green 化。
 
 ### Tasks
 
@@ -150,12 +150,12 @@ Compliance 5 項目が全て PASS、production smoke が green。残 7 日で `g
 
 ## T-6d (2026-04-30 水) — Public surface
 
-**目的**: 5 manifest 全 139 統一 / OpenAPI 221 paths / 5 surface positioning / 12 registry / per-tool precision / pricing calculator / 数値 drift 0 / handoff doc deployed。
+**目的**: 5 manifest 全 151 統一 / OpenAPI 302 paths / 5 surface positioning / 12 registry / per-tool precision / pricing calculator / 数値 drift 0 / handoff doc deployed。
 
 ### Tasks
 
-- [ ] `pyproject.toml` / `server.json` / `.well-known/mcp.json` / GitHub `topics` / PyPI `keywords` の 5 manifest で tools 数 = 139 統一
-- [ ] OpenAPI export `docs/openapi/v1.json` の paths が 221 (`jq '.paths | length' docs/openapi/v1.json`)
+- [ ] `pyproject.toml` / `server.json` / `.well-known/mcp.json` / GitHub `topics` / PyPI `keywords` の 5 manifest で tools 数 = 151 統一
+- [ ] OpenAPI export `docs/openapi/v1.json` の paths が 302 (`jq '.paths | length' docs/openapi/v1.json`)
 - [ ] 5 surface (developer / 税理士 / SMB / VC / GovTech) positioning copy が `docs/blog/2026-05-5_audience_pitch.md` に揃っている
 - [ ] 12 distribution registry (smithery / glama / mcp.so / Anthropic / npm proxy / PyPI / GitHub / Cloudflare Pages / openapi.tools / mcp-registry / X / LinkedIn) submission 計画確認
 - [ ] `per_tool_precision.md` table が 151 tool 全て埋まっている
@@ -232,7 +232,7 @@ PyPI dry-run 全 PASS。Zenn URL を press kit に追加せず内部メモのみ
 - [ ] `launch_announcement_calendar.md::T-2d` のチェックリスト全消化
 - [ ] 1Password vault `bookyou-autonomath-prod` の 13 secret (`solo_ops_handoff.md::§15`) を全件確認
 - [ ] Fly secrets と 1Password 値が一致していることを `flyctl secrets list` の expiry 列で確認
-- [ ] GitHub release `v0.3.0` 作成 (PyPI tag 連動は T-1d)
+- [ ] GitHub release `v0.4.0` 作成 (PyPI tag 連動は T-1d)
 
 ### 中間確認
 

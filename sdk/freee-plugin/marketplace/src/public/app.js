@@ -72,7 +72,8 @@
   // --- renderers ---------------------------------------------------------
   function renderSubsidy(p) {
     const tier = p.tier || '';
-    const url = p.source_url || `https://jpcite.com/programs/${encodeURIComponent(p.unified_id || p.id || '')}`;
+    const programUrl = subsidyProgramUrl(p);
+    const url = p.source_url || programUrl;
     return `<li>
       <div class="title">${escape(p.primary_name || p.title || p.name || '(無題)')}</div>
       <div class="meta">
@@ -82,9 +83,16 @@
       </div>
       <div class="deep">
         <a href="${escape(url)}" target="_blank" rel="noopener">出典を確認</a>
-        ${p.unified_id ? ` · <a href="https://jpcite.com/programs/${encodeURIComponent(p.unified_id)}" target="_blank" rel="noopener">jpciteで詳細</a>` : ''}
+        · <a href="${escape(programUrl)}" target="_blank" rel="noopener">jpciteで詳細</a>
       </div>
     </li>`;
+  }
+
+  function subsidyProgramUrl(data) {
+    const unifiedId = data.unified_id || data.id || '';
+    if (data.static_url) return data.static_url;
+    if (unifiedId) return `https://jpcite.com/programs/share.html?ids=${encodeURIComponent(unifiedId)}`;
+    return 'https://jpcite.com/programs/';
   }
 
   function renderTax(t) {

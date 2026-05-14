@@ -29,9 +29,8 @@ Fly proxy → origin``. Two paths exist:
    CF appends its CF-* headers; Fly proxy preserves them in transit.
 2. ``jpcite.com/api/*`` — DNS points at Cloudflare Pages, which runs
    ``functions/api_proxy.ts`` (CF Pages Function). That function
-   EXPLICITLY ``delete``\\ s ``cf-connecting-ip`` / ``cf-ipcountry`` /
-   ``cf-ray`` before forwarding to ``api.jpcite.com``, so by the time the
-   origin sees the request the headers are gone.
+   strips all inbound ``CF-*`` and ``X-Edge-Auth`` headers before minting
+   its own trusted headers for ``api.jpcite.com``.
 
 Both paths converge at origin via the Fly proxy. The TCP peer the origin
 observes (``request.client.host``) is the Fly proxy IP, NOT a CF egress
@@ -89,6 +88,7 @@ middleware that introspects request headers for trust-bearing values.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import hmac
 import ipaddress
@@ -221,13 +221,23 @@ def _peer_is_trusted(peer_host: str | None) -> bool:
     return any(addr in net for net in nets)
 
 
-def _verify_signed_edge_header(raw_value: str, secret: str, *, now: int | None = None) -> bool:
+def _verify_signed_edge_header(
+    raw_value: str,
+    secret: str,
+    *,
+    now: int | None = None,
+    caller_ip: str | None = None,
+) -> bool:
     """Constant-time HMAC verification on X-Edge-Auth.
 
-    Expected wire format: ``v1:<unix_ts>:<hex_hmac_sha256>`` where the
-    HMAC is computed over ``f"v1:{unix_ts}"`` keyed by ``secret``.
-    Versioning the prefix lets us rotate the algorithm later without
-    flag-day breakage.
+    Expected current wire format:
+    ``v1:<unix_ts>:<caller_ip>:<hex_hmac_sha256>`` where the HMAC is
+    computed over ``f"v1:{unix_ts}:{caller_ip}"`` keyed by ``secret``.
+    The older ``v1:<unix_ts>:<hex_hmac_sha256>`` format is still accepted
+    when ``caller_ip`` is not supplied so already-deployed edge functions
+    can roll through without breaking CF-header passthrough. Callers that
+    need to trust ``X-Forwarded-For`` pass ``caller_ip`` and therefore
+    require the bound token.
 
     Rejection conditions (any → False):
 
@@ -244,9 +254,22 @@ def _verify_signed_edge_header(raw_value: str, secret: str, *, now: int | None =
     parts = raw_value.split(":", 2)
     if len(parts) != 3:
         return False
-    version, ts_str, sig_hex = parts
+    version, ts_str, tail = parts
+    tail_parts = tail.rsplit(":", 1)
+    if len(tail_parts) == 2:
+        token_caller_ip, sig_hex = tail_parts
+        if not token_caller_ip:
+            return False
+    else:
+        token_caller_ip = None
+        sig_hex = tail
     if version != "v1":
         return False
+    if caller_ip is not None:
+        if token_caller_ip is None:
+            return False
+        if token_caller_ip != caller_ip:
+            return False
     try:
         ts = int(ts_str)
     except ValueError:
@@ -258,7 +281,10 @@ def _verify_signed_edge_header(raw_value: str, secret: str, *, now: int | None =
         return False
     if age > _EDGE_AUTH_MAX_AGE_SECONDS:
         return False
-    payload = f"v1:{ts_str}".encode()
+    if token_caller_ip is not None:
+        payload = f"v1:{ts_str}:{token_caller_ip}".encode()
+    else:
+        payload = f"v1:{ts_str}".encode()
     expected = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
     return hmac.compare_digest(expected, sig_hex.lower())
 
@@ -354,10 +380,8 @@ class EdgeHeaderSanitizationMiddleware(BaseHTTPMiddleware):
         # its own Request() instance still sees the sanitised list.
         stripped = _strip_cf_headers_inplace(request.scope)
         # request.state is a SimpleNamespace; safe to attach freely.
-        try:
+        with contextlib.suppress(AttributeError):
             request.state.edge_headers_stripped = stripped
-        except AttributeError:  # pragma: no cover — state always exists
-            pass
         return await call_next(request)
 
 

@@ -235,7 +235,7 @@ def _collect_client_context(
         except sqlite3.Error as exc:
             logger.warning("am_amendment_diff lookup failed: %s", exc)
 
-    # 8 業法 fence summary — fixed labels (税理士法 §52 / 行政書士法 §1
+    # 8 業法 fence summary — fixed labels (税理士法 §52 / 行政書士法 §1の2
     # / 司法書士法 §3 / 弁護士法 §72 / 社労士法 §27 / 弁理士法 §75 /
     # 公認会計士法 §47 / 宅地建物取引業法 §12). We never CALL these
     # statutes — the PDF only declares which fences the body respects.
@@ -245,7 +245,7 @@ def _collect_client_context(
             "rule": "税務代理・税務書類作成・税務相談は税理士のみ。本書はガイドラインに留まる。",
         },
         {
-            "law": "行政書士法 §1",
+            "law": "行政書士法 §1の2",
             "rule": "申請書類の代理作成は行政書士業務。本書は雛形・参考に限定。",
         },
         {"law": "司法書士法 §3", "rule": "登記・供託の代理は司法書士業務。本書は周辺情報に限定。"},

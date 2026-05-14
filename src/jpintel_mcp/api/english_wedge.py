@@ -157,7 +157,7 @@ def get_tax_treaty_route(
         "Returns the most-restrictive ``foreign_capital_eligibility`` flag "
         "({eligible / eligible_with_caveat / case_by_case / excluded / silent}) "
         "for the given program. ``houjin_bangou`` is currently input echo only "
-        "(flag is per-program). ¥3/req metered. 行政書士法 §1 / FDI 規制 fence."
+        "(flag is per-program). ¥3/req metered. 行政書士法 §1の2 / FDI 規制 fence."
     ),
 )
 def check_foreign_capital_eligibility_route(
@@ -197,7 +197,7 @@ def check_foreign_capital_eligibility_route(
         "Filters programs by industry JSIC + ``foreign_capital_eligibility`` "
         "!= 'excluded'. Ranks eligible > eligible_with_caveat > case_by_case "
         "> silent. ¥3/req metered. ``foreign_pct`` is input echo (DB has no "
-        "per-program threshold). 行政書士法 §1 / FDI 規制 / 国際課税 fence."
+        "per-program threshold). 行政書士法 §1の2 / FDI 規制 / 国際課税 fence."
     ),
 )
 def find_fdi_friendly_subsidies_route(

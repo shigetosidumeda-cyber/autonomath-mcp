@@ -45,10 +45,18 @@ from jpintel_mcp.billing.delivery import record_metered_delivery  # noqa: E402
 from jpintel_mcp.config import settings  # noqa: E402
 from jpintel_mcp.db.session import connect  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
+from jpintel_mcp.utils.slug import program_static_url  # noqa: E402
 
 logger = logging.getLogger("autonomath.cron.morning_briefing")
 
 _PUBLIC_ORIGIN = "https://jpcite.com"
+
+
+def _program_public_url(primary_name: str | None, unified_id: str | None) -> str:
+    """Return a safe public program link for briefing template payloads."""
+    if primary_name and unified_id:
+        return f"{_PUBLIC_ORIGIN}{program_static_url(primary_name, unified_id)}"
+    return f"{_PUBLIC_ORIGIN}/dashboard.html"
 
 
 def _new_programs_24h(conn: sqlite3.Connection, prefectures: set[str]) -> list[dict[str, Any]]:
@@ -77,7 +85,7 @@ def _new_programs_24h(conn: sqlite3.Connection, prefectures: set[str]) -> list[d
             "name": r["primary_name"],
             "prefecture": r["prefecture"] or "全国",
             "authority": r["authority_name"] or "",
-            "url": f"{_PUBLIC_ORIGIN}/programs/{r['unified_id']}",
+            "url": _program_public_url(r["primary_name"], r["unified_id"]),
         }
         for r in rows
     ]
@@ -110,7 +118,7 @@ def _deadlines_this_week(conn: sqlite3.Connection, prefectures: set[str]) -> lis
             "name": r["primary_name"],
             "deadline": r["deadline_date"],
             "prefecture": r["prefecture"] or "全国",
-            "url": f"{_PUBLIC_ORIGIN}/programs/{r['unified_id']}",
+            "url": _program_public_url(r["primary_name"], r["unified_id"]),
         }
         for r in rows
     ]

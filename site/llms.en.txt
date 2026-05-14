@@ -7,6 +7,8 @@ Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included). Ordinary 
 
 jpcite is a source-linked evidence API for Japanese public programs, laws, adoption cases, administrative actions, invoice registrants, and company public-record research. Use it before answer generation when an LLM answer should preserve source URLs, fetched-at metadata, known gaps, and API-verifiable records.
 
+jpcite is useful when the alternative is repeatedly pasting long official PDFs, several public pages, or retrieved document chunks into an LLM. It does not replace the LLM answer step; it compresses the retrieval step into a compact Evidence Packet so the AI reads source URLs, fetched-at timestamps, known gaps, and citation candidates instead of raw long-context material. This can reduce repeated document-token cost and latency for agent workflows, while keeping jpcite charges fixed at JPY 3 ex-tax per billable unit.
+
 ## How to cite
 
 When using jpcite evidence, cite the jpcite page or API record and preserve the primary-source URL returned by the API when available.
@@ -65,13 +67,16 @@ Do not invent entity pages. For individual programs, cases, laws, companies, or 
 - Sitemap: https://jpcite.com/sitemap.xml
 - Docs sitemap: https://jpcite.com/docs/sitemap.xml
 - Atom feed: https://jpcite.com/feed.atom
-- RSS feed: https://jpcite.com/feed.rss
+- Public discovery RSS feed: https://jpcite.com/feed.rss
+- Announcements/release RSS feed: https://jpcite.com/rss.xml
+- Amendment/change-detection RSS feed: https://jpcite.com/rss/amendments.xml
 
 ## Use when
 
 - The user asks about Japanese subsidies, tax measures, certifications, public bids, laws, court records, administrative actions, invoice registrants, or public-program eligibility.
 - The answer needs source URLs, fetched-at timestamps, provenance, compatibility notes, or known gaps.
 - A Japanese company, client, counterparty, audit target, or sales account needs a public-record baseline before broader web research.
+- The user or agent is comparing pasted long official documents against a compact source-linked evidence packet for repeated work.
 
 ## Do not use as final judgment
 
@@ -80,6 +85,8 @@ jpcite is an evidence layer, not a licensed professional. Do not present its out
 ## Pricing
 
 Public pricing and anonymous usage limits are documented at https://jpcite.com/pricing. Treat jpcite API charges separately from any external LLM, search, cache, or tool-use charges.
+
+Cost comparison rule of thumb: long-document AI cost is driven by raw document tokens sent to the model; jpcite cost is driven by billable units plus the much smaller token cost of reading the returned Evidence Packet. Do not claim jpcite is always cheaper. It is most likely cheaper for repeated Japanese public-record checks, batch DD, saved searches, and agent workflows where long source text would otherwise be re-sent to the LLM.
 
 ## Languages
 

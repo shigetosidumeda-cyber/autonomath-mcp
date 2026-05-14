@@ -2,13 +2,6 @@
 # Syntax: <from> <to> <status>  (200=rewrite, 301=permanent, 302=temp)
 # See https://developers.cloudflare.com/pages/configuration/redirects/
 
-# /changelog removed 2026-04-30 (per user request)
-/changelog          /  301
-/changelog.html     /  301
-/changelog/*        /  301
-/en/changelog       /en/  301
-/en/changelog.html  /en/  301
-
 # Canonical trailing-slash for docs
 /docs  /docs/  301
 
@@ -33,6 +26,8 @@
 # can still discover the contract if the API process is temporarily unavailable.
 /openapi/v1.json  /docs/openapi/v1.json  200
 /openapi/agent.json  /docs/openapi/agent.json  200
+/openapi  /docs/openapi/v1.json  302
+/openapi.json  /docs/openapi/v1.json  200
 /v1/openapi.json  /docs/openapi/v1.json  200
 /v1/openapi.agent.json  /docs/openapi/agent.json  200
 /v1/mcp-server.json  /mcp-server.json  200
@@ -58,6 +53,10 @@
 /docs/use_cases/by_industry_2026_05_11.html  /audiences/  301
 /docs/pricing/justification_2026_05_11.md  /docs/pricing/  301
 /docs/pricing/justification_2026_05_11.html  /docs/pricing/  301
+/docs/canonical/cost_saving_examples  /tools/cost_saving_examples.md  301
+/docs/canonical/cost_saving_examples/  /tools/cost_saving_examples.md  301
+/docs/canonical/cost_saving_examples.html  /tools/cost_saving_examples.md  301
+/docs/canonical/cost_saving_examples.md  /tools/cost_saving_examples.md  301
 
 # Per-program SEO pages live at /programs/{slug}-{sha1-6}.html (NOT
 # /programs/UNI-xxx.html — UNI ids are unified_id only, the static
@@ -146,12 +145,24 @@
 # Human-rights / security aliases used by trust.json and purchasing pages.
 /data_subject_rights.html  /docs/compliance/data_subject_rights/  301
 /data_subject_rights       /docs/compliance/data_subject_rights/  301
+/licensing.html            /data-licensing  301
+/legal/data_license        /data-licensing  301
+/contributors/queue-status /contribute/     302
 
 # Legacy public-brand aliases. Anything pointing at the old public name should
 # land on the jpcite homepage. Internal Python package paths are unaffected.
 /jpintel        /  301
 /jpintel.html   /  301
 /jpintel/*      /  301
+
+# Dataset category hubs advertised to agents. Until dedicated static hubs
+# exist, route them to the API reference instead of serving 404s.
+/companies/             /docs/api-reference/  302
+/invoice-registrants/   /docs/api-reference/  302
+/loans/                 /docs/api-reference/  302
+/tax-rulesets/          /docs/api-reference/  302
+/court-decisions/       /docs/api-reference/  302
+/bids/                  /docs/api-reference/  302
 
 # Former mobile-chat marketing path now points at the broader notification channel.
 /line           /notifications  301
@@ -186,7 +197,6 @@
 # of the HTML content, so the canonical page URL is the appropriate landing
 # spot for inbound LLM crawlers.
 /structured/*  /404  404
-/sitemap-structured.xml  /sitemap-index.xml  301
 
 # ─────────────────────────────────────────────────────────────────────────
 # Retired low-signal pages; redirect legacy inbound URLs to canonical hubs.

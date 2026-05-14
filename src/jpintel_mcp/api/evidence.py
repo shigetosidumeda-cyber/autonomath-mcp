@@ -885,8 +885,8 @@ def _dispatch_format(
     "/packets/{subject_kind}/{subject_id}",
     summary="Evidence Packet — single-subject composer (program / houjin)",
     description=(
-        "Source-linked evidence prefetch for GPT, Claude, Cursor, or RAG "
-        "answer generation. 1 packet = 1 billable unit (¥3 ex tax); "
+        "Source-linked evidence prefetch before GPT, Claude, Cursor, or other "
+        "AI answer generation. 1 packet = 1 billable unit (¥3 ex tax); "
         "anonymous callers can use 3 requests/day per IP. "
         "NO LLM call. Bundles primary metadata + per-fact provenance + "
         "compat-matrix rule verdicts (program only) into a compact envelope.\n\n"
@@ -1227,7 +1227,7 @@ class EvidencePacketQueryBody(BaseModel):
     summary="Evidence Packet — multi-record query composer",
     description=(
         "Use this endpoint as source-linked evidence prefetch before GPT, "
-        "Claude, Cursor, or RAG answer generation. It returns a compact "
+        "Claude, Cursor, or other AI answer generation. It returns a compact "
         "Evidence Packet instead of a final narrative answer, so callers can "
         "avoid pasting long PDFs, official pages, or search snippets into "
         "the model. 1 packet = 1 billable unit (¥3 ex tax); anonymous callers "

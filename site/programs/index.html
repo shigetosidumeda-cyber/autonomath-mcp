@@ -64,11 +64,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -99,7 +102,7 @@
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="/docs/">ドキュメント</a>
  <a href="/pricing.html">料金</a>
- <a href="/dashboard.html">API キー発行</a>
+ <a href="/pricing.html#api-paid">API キー発行</a>
  </nav>
  </div>
 </header>
@@ -121,7 +124,7 @@
  <section class="features" style="padding:28px 0 56px;background:var(--bg-alt);">
  <div class="container">
  <h2 class="section-title" style="font-size:20px;">AI から使う場合</h2>
- <p>Claude Desktop / Cursor / Cline などの MCP クライアントでは <code>search_programs</code> を使います。ChatGPT Custom GPT では <code>https://api.jpcite.com/v1/openapi.agent.json</code> を Actions に読み込ませて、同等の REST endpoint を呼び出します。</p>
+ <p>Claude Desktop / Cursor / Cline などの MCP クライアントでは <code>search_programs</code> を使います。ChatGPT Custom GPT では <code>https://jpcite.com/openapi.agent.gpt30.json</code> を Actions に読み込ませ、API Key auth の custom header <code>X-API-Key</code> を設定して REST endpoint を呼び出します。</p>
  <p>長い PDF や複数の官公庁ページを LLM に貼る前に、jpcite で候補制度・出典・既知の欠落を取得してください。トークン量や外部 LLM の請求額への影響は、利用するモデル・プロンプト・キャッシュ状態に依存します。</p>
  </div>
  </section>

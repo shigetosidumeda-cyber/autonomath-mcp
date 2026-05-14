@@ -48,6 +48,9 @@ on:
       - main
     paths:
       - "site/**"
+      - "functions/**"
+      - "functions/package*.json"
+      - "functions/tsconfig.json"
       - "docs/**"
       - "overrides/**"
       - "mkdocs.yml"
@@ -290,6 +293,7 @@ jobs:
             dist/site/.well-known/mcp.json \
             dist/site/.well-known/agents.json \
             dist/site/.well-known/llms.json \
+            dist/site/llms-meta.json \
             dist/site/.well-known/openapi-discovery.json \
             dist/site/docs/openapi/v1.json \
             dist/site/openapi.agent.json \
@@ -320,6 +324,13 @@ jobs:
             echo "::warning::GEO readiness has $rc-failures count. See log above. Advisory only; deploy continues."
           fi
           exit 0
+
+      - name: Typecheck Pages Functions
+        if: steps.cf-secrets.outputs.available == 'true'
+        run: |
+          set -euo pipefail
+          npm ci --prefix functions
+          npm run --prefix functions typecheck
 
       - name: Publish to Cloudflare Pages
         if: steps.cf-secrets.outputs.available == 'true'

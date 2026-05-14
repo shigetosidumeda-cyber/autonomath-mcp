@@ -75,7 +75,7 @@ Locate the marketplace index file (typically `mcps.json`, `servers.json`, or `in
     "invoice_registration_number": "T8010001213708",
     "contact": "info@bookyou.net"
   },
-  "disclaimer": "情報検索サービスです。税理士法 §52 (税務代理) / 弁護士法 §72 (法律事務) / 行政書士法 §1 (申請代理) / 社労士法 (労務判断) のいずれにも該当しません。出力は一次資料 URL を必ずご確認ください。"
+  "disclaimer": "情報検索サービスです。税理士法 §52 (税務代理) / 弁護士法 §72 (法律事務) / 行政書士法 §1の2 (申請代理) / 社労士法 (労務判断) のいずれにも該当しません。出力は一次資料 URL を必ずご確認ください。"
 }
 ```
 
@@ -170,7 +170,7 @@ AutonoMath is an information-retrieval service over published primary sources. I
 
 - Legal advice (弁護士法 §72)
 - Tax advice or filing representation (税理士法 §52)
-- Application representation (行政書士法 §1)
+- Application representation (行政書士法 §1の2)
 - Labour determinations (社労士法)
 
 Search results are extracted at the time of fetch; rates / sunset dates / authorities reflect the published values and may change. Verify primary-source URLs and consult a licensed professional for individual cases.
@@ -201,7 +201,7 @@ Search results are extracted at the time of fetch; rates / sunset dates / author
 
 ## Disclaimer fence (must appear in README and in the entry's `description` if schema permits)
 
-> AutonoMath is information retrieval, not advice. It does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
+> AutonoMath is information retrieval, not advice. It does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1の2), or 労務判断 (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
 
 ---
 

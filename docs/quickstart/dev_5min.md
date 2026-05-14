@@ -42,7 +42,7 @@ curl "http://localhost:8080/v1/programs/search?q=中小企業&limit=3"
 # → {"items":[...], "total":N, "..."}
 
 curl http://localhost:8080/openapi.json | jq '.paths | length'
-# → 219 (at 2026-05-07 snapshot)
+# → 302 (current v0.4.0 snapshot)
 ```
 
 If `programs/search` returns 0 hits, your local DB is the 1.3 MB dev fixture, not the production seed. That is fine for ergonomics work; for realistic results, fetch the volume seed:
@@ -68,7 +68,7 @@ mv ./data/jpintel.db.prod ./data/jpintel.db
           -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
 ```
 
-`tools/list` should return 151 tools by default (146 with all post-manifest tools landed; verify with `len(await mcp.list_tools())`).
+`tools/list` should return 151 tools by default; verify with `len(await mcp.list_tools())`.
 
 ## 4. Cloudflare Pages preview (≤90 seconds)
 
@@ -114,7 +114,7 @@ If the brand grep returns hits in `site/` or `docs/*.md` outside of historical-s
 
 ## What you have now
 
-- API @ `http://localhost:8080` (FastAPI, hot reload, 219 paths).
+- API @ `http://localhost:8080` (FastAPI, hot reload, 302 paths).
 - MCP server @ `stdio` or `http://localhost:8081/mcp` (151 tools).
 - A personal Cloudflare Pages preview URL.
 - Lint + fast tests green.

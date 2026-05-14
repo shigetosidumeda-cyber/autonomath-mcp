@@ -4,10 +4,10 @@
 <!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
-<title>jpcite と他の補助金検索サービスの比較 — jpcite</title>
-<meta name="description" content="jpcite と主要な補助金検索サービス・公的支援ポータルの機能比較。データ件数、一次資料リンク、API/MCP、価格、無料枠、全文検索などを 2026-04-26 時点の公開情報で並べた中立比較表。">
+<title>jpcite と他の補助金検索サービス・AI 根拠 API の比較 — jpcite</title>
+<meta name="description" content="jpcite と主要な補助金検索サービス・公的支援ポータルを比較。jpcite は検索ポータルではなく、AI 回答前に一次資料 URL・取得時刻・既知の不足を返す evidence/output API です。">
 
-<meta property="og:title" content="jpcite と他の補助金検索サービスの比較">
+<meta property="og:title" content="jpcite と他の補助金検索サービス・AI 根拠 API の比較">
 <meta property="og:description" content="API/MCP、一次資料、価格モデル、無料枠などを 2026-04-26 時点の公開情報で並べた中立比較表。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://jpcite.com/compare">
@@ -18,7 +18,7 @@
 <meta property="og:locale:alternate" content="en_US">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="jpcite と他の補助金検索サービスの比較">
+<meta name="twitter:title" content="jpcite と他の補助金検索サービス・AI 根拠 API の比較">
 <meta name="twitter:description" content="8 サービスを 14 軸で並べた中立比較表 (2026-04-26)。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
@@ -70,8 +70,8 @@
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "jpcite と他の補助金検索サービスの比較",
-  "description": "jpcite と主要な補助金検索サービス、公的支援ポータル、信用調査サービスを、データ件数・一次資料リンク・API/MCP・価格・無料枠・全文検索など 14 軸で並べた中立な機能比較。2026-04-26 時点の各社公開情報に基づく。",
+  "headline": "jpcite と他の補助金検索サービス・AI 根拠 API の比較",
+  "description": "jpcite と主要な補助金検索サービス、公的支援ポータル、信用調査サービスを比較。jpcite は検索ポータルではなく、AI 回答前に一次資料 URL・取得時刻・既知の不足を返す evidence/output API。2026-04-26 時点の各社公開情報に基づく。",
   "url": "https://jpcite.com/compare",
   "datePublished": "2026-04-26",
   "dateModified": "2026-04-26",
@@ -167,11 +167,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -229,8 +232,8 @@
 <main id="main" class="compare-page">
  <div class="container">
 
- <h1>jpcite と他の補助金検索サービスの比較</h1>
- <p class="lead">「補助金検索 API」「公的制度データ API」「ミラサポ plus API」等で辿り着いた方向けに、jpcite と主要な補助金・助成金検索サービスを 14 軸で並べた中立比較表です。各社の公開情報のみで構成し、未公開項目は「公開情報非公表」と表記しています。月次で見直します。</p>
+ <h1>jpcite と他の補助金検索サービス・AI 根拠 API の比較</h1>
+ <p class="lead">「補助金検索 API」「公的制度データ API」「AI の RAG コスト削減」等で辿り着いた方向けに、jpcite と主要な補助金・助成金検索サービスを 14 軸で並べた中立比較表です。jpcite は検索ポータルではなく、AI が長い文脈を読む前に一次資料 URL・取得時刻・既知の不足を返す evidence/output API です。各社の公開情報のみで構成し、未公開項目は「公開情報非公表」と表記しています。月次で見直します。</p>
 
  <p class="compare-note">比較対象: <strong>jpcite</strong> (本サイト) / 補助金検索サイト / 公的支援ポータル / 記事型データベース / J-Net21 / ミラサポ plus / 帝国データバンク (TDB) / 東京商工リサーチ (TSR)。詳細な 2 軸比較は <a href="/compare/tdb/">TDB 個別ページ</a> · <a href="/compare/tsr/">TSR 個別ページ</a>。</p>
  <p class="compare-note compare-note-callout" style="padding:12px 16px;border-radius:6px;margin:0 0 24px;">

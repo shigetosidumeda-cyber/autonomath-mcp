@@ -185,6 +185,19 @@ def test_axis4_cron_dry_run(tmp_path: Path, script: str, extra: list[str]) -> No
     assert isinstance(payload, dict)
 
 
+def test_portfolio_optimize_empty_db_dry_run_does_not_crash(tmp_path: Path) -> None:
+    db = tmp_path / "empty.db"
+    rc, out, err = _run_cron(
+        "refresh_portfolio_optimize_daily.py",
+        db,
+        ["--max-houjin", "5", "--top-n", "8"],
+    )
+    assert rc == 0, f"refresh_portfolio_optimize_daily.py rc={rc}\nstdout={out}\nstderr={err}"
+    last = out.strip().splitlines()[-1] if out.strip() else "{}"
+    payload = json.loads(last)
+    assert isinstance(payload, dict)
+
+
 def test_axis4_vec_embed_hash_fallback_dim() -> None:
     sys.path.insert(0, str(REPO_ROOT))
     from scripts.cron import embed_knowledge_graph_vec as mod

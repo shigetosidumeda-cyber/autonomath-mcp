@@ -153,7 +153,7 @@
       id: 'am.loans',
       method: 'GET',
       path: '/v1/am/loans',
-      title: '融資検索 (公庫 / 商工中金 / 自治体制度融資 — 3 軸保証)',
+      title: '融資検索 (公庫 / 商工中金 / 自治体制度融資 — 3 軸分類)',
       desc: 'loan-product corpus。 担保 / 個人保証人 / 第三者保証人 を独立 boolean で。',
       params: [
         { name: 'loan_kind',                type: 'enum',     label: '融資種別',          options: ['', 'ippan','trou','seirei','sanko','sogyo','rinsei','saigai','shingiseikyu','kiki','other'] },
@@ -1608,7 +1608,7 @@
     parts.push(shellQuote(url));
     parts.push('-H ' + shellQuote('Accept: application/json'));
     if (bearer) {
-      parts.push('-H ' + shellQuote('Authorization: Bearer ' + bearer));
+      parts.push('-H ' + shellQuote('X-API-Key: ' + bearer));
     }
     if (body != null) {
       parts.push('-H ' + shellQuote('Content-Type: application/json'));

@@ -58,7 +58,7 @@ _DISCLAIMER = (
     "court_decisions / enforcement_cases) と autonomath コーパス "
     "(am_law_article / nta_tsutatsu_index / nta_saiketsu) の機械的 join に "
     "よる検索結果のみで、法令解釈 (弁護士法 §72) ・税務助言 (税理士法 §52) ・"
-    "申請判断 (行政書士法 §1) の代替ではありません。各 row の source_url で "
+    "申請判断 (行政書士法 §1の2) の代替ではありません。各 row の source_url で "
     "原典を確認し、確定判断は資格を有する弁護士・税理士・行政書士に "
     "必ずご相談ください。本 endpoint は検索インデックスです。"
 )
@@ -591,7 +591,7 @@ def _normalize_since_date(since_date: str | None) -> str | None:
         "name hint).\n\n"
         "**Pricing:** ¥3 / call (`_billing_unit: 1`) regardless of "
         "`max_per_type`. Pure SQLite, NO LLM.\n\n"
-        "**Sensitive:** 弁護士法 §72 / 税理士法 §52 / 行政書士法 §1 fence — "
+        "**Sensitive:** 弁護士法 §72 / 税理士法 §52 / 行政書士法 §1の2 fence — "
         "the response carries a `_disclaimer` envelope; consume rows as "
         "primary-source pointers, NOT as advice."
     ),

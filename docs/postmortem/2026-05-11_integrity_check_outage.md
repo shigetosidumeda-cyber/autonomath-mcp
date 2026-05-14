@@ -103,7 +103,7 @@ retention assumed §4 was fast — for a multi-GB DB it is not.
 
 External (uptime / customer-visible):
 
-- UptimeRobot: 3 consecutive 60s `GET /v1/healthz` failures at 12:18 UTC.
+- UptimeRobot: 3 consecutive 60s `GET /healthz` failures at 12:18 UTC.
 - Fly proxy log: `could not find a good candidate within 40 attempts at load balancing`.
 - `flyctl status -a autonomath-api` showed `CHECKS: 0/1` while `instance_state: started` (the foot-gun signature — "running but not healthy").
 

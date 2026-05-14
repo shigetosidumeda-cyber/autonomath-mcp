@@ -190,6 +190,12 @@ def test_no_llm_api_imports_in_script_source():
         assert needle not in text, f"DEEP-61 violation: script source contains {needle!r}"
 
 
+def test_stripe_smoke_uses_real_billing_webhook_path():
+    text = SCRIPT.read_text(encoding="utf-8")
+    assert 'url = "/v1/billing/webhook"' in text
+    assert "/v1/billing/stripe_webhook" not in text
+
+
 # ---------------------------------------------------------------------------
 # 8. GHA-friendly stdout = single JSON line
 # ---------------------------------------------------------------------------

@@ -62,7 +62,7 @@ _CITATION_PACK_DISCLAIMER = (
     "nta_tsutatsu_index / nta_saiketsu / court_decisions / enforcement_cases / "
     "adoption_records) を一次資料 URL とともに 1 call で束ねた **検索結果** で、"
     "税理士法 §52 (税務代理) ・公認会計士法 §47条の2 (監査・意見表明) ・"
-    "行政書士法 §1 (申請代理) ・弁護士法 §72 (法律事務) のいずれにも該当しません。"
+    "行政書士法 §1の2 (申請代理) ・弁護士法 §72 (法律事務) のいずれにも該当しません。"
     "業務判断は必ず一次資料 URL を直接確認のうえ、確定判断は資格を有する士業へ。"
 )
 
@@ -73,7 +73,7 @@ _CITATION_PACK_DISCLAIMER = (
 _BUSINESS_LAW_DISCLAIMER = (
     "当該 program は 業法 (建設業法 / 宅建業法 / 旅館業法 等) 領域に属する"
     "可能性があり、申請書面の起案・提出は業務独占業務のため、出力 markdown を"
-    "そのまま申請書面として使用することは禁止 (行政書士法 §1)。"
+    "そのまま申請書面として使用することは禁止 (行政書士法 §1の2)。"
 )
 
 # Trigger words for the augmented sensitive-territory addendum.

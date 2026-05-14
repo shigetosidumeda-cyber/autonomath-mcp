@@ -46,7 +46,11 @@
   X-Permitted-Cross-Domain-Policies: none
 
 # Sitemaps must be served as XML to be parsed by Googlebot / Bingbot.
-/sitemap*.xml
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/sitemap-index.xml
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=3600
 
@@ -66,10 +70,31 @@
   Content-Type: application/rss+xml; charset=utf-8
   Cache-Control: public, max-age=3600
 
+/feed.rss
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/feed.atom
+  Content-Type: application/atom+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/audit-log.rss
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+# RSS namespace feeds (amendments, programs, prefectures).
+/rss/*.xml
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
 # robots.txt
 /robots.txt
   Content-Type: text/plain; charset=utf-8
   Cache-Control: public, max-age=3600
+
+# Status pages are operational artifacts, not SEO landing pages.
+/status/*
+  X-Robots-Tag: noindex, nofollow
 
 # RFC 9116 security.txt — responsible disclosure contact.
 /.well-known/security.txt
@@ -173,6 +198,20 @@
   Access-Control-Allow-Origin: *
   Cross-Origin-Resource-Policy: cross-origin
 
+/.well-known/llms.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+/llms-meta.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
 /.well-known/sbom.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
@@ -245,7 +284,11 @@
 # max-age=0 forces revalidation on every reload; s-maxage=60 lets the edge
 # absorb crawler bursts. The JS itself controls liveness — a 60s edge cache
 # on the shell only hides newly-published copy edits, not the live status.
-/status/*
+/status/*.json
+  Cache-Control: public, max-age=0, s-maxage=60, must-revalidate
+  X-Robots-Tag: noindex, nofollow
+
+/status/badge.svg
   Cache-Control: public, max-age=0, s-maxage=60, must-revalidate
   X-Robots-Tag: noindex, nofollow
 
@@ -293,6 +336,10 @@
 # within a day, while still flattening the bandwidth curve at scale.
 /*.html
   Cache-Control: public, max-age=3600, s-maxage=86400
+
+/status/*.html
+  Cache-Control: public, max-age=0, s-maxage=60, must-revalidate
+  X-Robots-Tag: noindex, nofollow
 
 # Per-program SEO pages — cacheable for a day, SWR a week.
 /programs/*
@@ -410,12 +457,6 @@
   Cache-Control: public, max-age=86400
   CDN-Cache-Control: public, max-age=604800
 
-# AI-surface sitemap (16-URL llmstxt/openapi/mcp/well-known group).
-# Served as XML; lifespan matches the rest of the sitemap-* group.
-/sitemap-llms.xml
-  Content-Type: application/xml; charset=utf-8
-  Cache-Control: public, max-age=3600
-
 # ------------------------------------------------------------------
 # 2026-05-12 — CDN cache strategy hot-path optimization.
 # ------------------------------------------------------------------
@@ -447,3 +488,13 @@
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=3600, s-maxage=86400
   CDN-Cache-Control: public, max-age=86400
+
+/status/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+  X-Robots-Tag: index, follow
+
+/status/feed.atom
+  Content-Type: application/atom+xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+  X-Robots-Tag: index, follow

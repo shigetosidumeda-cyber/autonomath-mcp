@@ -165,11 +165,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -237,7 +240,7 @@
  <li><strong>商用配信可否</strong> = 本サービスを通じた API 配信が、出典側 license 上明示的に許諾されているか</li>
  <li><strong>出典表示要件</strong> = 顧客が response を再利用する際に同等付与すべき表示文字列</li>
  <li><span class="dl-pill ok">可</span> = license 確認済で API 経由の配信 OK</li>
- <li><span class="dl-pill note">要再確認</span> = <code>license_review_queue.csv</code> 対象、launch 直前に再評価</li>
+ <li><span class="dl-pill note">要再確認</span> = <code>license_review_queue.csv</code> 対象。定期 review と公開前 review で再評価し、商用再配布前は個別確認します。</li>
  </ul>
 
  <h2 id="datasets">16 Dataset 一覧</h2>

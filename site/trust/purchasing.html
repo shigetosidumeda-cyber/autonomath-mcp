@@ -142,6 +142,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -269,7 +343,7 @@
  <li>税理士法 §52 (税務代理 / 税務書類作成 / 税務相談)</li>
  <li>弁護士法 §72 (個別法律事務)</li>
  <li>公認会計士法 §47-2 (監査証明業務)</li>
- <li>行政書士法 §1 (官公署提出書類作成・提出代行)</li>
+ <li>行政書士法 §1の2 (官公署提出書類作成・提出代行)</li>
  <li>司法書士法 §3 (登記申請・登記書類作成)</li>
  <li>社会保険労務士法 §27 (労社諸法令書類作成・申請代行 / 36協定 含む)</li>
  <li>弁理士法 §75 (特許 / 実用新案 / 意匠 / 商標 出願代理)</li>
@@ -324,46 +398,6 @@
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
- <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
- </div>
- <nav class="footer-nav" aria-label="フッター">
- <a href="/about.html">運営について</a>
- <a href="/products.html">プロダクト</a>
- <a href="/pricing.html">料金</a>
- <a href="/docs/">ドキュメント</a>
- <a href="/trust.html">信頼</a>
- <a href="/trust/purchasing.html">法人購買</a>
- <a href="/security/">Security</a>
- <a href="/legal-fence.html">法令フェンス</a>
- <a href="/data-licensing.html">データソース</a>
- <a href="/tos.html">利用規約</a>
- <a href="/privacy.html">プライバシー</a>
- <a href="/tokushoho.html">特商法</a>
- <a href="mailto:info@bookyou.net">お問い合わせ</a>
- </nav>
- <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
- </div>
-</footer>
-
-</body>
-</html>
-で吸収</li>
- <li><span class="pr-pill note">対象外</span> MSA (Master Service Agreement) 個別交渉 — ToS 約款型のまま</li>
- <li><span class="pr-pill note">対象外</span> Slack Connect / 専用 Teams channel / Zoom kickoff — info@bookyou.net email のみ</li>
- <li><span class="pr-pill note">対象外</span> SOC2 Type II / ISO27001 / Pマーク 取得 — 代替: OpenSSF Best Practices Badge / OWASP ASVS L1 / CSA STAR CAIQ self-assessment + Cloudflare Trust Hub</li>
- <li><span class="pr-pill note">対象外</span> 個別 SLA 上書き / credit 個別交渉 — tokushoho.md「重大不適合」条項 適用</li>
- </ul>
-
- <p class="pr-foot">本 page は法務部 reviewer の稟議準備時間を最小化するための 1-screen summary です。 各リンク先の一次資料 (利用規約 / プライバシー / 特商法 / Security Overview / SLA / 法令フェンス / データソース) が法的拘束力を持つ正本となります。 数値・記述に齟齬を発見した場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> までご連絡ください。 機械可読 manifest: <a href="/.well-known/trust.json">/.well-known/trust.json</a>。</p>
-
- </div>
-</main>
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
  <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

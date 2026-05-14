@@ -34,6 +34,9 @@ if TYPE_CHECKING:
 async def test_alerts_subscribe_list_delete_flow(
     page: Page, url_for, seeded_api_key: dict[str, str], base_url: str
 ) -> None:
+    if seeded_api_key.get("external") == "1":
+        pytest.skip("alert subscription mutation requires a locally seeded throwaway key")
+
     # Inject the seeded key into localStorage BEFORE the page's JS runs.
     # The dashboard_v2.js boot reads localStorage at DOMContentLoaded.
     api_key = seeded_api_key["raw_key"]

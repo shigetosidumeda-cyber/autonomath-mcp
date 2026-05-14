@@ -109,14 +109,19 @@ function isMeteredPath(path: string): boolean {
 /** Returns true for paths exempt even on /v1/* (health probes etc.). */
 function isExemptPath(path: string): boolean {
   return (
-    path === "/v1/healthz" ||
+    path === "/healthz" ||
     path === "/v1/readyz" ||
     path === "/v1/openapi.json" ||
     path === "/v1/openapi.agent.json" ||
     path === "/v1/mcp-server.json" ||
     path === "/v1/mcp-server.full.json" ||
     path === "/api/healthz" ||
-    path === "/api/readyz"
+    path === "/api/readyz" ||
+    path === "/api/openapi.json" ||
+    path === "/api/openapi.agent.json" ||
+    path === "/api/mcp-server.json" ||
+    path === "/api/mcp-server.full.json" ||
+    path === "/api/rum_beacon"
   );
 }
 
@@ -246,6 +251,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);
 
   // Fast bypass paths: not metered, exempt, or non-anonymous.
+  if (context.request.method === "OPTIONS") return context.next();
   if (!isMeteredPath(url.pathname)) return context.next();
   if (isExemptPath(url.pathname)) return context.next();
   if (!isAnonymous(context.request)) return context.next();

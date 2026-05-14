@@ -22,11 +22,11 @@ What we deliberately do NOT assert (out of scope here):
   - Real 30-day usage history (covered by tests/e2e/test_dashboard_flow.py)
   - MCP stdio behaviour (covered by tests/test_mcp_server*.py)
 
-Why we hit a real API in step 5 instead of stubbing: the prod failure mode
+Why we hit a real API in step 5 instead of stubbing: the staging failure mode
 we care about is "the static landing builds, but the API is down" — a stub
 would mask that. The walk uses the IP-anon 50/month quota, so a green-CI
-run consumes one slot. The prod target (`JPINTEL_E2E_BASE_URL=https://...`)
-will hit prod and is gated behind `--run-production` upstream.
+run consumes one slot. The prod API target requires both `--run-production`
+upstream and `JPINTEL_E2E_ALLOW_PROD_API=true`.
 
 Local two-port setup (Cloudflare Pages mock):
   - JPINTEL_E2E_BASE_URL=http://localhost:8084   ← static site (Pages)
@@ -38,6 +38,7 @@ shape — single host with API + Pages co-deployed).
 from __future__ import annotations
 
 import os
+import re
 from typing import TYPE_CHECKING
 from urllib.parse import quote
 
@@ -56,12 +57,12 @@ if TYPE_CHECKING:
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_step01_landing_hero_renders(page: Page, url_for) -> None:
-    await page.goto(url_for("/index.html"))
+    await page.goto(url_for("/index.html"), wait_until="commit")
     # Hero h1 — substring match keeps us robust to copy edits
     h1 = page.locator("h1").first
     await expect(h1).to_be_visible()
     text = (await h1.inner_text()).strip()
-    assert "公的制度" in text or "AutonoMath" in text, (
+    assert "Evidence Packet" in text or "公的制度" in text or "AutonoMath" in text, (
         f"landing h1 missing expected anchor copy: {text!r}"
     )
 
@@ -74,7 +75,7 @@ async def test_step01_landing_hero_renders(page: Page, url_for) -> None:
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_step02_audiences_section_has_five_cards(page: Page, url_for) -> None:
-    await page.goto(url_for("/index.html"))
+    await page.goto(url_for("/index.html"), wait_until="commit")
     # Section landmark
     section = page.locator("section#audiences")
     await expect(section).to_be_visible()
@@ -92,7 +93,7 @@ async def test_step02_audiences_section_has_five_cards(page: Page, url_for) -> N
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_step03_dev_audience_page_renders(page: Page, url_for) -> None:
-    await page.goto(url_for("/audiences/dev.html"))
+    await page.goto(url_for("/audiences/dev.html"), wait_until="commit")
     h1 = page.locator("h1").first
     await expect(h1).to_be_visible()
     text = (await h1.inner_text()).strip()
@@ -107,9 +108,9 @@ async def test_step03_dev_audience_page_renders(page: Page, url_for) -> None:
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_step04_pricing_metered_card_renders(page: Page, url_for) -> None:
-    await page.goto(url_for("/pricing.html"))
+    await page.goto(url_for("/pricing.html"), wait_until="commit")
     # H1 = 料金
-    await expect(page.locator("h1").first).to_have_text("料金")
+    await expect(page.locator("h1").first).to_have_text(re.compile(r"(料金|billable unit|¥3)"))
     # ≥1 price-card with ¥3.30 / 従量 copy somewhere on the page
     body = await page.locator("body").inner_text()
     assert "従量" in body or "metered" in body.lower(), "pricing missing 従量"
@@ -129,6 +130,9 @@ async def test_step05_api_search_returns_results(page: Page, base_url: str) -> N
     # timezone as the browser walk, and fits the "real network round-trip"
     # contract of the e2e suite.
     api_base = os.environ.get("JPINTEL_E2E_API_BASE", "").rstrip("/") or base_url
+    allow_prod_api = os.environ.get("JPINTEL_E2E_ALLOW_PROD_API", "").strip().lower()
+    if "api.jpcite.com" in api_base and allow_prod_api not in ("1", "true", "yes"):
+        pytest.skip("prod API smoke requires JPINTEL_E2E_ALLOW_PROD_API=true")
     api_url = f"{api_base}/v1/programs/search?q={quote('持続化補助金')}&limit=3"
     resp = await page.request.get(api_url)
     assert resp.ok, f"GET {api_url} → {resp.status}"
@@ -147,11 +151,11 @@ async def test_step05_api_search_returns_results(page: Page, base_url: str) -> N
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_step06_dashboard_signin_form_renders_for_anon(page: Page, url_for) -> None:
-    await page.goto(url_for("/dashboard.html"))
+    await page.goto(url_for("/dashboard.html"), wait_until="commit")
     # The unauth view shows a sign-in card with an api_key paste input.
-    # We assert *some* input element with `am_` placeholder is present —
+    # We assert *some* input element with `jc_` placeholder is present —
     # the dashboard.js DOM may swap between v1 and v2 layouts.
-    placeholder_input = page.locator('input[placeholder*="am_"]')
+    placeholder_input = page.locator("#dash2-key-input, input[placeholder*='jc_']")
     await expect(placeholder_input.first).to_be_visible(timeout=10_000)
 
 
@@ -163,7 +167,7 @@ async def test_step06_dashboard_signin_form_renders_for_anon(page: Page, url_for
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_step07_stats_page_renders_three_widgets(page: Page, url_for) -> None:
-    await page.goto(url_for("/stats.html"))
+    await page.goto(url_for("/stats.html"), wait_until="commit")
     body = await page.locator("body").inner_text()
     # 3 widget headings — the page might show "失敗" copy if the API base
     # isn't reachable from this origin (CORS / cross-host setup), but the

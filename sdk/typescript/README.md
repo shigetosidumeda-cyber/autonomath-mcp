@@ -158,7 +158,7 @@ OpenAI / Anthropic / Gemini key. The Python MCP server still accepts
 ## MCP usage (optional)
 
 The jpcite MCP server is currently distributed as the Python package
-`autonomath-mcp` (139 tools) for compatibility.
+`autonomath-mcp` (151 tools) for compatibility.
 This package can spawn it as a child process for Node-based MCP hosts.
 
 ```ts
@@ -198,7 +198,7 @@ ESM build: ~7 KB minified, ~3 KB gzip. Zero dependencies.
 
 ## Versioning
 
-`@autonomath/sdk` follows the jpcite REST API version. SDK 0.2.x →
+`@autonomath/sdk` follows the jpcite REST API version. SDK 0.4.x →
 API v1, MCP protocol 2025-06-18.
 
 ## License

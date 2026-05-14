@@ -1684,24 +1684,23 @@ def create_app() -> FastAPI:
             "三軸分解)、**1,185 件の行政処分**、**9,484 件の法令** (e-Gov / "
             "CC-BY 4.0)、**50 件の税務判定ルールセット**、**2,065 件の判例**、"
             "**362 件の入札案件**、**13,801 件の適格請求書発行事業者 (国税庁 / PDL "
-            "v1.0)** を、REST + MCP の単一検索面で公開する API です。各レコードは "
+            "v1.0)** を、REST + MCP の evidence/output API として公開するサービスです。各レコードは "
             "一次情報源 URL と取得時刻 (`source_url` / `fetched_at`) を保持しています。\n\n"
             "**用途:** LLM エージェント (Claude Desktop / Cursor / Cline は MCP、"
             "ChatGPT Custom GPT は OpenAPI Actions) と"
             "日本企業向け業務自動化開発者向け。地域 × 業種 × 金額の補助金候補抽出、"
             "13 桁 法人番号 → 適格請求書発行事業者 登録確認、税務判定ルール適用判断、"
             "採択事例の事前研究、行政処分歴の与信前 DD、e-Gov 法令の条文参照、等。\n\n"
-            "**税理士法 §52 fence:** 本 API は公的情報の検索結果を返すサービスで、"
+            "**税理士法 §52 fence:** 本 API は公的根拠を Evidence Packet / output artifact として返すサービスで、"
             "**税務助言・法律相談・士業 (税理士 / 弁護士 / 社労士 / 行政書士) 業務の"
             "代替ではありません**。`/v1/am/*` および `/v1/tax_*` の各レスポンスは "
             "`_disclaimer` キーをもち、機械可読な形でこの境界を表明しています。LLM "
             "エージェントは end user に情報を中継する際、`_disclaimer` を必ず併示"
             "してください。\n\n"
             "**料金体系:** 認証なし (匿名) は IP あたり 3 リクエスト / 日 (JST 翌日 "
-            "00:00 リセット)、有料は ¥3 / リクエスト 完全従量 (税込 ¥3.30)。"
+            "00:00 リセット)、有料は ¥3/billable unit 完全従量 (税込 ¥3.30)。"
             "tier 課金・座席課金・年契約最低料金はありません。Stripe Checkout で "
-            "発行した `X-API-Key: jc_...` を `X-API-Key` ヘッダー"
-            "または `Authorization: Bearer ...` で送信してください。\n\n"
+            "発行した API key は `X-API-Key: jc_...` ヘッダーで送信してください。\n\n"
             "**公式サイト:** https://jpcite.com/."
         ),
         lifespan=_lifespan,
@@ -2513,7 +2512,7 @@ def create_app() -> FastAPI:
     # /v1/intel/probability_radar — program × houjin radar bundle
     # (probability estimate + same-industry rate + ROI + evidence) in 1 call.
     # Pure SQLite over am_recommended_programs / am_adopted_company_features /
-    # jpi_adoption_records. Sensitive: §52 / 行政書士法 §1 disclaimer.
+    # jpi_adoption_records. Sensitive: §52 / 行政書士法 §1の2 disclaimer.
     _include_experimental_router(
         app,
         "jpintel_mcp.api.intel",
@@ -2547,7 +2546,7 @@ def create_app() -> FastAPI:
     # 裁決 + 判例 + 行政処分 full regulatory bundle in 1 call. Pure SQLite
     # over program_law_refs / laws / am_law_article / nta_tsutatsu_index /
     # nta_saiketsu / court_decisions / enforcement_cases. Sensitive: 弁護士法
-    # §72 + 税理士法 §52 + 行政書士法 §1 disclaimer.
+    # §72 + 税理士法 §52 + 行政書士法 §1の2 disclaimer.
     _include_experimental_router(
         app,
         "jpintel_mcp.api.intel_regulatory_context",
@@ -2632,7 +2631,7 @@ def create_app() -> FastAPI:
     # alternative-program suggestion in 1 call. Cross-joins
     # am_program_eligibility_predicate_json (W26-6) with houjin attrs
     # (am_entities corp.*) and am_recommended_programs (W29-8). Pure
-    # SQLite + Python diff. Sensitive: 行政書士法 §1 / 税理士法 §52 fence.
+    # SQLite + Python diff. Sensitive: 行政書士法 §1の2 / 税理士法 §52 fence.
     _include_experimental_router(
         app,
         "jpintel_mcp.api.intel_why_excluded",
@@ -2644,7 +2643,7 @@ def create_app() -> FastAPI:
     # filter) + am_funding_stack_empirical (W22-6 conflict edges) + jpi_programs
     # (amount roll-up). Returns bundle + bundle_total + conflict_avoidance +
     # optimization_log + runner_up_bundles. Pure SQLite + Python greedy. Sensitive:
-    # 行政書士法 §1 / 税理士法 §52 fence.
+    # 行政書士法 §1の2 / 税理士法 §52 fence.
     _include_experimental_router(
         app,
         "jpintel_mcp.api.intel_bundle_optimal",
@@ -2655,7 +2654,7 @@ def create_app() -> FastAPI:
     # jurisdiction + watch_status) in 1 GET. Cross-joins houjin_master +
     # am_adopted_company_features + am_enforcement_detail + invoice_registrants
     # + am_geo_industry_density + customer_watches (mig 088). Pure SQLite,
-    # NO LLM. Sensitive: §52 / §72 / 行政書士法 §1 disclaimer.
+    # NO LLM. Sensitive: §52 / §72 / 行政書士法 §1の2 disclaimer.
     _include_experimental_router(
         app,
         "jpintel_mcp.api.intel_houjin_full",
@@ -2666,7 +2665,7 @@ def create_app() -> FastAPI:
     # context + peer-validated program recs. Cross-joins houjin_master +
     # am_adopted_company_features + am_geo_industry_density + am_entity_facts
     # + jpi_adoption_records + jpi_programs. Pure SQLite + Python. Sensitive:
-    # 景表法 / 行政書士法 §1 / 税理士法 §52 fence.
+    # 景表法 / 行政書士法 §1の2 / 税理士法 §52 fence.
     _include_experimental_router(
         app,
         "jpintel_mcp.api.intel_peer_group",
@@ -2813,7 +2812,7 @@ def create_app() -> FastAPI:
     app.include_router(dashboard_router)
     app.include_router(feedback_router)
     # Wave 43.1.3 — 民間助成財団 grant program surface (公益財団 / 一般財団 /
-    # NPO / 業界団体). Sensitive (税理士法 §2 / 行政書士法 §1 / 弁護士法 §72) —
+    # NPO / 業界団体). Sensitive (税理士法 §2 / 行政書士法 §1の2 / 弁護士法 §72) —
     # each handler stamps `_disclaimer` envelope key. AnonIpLimitDep applied
     # so the public 3 req/日 IP quota fences anonymous traffic.
     app.include_router(foundation_router, dependencies=[AnonIpLimitDep])
@@ -3133,10 +3132,10 @@ def create_app() -> FastAPI:
                 ),
             }
         }
-        # Spec-level default security so SDK generators emit auth wiring on
-        # every operation. Endpoints that accept anonymous traffic still work
-        # without the header; this is a hint to tooling, not a hard gate.
-        schema["security"] = [{"ApiKeyAuth": []}]
+        # Keep top-level security empty because many lookup endpoints support
+        # anonymous 3 req/day/IP access. Auth-required operations declare
+        # ApiKeyAuth at the operation level.
+        schema["security"] = []
         # Info-section metadata: ToS / license. Surfaces in
         # generated docs (Stainless, Mintlify, ReDoc) and SDK readmes.
         schema["info"].pop("contact", None)
@@ -3154,11 +3153,12 @@ def create_app() -> FastAPI:
         schema["tags"] = [
             {
                 "name": "programs",
-                "description": (
-                    "Search and detail-lookup over the unified Japanese "
-                    "public-program corpus (補助金 / 助成金 / 融資 / 税制 / 認定). "
-                    "Primary discovery surface — most callers start here."
-                ),
+	                "description": (
+	                    "Search and detail-lookup over the unified Japanese "
+	                    "public-program corpus (補助金 / 助成金 / 融資 / 税制 / 認定). "
+	                    "Use after evidence preflight when the caller needs targeted "
+	                    "program search or detail lookup."
+	                ),
             },
             {
                 "name": "jpcite",
@@ -3239,7 +3239,7 @@ def create_app() -> FastAPI:
                 "name": "intelligence",
                 "description": (
                     "Pre-computed compact evidence packets for AI workflows. "
-                    "Call before answer generation to retrieve source-linked "
+                    "Call before downstream AI writing or review to retrieve source-linked "
                     "context with optional baseline compression."
                 ),
             },

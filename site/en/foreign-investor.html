@@ -72,7 +72,7 @@
     {"@type": "Question", "name": "Is there an LLM doing the translation?", "acceptedAnswer": {"@type": "Answer", "text": "No. The English text is sourced from e-Gov's hand-curated Japanese Law Translation corpus. jpcite does not call an LLM API for translation — your LLM is the consumer."}},
     {"@type": "Question", "name": "Which jurisdictions are covered in the tax-treaty matrix?", "acceptedAnswer": {"@type": "Answer", "text": "33 countries are hand-curated as of 2026-05-07 (US, UK, Singapore, Hong Kong, Germany, France, Netherlands, China, Korea, Taiwan, Australia, Canada, India, Indonesia, Thailand, Vietnam, Malaysia, Philippines, plus 15 more). Coverage continues to expand from the Ministry of Finance and National Tax Agency primary sources. NULL in any wht_*_pct field means 'see treaty article (n/a in standard rate)' — distinct from 0.0 = exempt under treaty."}},
     {"@type": "Question", "name": "What does foreign_capital_eligibility return?", "acceptedAnswer": {"@type": "Answer", "text": "One of: eligible, eligible_with_caveat, excluded, silent (default), case_by_case. The default 'silent' means the program text does not address foreign capital — the Japanese statutory presumption is permissive, so most national programs do NOT exclude foreign-owned KKs unless they explicitly say so. The flag is per program, not per corporation. Always verify with the program office before relying on this for a filing decision."}},
-    {"@type": "Question", "name": "Is this legal or tax advice?", "acceptedAnswer": {"@type": "Answer", "text": "No. Every response carries a _disclaimer envelope declaring 税理士法 §52 / 弁護士法 §72 / 行政書士法 §1 / FDI 規制 fence. The output is information retrieval, not legal advice. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士."}}
+    {"@type": "Question", "name": "Is this legal or tax advice?", "acceptedAnswer": {"@type": "Answer", "text": "No. Every response carries a _disclaimer envelope declaring 税理士法 §52 / 弁護士法 §72 / 行政書士法 §1の2 / FDI 規制 fence. The output is information retrieval, not legal advice. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士."}}
   ]
 }
 </script>
@@ -96,6 +96,80 @@ pre { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; paddin
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -200,65 +274,7 @@ GET  /v1/en/fdi_subsidies?industry_jsic=E&amp;foreign_pct=100&amp;limit=20</pre>
 <section>
 <h2>Disclaimer (important)</h2>
 <div class="disclaimer">
-<p><strong>This is not legal advice or tax advice.</strong> Every response carries a <code>_disclaimer</code> envelope declaring the surface 税理士法 §52 (tax advice fence) / 弁護士法 §72 (legal advice fence) / 行政書士法 §1 (FDI 申請 代理 fence) / 国際課税 / FDI 規制 fence. The output is information retrieval. Translation text is from the e-Gov 日本法令外国語訳 corpus under CC-BY 4.0; the Japanese-language original is the only legally authoritative version. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士.</p>
-</div>
-</section>
-
-<section>
-<h2>Documentation</h2>
-<ul>
-<li><a href="/en/audiences/foreign-investor.html">Full English wedge guide (docs/en/foreign_investor.md)</a></li>
-<li><a href="/en/audiences/foreign-investor.html">Foreign-investor audience page (deeper FAQ + 外為法 prior-notification context)</a></li>
-<li><a href="https://api.jpcite.com/v1/openapi.json">Full OpenAPI spec (English descriptions on every route)</a></li>
-<li><a href="/server.json">MCP server manifest</a></li>
-</ul>
-</section>
-
-</main>
-
-<footer>
-<p>© Bookyou株式会社 (Bookyou K.K., 適格請求書発行事業者番号 T8010001213708). <a href="mailto:info@bookyou.net">info@bookyou.net</a>.</p>
-</footer>
-
-</body>
-</html>
-imer": "The English text returned here is a courtesy translation ...",
-  "_billing_unit": 1,
-  "_next_calls": [...]
-}</pre>
-</section>
-
-<section>
-<h2>Sample call (get_tax_treaty)</h2>
-<pre>$ curl 'https://api.jpcite.com/v1/en/tax_treaty/US?country_b=JPN'
-{
-  "found": true,
-  "treaty": {
-    "country_a": "US",
-    "country_b": "JP",
-    "country_iso": "US",
-    "country_name_en": "United States",
-    "treaty_kind": "comprehensive",
-    "dta_in_force_date": "2004-03-30",
-    "withholding_tax_pct": {
-      "dividend_general": 10.0,
-      "dividend_parent_subsidiary": 5.0,
-      "interest": 10.0,
-      "royalty": 0.0
-    },
-    "info_exchange": "standard",
-    "moaa_arbitration": true,
-    "source_url": "https://www.mof.go.jp/tax_policy/summary/international/tax_convention/usa.htm",
-    "license": "gov_standard"
-  },
-  "_disclaimer": "本 response は国税庁・財務省の一次資料に基づく retrieval です。..."
-}</pre>
-</section>
-
-<section>
-<h2>Disclaimer (important)</h2>
-<div class="disclaimer">
-<p><strong>This is not legal advice or tax advice.</strong> Every response carries a <code>_disclaimer</code> envelope declaring the surface 税理士法 §52 (tax advice fence) / 弁護士法 §72 (legal advice fence) / 行政書士法 §1 (FDI 申請 代理 fence) / 国際課税 / FDI 規制 fence. The output is information retrieval. Translation text is from the e-Gov 日本法令外国語訳 corpus under CC-BY 4.0; the Japanese-language original is the only legally authoritative version. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士.</p>
+<p><strong>This is not legal advice or tax advice.</strong> Every response carries a <code>_disclaimer</code> envelope declaring the surface 税理士法 §52 (tax advice fence) / 弁護士法 §72 (legal advice fence) / 行政書士法 §1の2 (FDI 申請 代理 fence) / 国際課税 / FDI 規制 fence. The output is information retrieval. Translation text is from the e-Gov 日本法令外国語訳 corpus under CC-BY 4.0; the Japanese-language original is the only legally authoritative version. For binding interpretation, consult a Japanese qualified attorney / 税理士 / 行政書士.</p>
 </div>
 </section>
 

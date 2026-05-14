@@ -26,6 +26,11 @@ if TYPE_CHECKING:
     from playwright.async_api import Page
 
 
+def _skip_external_key_mutation(seeded_api_key: dict[str, str]) -> None:
+    if seeded_api_key.get("external") == "1":
+        pytest.skip("mutating dashboard e2e requires a locally seeded throwaway key")
+
+
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_dashboard_signin_with_seeded_key_shows_tier_and_prefix(
@@ -88,6 +93,8 @@ async def test_dashboard_usage_chart_renders_bars_with_seeded_events(
 async def test_rotate_key_invalidates_old_key(
     page: Page, url_for, seeded_api_key: dict[str, str]
 ) -> None:
+    _skip_external_key_mutation(seeded_api_key)
+
     # Pre-confirm the window.confirm dialog that onRotate() throws up.
     page.on("dialog", lambda d: d.accept())
 

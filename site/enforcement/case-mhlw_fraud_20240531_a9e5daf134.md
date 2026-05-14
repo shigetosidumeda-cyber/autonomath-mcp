@@ -37,7 +37,7 @@ license: see https://jpcite.com/tos
 
 ## 関連法令 
 
-- [雇用保険法施行規則 ](https://jpcite.com/laws/LAW-23cf80a32f)
+- [雇用保険法施行規則 ](https://jpcite.com/laws/koyo-hoken-ho_5)
 
 ## 一次資料 
 

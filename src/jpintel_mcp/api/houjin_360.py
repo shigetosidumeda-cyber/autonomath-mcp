@@ -108,7 +108,7 @@ _DISCLAIMER = (
     "am_enforcement_detail + bids + jpi_invoice_registrants + "
     "am_amendment_diff + customer_watches を機械的に SQL 結合した "
     "**公開情報の名寄せ結果** であり、税理士法 §52 (税務代理) ・"
-    "弁護士法 §72 (法律事務) ・行政書士法 §1 (申請代理) のいずれにも"
+    "弁護士法 §72 (法律事務) ・行政書士法 §1の2 (申請代理) のいずれにも"
     "該当しません。risk_score / credit_score / compliance_score は "
     "公開コーパスからの **descriptive 指標** であり、与信判断・"
     "税務判断・法令適用判断ではありません。確定判断は資格を有する"

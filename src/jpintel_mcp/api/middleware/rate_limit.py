@@ -165,22 +165,24 @@ def _client_ip(request: Request) -> str:
     """Return the client IP used for the origin burst bucket.
 
     ``X-Forwarded-For`` is caller-controlled unless it arrives with an
-    origin-trusted marker. Prefer Fly's proxy-owned header and only accept
-    XFF on the signed edge-auth path. A bare XFF falls back to
+    origin-trusted marker. Prefer signed edge-auth XFF from the jpcite.com
+    proxy, then Fly's proxy-owned header. A bare XFF falls back to
     ``request.client.host`` so an attacker cannot choose their bucket key.
     """
+    xff = request.headers.get("x-forwarded-for", "").strip()
+    if xff:
+        caller_ip = xff.split(",", 1)[0].strip()
+        if caller_ip and _trusted_edge_header_present(request, caller_ip):
+            return caller_ip
     fly_ip = request.headers.get("fly-client-ip")
     if fly_ip:
         return fly_ip.strip()
-    xff = request.headers.get("x-forwarded-for", "").strip()
-    if xff and _trusted_edge_header_present(request):
-        return xff.split(",")[0].strip()
     if request.client:
         return request.client.host
     return "unknown"
 
 
-def _trusted_edge_header_present(request: Request) -> bool:
+def _trusted_edge_header_present(request: Request, caller_ip: str) -> bool:
     """Return true when ``X-Edge-Auth`` proves XFF came via our edge."""
     try:
         from jpintel_mcp.api.middleware.edge_header_sanitization import (
@@ -194,7 +196,7 @@ def _trusted_edge_header_present(request: Request) -> bool:
     if not secret:
         return False
     raw_token = request.headers.get("x-edge-auth", "")
-    return bool(raw_token and _verify_signed_edge_header(raw_token, secret))
+    return bool(raw_token and _verify_signed_edge_header(raw_token, secret, caller_ip=caller_ip))
 
 
 def _extract_raw_key(request: Request) -> str | None:

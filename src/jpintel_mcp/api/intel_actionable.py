@@ -75,14 +75,14 @@ ALLOWED_INTENTS: frozenset[str] = frozenset(
 )
 
 
-# §52 / 行政書士法 §1 / 公認会計士法 §47条の2 disclaimer envelope. The cached
+# §52 / 行政書士法 §1の2 / 公認会計士法 §47条の2 disclaimer envelope. The cached
 # JSON already contains this; the lookup endpoint preserves it verbatim. The
 # constant lives here so a stale cached row that lost its disclaimer (e.g.
 # manual surgery on the table) still gets one re-attached on the way out.
 _DISCLAIMER_FALLBACK = (
     "本キャッシュ済みエンベロープは jpcite が公的機関 (各省庁・自治体・国税庁・"
     "日本政策金融公庫 等) の公開情報を機械的に整理した結果を返却するものであり、"
-    "税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1 に基づく個別具体的な"
+    "税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1の2 に基づく個別具体的な"
     "税務助言・監査意見・申請書面作成の代替ではありません。最終的な申請可否・"
     "税務判断は資格を有する士業へご相談ください。"
 )

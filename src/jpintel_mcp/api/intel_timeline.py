@@ -87,7 +87,7 @@ _TIMELINE_DISCLAIMER = (
     "本 timeline は am_amendment_diff / am_adoption_trend_monthly / "
     "am_enforcement_anomaly / am_adopted_company_features / "
     "am_program_narrative_full の各テーブルに対する機械的検索照合の集約であり、"
-    "税理士法 §52 (税務代理) ・行政書士法 §1 (申請代理) ・弁護士法 §72 "
+    "税理士法 §52 (税務代理) ・行政書士法 §1の2 (申請代理) ・弁護士法 §72 "
     "(法律事務) の代替ではない。severity / type は決定論的 enum マッピングであり、"
     "LLM 推論は含まれない。確定判断は資格を有する士業へ。"
 )

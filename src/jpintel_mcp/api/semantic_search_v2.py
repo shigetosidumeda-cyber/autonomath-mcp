@@ -147,7 +147,7 @@ _DISCLAIMER = (
     "hybrid semantic surface (FTS5 + sqlite-vec + cross-encoder reranker); "
     "出力は情報検索結果であり、税務 (税理士法 §52) ・法務 (弁護士法 §72) ・"
     "経営判断を代替しません。最終確認は一次資料 (source_url) と専門家確認を "
-    "必ず経てください。§52 / §47条の2 / §72 / 行政書士法 §1 sensitive surface."
+    "必ず経てください。§52 / §47条の2 / §72 / 行政書士法 §1の2 sensitive surface."
 )
 
 

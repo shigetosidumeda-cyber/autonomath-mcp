@@ -16,14 +16,14 @@ license: see https://jpcite.com/tos
 
 # jpcite が触らない 8 業法
 
-jpcite は情報検索・根拠確認の補助に徹し、 個別具体的な税務・法律・申請・監査・登記・労務・知財・労基の判断は行いません。 該当する 8 業法 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1 / 司法書士法 §3 / 社会保険労務士法 §27 / 弁理士法 §75 / 労働基準法 §36) の業務範囲・「やる/やらない」境界線・違反通報先を 1 page で開示します。 API response の _disclaimer field 仕様も末尾に記載しています。
+jpcite は情報検索・根拠確認の補助に徹し、 個別具体的な税務・法律・申請・監査・登記・労務・知財・労基の判断は行いません。 該当する 8 業法 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1の2 / 司法書士法 §3 / 社会保険労務士法 §27 / 弁理士法 §75 / 労働基準法 §36) の業務範囲・「やる/やらない」境界線・違反通報先を 1 page で開示します。 API response の _disclaimer field 仕様も末尾に記載しています。
 
 目次
 
 - [1. 税理士法 §52 ](#fence-52)
 - [2. 弁護士法 §72 ](#fence-72)
 - [3. 公認会計士法 §47-2 ](#fence-47-2)
-- [4. 行政書士法 §1 ](#fence-gyosei)
+- [4. 行政書士法 §1の2 ](#fence-gyosei)
 - [5. 司法書士法 §3 ](#fence-shiho)
 - [6. 社会保険労務士法 §27 (36協定 含む) ](#fence-shaho)
 - [7. API response の _disclaimer field 仕様 ](#disclaimer)
@@ -95,9 +95,9 @@ jpcite は情報検索・根拠確認の補助に徹し、 個別具体的な税
 
 違反通報先 : 日本公認会計士協会 [https://jicpa.or.jp/ ](https://jicpa.or.jp/)
 
-## 4. 行政書士法 §1
+## 4. 行政書士法 §1の2
 
-### 業務範囲 (行政書士法 §1 が独占)
+### 業務範囲 (行政書士法 §1の2 が独占)
 
 官公署に提出する書類等の作成、その代理・相談業務
 
@@ -153,18 +153,18 @@ jpcite は情報検索・根拠確認の補助に徹し、 個別具体的な税
 
 ### jpcite が やらない
 
-- 36協定 (時間外労働・休日労働に関する協定届) の生成 — 公開提供していません。関連する出力は下書き扱いで、社労士確認必須の注意書きを付与します。
+- 36協定 (時間外労働・休日労働に関する協定届) の生成 — 公開提供していません。関連する出力は下書き扱いで、社労士確認が必要である旨を表示対象にします。
 - 就業規則作成・改定
 - 助成金申請代行
 - 労働社会保険諸法令に基づく申告書類の作成
 
 違反通報先 : 全国社会保険労務士会連合会 [https://www.shakaihokenroumushi.jp/ ](https://www.shakaihokenroumushi.jp/)
 
-36協定の扱い : 36協定書面の生成機能は公開提供していません。関連する出力は下書き扱いで、「社労士確認必須」の注意書きを必ず付与します。
+36協定の扱い : 36協定書面の生成機能は公開提供していません。関連する出力は下書き扱いで、「社労士確認が必要」という注意書きを表示対象にします。
 
 ## 7. API response の _disclaimer field 仕様
 
-業法に該当する 11 sensitive tool branch では、API response 末尾に _disclaimer field を自動付与します (disclaimer hardening 済)。
+業法に該当する sensitive tool branch では、API response 末尾の _disclaimer field を表示対象にします。対象は税務・法律・申請・監査・登記・労務・知財・36協定などの sensitive surface に限定します。
 
 ### 統一文体
 { "_disclaimer": { "law": "税理士法 §52", "scope_excluded": "個別税務代理・申告書作成・税務相談", "professional": "税理士", "professional_directory": "https://www.nichizeiren.or.jp/", "message": "本 response は情報検索の結果です。 個別具体的な税務判断は税理士にご相談ください (税理士法 §52 に基づく業務範囲外)。", "source_urls": ["https://elaws.e-gov.go.jp/...", ...] } }
@@ -188,7 +188,7 @@ match_due_diligence_questions §52 + 弁護士法 §72 ○
 
 cross_check_jurisdiction §52 + §72 + 司法書士法 §3 ○
 
-bundle_application_kit 行政書士法 §1 ○
+bundle_application_kit 行政書士法 §1の2 ○
 
 render_36_kyotei_am (gated off) 社労士法 §27 + 労基法 §36 ○ (gate ON 時)
 
@@ -198,6 +198,6 @@ pack_manufacturing §52 + §47-2 ○
 
 pack_real_estate §52 + §47-2 ○
 
-これらは CI で継続確認し、「全 sensitive branch の response が _disclaimer を含む」ことを検証します。
+これらは CI で継続確認し、「対象 sensitive branch の response が _disclaimer を含む」ことを検証します。
 
 本 page の各業法引用は e-Gov 法令データ (CC BY 4.0) と各業法主管団体の公開情報を一次資料とします。 jpcite が「やる/やらない」境界線に関する記述は、 [利用規約 ](/tos.html)§7 (免責) と整合します。 関連 page: [法人購買 1-screen ](/trust/purchasing.html)· [Security Overview ](/security/)· [データソース・ライセンス ](/data-licensing.html)· [trust.json ](/.well-known/trust.json)

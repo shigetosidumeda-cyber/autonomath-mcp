@@ -12,6 +12,7 @@
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/v2">
 <link rel="alternate" type="application/json" href="/status/status.json">
 <link rel="alternate" type="application/rss+xml" href="/status/rss.xml">
+<link rel="alternate" type="application/atom+xml" href="/status/feed.atom">
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:960px;margin:0 auto;padding:20px;color:#0f172a}
 h1{font-size:28px;margin:0 0 16px}
@@ -22,39 +23,160 @@ h1{font-size:28px;margin:0 0 16px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:0 0 32px}
 .card{padding:14px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}
 .card .name{font-weight:600;margin:0 0 6px}
-.card .status{font-size:14px}
+.card .status{font-size:14px;font-weight:600;margin:0 0 4px}
+.card .meta{font-size:13px;color:#475569;margin:0}
 .card.green::before{content:"●";color:#16a34a;margin-right:6px}
 .card.yellow::before{content:"▲";color:#d97706;margin-right:6px}
 .card.red::before{content:"✕";color:#dc2626;margin-right:6px}
 footer{margin:48px 0 0;padding:24px 0 0;border-top:1px solid #e2e8f0;font-size:13px;color:#64748b}
 </style>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 <a href="#main" style="position:absolute;left:-9999px">本文へスキップ</a>
 <header role="banner"><h1>jpcite Status</h1></header>
 <main id="main" role="main">
-  <div class="hero operational" id="hero">全システム稼働中</div>
+  <div class="hero outage" id="hero">障害発生中</div>
   <div class="grid" id="components">
-    <div class="card green"><div class="name">api</div><div class="status">api.jpcite.com (REST + MCP) / p95 ~ms</div></div>
-    <div class="card green"><div class="name">mcp</div><div class="status">/.well-known/mcp.json / 151 tools</div></div>
-    <div class="card green"><div class="name">billing</div><div class="status">Stripe metered + webhook</div></div>
-    <div class="card green"><div class="name">data-freshness</div><div class="status">4 dataset window 内</div></div>
-    <div class="card green"><div class="name">dashboard</div><div class="status">magic-link login 完走率</div></div>
+    <div class="card green" data-component-id="api"><div class="name">API</div><div class="status">ok</div><p class="meta">1147 ms · 2026-05-14T13:42:03+09:00</p></div>
+    <div class="card yellow" data-component-id="mcp"><div class="name">MCP</div><div class="status">degraded</div><p class="meta">1226 ms · 2026-05-14T13:42:03+09:00</p></div>
+    <div class="card green" data-component-id="billing"><div class="name">Billing (Stripe)</div><div class="status">ok</div><p class="meta">2026-05-14T13:42:03+09:00</p></div>
+    <div class="card red" data-component-id="data-freshness"><div class="name">データ鮮度</div><div class="status">down</div><p class="meta">data_stale · last updated 2026-05-12 · max age 20 days</p></div>
+    <div class="card green" data-component-id="dashboard"><div class="name">ダッシュボード</div><div class="status">ok</div><p class="meta">212 ms · 2026-05-14T13:42:03+09:00</p></div>
   </div>
 </main>
 <footer role="contentinfo">
   <p>Bookyou株式会社 (T8010001213708) — <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-  <p><a href="/status/status.json">status.json</a> | <a href="/status/rss.xml">RSS</a> | <a href="/sla.html">SLA</a> | <a href="https://jpcite.com/status/badge.svg" alt="status badge">embed badge</a></p>
+  <p><a href="/status/status.json">status.json</a> | <a href="/status/rss.xml">RSS</a> | <a href="/status/feed.atom">Atom</a> | <a href="/sla.html">SLA</a> | <a href="https://jpcite.com/status/badge.svg" alt="status badge">embed badge</a></p>
 </footer>
 <script>
-fetch('/status/status.json').then(r=>r.json()).then(d=>{
-  const hero=document.getElementById('hero');
-  const overall=d.overall_status||d.overall;
-  if(overall==='operational'||overall==='ok'){hero.className='hero operational';hero.textContent='全システム稼働中'}
-  else if(overall==='degraded'||overall==='warn'){hero.className='hero degraded';hero.textContent='軽微な低下'}
-  else if(overall==='outage'||overall==='down'){hero.className='hero outage';hero.textContent='障害発生中'}
-  // components hydrate (details omitted)
-}).catch(()=>{});
+(function(){
+  var STATUS_URL = '/status/status_components.json';
+  var classByStatus = { ok: 'green', degraded: 'yellow', down: 'red' };
+  var heroText = { ok: '全システム稼働中', degraded: '限定運用', down: '障害発生中' };
+  var heroClass = { ok: 'operational', degraded: 'degraded', down: 'outage' };
+
+  function normStatus(value) {
+    if (value === 'operational') return 'ok';
+    if (value === 'warn') return 'degraded';
+    if (value === 'outage') return 'down';
+    if (value === 'ok' || value === 'degraded' || value === 'down') return value;
+    return 'down';
+  }
+
+  function metaFor(component) {
+    var parts = [];
+    if (component.error_category) parts.push(component.error_category);
+    if (component.id === 'data-freshness' && component.last_updated_at) {
+      parts.push('last updated ' + component.last_updated_at);
+    }
+    if (component.id === 'data-freshness' && component.max_age_days !== null && component.max_age_days !== undefined) {
+      parts.push('max age ' + component.max_age_days + ' day' + (component.max_age_days === 1 ? '' : 's'));
+    }
+    if (component.latency_ms) parts.push(component.latency_ms + ' ms');
+    if (component.last_check) parts.push(component.last_check);
+    return parts.join(' · ');
+  }
+
+  function paintCard(component) {
+    var card = document.querySelector('[data-component-id="' + component.id + '"]');
+    if (!card) return;
+    var status = normStatus(component.status);
+    card.className = 'card ' + classByStatus[status];
+    var name = card.querySelector('.name');
+    var state = card.querySelector('.status');
+    var meta = card.querySelector('.meta');
+    if (name) name.textContent = component.label || component.id;
+    if (state) state.textContent = status;
+    if (meta) meta.textContent = metaFor(component);
+  }
+
+  fetch(STATUS_URL, { credentials: 'omit', cache: 'no-store' }).then(function(response) {
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return response.json();
+  }).then(function(snapshot) {
+    var overall = normStatus(snapshot.overall || snapshot.overall_status);
+    var hero = document.getElementById('hero');
+    if (hero) {
+      hero.className = 'hero ' + heroClass[overall];
+      hero.textContent = heroText[overall];
+    }
+    (snapshot.components || []).forEach(paintCard);
+  }).catch(function(){});
+}());
 </script>
 </body>
 </html>

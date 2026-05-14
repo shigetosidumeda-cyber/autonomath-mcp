@@ -178,8 +178,8 @@ description_for_model に「8 業法フェンス + 匿名 3 req/日 + jc_ プレ
 distribution channel (pypi/npm), version, transport, publisher 情報を機械可読で宣言。
 
 **jpcite 現状**:
-- `server.json` (v0.3.4): pypi package `autonomath-mcp`, stdio transport,
-  `tool_count=139`, `resource_count=28`, recurring_workflows 3 種を `_meta` に格納。
+- `server.json` (v0.4.0): pypi package `autonomath-mcp`, stdio transport,
+  `tool_count=151`, `resource_count=28`, recurring_workflows 3 種を `_meta` に格納。
 - `mcp-server.json` (172KB): tool 1 件 1 件の `inputSchema` を完全展開した tool catalog。
 - MCP Registry: 既に publish 済み。`uvx autonomath-mcp` で 1 行 install。
 
@@ -435,7 +435,7 @@ site/
 ├── openapi.agent.json                    # 544KB, agent-safe
 ├── openapi.agent.gpt30.json              # 379KB, GPT Custom GPT 30 endpoint slim
 ├── mcp-server.json                       # 172KB, tool catalog
-├── server.json                           # MCP Registry manifest (v0.3.4)
+├── server.json                           # MCP Registry manifest (v0.4.0)
 ├── manifest.webmanifest                  # PWA manifest
 └── .well-known/
     ├── mcp.json                          # 253 行、AI discovery の主役

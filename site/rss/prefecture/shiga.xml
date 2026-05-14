@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>【募集開始】中小企業成長展開支援事業 成長展開チャレンジ支援補助金｜滋賀県ホームページ</title>
@@ -380,29 +380,11 @@
   </item>
 
   <item>
-    <title>特別支援教育課</title>
-    <link>https://jpcite.com/programs/tokubetsu-shien-kyouikuka-372bd9.html</link>
-    <description>Tier A / 滋賀県 / 滋賀県 / support 出典: https://www.pref.shiga.lg.jp/kensei/gaiyou/soshiki/kyouikuiinkai/tokubetsushienkyouikuka/index.html</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-1e52201cb7</guid>
-    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
-  </item>
-
-  <item>
     <title>健康・医療・福祉関連</title>
     <link>https://jpcite.com/programs/kenkou-iryou-fukushi-kanren-f72c8f.html</link>
     <description>Tier A / 滋賀県 / 滋賀県 / support 出典: https://www.pref.shiga.lg.jp/zigyousya/shien/305560/</description>
     <category>support</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-3db46fe0da</guid>
-    <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>用地事業支援課</title>
-    <link>https://jpcite.com/programs/youchi-jigyou-shien-ka-68549b.html</link>
-    <description>Tier A / 滋賀県 / 滋賀県 / support 出典: https://www.pref.shiga.lg.jp/kensei/gaiyou/soshiki/dobokukotsubu/youchijigyoshienka/index.html</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-42d22d73bf</guid>
     <pubDate>Sat, 25 Apr 2026 04:28:09 +0000</pubDate>
   </item>
 
@@ -587,6 +569,15 @@
   </item>
 
   <item>
+    <title>モリヤマメロン生産設備整備事業補助金</title>
+    <link>https://jpcite.com/programs/moriyamameron-seisan-setsubi-seibi-jigyou-hojokin-dd4460.html</link>
+    <description>Tier C / 滋賀県 / subsidy / 上限 875万円 出典: https://www.city.moriyama.lg.jp/_res/projects/default_project/_page_/001/014/374/20260213yosannann.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1a045e446d</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>甲賀市新規就農者支援事業</title>
     <link>https://jpcite.com/programs/kouka-shi-shinki-shuunou-mono-shien-jigyou-281a1a.html</link>
     <description>Tier B / 滋賀県 / 市町村 / subsidy / 上限 50万円 出典: https://reiki.city.koka.lg.jp/reiki_int/reiki_honbun/r055RG00000363.html</description>
@@ -601,6 +592,15 @@
     <description>Tier B / 滋賀県 / 市町村 / subsidy / 上限 375万円 出典: https://reiki.city.koka.lg.jp/reiki_int/reiki_honbun/r055RG00001836.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-1ba5e65e1f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>環境こだわり農産物育成補助金</title>
+    <link>https://jpcite.com/programs/kankyou-kodawari-nousanbutsu-ikusei-hojokin-8b28a7.html</link>
+    <description>Tier C / 滋賀県 / subsidy / 上限 36万円 出典: https://www.city.moriyama.lg.jp/_res/projects/default_project/_page_/001/014/374/20260213yosannann.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-1f23b9e07b</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -704,6 +704,15 @@
   </item>
 
   <item>
+    <title>緩衝帯整備事業補助金</title>
+    <link>https://jpcite.com/programs/kanshou-obi-seibi-jigyou-hojokin-381fac.html</link>
+    <description>Tier B / 滋賀県 / subsidy / 上限 70万円 出典: https://www.city.koka.lg.jp/22194.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-5fa1531791</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>次世代担い手確保・育成支援補助</title>
     <link>https://jpcite.com/programs/jisedai-ninaite-kakuho-ikusei-shien-hojo-13ad02.html</link>
     <description>Tier C / 滋賀県 / subsidy / 上限 300万円 出典: https://www.city.higashiomi.shiga.jp/_res/projects/default_project/_page_/001/004/417/220527_09_shisaku.pdf</description>
@@ -718,6 +727,15 @@
     <description>Tier B / 滋賀県 / equipment / 上限 500万円 出典: https://www2.city.moriyama.lg.jp/reiki_int/reiki_honbun/i400RG00002659.html</description>
     <category>equipment</category>
     <guid isPermaLink="false">jpcite:program:UNI-6e3a91fa7f</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>法定猟具等購入事業補助金</title>
+    <link>https://jpcite.com/programs/houtei-ryougu-nado-kounyuu-jigyou-hojokin-327052.html</link>
+    <description>Tier B / 滋賀県 / subsidy / 上限 30万円 出典: https://www.city.koka.lg.jp/6130.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-71ea3960e7</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -758,6 +776,15 @@
   </item>
 
   <item>
+    <title>農作物獣害防止対策補助金</title>
+    <link>https://jpcite.com/programs/nousakubutsu-juugai-boushitaisaku-hojokin-d43bf5.html</link>
+    <description>Tier B / 滋賀県 / subsidy / 上限 250万円 出典: https://www.city.koka.lg.jp/9342.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-99aac3152c</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
     <title>守山市近江米振興協会負担金</title>
     <link>https://jpcite.com/programs/moriyama-shi-oumi-kome-shinkou-kyoukai-futankin-76d76e.html</link>
     <description>Tier C / 滋賀県 / subsidy / 上限 244万円 出典: https://www.city.moriyama.lg.jp/_res/projects/default_project/_page_/001/014/374/20260213yosannann.pdf</description>
@@ -767,20 +794,20 @@
   </item>
 
   <item>
-    <title>【有機JAS認証支援】長浜市有機JAS認証支援事業奨励金</title>
-    <link>https://jpcite.com/programs/yuuki-jas-ninshou-shien-nagahama-shiyuu-ki-jas-ninshou-f78c0d.html</link>
-    <description>Tier B / 滋賀県 / 上限 5万円 出典: https://www.city.nagahama.lg.jp/0000011668.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-e67fd3eea0</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>長浜市有機農業推進事業補助金（有機JAS認証支援）</title>
     <link>https://jpcite.com/programs/nagahama-shiyuu-ki-nougyou-suishin-jigyou-hojokin-yuuki-jas-278da2.html</link>
     <description>Tier C / 滋賀県 / subsidy / 上限 250万円 出典: https://www.city.nagahama.lg.jp/category/nougyou/hojokin/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-f5064c7ba7</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>獣害に強い里づくり事業補助金</title>
+    <link>https://jpcite.com/programs/juugai-ni-tsuyoi-sato-zukuri-jigyou-hojokin-5665c2.html</link>
+    <description>Tier B / 滋賀県 / subsidy / 上限 30万円 出典: https://www.city.koka.lg.jp/22193.htm</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ff983e03c3</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

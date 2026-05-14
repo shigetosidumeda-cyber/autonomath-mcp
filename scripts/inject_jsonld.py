@@ -12,7 +12,7 @@ inject = f'<script type="application/ld+json" {MARKER}>{common}</script>'
 updated = []
 for f in (ROOT / "site").rglob("*.html"):
     s = str(f)
-    if "_assets" in s or "/.cursor/" in s or "/.well-known/" in s:
+    if "_assets" in s or "/.cursor/" in s or "/.well-known/" in s or "/site/docs/" in s:
         continue
     text = f.read_text("utf-8", errors="ignore")
     if "</head>" not in text:

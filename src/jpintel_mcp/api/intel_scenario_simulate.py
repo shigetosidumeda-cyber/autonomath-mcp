@@ -34,7 +34,7 @@ _DISCLAIMER = (
     "am_recommended_programs / jpi_adoption_records / am_funding_stack_empirical "
     "等の公開・事前計算 substrate を rules-based に集計した試算であり、"
     "採択保証、補助金額の確約、税務・法律・行政手続代理の助言ではありません。"
-    "最終判断は一次資料および税理士法 §52・行政書士法 §1・弁護士法 §72 の "
+    "最終判断は一次資料および税理士法 §52・行政書士法 §1の2・弁護士法 §72 の "
     "有資格者確認に従ってください。"
 )
 

@@ -282,11 +282,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -366,7 +369,7 @@
  <button id="copy-key-btn" class="btn-ghost" type="button">&#128203; APIキーをコピー</button>
  </div>
  <div class="meta-row" aria-label="metadata">
- <span>plan: <strong>完全従量 ¥3/課金単位 (税込 ¥3.30)</strong></span>
+ <span>plan: <strong>完全従量 税別 ¥3/課金単位 (税込 ¥3.30)</strong></span>
  <span>customer_id: <strong id="meta-customer">—</strong></span>
  </div>
  </div>
@@ -387,9 +390,9 @@
  <button id="copy-claude-btn" class="btn-ghost" type="button">&#128203; Claude config をコピー</button>
  </div>
  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
- 事前に <code>pip install jpcite-mcp</code> または <code>uv tool install jpcite-mcp</code>。
+ 事前に <code>uvx autonomath-mcp</code> が使える状態にしてください。PyPI package 名は legacy 維持で <code>autonomath-mcp</code>、サービス名は jpcite です。
  設定ファイル: macOS = <code>~/Library/Application Support/Claude/claude_desktop_config.json</code>。
- 詳細 → <a href="/integrations/claude-desktop.html">Claude Desktop 統合ガイド</a>
+ 詳細 → <a href="/connect/claude-code">Claude Desktop 統合ガイド</a>
  </p>
  </div>
 
@@ -401,7 +404,7 @@
  <button id="copy-cursor-btn" class="btn-ghost" type="button">&#128203; Cursor / Cline config をコピー</button>
  </div>
  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
- 詳細 → <a href="/integrations/cursor.html">Cursor 統合</a> · <a href="/integrations/cline.html">Cline 統合</a>
+ 詳細 → <a href="/connect/cursor">Cursor 統合</a> · <a href="/integrations/cline.html">Cline 統合</a>
  </p>
  </div>
 
@@ -409,7 +412,7 @@
  <div class="state-card">
  <p class="label">ChatGPT Custom GPT (OpenAPI Actions)</p>
  <pre id="chatgpt-block" class="code-block" aria-label="ChatGPT Actions / OpenAPI"># OpenAPI URL
-https://api.jpcite.com/v1/openapi.agent.json
+	https://jpcite.com/openapi.agent.gpt30.json
 
 # Authentication
 Type: API Key
@@ -420,7 +423,7 @@ Auth value: …</pre>
  </div>
  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
  ChatGPT Plus / Team で My GPTs → Configure → Actions → Import OpenAPI で上記 URL を貼り付け、 Authentication に API キーを設定。
- 詳細 → <a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT 統合ガイド</a>
+ 詳細 → <a href="/connect/chatgpt">ChatGPT Custom GPT 統合ガイド</a>
  </p>
  </div>
 
@@ -429,7 +432,9 @@ Auth value: …</pre>
  <ol>
  <li><a href="/docs/getting-started/">Getting Started</a> &mdash; Python / Node の最小例、 認証、 rate limit</li>
  <li><a href="dashboard.html">既存 API キーを管理 (ダッシュボード)</a> &mdash; 利用量、 キー再発行、 Stripe ポータル、 解約</li>
- <li><a href="/docs/prompt_cookbook/">Cookbook (12 レシピ)</a> &mdash; 税理士 daily / Claude Desktop install / 法人 360 / pref heatmap / 採択事例 / 行政処分 watch ほか</li>
+ <li><a href="/products.html">成果物カタログ</a> &mdash; Evidence Packet / 会社フォルダ / 公開情報 DD / 月次レビュー / 通知の入口</li>
+ <li><a href="/laws/">公開カタログ</a> &mdash; <a href="/laws/">法令</a> / <a href="/enforcement/">行政処分</a> / <a href="/programs/">制度</a> を確認</li>
+ <li><a href="/prompts/">Prompts</a> &mdash; 税理士 daily / Claude Desktop install / 法人 360 / pref heatmap / 採択事例 / 行政処分 watch ほか</li>
  <li><a href="support.html">サポート</a> &mdash; FAQ / Status / Issue tracker / メール窓口</li>
  </ol>
  </div>
@@ -441,6 +446,7 @@ Auth value: …</pre>
  <a class="btn btn-secondary" href="dashboard.html" style="text-decoration:none;">Dashboard を開く (Stripe ポータル / 解約)</a>
  <a class="btn-ghost" href="mailto:info@bookyou.net?subject=jpcite%20-%20削除請求" style="text-decoration:none;">アカウント削除請求</a>
  </div>
+ <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">アカウント削除請求や API キー削除・ローテーションは、Stripe サブスクリプションの解約ではありません。解約は Stripe Customer Portal で行ってください。</p>
  <p style="font-size:13px;color:var(--text-muted);margin:12px 0 0;line-height:1.6;">
  <strong>セキュリティのご推奨:</strong> Stripe Customer Portal で 2 要素認証 (2FA) を有効化し、API キーは環境変数 (<code>JPCITE_API_KEY</code>) で管理することを強く推奨します。鍵の流出に気付いた場合は Dashboard から即時ローテーションしてください。
  </p>
@@ -591,7 +597,7 @@ Auth value: …</pre>
         '  "mcpServers": {\n' +
         '    "jpcite": {\n' +
         '      "command": "uvx",\n' +
-        '      "args": ["jpcite-mcp"],\n' +
+        '      "args": ["autonomath-mcp"],\n' +
         '      "env": {"JPCITE_API_KEY": "' + apiKey + '"}\n' +
         '    }\n' +
         '  }\n' +
@@ -604,7 +610,7 @@ Auth value: …</pre>
         '  "mcpServers": {\n' +
         '    "jpcite": {\n' +
         '      "command": "uvx",\n' +
-        '      "args": ["jpcite-mcp"],\n' +
+        '      "args": ["autonomath-mcp"],\n' +
         '      "env": {"JPCITE_API_KEY": "' + apiKey + '"}\n' +
         '    }\n' +
         '  }\n' +
@@ -613,7 +619,7 @@ Auth value: …</pre>
 
     function buildChatGPT(apiKey) {
       return '# OpenAPI URL\n' +
-        'https://api.jpcite.com/v1/openapi.agent.json\n\n' +
+        'https://jpcite.com/openapi.agent.gpt30.json\n\n' +
         '# Authentication\n' +
         'Type: API Key\n' +
         'Header name: X-API-Key\n' +

@@ -51,10 +51,11 @@ def _request_for_client_ip(headers: dict[str, str]) -> Request:
     )
 
 
-def _edge_auth_token(secret: str) -> str:
+def _edge_auth_token(secret: str, caller_ip: str = "203.0.113.77") -> str:
     ts = str(int(time.time()))
-    sig = hmac.new(secret.encode("utf-8"), f"v1:{ts}".encode("utf-8"), hashlib.sha256)
-    return f"v1:{ts}:{sig.hexdigest()}"
+    payload = f"v1:{ts}:{caller_ip}"
+    sig = hmac.new(secret.encode("utf-8"), payload.encode("utf-8"), hashlib.sha256)
+    return f"{payload}:{sig.hexdigest()}"
 
 
 @pytest.fixture(autouse=True)
@@ -101,11 +102,45 @@ def test_x_forwarded_for_is_allowed_with_signed_edge_header(
     request = _request_for_client_ip(
         {
             "X-Forwarded-For": "203.0.113.77, 198.51.100.10",
-            "X-Edge-Auth": _edge_auth_token(secret),
+            "X-Edge-Auth": _edge_auth_token(secret, "203.0.113.77"),
         }
     )
 
     assert _client_ip(request) == "203.0.113.77"
+
+
+def test_signed_xff_wins_over_fly_client_ip(monkeypatch: pytest.MonkeyPatch) -> None:
+    from jpintel_mcp.api.middleware.rate_limit import _client_ip
+
+    secret = "edge-secret-for-rate-limit-test"
+    monkeypatch.setenv("JPCITE_EDGE_AUTH_SECRET", secret)
+    request = _request_for_client_ip(
+        {
+            "Fly-Client-IP": "198.51.100.2",
+            "X-Forwarded-For": "203.0.113.77, 198.51.100.10",
+            "X-Edge-Auth": _edge_auth_token(secret, "203.0.113.77"),
+        }
+    )
+
+    assert _client_ip(request) == "203.0.113.77"
+
+
+def test_signed_xff_rejects_token_bound_to_different_ip(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from jpintel_mcp.api.middleware.rate_limit import _client_ip
+
+    secret = "edge-secret-for-rate-limit-test"
+    monkeypatch.setenv("JPCITE_EDGE_AUTH_SECRET", secret)
+    request = _request_for_client_ip(
+        {
+            "Fly-Client-IP": "198.51.100.2",
+            "X-Forwarded-For": "203.0.113.77, 198.51.100.10",
+            "X-Edge-Auth": _edge_auth_token(secret, "203.0.113.88"),
+        }
+    )
+
+    assert _client_ip(request) == "198.51.100.2"
 
 
 def test_anon_burst_under_limit_passes(client: TestClient) -> None:

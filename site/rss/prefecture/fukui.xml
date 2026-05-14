@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>福井県の企業支援制度</title>
@@ -848,15 +848,6 @@
   </item>
 
   <item>
-    <title>新規就農サポート事業（新規就農者支援事業）</title>
-    <link>https://jpcite.com/programs/shinki-shuunou-sapooto-jigyou-shinki-shuunou-mono-shien-a625e9.html</link>
-    <description>Tier B / 福井県 / 上限 2万円 出典: https://www.city.fukui-sakai.lg.jp/nogyoshinko/jigyosha/norin/nogyo/shinki-syuno.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-7df97ba6a8</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>儲かるふくい型農業総合支援事業（新規就農支援）</title>
     <link>https://jpcite.com/programs/mouka-rufukui-kata-nougyou-sougou-shien-jigyou-shinki-7d02a0.html</link>
     <description>Tier B / 福井県 / 福井県坂井市 / subsidy / 上限 2万円 出典: https://www.city.fukui-sakai.lg.jp/nogyoshinko/jigyosha/norin/nogyo/shinki-syuno.html</description>
@@ -884,15 +875,6 @@
   </item>
 
   <item>
-    <title>儲かるふくい型農業総合支援事業（新規就農支援）</title>
-    <link>https://jpcite.com/programs/mouka-rufukui-kata-nougyou-sougou-shien-jigyou-shinki-02e370.html</link>
-    <description>Tier B / 福井県 / 上限 2万円 出典: https://www.city.fukui-sakai.lg.jp/nogyoshinko/jigyosha/norin/nogyo/shinki-syuno.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-99c889ec14</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>成長型中小企業等研究開発支援事業（Go-Tech事業）</title>
     <link>https://jpcite.com/programs/seichou-kata-chuushoukigyou-nado-kenkyuukaihatsu-shien-2be37b.html</link>
     <description>Tier B / 福井県 / incentive / 上限 4,500万円 出典: https://www.chusho.meti.go.jp/koukai/hojyokin/kobo/2026/260216001.html</description>
@@ -907,6 +889,24 @@
     <description>Tier B / 福井県 / 市町村 / subsidy / 上限 150万円 出典: https://www.city.ono.fukui.jp/sangyo/noringyo/shinkishunou/shinki-shuno.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-a24e4e3ea2</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>あわら市_小農具等整備奨励金</title>
+    <link>https://jpcite.com/programs/awara-shi-shounou-gu-nado-seibi-shoureikin-159d5f.html</link>
+    <description>Tier B / 福井県 / subsidy / 上限 100万円 出典: https://www.city.awara.lg.jp/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-a74fc52520</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>福井_新規就農者住宅確保支援事業</title>
+    <link>https://jpcite.com/programs/pref-18-102-fukui-shinki-shuunou-mono-juutaku-kakuho-shien-500dfa.html</link>
+    <description>Tier B / 福井県 / subsidy / 上限 47万円 出典: https://www.pref.fukui.lg.jp/doc/021037/shienseido.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b07b6707a8</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

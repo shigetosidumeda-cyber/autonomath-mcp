@@ -250,6 +250,21 @@ def _build_fixture_autonomath_db(path: Path) -> None:
         con.close()
 
 
+def _cleanup_program_law_refs(jpintel_db_path: Path) -> None:
+    con = sqlite3.connect(jpintel_db_path)
+    try:
+        con.execute(
+            "DELETE FROM program_law_refs "
+            "WHERE law_unified_id = ? OR program_unified_id = ?",
+            ("LAW-disc-shared", "UNI-disc-plr2"),
+        )
+        con.execute("DELETE FROM laws WHERE unified_id = ?", ("LAW-disc-shared",))
+        con.execute("DELETE FROM programs WHERE unified_id = ?", ("UNI-disc-plr2",))
+        con.commit()
+    finally:
+        con.close()
+
+
 def _seed_program_law_refs(jpintel_db_path: Path) -> None:
     """Seed program_law_refs in jpintel.db so the via_law_ref axis fires.
 
@@ -259,6 +274,13 @@ def _seed_program_law_refs(jpintel_db_path: Path) -> None:
     """
     con = sqlite3.connect(jpintel_db_path)
     try:
+        con.execute(
+            "DELETE FROM program_law_refs "
+            "WHERE law_unified_id = ? OR program_unified_id = ?",
+            ("LAW-disc-shared", "UNI-disc-plr2"),
+        )
+        con.execute("DELETE FROM laws WHERE unified_id = ?", ("LAW-disc-shared",))
+        con.execute("DELETE FROM programs WHERE unified_id = ?", ("UNI-disc-plr2",))
         # First, add a partner program that doesn't exist yet — programs
         # has NOT NULL on primary_name and updated_at so include both.
         con.execute(
@@ -386,6 +408,7 @@ def _override_paths(
 
     _seed_program_law_refs(tmp_db_path)
     yield
+    _cleanup_program_law_refs(tmp_db_path)
     if "jpintel_mcp.mcp.autonomath_tools.db" in sys.modules:
         from jpintel_mcp.mcp.autonomath_tools import db as _am_db
 

@@ -22,7 +22,7 @@ Hard constraints
 * Cross-DB reads: jpintel.db (programs anchor) AND autonomath.db
   (am_legal_chain). CLAUDE.md forbids ATTACH / cross-DB JOIN, so the two
   halves are pulled separately and merged in Python.
-* Sensitive surface — 弁護士法 §72 (法令解釈) + 行政書士法 §1 (官公署
+* Sensitive surface — 弁護士法 §72 (法令解釈) + 行政書士法 §1の2 (官公署
   提出書類) fence injected via ``_disclaimer``. The output is a citation
   index; the customer LLM MUST relay the disclaimer verbatim.
 * ``_billing_unit: 3`` (¥3/req × 3 unit = 税込 ¥9.90) — chain query is
@@ -54,7 +54,7 @@ _PROGRAM_ID_RE = re.compile(r"^[A-Z]{2,5}-[0-9a-zA-Z\-_.]{1,80}$")
 _LEGAL_CHAIN_DISCLAIMER = (
     "本 legal_chain は jpcite + autonomath corpus (am_legal_chain / programs / "
     "laws / am_enforcement_detail / case_studies) を一次資料 URL と共に 1 call で "
-    "束ねた検索結果で、弁護士法 §72 (法令解釈) ・行政書士法 §1 (官公署提出書類) "
+    "束ねた検索結果で、弁護士法 §72 (法令解釈) ・行政書士法 §1の2 (官公署提出書類) "
     "・税理士法 §52 (税務代理) のいずれの士業役務にも該当しません。掲載の予算成立 / "
     "法令 / 閣議決定 / 行政処分 / 採択事例は公表時点の情報であり、改正により現在の "
     "取扱が変更されている可能性があります。各 layer の evidence_url で原典を確認の "
@@ -297,7 +297,7 @@ def _build_coverage(
         "party government domain — aggregators are banned by ETL).\n\n"
         "**Pricing:** ¥3 / call × 3 unit = ¥9 / 9.90 incl tax "
         "(`_billing_unit: 3`). Heavy chain query.\n\n"
-        "**Sensitive:** 弁護士法 §72 / 行政書士法 §1 / 税理士法 §52 "
+        "**Sensitive:** 弁護士法 §72 / 行政書士法 §1の2 / 税理士法 §52 "
         "fence — every response carries a `_disclaimer` envelope key."
     ),
 )

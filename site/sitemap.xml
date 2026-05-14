@@ -189,7 +189,7 @@
   </url>
   <url>
     <loc>https://jpcite.com/tos</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/tos"/>
@@ -198,7 +198,7 @@
   </url>
   <url>
     <loc>https://jpcite.com/en/tos</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/tos"/>
@@ -207,9 +207,39 @@
   </url>
   <url>
     <loc>https://jpcite.com/tokushoho</loc>
-    <lastmod>2026-04-26</lastmod>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/tokushoho"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/tokushoho"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/tokushoho"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/en/tokushoho</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/tokushoho"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/tokushoho"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/tokushoho"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/legal-fence</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/legal-fence"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/legal-fence"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/legal-fence"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/en/legal-fence</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/legal-fence"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/legal-fence"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/legal-fence"/>
   </url>
   <url>
     <loc>https://jpcite.com/facts</loc>
@@ -250,6 +280,22 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/products"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/products"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/products"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/connect/</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/prompts/</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/prompts/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/prompts/"/>
   </url>
   <url>
     <loc>https://jpcite.com/en/products</loc>

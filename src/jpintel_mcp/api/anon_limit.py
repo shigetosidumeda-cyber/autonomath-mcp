@@ -336,7 +336,8 @@ def _raise_edge_ip_unavailable(request: Request) -> NoReturn:
 def _client_ip(request: Request) -> str:
     """Extract the caller's IP.
 
-    Priority: Fly-Client-IP (Fly.io's trusted proxy header) >
+    Priority: signed X-Forwarded-For from our edge proxy >
+    Fly-Client-IP (Fly.io's trusted proxy header) >
     request.client.host. Do not trust bare X-Forwarded-For here: clients can
     set it directly, so using it without a trusted proxy marker lets an
     anonymous caller choose their own bucket. Fall back to 'unknown' so we
@@ -351,6 +352,9 @@ def _client_ip(request: Request) -> str:
     IP we cannot bucket the caller, and falling back to a single "unknown"
     bucket would share one quota across every spoofed caller.
     """
+    signed_xff = _signed_edge_forwarded_for(request)
+    if signed_xff:
+        return signed_xff
     fly_ip = request.headers.get("fly-client-ip")
     if fly_ip:
         return fly_ip.strip()
@@ -361,6 +365,29 @@ def _client_ip(request: Request) -> str:
         return host
     # No transport-level peer AND no Fly-Client-IP — unrecoverable.
     _raise_edge_ip_unavailable(request)
+
+
+def _signed_edge_forwarded_for(request: Request) -> str | None:
+    xff = request.headers.get("x-forwarded-for", "").strip()
+    if not xff:
+        return None
+    caller_ip = xff.split(",", 1)[0].strip()
+    if not caller_ip:
+        return None
+    try:
+        from jpintel_mcp.api.middleware.edge_header_sanitization import (
+            _edge_auth_secret,
+            _verify_signed_edge_header,
+        )
+    except Exception:
+        return None
+    secret = _edge_auth_secret()
+    token = request.headers.get("x-edge-auth", "")
+    if not secret or not token or not _verify_signed_edge_header(
+        token, secret, caller_ip=caller_ip
+    ):
+        return None
+    return caller_ip
 
 
 def canonical_ipv6_64(ip: str) -> str | None:

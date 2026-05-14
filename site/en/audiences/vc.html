@@ -89,7 +89,7 @@
     {"@type": "Question", "name": "Can I check qualified-invoice (invoice-system) registration?", "acceptedAnswer": {"@type": "Answer", "text": "13,801 invoice_registrants are live as a delta-only mirror under PDL v1.0 attribution (the NTA monthly bulk is pending). Look up registration, registration date, and category by corporate number — essential for invoice-system DD."}},
     {"@type": "Question", "name": "Are there scale limits?", "acceptedAnswer": {"@type": "Answer", "text": "Even at enterprise scale the price is ¥3/billable unit metered (¥3.30 tax inclusive). No fixed monthly fee, seat fee, or annual minimum. Unit price doesn't change at 1M req/month. Stripe metered billing keeps ops scalable."}},
     {"@type": "Question", "name": "Are PII or transaction histories included?", "acceptedAnswer": {"@type": "Answer", "text": "jpcite only handles publicly disclosed primary sources (enforcement disclosures, adoption announcements, NTA invoice-registrant data under PDL v1.0). No personal PII, no transaction histories, no financial statements. Pair with commercial databases for that side."}},
-    {"@type": "Question", "name": "Can I plug this into automated DD reports?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Wire the MCP server directly into Claude / GPT, and integrate REST endpoints into in-house RAG. dd_profile_am returns the standard DD package for one corporate number."}}
+    {"@type": "Question", "name": "Can I plug this into automated DD reports?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Wire the MCP server directly into Claude / GPT, and call REST endpoints before automated DD report drafting. dd_profile_am returns the standard DD package for one corporate number."}}
   ]
 }
 </script>
@@ -145,11 +145,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -373,7 +376,7 @@ asyncio.run(main)</code></pre>
  <h3 style="font-size:16px;margin:18px 0 6px;">Are PII or transaction histories included?</h3>
  <p>jpcite handles only publicly disclosed primary sources (enforcement disclosures, adoption announcements, NTA invoice-registrant data under PDL v1.0). No personal PII, no transaction histories, no financial statements. Pair with commercial DBs for that side.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Can I plug this into automated DD reports?</h3>
- <p>Yes. Wire the MCP server directly into Claude / GPT, and integrate REST endpoints into in-house RAG. <code>dd_profile_am</code> returns the standard DD package for one corporate number.</p>
+ <p>Yes. Wire the MCP server directly into Claude / GPT, and call REST endpoints before automated DD report drafting. <code>dd_profile_am</code> returns the standard DD package for one corporate number.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
  <p>Stakeholders that overlap on the target / sell-side: <a href="tax-advisor.html">tax advisors</a> (tax DD), <a href="admin-scrivener.html">administrative scriveners</a> (permit-succession DD), <a href="dev.html">AI agent developers</a> (the side building in-house DD bots), <a href="smb.html">SMB owners</a> (target candidates). <a href="index.html">Compare all 5 audiences</a>.</p>
  </div>
@@ -384,7 +387,7 @@ asyncio.run(main)</code></pre>
  <h2 id="resources-title" class="section-title">VC / M&amp;A advisor resources</h2>
  <ul class="resource-list" style="list-style:none;padding:0;margin:0;">
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="../facts.html"><strong>Facts sheet (data coverage)</strong></a> &mdash; Exact breakdowns: 14,472 programs + 2,286 adoptions + 1,185 enforcement cases + 13,801 qualified invoice registrants. Use as the source footnote in IC memos.</li>
- <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="dev.html"><strong>AI agent developer page</strong></a> &mdash; The MCP / REST integration guide for in-house DD bots. Two patterns: drop into Claude Desktop directly, or pipe REST into in-house RAG.</li>
+ <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="dev.html"><strong>AI agent developer page</strong></a> &mdash; The MCP / REST integration guide for in-house DD bots. Two patterns: drop into Claude Desktop directly, or pipe REST Evidence Packets into in-house DD bots before answer generation.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/examples/"><strong>Batch DD examples (Python + curl + TypeScript)</strong></a> &mdash; Code for running a 50-target seed-round DD in one batch. Error handling and retries included.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#programs"><strong>REST API: /v1/programs/search</strong></a> &mdash; Pull related subsidies and adoption history for any corporate number. Pagination and filters for batch workloads.</li>
  <li style="padding:10px 0;border-bottom:1px solid var(--border);"><a href="/docs/mcp-tools/"><strong>MCP tools index (151 tools)</strong></a> &mdash; <code>dd_profile_am</code> + <code>check_enforcement_am</code> + <code>search_acceptance_stats_am</code> and more, ready to plug into your DD pipeline.</li>
@@ -398,7 +401,7 @@ asyncio.run(main)</code></pre>
  <div class="container">
  <h2 id="cta-title" class="section-title">Get started</h2>
  <div class="cta-row">
- <a class="btn btn-primary" href="../dashboard.html">Get an API key (Free 3 req/day)</a>
+ <a class="btn btn-primary" href="../dashboard.html">Open Dashboard</a>
  <a class="btn btn-secondary" href="../getting-started.html">Get started</a>
  <a class="btn btn-secondary" href="/docs/openapi/v1.json">OpenAPI v1 (JSON)</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>

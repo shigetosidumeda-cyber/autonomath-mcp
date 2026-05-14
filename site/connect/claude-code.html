@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
 <title>Claude Code から jpcite を 30 秒で接続 | jpcite</title>
-<meta name="description" content="Claude Code CLI (anthropics/claude-code) に jpcite MCP server を 1 行で統合。151 tool で日本公的情報横断、anon 3req/IP/日無料、paid ¥3/req metered。">
+<meta name="description" content="Claude Code CLI (anthropics/claude-code) に jpcite MCP server を 1 行で統合。151 tool で日本公的情報横断、anon 3req/IP/日無料、paid は税別 ¥3/billable unit metered。">
 <link rel="canonical" href="https://jpcite.com/connect/claude-code">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/claude-code">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/claude-code">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Claude Code から jpcite を 30 秒で接続 | jpcite">
-<meta property="og:description" content="Claude Code CLI に jpcite MCP server を 1 行で統合。151 tool で日本公的情報横断、anon 3req/IP/日無料、paid ¥3/req metered。">
+<meta property="og:description" content="Claude Code CLI に jpcite MCP server を 1 行で統合。151 tool で日本公的情報横断、anon 3req/IP/日無料、paid は税別 ¥3/billable unit metered。">
 <meta property="og:url" content="https://jpcite.com/connect/claude-code">
 <meta property="og:site_name" content="jpcite">
 <meta property="og:locale" content="ja_JP">
@@ -125,11 +125,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -159,7 +162,7 @@
 <main id="main">
   <section class="hero">
     <h1>Claude Code から jpcite を 30 秒で接続</h1>
-    <p><code>claude mcp add jpcite -- uvx autonomath-mcp</code> 1 行で 151 tool 解禁。anonymous は 3 req/IP/日まで無料、paid は ¥3/req metered。</p>
+    <p><code>claude mcp add jpcite -- uvx autonomath-mcp</code> 1 行で 151 tool 解禁。anonymous は 3 req/IP/日まで無料、paid は税別 ¥3/billable unit metered。</p>
   </section>
 
   <section>
@@ -192,9 +195,9 @@
 
   <section>
     <h2>動作確認</h2>
-    <p>Claude Code セッション内で <code>/mcp</code> コマンドを実行 (または下記 CLI) で <code>jpcite</code> が緑 dot で表示され、tools 139 件が読まれていれば成功。</p>
+    <p>Claude Code セッション内で <code>/mcp</code> コマンドを実行 (または下記 CLI) で <code>jpcite</code> が緑 dot で表示され、tools 151 件が読まれていれば成功。</p>
 <pre><code aria-label="動作確認コマンド">claude mcp list   # jpcite が「Connected」表示</code></pre>
-    <p>期待値: <code>jpcite: uvx autonomath-mcp - ✓ Connected</code> と表示され、公開 tools 139 件が読まれていれば成功です。36協定書面の生成機能は公開提供していません。</p>
+    <p>期待値: <code>jpcite: uvx autonomath-mcp - ✓ Connected</code> と表示され、公開 tools 151 件が読まれていれば成功です。36協定書面の生成機能は公開提供していません。</p>
     <p>REST 直叩きで疎通確認する場合は <code>-G --data-urlencode</code> を必ず使うこと。日本語 query を URL に直接埋めると HTTP リクエスト行が壊れ、API は <code>{"error":{"code":"bad_request",...,"hint":"Use --data-urlencode for non-ASCII query params..."}}</code> を返します。</p>
 <pre><code aria-label="REST 動作確認 (curl)">curl -G "https://api.jpcite.com/v1/programs/search" \
   --data-urlencode "q=補助金" \
@@ -204,14 +207,14 @@
 
   <section>
     <h2>FAQ</h2>
-    <details><summary>anonymous と paid の違いは?</summary><p>anon は IP ベースで 3 req/日 (AnonIpLimit)、API key 無し。paid は ¥3/req metered で上限なし、<code>JPCITE_API_KEY</code> 経由でカウント。</p></details>
+    <details><summary>anonymous と paid の違いは?</summary><p>anon は IP ベースで 3 req/日 (AnonIpLimit)、API key 無し。paid は税別 ¥3/billable unit metered で上限なし、<code>JPCITE_API_KEY</code> 経由でカウント。</p></details>
     <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から発行します。発行直後にダッシュボードでキーを 1 回だけ表示します。</p></details>
     <details><summary>8 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。</p></details>
   </section>
 </main>
 <footer role="contentinfo">
   <p>powered by Bookyou株式会社 (T8010001213708) / <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-  <p><a href="/pricing.html">¥3/req metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
+  <p><a href="/pricing.html">税別 ¥3/billable unit metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
 </footer>
 </body>
 </html>

@@ -221,11 +221,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -287,7 +290,7 @@
  <h1>Confidence</h1>
  <p class="sub">信頼度ダッシュボード。ツール単位の <strong>発見確率</strong> (見つけられる確率) と <strong>再利用確率</strong> (7 日以内に再利用される確率) を、過去 30 日のデータで集計し、95% 区間を併記しています。</p>
 
- <!-- Headline ------------------------------------------------------------ -->
+ <!-- Headline -->
  <section class="conf-section" aria-labelledby="headline-h">
  <h2 id="headline-h">サマリ — 全体 発見確率 / 再利用確率</h2>
  <p class="desc">試行回数で重み付けした集約値。発見確率は「見つけられる確率」、再利用確率は「7 日以内に再利用される確率」。</p>
@@ -311,7 +314,7 @@
  <p class="err" id="headline-err" hidden></p>
  </section>
 
- <!-- Per-tool table ------------------------------------------------------ -->
+ <!-- Per-tool table -->
  <section class="conf-section" aria-labelledby="per-tool-h">
  <h2 id="per-tool-h">ツール別 — ツールごとの 発見確率 / 再利用確率</h2>
  <p class="desc">各ツールの推定値と 95% 区間。試行回数が少ないツールは区間が広くなります (= 不確実性が大きい)。</p>
@@ -334,7 +337,7 @@
  <p class="err" id="per-tool-err" hidden></p>
  </section>
 
- <!-- Time series --------------------------------------------------------- -->
+ <!-- Time series -->
  <section class="conf-section" aria-labelledby="ts-h">
 	 <h2 id="ts-h">推移 — 日次 信頼度 (公開後)</h2>
  <p class="desc">過去のスナップショットを時系列で結んだもの。薄色の帯は 95% 区間です。</p>

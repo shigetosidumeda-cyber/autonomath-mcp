@@ -19,7 +19,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="jpcite とは">
-<meta name="twitter:description" content="なぜ作ったか・一次資料原則・AI から使える検索 API / MCP。">
+<meta name="twitter:description" content="なぜ作ったか・一次資料原則・AI から使える Evidence/output API / MCP。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 
 <link rel="canonical" href="https://jpcite.com/about">
@@ -158,11 +158,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -192,10 +195,12 @@
  <a class="brand" href="/" aria-label="jpcite ホーム">
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
- <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="about.html" aria-current="page">運営について</a>
- <a href="products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
+	 <nav class="site-nav" aria-label="主要ナビゲーション">
+	 <a href="about.html" aria-current="page">運営について</a>
+	 <a href="products.html">プロダクト</a>
+	 <a href="/connect/">接続</a>
+	 <a href="/prompts/">Prompts</a>
+	 <a href="/docs/">ドキュメント</a>
  <a href="pricing.html">料金</a>
  <a href="audiences/">利用者層</a>
  <details class="nav-trust">
@@ -245,7 +250,8 @@
  <li><span class="num">108</span><span class="lbl">融資商品 (担保・個人保証人・第三者保証人で分類)</span></li>
  <li><span class="num">1,185</span><span class="lbl">行政処分 公表記録</span></li>
  <li><span class="num">9,484</span><span class="lbl">法令メタデータ・本文参照</span></li>
- <li><span class="num">139</span><span class="lbl">AI から呼べる MCP ツール</span></li>
+ <li><span class="num">151</span><span class="lbl">AI から呼べる MCP ツール</span></li>
+ <li><span class="num">302</span><span class="lbl">REST paths (OpenAPI)</span></li>
  <li><span class="num">出典付き</span><span class="lbl">主要公開行に一次資料 URL を付与</span></li>
  </ul>
 
@@ -296,7 +302,7 @@
  <tr><th><code>/v1/eligibility/dynamic_check</code></th><td>排他ルール 181 件 連動の動的適格性チェック (制度 ID 群 → 衝突判定)</td></tr>
  <tr><th><code>/v1/regions/{code}/coverage</code></th><td>地域コード単位の 制度・採択 カバレッジ (地理 cohort)</td></tr>
  <tr><th><code>/v1/invoice_registrants/{tnum}/risk</code></th><td>取引先 (T 番号) の登録状態 + 行政処分 履歴 リスクサマリ</td></tr>
- <tr><th><code>/v1/me/amendment_alerts</code></th><td>登録 制度・法令 群の改正アラート フィード (¥3 / 通知)</td></tr>
+<tr><th><code>/v1/me/amendment_alerts</code></th><td>登録 制度・法令 群の改正アラート フィード。API / MCP 呼び出しは税別 ¥3/billable unit (税込 ¥3.30)。有料通知フローは有効化前に条件を画面で表示します。</td></tr>
  </tbody>
  </table>
 

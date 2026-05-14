@@ -172,6 +172,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -203,7 +277,7 @@
  <h1>Confidence</h1>
  <p class="sub">Confidence dashboard. Per-tool <strong>Discovery</strong> (probability of being found) and <strong>Use</strong> (probability of being reused within 7 days) are estimated over a 30-day trailing window and reported alongside 95% intervals.</p>
 
- <!-- Headline ------------------------------------------------------------ -->
+ <!-- Headline -->
  <section class="conf-section" aria-labelledby="headline-h">
  <h2 id="headline-h">Headline — overall Discovery / Use</h2>
  <p class="desc">Trial-weighted aggregate. Discovery is "probability the right tool is found"; Use is "probability of reuse within 7 days".</p>
@@ -227,7 +301,7 @@
  <p class="err" id="headline-err" hidden></p>
  </section>
 
- <!-- Per-tool table ------------------------------------------------------ -->
+ <!-- Per-tool table -->
  <section class="conf-section" aria-labelledby="per-tool-h">
  <h2 id="per-tool-h">Per-tool — Discovery / Use by tool</h2>
  <p class="desc">Estimated value and 95% interval for each tool. Tools with few trials show wider intervals (greater uncertainty).</p>
@@ -250,7 +324,7 @@
  <p class="err" id="per-tool-err" hidden></p>
  </section>
 
- <!-- Time series --------------------------------------------------------- -->
+ <!-- Time series -->
  <section class="conf-section" aria-labelledby="ts-h">
 	 <h2 id="ts-h">Trend — daily confidence (since launch)</h2>
  <p class="desc">Past snapshots joined as a time series. The faint band is the 95% interval.</p>
@@ -448,70 +522,6 @@
     function band(lows, highs, color) {
       var d = "";
       lows.forEach(function (v, i) {
-        d += (i === 0 ? "M" : "L") + x(i).toFixed(1) + "," + y(v).toFixed(1) + " ";
-      });
-      for (var i = highs.length - 1; i >= 0; i -= 1) {
-        d += "L" + x(i).toFixed(1) + "," + y(highs[i]).toFixed(1) + " ";
-      }
-      d += "Z";
-      var p = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      p.setAttribute("d", d);
-      p.setAttribute("fill", color);
-      p.setAttribute("opacity", "0.18");
-      p.setAttribute("stroke", "none");
-      svg.appendChild(p);
-    }
-    var disc = snapshots.map(function (s) { return s.discovery_overall || 0; });
-    var use = snapshots.map(function (s) { return s.use_overall || 0; });
-    var discLo = snapshots.map(function (s) { return (s.discovery_ci95 && s.discovery_ci95[0]) || 0; });
-    var discHi = snapshots.map(function (s) { return (s.discovery_ci95 && s.discovery_ci95[1]) || 1; });
-    var useLo = snapshots.map(function (s) { return (s.use_ci95 && s.use_ci95[0]) || 0; });
-    var useHi = snapshots.map(function (s) { return (s.use_ci95 && s.use_ci95[1]) || 1; });
-    band(discLo, discHi, "#1e3a8a");
-    band(useLo, useHi, "#7c3aed");
-    line(disc, "#1e3a8a");
-    line(use, "#7c3aed");
-    // Target lines (90% / 80%).
-    [[0.90, "#1e3a8a"], [0.80, "#7c3aed"]].forEach(function (pair) {
-      var ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      ln.setAttribute("x1", pad);
-      ln.setAttribute("x2", W - pad);
-      ln.setAttribute("y1", y(pair[0]));
-      ln.setAttribute("y2", y(pair[0]));
-      ln.setAttribute("stroke", pair[1]);
-      ln.setAttribute("stroke-dasharray", "4 4");
-      ln.setAttribute("stroke-width", "1");
-      ln.setAttribute("opacity", "0.6");
-      svg.appendChild(ln);
-    });
-  }
-
-  function loadHistory() {
-    fetch(HISTORY_URL)
-      .then(function (r) {
-        if (!r.ok) throw new Error(String(r.status));
-        return r.json();
-      })
-      .then(function (idx) {
-        var snaps = idx.snapshots || [];
-        renderTimeSeries(snaps);
-      })
-      .catch(function () {
-        // History index not yet published — leave the empty-state text.
-        renderTimeSeries([]);
-      });
-  }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    loadLive();
-    loadHistory();
-  });
-})();
-</script>
-
-</body>
-</html>
-unction (v, i) {
         d += (i === 0 ? "M" : "L") + x(i).toFixed(1) + "," + y(v).toFixed(1) + " ";
       });
       for (var i = highs.length - 1; i >= 0; i -= 1) {

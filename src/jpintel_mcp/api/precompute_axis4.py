@@ -32,7 +32,7 @@ router = APIRouter(prefix="/v1", tags=["axis4_precompute"])
 _TAX_DISCLAIMER = (
     "本 response は public corpus + 法人 master + 採択 history + 行政処分 "
     "+ am_compat_matrix からの統計 signal です。"
-    "税理士法 §52 / 行政書士法 §1 / 弁護士法 §72 上の助言ではありません。"
+    "税理士法 §52 / 行政書士法 §1の2 / 弁護士法 §72 上の助言ではありません。"
     "最終判断は専門家に相談してください。"
 )
 

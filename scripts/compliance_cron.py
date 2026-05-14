@@ -49,6 +49,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Literal
+from urllib.parse import quote
 
 # Allow running as `python scripts/compliance_cron.py` without install
 # by pushing repo src/ onto sys.path when the package isn't importable.
@@ -62,6 +63,7 @@ from jpintel_mcp.email.compliance_templates import (  # noqa: E402
     Change,
     compose_alert_email,
 )
+from jpintel_mcp.utils.slug import program_static_url  # noqa: E402
 
 logger = logging.getLogger("jpintel.compliance_cron")
 
@@ -346,7 +348,11 @@ def _collect_candidate_changes(
         for r in rows:
             r["prefecture"] if spec.has_prefecture and "prefecture" in r else None
             updated = r["updated_at"]
-            detail_url = _detail_url(spec.table, r["unified_id"])
+            detail_url = _detail_url(
+                spec.table,
+                r["unified_id"],
+                r["title"] if spec.table == "programs" else None,
+            )
 
             areas = _tax_ruleset_areas(r) if spec.table == "tax_rulesets" else [spec.area]
 
@@ -366,15 +372,17 @@ def _collect_candidate_changes(
     return out
 
 
-def _detail_url(table: str, unified_id: str) -> str:
+def _detail_url(table: str, unified_id: str, primary_name: str | None = None) -> str:
     """Construct the AutonoMath public detail URL for a row.
 
-    Per-program static pages exist at `/programs/{unified_id}.html`;
+    Per-program static pages exist at `/programs/{slug}.html`;
     other tables do not have static pages yet, so we point at the docs
     or back to the homepage so the link is never a 404.
     """
     if table == "programs":
-        return f"https://jpcite.com/programs/{unified_id}"
+        if primary_name and unified_id:
+            return program_static_url(primary_name, unified_id, domain="jpcite.com")
+        return f"https://jpcite.com/programs/share.html?ids={quote(unified_id, safe='')}"
     if table == "laws":
         return f"https://jpcite.com/docs/laws/{unified_id}"
     if table == "court_decisions":

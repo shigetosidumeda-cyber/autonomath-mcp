@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>「2026年愛知県窯業事業者燃油価格高騰対策支援金」の申請受付の開始について - 愛知県</title>
@@ -209,15 +209,6 @@
   </item>
 
   <item>
-    <title>運営支援課</title>
-    <link>https://jpcite.com/programs/un-ei-shien-ka-ed081d.html</link>
-    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/unei-shien/</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-11d9ecf59f</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
     <title>2024年度ロボット未活用領域導入検証補助金 事業結果報告書 [PDFファイル／6.8MB]</title>
     <link>https://jpcite.com/programs/2024-nendo-robotto-hitsuji-katsuyou-ryouiki-dounyuu-kenshou-c8ebf5.html</link>
     <description>Tier A / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/uploaded/attachment/572521.pdf</description>
@@ -367,15 +358,6 @@
     <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/korei/kaigo-service-keizoku-shien.html</description>
     <category>support</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-cf52867a31</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>特別支援教育課</title>
-    <link>https://jpcite.com/programs/tokubetsu-shien-kyouikuka-d04562.html</link>
-    <description>Tier A / 愛知県 / 愛知県 / support 出典: https://www.pref.aichi.jp/soshiki/tokubetsushienkyoiku/</description>
-    <category>support</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-d0a7e8ff9e</guid>
     <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
   </item>
 
@@ -907,6 +889,24 @@
     <description>Tier B / 愛知県 / 愛知県 / subsidy 出典: https://www.pref.aichi.jp/soshiki/nogyo-shinko/0000051974.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-01bfb51fd6</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>野生イノシシ等被害防止対策事業補助金</title>
+    <link>https://jpcite.com/programs/yasei-inoshishi-nado-higai-boushitaisaku-jigyou-hojokin-93d7a0.html</link>
+    <description>Tier C / 愛知県 / 愛知県西尾市 / subsidy / 上限 5万円 出典: https://www.city.nishio.aichi.jp/_res/projects/default_project/_page_/001/008/600/inoshishi2025.pdf</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-06a0ce7002</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>安城市 イチジク・ナシ新規栽培支援</title>
+    <link>https://jpcite.com/programs/anjou-shi-ichijiku-nashi-shinki-saibai-shien-14cafe.html</link>
+    <description>Tier A / 愛知県 / 市町村 / subsidy / 上限 100万円 出典: https://www.city.anjo.aichi.jp/zigyo/nogyo/shien.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-092e56f0a8</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

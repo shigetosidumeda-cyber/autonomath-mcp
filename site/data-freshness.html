@@ -36,7 +36,7 @@
 <link rel="alternate" type="application/rss+xml" title="jpcite — Tier S 制度" href="/rss/programs-tier-s.xml">
 <link rel="alternate" type="application/rss+xml" title="jpcite — 制度改正検出ログ" href="/rss/amendments.xml">
 <link rel="alternate" type="application/rss+xml" title="jpcite — 変更履歴 RSS" href="/audit-log.rss">
-<link rel="alternate" type="application/rss+xml" title="jpcite — お知らせ" href="/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="jpcite — お知らせ" href="/feed.rss">
 
 <script type="application/ld+json">
 {
@@ -163,11 +163,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -289,7 +292,7 @@
  </section>
 
  <section aria-labelledby="ai-read-title" style="margin-top:40px;border-top:1px solid var(--border);padding-top:28px;">
-   <h2 id="ai-read-title" style="font-size:24px;margin:0 0 8px;font-weight:700;">AI / RAG での読み方</h2>
+   <h2 id="ai-read-title" style="font-size:24px;margin:0 0 8px;font-weight:700;">AI 回答前の Evidence Packet としての読み方</h2>
    <p style="color:var(--text-muted);margin:0 0 16px;max-width:720px;line-height:1.75;">AI が制度根拠を引用する場合は、Evidence Packet の <code>source_url</code> を一次資料 URL、<code>source_fetched_at</code> を取得時刻として扱います。古い行や未取得領域は <code>known_gaps</code> と併せて確認し、回答文では「確認できた範囲」と「未確認の範囲」を分けてください。</p>
    <p style="color:var(--text-muted);margin:0;max-width:720px;line-height:1.75;">匿名で試す場合は <a href="pricing.html#three-trial-checklist-title">無料 3 回チェックリスト</a>、出典機関とライセンスは <a href="sources.html">出典一覧</a> を参照してください。</p>
  </section>
@@ -301,7 +304,7 @@
      <li><a href="/rss/programs-tier-s.xml" rel="alternate" type="application/rss+xml">Tier S 制度フィード — 高信頼の補助金/融資/税制/認定 (全国)</a></li>
      <li><a href="/rss/amendments.xml" rel="alternate" type="application/rss+xml">制度改正検出ログ — 金額・補助率・対象・出典 URL の差分</a></li>
      <li><a href="/audit-log.rss" rel="alternate" type="application/rss+xml">変更履歴 RSS — 既存 audit-log の RSS 配信</a></li>
-     <li><a href="/rss.xml" rel="alternate" type="application/rss+xml">お知らせ RSS — リリース・データ取り込み・主要マイグレーション</a></li>
+     <li><a href="/feed.rss" rel="alternate" type="application/rss+xml">お知らせ RSS — リリース・データ取り込み・主要マイグレーション</a></li>
    </ul>
    <p style="margin-top:16px;color:var(--text-muted);">都道府県別フィードは <a href="/assets/rss-feeds.json">/assets/rss-feeds.json</a> に列挙 (47 都道府県、Tier S+A+B+C 各最大 100 件)。</p>
  </section>

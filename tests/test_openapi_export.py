@@ -45,6 +45,8 @@ def _stable_env() -> dict[str, str]:
     env = os.environ.copy()
     env["PYTHONDONTWRITEBYTECODE"] = "1"
     env["AUTONOMATH_EXPERIMENTAL_API_ENABLED"] = "0"
+    env["JPCITE_ENABLE_PREVIEW_ENDPOINTS"] = "0"
+    env["JPINTEL_ENABLE_PREVIEW_ENDPOINTS"] = "0"
     return env
 
 
@@ -100,25 +102,61 @@ def test_openapi_export_temp_site_out_does_not_mutate_root_mirror(tmp_path: Path
     assert (mirror.read_bytes(), mirror.stat().st_mtime_ns) == before
 
 
-def test_served_openapi_json_matches_committed_stable_spec(monkeypatch) -> None:
-    from fastapi.testclient import TestClient
+def test_served_openapi_json_matches_committed_stable_spec(tmp_path: Path) -> None:
+    served_out = tmp_path / "served-openapi.json"
+    script = f"""
+import json
+from pathlib import Path
 
-    from jpintel_mcp.api.main import create_app
+from fastapi.testclient import TestClient
 
-    monkeypatch.setenv("AUTONOMATH_EXPERIMENTAL_API_ENABLED", "0")
-    client = TestClient(create_app())
-    response = client.get("/v1/openapi.json")
-    assert response.status_code == 200, response.text
+from jpintel_mcp.api.main import create_app
+
+client = TestClient(create_app())
+response = client.get("/v1/openapi.json")
+assert response.status_code == 200, response.text
+Path({str(served_out)!r}).write_text(
+    json.dumps(response.json(), ensure_ascii=False),
+    encoding="utf-8",
+)
+"""
+    subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=REPO_ROOT,
+        env=_stable_env(),
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    served = json.loads(served_out.read_text(encoding="utf-8"))
     committed = json.loads((REPO_ROOT / "docs" / "openapi" / "v1.json").read_text(encoding="utf-8"))
-    assert response.json() == committed
+    assert served == committed
 
 
-def test_static_agent_openapi_matches_dynamic_stable_projection(monkeypatch) -> None:
-    from jpintel_mcp.api.main import create_app
-    from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
+def test_static_agent_openapi_matches_dynamic_stable_projection(tmp_path: Path) -> None:
+    dynamic_out = tmp_path / "dynamic-agent-openapi.json"
+    script = f"""
+import json
+from pathlib import Path
 
-    monkeypatch.setenv("AUTONOMATH_EXPERIMENTAL_API_ENABLED", "0")
-    dynamic_schema = build_agent_openapi_schema(create_app().openapi())
+from jpintel_mcp.api.main import create_app
+from jpintel_mcp.api.openapi_agent import build_agent_openapi_schema
+
+dynamic_schema = build_agent_openapi_schema(create_app().openapi())
+Path({str(dynamic_out)!r}).write_text(
+    json.dumps(dynamic_schema, ensure_ascii=False),
+    encoding="utf-8",
+)
+"""
+    subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=REPO_ROOT,
+        env=_stable_env(),
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    dynamic_schema = json.loads(dynamic_out.read_text(encoding="utf-8"))
 
     for path in _AGENT_OPENAPI_PATHS:
         committed = json.loads(path.read_text(encoding="utf-8"))

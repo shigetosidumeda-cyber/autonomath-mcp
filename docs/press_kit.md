@@ -94,7 +94,7 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 | entity-fact 件数 | 503,930 entities + 6.12M facts + 177,381 relations + 335,605 aliases |
 | 法令メタデータ / 行政処分 cases | 9,484 / 1,185 |
 | 排他ルール件数 | 181 |
-| MCP ツール数 | 標準構成 139 |
+| MCP ツール数 | 標準構成 151 |
 | MCP プロトコル | 2025-06-18 |
 | ホスティング | Fly.io Tokyo (nrt) |
 | 静的サイト | Cloudflare Pages |
@@ -102,7 +102,7 @@ Launch: 2026-05-06。Press contact: info@bookyou.net
 | 主な導線 | 検索、ドキュメント、GitHub、MCP レジストリ |
 | 営業活動 | セルフサービス中心 |
 | ライセンス | API: 商用利用可 (規約に従う) / コード: 一部 OSS |
-| 直近メジャー版 | v0.3.0 |
+| 直近メジャー版 | v0.4.0 |
 
 ---
 

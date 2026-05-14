@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import re
 import sqlite3
 import sys
 from datetime import UTC, datetime, timedelta
@@ -560,3 +561,65 @@ def test_analytics_events_row_inserted_on_success(weekly_db: Path):
         assert ev[0]["path"] == "/cron/weekly_digest"
     finally:
         conn.close()
+
+
+def test_rendered_digest_program_links_use_static_slug_urls():
+    mod = _import_module()
+    diff = {
+        "hits": [
+            {
+                "unified_id": "UNI-static-link-1",
+                "primary_name": "東京都 テスト補助金",
+                "prefecture": "東京都",
+                "amount_max_man_yen": 100,
+                "updated_at": "2026-05-01T00:00:00Z",
+                "_delta": "NEW",
+            }
+        ],
+        "new": ["UNI-static-link-1"],
+        "modified": [],
+        "removed": [],
+        "all_count": 1,
+    }
+    args = {
+        "saved_name": "static link guard",
+        "diff": diff,
+        "manage_url": "https://jpcite.com/dashboard.html#saved-searches",
+        "now_iso": "2026-05-14T00:00:00Z",
+    }
+
+    plaintext = mod._render_plaintext(**args)
+    html = mod._render_html(**args)
+    payload = mod._render_json(saved_id=1, **args)
+    combined = "\n".join(
+        [
+            plaintext,
+            html,
+            json.dumps(payload, ensure_ascii=False, sort_keys=True),
+        ]
+    )
+
+    assert "/programs/UNI-" not in combined
+    assert re.search(r"https://jpcite\.com/programs/.+\.html", combined)
+
+
+def test_digest_program_link_falls_back_without_required_static_fields():
+    mod = _import_module()
+    assert (
+        mod._program_public_url({"unified_id": "UNI-static-link-2", "primary_name": ""})
+        == "https://jpcite.com/dashboard.html#saved-searches"
+    )
+    assert (
+        mod._program_public_url({"unified_id": "", "primary_name": "東京都 テスト補助金"})
+        == "https://jpcite.com/dashboard.html#saved-searches"
+    )
+
+
+def test_cron_scripts_do_not_synthesize_program_links_from_unified_ids():
+    unsafe_pattern = re.compile(r"/programs/\{[^}\n]*(?:unified_id|\['unified_id'\])")
+    for rel in (
+        Path("scripts/cron/weekly_digest.py"),
+        Path("scripts/cron/morning_briefing.py"),
+    ):
+        src = (REPO / rel).read_text(encoding="utf-8")
+        assert not unsafe_pattern.search(src), f"{rel} synthesizes an unsafe program link"

@@ -120,11 +120,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -221,13 +224,13 @@
  </ul>
  </article>
  <article class="price-card highlight">
- <h2>料金</h2>
-	 <p class="tier-desc">検索・成果物と同じ従量制</p>
- <p class="price">¥3.30</p>
+ <h2>本利用</h2>
+	 <p class="tier-desc">有料通知フローは条件を事前表示</p>
+ <p class="price">保存検索・締切リマインド</p>
  <p class="price-unit">API / MCP / Playground の料金は Pricing に掲載</p>
  <ul class="feats">
 	 <li>通知はリマインド・確認導線として扱います</li>
-	 <li>保存検索や締切リマインドの通知単位で計上します</li>
+	 <li>有料通知フローを有効にする前に条件を画面で表示します</li>
  <li><a href="pricing.html">Pricing</a> で現行の API 利用条件を確認できます</li>
  </ul>
  </article>
@@ -291,7 +294,7 @@ document.getElementById('notification-form').addEventListener('submit', async (e
   const honey = e.target.company_url && e.target.company_url.value;
   const submitBtn = document.getElementById('notification-submit');
   const status = document.getElementById('notification-status');
-  if (honey) { status.textContent = '登録しました。利用開始時にメールでお知らせします。'; return; }
+  if (honey) { status.textContent = '登録しました。保存検索・締切リマインドの通知設定をご案内します。'; return; }
   if (submitBtn) submitBtn.disabled = true;
   const email = e.target.email.value;
   status.textContent = '送信中...';
@@ -301,11 +304,11 @@ document.getElementById('notification-form').addEventListener('submit', async (e
     const r = await fetch('https://api.jpcite.com/v1/subscribers', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({email, source: 'notification_signup'}),
+      body: JSON.stringify({email, source: 'saved_search_notifications'}),
       signal: ctrl.signal
     });
     if (r.ok) {
-      status.textContent = '登録しました。利用開始時にメールでお知らせします。';
+      status.textContent = '登録しました。保存検索・締切リマインドの通知設定をご案内します。';
       e.target.reset();
     } else {
       let detail = '';

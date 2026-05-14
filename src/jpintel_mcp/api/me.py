@@ -1302,11 +1302,11 @@ def set_monthly_cap(
 ) -> CapResponse:
     """Set the customer's self-serve monthly spend cap (P3-W).
 
-    Authenticated via require_key (X-API-Key header or Authorization: Bearer).
+    Authenticated via require_key (X-API-Key header).
     Anonymous callers (no key) cannot set a cap because the anonymous tier is
     already gated by the 3 req/日 free quota — there is nothing to cap.
 
-    The unit price stays ¥3/req (immutable per
+    The unit price stays ¥3/billable unit (immutable per
     project_autonomath_business_model). `monthly_cap_yen` is purely a client
     budget control: at cap-reached the middleware returns 503 with
     `cap_reached: true` and Stripe usage is NOT recorded for the rejected

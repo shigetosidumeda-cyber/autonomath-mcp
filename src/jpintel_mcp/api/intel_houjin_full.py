@@ -95,7 +95,7 @@ _DISCLAIMER = (
     "本 houjin/full response は houjin_master + am_adopted_company_features "
     "+ am_enforcement_detail + invoice_registrants + am_geo_industry_density "
     "+ customer_watches を機械的に SQL 結合した **公開情報の名寄せ結果** で "
-    "あり、税理士法 §52 (税務代理) ・弁護士法 §72 (法律事務) ・行政書士法 §1 "
+    "あり、税理士法 §52 (税務代理) ・弁護士法 §72 (法律事務) ・行政書士法 §1の2 "
     "(申請代理) のいずれにも該当しません。検索結果のみ提供、与信・税務・"
     "法令適用の業務判断は primary source 確認必須、確定判断は資格を有する"
     "税理士・弁護士・行政書士・公認会計士へ。"

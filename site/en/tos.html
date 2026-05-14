@@ -42,6 +42,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -70,7 +144,7 @@
  <div class="container">
 
  <h1>Terms of Service</h1>
- <p class="meta">Last updated: 2026-04-24</p>
+ <p class="meta">Last updated: 2026-05-14</p>
 
  <p class="binding-note" style="background:#fff8e6;border:1px solid #d4a017;color:#7a5b00;padding:12px 16px;border-radius:6px;font-size:14px;margin:0 0 24px;line-height:1.6;"><strong>This is a courtesy English translation.</strong> The legally binding original is the Japanese version at <a href="../tos.html" hreflang="ja" lang="ja" style="color:#7a5b00;text-decoration:underline;">/tos.html</a>. In case of any conflict or ambiguity between this translation and the Japanese version, the Japanese version prevails. These Terms are governed by the laws of Japan, and Section 19 sets forth Tokyo as the agreed forum.</p>
 
@@ -78,10 +152,10 @@
  <h2 id="tax-disclaimer-title-en" style="font-size:18px;margin:0 0 10px;color:#7c2d12;">Important notice — Article 52 of the Certified Tax Accountants Act / Article 72 of the Attorneys Act</h2>
  <p style="margin:0 0 6px;">The Service searches and organises tax, subsidy, and statutory information published by Japanese public authorities. <strong>It does not constitute tax advice or legal advice.</strong></p>
  <p style="margin:0 0 6px;">In compliance with Article 52 of the Certified Tax Accountants Act, the Company does not provide specific tax determinations or filing-document preparation. In compliance with Article 72 of the Attorneys Act, the Company does not provide specific legal consultation or legal services.</p>
- <p style="margin:0;">For specific cases, <strong>please consult a licensed 税理士 (Certified Public Tax Accountant) or 弁護士 (attorney)</strong>. The Company is not liable for any damages arising from reliance on the Service. See Section 5 (Compliance with professional-statute laws) for details.</p>
+ <p style="margin:0;">For specific cases, <strong>please consult a licensed 税理士 (Certified Public Tax Accountant) or 弁護士 (attorney)</strong>. The Company is not liable for damages arising from reliance on the Service except to the extent liability cannot be excluded under Sections 14 to 16 or mandatory law. See Section 5 (Compliance with professional-statute laws) for details.</p>
  </div>
 
- <p>These Terms of Service (hereinafter, the "<strong>Terms</strong>") set out the conditions of use of the Japanese public-program information API and MCP server (collectively, the "<strong>Service</strong>") provided under the name "jpcite" by Bookyou Inc. (Bookyou Kabushiki Kaisha; hereinafter, the "<strong>Company</strong>"). Any legal entity or individual using the Service (hereinafter, "<strong>User</strong>") shall use the Service only after agreeing to all provisions of these Terms.</p>
+ <p>These Terms of Service (hereinafter, the "<strong>Terms</strong>") set out the conditions of use of the Japanese public-record evidence/output API and MCP server (collectively, the "<strong>Service</strong>") provided under the name "jpcite" by Bookyou Inc. (Bookyou Kabushiki Kaisha; hereinafter, the "<strong>Company</strong>"). Any legal entity or individual using the Service (hereinafter, "<strong>User</strong>") shall use the Service only after agreeing to all provisions of these Terms. The Service returns source-linked Evidence Packets and output artifacts before AI answer generation, internal decisions, or customer review; it does not provide tax advice or legal advice.</p>
 
  <h2>Section 1 (Definitions)</h2>
  <p>The terms used in these Terms are defined as set out below.</p>
@@ -89,10 +163,12 @@
  <li><strong>API</strong> means the program interface provided by the Company over HTTP/HTTPS or other network protocols for invoking the functions of the Service.</li>
  <li><strong>MCP</strong> means the Company's server compliant with the Model Context Protocol, providing functions equivalent to the API via AI agents.</li>
  <li><strong>End User</strong> means any individual or legal entity that indirectly comes into contact with the Service's output through a product or service developed or operated by the User.</li>
- <li><strong>Request</strong> means a single API or MCP invocation made by the User or the User's system to the Service. Charges are calculated on a per-request basis.</li>
+ <li><strong>Request</strong> means a single API or MCP invocation made by the User or the User's system to the Service. Normal search and detail calls are one request = one billable unit; batch, export, fanout, and similar endpoints may consume multiple billable units according to formulas shown before use.</li>
+ <li><strong>Evidence Packet / output artifact</strong> means a Service response that bundles primary-source URLs, fetched timestamps, citation candidates, known gaps, quality information, and related structured fields in a format usable by downstream AI or human review.</li>
  <li><strong>Service</strong> collectively means the API and MCP server defined above, related documentation, the dashboard, accompanying website, and the support channel.</li>
  <li><strong>User</strong> means any legal entity or individual that, after agreeing to these Terms, registers to use the Service or uses the Service within the unregistered scope.</li>
  <li><strong>AI Output</strong> means any text, summary, answer, calculation result, or other output generated by a large language model, machine-learning model, or other generative artificial-intelligence system. Some functions of the Service may present AI Output combined with structured data returned by the Service.</li>
+ <li><strong>External Provider Charges</strong> means fees charged by third-party LLMs, AI agents, cloud providers, search APIs, vector databases, browser automation tools, telecommunications providers, external SaaS products, or other third-party services used by the User. Such fees are not included in the Service fees.</li>
  </ul>
 
  <h2>Section 2 (Agreement to the Terms; scope of application; target jurisdiction)</h2>
@@ -113,13 +189,13 @@
  <li>Upon commencement of use of the Service, the User represents and warrants that the User is a Target User as defined in Section 2, paragraph 5, or, if not a Target User, is using the Service at the User's own risk.</li>
  <li>The API key is confidential information uniquely issued to the User. The User shall manage the API key with the care of a prudent manager and shall not disclose, lend, share, transfer, or pledge the API key to any third party. The Company recommends enabling two-factor authentication (2FA) on the Stripe Customer Portal, periodic API-key rotation, and least-privilege environment-variable management.</li>
  <li>If the API key is leaked, lost, or at risk of misuse, the User shall immediately notify the Company and shall revoke the relevant API key. The Company will, within a reasonable period after receiving such notice, deactivate the API key.</li>
- <li>All requests made using the API key, and any fees arising from such requests, are attributable to the User in whose name the API key is issued. Even where misuse occurs, the Company is not liable for fees incurred during the period prior to receipt of notice from the User.</li>
+ <li>Requests made using the API key, and any fees arising from such requests, are attributable to the User in whose name the API key is issued where they result from the User's credential management failure or other causes attributable to the User. This does not apply where liability cannot be excluded due to a compromise of the Company's systems, the Company's wilful misconduct or gross negligence, or other mandatory law.</li>
  </ul>
 
  <h2>Section 4 (Content of the Service)</h2>
  <ul>
- <li>The Service collects, organises, and structures information on subsidies, grants, financing programs, tax incentives, certification programs, administrative dispositions, court decisions, and other public-program-related information (collectively, "<strong>Program Information</strong>") published by Japanese public agencies and other organisations from primary sources, and provides such information through the API and MCP.</li>
- <li>The Service is strictly limited to <strong>information provision</strong>. None of the following are within the scope of the Service:
+ <li>The Service collects, organises, and structures information on subsidies, grants, financing programs, tax incentives, certification programs, administrative dispositions, court decisions, and other public-program-related information (collectively, "<strong>Program Information</strong>") published by Japanese public agencies and other organisations from primary sources, and provides such information as Evidence Packets / output artifacts through the API and MCP.</li>
+ <li>The Service is strictly limited to <strong>public-source evidence retrieval, structuring, and output assistance</strong>. None of the following are within the scope of the Service:
  <ul>
  <li>Preparing or filing application documents for subsidies, grants, or financing on a User's behalf</li>
  <li>Specific tax-advisory consultation or preparation of tax documents</li>
@@ -135,7 +211,7 @@
 
  <h2>Section 5 (Compliance with professional-statute laws and AI Business Operator Guidelines)</h2>
  <ul>
- <li>The Company complies with Article 72 of the Attorneys Act, Article 52 of the Certified Tax Accountants Act, Article 47-2 of the Certified Public Accountants Act, Article 27 of the Labour and Social Security Attorneys Act, Article 1-2 of the Administrative Scriveners Act, and other professional-statute laws, and does not provide any of the services that those laws reserve to licensed professionals.</li>
+ <li>The Company complies with Article 72 of the Attorneys Act, Article 52 of the Certified Tax Accountants Act, Article 47-2 of the Certified Public Accountants Act, Article 27 of the Labour and Social Security Attorneys Act, Article 1-2 and Article 19 of the Administrative Scriveners Act, Article 3 of the Judicial Scriveners Act, Article 75 of the Patent Attorneys Act, Article 36 of the Labour Standards Act, and other professional-statute or labour-related laws, and does not provide any of the services that those laws reserve to licensed professionals or regulated parties.</li>
  <li>The information provided by the Service consists of organised and structured general public information on program requirements, eligible applicants, subsidy ratios, application periods, and required documents, and does not constitute legal or tax advice based on the specific circumstances of any particular User.</li>
  <li>The calculation, eligibility-evaluation, and estimate features of the Service are <strong>rough-estimate features</strong> based on general formulae for subsidy ratios, ceilings, income deductions, and the like, and do not constitute specific tax-advisory consultation or legal-advisory consultation for tax filing, accounting, or subsidy applications. Estimate results are reference values only, and the Company makes no warranty of accuracy, validity, or fitness for any particular purpose.</li>
  <li>The Company aims to provide data in a verifiable form, including primary-source URLs, fetched-at timestamps, and source-attribution fields where available. These operational targets do not constitute legal warranties.</li>
@@ -147,7 +223,7 @@
  <ul>
  <li>(1) Using the Service for the purpose of violating Article 29 of the Act on Proper Execution of Budget Pertaining to Subsidies (補助金等に係る予算の執行の適正化に関する法律) or any other laws and regulations</li>
  <li>(2) Using the Service to prepare false or untruthful application documents or supporting materials for subsidies, grants, financing, or tax incentives</li>
- <li>(3) Submitting the Service's output, whether processed or not, to banks, shinkin banks, credit cooperatives, the Japan Finance Corporation, or any other public or private financial institution as material for credit assessment, guarantee assessment, or rating assessment</li>
+ <li>(3) Presenting or submitting the Service's output as if the Company, a public authority, a bank, a shinkin bank, a credit cooperative, the Japan Finance Corporation, or any other third party had created a credit report, rating, guarantee, lending-review document, certificate, or authenticity warranty; or using the Service's output as the sole or primary basis for credit, investment, adoption, lending, or similar decisions without primary-source verification and any necessary professional judgment</li>
  <li>(4) Acquiring large volumes of data significantly exceeding reasonable use, by means of scraping, crawling, parallel concurrent requests, or otherwise</li>
  <li>(5) Lending, disclosing, sharing, or reselling an API key issued to the User to any third party</li>
  <li>(6) Circumventing the Company's rate limits or use ceilings by switching IP addresses, rotating API keys, or other technical means</li>
@@ -155,7 +231,7 @@
  <li>(8) Constructing, operating, or selling a database or information service that competes with the Service, using the Service's output as raw material</li>
  <li>(9) Acts that violate laws, regulations, or public order and morals, that infringe the rights of any third party, or that contribute to such acts</li>
  <li>(10) Using the Service for credit assessment, investment solicitation, financing intermediation, fund transfer, or other regulated activities in a manner that conflicts with the Banking Act, the Money Lending Business Act, the Financial Instruments and Exchange Act, the Capital Subscription Act (出資法), the Act on Prevention of Transfer of Criminal Proceeds, or other industry-specific laws</li>
- <li>(11) Acting against the Service's AI response features by means of prompt injection, requests to disclose system prompts, jailbreaks, "DAN"-style attempts, or other means to cause the Service to deviate from its intended scope of operation</li>
+ <li>(11) Using improper instructions, bypass attempts, unauthorised access, prompt injection, requests to disclose system prompts, jailbreaks, "DAN"-style attempts, or other means to cause the Service, MCP server, API, or User-side AI client integration to deviate from its intended scope of operation; or attempting to extract, infer, bypass, or test without authorisation any Company or third-party API key, secret, system prompt, internal log, credential, or non-public data</li>
  <li>(12) Processing or editing the Service's output or responses so as to cause third parties to misperceive program contents, subsidy ratios, ceilings, adoption track records, or other facts (including misrepresentation of superiority or favourability prohibited under Article 5 of the Act against Unjustifiable Premiums and Misleading Representations / 景品表示法)</li>
  <li>(13) Other acts that the Company reasonably determines to interfere with the operation of the Service</li>
  </ul>
@@ -165,6 +241,7 @@
  <li>The Company makes no warranty, express or implied, regarding the <strong>completeness, accuracy, currency, fitness for any particular purpose, usefulness, continuity, or non-infringement of third-party rights</strong> of the information provided through the Service.</li>
  <li>Information on subsidies, grants, financing, taxation, and similar programs depends on the update timing, program revisions, and operational changes of the supervising authorities, local governments, incorporated administrative agencies, and other primary sources. Even where the Company endeavours to keep its information current, time lags or content discrepancies may arise between the primary source and the Service.</li>
  <li>Users shall, prior to making decisions about applications, contracts, investments, or otherwise in reliance on information from the Service, themselves verify the primary sources defined in Section 8; if the verification result differs from the Service's information, the primary-source description shall prevail.</li>
+ <li>Evidence Packets, Source Receipts, <code>source_fetched_at</code>, content hashes, corpus_snapshot_id values, and other metadata indicate the time and scope of the Company's retrieval or structuring of the information. They do not guarantee the publication date, update date, expiration date, legal effective date, current program operation, acceptance status, legal interpretation, or continued availability of any primary-source or third-party website. An empty <code>known_gaps</code> field does not guarantee completeness or absence of risk.</li>
  <li>The Company is exempted from liability, in accordance with Sections 14 and 15, for damages incurred by Users or End Users on grounds of errors, omissions, or update delays in information contained in the Service.</li>
  </ul>
 
@@ -173,6 +250,13 @@
  <li>Output generated by the User's external AI client, RAG pipeline, summary generator, or other generative-AI system using the Service's structured data may contain factual inaccuracies, staleness, source misattribution, rounding errors, or context-dependent reasoning errors.</li>
  <li>The User shall not rely on external AI output as the basis for any final decision without expert verification, and shall use primary sources together with the advice of a licensed professional when making concrete decisions.</li>
  <li>The Company makes no warranty of any kind regarding the factuality, consistency, or comprehensiveness of external AI output generated outside the Service.</li>
+ </ul>
+
+ <h2>Section 7-3 (Cost-saving and input-context reduction estimates)</h2>
+ <ul>
+ <li>Any input-token reduction estimate, break-even indicator, cost comparison, latency-reduction statement, or other efficiency-related display shown on the website, in documentation, in API responses, or in calculators is an estimate based on assumptions specified by the User or reference conditions stated by the Company.</li>
+ <li>The Company does not guarantee that use of the Service will actually reduce the User's external LLM fees, search API fees, labour costs, work time, total system costs, or any other costs.</li>
+ <li>Actual costs may differ from displayed reference values depending on third-party LLM pricing, exchange rates, caching, reasoning tokens, tool use, search API charges, output tokens, prompt design, User-side implementation, and other conditions.</li>
  </ul>
 
  <h2>Section 8 (Third-party sources and the duty to verify primary sources)</h2>
@@ -186,12 +270,13 @@
 
  <h2>Section 9 (Fees and payment)</h2>
  <ul>
- <li>The paid usage fee for the Service is JPY 3 per request (tax exclusive), and the Company invoices JPY 3.30 per request (tax inclusive at 10% Japanese Consumption Tax (JCT)). The fee display, in the spirit of the Premiums and Misrepresentation Act (景品表示法) and the Consumer Contract Act, shall include both tax-exclusive and tax-inclusive prices.</li>
- <li>The billing period runs from 00:00 on the first day of each month to 23:59 on the last day of that month (Japan Standard Time / JST). The amount obtained by multiplying the number of requests completed during such period by the unit price is invoiced automatically from the first day of the following month (JST), in accordance with Stripe's billing cycle.</li>
+ <li>The paid usage fee for the Service is JPY 3 per billable unit (tax exclusive), and the Company invoices JPY 3.30 per billable unit (tax inclusive at 10% Japanese Consumption Tax (JCT)). Normal search and detail calls are one request = one billable unit; batch, export, fanout, and similar endpoints may consume multiple billable units according to formulas shown before use. The fee display, in the spirit of the Premiums and Misrepresentation Act (景品表示法) and the Consumer Contract Act, shall include both tax-exclusive and tax-inclusive prices.</li>
+ <li>The billing period runs from 00:00 on the first day of each month to 23:59 on the last day of that month (Japan Standard Time / JST). The amount obtained by multiplying the number of completed billable units during such period by the unit price is invoiced automatically from the first day of the following month (JST), in accordance with Stripe's billing cycle.</li>
  <li>Payment shall be processed automatically from the credit card the User registers with Stripe via the payment processor designated by the Company, Stripe Payments Japan K.K. (hereinafter, "<strong>Stripe</strong>"). Supported card brands are Visa, Mastercard, American Express, JCB, Diners Club, and Discover (subject to change with Stripe's coverage).<br><span style="font-size:13px;color:#555;">* The cross-border data transfer to Stripe, Inc. (US) via Stripe Payments Japan KK is disclosed in our Privacy Policy.</span></li>
  <li>Payment processing on Stripe, addition / change / deletion of payment methods, invoice issuance, and viewing of receipts shall be performed by the User through the Customer Portal provided by Stripe.</li>
  <li>Qualified invoices based on Qualified Invoice Issuer Registration Number are generated automatically by Stripe and delivered to the User electronically.</li>
  <li>Anonymous use without registration is free for up to 3 requests per IP address per day, reset at JST 00:00 daily. Authenticated API-key usage is metered from the first successful paid request; registered users do not receive a separate free request bundle.</li>
+ <li>Service fees do not include External Provider Charges. The User is responsible for the contracts, terms of use, billing, refunds, caps, search or tool-use charges, cache application, exchange-rate exposure, and disputes relating to third-party LLMs and other external providers. Monthly caps, <code>X-Cost-Cap-JPY</code>, cost previews, idempotency, and similar controls provided by the Service are auxiliary controls for Service fees only and do not limit or guarantee External Provider Charges.</li>
  <li>If the User fails to pay fees by the due date, the Company may, in addition to suspension under Section 10, charge late-payment damages at the rate of 14.6% per annum.</li>
  </ul>
 
@@ -215,7 +300,7 @@
  <ul>
  <li>Copyrights, patent rights, trademarks, trade secrets, and all other intellectual property rights in the Service, the API, the MCP server, the dashboard, the documentation, the logo, the trademarks, and any other deliverable comprising the Service belong to the Company or to third parties that have duly licensed them to the Company.</li>
  <li>The database constructed by the Service, by virtue of the creativity in the selection or systematic configuration of its information, is protected as a database work under Article 12-2 of the Copyright Act.</li>
- <li>Subject to completion of payment in accordance with Section 9, the User may use the responses returned by the Service for the User's own product or service's internal processing, generation of individual answers to End Users, integration into RAG pipelines, and similar purposes. Provided, however, that the following acts are expressly prohibited:
+ <li>Subject to compliance with these Terms and the applicable billing rules, the User may use the responses returned by the Service for the User's own product or service's internal processing, generation of individual answers to End Users, integration into AI/tool-use pipelines, and similar purposes. Provided, however, that the following acts are expressly prohibited:
  <ul>
  <li>Redistributing, reselling, or publicly releasing the Service's responses in their entirety or at large scale</li>
  <li>Constructing <strong>bulk training datasets</strong> for large language models or other machine-learning models using the Service's responses as raw material</li>
@@ -243,6 +328,7 @@
  <li>The Company complies with the Act on the Protection of Personal Information and other applicable laws and regulations, and handles User personal information and customer data acquired in connection with the provision of the Service in accordance with the <a href="privacy.html">Privacy Policy</a> separately set forth.</li>
  <li>For the operation of the Service, the Company may entrust portions of its operations relating to infrastructure, payments, email delivery, log management, and similar matters to third-party providers in Japan or abroad. Major outsourcing providers and the scope of their entrustment are disclosed in the Privacy Policy.</li>
  <li>Where the User transmits End Users' personal information to the Company's system through the Service, the User shall do so only after obtaining all consents from End Users necessary for such transmission, and shall bear the responsibilities of a data provider under the Act on the Protection of Personal Information.</li>
+ <li>The User represents that it has the necessary rights, authority, consents, and legal basis for prompts, search terms, corporate numbers, customer data, files, URLs, and any other input data sent to the Service. Where the User sends third-party confidential information, personal information, or regulated information, the User is responsible for appropriate controls, anonymisation, consent acquisition, and confirmation of handling by any external AI integration provider.</li>
  </ul>
 
  <h2>Section 13 (Service level)</h2>
@@ -251,7 +337,7 @@
  <li>As a data-protection measure, the Company sets, as operational targets for the production database, a Recovery Point Objective (RPO) of <strong>24 hours</strong> and a Recovery Time Objective (RTO) of <strong>4 hours</strong>. The figures in this paragraph are also targets and not a warranty by the Company.</li>
  <li>The Company may temporarily suspend all or part of the Service due to system maintenance, security updates, infrastructure migration, or other reasons. In the case of planned suspension, the Company will use reasonable efforts to give prior notice through the website or the dashboard.</li>
  <li>For suspensions due to emergency incident response, security-incident response, upstream-provider outages, or other situations where prior notice is not feasible, the Company is not under a duty of prior notice.</li>
- <li>Given the Service's metered-pricing nature, no per-request charges accrue for requests that do not complete. Refunds for downtime do not, as a rule, arise except for confirmed billing errors.</li>
+ <li>Given the Service's metered-pricing nature, no billable-unit charges accrue for requests that do not complete. Refunds for downtime do not, as a rule, arise except for confirmed billing errors or confirmed material defects that caused chargeable use and are reported within a reasonable period.</li>
  <li>For interruption, suspension, or termination of the Service within the anonymous allowance, the Company is not liable for compensation or any other liability to Users.</li>
  </ul>
 
@@ -302,7 +388,7 @@
 
  <h2>Section 17 (Termination, withdrawal, and data-deletion SLA)</h2>
  <ul>
- <li>The User may at any time cancel/terminate paid use by removing the credit card from the Stripe Customer Portal or by deactivating the API key from the Company's dashboard. There are no termination penalties, no minimum-use periods, and no cancellation/termination fees.</li>
+ <li>The User may at any time cancel/terminate paid use from the Stripe Customer Portal. API access remains valid through the end of the current billing month, and current-month usage is billed at the metered rate. Deactivating, deleting, or rotating an API key only disables that key and does not constitute billing cancellation. There are no termination penalties, no minimum-use periods, and no cancellation/termination fees.</li>
  <li>Where the Company terminates all or part of the Service for reasonable business reasons, the Company will use reasonable efforts to notify Users by website, dashboard, or email at least <strong>90 days</strong> prior to the termination date. The foregoing does not apply where prior notice is not feasible due to emergency statutory-compliance demands, security-incident response, upstream-provider withdrawal, or similar circumstances.</li>
  <li>After cancellation/termination, the Company will retain access logs, billing records, and API-key history relating to the relevant User for <strong>up to 90 days</strong>, for purposes of unpaid-fee settlement, tax response, and fraud investigation, after which such data will be deleted or anonymised. Provided, however, that records subject to mandatory retention under the Corporation Tax Act, the Consumption Tax Act, and other laws (billing records, books and documents) shall be retained for the period prescribed by such laws (as a rule, 7 years).</li>
  <li>Where the User requests erasure of retained personal data under the Act on the Protection of Personal Information, the Company will, except for the scope of statutory retention obligations, complete the deletion within <strong>30 days</strong> of receipt of the request. Users may, on a self-service basis through the Stripe Customer Portal and the Company's dashboard, electronically export (data portability) personal data linked to the User's account.</li>
@@ -348,57 +434,7 @@
  <hr>
 
  <p class="meta">
- Last updated: 2026-04-24<br>
- Operator: Bookyou Inc. (Bookyou Kabushiki Kaisha)<br>
- Address: 2-22-1 Kohinata, Bunkyo-ku, Tokyo, Japan<br>
- Representative: Shigetoshi Umeda, Representative Director<br>
- Contact: <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </p>
-
- <p>Related documents:
- <a href="privacy.html">Privacy Policy</a> /
- <a href="tokushoho.html">Specified Commercial Transactions Act disclosure</a> /
- <a href="/docs/sla">Service Level Standard (SLA)</a>
- </p>
-
- </div>
-</main>
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
- <p class="footer-tag">Japanese public-program API</p>
- </div>
- <nav class="footer-nav" aria-label="Footer">
- <a href="tos.html" aria-current="page">Terms</a>
- <a href="privacy.html">Privacy</a>
- <a href="tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
- </div>
-</footer>
-
-</body>
-</html>
-ers or former members thereof until five (5) years have passed since cessation, (c) quasi-members of organised-crime groups, (d) enterprises related to organised-crime groups, (e) corporate racketeers (sokaiya), (f) groups engaging in social-movement-style intimidation, (g) special-intelligence violent groups, or (h) any party equivalent to the foregoing (collectively, "<strong>Antisocial Forces</strong>"), and that they will not engage in any of the following acts:
- <ul>
- <li>Violent demands</li>
- <li>Unjust demands beyond legal responsibility</li>
- <li>Threatening conduct or use of violence in connection with transactions</li>
- <li>Damaging the credibility of, or interfering with the business of, the counterparty by spreading rumours, by deception, or by force</li>
- <li>Other acts equivalent to the foregoing</li>
- </ul>
- </li>
- <li>If the Company determines that the User has breached the representations and warranties in the preceding paragraph, the Company may terminate these Terms and deactivate the API key without prior demand. The Company is not liable for damages arising from such termination.</li>
- </ul>
-
- <hr>
-
- <p class="meta">
- Last updated: 2026-04-24<br>
+ Last updated: 2026-05-14<br>
  Operator: Bookyou Inc. (Bookyou Kabushiki Kaisha)<br>
  Address: 2-22-1 Kohinata, Bunkyo-ku, Tokyo, Japan<br>
  Representative: Shigetoshi Umeda, Representative Director<br>

@@ -71,6 +71,80 @@
   <meta name="theme-color" content="#0a4d8c" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 
@@ -118,64 +192,13 @@
  <h2>Who built it</h2>
  <p>Operated by <strong>Bookyou株式会社</strong>. Hosted in Tokyo and billed via Stripe Tax. Legal entity and qualified-invoice details are available in the Japanese legal disclosure.</p>
 
- <h2>Quick facts</h2>
+ <h2 id="quick-facts">Quick facts</h2>
  <table>
  <tbody>
  <tr><th>Programs indexed</th><td>14,472 (11,601 searchable in tier S/A/B/C; 2,871 excluded from public search)</td></tr>
  <tr><th>Case studies (採択事例)</th><td>2,286</td></tr>
  <tr><th>Loan programs (detailed)</th><td>108 (with three-axis collateral / guarantor decomposition)</td></tr>
  <tr><th>Enforcement cases</th><td>1,185</td></tr>
- <tr><th>Laws (e-Gov CC-BY)</th><td>e-Gov law metadata and article references; coverage varies by record.</td></tr>
- <tr><th>Tax rulesets</th><td>50</td></tr>
- <tr><th>Court decisions</th><td>2,065</td></tr>
- <tr><th>Bids</th><td>362</td></tr>
- <tr><th>Invoice registrants</th><td>13,801 (PDL v1.0 delta-only; full ~4M monthly bulk pending)</td></tr>
- <tr><th>Entity-fact DB entities</th><td>503,930 (across 12 record_kinds)</td></tr>
- <tr><th>Entity-fact DB facts</th><td>6.12M</td></tr>
- <tr><th>Entity-fact DB relations</th><td>177,381 (15 canonical relation types)</td></tr>
- <tr><th>Primary-source coverage</th><td>Most public rows carry source_url + fetched_at; gaps are flagged instead of backfilled</td></tr>
- <tr><th>Exclusion rules</th><td>181 (125 exclude + 17 prerequisite + 15 absolute + 24 other)</td></tr>
- <tr><th>MCP tools</th><td>151 at standard configuration, protocol 2025-06-18 (program / case-study / loan / enforcement search, source-backed context packets, metadata tools, and DD-support tools)</td></tr>
- <tr><th>MCP protocol</th><td>2025-06-18</td></tr>
- <tr><th>Region</th><td>Japan</td></tr>
- <tr><th>Launch</th><td>2026-05-06</td></tr>
- </tbody>
- </table>
-
- <h2>Contact</h2>
- <p>Email: <a href="mailto:info@bookyou.net">info@bookyou.net</a>. For press, the full kit is at <a href="../press/about.md">/press/about.md</a>. For Japanese legal disclosures (特定商取引法), see <a href="../tokushoho.html">the JP tokushoho page</a>.</p>
-
- </div>
-</main>
-
-<div class="container">
-</div>
-
-
-<footer class="site-footer" role="contentinfo">
- <div class="container footer-inner">
- <div class="footer-col">
- <p class="footer-brand">jpcite</p>
- <p class="footer-tag">Japanese public-program API</p>
- </div>
- <nav class="footer-nav" aria-label="Footer">
- <a href="about.html">About</a>
- <a href="getting-started.html">Getting started</a>
- <a href="pricing.html">Pricing</a>
- <a href="sources.html">Data sources</a>
- <a href="tokushoho.html">Legal (JP)</a>
- <a href="mailto:info@bookyou.net">info@bookyou.net</a>
- </nav>
- <p class="footer-entity">Operated by Bookyou Inc. · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
- <p class="footer-copy">&copy; 2026 Bookyou Inc.</p>
- </div>
-</footer>
-
-<script src="/assets/trust-strip.en.js" defer></script>
-
-</body>
-</html>
-td></tr>
  <tr><th>Laws (e-Gov CC-BY)</th><td>e-Gov law metadata and article references; coverage varies by record.</td></tr>
  <tr><th>Tax rulesets</th><td>50</td></tr>
  <tr><th>Court decisions</th><td>2,065</td></tr>

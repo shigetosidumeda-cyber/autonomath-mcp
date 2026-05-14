@@ -152,11 +152,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -201,8 +204,8 @@
  <a href="../index.html">Home</a> &raquo; <a href="index.html">Audiences</a> &raquo; <span aria-current="page">Tax advisors</span>
  </nav>
  <h1 id="hero-title">jpcite for tax advisors (zeirishi)</h1>
- <p class="hero-sub">Special Measures Act search + tax incentives + e-bookkeeping / invoice-system revision alerts. Stand up an in-firm RAG for 80 client engagements in 30 minutes.</p>
- <p class="hero-tag">Sized for a 5-person firm with ~80 SMB clients. Wire the MCP server into Claude Desktop or your in-house RAG and search across 50 tax rulesets, e-Gov law metadata and article references (coverage varies by record), and 14,472 programs. Revision alerts keep e-bookkeeping (denshi-chobo), invoice-system (qualified-invoice), and consumer-protection law changes from slipping past you.</p>
+ <p class="hero-sub">Special Measures Act search + tax incentives + e-bookkeeping / invoice-system revision alerts. Add source-linked Evidence Packets to 80 client-review workflows in 30 minutes.</p>
+ <p class="hero-tag">Sized for a 5-person firm with ~80 SMB clients. Wire the MCP server into Claude Desktop or your AI workflow and retrieve compact evidence across 50 tax rulesets, e-Gov law metadata and article references (coverage varies by record), and 14,472 programs. Revision alerts keep e-bookkeeping (denshi-chobo), invoice-system (qualified-invoice), and consumer-protection law changes from slipping past you.</p>
  <div class="cta-row">
  <a class="btn btn-primary" href="#quickstart">Start in 5 minutes &rarr;</a>
  <a class="btn btn-secondary" href="../pricing.html">See pricing</a>
@@ -378,7 +381,7 @@ for row in r2.json["items"]:
  <h3 style="font-size:16px;margin:18px 0 6px;">How does this fit Article 38 zeirishi-law confidentiality?</h3>
  <p>jpcite does not use submitted search queries as training data. Inference logs are used for billing reconciliation only. When entering client-specific business details, follow your firm's internal policy.</p>
  <h3 style="font-size:16px;margin:18px 0 6px;">Related audiences?</h3>
- <p><a href="admin-scrivener.html">Administrative scriveners</a> (permits + subsidy paperwork) and <a href="dev.html">AI agent developers</a> (in-firm RAG) overlap.</p>
+ <p><a href="admin-scrivener.html">Administrative scriveners</a> (permits + subsidy paperwork) and <a href="dev.html">AI agent developers</a> (evidence-layer workflows) overlap.</p>
  </div>
  </section>
 
@@ -402,7 +405,7 @@ for row in r2.json["items"]:
  <h2 id="cta-title" class="section-title">Get started</h2>
  <div class="cta-row">
  <a class="btn btn-primary" href="../index.html#demo">Try the tax-incentive prescreen (30s)</a>
- <a class="btn btn-secondary" href="../dashboard.html">Get an API key (Free 3 req/day)</a>
+ <a class="btn btn-secondary" href="../dashboard.html">Open Dashboard</a>
  <a class="btn btn-secondary" href="../getting-started.html">Read the docs</a>
  <a class="btn btn-secondary" href="https://pypi.org/project/autonomath-mcp/" rel="noopener">PyPI: <code>autonomath-mcp</code></a>
  </div>

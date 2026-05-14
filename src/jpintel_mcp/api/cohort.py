@@ -19,7 +19,7 @@ Metering
 * program risk: 1 ¥3/req unit (``program_risk_4d``).
 * supplier chain: 2 ¥3/req units (heavier traversal — ``quantity=2``).
 
-The §52 / §47条の2 / 行政書士法 §1 disclaimer is mirrored from
+The §52 / §47条の2 / 行政書士法 §1の2 disclaimer is mirrored from
 ``api/intel_actionable.py`` and stamped on the 2xx envelope of every
 handler — output is information retrieval, not 申請代理 / 税務助言 /
 経営判断.
@@ -45,7 +45,7 @@ router = APIRouter(prefix="/v1", tags=["cohort", "risk", "supplier-chain"])
 
 _DISCLAIMER = (
     "本レスポンスは jpcite が公開情報を機械的に整理した結果を返却するものであり、"
-    "税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1 / 弁護士法 §72 に基づく"
+    "税理士法 §52 / 公認会計士法 §47条の2 / 行政書士法 §1の2 / 弁護士法 §72 に基づく"
     "個別具体的な税務助言・監査意見・申請書面作成・法律相談の代替ではありません。"
     "最終的な判断は資格を有する士業へご相談ください。"
 )

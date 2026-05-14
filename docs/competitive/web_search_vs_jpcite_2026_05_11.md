@@ -151,9 +151,9 @@ Q1 / Q3 は税制改正履歴を読まないと外す。Q2 は会計検査院 / 
 
 1. **axis A 出典 verifiable** — `source_url` + `source_fetched_at` + `corpus_snapshot_id` まで揃え、`/v1/citations/verify` で本文一致まで取れる。web 検索は URL までは返すが、 hash / snapshot 単位の reproducibility がない。
 2. **axis B fetched_at 鮮度** — corpus_snapshot_id で「いつ撮ったか」を caller に渡せる。web 検索は cache window が不透明で、改正反映 lag を agent が判定する手段がない。
-3. **axis C 業法 fence** — 8 業法を `data/fence_registry.json` で declared している唯一のサービス。`// fence: <業法>` コメント差し込み規約まで lib 化 (`render_fence` ツール) されている。
+3. **axis C 業法 fence** — 8 業法を `data/fence_registry.json` で declared している設計。`// fence: <業法>` コメント差し込み規約まで lib 化 (`render_fence` ツール) されている。
 4. **axis D 取りこぼし** — `pack_*` / `prerequisite_chain` / `trace_program_to_law` / `check_exclusions` で **1 call cohort 返却**。web 検索は 3-5 回追加 query を回す必要があり、agent token cost が嵩む。
-5. **axis E 詐欺 risk** — aggregator ban (`noukaweb`, `hojyokin-portal`, `biz.stayway` を `source_url` から除外) + `tier='X'` quarantine。**IT 導入補助金 / ものづくり補助金で SEO 上位を占める申請代行業者を citation に混ぜない**唯一の選択肢。
+5. **axis E 出典リスク** — aggregator ban (`noukaweb`, `hojyokin-portal`, `biz.stayway` を `source_url` から除外) + `tier='X'` quarantine。**IT 導入補助金 / ものづくり補助金で SEO 上位を占める申請代行業者を citation に混ぜにくい**設計。
 
 ### 5.2 改善必要 axes (2 個)
 

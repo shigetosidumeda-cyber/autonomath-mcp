@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>高知県小規模事業経営支援事業費補助金について | 高知県</title>
@@ -470,15 +470,6 @@
   </item>
 
   <item>
-    <title>高知県特産農畜産物販売拡大総合支援事業費補助金</title>
-    <link>https://jpcite.com/programs/kouchiken-tokusan-nouchikusan-buppan-bai-kakudai-sougou-a8c2fe.html</link>
-    <description>Tier B / 高知県 出典: https://www.pref.kochi.lg.jp/soshiki/160701/2021030200060.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-030c960c48</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
     <title>土佐清水市水産業振興事業費補助金</title>
     <link>https://jpcite.com/programs/tosashimizu-shisui-sangyou-shinkou-jigyou-hi-hojokin-7fc829.html</link>
     <description>Tier B / 高知県 / subsidy / 上限 250万円 出典: https://www.city.tosashimizu.kochi.jp/kurashi/section/nourin/</description>
@@ -664,15 +655,6 @@
     <description>Tier B / 高知県 / training / 上限 100万円 出典: https://kochi-iju.jp/area/nankoku-city/</description>
     <category>training</category>
     <guid isPermaLink="false">jpcite:program:UNI-3e5b94f059</guid>
-    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>香南市園芸用ハウス等リノベーション事業費補助金</title>
-    <link>https://jpcite.com/programs/kounan-shi-engeiyou-hausu-nado-rinobeeshon-jigyou-hi-hojokin-8ca584.html</link>
-    <description>Tier B / 高知県 / 上限 100万円 出典: https://www.city.kochi-konan.lg.jp/section/reiki_int/reiki_honbun/r254RG00001906.html</description>
-    <category>制度</category>
-    <guid isPermaLink="false">jpcite:program:UNI-44c61c885b</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 
@@ -907,6 +889,24 @@
     <description>Tier B / 高知県 / subsidy / 上限 1万円 出典: https://www.city.sukumo.kochi.jp/docs-05/p040401.html</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-a58fe4b3cc</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>ラジコン草刈機貸し出し</title>
+    <link>https://jpcite.com/programs/rajikon-kusakari-ki-kashidashi-d6fe6a.html</link>
+    <description>Tier B / 高知県 / subsidy / 上限 100万円 出典: https://www.city.shimanto.lg.jp/soshiki/15/</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-aa48d70785</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>香南市園芸用ハウス整備事業費補助金</title>
+    <link>https://jpcite.com/programs/kounan-shi-engeiyou-hausu-seibi-jigyou-hi-hojokin-74825e.html</link>
+    <description>Tier B / 高知県 / 高知県香南市 / subsidy / 上限 1,100万円 出典: https://www.city.kochi-konan.lg.jp/section/reiki_int/reiki_honbun/r254RG00001364.html</description>
+    <category>subsidy</category>
+    <guid isPermaLink="false">jpcite:program:UNI-ab95a0cdd2</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

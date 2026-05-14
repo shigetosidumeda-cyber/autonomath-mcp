@@ -421,7 +421,7 @@ def module_stripe_webhook(args: argparse.Namespace) -> ModuleResult:
         "X-Smoke-Idempotency": event["id"],
     }
     timeout = httpx.Timeout(connect=5.0, read=10.0, write=5.0, pool=5.0)
-    url = "/v1/billing/stripe_webhook"
+    url = "/v1/billing/webhook"
 
     try:
         with httpx.Client(base_url=args.base_url, timeout=timeout) as client:

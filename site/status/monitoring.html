@@ -24,7 +24,7 @@
      failure + deploy issue + endpoint 5xx events for Feedly / Inoreader
      subscribers. Browsers and feed readers will pick this up automatically. -->
 <link rel="alternate" type="application/atom+xml" title="jpcite — 監視 alert feed" href="/status/feed.atom">
-<link rel="alternate" type="application/rss+xml" title="jpcite — お知らせ" href="/rss.xml">
+<link rel="alternate" type="application/rss+xml" title="jpcite — status RSS" href="/status/rss.xml">
 
 <style>
   :root {
@@ -249,6 +249,80 @@
   ]
 }
 </script>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
 </head>
 <body>
 <div class="container">
@@ -258,7 +332,7 @@
 <h1>Monitoring (統合ダッシュボード)</h1>
 <p class="lede">
   jpcite では監視を 5 つの専門ダッシュボードに分けて運用しています。
-  本ページはそれらを 1 ページに集約し、エージェントが <a href="/v1/status/all">/v1/status/all</a>
+  本ページはそれらを 1 ページに集約し、エージェントが <a href="https://api.jpcite.com/v1/status/all">/v1/status/all</a>
   で JSON を 1 fetch でも、人間がブラウザでも、同じ情報に到達できるようにした
   「Agent + Human readable」統合面です。<strong>JavaScript 非依存・semantic HTML のみ</strong>。
 </p>
@@ -360,14 +434,14 @@
   <td>last_run + sla_status</td>
   <td>per-axis SLA met</td>
   <td>daily 06:30 UTC</td>
-  <td><a href="/v1/status/six_axis">/v1/status/six_axis</a></td>
+  <td><a href="https://api.jpcite.com/v1/status/six_axis">/v1/status/six_axis</a></td>
 </tr>
 <tr id="scheduled">
   <td>19 scheduled-update health</td>
   <td>success_rate_24h</td>
   <td>&gt;= 0.95</td>
   <td>24h rolling</td>
-  <td><a href="/v1/status/all">/v1/status/all</a></td>
+  <td><a href="https://api.jpcite.com/v1/status/all">/v1/status/all</a></td>
 </tr>
 </tbody>
 </table>
@@ -416,7 +490,7 @@
 </p>
 <ul>
   <li><a href="/status/feed.atom">/status/feed.atom</a> — 監視 alert ATOM feed</li>
-  <li><a href="/v1/status/alerts">/v1/status/alerts</a> — 現在 active な alert (JSON)</li>
+  <li><a href="https://api.jpcite.com/v1/status/alerts">/v1/status/alerts</a> — 現在 active な alert (JSON)</li>
 </ul>
 </section>
 
@@ -428,16 +502,16 @@
 <table>
 <thead><tr><th>Method</th><th>Path</th><th>用途</th></tr></thead>
 <tbody>
-<tr><td>GET</td><td><a href="/v1/status/all"><code>/v1/status/all</code></a></td><td>5 dashboard 集約 JSON</td></tr>
-<tr><td>GET</td><td><a href="/v1/status/alerts"><code>/v1/status/alerts</code></a></td><td>active alert list</td></tr>
-<tr><td>GET</td><td><a href="/v1/status/six_axis"><code>/v1/status/six_axis</code></a></td><td>6 軸 sanity 詳細</td></tr>
+<tr><td>GET</td><td><a href="https://api.jpcite.com/v1/status/all"><code>/v1/status/all</code></a></td><td>5 dashboard 集約 JSON</td></tr>
+<tr><td>GET</td><td><a href="https://api.jpcite.com/v1/status/alerts"><code>/v1/status/alerts</code></a></td><td>active alert list</td></tr>
+<tr><td>GET</td><td><a href="https://api.jpcite.com/v1/status/six_axis"><code>/v1/status/six_axis</code></a></td><td>6 軸 sanity 詳細</td></tr>
 </tbody>
 </table>
 </section>
 
 <footer>
 <p>
-  Updated 2026-05-12.
+  Updated 2026-05-14.
   個別 dashboard と集約 index を公開しています。<br>
   運営: <a href="https://jpcite.com/">Bookyou株式会社</a> ・
   問い合わせ: <a href="mailto:info@bookyou.net">info@bookyou.net</a>

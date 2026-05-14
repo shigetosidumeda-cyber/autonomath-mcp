@@ -70,7 +70,7 @@ _MAX_HISTORY_YEARS = 20
 _DISCLAIMER = (
     "Dynamic eligibility check is a deterministic join of public 行政処分 records "
     "and exclusion rules. Coverage is bounded by published 一次資料 and is not "
-    "legal clearance. 最終的な受給可否は所管官庁の公募要領 + 税理士法 §52 / 行政書士法 §1 "
+    "legal clearance. 最終的な受給可否は所管官庁の公募要領 + 税理士法 §52 / 行政書士法 §1の2 "
     "に基づく専門家確認を経てください。"
 )
 

@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   AI / LLM surface sitemap for jpcite.com.
-  Aggregates the 16 canonical AI-discovery surfaces so answer engines and
+  Aggregates the 20 canonical AI-discovery surfaces so answer engines and
   MCP-aware crawlers can fetch the full discovery cohort in one pass.
 
   This is additive to the master sitemap-index.xml; it does NOT replace any
   search-engine sitemap. URL set covers:
     - llms.txt cohort (4: JP/EN, summary/full) — llmstxt.org convention
     - OpenAPI agent profiles (2: full + gpt30 slim)
-    - MCP discovery surfaces (3: mcp-server.json + .well-known/mcp/agents/ai-plugin)
-    - Trust + provenance (3: trust.json + security.txt + sbom.json sources)
+    - MCP discovery surfaces (4: mcp-server.json + .well-known/mcp/agents/ai-plugin)
+    - Trust + provenance (2: trust.json + security.txt)
     - Cohort sitemaps cross-link (4: cases, laws, enforcement-cases, laws-en)
     - facts.html JP+EN (2)
+    - agent setup + prompt hubs (2: connect, prompts)
 
   changefreq / priority hints follow sitemaps.org 0.9 spec; priorities are
   discovery hints for AI crawlers, not Google PageRank.
@@ -54,6 +55,18 @@
   <url>
     <loc>https://jpcite.com/openapi.agent.gpt30.json</loc>
     <lastmod>2026-05-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jpcite.com/connect/</loc>
+    <lastmod>2026-05-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://jpcite.com/prompts/</loc>
+    <lastmod>2026-05-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>

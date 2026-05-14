@@ -11,8 +11,8 @@
  *
  * Concretely the rewrite is:
  *
- *   GET  https://jpcite.com/api/programs?q=...
- *   → 200 (proxied) https://api.jpcite.com/v1/programs?q=...
+ *   GET  https://jpcite.com/api/programs/search?q=...
+ *   → 200 (proxied) https://api.jpcite.com/v1/programs/search?q=...
  *
  *   POST https://jpcite.com/api/programs/batch
  *   → 200 (proxied) https://api.jpcite.com/v1/programs/batch
@@ -36,6 +36,7 @@
 export interface Env {
   ASSETS: Fetcher;
   JPCITE_API_BASE?: string;
+  JPCITE_EDGE_AUTH_SECRET?: string;
 }
 
 // CORS — broad because AI agents call from anywhere (no browser session).
@@ -43,14 +44,20 @@ const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
   "Access-Control-Allow-Headers":
-    "Authorization, Content-Type, X-API-Key, X-Client-Tag, X-Idempotency-Key, Accept",
+    "Authorization, Content-Type, X-API-Key, X-Client-Tag, Idempotency-Key, X-Idempotency-Key, X-Cost-Cap-JPY, Accept",
   "Access-Control-Expose-Headers":
-    "X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-Anon-Upgrade-Url",
+    "X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-Anon-Upgrade-Url, X-Anon-Direct-Checkout-Url, X-Anon-Trial-Url, X-Rate-Limit-Hint, X-Upstream-Canonical, X-Cost-Yen, X-Cost-Cap-Required, X-Cost-Capped, X-Idempotency-Replayed",
   "Access-Control-Max-Age": "86400",
 };
 
 const UPSTREAM_FETCH_TIMEOUT_MS = 10_000;
 const MAX_PROXY_BODY_BYTES = 1_048_576;
+const ROOT_API_PATH_ALIASES: Record<string, string> = {
+  "/api/healthz": "/healthz",
+  "/api/programs": "/v1/programs/search",
+  "/api/programs/": "/v1/programs/search",
+  "/api/readyz": "/readyz",
+};
 
 type LimitedBodyResult = { ok: true; body: ArrayBuffer | null } | { ok: false };
 
@@ -119,12 +126,17 @@ async function fetchWithTimeout(
 
 /** Build the upstream URL by stripping /api/ and prepending /v1/. */
 function rewriteToUpstream(reqUrl: URL, base: string): string {
-  // /api/programs           → /v1/programs
+  // /api/programs/search    → /v1/programs/search
+  // /api/programs           → /v1/programs/search
   // /api/programs/batch     → /v1/programs/batch
+  // /api/healthz            → /healthz
+  // /api/readyz             → /readyz
   // /api/                   → /v1/
   // /api                    → /v1/
-  let upstreamPath: string;
-  if (reqUrl.pathname === "/api" || reqUrl.pathname === "/api/") {
+  let upstreamPath = ROOT_API_PATH_ALIASES[reqUrl.pathname];
+  if (upstreamPath) {
+    // Root health endpoints intentionally live outside /v1 on the API host.
+  } else if (reqUrl.pathname === "/api" || reqUrl.pathname === "/api/") {
     upstreamPath = "/v1/";
   } else if (reqUrl.pathname.startsWith("/api/")) {
     upstreamPath = "/v1/" + reqUrl.pathname.slice("/api/".length);
@@ -142,6 +154,23 @@ function redactUpstreamUrl(upstreamUrl: string): string {
   return `${url.origin}${url.pathname}`;
 }
 
+function bytesToHex(bytes: ArrayBuffer): string {
+  return [...new Uint8Array(bytes)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function mintEdgeAuth(secret: string, nowSeconds: number, callerIp: string): Promise<string> {
+  const payload = `v1:${nowSeconds}:${callerIp}`;
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload));
+  return `${payload}:${bytesToHex(sig)}`;
+}
+
 export const onRequest: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);
 
@@ -156,16 +185,31 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   // Forward most headers; strip the host/CF-internal ones that would
   // confuse the origin if echoed.
+  const callerIp = context.request.headers.get("CF-Connecting-IP")?.trim();
   const fwdHeaders = new Headers(context.request.headers);
   fwdHeaders.delete("host");
-  fwdHeaders.delete("cf-connecting-ip");
-  fwdHeaders.delete("cf-ipcountry");
-  fwdHeaders.delete("cf-ray");
+  for (const headerName of [...fwdHeaders.keys()]) {
+    if (headerName.toLowerCase().startsWith("cf-")) {
+      fwdHeaders.delete(headerName);
+    }
+  }
   fwdHeaders.delete("fly-client-ip");
   fwdHeaders.delete("x-forwarded-for");
+  fwdHeaders.delete("x-edge-auth");
   // Identify the proxy hop so origin logs can distinguish direct vs proxied.
   fwdHeaders.set("X-Forwarded-By", "jpcite-pages-api-proxy");
   fwdHeaders.set("X-Forwarded-Host", url.host);
+  if (callerIp && context.env.JPCITE_EDGE_AUTH_SECRET) {
+    fwdHeaders.set("X-Forwarded-For", callerIp);
+    fwdHeaders.set(
+      "X-Edge-Auth",
+      await mintEdgeAuth(
+        context.env.JPCITE_EDGE_AUTH_SECRET,
+        Math.floor(Date.now() / 1000),
+        callerIp,
+      ),
+    );
+  }
 
   let upstreamBody: ArrayBuffer | null = null;
   if (context.request.method !== "GET" && context.request.method !== "HEAD") {

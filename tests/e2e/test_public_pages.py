@@ -42,7 +42,7 @@ _PUBLIC_PAGES: list[tuple[str, re.Pattern[str]]] = [
 async def test_public_page_returns_200_and_shows_heading(
     page: Page, url_for, path: str, expected_heading: re.Pattern[str]
 ) -> None:
-    resp = await page.goto(url_for(path))
+    resp = await page.goto(url_for(path), wait_until="commit")
     assert resp is not None, f"no response object for {path}"
     assert resp.status == 200, f"{path} returned HTTP {resp.status}"
 
@@ -68,7 +68,7 @@ async def test_press_about_returns_200(page: Page, url_for) -> None:
     Accept either rendered HTML (200 with body text) or the raw Markdown
     served as text/plain — depends on the static host config.
     """
-    resp = await page.goto(url_for("/press/about.md"))
+    resp = await page.goto(url_for("/press/about.md"), wait_until="commit")
     assert resp is not None
     assert resp.status == 200, f"/press/about.md returned HTTP {resp.status}"
     body_text = await page.locator("body").text_content()

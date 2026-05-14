@@ -214,7 +214,7 @@ class DisasterActiveProgramsResponse(BaseModel):
     as_of: str
     results: list[DisasterProgramRef]
     # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 災害特例 surface — 税理士法 §52 /
-    # 行政書士法 §1 / 中小企業診断士 fence. serialization_alias mirrors
+    # 行政書士法 §1の2 / 中小企業診断士 fence. serialization_alias mirrors
     # api/eligibility_check.py so FastAPI emits "_disclaimer".
     disclaimer: str = Field(
         default_factory=lambda: _DISCLAIMER_DISASTER,
@@ -268,7 +268,7 @@ class DisasterMatchResponse(BaseModel):
     total: int
     buckets: list[DisasterMatchBucket]
     # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 災害特例 surface — 税理士法 §52 /
-    # 行政書士法 §1 / 中小企業診断士 fence.
+    # 行政書士法 §1の2 / 中小企業診断士 fence.
     disclaimer: str = Field(
         default_factory=lambda: _DISCLAIMER_DISASTER,
         alias="_disclaimer",
@@ -298,7 +298,7 @@ class DisasterCatalogResponse(BaseModel):
     total_events: int
     events: list[DisasterEvent]
     # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 災害特例 surface — 税理士法 §52 /
-    # 行政書士法 §1 / 中小企業診断士 fence.
+    # 行政書士法 §1の2 / 中小企業診断士 fence.
     disclaimer: str = Field(
         default_factory=lambda: _DISCLAIMER_DISASTER,
         alias="_disclaimer",
@@ -308,7 +308,7 @@ class DisasterCatalogResponse(BaseModel):
 
 # ---------------------------------------------------------------------------
 # R8_BUGHUNT_DISCLAIMER_R2 (2026-05-07): 業法 fence — 災害特例 surface 全 endpoint で
-# 補助金・融資・税特例 を列挙するため、税理士法 §52 (税務代理) ・行政書士法 §1 (申請代理) ・
+# 補助金・融資・税特例 を列挙するため、税理士法 §52 (税務代理) ・行政書士法 §1の2 (申請代理) ・
 # 中小企業診断士の経営助言の代替ではないことを明示する。/v1/disaster/active_programs +
 # /v1/disaster/match + /v1/disaster/catalog の 3 endpoint で missing 検出 → fix。
 # ---------------------------------------------------------------------------
@@ -316,7 +316,7 @@ _DISCLAIMER_DISASTER = (
     "本 disaster surface は 災害特例 として programs corpus (jpintel.db) の "
     "primary_name keyword fence で抽出した 補助金 / 融資 / 税特例 / "
     "セーフティネット保証 の機械的列挙であり、税理士法 §52 (税務代理) ・"
-    "行政書士法 §1 (申請代理) ・中小企業診断士の経営助言の代替ではない。"
+    "行政書士法 §1の2 (申請代理) ・中小企業診断士の経営助言の代替ではない。"
     "個別案件の適用可否は各 source_url の一次情報 (中小企業庁・国税庁・"
     "都道府県・日本政策金融公庫 等) を必ずご確認ください。"
 )

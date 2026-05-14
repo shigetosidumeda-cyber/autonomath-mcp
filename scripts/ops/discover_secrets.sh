@@ -88,6 +88,7 @@ if fly auth whoami >/dev/null 2>&1; then
         "AUTONOMATH_DB_URL"
         "INVOICE_FOOTER_JA"
         "INVOICE_REGISTRATION_NUMBER"
+        "JPCITE_EDGE_AUTH_SECRET"
         "JPCITE_SESSION_SECRET"
         "JPINTEL_CORS_ORIGINS"
         "JPINTEL_ENV"
@@ -135,8 +136,15 @@ if fly auth whoami >/dev/null 2>&1; then
         miss=$((miss+1))
     fi
 
+    appi_disabled=false
+    if grep -Eq '^[[:space:]]*AUTONOMATH_APPI_ENABLED[[:space:]]*=[[:space:]]*"(0|false|False)"' fly.toml 2>/dev/null; then
+        appi_disabled=true
+    fi
     if echo "$fly_secrets" | grep -qx "CLOUDFLARE_TURNSTILE_SECRET"; then
         printf "${G}✓${N} %-40s %s\n" "CLOUDFLARE_TURNSTILE_SECRET" "Fly Deployed (APPI boot gate)"
+        ok=$((ok+1))
+    elif $appi_disabled; then
+        printf "${G}✓${N} %-40s %s\n" "CLOUDFLARE_TURNSTILE_SECRET" "Fly not required (AUTONOMATH_APPI_ENABLED=0)"
         ok=$((ok+1))
     else
         printf "${Y}-${N} %-40s %s ${Y}(conditional: required unless APPI disabled)${N}\n" "CLOUDFLARE_TURNSTILE_SECRET" "Fly missing"

@@ -8,11 +8,11 @@
 
 | Surface | Endpoint | Auth | Cap |
 |---------|----------|------|-----|
-| REST API | `https://api.jpcite.com/v1/*` | Anonymous (3 req/day per IP, JST 翌日 00:00 reset) **or** `Authorization: Bearer jc_…` | Anon: 3 req/day. Auth: ¥3/req. |
+| REST API | `https://api.jpcite.com/v1/*` | Anonymous (3 req/day per IP, JST 翌日 00:00 reset) **or** `X-API-Key: jc_…` | Anon: 3 req/day. Auth: 税別 ¥3/billable unit (税込 ¥3.30). |
 | MCP (stdio) | `pip install autonomath-mcp && autonomath-mcp` | API key via env (`JPCITE_API_KEY` / legacy `AUTONOMATH_API_KEY`) | Same as REST |
-| MCP (Streamable HTTP) | `POST https://api.jpcite.com/mcp` | Bearer header | Same as REST |
+| MCP (Streamable HTTP) | `POST https://api.jpcite.com/mcp` | `X-API-Key` header | Same as REST |
 | Static markdown | `https://jpcite.com/{path}.md` | None | No rate limit |
-| OpenAPI 3.1 | `https://jpcite.com/openapi.json` | None | n/a (219 paths) |
+| OpenAPI 3.1 | `https://api.jpcite.com/v1/openapi.json` (static mirror: `https://jpcite.com/openapi/v1.json`) | None | n/a (306 paths) |
 | Agent capability JSON | `https://jpcite.com/agent.json` | None | n/a |
 
 ## Sample 1 — Anthropic Claude (Tool use, REST)
@@ -48,7 +48,7 @@ def call_jpcite(name: str, args: dict) -> dict:
         r = requests.get(
             "https://api.jpcite.com/v1/programs/search",
             params={"q": args["q"], "limit": args.get("limit", 5)},
-            headers={"Authorization": f"Bearer {os.environ['JPCITE_API_KEY']}"},
+            headers={"X-API-Key": os.environ["JPCITE_API_KEY"]},
             timeout=10,
         )
         r.raise_for_status()
@@ -142,7 +142,7 @@ def call_jpcite(args: dict) -> str:
     r = requests.get(
         "https://api.jpcite.com/v1/programs/search",
         params={"q": args["q"], "limit": args.get("limit", 5)},
-        headers={"Authorization": f"Bearer {os.environ['JPCITE_API_KEY']}"},
+        headers={"X-API-Key": os.environ["JPCITE_API_KEY"]},
         timeout=10,
     )
     r.raise_for_status()
@@ -179,9 +179,9 @@ Builder → Configure → Actions → Import from URL:
 https://jpcite.com/openapi.agent.gpt30.json
 ```
 
-This is the slim 30-tool subset purpose-built for GPT Actions (the full 219-path spec exceeds the GPT Actions size limit).
+This is the slim 30-tool subset purpose-built for GPT Actions (the full 302-path spec exceeds the GPT Actions size limit).
 
-Authentication = "API Key" (Bearer). Privacy policy = `https://jpcite.com/legal/privacy`.
+Authentication = "API Key" → "Custom" → Header name `X-API-Key`. Privacy policy = `https://jpcite.com/privacy.html`.
 
 ## Sample 5 — Cursor IDE (.mcp.json)
 
@@ -201,7 +201,7 @@ Authentication = "API Key" (Bearer). Privacy policy = `https://jpcite.com/legal/
 }
 ```
 
-Cursor surfaces the 139 jpcite tools alongside its built-in toolset.
+Cursor surfaces the 151 jpcite tools alongside its built-in toolset.
 
 ## Sample 6 — Continue.dev (config.json)
 
@@ -229,7 +229,7 @@ Same shape as Cursor. Place at the repo root; Claude Code picks it up on session
 curl -s "https://api.jpcite.com/v1/programs/search?q=DX&limit=3" | jq '.items[].title'
 
 # Authenticated
-curl -s -H "Authorization: Bearer $JPCITE_API_KEY" \
+curl -s -H "X-API-Key: $JPCITE_API_KEY" \
      "https://api.jpcite.com/v1/programs/search?q=DX&limit=3" \
      | jq '.items[].title'
 ```
@@ -245,7 +245,7 @@ https://jpcite.com/laws/{slug}               → /laws/{slug}.md
 https://jpcite.com/enforcement/{id}          → /enforcement/{id}.md
 ```
 
-Frontmatter includes `canonical`, `lang`, `est_tokens`, `fetched_at`, `source_url`, `license`. Prefer the `.md` over the `.html` if you're building a RAG index — it skips the HTML parser entirely.
+Frontmatter includes `canonical`, `lang`, `est_tokens`, `fetched_at`, `source_url`, `license`. For downstream indexing of public static pages, prefer the `.md` over the `.html` because it skips the HTML parser. For AI answers over jpcite corpora, call the evidence/output endpoints first so the model receives compact source packets instead of long raw RAG context.
 
 ## Compliance checklist for agents that resell jpcite output
 
@@ -256,7 +256,8 @@ Frontmatter includes `canonical`, `lang`, `est_tokens`, `fetched_at`, `source_ur
 
 ## See also
 
-- `https://jpcite.com/openapi.json` — full 219-path OpenAPI 3.1
+- `https://api.jpcite.com/v1/openapi.json` — full 306-path OpenAPI 3.1
+- `https://jpcite.com/openapi/v1.json` — static mirror for crawlers/importers
 - `https://jpcite.com/openapi.agent.gpt30.json` — slim 30-tool GPT-Actions subset
 - `https://jpcite.com/agent.json` — agent capability summary
 - `https://jpcite.com/.well-known/mcp.json` — MCP capability descriptor

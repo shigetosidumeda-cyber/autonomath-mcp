@@ -77,7 +77,7 @@
       "name": "API キーはどこで発行できますか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Pricing ページの API キー発行ボタンから Stripe Checkout に進むと有料 API キー (¥3.30/unit 完全従量) が即時発行されます。 メールでトライアル (14 日 / 200 req カード不要) は trial.html から、 登録不要の匿名 3 リクエスト/日/IP は curl / Playground から利用できます。"
+        "text": "Pricing ページの API キー発行ボタンから Stripe Checkout に進むと有料 API キー (¥3.30/unit 完全従量) が即時発行されます。 メールでトライアル (14 日 / 200 req、カード不要、自動有料移行なし) は trial.html から、 登録不要の匿名 3 リクエスト/日/IP は curl / Playground から利用できます。"
       }
     },
     {
@@ -85,7 +85,7 @@
       "name": "解約方法は?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Stripe Customer Portal からサブスクリプションをキャンセルすると以後の課金は停止し、 匿名 3 リクエスト/日/IP の利用に戻ります。 解約違約金・最低利用期間はありません。 Customer Portal へは ダッシュボード から遷移できます。"
+        "text": "Stripe Customer Portal からサブスクリプションをキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ従量請求されます。次月以降の課金は停止します。API キーの無効化だけでは有償利用の解約にはなりません。解約違約金・最低利用期間はありません。"
       }
     },
     {
@@ -133,7 +133,7 @@
       "name": "税理士法 §52 / 弁護士法 §72 該当の業務はおこないますか?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "おこないません。 jpcite は日本の制度情報の検索インデックス API です。 税務助言・法律相談・申請代行・社労士業務は対象外で、 出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。"
+        "text": "おこないません。jpcite は日本の公的根拠を Evidence Packet / output artifact として返す evidence/output API です。税務助言・法律相談・申請代行・監査・登記・労務・知財・信用判断その他の専門判断は対象外です。"
       }
     }
   ]
@@ -277,11 +277,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -311,10 +314,12 @@
  <a class="brand" href="/" aria-label="jpcite ホーム">
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
- <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="about.html">運営について</a>
- <a href="products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
+	 <nav class="site-nav" aria-label="主要ナビゲーション">
+	 <a href="about.html">運営について</a>
+	 <a href="products.html">プロダクト</a>
+	 <a href="/connect/">接続</a>
+	 <a href="/prompts/">Prompts</a>
+	 <a href="/docs/">ドキュメント</a>
  <a href="pricing.html">料金</a>
  <a href="audiences/">利用者層</a>
  <details class="nav-trust">
@@ -364,7 +369,7 @@
  <div class="card">
  <h3>ドキュメント</h3>
  <p><a href="/docs/getting-started/">5 分クイックスタート</a></p>
-	 <p><a href="/docs/prompt_cookbook/">Cookbook (12 レシピ)</a></p>
+	 <p><a href="/prompts/">Prompts / Cookbook (12 レシピ)</a></p>
  <p><a href="/docs/api-reference/">API リファレンス</a></p>
  </div>
  </div>
@@ -376,7 +381,7 @@
  <p>
  3 経路あります:
  1) <a href="pricing.html#api-paid">Pricing で有料 API キーを発行</a> (Stripe Checkout、 ¥3.30/unit 完全従量、 即時発行) /
- 2) <a href="trial.html">メールでトライアル</a> (14 日 / 200 req、 マジックリンク認証、 カード不要) /
+ 2) <a href="trial.html">メールでトライアル</a> (14 日 / 200 req、 マジックリンク認証、 カード不要、 自動有料移行なし) /
  3) 登録不要の匿名 3 リクエスト/日/IP (curl / Playground でその場で利用、 JST 翌日 00:00 リセット)。
  </p>
  </details>
@@ -384,9 +389,10 @@
  <details>
  <summary>解約方法は?</summary>
  <p>
- <a href="dashboard.html">ダッシュボード</a> から Stripe Customer Portal を開き、 サブスクリプションをキャンセルしてください。
- キャンセル後も当月末までは API アクセス可能で、 当月利用分のみ ¥3/billable unit 従量請求が発生します。
- 次月以降の課金は停止します。
+	 <a href="dashboard.html">ダッシュボード</a> から Stripe Customer Portal を開き、 サブスクリプションをキャンセルしてください。
+	 キャンセル後も当月末までは API アクセス可能で、 当月利用分のみ ¥3/billable unit 従量請求が発生します。
+	 API キーの無効化・削除・ローテーションは当該キーの利用停止であり、Stripe サブスクリプションまたは有償利用の解約にはなりません。
+	 次月以降の課金は停止します。
  解約違約金・最低利用期間はありません。
  </p>
  </details>
@@ -427,10 +433,10 @@
  <summary>Claude Desktop / Cursor / Cline / ChatGPT Custom GPT への設定方法は?</summary>
  <p>
  統合ガイドを各クライアント向けに用意しています:
- <a href="/integrations/claude-desktop.html">Claude Desktop</a> ·
- <a href="/integrations/cursor.html">Cursor</a> ·
+ <a href="/connect/claude-code">Claude Desktop</a> ·
+ <a href="/connect/cursor">Cursor</a> ·
  <a href="/integrations/cline.html">Cline</a> ·
- <a href="/integrations/openai-custom-gpt.html">ChatGPT Custom GPT</a>。
+ <a href="/connect/chatgpt">ChatGPT Custom GPT</a>。
  支払い完了後の <a href="success.html">success ページ</a> でも同じ設定ブロックをコピー&貼り付けできます。
  </p>
  </details>
@@ -447,7 +453,7 @@
  <details>
  <summary>税理士法 §52 / 弁護士法 §72 該当の業務はおこないますか?</summary>
  <p>
- おこないません。 jpcite は日本の制度情報の検索インデックス API です。
+ おこないません。 jpcite は日本の公的根拠を Evidence Packet / output artifact として返す evidence/output API です。
  税務助言・法律相談・申請代行・社労士業務は対象外で、 出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。
  </p>
  </details>
@@ -455,7 +461,7 @@
  <details>
  <summary>外部 LLM の請求額削減は保証されますか?</summary>
  <p>
- 保証しません。 jpcite は Evidence Packet (出典 URL + 取得時刻 + content_hash + known_gaps) を返す検索 API で、 入力文脈量の参考削減見込みは <code>compression.input_context_reduction_rate</code> として返しますが、 これは入力文脈量だけの参考推定で、 出力 tokens / reasoning tokens / cache / provider tool / search 料金 / 為替を含みません。
+ 保証しません。 jpcite は Evidence Packet (出典 URL + 取得時刻 + content_hash + known_gaps) を返す evidence/output API で、 入力文脈量の参考削減見込みは <code>compression.input_context_reduction_rate</code> として返しますが、 これは入力文脈量だけの参考推定で、 出力 tokens / reasoning tokens / cache / provider tool / search 料金 / 為替を含みません。
  </p>
  </details>
 
@@ -463,8 +469,8 @@
  <summary>データ更新頻度は?</summary>
  <p>
  主要公開行に <code>source_url</code> + <code>source_fetched_at</code> + <code>content_hash</code> を付与しています。
- 優先度の高い出典の再取得中央値は約 7 日で、 鮮度の per-source 内訳は <a href="data-freshness.html">データ鮮度</a> ページで公開しています。
- 法令改正の差分は日次走査、 出典 URL の死活監視は毎晩自動実行しています。
+ 出典の取得日は行ごとに返却し、鮮度の per-source 内訳は <a href="data-freshness.html">データ鮮度</a> ページで公開しています。
+ 古い出典や監視対象の内訳は同ページで確認できます。
  </p>
  </details>
 
@@ -488,7 +494,7 @@
 
  <div class="disclaimer-52" role="note">
  <strong>税理士法 §52 / 弁護士法 §72 該当の業務はおこないません。</strong>
- jpcite は日本の制度情報の検索インデックス API です。 税務助言・法律相談・申請代行・社労士業務は対象外で、 出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。 詳細は <a href="tos.html">利用規約</a> をご確認ください。
+ jpcite は日本の公的根拠を Evidence Packet / output artifact として返す evidence/output API です。 税務助言・法律相談・申請代行・社労士業務は対象外で、 出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。 詳細は <a href="tos.html">利用規約</a> をご確認ください。
  </div>
 
  </div>

@@ -8,7 +8,15 @@
   <language>en</language>
   <copyright>(C) 2026 Bookyou Inc.</copyright>
   <generator>jpcite site (Bookyou株式会社)</generator>
-  <lastBuildDate>Sun, 26 Apr 2026 16:00:00 +0900</lastBuildDate>
+  <lastBuildDate>Thu, 14 May 2026 06:20:00 +0900</lastBuildDate>
+
+  <item>
+    <title>v0.4.0 released — 302 REST paths, 151 MCP tools, and the 8-output catalog</title>
+    <link>https://jpcite.com/changelog/</link>
+    <description>Released on 2026-05-12. jpcite now surfaces 302 REST paths and 151 MCP tools through eight user-facing outputs, including Evidence Packets, company folders, public-info DD, amendment alerts, and agent handoff. RSS, LLM discovery, and status surfaces were also refreshed.</description>
+    <guid isPermaLink="false">jpcite:release:v0.4.0:2026-05-12</guid>
+    <pubDate>Tue, 12 May 2026 21:21:00 +0900</pubDate>
+  </item>
 
   <item>
     <title>v0.3.0 released — extended dataset + static dataset tools complete (8.29 GB unified DB)</title>

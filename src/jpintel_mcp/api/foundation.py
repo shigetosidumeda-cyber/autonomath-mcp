@@ -17,7 +17,7 @@ CLAUDE.md "Aggregators ... are banned" + memory `feedback_no_fake_data`.
 Sensitive surface
 -----------------
 助成 program eligibility 表示 は 民間財団 規程 + 一次資料 の機械的整理に
-過ぎず、助成金 受給 助言 (税理士法 §2, 助成金 申請代理 = 行政書士法 §1) には
+過ぎず、助成金 受給 助言 (税理士法 §2, 助成金 申請代理 = 行政書士法 §1の2) には
 該当しない。各 row は ``source_url`` で原典確認必須。``_disclaimer`` を 2xx
 レスポンスに 必ず stamp する。
 
@@ -57,7 +57,7 @@ router = APIRouter(prefix="/v1/foundation", tags=["foundation", "grants"])
 _FOUNDATION_DISCLAIMER = (
     "本レスポンスは jpcite が 公益財団協会 / 各 公益財団 公式 site / "
     "内閣府 NPO 公開資料 / 業界団体 公式 site を機械的に整理した結果を "
-    "返却するものであり、税理士法 §2 (税務代理) ・行政書士法 §1 (助成金 "
+    "返却するものであり、税理士法 §2 (税務代理) ・行政書士法 §1の2 (助成金 "
     "申請代理) ・弁護士法 §72 (法令解釈) のいずれの士業役務 にも該当 "
     "しません。掲載の grant_amount_range / application_period_json は "
     "公表時点の事実であり、現在の状態が変更されている可能性があります。"
@@ -179,7 +179,7 @@ def _bounded_summary(
         "rows with optional ``foundation_type`` / ``grant_theme`` filters. "
         "NO LLM call. Results are served from precomputed indexed records.\n\n"
         "**Pricing**: ¥3 / call (``_billing_unit: 1``).\n\n"
-        "**Sensitive**: 税理士法 §2 / 行政書士法 §1 / 弁護士法 §72 fence — "
+        "**Sensitive**: 税理士法 §2 / 行政書士法 §1の2 / 弁護士法 §72 fence — "
         "every 2xx carries ``_disclaimer`` (envelope key). LLM agents MUST "
         "relay the disclaimer verbatim to end users."
     ),

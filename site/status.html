@@ -11,6 +11,8 @@
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/status">
 <link rel="alternate" hreflang="en" href="https://jpcite.com/en/status">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/status">
+<link rel="alternate" type="application/rss+xml" title="jpcite status RSS" href="/status/rss.xml">
+<link rel="alternate" type="application/atom+xml" title="jpcite status Atom" href="/status/feed.atom">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -261,11 +263,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products/company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products/monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products/bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products/public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products/pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -305,8 +310,8 @@
 
  <h1>稼働状況 / Status</h1>
  <p class="lead">
- API (api.jpcite.com) とランディング (jpcite.com) の現在のステータス。<br>
- Current status of the API and landing site.
+ API、ランディング/静的フォールバック、MCP、決済、データ鮮度、ダッシュボードの現在のステータス。詳細な監視面は <a href="/status/">/status/</a> を確認してください。<br>
+ Current status of the API, landing/static fallback, MCP, billing, data freshness, and dashboards. See the detailed monitoring surface at <a href="/status/">/status/</a>.
  </p>
 
  <!--
@@ -322,8 +327,8 @@
  <span class="dot" aria-hidden="true">🟢</span>
  <div>
  <h2>運用中 / Operational</h2>
- <p>最新状況を確認中。API、ランディング、決済の公開ヘルスチェックを継続監視しています。<br>
- Current status is being checked — API, landing, and billing health checks are monitored continuously.</p>
+ <p>通常運用時は API、ランディング/静的フォールバック、MCP、決済、データ鮮度、ダッシュボードを継続監視しています。<br>
+ During normal operation, API, landing/static fallback, MCP, billing, data freshness, and dashboards are monitored continuously.</p>
  </div>
  </section>
 
@@ -339,23 +344,24 @@
  <section class="state down active" aria-label="down">
  <span class="dot" aria-hidden="true">🔴</span>
  <div>
- <h2>停止中 / Down (代替手段モード)</h2>
- <p>API は現在停止しています。本ページは静的フォールバックから配信されています。<br>
- The API is currently down. This page is served from the static fallback mirror.</p>
+ <h2>総合停止 / Overall Down (データ鮮度 stale)</h2>
+ <p>API・決済・ダッシュボードは応答中です。MCP は限定運用、データ鮮度は stale のため総合状態を Down としています。<br>
+ API, billing, and dashboard are responding. MCP is degraded and data freshness is stale, so the overall status is Down.</p>
  </div>
  </section>
 
  <p class="updated">
  最終更新 / Last updated:
- <code>2026-05-12T10:25:15+09:00 (status.json)</code>
+ <code>2026-05-14T13:42:03+09:00 (status.json)</code>
  </p>
 
  <p class="fallback-note">
- 本ページが表示されている場合、ランディングは一時的な代替ページとして提供されている可能性があります。
- API (<code>api.jpcite.com</code>) の復旧後、通常表示へ戻します。
+ 機械可読スナップショットでは API は応答中で、MCP は external_dependency_unavailable、データ鮮度は data_stale で限定運用です。
+ 決済、ランディング/静的フォールバック、各ダッシュボードの監視状況を含む詳細は <a href="/status/status.json"><code>/status/status.json</code></a> と <a href="/status/">/status/</a> を確認してください。
  <br>
- If you are seeing this page, the landing may be served from a temporary
- fallback. Normal serving will resume once the API is healthy.
+ The machine-readable snapshot shows the API responding, with MCP marked
+ external_dependency_unavailable and data freshness marked data_stale.
+ See <a href="/status/status.json"><code>/status/status.json</code></a> and <a href="/status/">/status/</a> for billing, landing/static fallback, and dashboard monitoring details.
  </p>
 
  <p class="fallback-note">
@@ -366,6 +372,8 @@
 
  <p class="links">
  <a href="/">← ホームへ戻る / Back to home</a>
+ <a href="/status/rss.xml">Status RSS</a>
+ <a href="/status/feed.atom">Status Atom</a>
  </p>
 
 </main>
@@ -378,7 +386,7 @@
  </div>
  <nav class="footer-nav" aria-label="フッター">
  <a href="about.html">運営について</a>
- <a href="products.html">プロダクト</a>
+ <a href="products.html">成果物</a>
  <a href="pricing.html">料金</a>
  <a href="/docs/">ドキュメント</a>
  <a href="trust.html">信頼</a>

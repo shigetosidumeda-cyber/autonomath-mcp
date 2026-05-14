@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompts — jpcite を AI agent に使わせる指示文</title>
+<meta name="description" content="jpcite を Claude、ChatGPT、Cursor、Codex から使うための prompt hub。Evidence Packet handoff、8 業法 fence、公開情報 DD、顧問先レビュー用の指示文を整理。">
+<meta property="og:title" content="Prompts — jpcite を AI agent に使わせる指示文">
+<meta property="og:description" content="Evidence Packet handoff、8 業法 fence、公開情報 DD、顧問先レビュー用 prompt を Claude、ChatGPT、Cursor、Codex 向けに整理。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/prompts/">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Prompts — jpcite">
+<meta name="twitter:description" content="jpcite を evidence layer として使わせるための prompt hub。">
+<meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
+<link rel="canonical" href="https://jpcite.com/prompts/">
+<link rel="stylesheet" href="/styles.css?v=20260511a">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "jpcite Prompts",
+  "description": "jpcite を Claude、ChatGPT、Cursor、Codex から使うための prompt hub。Evidence Packet handoff、8 業法 fence、公開情報 DD、顧問先レビュー用の指示文を整理。",
+  "url": "https://jpcite.com/prompts/",
+  "inLanguage": "ja",
+  "publisher": {"@type": "Organization", "name": "Bookyou株式会社", "url": "https://jpcite.com"}
+}
+</script>
+  <script type="application/ld+json" data-jpcite-jsonld="common">{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://jpcite.com/#org",
+      "name": "Bookyou株式会社",
+      "legalName": "Bookyou株式会社",
+      "url": "https://jpcite.com",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "小日向2-22-1",
+        "addressLocality": "文京区",
+        "addressRegion": "東京都",
+        "postalCode": "112-0006",
+        "addressCountry": "JP"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "info@bookyou.net",
+        "contactType": "customer support",
+        "availableLanguage": ["ja", "en"]
+      },
+      "identifier": [
+        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
+        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://jpcite.com/#site",
+      "name": "jpcite",
+      "url": "https://jpcite.com",
+      "inLanguage": "ja",
+      "publisher": {"@id": "https://jpcite.com/#org"},
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://jpcite.com/search?q={query}",
+        "query-input": "required name=query"
+      }
+    },
+    {
+      "@type": "Service",
+      "@id": "https://jpcite.com/#service",
+      "serviceType": "Japanese public-program evidence API",
+      "provider": {"@id": "https://jpcite.com/#org"},
+      "areaServed": {"@type": "Country", "name": "Japan"},
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "jpcite product line",
+        "itemListElement": [
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
+        ]
+      },
+      "offers": {"@id": "https://jpcite.com/#price"}
+    },
+    {
+      "@type": "UnitPriceSpecification",
+      "@id": "https://jpcite.com/#price",
+      "price": "3",
+      "priceCurrency": "JPY",
+      "valueAddedTaxIncluded": false,
+      "unitText": "request"
+    }
+  ]
+}</script>
+</head>
+<body>
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="jpcite home"><span class="brand-mark">jp</span><span class="brand-name">jpcite</span></a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+      <a href="/products.html">成果物</a>
+      <a href="/playground.html?flow=evidence3">Try</a>
+      <a href="/connect/">接続</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/dashboard.html">Dashboard</a>
+      <a href="/support.html">Support</a>
+    </nav>
+  </div>
+</header>
+<main id="main" class="pricing-page">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="パンくずリスト" style="margin:0 0 16px;font-size:14px;color:var(--text-muted);">
+      <a href="/">ホーム</a> <span aria-hidden="true">›</span>
+      <span aria-current="page">Prompts</span>
+    </nav>
+    <h1>Prompts — jpcite を AI agent に使わせる指示文</h1>
+    <p class="lead">Claude / ChatGPT / Cursor / Codex が jpcite を「検索の代わり」ではなく、出典 URL・取得時刻・known gaps・8 業法 fence を返す evidence layer として使うための prompt hub です。</p>
+
+    <div class="pricing-grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+      <article class="price-card">
+        <h2>Prompt cookbook</h2>
+        <p class="tier-desc">税理士 daily、法人 360、pref heatmap、採択事例、行政処分 watch などのレシピ。</p>
+        <a class="btn btn-secondary" href="/docs/prompt_cookbook/">Cookbook を開く</a>
+      </article>
+      <article class="price-card">
+        <h2>8 業法 fence</h2>
+        <p class="tier-desc">税理士法・弁護士法・司法書士法などの独占業務に踏み込ませない system instruction。</p>
+        <a class="btn btn-secondary" href="/legal-fence.html">Legal fence</a>
+      </article>
+      <article class="price-card">
+        <h2>Evidence Packet handoff</h2>
+        <p class="tier-desc">source_url、source_fetched_at、known_gaps を回答・稟議・専門家レビューへ残す指示文。</p>
+        <a class="btn btn-secondary" href="/products#evidence-packet">Evidence Packet</a>
+      </article>
+      <article class="price-card">
+        <h2>Public-info DD prompt</h2>
+        <p class="tier-desc">会社フォルダ、行政処分、採択履歴、適格事業者確認を DD メモにする agent prompt。</p>
+        <a class="btn btn-secondary" href="/products#public-dd">公開情報 DD</a>
+      </article>
+      <article class="price-card">
+        <h2>Runtime prompt API</h2>
+        <p class="tier-desc">MCP / REST から prompt catalog を取得する機械向け surface。</p>
+        <a class="btn btn-secondary" href="https://api.jpcite.com/v1/meta/prompts">/v1/meta/prompts</a>
+      </article>
+      <article class="price-card">
+        <h2>接続ガイド</h2>
+        <p class="tier-desc">Prompt を貼る前に Claude / Cursor / ChatGPT / Codex へ jpcite を接続します。</p>
+        <a class="btn btn-secondary" href="/connect/">AI agent 接続</a>
+      </article>
+    </div>
+    <section aria-labelledby="prompt-next-title" style="margin-top:32px;">
+      <h2 id="prompt-next-title" class="section-title" style="font-size:22px;">次に開く画面</h2>
+      <p style="margin:0;display:flex;flex-wrap:wrap;gap:8px;">
+        <a class="btn btn-primary" href="/playground.html?flow=evidence3">Playground で試す</a>
+        <a class="btn btn-secondary" href="/connect/">AI agent に接続</a>
+        <a class="btn btn-secondary" href="/products.html">成果物を見る</a>
+        <a class="btn btn-secondary" href="/pricing.html#api-paid">API key を発行</a>
+      </p>
+    </section>
+  </div>
+</main>
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <p class="footer-brand">jpcite</p>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/products.html">成果物</a>
+      <a href="/connect/">接続</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/privacy.html">プライバシー</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

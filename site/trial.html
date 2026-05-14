@@ -4,7 +4,7 @@
 <!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <title>jpcite — トライアル鍵を発行しました</title>
-<meta name="description" content="メール認証だけで 14 日 / 200 リクエストのトライアル API キーが発行されます。クレジットカード登録は不要です。">
+<meta name="description" content="メール認証だけで 14 日 / 200 リクエストのトライアル API キーが発行されます。クレジットカード登録は不要で、有料課金には自動移行しません。">
 <meta name="robots" content="noindex,nofollow">
 <meta property="og:title" content="jpcite — トライアル鍵を発行しました">
 <meta property="og:url" content="https://jpcite.com/trial.html">
@@ -149,11 +149,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -266,8 +269,8 @@
  </div>
  <p style="font-size:12px;color:var(--text-muted);margin:8px 0 0;line-height:1.6;">
  事前に <code>pip install autonomath-mcp</code> または <code>uv tool install autonomath-mcp</code> (互換のため旧配布名を維持、ブランドは jpcite)。
- 設定ファイルの場所は <a href="/integrations/claude-desktop.html">Claude Desktop</a> /
- <a href="/integrations/cursor.html">Cursor</a> /
+ 設定ファイルの場所は <a href="/connect/claude-code">Claude Desktop</a> /
+ <a href="/connect/cursor">Cursor</a> /
  <a href="/integrations/cline.html">Cline</a> 参照。
  </p>
  </div>
@@ -276,14 +279,14 @@
  <h2>次のステップ</h2>
  <ol>
  <li><a href="/docs/getting-started/">Getting Started</a> — Python / Node の最小例、認証、rate limit</li>
- <li><a href="/integrations/claude-desktop.html">Claude Desktop (MCP) 統合</a> — stdio で 151 tools をエージェントから直呼び</li>
+ <li><a href="/connect/claude-code">Claude Desktop (MCP) 統合</a> — stdio で 151 tools をエージェントから直呼び</li>
  <li>残り 3 日で「終了予告メール」を送ります。本番利用 (¥3/課金単位 完全従量) への切替は <a href="pricing.html">Pricing</a> から</li>
  </ol>
  </div>
 
  <div class="disclaimer-52" role="note">
  <strong>税理士法 §52 / 弁護士法 §72 該当の業務はおこないません。</strong>
- jpcite は日本の制度情報の検索インデックス API です。税務助言・法律相談・申請代行・社会保険労務士業務は対象外で、出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は <a href="tos.html">利用規約</a> をご確認ください。
+	 jpcite は日本の公的根拠を Evidence Packet / output artifact として返す evidence/output API です。税務助言・法律相談・申請代行・社会保険労務士業務は対象外で、出力結果は士業 (税理士・弁護士・社労士・行政書士) による確認の代替にはなりません。詳細は <a href="tos.html">利用規約</a> をご確認ください。
  </div>
  </div>
 
@@ -327,7 +330,7 @@
  <div id="state-signup" tabindex="-1" hidden>
  <div class="trial-head">
  <h1>メールでトライアル鍵を発行</h1>
- <p class="sub">メールアドレスのみで 14 日 / 200 リクエストのトライアル API キーが届きます。クレジットカード登録は不要です。</p>
+ <p class="sub">メールアドレスのみで 14 日 / 200 リクエストのトライアル API キーが届きます。クレジットカード登録は不要で、有料課金には自動移行しません。</p>
  </div>
  <div class="state-card">
  <p class="label">トライアル登録</p>
@@ -349,7 +352,7 @@
  </div>
  <div class="disclaimer-52" role="note">
  <strong>税理士法 §52 / 弁護士法 §72 該当の業務はおこないません。</strong>
- jpcite は日本の制度情報の検索インデックス API です。 詳細は <a href="tos.html">利用規約</a>。
+	 jpcite は日本の公的根拠を Evidence Packet / output artifact として返す evidence/output API です。 詳細は <a href="tos.html">利用規約</a>。
  </div>
  </div>
 

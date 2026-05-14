@@ -52,7 +52,7 @@
 
 - **web search**: 建設業法違反の行政処分情報は単独データベースに無い (国交省 + 自治体に分散)。手作業で 1 件 30-60 分かかり、案件単価を圧迫
 - **anonymous 3 req/日**: 1 案件 18 req のため、anonymous では 1 件で 6 日かかる計算。実用不能
-- **汎用 RAG**: enforcement_cases (1,185 行) や invoice_registrants (13,801 行 delta + 月次 4M bulk) は curated DB が無いと網羅不能。aggregator 経由は信頼性が業務水準に届かない
+- **一般 AI / 長文資料投入**: enforcement_cases (1,185 行) や invoice_registrants (13,801 行 delta + 月次 4M bulk) は curated DB が無いと網羅不能。aggregator 経由は信頼性が業務水準に届かない
 
 ## jpcite を使った場合の構造的優位
 
@@ -73,10 +73,10 @@
 - `createCompanyFolderBrief` — 法人サマリ + 引照付きフォルダ assembly
 - `queryEvidencePacket` — 法令本文 + 排他ルール照合
 - `prerequisite_chain` — 事前要件チェイン (Wave 21 composition)
-- `bundle_application_kit` — 必要書類チェックリスト assembly (Wave 22 composition、行政書士法 §1 fence 付き)
+- `bundle_application_kit` — 必要書類チェックリスト assembly (Wave 22 composition、行政書士法 §1の2・§19 fence 付き)
 - `cross_check_jurisdiction` — 登記 / 適格事業者 / 採択地域の不一致検出 (Wave 22)
 - `previewCost` — 実行前見積もり
 
 ## まとめ
 
-建設業許可 1 案件 DD、¥59.40 (税込)。報酬比 0.02-0.06%。申請差し戻し・顧客説明・返金リスクにつながる確認漏れを減らすため、公開情報の evidence pack を低い案件単価で揃える。行政書士法 §19 fence により申請代理領域は犯さず、行政書士事務所の補助線として組み込み安全。
+建設業許可 1 案件 DD、¥59.40 (税込)。報酬比 0.02-0.06%。申請差し戻し・顧客説明・返金リスクにつながる確認漏れを減らすため、公開情報の evidence pack を低い案件単価で揃える。行政書士法 §19 fence により申請代理領域は犯さず、行政書士事務所の補助線として使う。専門判断・申請代理の代替ではなく、公開情報の確認下地としてレビューしてください。

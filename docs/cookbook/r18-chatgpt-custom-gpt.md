@@ -9,7 +9,7 @@ ChatGPT の Custom GPT (GPT-Builder) の Actions に jpcite の **agent-safe Ope
 
 ## TL;DR
 
-完全 OpenAPI (`/v1/openapi.json`) は ChatGPT Actions には広すぎる。Agent-safe subset (`/v1/openapi.agent.json`) を import すれば GPT が選択しやすい操作面に絞られる。
+完全 OpenAPI (`/v1/openapi.json`) は ChatGPT Actions には広すぎる。ChatGPT 用 30-path profile (`https://jpcite.com/openapi.agent.gpt30.json`) を import すれば GPT が選択しやすい操作面に絞られる。
 
 ## Sample (GPT-Builder)
 
@@ -17,11 +17,11 @@ ChatGPT の Custom GPT (GPT-Builder) の Actions に jpcite の **agent-safe Ope
 2. URL 欄に以下を貼る:
 
    ```
-   https://api.jpcite.com/v1/openapi.agent.json?src=cookbook_r18-chatgpt-custom-gpt
+   https://jpcite.com/openapi.agent.gpt30.json
    ```
 
-3. Authentication: **API Key** を選び、Auth Type = Custom, Header name = `X-API-Key`, Value = `jc_...` (jpcite ダッシュボードで発行)。
-4. Privacy policy URL に `https://jpcite.com/compliance/privacy_policy/?src=cookbook_r18-chatgpt-custom-gpt` を入れる (Custom GPT 公開には必須)。
+3. Authentication: **API Key** を選び、Auth Type = Custom, Header name = `X-API-Key`, Value = `jc_...` (新規発行は `https://jpcite.com/pricing.html#api-paid`)。
+4. Privacy policy URL に `https://jpcite.com/privacy.html` を入れる (Custom GPT 公開には必須)。
 5. System prompt 例:
 
    ```

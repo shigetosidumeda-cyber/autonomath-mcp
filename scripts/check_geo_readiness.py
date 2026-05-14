@@ -65,7 +65,7 @@ LLMS_REQUIRED_TOKENS = [
     "source_url",
     "source_fetched_at",
     "known_gaps",
-    "Evidence-to-Expert Handoff",
+    "Review Handoff Packet",
     "¥3.30",
     "3 回",
     "外部LLM",
@@ -142,7 +142,7 @@ INDEX_REQUIRED_TOKENS = [
     'href="/llms.en.txt"',
     'rel="service-desc"',
     "https://api.jpcite.com/v1/openapi.agent.json",
-    "Evidence-to-Expert Handoff",
+    "Review Handoff Packet",
 ]
 
 AGENT_OPENAPI_REQUIRED_PATHS = [

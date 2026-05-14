@@ -81,6 +81,7 @@ PUBLIC_ERROR_CATEGORIES = {
     "external_dependency_unavailable",
     "rate_limited",
     "maintenance",
+    "data_stale",
 }
 
 # Defaults; overridable via CLI / env.
@@ -466,6 +467,7 @@ def probe_data_freshness() -> dict[str, Any]:
         "status": worst_status,
         "latency_ms": int((time.monotonic() - t0) * 1000),
         "http": 0,
+        "error_category": "data_stale" if worst_status != STATUS_OK else None,
         "last_updated_at": last_updated_at,
         "max_age_days": max_age_days,
         "datasets": datasets,
@@ -568,7 +570,12 @@ def _public_error_category(component: dict[str, Any]) -> str | None:
     status = component.get("status", STATUS_DOWN)
     raw_error = str(component.get("error") or "").lower()
     http_status = _safe_int(component.get("http"))
+    explicit_category = component.get("error_category")
 
+    if status == STATUS_OK:
+        return None
+    if explicit_category in PUBLIC_ERROR_CATEGORIES:
+        return str(explicit_category)
     if "timeout" in raw_error or "timed out" in raw_error:
         return "timeout"
     if http_status == 429:
@@ -577,8 +584,6 @@ def _public_error_category(component: dict[str, Any]) -> str | None:
         return "external_dependency_unavailable"
     if component.get("stub") is True:
         return "external_dependency_unavailable"
-    if status == STATUS_OK and not raw_error:
-        return None
     if http_status == 0 and (raw_error or status != STATUS_OK):
         return "network"
     if 500 <= http_status < 600:
@@ -600,8 +605,9 @@ def public_component(component: dict[str, Any], *, data_freshness: bool = False)
         status = STATUS_DOWN
 
     category = _public_error_category(component)
-    if data_freshness and not component.get("error") and not component.get("stub"):
-        category = None
+    if data_freshness:
+        explicit_category = component.get("error_category")
+        category = str(explicit_category) if explicit_category in PUBLIC_ERROR_CATEGORIES else None
     if category not in PUBLIC_ERROR_CATEGORIES:
         category = None
 
@@ -779,7 +785,7 @@ def derive_ax_dashboard_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
           "components": [
             {"id": "api",             "status": "ok|degraded|down",
              "last_check": "<JST>",   "latency_ms": int,
-             "label": "API"},
+             "label": "API",          "error_category": "public|null"},
             ... 5 entries total ...
           ],
           "overall": "ok|degraded|down"

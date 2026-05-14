@@ -47,7 +47,7 @@ Search Japanese institutional data: 11,601 subsidies + 6,493 laws full-text inde
 ### Long description (500–800 characters)
 
 ```
-AutonoMath exposes Japanese institutional public data via 151 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; aggregator-only rows are excluded from public sourcing. ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1), or 労務判断 (社労士法).
+AutonoMath exposes Japanese institutional public data via 151 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; aggregator-only rows are excluded from public sourcing. ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1の2), or 労務判断 (社労士法).
 ```
 
 ### Repository URL
@@ -191,7 +191,7 @@ Paste each as a separate example:
 AutonoMath is an information-retrieval service over published Japanese primary sources (e-Gov, ministries, prefectures, 日本政策金融公庫, 国税庁, 裁判所). It does NOT provide:
 - Legal advice (弁護士法 §72)
 - Tax advice or filing representation (税理士法 §52)
-- Application representation (行政書士法 §1)
+- Application representation (行政書士法 §1の2)
 - Labour determinations (社労士法)
 
 Search results are snapshots at fetch time; rates / sunset dates / authorities are subject to change. Verify primary-source URLs and consult a licensed professional for individual cases.

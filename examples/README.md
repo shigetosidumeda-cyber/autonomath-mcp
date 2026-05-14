@@ -95,7 +95,7 @@ curl -s "$JPCITE_API_BASE/v1/laws/search?q=中小企業基本法&limit=3" \
   -H "X-API-Key: $JPCITE_API_KEY"
 
 # 該当 unified_id で本文
-curl -s "$JPCITE_API_BASE/v1/laws/LAW-956ad0e0e4" \
+curl -s "$JPCITE_API_BASE/v1/laws/{unified_id}" \
   -H "X-API-Key: $JPCITE_API_KEY"
 ```
 
@@ -108,7 +108,7 @@ MCP:
     limit: 3
 - tool: get_law
   args:
-    unified_id: LAW-956ad0e0e4
+    unified_id: "{unified_id}"
 ```
 
 **解釈**: 条文単位で取りたい場合は MCP の条文取得ツール

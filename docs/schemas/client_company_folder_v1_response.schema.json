@@ -167,7 +167,7 @@
         },
         "06_professional_review_handoff": {
           "type": "string",
-          "description": "Markdown — 7 業法 boundary を踏まえた専門家 handoff 用根拠メモ。税理士 / 弁護士 / 行政書士 / 司法書士 / 弁理士 / 社労士 / 公認会計士 への明示 routing"
+          "description": "Markdown — 8 業法 boundary を踏まえた専門家 handoff 用根拠メモ。税理士 / 弁護士 / 公認会計士 / 行政書士 / 司法書士 / 社労士 / 弁理士 / 労基 への明示 routing"
         }
       }
     },
@@ -193,7 +193,7 @@
     },
     "_disclaimer": {
       "type": "string",
-      "description": "7 業法 combined disclaimer envelope。verbatim 日本語固定文 (§5 of this spec)。"
+      "description": "8 業法 combined disclaimer envelope。verbatim 日本語固定文 (§5 of this spec)。"
     },
     "_source_receipts": {
       "type": "array",

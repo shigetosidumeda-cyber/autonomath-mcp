@@ -29,10 +29,10 @@ if TYPE_CHECKING:
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_pricing_page_loads_with_hero_and_pricing_card(page: Page, url_for) -> None:
-    await page.goto(url_for("/pricing.html"))
+    await page.goto(url_for("/pricing.html"), wait_until="commit")
 
-    # H1 — "料金"
-    await expect(page.locator("h1")).to_have_text(re.compile(r"料金"))
+    # H1 — pricing can lead with either the Japanese label or the billable-unit offer.
+    await expect(page.locator("h1")).to_have_text(re.compile(r"(料金|billable unit|¥3)"))
 
     # At least one pricing card renders (single metered card post-pivot).
     cards = page.locator("article.price-card")
@@ -42,11 +42,12 @@ async def test_pricing_page_loads_with_hero_and_pricing_card(page: Page, url_for
 @pytest.mark.asyncio
 @pytest.mark.e2e
 async def test_primary_cta_links_to_checkout(page: Page, url_for) -> None:
-    await page.goto(url_for("/pricing.html"))
-    cta = page.locator("a.btn-primary").first
+    await page.goto(url_for("/pricing.html"), wait_until="commit")
+    cta = page.locator("#checkout-btn")
     await expect(cta).to_be_visible()
-    href = await cta.get_attribute("href")
-    assert href and "checkout" in href, f"primary CTA href doesn't route to checkout: {href!r}"
+    assert await cta.is_disabled(), "checkout button should remain disabled until consent"
+    await page.locator("#checkout-consent").check()
+    assert not await cta.is_disabled(), "checkout button should enable after consent"
 
 
 @pytest.mark.asyncio
@@ -61,16 +62,17 @@ async def test_pricing_cta_click_initiates_checkout_request(
         seen_requests.append(route.request.url)
         await route.fulfill(
             status=200,
-            content_type="text/html",
-            body="<html><body><h1>stub ok</h1></body></html>",
+            content_type="application/json",
+            body='{"url": "' + base_url.rstrip("/") + '/checkout-stub.html"}',
         )
 
     await page.route(re.compile(r".*/v1/billing/checkout.*"), _handle)
 
-    await page.goto(url_for("/pricing.html"))
-    cta = page.locator("a.btn-primary").first
+    await page.goto(url_for("/pricing.html"), wait_until="commit")
+    await page.locator("#checkout-consent").check()
+    cta = page.locator("#checkout-btn")
 
-    async with page.expect_navigation():
+    async with page.expect_navigation(url=re.compile(r".*/checkout-stub\.html")):
         await cta.click()
 
     assert seen_requests, (

@@ -77,7 +77,7 @@ class CohortAverageBody(BaseModel):
         "(distinct_programs) / outlier 法人 (top 10% by populated 交付額) を "
         "返します。jpcite の採択事例データと公開採択結果データを照合し、"
         "出典付きの集計として返します。\n\n"
-        "**¥3/req single billing unit.** NO LLM. §52 / §47条の2 / 行政書士法 §1 "
+        "**¥3/req single billing unit.** NO LLM. §52 / §47条の2 / 行政書士法 §1の2 "
         "disclaimer envelope on every result — output is information retrieval, "
         "not 申請代理 / 税務助言 / 経営判断."
     ),

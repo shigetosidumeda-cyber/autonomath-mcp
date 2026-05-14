@@ -123,7 +123,7 @@
 **登録/掲載手順**:
 1. PyPI `autonomath-mcp` package description (long_description) を `llms.txt` の英訳版で full text 投入. classifiers = `Development Status :: 5`, `Topic :: Office/Business`, `Topic :: Scientific/Engineering :: Artificial Intelligence`.
 2. PyPI Project URLs: Homepage=https://jpcite.com, Documentation=https://jpcite.com/docs, Repository=GitHub, Changelog=https://jpcite.com/changelog, Funding=Stripe direct (¥3/req).
-3. npm `@jpcite/agents` (v0.3.4 で publish 済の参考 agent 5 種) の README.md に 5 種 use case を embed. tags=[`mcp`,`anthropic`,`japan`,`evidence`,`rag`].
+3. npm `@jpcite/agents` (v0.4.0 系 surface と整合する参考 agent 5 種) の README.md に 5 種 use case を embed. tags=[`mcp`,`anthropic`,`japan`,`evidence`,`rag`].
 4. PyPI Stats を README に embed (badges.io). Download count を organic social proof として表示.
 5. PyPI search 上位を狙うため keyword は `japanese subsidy`, `mcp server`, `evidence prefetch`, `corporate registry japan`.
 
@@ -216,14 +216,14 @@
 
 **memory 制約遵守**: 寄稿は organic outreach、営業電話なし (PUBLISH_ORDER 監査 green).
 
-**失敗パターン**: 編集側が「AI = 自社専門領域への脅威」と embargo. → 改善: 寄稿冒頭で 7 業法 fence を明示し「専門家業務を代替しない」スタンスを先に提示 (既に 5 本ともこのスタンス).
+**失敗パターン**: 編集側が「AI = 自社専門領域への脅威」と embargo. → 改善: 寄稿冒頭で 8 業法 fence を明示し「専門家業務を代替しない」スタンスを先に提示 (既に 5 本ともこのスタンス).
 
 ### 4.3 日経 / 東洋経済 オンライン (long shot)
 
 **登録/掲載手順**:
 1. 日経 BP / 日経クロステック 編集部 contact (info@nikkei.bp.com 等) に PRTIMES release を起点として打診. テーマ = 「中小企業向け AI agent 経由の公的制度 evidence prefetch」.
 2. 東洋経済オンライン「テクノロジー」セクションへ寄稿 pitch (自社 release ではなく寄稿).
-3. 寄稿テーマ案: 「中小企業庁 11,601 制度を AI agent が 1 req ¥3 で横断検索する技術構造」「7 業法 fence を遵守した AI tool 設計」「solo + zero-touch + organic only で日本初の MCP 制度 DB を公開」.
+3. 寄稿テーマ案: 「中小企業庁 11,601 制度を AI agent が 1 req ¥3 で横断検索する技術構造」「8 業法 fence を遵守した AI tool 設計」「solo + zero-touch + organic only で日本初の MCP 制度 DB を公開」.
 4. 寄稿成立可否は編集判断に依存、ダメなら自社 blog で同記事を publish + 日経 referral 無視で organic SEO だけ拾う.
 5. 日経 / 東洋経済 1 度の掲載で organic SEO authority が向上 (backlink から domain authority 上昇).
 

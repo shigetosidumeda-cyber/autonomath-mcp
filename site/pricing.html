@@ -193,8 +193,8 @@
   "mainEntity": [
     {"@type": "Question", "name": "階層プランはないんですか?", "acceptedAnswer": {"@type": "Answer", "text": "ありません。通常の検索・詳細取得は ¥3 / billable unit の完全従量のみ。batch/export は ID 件数や bundle size に応じた式を事前に表示します。"}},
     {"@type": "Question", "name": "適格請求書 (インボイス) はもらえますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。 月初に自動発行し、 ダッシュボードからダウンロードできます。 適格請求書制度に対応した請求書を発行します。"}},
-    {"@type": "Question", "name": "解約手続きは?", "acceptedAnswer": {"@type": "Answer", "text": "ダッシュボードから Stripe Customer Portal を開いてキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/billable unit 従量請求が発生します。次月以降の課金は停止します。解約違約金・最低利用期間はありません。"}},
-    {"@type": "Question", "name": "返金はありますか?", "acceptedAnswer": {"@type": "Answer", "text": "従量課金のためすでに呼び出した分の返金はありません。 サービス障害による誤課金の可能性がある場合は info@bookyou.net で確認し、必要に応じて返金します。"}},
+	    {"@type": "Question", "name": "解約手続きは?", "acceptedAnswer": {"@type": "Answer", "text": "ダッシュボードから Stripe Customer Portal を開いてキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/billable unit 従量請求が発生します。API キーの無効化・削除・ローテーションは当該キーの利用停止であり、課金契約の解約には該当しません。次月以降の課金は停止します。解約違約金・最低利用期間はありません。"}},
+	    {"@type": "Question", "name": "返金はありますか?", "acceptedAnswer": {"@type": "Answer", "text": "通常利用分は返金対象外です。ただし、重複請求、単価・unit 式の誤適用、成立していないリクエストへの課金、または重大な不適合により課金が発生した場合は、調査のうえ返金または次月請求からの減額で対応します。"}},
     {"@type": "Question", "name": "予算上限を設定できますか?", "acceptedAnswer": {"@type": "Answer", "text": "はい。ダッシュボードで月額上限を任意の円額で設定できます。広い batch / fanout では request 単位の X-Cost-Cap-JPY、再試行には Idempotency-Key、顧客・案件別集計には X-Client-Tag も併用できます。"}}
   ]
 }
@@ -251,11 +251,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -285,10 +288,12 @@
  <a class="brand" href="index.html" aria-label="jpcite ホーム">
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
- <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="about.html">運営について</a>
- <a href="products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
+	 <nav class="site-nav" aria-label="主要ナビゲーション">
+	 <a href="about.html">運営について</a>
+	 <a href="products.html">プロダクト</a>
+	 <a href="/connect/">接続</a>
+	 <a href="/prompts/">Prompts</a>
+	 <a href="/docs/">ドキュメント</a>
  <a href="pricing.html" aria-current="page">料金</a>
  <a href="audiences/">利用者層</a>
  <details class="nav-trust">
@@ -330,15 +335,24 @@
  </section>
 
  <section class="pricing-hero" style="padding:32px 0 8px;">
- <h1 style="font-size:clamp(36px,9vw,56px);line-height:1.1;margin:0 0 16px;letter-spacing:-0.02em;">¥3/req metered (税込 ¥3.30)</h1>
+ <h1 style="font-size:clamp(36px,9vw,56px);line-height:1.1;margin:0 0 16px;letter-spacing:-0.02em;">¥3/billable unit metered (税込 ¥3.30)</h1>
  <p style="font-size:20px;line-height:1.6;margin:0 0 24px;color:var(--text);max-width:760px;">
  Stripe 経由・completely_metered・月額 minimum なし・tier なし。匿名 3 req/日 per IP は登録不要で無料 (JST 翌日 00:00 リセット)。
  </p>
 	 <p style="font-size:15px;line-height:1.7;margin:-10px 0 24px;color:var(--text-muted);max-width:760px;">
-		 AI agent (Custom GPT / Claude MCP / Cursor / Codex / Anthropic API direct) が日本公的制度・法令・判例・税務・適格事業者を扱う前に呼ぶ Evidence prefetch layer。1 API/MCP 呼び出し = 1 billable unit。jpcite 側は LLM 推論を一切しないため、agent dev の自前 LLM token と完全独立で jpcite の単価は固定式です。反復実行では月次上限・X-Cost-Cap-JPY・X-Client-Tag を組み合わせ予算と顧客別原価を管理できます。
- </p>
+			 AI agent (Custom GPT / Claude MCP / Cursor / Codex / Anthropic API direct) が日本公的制度・法令・判例・税務・適格事業者を扱う前に呼ぶ Evidence prefetch layer。通常の単発 API/MCP 呼び出しは 1 billable unit、batch/export は事前表示の式で算出します。jpcite 側は LLM 推論を一切しないため、agent dev の自前 LLM token と完全独立で jpcite の単価は固定式です。反復実行では月次上限・X-Cost-Cap-JPY・X-Client-Tag を組み合わせ予算と顧客別原価を管理できます。
+	 </p>
+	 <section aria-labelledby="token-cost-calc-title" style="margin:0 0 24px;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:var(--bg-alt,#fafaf9);padding:16px 18px;">
+		 <h2 id="token-cost-calc-title" style="font-size:18px;margin:0 0 8px;">長文資料を毎回 LLM に渡す場合との費用比較式</h2>
+	 <p style="font-size:14px;line-height:1.7;margin:0 0 10px;color:var(--text);">LLM に資料 chunk を毎回読ませる場合、費用は <code>投入 tokens × 利用モデルの input 単価 + output tokens</code> です。jpcite を挟む場合、費用は <code>jpcite ¥3/billable unit + Evidence Packet を読む少量 tokens</code> です。</p>
+	 <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:var(--text-muted);">
+	 <li>数十ページの公的資料を毎回投げる反復 agent では、入力 token と遅延を下げやすい設計です。</li>
+	 <li>1 回だけの軽い質問、短い 1 ページ確認、無料検索で足りる内容では、jpcite を挟まない方が安い場合があります。</li>
+	 <li>モデル単価は外部 LLM 側で変動します。jpcite は根拠取得部分を ¥3/billable unit に固定し、LLM 推論費と分けて管理できます。</li>
+	 </ul>
+	 </section>
 
- <div class="hero-calc" style="margin:0 0 28px;border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;max-width:560px;">
+	 <div class="hero-calc" style="margin:0 0 28px;border:1px solid var(--border,#e5e7eb);border-radius:12px;overflow:hidden;max-width:560px;">
  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
  <table style="width:100.0%;min-width:420px;border-collapse:collapse;font-variant-numeric:tabular-nums;">
  <thead>
@@ -394,7 +408,7 @@
  <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">1,800 req × ¥3.30。<code>X-Client-Tag</code> で顧問先別原価集計、税理士法 §52 fence 自動。</p>
  </div>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
- <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">BPO 1000 案件 triage</p>
+ <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text-muted);">一括 1000 案件 triage</p>
  <p style="font-size:22px;font-weight:800;margin:0 0 4px;font-variant-numeric:tabular-nums;">¥52,800<small style="font-size:12px;font-weight:500;color:var(--text-muted);"> / 月</small></p>
  <p style="font-size:13px;color:var(--text-muted);margin:0;line-height:1.55;">16,000 req × ¥3.30。1 案件 ¥52.80 で公的 DD layer。 <code>Idempotency-Key</code> で再送安全。</p>
  </div>
@@ -410,14 +424,14 @@
  </div>
  </div>
  <p style="margin:14px 0 0;font-size:12px;color:var(--text-muted);line-height:1.6;">
- 業種別の request 数と料金例は <a href="/audiences/">業種別 use case (税理士・会計士・行政書士・診断士・M&amp;A・信金)</a> ・課金根拠は <a href="/docs/pricing/">justification</a> ・対話試算は <a href="/tools/cost_saving_calculator.html">cost saving calculator</a>。
+ 業種別の request 数と料金例は <a href="/audiences/">業種別 use case (税理士・会計士・行政書士・診断士・M&amp;A・信金)</a> ・課金根拠は <a href="/docs/pricing/">justification</a> ・対話試算は <a href="/tools/cost_saving_calculator.html">API fee delta calculator</a>。
  </p>
 
  <!-- Public cost comparison: token + web search assumptions vs jpcite units -->
  <div style="margin-top:24px;border:1px dashed var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg-alt,#fafaf9);max-width:1000px;">
    <p style="font-size:13px;font-weight:700;margin:0 0 6px;color:var(--text);">API 料金差額の参考比較 — stated baseline (2026-05-12 公開単価)</p>
    <p style="font-size:13.5px;line-height:1.65;margin:0 0 8px;color:var(--text-muted);">
-     baseline は Claude Sonnet 4.5 ($3 / $15 per MTok)、Anthropic web search ($10/1k)、USD/JPY=150、下記 use case の token/search 回数です。この条件で外部 provider の token + search API fee と jpcite ¥3/req を比べた差額だけを表示します。
+     baseline は Claude Sonnet 4.5 ($3 / $15 per MTok)、Anthropic web search ($10/1k)、USD/JPY=150、下記 use case の token/search 回数です。この条件で外部 provider の token + search API fee と jpcite 税別 ¥3/billable unit を比べた差額だけを表示します。
    </p>
    <ul style="font-size:13px;line-height:1.7;margin:0 0 8px;padding-left:18px;">
      <li>1 case あたり: external provider API fee <strong>¥51-¥136.50</strong> / jpcite metered fee <strong>¥6-¥15</strong> / API fee delta <strong>¥45-¥124.50</strong></li>
@@ -425,7 +439,7 @@
      <li>月 100 case (#3 税理士措置法 baseline を反復): 月次 API fee delta <strong>¥7,050</strong> / 年換算 reference <strong>¥84,600</strong></li>
    </ul>
    <p style="font-size:12.5px;margin:0;color:var(--text-muted);line-height:1.6;">
-     計算式・前提は <a href="/tools/cost_saving_calculator.html">cost saving calculator</a> で確認できます。実請求額は provider、model、cache、tool 設定、為替、prompt に依存します。業務効果、売上、利益、専門判断の価値は含みません。
+     計算式・前提は <a href="/tools/cost_saving_calculator.html">API fee delta calculator</a> (cost saving reference) で確認できます。実請求額は provider、model、cache、tool 設定、為替、prompt に依存します。業務効果、売上、利益、専門判断の価値は含みません。
    </p>
  </div>
  </section>
@@ -433,7 +447,7 @@
  <section aria-labelledby="structure-vs-websearch-title" style="margin-top:40px;">
  <h2 id="structure-vs-websearch-title" class="section-title" style="font-size:22px;">jpcite vs web search — 構造比較</h2>
  <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
- AI agent から web search で公的制度を扱う場合、aggregator 孫引き・fetched_at 不明・業法 fence なしの結果は追加確認が必要です。jpcite ¥3/req は出典固定 + 業法 fence + 監査対応の対価です。
+ AI agent から web search で公的制度を扱う場合、aggregator 孫引き・fetched_at 不明・業法 fence なしの結果は追加確認が必要です。jpcite 税別 ¥3/billable unit は出典固定 + 業法 fence + 監査対応の対価です。
  </p>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;overflow:hidden;max-width:1000px;background:var(--bg,#fff);">
  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
@@ -442,7 +456,7 @@
  <tr style="background:var(--bg-alt,#fafaf9);">
  <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">軸</th>
  <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">web search (Perplexity / Tavily / Exa / 一般 SERP)</th>
- <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">jpcite (¥3/req)</th>
+ <th scope="col" style="text-align:left;padding:12px 14px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);">jpcite (税別 ¥3/billable unit)</th>
  </tr>
  </thead>
  <tbody>
@@ -454,12 +468,12 @@
  <tr>
  <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">取得時刻</th>
  <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">HTML に fetched_at なし。サイト自己申告「最終更新」のみ</td>
- <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">全 response に <code>source_fetched_at</code>、優先出典の再取得中央値 約 7 日</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">主要な公開検索 / Evidence response で <code>source_fetched_at</code> を返します。値は jpcite の取得・構造化時刻であり、一次情報源の公表日・更新日・有効期限を示すものではありません。</td>
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">業法 fence</th>
  <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">なし — 個別税務助言 / 監査意見 / 申請書面 / 登記代理を平気で生成 → 業法抵触リスク</td>
- <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">8 業法 fence (税理士§52 / 弁護士§72 / 公認会計士§47条の2 / 司法書士§3 / 行政書士§1 / 社労士§27 / 中小企業診断士登録規則 / 弁理士§75) を envelope 自動付与</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">8 業法 fence (税理士法§52 / 弁護士法§72 / 公認会計士法§47条の2 / 行政書士法§1の2・§19 / 司法書士法§3 / 社会保険労務士法§27 / 弁理士法§75 / 労働基準法§36) を envelope 自動付与</td>
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">排他 / 前提ルール</th>
@@ -485,7 +499,7 @@
  <section aria-labelledby="automation-pricing-title" style="margin-top:40px;">
 	 <h2 id="automation-pricing-title" class="section-title" style="font-size:22px;">成果物の反復運用では、先に上限を決める</h2>
 	 <p style="font-size:15px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);max-width:820px;">
-	 AI agent / BPO / 士業システムで反復利用する場合は、 会社フォルダ、 顧問先レビュー、 申請戦略パック、 公開情報DDパックごとに、 実行前見積もり、 月次上限、 実行単位の予算、 顧客別タグを設定してください。 価格は通常 1 API/MCP 呼び出し = 1 billable unit = 税込 ¥3.30 です。
+	 AI agent / 士業システム / 社内ワークフローで反復利用する場合は、 会社フォルダ、 顧問先レビュー、 申請戦略パック、 公開情報DDパックごとに、 実行前見積もり、 月次上限、 実行単位の予算、 顧客別タグを設定してください。 通常の単発 API/MCP 呼び出しは 1 billable unit = 税込 ¥3.30、batch / export / fanout は見積もり表示の units で課金されます。
  </p>
  <div class="value-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;max-width:920px;">
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:10px;padding:16px 18px;background:var(--bg,#fff);">
@@ -554,7 +568,7 @@
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 16px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);vertical-align:top;">2. <code>source_fetched_at</code> がある</th>
- <td style="padding:12px 16px;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.6;">最終更新ではなく <strong>jpcite が出典を最後に取得した時刻</strong>。 優先度の高い出典の再取得中央値は約 7 日で、 古ければ <a href="data-freshness.html">データ鮮度</a> で per-source 内訳を確認できます。</td>
+ <td style="padding:12px 16px;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.6;">最終更新ではなく <strong>jpcite が出典を最後に取得した時刻</strong>。 古い出典や per-source 内訳は <a href="data-freshness.html">データ鮮度</a> で確認できます。</td>
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 16px;font-weight:600;border-bottom:1px solid var(--border,#e5e7eb);vertical-align:top;">3. Evidence Packet で <code>quality.known_gaps</code> を確認できる</th>
@@ -582,7 +596,7 @@
  </section>
 
  <section aria-labelledby="value-title" style="margin-top:48px;">
- <h2 id="value-title" class="section-title">¥3/unit の根拠 — 価値統合の 3 軸</h2>
+ <h2 id="value-title" class="section-title">¥3/billable unit の根拠 — 価値統合の 3 軸</h2>
  <p style="font-size:15px;line-height:1.7;margin:0 0 24px;color:var(--text-muted);max-width:760px;">
  通常 call 1 unit の ¥3 (税込 ¥3.30) は、 単発の検索結果ではなく <strong>複数 DB を結合した監査対応形式の応答</strong> の対価です。batch/export は事前表示の billable units 式で計算します。LLM API 利用料ではなく、 統合 + 出典 + 鮮度の 3 軸で正当化されます。
  </p>
@@ -599,8 +613,8 @@
  </div>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:12px;padding:20px 22px;background:var(--bg,#fff);">
  <p style="font-size:13px;font-weight:600;color:var(--text-muted);margin:0 0 6px;letter-spacing:0.04em;">3. 鮮度 + コスト決定性</p>
- <p style="font-size:18px;font-weight:700;line-height:1.4;margin:0 0 10px;">再取得中央値は約 7 日</p>
- <p style="font-size:14px;line-height:1.7;margin:0;color:var(--text);">優先度の高い出典の再取得中央値は約 7 日です。 税込 ¥3.30/unit は jpcite の billable API/MCP call 単価です。通常 call は 1 unit です。 外部 LLM 側の token / search / cache / tool cost は利用者のモデル設定に依存します。</p>
+ <p style="font-size:18px;font-weight:700;line-height:1.4;margin:0 0 10px;">鮮度分布は live 開示</p>
+ <p style="font-size:14px;line-height:1.7;margin:0;color:var(--text);">出典の取得日は行ごとに返却し、現在の鮮度分布は <a href="data-freshness.html">データ鮮度</a> で公開します。 税込 ¥3.30/unit は jpcite の billable API/MCP call 単価です。通常 call は 1 unit です。 外部 LLM 側の token / search / cache / tool cost は利用者のモデル設定に依存します。</p>
  </div>
  </div>
  <p style="font-size:13px;line-height:1.7;margin:14px 0 0;color:var(--text-muted);">
@@ -882,11 +896,11 @@
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">解約手続きは?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ダッシュボードから Stripe Customer Portal を開いてキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/billable unit 従量請求が発生します。次月以降の課金は停止します。解約違約金・最低利用期間はありません。</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">ダッシュボードから Stripe Customer Portal を開いてキャンセルできます。キャンセル後も当月末までは API アクセス可能で、当月利用分のみ ¥3/billable unit 従量請求が発生します。API キーの無効化・削除・ローテーションは当該キーの利用停止であり、課金契約の解約には該当しません。次月以降の課金は停止します。解約違約金・最低利用期間はありません。</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">返金はありますか?</summary>
- <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">従量課金のためすでに呼び出した分の返金はありません。 サービス障害による誤課金の可能性がある場合は <a href="mailto:info@bookyou.net">info@bookyou.net</a> で確認し、必要に応じて返金します。</p>
+ <p style="margin:10px 0 0;font-size:14px;color:var(--text);line-height:1.7;">役務提供開始後の通常利用分は返金対象外です。ただし、重複請求、単価・unit 式の誤適用、成立していないリクエストへの課金、または重大な不適合により課金が発生した場合は、調査のうえ返金または次月請求からの減額で対応します。</p>
  </details>
  <details style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:14px 16px;background:var(--bg,#fff);">
  <summary style="cursor:pointer;font-weight:600;font-size:15px;color:var(--text);">予算上限を設定できますか?</summary>

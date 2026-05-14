@@ -49,7 +49,7 @@ DD-style の深掘り 1 件で 47 req。pricing.html の「申請準備パック
 
 - **web search**: tax_rulesets の研究開発税制 措置法 42-4・IT 導入補助金会計処理は条文 + 通達 + 国税庁 saiketsu の組み合わせで決まる。web search だと国税庁ページ / 経産省ページ / aggregator がバラバラに返り、組み合わせを 人手で復元する負荷が高い
 - **anonymous 3 req/日**: 1 案件 47 req のため 16 日かかる計算。経営診断のタイムボックス (1 週間 - 1 ヶ月) に乗らない
-- **汎用 RAG**: 業種統計や採択事例 matching は curated DB が無いと不可能。複数 DB JOIN の `pack_construction` / `pack_manufacturing` / `pack_real_estate` 相当の表現は汎用 RAG が日本公的領域では届かない
+- **一般 AI / 長文資料投入**: 業種統計や採択事例 matching は curated DB が無いと不可能。複数 DB JOIN の `pack_construction` / `pack_manufacturing` / `pack_real_estate` 相当の表現は、長文資料を毎回 AI に渡す運用では日本公的領域で届きにくい
 
 ## jpcite を使った場合の構造的優位
 
@@ -77,4 +77,4 @@ DD-style の深掘り 1 件で 47 req。pricing.html の「申請準備パック
 
 ## まとめ
 
-経営診断 1 件で ¥155.10 (税込)。診断料比 0.05-0.16%。補助金・税制特例・採択後 monitoring・DD 質問デッキを低い案件単価で揃える。中小企業診断士登録規則 fence により「個別経営診断書発行」は出さず、診断士の補助線として組み込み安全。
+経営診断 1 件で ¥155.10 (税込)。診断料比 0.05-0.16%。補助金・税制特例・採択後 monitoring・DD 質問デッキを低い案件単価で揃える。中小企業診断士登録規則 fence により「個別経営診断書発行」は出さず、診断士の補助線として使う。専門判断の代替ではなく、公開情報の確認下地としてレビューしてください。

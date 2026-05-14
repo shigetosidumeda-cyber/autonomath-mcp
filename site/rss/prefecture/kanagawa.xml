@@ -8,7 +8,7 @@
   <language>ja</language>
   <copyright>(C) 2026 jpcite</copyright>
   <generator>jpcite site</generator>
-  <lastBuildDate>Sun, 03 May 2026 11:55:33 +0000</lastBuildDate>
+  <lastBuildDate>Wed, 13 May 2026 19:27:47 +0000</lastBuildDate>
 
   <item>
     <title>神奈川県事業承継補助金（令和8年度実施分）について - 神奈川県ホームページ</title>
@@ -106,15 +106,6 @@
     <description>Tier A / 神奈川県 / 神奈川県 / subsidy 出典: https://r8seisansei.pref.kanagawa.jp/about/</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-ext-b1c73d0c7b</guid>
-    <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
-  </item>
-
-  <item>
-    <title>事務連絡「『紙版かながわトクトクキャンペーン！』事業費補助金における実績報告手続について」（PDF：1,186KB）</title>
-    <link>https://jpcite.com/programs/jimurenraku-kamihan-kanagawa-tokutokukyanpeen-jigyou-hi-31f9a2.html</link>
-    <description>Tier A / 神奈川県 / 神奈川県 / subsidy 出典: https://www.pref.kanagawa.jp/documents/132535/r8_jimurenraku_jissekihoukoku.pdf</description>
-    <category>subsidy</category>
-    <guid isPermaLink="false">jpcite:program:UNI-ext-b2113cb8a4</guid>
     <pubDate>Sat, 25 Apr 2026 04:32:49 +0000</pubDate>
   </item>
 
@@ -907,6 +898,15 @@
     <description>Tier C / 神奈川県 / 神奈川県横浜市 / subsidy 出典: https://www.city.yokohama.lg.jp/business/keizai/nogyo/ninaite/challengefarmer.files/boshu_annai.pdf</description>
     <category>subsidy</category>
     <guid isPermaLink="false">jpcite:program:UNI-b0d51bdc88</guid>
+    <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
+  </item>
+
+  <item>
+    <title>神奈川 担い手育成資金</title>
+    <link>https://jpcite.com/programs/kanagawa-ninaite-ikusei-shikin-d65842.html</link>
+    <description>Tier A / 神奈川県 / 都道府県 / loan / 上限 1,800万円 出典: https://www.pref.kanagawa.jp/docs/f6k/cnt/f75/p2302.html</description>
+    <category>loan</category>
+    <guid isPermaLink="false">jpcite:program:UNI-b343d1edfd</guid>
     <pubDate>Wed, 22 Apr 2026 13:20:57 +0000</pubDate>
   </item>
 

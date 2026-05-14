@@ -10,6 +10,8 @@
 <link rel="canonical" href="https://jpcite.com/status/">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/status/">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/status/">
+<link rel="alternate" type="application/rss+xml" title="jpcite status RSS" href="/status/rss.xml">
+<link rel="alternate" type="application/atom+xml" title="jpcite status Atom" href="/status/feed.atom">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
@@ -353,11 +355,14 @@
         "@type": "OfferCatalog",
         "name": "jpcite product line",
         "itemListElement": [
-          {"@type": "Offer", "name": "Company Folder Pack", "url": "https://jpcite.com/products.html#company-folder"},
-          {"@type": "Offer", "name": "Monthly Review", "url": "https://jpcite.com/products.html#monthly-review"},
-          {"@type": "Offer", "name": "BPO Intake", "url": "https://jpcite.com/products.html#bpo-intake"},
-          {"@type": "Offer", "name": "Public-Info DD", "url": "https://jpcite.com/products.html#public-dd"},
-          {"@type": "Offer", "name": "Pre-Consult Triage", "url": "https://jpcite.com/products.html#pre-consult"}
+          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
+          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
+          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
+          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
+          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
         ]
       },
       "offers": {"@id": "https://jpcite.com/#price"}
@@ -389,7 +394,8 @@
     {"@type": "DataDownload", "encodingFormat": "text/html", "contentUrl": "https://jpcite.com/status/"},
     {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://jpcite.com/status/status.json"},
     {"@type": "DataDownload", "encodingFormat": "image/svg+xml", "contentUrl": "https://jpcite.com/status/badge.svg"},
-    {"@type": "DataDownload", "encodingFormat": "application/rss+xml", "contentUrl": "https://jpcite.com/status/rss.xml"}
+    {"@type": "DataDownload", "encodingFormat": "application/rss+xml", "contentUrl": "https://jpcite.com/status/rss.xml"},
+    {"@type": "DataDownload", "encodingFormat": "application/atom+xml", "contentUrl": "https://jpcite.com/status/feed.atom"}
   ],
   "variableMeasured": [
     {"@type": "PropertyValue", "name": "components_monitored", "value": 5},
@@ -602,6 +608,8 @@
  <a href="/">← ホームへ戻る / Back to home</a>
  <a href="/docs/sla/">SLA 方針 / SLA policy</a>
  <a href="/status/status.json">公開 status JSON / Public status JSON</a>
+ <a href="/status/rss.xml">Status RSS</a>
+ <a href="/status/feed.atom">Status Atom</a>
  </p>
 
 </main>
