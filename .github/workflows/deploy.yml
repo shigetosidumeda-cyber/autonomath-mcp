@@ -150,9 +150,6 @@ jobs:
             INVOICE_REGISTRATION_NUMBER
             JPCITE_EDGE_AUTH_SECRET
             JPCITE_SESSION_SECRET
-            JPCITE_X402_ADDRESS
-            JPCITE_X402_ORIGIN_SECRET
-            JPCITE_X402_QUOTE_SECRET
             JPINTEL_CORS_ORIGINS
             JPINTEL_ENV
             RATE_LIMIT_FREE_PER_DAY
@@ -185,9 +182,28 @@ jobs:
           if [ "$audit_seal_present" = "0" ]; then
             missing+=("one_of(AUDIT_SEAL_SECRET|JPINTEL_AUDIT_SEAL_KEYS)")
           fi
+          x402_names=(JPCITE_X402_ADDRESS JPCITE_X402_ORIGIN_SECRET JPCITE_X402_QUOTE_SECRET)
+          x402_present=()
+          x402_missing=()
+          for name in "${x402_names[@]}"; do
+            if grep -Fxq "$name" <<< "$fly_secret_names"; then
+              x402_present+=("$name")
+            else
+              x402_missing+=("$name")
+            fi
+          done
+          if [ "${#x402_present[@]}" -gt 0 ] && [ "${#x402_missing[@]}" -gt 0 ]; then
+            echo "::error::Partial x402 Fly secret configuration. Set all or none: missing ${x402_missing[*]}"
+            exit 1
+          fi
           if [ "${#missing[@]}" -gt 0 ]; then
             echo "::error::Missing required Fly secret names for autonomath-api: ${missing[*]}"
             exit 1
+          fi
+          if [ "${#x402_present[@]}" -eq 0 ]; then
+            echo "::notice::x402 Fly origin bridge secrets are not configured; Stripe/API key rails remain deployable and x402 stays unavailable."
+          else
+            echo "x402 Fly origin bridge secret names present; values not read."
           fi
           echo "Required Fly secret names present for autonomath-api (${#required[@]} required + audit-seal alternative checked; values not read)."
 

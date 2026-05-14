@@ -122,7 +122,7 @@ def test_pages_deploy_fails_closed_when_cloudflare_secrets_missing() -> None:
     assert "Skipping Cloudflare Pages deploy" not in text
 
 
-def test_deploy_live_fly_secret_gate_requires_edge_auth_secret() -> None:
+def test_deploy_live_fly_secret_gate_requires_edge_auth_secret_and_consistent_optional_x402() -> None:
     text = _text(DEPLOY)
     step = text[text.index("Verify live Fly secret names before deploy") :]
 
@@ -130,6 +130,9 @@ def test_deploy_live_fly_secret_gate_requires_edge_auth_secret() -> None:
     assert "JPCITE_X402_ADDRESS" in step
     assert "JPCITE_X402_ORIGIN_SECRET" in step
     assert "JPCITE_X402_QUOTE_SECRET" in step
+    assert "Partial x402 Fly secret configuration" in step
+    assert "Set all or none" in step
+    assert "x402 Fly origin bridge secrets are not configured" in step
     assert "Missing required Fly secret names for autonomath-api" in step
 
 
@@ -295,6 +298,8 @@ def test_pages_deploy_smokes_x402_edge_quote() -> None:
 
     assert "https://jpcite.com/x402/discovery?$Q" in step
     assert "https://jpcite.com/x402/quote?$Q" in step
+    assert "x402 discovery smoke OK" in step
+    assert "x402 quote smoke skipped: edge recipient secret not configured" in step
     assert (
         '"quote_id", "amount_usdc", "amount_usdc_micro", "recipient", '
         '"chain_id", "token_address", "signature"'
