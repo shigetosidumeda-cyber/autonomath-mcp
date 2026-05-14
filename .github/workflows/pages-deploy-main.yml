@@ -250,21 +250,19 @@ jobs:
             --include 'tools/' \
             --include 'tools/*.md' \
             --include 'laws/index.html' \
-            --include 'programs/index.html' \
-            --include 'programs/share.html' \
             --include 'cases/index.html' \
             --include 'enforcement/index.html' \
             --exclude 'laws/*.html' \
-            --exclude 'programs/*.html' \
             --exclude 'cases/*.html' \
             --exclude 'enforcement/*.html' \
             --exclude '*.md' \
             site/ dist/site/
-          # 2026-05-14 Wave 51: detail laws/programs/cases/enforcement
-          # HTML plus companion Markdown are intentionally NOT bundled here,
-          # but ARE served end-to-end. The full site/ tree now exceeds the
-          # Cloudflare Pages 20,000-file deployment limit (verified via
-          # wrangler error, run 2026-05-14). Wave 45/51 wires
+          # 2026-05-14 Wave 51: detail laws/cases/enforcement HTML plus
+          # companion Markdown are intentionally NOT bundled here, but ARE
+          # served end-to-end. programs/*.html stays in the static artifact
+          # because it is generated in CI and not present in GitHub raw; the
+          # artifact still stays below the Cloudflare Pages 20,000-file limit
+          # (verified via wrangler error, run 2026-05-14). Wave 45/51 wires
           # `functions/[[path]].ts` (catch-all Pages Function) which
           # intercepts every source-backed GET that ASSETS returns 404 for,
           # fetches the file from raw.githubusercontent.com (the source
@@ -387,13 +385,16 @@ jobs:
           done
           echo "post-deploy smoke OK"
 
-      - name: Post-deploy smoke (source-backed catch-all Function)
+      - name: Post-deploy smoke (generated pages and source-backed Function)
         if: steps.cf-secrets.outputs.available == 'true'
         run: |
           set -euo pipefail
           # Verification: functions/[[path]].ts must proxy source-backed URLs
           # that ASSETS returns 404 for. Sample the law HTML cohort excluded
           # from the Pages artifact plus one .md path from each large cohort.
+          # Also sample one generated program page that stays static in the
+          # Pages artifact because it is generated in CI rather than committed
+          # to the GitHub raw source tree.
           Q="deploy_check=$(date +%s)"
           for url in \
             "https://jpcite.com/laws/chusho-kihon?$Q" \

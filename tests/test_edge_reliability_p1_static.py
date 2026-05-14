@@ -154,7 +154,6 @@ def test_pages_routes_limit_function_invocations_to_dynamic_surfaces() -> None:
     assert "/webhook/*" in include
     assert "/artifacts/*" in include
     assert "/laws/*" in include
-    assert "/programs/*" in include
     assert "/cases/*" in include
     assert "/enforcement/*" in include
     assert "/*.md" in include

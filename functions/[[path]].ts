@@ -5,7 +5,7 @@
  * Problem
  * -------
  * jpcite ships 10,282 companion `.md` files plus large generated HTML
- * cohorts (laws/programs/cases/enforcement) that are the canonical citation
+ * cohorts (laws/cases/enforcement) that are the canonical citation
  * and SEO surface for LLM agents. The `pages-deploy-main.yml` workflow
  * excludes those high-count source-backed files because the combined `site/`
  * tree is above the Cloudflare Pages 20,000-file deployment limit (verified
@@ -22,8 +22,8 @@
  * Operational properties
  * ----------------------
  *   - Coverage: all 10,282 companion .md plus canonical generated HTML detail
- *     routes under `/laws`, `/programs`, `/cases`, and `/enforcement` become
- *     200 immediately on first edge fetch (warm cache thereafter).
+ *     routes under `/laws`, `/cases`, and `/enforcement` become 200
+ *     immediately on first edge fetch (warm cache thereafter).
  *   - Cache: 24h edge TTL via Cache API, plus immutable git ref so stale
  *     reads after a content update are bounded by 24h.
  *   - Failure mode: if raw.githubusercontent.com is unreachable (CF
@@ -40,10 +40,10 @@
  * This Function MUST run as a catch-all because CF Pages Functions
  * cannot register multiple specific .md routes statically. The handler
  * filters by allowlisted source-backed shape: `.md`, and generated detail
- * HTML under `/laws`, `/programs`, `/cases`, and `/enforcement`. Everything
- * else is passed through to ASSETS (the static site). Allowlisted paths are
- * also passed through to ASSETS first, and only if ASSETS returns 404 do we
- * proxy from GitHub raw.
+ * HTML under `/laws`, `/cases`, and `/enforcement`. Everything else is passed
+ * through to ASSETS (the static site). Allowlisted paths are also passed
+ * through to ASSETS first, and only if ASSETS returns 404 do we proxy from
+ * GitHub raw.
  *
  * This single-function design is necessary because /functions/[[path]].ts
  * intercepts ALL routes. Any new Pages Function added in this repo must
@@ -77,7 +77,6 @@ const MD_CONTENT_TYPE = "text/markdown; charset=utf-8";
 const HTML_CONTENT_TYPE = "text/html; charset=utf-8";
 const SOURCE_BACKED_HTML_PREFIXES = [
   "/laws/",
-  "/programs/",
   "/cases/",
   "/enforcement/",
 ];

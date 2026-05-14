@@ -10,7 +10,6 @@
     "/dpa_issue",
     "/ab_assign",
     "/laws/*",
-    "/programs/*",
     "/cases/*",
     "/enforcement/*",
     "/*.md"

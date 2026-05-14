@@ -248,7 +248,9 @@ def test_chaos_24_7_uses_runner_side_toxiproxy_wait_and_module_uvicorn() -> None
 
 def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
     text = _text(PAGES_DEPLOY_MAIN)
-    step = text[text.index("Post-deploy smoke (source-backed catch-all Function)") :]
+    step = text[
+        text.index("Post-deploy smoke (generated pages and source-backed Function)") :
+    ]
 
     assert "https://jpcite.com/laws/chusho-kihon?$Q" in step
     assert "https://jpcite.com/laws/chusho-kihon.html?$Q" in step
@@ -270,7 +272,7 @@ def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
 
 
 def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> None:
-    trimmed_cohorts = ("laws", "programs", "cases", "enforcement")
+    trimmed_cohorts = ("laws", "cases", "enforcement")
     for workflow in (PAGES_PREVIEW, PAGES_DEPLOY_MAIN, PAGES_REGENERATE):
         text = _text(workflow)
         for cohort in trimmed_cohorts:
@@ -282,7 +284,8 @@ def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> Non
             assert text.index(f"--exclude '{cohort}/*.html'") < text.index(
                 "--exclude '*.md'"
             )
-        assert "--include 'programs/share.html'" in text
+        assert "--exclude 'programs/*.html'" not in text
+        assert "--include 'programs/share.html'" not in text
         assert "Cloudflare Pages artifact has ${file_count} files" in text
 
     function = _text(PAGES_CATCH_ALL_FUNCTION)
@@ -291,7 +294,7 @@ def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> Non
         in function
     )
     assert '"/laws/"' in function
-    assert '"/programs/"' in function
+    assert '"/programs/"' not in function
     assert '"/cases/"' in function
     assert '"/enforcement/"' in function
     assert "return `${pathname}.html`;" in function
@@ -301,7 +304,7 @@ def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> Non
 
     routes = _text(PAGES_ROUTES)
     assert '"/laws/*"' in routes
-    assert '"/programs/*"' in routes
+    assert '"/programs/*"' not in routes
     assert '"/cases/*"' in routes
     assert '"/enforcement/*"' in routes
     assert '"/*"' not in routes
