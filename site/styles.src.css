@@ -1444,6 +1444,8 @@ pre code { word-break: normal; }
   .brand-mark { color: #0d1117; }
   .btn-primary { color: #0d1117; }
   .btn-primary:hover { color: #0d1117; }
+  .nav-cta,
+  .nav-cta:hover { color: #0d1117 !important; }
   .skip-link { color: #0d1117; }
   .ps-submit { color: #0d1117; }
 

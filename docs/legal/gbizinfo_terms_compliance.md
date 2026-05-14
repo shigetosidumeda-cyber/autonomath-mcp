@@ -349,7 +349,7 @@ API ToS §2 (4999421139102) は具体的な利用上限値を **規約上 非開
 
 ### 4.4 Cache 透明性の顧客向け開示
 
-- 全 response に `_cache_meta.cache_age_hours` を埋め込み (`_gbiz_rate_limiter.py:get()` で実装)
+- gBizINFO 由来データを含む対象 response に `_cache_meta.cache_age_hours` を埋め込み (`_gbiz_rate_limiter.py:get()` で実装)
 - API docs (`docs/api-reference.md`) で「gBizINFO 由来 fact は最大 24h stale」を明記
 - webhook 配信時は `gbiz_cache_age_hours` を payload に同梱 (W1_A04 rationale §10 準拠)
 
@@ -416,7 +416,7 @@ jpcite (https://jpcite.com) において、API ご利用条件の見直しが
 - 平均アクセス頻度: X req/sec (ToS §2 利用上限を defensive に
   1 rps 以下で運用)
 - キャッシュ TTL: 24時間 (ToS §2 趣旨に整合する defensive default)
-- 出典固定文: 全 response に短形 + 機械可読 _attribution を 100% 付与
+- 出典固定文: gBizINFO 由来データを含む対象 response に短形 + 機械可読 _attribution を付与
 - 上流提供元 attribution: per-record で保持
 - 個別法令マーク画像: ingest 時に skip (PSE/JIS/PSC 等)
 

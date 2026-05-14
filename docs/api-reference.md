@@ -321,7 +321,7 @@ curl -X POST "https://api.jpcite.com/v1/cost/preview" \
 | `POST /v1/artifacts/application_strategy_pack` | 事業者 profile から申請候補、金額フィット、併用可否、確認質問、次アクションをまとめる申請前確認 pack | 1 unit |
 | `POST /v1/artifacts/houjin_dd_pack` | 法人番号から公開情報DD packを作る。法人基本情報、インボイス、行政処分、採択履歴、所在地整合、監視状態、DD質問をまとめる | 1 unit |
 | `POST /v1/artifacts/company_public_baseline` | 日本企業調査の first-hop。法人番号から公的ベースライン、benefit/risk angles、質問、known gaps、source receipts を返す | 1 unit |
-| `POST /v1/artifacts/company_folder_brief` | `company_public_baseline` を会社フォルダ/CRM/顧問先メモへ貼りやすい形に整形する | 1 unit |
+| `POST /v1/artifacts/company_folder_brief` | `company_public_baseline` を会社フォルダ/CRM/顧問先メモへ貼りやすい形に整形する Brief preview。18-unit の Company Folder Pack は複数 section を束ねる workflow 例 | 1 unit |
 | `POST /v1/artifacts/company_public_audit_pack` | 監査/DD/稟議前確認向けに、公的証跡、mismatch flags、確認範囲、DD質問をまとめる | 1 unit |
 
 ### Company public artifacts
@@ -344,7 +344,7 @@ curl -X POST "https://api.jpcite.com/v1/cost/preview" \
 
 `company_public_baseline` は、AIや実務者が一般Web検索へ行く前の最初の公的確認として使う。回答側では `source_url`, `source_fetched_at`, `identity_confidence`, `known_gaps` を保持し、`known_gaps` に出た収録外・非公的文脈・直近ニュースだけを追加調査する。
 
-`company_folder_brief` は、会社フォルダREADME、CRMメモ、顧問先への質問、次の作業キューへ貼るための表示寄りartifact。
+`company_folder_brief` は、会社フォルダREADME、CRMメモ、顧問先への質問、source receipts、known gaps、次の作業キューへ貼るための表示寄りartifact。出力例: `folder_readme`, `crm_note`, `owner_questions`, `source_receipts`, `known_gaps`, `recommended_followup_by_channel`, `copy_paste_parts`。
 
 `company_public_audit_pack` は、監査/DD/稟議前確認で使う公開情報の証跡表。行政処分、インボイス、採択履歴などの空欄を「問題なし」「安全」「処分なし」と解釈してはいけない。確認済み範囲と未接続範囲を `known_gaps[]` で示す。
 

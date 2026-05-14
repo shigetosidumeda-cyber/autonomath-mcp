@@ -233,7 +233,7 @@
  <p>受任候補の前歴・enforcement (fine / grant_refund / subsidy_exclude)・業務範囲 (定款目的・JSIC) を 1-call で。</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>example query</strong>: 「法人番号 1234567890123 の 過去 5 年の代表者変更履歴と enforcement 履歴」</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>intel_houjin_full</code> + <code>check_enforcement_am</code></p>
- <pre style="background:var(--bg-code,#f5f5f5);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3 × 2 = ¥6)
+ <pre style="background:var(--code-bg);color:var(--code-text);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3 × 2 = ¥6)
 intel_houjin_full({"houjin_bangou": "1234567890123"})
 check_enforcement_am({"houjin_bangou": "1234567890123"})</code></pre>
  </article>
@@ -243,7 +243,7 @@ check_enforcement_am({"houjin_bangou": "1234567890123"})</code></pre>
  <p>本店 (法務局) vs 営業所 (NTA invoice) vs 不動産所在地 の 3 軸不一致検出、登記申請先確定手前の sanity check。</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>example query</strong>: 「法人 X の本店 vs 営業所 vs 不動産所在地 jurisdiction 確認」</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>cross_check_jurisdiction</code></p>
- <pre style="background:var(--bg-code,#f5f5f5);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3)
+ <pre style="background:var(--code-bg);color:var(--code-text);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3)
 cross_check_jurisdiction({"houjin_bangou": "1234567890123"})</code></pre>
  </article>
 
@@ -252,7 +252,7 @@ cross_check_jurisdiction({"houjin_bangou": "1234567890123"})</code></pre>
  <p>相手方 (140 万円以下) の公開情報、行政処分、補助金除外情報などを時系列で確認。訴額判定と代理可否は司法書士本人判断。</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>example query</strong>: 「法人 X の 直近 与信 + 倒産 risk + 反社チェック 相当」</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>shihoshoshi_dd_pack_am</code> (新 tool)</p>
- <pre style="background:var(--bg-code,#f5f5f5);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3)
+ <pre style="background:var(--code-bg);color:var(--code-text);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3)
 shihoshoshi_dd_pack_am({"houjin_bangou": "1234567890123"})</code></pre>
  </article>
 
@@ -261,7 +261,7 @@ shihoshoshi_dd_pack_am({"houjin_bangou": "1234567890123"})</code></pre>
  <p>成年後見・任意後見・関連補助金 (中核機関整備 / 市民後見人養成) timeline と民法条文 を横断検索。</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>example query</strong>: 「成年後見 + 補助金 関連制度 一覧」</p>
  <p style="font-size:14px;color:var(--text-muted);"><strong>推奨 tool</strong>: <code>search_programs</code> + <code>get_law_article_am</code> (民法 §7-§876)</p>
- <pre style="background:var(--bg-code,#f5f5f5);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3 × 2 = ¥6)
+ <pre style="background:var(--code-bg);color:var(--code-text);padding:12px;border-radius:4px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>// MCP sample call (¥3 × 2 = ¥6)
 search_programs({"q": "成年後見", "limit": 10})
 get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
  </article>
@@ -273,7 +273,7 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
  <div class="container">
  <h2>MCP install (Claude Desktop)</h2>
  <p>Claude Desktop の <code>claude_desktop_config.json</code> に下記を追加してください。</p>
- <pre style="background:var(--bg-code,#f5f5f5);padding:16px;border-radius:6px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>{
+ <pre style="background:var(--code-bg);color:var(--code-text);padding:16px;border-radius:6px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:13px;"><code>{
   "mcpServers": {
     "jpcite": {
       "command": "uvx",
@@ -332,7 +332,7 @@ get_law_article_am({"law_id": "minpou", "article_range": "7-876"})</code></pre>
  <section class="disclaimer-envelope" style="background:var(--bg-alt);padding:24px 0;">
  <div class="container">
  <h2 style="font-size:18px;">業法 disclaimer envelope</h2>
- <p style="font-size:14px;line-height:1.8;color:var(--text-muted);">本サービスは情報検索です。下記の業法 fence を厳守し、有資格者の業務範囲を侵しません。全 response に <code>_disclaimer</code> field が必須出現します。</p>
+ <p style="font-size:14px;line-height:1.8;color:var(--text-muted);">本サービスは情報検索です。下記の業法 fence を厳守し、有資格者の業務範囲を侵しません。司法書士向けの sensitive surface では <code>_disclaimer</code> field や fence note を返し、専門業務との境界を明示します。</p>
  <ul style="font-size:14px;line-height:1.8;color:var(--text-muted);">
  <li><strong>司法書士法 §3</strong>: 登記・供託・簡裁訴訟代理は司法書士独占業務、jpcite は代行不可。</li>
  <li><strong>税理士法 §52</strong>: 税務代理・税務相談を行わない。</li>

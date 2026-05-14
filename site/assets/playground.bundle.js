@@ -771,6 +771,15 @@
         'agentRecommendation',
         'evidence_value',
         'evidenceValue',
+        'folder_readme',
+        'crm_note',
+        'owner_questions',
+        'source_receipts',
+        'copy_paste_parts',
+        'recommended_followup_by_channel',
+        'human_review_required',
+        'sections',
+        'agent_routing',
         'matched_programs',
         'matchedPrograms',
         'pairs',
@@ -1901,6 +1910,10 @@
     if (idx >= 0) {
       currentEndpoint = ENDPOINTS[idx];
       els.endpoint.value = String(idx);
+      if (currentEndpoint.id === 'artifacts.company_folder_brief' && els.flowHint) {
+        els.flowHint.innerHTML = '<strong>Company Folder preview:</strong> 法人番号から <code>folder_readme</code>、<code>crm_note</code>、<code>owner_questions</code>、<code>source_receipts</code>、<code>known_gaps</code>、<code>recommended_followup_by_channel</code> を返します。Brief は 1 unit preview、複数 section を束ねる Pack workflow は見積もり上の req 数で課金されます。';
+        els.flowHint.hidden = false;
+      }
     }
     renderParams();
     applyQueryParamsToCurrentEndpoint(qs);

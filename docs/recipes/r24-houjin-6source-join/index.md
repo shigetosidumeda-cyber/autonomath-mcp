@@ -16,7 +16,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 # 法人 6 source join (素材レイヤ)
 
 ## 想定 user
-SaaS 開発者 / agent dev / リサーチャー / 大学院生で、法人番号 1 件から 6 つの公的 source (1) 採択履歴、(2) 行政処分、(3) 適格事業者状況、(4) EDINET 重要事実、(5) 公共入札落札、(6) 商号 / 住所 / 代表者変更 を 1 envelope で join した parquet / JSON を取得し、自社 SaaS の DB に取り込む素材レイヤとして使う。本 recipe は最も汎用的な素材 endpoint で、他の recipe (r03 M&A DD / r09 BPO トリアージ / r12 監査 KYC / r15 SaaS enrich) の下流に位置する。
+SaaS 開発者 / agent dev / リサーチャー / 大学院生で、法人番号 1 件から 6 つの公的 source (1) 採択履歴、(2) 行政処分、(3) 適格事業者状況、(4) EDINET 重要事実、(5) 公共入札落札、(6) 商号 / 住所 / 代表者変更 を 1 envelope で join した parquet / JSON を取得し、自社 SaaS の DB に取り込む素材レイヤとして使う。本 recipe は最も汎用的な素材 endpoint で、他の recipe (r03 M&A DD / r09 問い合わせトリアージ / r12 監査 KYC / r15 SaaS enrich) の下流に位置する。
 
 ## 必要な前提
 - jpcite API key (標準従量料金、初回 3 req/IP/日無料)

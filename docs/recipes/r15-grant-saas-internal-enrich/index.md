@@ -118,7 +118,7 @@ const result = await jpcite.get_job_result(job.job_id);
 - `apply_eligibility_chain_am` (排他ルールチェック、Wave 21)
 
 ## 関連 recipe
-- [r09-bpo-grant-triage-1000](../r09-bpo-grant-triage-1000/) — BPO トリアージ、SaaS 化前段
+- [r09-bpo-grant-triage-1000](../r09-bpo-grant-triage-1000/) — 問い合わせトリアージ、SaaS 化前段
 - [r24-houjin-6source-join](../r24-houjin-6source-join/) — 6 source join、本 recipe の素材レイヤ
 - [r25-adoption-bulk-export](../r25-adoption-bulk-export/) — 採択 bulk export、参照データの月次再生成
 

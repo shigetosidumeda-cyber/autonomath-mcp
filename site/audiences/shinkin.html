@@ -288,13 +288,13 @@
  </ul>
 
  <h2 class="section-title" style="margin-top:32px;">サンプル query (curl)</h2>
- <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code># 大阪府 製造業 取引先 1 社向けに 信金推薦が要件の融資 + 補助金候補を集約
+ <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:var(--code-bg);color:var(--code-text);padding:14px;border-radius:6px;border:1px solid var(--border);overflow-x:auto;"><code># 大阪府 製造業 取引先 1 社向けに 信金推薦が要件の融資 + 補助金候補を集約
 curl "https://api.jpcite.com/v1/loan-programs/search?q=設備投資&collateral_required=not_required" \
   -H "X-API-Key: $JPCITE_API_KEY" \
   -H "X-Client-Tag: client-osaka-mfg-001"</code></pre>
 
  <h2 class="section-title" style="margin-top:32px;">install one-liner (MCP / Claude Desktop)</h2>
- <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:#f6f6f6;padding:14px;border-radius:6px;border:1px solid #e7e5e4;overflow-x:auto;"><code># 信金担当者の手元 Claude Desktop / Cursor / Cline で MCP として呼ぶ
+ <pre class="code-block" style="margin:16px 0;font-size:13px;line-height:1.55;background:var(--code-bg);color:var(--code-text);padding:14px;border-radius:6px;border:1px solid var(--border);overflow-x:auto;"><code># 信金担当者の手元 Claude Desktop / Cursor / Cline で MCP として呼ぶ
 uvx autonomath-mcp --src=audience_shinkin</code></pre>
 
  <p style="font-size:14px;color:var(--text-muted);margin:8px 0 0;">

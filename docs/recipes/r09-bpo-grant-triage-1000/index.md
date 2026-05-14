@@ -1,22 +1,22 @@
 ---
-title: "BPO の補助金トリアージ 1000 件"
+title: "補助金問い合わせトリアージ 1000 件"
 slug: "r09-bpo-grant-triage-1000"
-audience: "BPO"
+audience: "業務支援チーム"
 intent: "bulk_triage"
 tools: ["search_programs", "get_corp_360", "check_eligibility"]
 artifact_type: "triage.csv"
 billable_units_per_run: 1000
-seo_query: "BPO 補助金 トリアージ 大量 自動化"
+seo_query: "補助金 問い合わせ トリアージ 大量 照合"
 total_time: "PT5M"
 date_created: "2026-05-11"
 date_modified: "2026-05-11"
 license: "PDL v1.0 / CC-BY-4.0"
 ---
 
-# BPO の補助金トリアージ 1000 件
+# 補助金問い合わせトリアージ 1000 件
 
 ## 想定 user
-親会社 / 地銀 / メガバンク / 商工会連合会 / 信金中金 / 産業創造機構 等から、傘下 / 取引先 / 会員企業 500-5,000 社の補助金フィット度算定を一括委託される BPO 事業者。月次 / 四半期で 1,000 社の法人番号 CSV を受領し、各社につき適合補助金 top 5 + 排他ルール抵触有無 + 採択確率帯 (low/mid/high) を 5 分でテーブル化し、優先架電 100 社 / 案内 DM 900 社の振分けを行う。
+親会社 / 地銀 / メガバンク / 商工会連合会 / 信金中金 / 産業創造機構 等から、傘下 / 取引先 / 会員企業 500-5,000 社の公開情報レビューを依頼される業務支援チーム。月次 / 四半期で 1,000 社の法人番号 CSV を受領し、各社につき候補制度 top 5 + 排他ルール確認状況 + 要確認 band (low/mid/high) を初期レビュー表に整理し、人間レビュー・専門家確認の優先順位付けに使う。
 
 ## 必要な前提
 - jpcite API key (標準従量料金、初回 3 req/IP/日無料、bulk 利用は事前 prepay 推奨)
@@ -104,7 +104,7 @@ const res = await jpcite.bulk_match_programs({
   ],
   "known_gaps": ["rate-limit 10 req/s で 1,000 社 約 2 分"],
   "recommended_followup": [
-    "fit_score >= 0.75 の 87 社を優先架電",
+    "fit_score >= 0.75 の 87 社を人間レビュー優先",
     "0.60-0.75 の 234 社を案内 DM",
     "0.50-0.60 の 626 社を四半期再算定対象に編入"
   ]
@@ -140,10 +140,10 @@ const res = await jpcite.bulk_match_programs({
 - PDL v1.0 + CC-BY-4.0、出典明記必須
 - 委託元 (地銀 / 商工会 / メガバンク) への再配布時は jpcite 出典明記必須
 - 法人番号は公開情報 — 個別社名と紐付けても 個人情報保護法対象外
-- BPO 内部の triage ロジック (fit_score 閾値 / 優先架電基準) は二次著作物扱い
+- 業務支援チーム内部の triage ロジック (fit_score 閾値 / レビュー優先度基準) は二次著作物扱い
 
 ## 業法 fence
 - BPO は情報整理のみ、申請代行は別資格者 (中小企業診断士 / 行政書士 / 公認会計士 / 税理士) へ受渡し
 - 個人情報保護法 — 法人番号は対象外、代表者氏名 / 担当者連絡先 等は別途同意 + 安全管理
 - 下請法 / 独禁法 — 親会社→傘下企業へのトリアージ結果押し付けは優越的地位の濫用に抵触し得る
-- 景表法 — 採択確率帯 (low/mid/high) は統計推定、保証ではない旨を artifact に明記
+- 景表法 — 要確認 band (low/mid/high) は公開情報に基づく初期整理であり、採択・受給・業績改善を保証しない旨を artifact に明記

@@ -35,9 +35,9 @@
 | 6 | dev 試作 endpoint | 50,000 | 10,000 | 12 | 5 | 63.00 | 15 | **48.00** |
 | **合計** | 6 case 1 セット |  |  |  |  | **528.00** | **51** | **477.00** |
 
-**月次/年次 スケール (#3 中央値)**:
-- 月 100 case (税理士 100 顧問): 純 LLM ¥7,650 / jpcite ¥600 → 月節約 **¥7,050** / 年 **¥84,600**
-- 月 1,800 case (BPO triage): 純 LLM ¥137,700 / jpcite ¥10,800 → 月節約 **¥126,900** / 年 **¥1,522,800**
+**月次/年次 スケール (#3 中央値 / API fee delta reference)**:
+- 月 100 case (税理士 100 顧問): 純 LLM ¥7,650 / jpcite ¥600 → 月次 API fee delta **¥7,050** / 年換算 **¥84,600**
+- 月 1,800 case (問い合わせ triage): 純 LLM ¥137,700 / jpcite ¥10,800 → 月次 API fee delta **¥126,900** / 年換算 **¥1,522,800**
 
 ## 検算 (3 軸 verify)
 
@@ -79,4 +79,3 @@
 - 6 use case を業種 page (cpa_firm / tax_advisor / construction / shinkin 等) の cost saving table に v2 数字注入 (Wave 46 で 3 page 完了済、 残 14 page を v2 化)
 - gpt-5 baseline での同等 calc を § E に追加 (cheaper input でも search × multi-turn で結果近似なので jpcite 優位は維持)
 - calculator HTML に MCP playground 直リンク追加で agent 経由 ¥3 を即体感させる
-

@@ -115,7 +115,7 @@ console.log(`採択 ${job.row_count} 件、URL: ${job.result_url}`);
 
 ## 関連 recipe
 - [r07-shindanshi-monthly-companion](../r07-shindanshi-monthly-companion/index.md) — 診断士月次伴走、類似採択事例参照
-- [r09-bpo-grant-triage-1000](../r09-bpo-grant-triage-1000/index.md) — BPO トリアージ、優先架電基準
+- [r09-bpo-grant-triage-1000](../r09-bpo-grant-triage-1000/index.md) — 補助金問い合わせトリアージ、レビュー優先度基準
 - [r24-houjin-6source-join](../r24-houjin-6source-join/index.md) — 法人 6 source join
 
 ## billable_units 試算
