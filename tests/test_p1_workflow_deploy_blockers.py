@@ -264,6 +264,7 @@ def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
     assert "https://jpcite.com/laws/chusho-kihon.md?$Q" in step
     assert "https://jpcite.com/enforcement/act-10084.md?$Q" in step
     assert "https://jpcite.com/cases/mirasapo_case_118.md?$Q" in step
+    assert 'curl -s -L -o /dev/null -w "%{http_code}"' in step
     assert "::error::source-backed smoke failed" in step
     assert re.search(r'if \[ "\$ok" != "true" \]; then\n\s+echo "::error::', step)
     assert re.search(r'if \[ "\$ok" != "true" \]; then.*?\n\s+exit 1', step, re.DOTALL)

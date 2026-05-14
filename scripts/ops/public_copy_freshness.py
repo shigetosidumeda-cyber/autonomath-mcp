@@ -163,12 +163,11 @@ def _should_scan(path: Path) -> bool:
     rel = path.relative_to(REPO_ROOT).as_posix()
     if path.suffix not in TEXT_SUFFIXES:
         return False
-    if any(part in SKIP_DIR_PARTS for part in path.relative_to(REPO_ROOT).parts):
-        if not rel.startswith("site/docs/"):
-            return False
-    if not _is_public_doc(rel):
+    if any(
+        part in SKIP_DIR_PARTS for part in path.relative_to(REPO_ROOT).parts
+    ) and not rel.startswith("site/docs/"):
         return False
-    return True
+    return _is_public_doc(rel)
 
 
 def iter_scan_files() -> list[Path]:

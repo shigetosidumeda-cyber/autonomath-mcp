@@ -409,9 +409,9 @@ jobs:
             echo "source-backed-smoke: $url"
             ok=false
             for attempt in 1 2 3 4 5 6; do
-              # Accept 200 from either the proxy path or static path —
-              # both are correct outcomes. Reject 404.
-              status=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$url" || echo "000")
+              # Accept final 200 from either the proxy path or static path.
+              # Program detail URLs may 308 to extensionless canonicals.
+              status=$(curl -s -L -o /dev/null -w "%{http_code}" --max-time 30 "$url" || echo "000")
               if [ "$status" = "200" ]; then
                 ok=true
                 break
