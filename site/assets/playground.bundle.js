@@ -103,6 +103,18 @@
       ],
     },
     {
+      id: 'artifacts.company_folder_brief',
+      method: 'POST',
+      path: '/v1/artifacts/company_folder_brief',
+      title: '会社フォルダ Brief / 公開情報メモ',
+      desc: '法人番号から、会社フォルダやCRMメモへ貼りやすい公開情報 brief を返す。回答生成前の会社確認 first-hop。',
+      params: [
+        { name: 'houjin_bangou', type: 'text', label: '法人番号またはT番号', in: 'body', required: true, placeholder: '8010001213708', defaultValue: '8010001213708' },
+        { name: 'max_per_section', type: 'number', label: '各セクション最大件数', in: 'body', defaultValue: '10' },
+        { name: 'include_sections', type: 'array', label: 'include_sections (任意、改行/カンマ区切り)', in: 'body', placeholder: 'meta\ninvoice_status\nenforcement\nadoption_history' },
+      ],
+    },
+    {
       id: 'funding_stack.check',
       method: 'POST',
       path: '/v1/funding_stack/check',

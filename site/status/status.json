@@ -1,33 +1,33 @@
 {
-  "snapshot_at": "2026-05-14T19:34:42+09:00",
+  "snapshot_at": "2026-05-14T20:10:21+09:00",
   "components": {
     "api": {
       "status": "ok",
-      "latency_ms": 702,
+      "latency_ms": 1127,
       "error_category": null
     },
     "mcp": {
       "status": "degraded",
-      "latency_ms": 810,
+      "latency_ms": 1306,
       "error_category": "external_dependency_unavailable"
     },
     "billing": {
       "status": "ok",
       "latency_ms": 0,
-      "error_category": "external_dependency_unavailable"
+      "error_category": null
     },
     "data-freshness": {
-      "status": "degraded",
-      "latency_ms": 0,
-      "error_category": null,
-      "last_updated_at": null,
-      "max_age_days": null
+      "status": "down",
+      "latency_ms": 130,
+      "error_category": "data_stale",
+      "last_updated_at": "2026-05-12",
+      "max_age_days": 21
     },
     "dashboard": {
       "status": "ok",
-      "latency_ms": 203,
+      "latency_ms": 252,
       "error_category": null
     }
   },
-  "overall": "degraded"
+  "overall": "down"
 }

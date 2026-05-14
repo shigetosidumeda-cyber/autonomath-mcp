@@ -38,7 +38,7 @@ artifact の構成:
 
 第二に、recipe r07 は中小企業支援法の建付けに沿う「経営革新等支援機関業務の補助情報」として位置付けられ、認定支援機関が自身の業務遂行のために用いることを前提とする。出力には診断士法人・税理士法人・金融機関などの認定支援機関が「自身の業務遂行に用いる」旨を ToS で明示している。
 
-すべての API response に `X-Jpcite-Disclaimer` header と `_disclaimer` field が付与され、「公開情報の機械整形であり、税務判断・経営助言の最終責任は資格専門家にあること」を明示する。SDK / MCP server は disclaimer chain を再配布事業者にも継承させる。
+税務・経営助言・申請・監査などの sensitive surface では、`X-Jpcite-Disclaimer` header や `_disclaimer` field により、「公開情報の機械整形であり、最終責任は資格専門家にあること」を示す。SDK / MCP server は同じ境界表示を再配布事業者にも継承させる設計として扱う。
 
 ## 節約額試算 (旧称 ROI 試算)
 

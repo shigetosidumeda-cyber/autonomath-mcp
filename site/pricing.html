@@ -472,8 +472,8 @@
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">業法 fence</th>
- <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">なし — 個別税務助言 / 監査意見 / 申請書面 / 登記代理を平気で生成 → 業法抵触リスク</td>
- <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">8 業法 fence (税理士法§52 / 弁護士法§72 / 公認会計士法§47条の2 / 行政書士法§1の2・§19 / 司法書士法§3 / 社会保険労務士法§27 / 弁理士法§75 / 労働基準法§36) を envelope 自動付与</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">一般的な web search では、専門判断に必要な注意書きや業法上の境界表示が応答ごとに揃わない場合があります</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">税務・法律・申請・監査・与信前確認などの sensitive surface では、対象領域に応じた 8 業法 fence note を返す設計です</td>
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">排他 / 前提ルール</th>
@@ -483,7 +483,7 @@
  <tr>
  <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);">監査 / 顧問先説明</th>
  <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;">URL のみ、content_hash / corpus_snapshot_id なし</td>
- <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;"><code>content_hash</code> + <code>corpus_snapshot_id</code> + Merkle proof で再現可能性</td>
+ <td style="padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--border,#e5e7eb);line-height:1.65;"><code>content_hash</code> や <code>corpus_snapshot_id</code> など、利用可能な範囲の再確認用メタデータを返します。監査・DD では一次資料と専門家レビューを併用してください</td>
  </tr>
  <tr>
  <th scope="row" style="text-align:left;padding:12px 14px;font-weight:600;vertical-align:top;">100 req コスト</th>

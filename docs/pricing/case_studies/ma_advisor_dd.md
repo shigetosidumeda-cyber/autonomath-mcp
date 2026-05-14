@@ -17,7 +17,7 @@ M&A advisor が 1 案件 (中小企業 sell side / buy side / 事業承継) の 
 - 国税 saiketsu (140+ 行) と通達 (3,221 行) で税務争点の有無
 - 事業承継 制度マッチング (api/succession.py、R8 grow)
 - M&A 関連の助成金 / 補助金 (事業承継・引継ぎ補助金、中小 M&A 支援措置等)
-- 監査済 audit_pack の assembly (createCompanyPublicAuditPack、counterparty_dd_and_audit_prep シーケンス)
+- source-linked public audit pack の assembly (createCompanyPublicAuditPack、counterparty_dd_and_audit_prep シーケンス)
 
 ## 利用量と課金 (実数)
 

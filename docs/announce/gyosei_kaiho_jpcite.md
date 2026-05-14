@@ -42,7 +42,7 @@ artifact 仕様:
 
 第一に、recipe r05 の出力は「許認可制度の候補リスト + 根拠 + 申請窓口情報」までであり、申請書類のドラフトを一切生成しない。記入例・記入欄候補等の出力も recipe 仕様で禁止されている。
 
-第二に、すべての API response に `X-Jpcite-Disclaimer` header と JSON body の `_disclaimer` field が付与され、「公開情報の機械整形であり、書類作成・申請代理は行政書士業務であること」を明示する。
+第二に、申請・許認可・専門判断に関わる sensitive surface では、`X-Jpcite-Disclaimer` header や JSON body の `_disclaimer` field により、「公開情報の機械整形であり、書類作成・申請代理は行政書士業務であること」を示す。
 
 第三に、jpcite SDK と MCP server は、再配布事業者にも disclaimer chain の継承を ToS で義務付ける。最終利用者まで「artifact は事実整理にとどまる」という事実が届く仕組みである。
 

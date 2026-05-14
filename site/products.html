@@ -271,7 +271,7 @@
  </thead>
  <tbody>
 	 <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">Evidence Packet</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">制度ID / キーワード / 法令名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">一次資料 URL、取得時刻、known gaps、業法 fence、引用候補、packet token 見積もり</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/playground.html?flow=evidence3">Playground</a> / <a href="/docs/getting-started/">REST</a> / <a href="/connect/">MCP</a></td></tr>
- <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">会社フォルダ</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">法人番号 / T番号 / 会社名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">同定結果、適格事業者、行政処分、採択履歴、確認質問</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/audiences/">REST</a> / <a href="/connect/">MCP</a> / <a href="/dashboard.html">Dashboard</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">会社フォルダ</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">法人番号 / T番号 / 会社名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">同定結果、適格事業者、行政処分、採択履歴、確認質問</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">プレビュー</a> / <a href="/docs/getting-started/audiences/">REST</a> / <a href="/connect/">MCP</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">公開情報 DD</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">候補会社リスト / 取引先名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">処分履歴、補助金採択、未確認範囲、担当者向けメモ</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/audiences/">REST batch</a> / <a href="/connect/">MCP</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">顧問先月次レビュー</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">顧問先名 / 業種 / 地域</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">補助金・税制・融資候補、締切、変更点、顧問先に聞く文面</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/dashboard.html#dashboard-workflows-title">Saved search</a> / <a href="/dashboard.html#dashboard-workflows-title">Email</a> / <a href="/docs/getting-started/">API</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">申請戦略パック</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">地域 / 業種 / 投資額 / 使途</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">候補制度、除外条件、併用注意、必要資料、面談質問</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/playground.html?flow=evidence3">Playground</a> / <a href="/widget.html">Widget</a></td></tr>
@@ -299,14 +299,14 @@
 
 	 <article class="price-card" id="monthly-review">
 	 <h2>顧問先月次レビュー</h2>
-	 <p class="tier-desc">顧問先名・所在地・業種を入れると、税制・補助金・融資候補、出典URL、未確認点、顧問先へ送る質問文を月次レビュー用に返します。事務所の定例確認工数を減らす対価です。</p>
+	 <p class="tier-desc">顧問先名・所在地・業種を入れると、税制・補助金・融資候補、出典URL、未確認点、顧問先へ送る質問文を月次レビュー用に返します。事務所の定例確認で使う根拠収集・未確認点整理のための出力です。工数削減は業務内容・確認範囲・外部ツール条件に依存します。</p>
 		 <a class="btn btn-secondary" href="dashboard.html#dashboard-workflows-title">保存検索を見る →</a>
 	 </article>
 
 	 <article class="price-card" id="company-folder">
 	 <h2>会社フォルダ</h2>
-	 <p class="tier-desc">法人番号・T番号・会社名を入れると、同定結果、インボイス確認、公開情報、質問票、watch対象を会社フォルダに保存できる形で返します。取引開始前の確認作業向けです。</p>
-	 <a class="btn btn-secondary" href="/docs/getting-started/audiences/">始め方 →</a>
+	 <p class="tier-desc">法人番号・T番号・会社名から、利用可能な公開レコード、同定結果、インボイス確認、確認質問、known gaps を会社フォルダ/CRMメモへ貼りやすい形に整理します。保存・監視は利用者側の設定に依存します。</p>
+	 <a class="btn btn-secondary" href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">会社フォルダをプレビュー →</a>
 	 </article>
 
 	 <span id="pre-consult" class="visually-hidden" aria-hidden="true"></span>

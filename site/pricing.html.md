@@ -80,11 +80,11 @@ AI agent から web search で公的制度を扱うと、aggregator 孫引き・
 
 取得時刻 HTML に fetched_at なし。サイト自己申告「最終更新」のみ 全 response に source_fetched_at 、優先出典の再取得中央値 約 7 日
 
-業法 fence なし — 個別税務助言 / 監査意見 / 申請書面 / 登記代理を平気で生成 → 業法抵触リスク 8 業法 fence (税理士法§52 / 弁護士法§72 / 公認会計士法§47条の2 / 行政書士法§1 / 司法書士法§3 / 社会保険労務士法§27 / 弁理士法§75 / 労働基準法§36) を envelope 自動付与
+業法 fence 一般的な web search では、専門判断に必要な注意書きや業法上の境界表示が応答ごとに揃わない場合があります 税務・法律・申請・監査・与信前確認などの sensitive surface では、対象領域に応じた 8 業法 fence note を返す設計です
 
 排他 / 前提ルール LLM 推論で「同時利用できそう」を hallucinate 181 ルール (排他 125 + 前提 17 + 絶対 15 + その他 24) を機械照合、AI 推論不要
 
-監査 / 顧問先説明 URL のみ、content_hash / corpus_snapshot_id なし content_hash + corpus_snapshot_id + Merkle proof で再現可能性
+監査 / 顧問先説明 URL のみ、content_hash / corpus_snapshot_id なし content_hash や corpus_snapshot_id など、利用可能な範囲の再確認用メタデータを返します。監査・DD では一次資料と専門家レビューを併用してください
 
 100 req コスト caller 側の LLM token / web search / cache 条件に依存。jpcite は 100 req = ¥330 (税込) で、出典 URL・取得時点・known gaps・業法 fence を同じ envelope で返します。
 
