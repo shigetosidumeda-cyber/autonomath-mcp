@@ -1551,6 +1551,14 @@ def test_generators_emit_current_public_chrome_when_regenerated() -> None:
         "/assets/logo.png",
         "AutonoMath",
     ]
+    required_nav_tokens = [
+        'href="/connect/"',
+        'href="/prompts/"',
+        'href="/pricing.html"',
+        'class="nav-trust"',
+        'href="/status.html"',
+        'class="lang-switch"',
+    ]
     offenders: list[str] = []
     for rel in generator_paths:
         text = (REPO_ROOT / rel).read_text(encoding="utf-8", errors="ignore")
@@ -1565,6 +1573,10 @@ def test_generators_emit_current_public_chrome_when_regenerated() -> None:
             if "lockup-transparent-600-darklogo.png" not in template_text:
                 offenders.append(f"{template_rel}: template missing canonical logo lockup")
             continue
+        if '<nav class="site-nav"' in text:
+            for token in required_nav_tokens:
+                if token not in text:
+                    offenders.append(f"{rel}: generator nav missing {token}")
         if "footer-brand-mark" not in text:
             offenders.append(f"{rel}: generator missing footer brand mark")
         if "lockup-transparent-600-darklogo.png" not in text:
