@@ -58,7 +58,7 @@ AI agent / 士業システム / 社内ワークフローで反復利用する場
 - **二重実行防止:** batch / export / fanout では `Idempotency-Key` を使う
 - **顧客別原価管理:** 士業 / AI agent / 社内ワークフローは `X-Client-Tag` で顧問先・会社フォルダ・案件ごとに利用量を分ける
 
-価格判断では、jpcite を「安い検索API」としてではなく、source URL、取得時刻、known gaps、compatibility / exclusion rule、source receipts を含む Evidence layer として評価してください。外部 LLM の token / search / cache / tool 料金削減は保証しません。
+価格判断では、jpcite を「安い検索API」としてではなく、source URL、取得時刻、known gaps、compatibility / exclusion rule、source receipts を含む Evidence layer として評価してください。外部 LLM の token / search / cache / tool 料金削減を約束するものではありません。
 
 Claude Agent SDK / `claude -p` / GitHub Actions での反復利用では、「AIだけで調べるより安い」と表現するより、毎回 PDF と検索を投げる前に根拠付きの小さい入力へ変換する、と説明してください。jpcite のレスポンスは `jpcite_cost_jpy`、`estimated_tokens_saved`、`source_count`、`known_gaps` を返すため、agent 側は Claude 側の月次クレジットや API 請求仕様に合わせて、呼ぶ価値があるケースだけ packet を渡せます。
 
@@ -67,7 +67,7 @@ Claude Agent SDK / `claude -p` / GitHub Actions での反復利用では、「AI
 匿名 3 req/日 (IP 単位、JST 翌日 00:00 リセット) の代表的な検証フローです。無料枠でも通常と同じ品質・形式のレスポンスで、課金前に下の 5 点を確認できます。
 
 1. **出典 URL がある** — 主要な公開検索 / Evidence response の `source_url` がまとめサイトでなく省庁・自治体・公庫の一次資料
-2. **`source_fetched_at` がある** — jpcite が出典を最後に取得・構造化した時刻 (一次情報源の公表日・更新日・有効期限・法的効力日・現在の受付状況を保証するものではありません)。中央値 7 日
+2. **`source_fetched_at` がある** — jpcite が出典を最後に取得・構造化した時刻 (一次情報源の公表日・更新日・有効期限・法的効力日・現在の受付状況を断定するものではありません)。中央値 7 日
 3. **Evidence Packet で `quality.known_gaps` を確認できる** — 未接続 / 未取得 / 未抽出 を黙って隠さない
 4. **packet tokens vs baseline 比較が返る** — `GET /v1/intelligence/precomputed/query` に `source_tokens_basis=pdf_pages` + `source_pdf_pages` + `input_token_price_jpy_per_1m` を渡すと `compression.packet_tokens_estimate` / `source_tokens_estimate` / `input_context_reduction_rate` が返る
 5. **`agent_recommendation.recommend_for_cost_savings` が true になる条件** — caller baseline と入力 token 単価が揃い、`break_even_met=true` の時のみ true。baseline なしなら `needs_caller_baseline`、単価なしなら `needs_input_token_price`、式を満たさない場合は `not_supported_by_caller_baseline`
@@ -79,7 +79,7 @@ Claude Agent SDK / `claude -p` / GitHub Actions での反復利用では、「AI
 - `true` の意味: caller が渡した baseline (`source_pdf_pages` または `source_token_count`) と `input_token_price_jpy_per_1m` を使ったとき、`avoided_tokens × 単価 / 1,000,000 ≥ ¥3` (通常 call の 1 unit 単価) を満たしたという推定値
 - `false` の意味: 上の式を満たさない (`not_supported_by_caller_baseline`)、caller baseline が未指定 (`needs_caller_baseline`)、または input token 単価が未指定 (`needs_input_token_price`)
 - **対象外のもの**: 出力 tokens、reasoning tokens、cache、provider tool / search 料金、為替、外部 LLM 側の請求仕様
-- **保証ではないもの**: 外部 LLM 請求額そのものの削減保証ではなく、caller baseline 条件下の入力文脈比較です
+- **対象外のもの**: 外部 LLM 請求額そのものの削減約束ではなく、caller baseline 条件下の入力文脈比較です
 
 レスポンス側でも `compression.savings_claim="estimate_not_guarantee"` と `compression.provider_billing_not_guaranteed=true` が常に付きます。AI が引用するときも「caller baseline 条件下の入力文脈削減見込み」 として扱ってください。
 

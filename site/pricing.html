@@ -344,7 +344,7 @@
 		 </p>
 		 <section aria-labelledby="token-cost-calc-title" style="margin:0 0 24px;border:1px solid var(--border,#e5e7eb);border-radius:12px;background:var(--bg-alt,#fafaf9);padding:16px 18px;">
 			 <h2 id="token-cost-calc-title" style="font-size:18px;margin:0 0 8px;">毎回 PDF と検索を投げる前に、根拠付きの小さい入力へ変換</h2>
-		 <p style="font-size:14px;line-height:1.7;margin:0 0 10px;color:var(--text);">LLM に資料 chunk を毎回読ませる場合、費用は <code>投入 tokens × 利用モデルの input 単価 + output tokens</code> です。jpcite を挟む場合、費用は <code>jpcite ¥3/billable unit + Evidence Packet を読む少量 tokens</code> です。Claude Agent SDK や <code>claude -p</code> の月次クレジットを直接保証するものではありませんが、長い資料投入を根拠付き packet へ置き換える設計にできます。</p>
+		 <p style="font-size:14px;line-height:1.7;margin:0 0 10px;color:var(--text);">LLM に資料 chunk を毎回読ませる場合、費用は <code>投入 tokens × 利用モデルの input 単価 + output tokens</code> です。jpcite を挟む場合、費用は <code>jpcite ¥3/billable unit + Evidence Packet を読む少量 tokens</code> です。Claude Agent SDK や <code>claude -p</code> の月次クレジット削減を直接約束するものではありませんが、長い資料投入を根拠付き packet へ置き換える設計にできます。</p>
 	 <ul style="margin:0;padding-left:20px;font-size:13px;line-height:1.7;color:var(--text-muted);">
 	 <li>数十ページの公的資料を毎回投げる反復 agent では、入力 token と遅延を下げやすい設計です。</li>
 	 <li>1 回だけの軽い質問、短い 1 ページ確認、無料検索で足りる内容では、jpcite を挟まない方が安い場合があります。</li>
