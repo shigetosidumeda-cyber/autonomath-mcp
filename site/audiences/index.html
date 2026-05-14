@@ -154,9 +154,9 @@
         "itemListElement": [
           {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
           {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
           {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
           {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
           {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
@@ -190,24 +190,27 @@
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="../about.html">運営について</a>
- <a href="../products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
- <a href="../pricing.html">料金</a>
- <a href="../audiences/" aria-current="page">利用者層</a>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
  <details class="nav-trust">
  <summary>信頼</summary>
  <ul>
- <li><a href="../status.html">稼働状況</a></li>
- <li><a href="../data-freshness.html">データ鮮度</a></li>
- <li><a href="../transparency.html">透明性</a></li>
- <li><a href="../sources.html">出典</a></li>
+ <li><a href="/trust.html">信頼の設計</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
  </ul>
  </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
- <a href="/audiences/" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <a href="/" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
- <a href="/en/audiences/" lang="en" hreflang="en">EN</a>
+ <a href="/en/" lang="en" hreflang="en">EN</a>
  </span>
  </nav>
  </div>
@@ -317,7 +320,7 @@
  <p style="margin:14px 0 0;"><a class="btn btn-secondary" href="/products.html#monthly-review">出力例を見る</a></p>
  </article>
  <article class="card">
- <h3>公開情報 DD / 申請前 Evidence Packet</h3>
+ <h3>M&A DD / 取引先公開情報チェック / 申請前 Evidence Packet</h3>
  <p>候補会社や投資テーマに対して、処分履歴、補助金採択、未確認範囲、除外条件、一次資料 URL、known gaps、確認質問をまとめます。</p>
  <p style="margin:14px 0 0;"><a class="btn btn-secondary" href="/products.html#public-dd">成果物一覧を見る</a></p>
  </article>
@@ -347,7 +350,7 @@
  <tr><th scope="row">行政書士</th><td>許認可・補助金・処分履歴メモ</td><td>一次資料 URL / 業法 fence / 申請前の確認質問</td><td>1-2 req</td><td>¥3-¥6</td><td><a href="admin-scrivener.html">詳細</a></td></tr>
  <tr><th scope="row">補助金コンサル</th><td>顧問先月次レビュー</td><td>顧問先ごとの制度候補 / 未確認点 / 次の質問文</td><td>3 req</td><td>¥9</td><td><a href="/products.html#monthly-review">出力例</a></td></tr>
  <tr><th scope="row">中小企業経営者</th><td>相談前の候補制度・質問票</td><td>候補制度 / 相談前に専門家へ聞く質問</td><td>3 req</td><td>¥9</td><td><a href="smb.html">詳細</a></td></tr>
- <tr><th scope="row">VC / M&amp;A</th><td>会社フォルダ / 公開情報 DD</td><td>法人番号 / T番号 / 行政処分 / 公開 source receipts</td><td>4 req</td><td>¥12</td><td><a href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">試す</a></td></tr>
+ <tr><th scope="row">VC / M&amp;A</th><td>会社フォルダ / M&A DD / 取引先公開情報チェック</td><td>法人番号 / T番号 / 行政処分 / 公開 source receipts</td><td>4 req</td><td>¥12</td><td><a href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">試す</a></td></tr>
  <tr><th scope="row">AI 開発者</th><td>MCP / REST で Evidence prefetch</td><td>長文資料投入前の根拠収集・整形</td><td>5 req</td><td>¥15</td><td><a href="dev.html">詳細</a></td></tr>
  <tr><th scope="row">建設業特化</th><td>補助金候補 + 除外条件</td><td>地域・業種別の制度候補 / 除外条件</td><td>2 req</td><td>¥6</td><td><a href="construction.html">詳細</a></td></tr>
  <tr><th scope="row">製造業特化</th><td>設備投資・GX・省力化候補</td><td>投資テーマ別の制度候補 / source receipts</td><td>2 req</td><td>¥6</td><td><a href="manufacturing.html">詳細</a></td></tr>
@@ -367,7 +370,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の公的制度を、成果物として。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

@@ -95,7 +95,7 @@ jpcite は、 その欠落した層を AI エージェントが直接呼べる A
 ## 提供形態 
 
 - REST API + MCP サーバー 
-- メール通知チャネル · 法令改正アラート · 埋込ウィジェット · 根拠付き相談パック / Evidence-to-Expert Handoff 
+- メール通知チャネル · 法令改正アラート · Embedded Evidence Entry · 根拠付き相談パック / Evidence-to-Expert Handoff
 
 ## 連絡先 
 

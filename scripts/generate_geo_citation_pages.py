@@ -3740,7 +3740,7 @@ def _build_json_ld(p: QAPage, domain: str) -> dict[str, Any]:
         },
         "logo": {
             "@type": "ImageObject",
-            "url": f"https://{domain}/assets/logo.png",
+            "url": f"https://{domain}/assets/logo-v2.svg",
             "width": 600,
             "height": 60,
         },
@@ -4122,7 +4122,7 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <meta name="robots" content="index, follow">
 
 <link rel="canonical" href="https://{domain}{canonical_path}">
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/styles.css?v=20260428a">
 </head>
 <body>
@@ -4131,8 +4131,8 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <header class="site-header" role="banner">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="jpcite ホーム">
-      <span class="brand-name">jpcite</span>
-    </a>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/docs/">Docs</a>
       <a href="/pricing.html">Pricing</a>
@@ -4166,7 +4166,7 @@ INDEX_TEMPLATE = """<!DOCTYPE html>
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">jpcite</p>
+      <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
       <p class="footer-tag">日本の制度 API</p>
       <p class="footer-entity">運営: Bookyou株式会社</p>
     </div>

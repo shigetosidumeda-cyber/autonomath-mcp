@@ -197,7 +197,7 @@ def _render_alert_payload(alert: dict[str, Any]) -> dict[str, Any]:
         "deadline": alert["deadline"],
         "distance_days": alert["distance_days"],
         "subject": (
-            f"[AutonoMath] {alert['kind_label'] or alert['milestone_kind']} "
+            f"[jpcite] {alert['kind_label'] or alert['milestone_kind']} "
             f"- 残{alert['distance_days']}日"
         ),
         "source_url": alert["milestone_source_url"],

@@ -17,6 +17,7 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260515a">
 
 <style>
   /* Mirror of styles.css palette (kept inline so status page works even if
@@ -48,6 +49,17 @@
     max-width: 720px;
     margin: 0 auto;
     padding: 48px 20px 64px;
+  }
+  .site-header .container {
+    max-width: 1200px;
+    padding: 0 24px;
+  }
+  .site-header .brand {
+    margin-bottom: 0;
+  }
+  .site-footer .container {
+    max-width: 1200px;
+    padding: 24px;
   }
   .brand {
     display: inline-flex;
@@ -266,9 +278,9 @@
         "itemListElement": [
           {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
           {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
           {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
           {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
           {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
@@ -296,18 +308,39 @@
 
 <a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
 
-<main id="main" class="container">
-
- <div class="top-bar">
+<header class="site-header" role="banner">
+ <div class="container header-inner">
  <a class="brand" href="/" aria-label="jpcite ホーム">
- <span>jpcite</span>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼の設計</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
- <a href="status.html" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <a href="/" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
- <a href="en/status.html" lang="en" hreflang="en">EN</a>
+ <a href="/en/" lang="en" hreflang="en">EN</a>
  </span>
+ </nav>
  </div>
+</header>
+
+<main id="main" class="container">
 
  <h1>稼働状況 / Status</h1>
  <p class="lead">
@@ -321,7 +354,7 @@
       2. Add "active" to the new state (ok / warn / down).
       3. Update "最終更新 / Last updated" below.
       4. Publish the updated static page.
-    Current = down. Keep this page in sync with site/status/status.json.
+    Current = warn. Keep this page in sync with site/status/status.json.
   -->
 
  <section class="state ok" aria-label="operational">
@@ -333,16 +366,16 @@
  </div>
  </section>
 
- <section class="state warn" aria-label="degraded">
+ <section class="state warn active" aria-label="degraded">
  <span class="dot" aria-hidden="true">🟡</span>
  <div>
  <h2>限定運用 / Degraded</h2>
- <p>一部機能の遅延または障害あり。詳細は本ページの更新をご確認ください。<br>
- Partial outage or elevated latency. Check the note below for details.</p>
+ <p>API・決済・ダッシュボードは応答中です。MCP は限定運用、データ鮮度は stale のため総合状態を限定運用としています。<br>
+ API, billing, and dashboard are responding. MCP is degraded and data freshness is stale, so the overall status is Degraded.</p>
  </div>
  </section>
 
- <section class="state down active" aria-label="down">
+ <section class="state down" aria-label="down">
  <span class="dot" aria-hidden="true">🔴</span>
  <div>
  <h2>総合停止 / Overall Down (データ鮮度 stale)</h2>
@@ -353,7 +386,7 @@
 
  <p class="updated">
  最終更新 / Last updated:
-<code>2026-05-15T00:25:41+09:00 (status.json)</code>
+<code>2026-05-15T03:29:10+09:00 (status.json)</code>
  </p>
 
  <p class="fallback-note">
@@ -382,7 +415,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

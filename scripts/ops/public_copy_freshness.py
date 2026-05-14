@@ -77,7 +77,8 @@ RULES = (
         re.compile(
             r"LangChain\s*/\s*LlamaIndex\s*/\s*RAG|RAG\s*前の\s*Evidence Packet|"
             r"LangChain\s*/\s*LlamaIndex\s*RAG|長い\s*RAG\s*文脈|long\s+RAG\s+context|"
-            r"自前\s*RAG|汎用\s*RAG|generic\s+RAG|RAG\s+answer\s+generation",
+            r"自前\s*RAG|汎用\s*RAG|generic\s+RAG|RAG\s+answer\s+generation|"
+            r"RAG\s*データ取込|AI\s*agent\s*/\s*RAG\s*が\s*runtime",
             re.IGNORECASE,
         ),
         "Use `LangChain / LlamaIndex Evidence Packet` or another evidence-prefetch label.",
@@ -90,7 +91,7 @@ RULES = (
     Rule(
         "bpo_first_positioning",
         re.compile(r"BPO\s*(?:の補助金|補助金|トリアージ)|優先架電"),
-        "Use `補助金問い合わせトリアージ`, `業務支援チーム`, and `人間レビュー優先`.",
+        "Use `補助金問い合わせトリアージ`, `公開情報レビュー担当`, and `人間レビュー優先`.",
     ),
     Rule(
         "adoption_probability_band",
@@ -118,8 +119,18 @@ RULES = (
     ),
     Rule(
         "old_application_strategy_pack",
-        re.compile(r"申請戦略パック"),
-        "Use `申請前 Evidence Packet` and make clear it is not filing/advice work.",
+        re.compile(r'"?Application Strategy Pack"?|申請戦略パック'),
+        "Use `Application Evidence Pack` / `申請前 Evidence Pack` and make clear it is not filing/advice work.",
+    ),
+    Rule(
+        "old_public_info_dd_label",
+        re.compile(r'"?Public-info DD"?'),
+        "Use `M&A DD / Public-info Check` or `取引先公開情報チェック`.",
+    ),
+    Rule(
+        "old_authenticated_free_quota",
+        re.compile(r"Free\s*枠\s*\(1日\s*100\s*リクエスト上限\)|1日\s*100\s*リクエスト上限"),
+        "Paid keys should pause on failed payment; anonymous trial is 3 req/day/IP.",
     ),
     Rule(
         "old_dd_deck_label",

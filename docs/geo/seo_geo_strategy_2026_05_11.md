@@ -212,7 +212,7 @@ honest gap (data drift): 旧 snapshot の stale OpenAPI/tool counters は 2026-0
 | 15 | 採択事例 検索 | biz | n/a | top 10 | (要 generate_case_pages.py) |
 | 16 | 税理士 顧問先 補助金 自動 | persona | n/a | top 5 | `/audiences/tax-advisor.html` |
 | 17 | 信用金庫 取引先 補助金 monitoring | persona | n/a | top 5 | `/audiences/shinkin.html` |
-| 18 | M&A 公開情報 DD | persona | n/a | top 5 | `/audiences/vc.html` |
+| 18 | M&A M&A DD / 取引先公開情報チェック | persona | n/a | top 5 | `/audiences/vc.html` |
 | 19 | 補助金 検索 ChatGPT GPT | AI-surface | n/a | **1 位** | `/integrations/openai-custom-gpt.html` |
 | 20 | 補助金 検索 Claude MCP | AI-surface | n/a | **1 位** | `/integrations/claude-desktop.html` |
 

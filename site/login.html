@@ -259,9 +259,9 @@
         "itemListElement": [
           {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
           {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
           {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
           {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
           {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
@@ -293,11 +293,29 @@
       </picture>
     </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/about.html">運営について</a>
-      <a href="/products.html">プロダクト</a>
-      <a href="/docs/">ドキュメント</a>
-      <a href="/pricing.html">料金</a>
-    </nav>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼の設計</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
   </div>
 </header>
 
@@ -391,15 +409,25 @@
   </section>
 </main>
 
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p class="footer-copy">© Bookyou株式会社 — jpcite</p>
-    <nav class="footer-nav" aria-label="フッターナビゲーション">
-      <a href="/tos.html">利用規約</a>
-      <a href="/privacy.html">プライバシー</a>
-      <a href="/support.html">お問い合わせ</a>
-    </nav>
-  </div>
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+ <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッターナビゲーション">
+ <a href="/about.html">運営について</a>
+ <a href="/products.html">成果物</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/trust.html">信頼</a>
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/support.html">お問い合わせ</a>
+ </nav>
+ <p class="footer-entity">運営: Bookyou株式会社 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
+ </div>
 </footer>
 
 <script>

@@ -8,7 +8,7 @@ Notes:
 - Source corpus is mirasapo-plus.go.jp (中小企業庁 jirei-navi) — a primary
   government source, NOT an aggregator. Banned aggregators (noukaweb /
   hojyokin-portal / biz.stayway) are filtered out if encountered.
-- Brand surface: jpcite only (no jpintel / AutonoMath / zeimu-kaikei.ai
+- Brand surface: jpcite only (no jpintel / jpcite / zeimu-kaikei.ai
   in visible HTML).
 - No LLM call. Pure SQLite + Python f-string rendering.
 - Idempotent: re-runs overwrite the same files; existing files are not
@@ -325,7 +325,7 @@ def render_page(row: dict[str, Any]) -> str:
         "で類似事例を取得できます。詳細は <a href='/docs/api-reference'>API リファレンス</a>。"
         "</p>"
         "<p class='api-cta-line'>無料 3 リクエスト/日 (匿名 IP)。<a href='/pricing.html'>料金</a> ・ "
-        "<a href='/dashboard.html'>API キー発行</a></p>"
+        "<a href='/pricing.html#api-paid'>API キー発行</a></p>"
         "</section>"
     )
 
@@ -369,7 +369,7 @@ def render_page(row: dict[str, Any]) -> str:
       "name": "Bookyou株式会社",
       "legalName": "Bookyou株式会社",
       "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/_assets/logo.svg",
+      "logo": "https://jpcite.com/assets/logo-v2.svg",
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "小日向2-22-1",
@@ -452,9 +452,11 @@ def render_page(row: dict[str, Any]) -> str:
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="/about.html">運営について</a>
- <a href="/products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
- <a href="/pricing.html">料金</a>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
  <a href="/audiences/">利用者層</a>
  </nav>
  </div>
@@ -498,7 +500,7 @@ def render_page(row: dict[str, Any]) -> str:
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
  <p class="footer-entity">制度データ提供: jpcite</p>
  </div>

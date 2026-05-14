@@ -654,11 +654,16 @@ def page_html(
 <a href="#main" class="skip-link">本文へスキップ</a>
 <header class="site-header" role="banner">
  <div class="container header-inner">
- <a class="brand" href="/" aria-label="jpcite ホーム">jpcite</a>
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="/about.html">運営について</a>
- <a href="/products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
  <a href="/pricing.html">料金</a>
  </nav>
  </div>
@@ -700,7 +705,7 @@ def page_html(
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">

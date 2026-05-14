@@ -1,4 +1,4 @@
-# 中小 M&A の公開情報 DD を 5 分で artifact 化する手順 ——「jpcite」recipe r03 の実装
+# 中小 M&A のM&A DD / 取引先公開情報チェック を 5 分で artifact 化する手順 ——「jpcite」recipe r03 の実装
 
 中小 M&A の Due Diligence (DD) において、買い手・売り手双方の公開情報を機械整形して artifact 化する API・MCP サーバ「jpcite」が、DD リードタイムを数日から 5 分に圧縮している。recipe r03 は弁護士法 §72・金商法 §29・税理士法 §52 の 3 業法 fence を組み込み、外部アドバイザーの最終判断業務を侵食しない設計を貫いている。
 
@@ -19,7 +19,7 @@
 
 ## recipe r03 の入出力
 
-jpcite は Bookyou 株式会社 (T8010001213708) が運営する公的情報 API・MCP サーバである。recipe r03「M&A 公開情報 DD」は、対象企業の法人番号・業種コード・所在地を input として、構造化 artifact を 5 分以内に出力する。
+jpcite は Bookyou 株式会社 (T8010001213708) が運営する公的情報 API・MCP サーバである。recipe r03「M&A M&A DD / 取引先公開情報チェック」は、対象企業の法人番号・業種コード・所在地を input として、構造化 artifact を 5 分以内に出力する。
 
 artifact の構成:
 

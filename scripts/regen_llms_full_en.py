@@ -281,7 +281,7 @@ def _section_about() -> list[str]:
     return [
         "## About jpcite",
         "",
-        "jpcite is an Evidence Pre-fetch Layer that exposes Japanese public-program data (subsidies, loans, tax measures, certifications, and related public records) as a REST API and an MCP (Model Context Protocol) server. It is built for AI application developers and enterprise RAG teams that need to ground answers about Japanese public funding in source-linked data.",
+        "jpcite is an Evidence Pre-fetch Layer that exposes Japanese public-program data (subsidies, loans, tax measures, certifications, and related public records) as a REST API and an MCP (Model Context Protocol) server. It is built for AI application developers and professional workflows that need source-linked Evidence Packets for monthly review, application evidence packs, funding compatibility, M&A DD, invoice checks, and funding traceback.",
         "",
         "Public search returns source-linked rows that have passed jpcite's publication checks. Rows cite government or official institutional sources where available.",
         "",

@@ -282,7 +282,7 @@ def _render_payload(
         "tier": program["tier"],
         "prefecture": program["prefecture"],
         "subject": (
-            f"[AutonoMath 同日通知] {program['primary_name']} "
+            f"[jpcite 同日通知] {program['primary_name']} "
             f"({program['tier']}) — 顧問先「{profile['name_label']}」適合候補"
         ),
         "official_url": program.get("official_url") or program.get("source_url"),

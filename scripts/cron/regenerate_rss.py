@@ -200,7 +200,7 @@ def _render_rss(
     lines.append(f"  <description>{_xml_escape(description)}</description>")
     lines.append(f"  <language>{language}</language>")
     lines.append("  <copyright>(C) 2026 Bookyou株式会社</copyright>")
-    lines.append("  <generator>AutonoMath site (Bookyou株式会社)</generator>")
+    lines.append("  <generator>jpcite site (Bookyou株式会社)</generator>")
     lines.append(f"  <lastBuildDate>{format_datetime(last_build)}</lastBuildDate>")
     lines.append("")
     for it in items:
@@ -263,9 +263,9 @@ def run(
     ja_xml = _render_rss(
         items,
         domain=domain,
-        title="AutonoMath お知らせ",
+        title="jpcite お知らせ",
         description=(
-            "AutonoMath (Bookyou株式会社) の制度変更検出ログ・リリース・主要マイグレーションのお知らせ。"
+            "jpcite (Bookyou株式会社) の制度変更検出ログ・リリース・主要マイグレーションのお知らせ。"
             " am_amendment_diff (追記専用) から週次で自動生成。"
         ),
         feed_url=f"https://{domain}/rss.xml",
@@ -275,9 +275,9 @@ def run(
     en_xml = _render_rss(
         items,
         domain=domain,
-        title="AutonoMath News (Japanese public-program changes)",
+        title="jpcite News (Japanese public-program changes)",
         description=(
-            "AutonoMath (Bookyou Inc.) Japanese public-program change-detection log."
+            "jpcite (Bookyou Inc.) Japanese public-program change-detection log."
             " Generated weekly from am_amendment_diff (append-only)."
             " Item bodies fall back to Japanese when no translation is available."
         ),

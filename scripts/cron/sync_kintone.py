@@ -147,7 +147,7 @@ def _run() -> dict[str, int]:
                     "authority": {"value": s["authority"]},
                     "amount_label": {"value": s["amount"]},
                     "source_url": {"value": s["url"]},
-                    "synced_by": {"value": "AutonoMath"},
+                    "synced_by": {"value": "jpcite"},
                 }
             )
         # Pre-flight idempotency check — if today's row already exists,

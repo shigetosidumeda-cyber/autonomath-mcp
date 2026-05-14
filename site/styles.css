@@ -1,1 +1,1810 @@
-:root{color-scheme:light dark;--accent:#1e3a8a;--accent-hover:#172b6b;--text:#111;--text-muted:#404040;--border:#e5e5e5;--bg:#fff;--bg-alt:#f7f7f8;--bg-subtle:#fafafa;--code-bg:#0f172a;--code-text:#e2e8f0;--danger:#b91c1c;--focus:#1e3a8a;--max-w:960px}*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;font-size:16px;line-height:1.7;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;word-break:break-word;overflow-wrap:break-word}[data-fact]{white-space:nowrap;display:inline-block;min-width:1ch}input::placeholder,textarea::placeholder{color:var(--text-muted);opacity:1}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.link-button{background:0;border:0;padding:0;margin:0;font:inherit;color:var(--accent);cursor:pointer;text-decoration:none}.link-button:hover{text-decoration:underline}.link-button:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}.container{max-width:var(--max-w);margin:0 auto;padding:0 20px}.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}.skip-link{position:absolute;top:0;left:8px;padding:10px 14px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;border-radius:0 0 6px 6px;z-index:100;text-decoration:none;transform:translateY(-110%);transition:transform .1s ease}.skip-link:focus,.skip-link:focus-visible{transform:translateY(0);outline:2px solid #fff;outline-offset:-4px}.site-header{border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10}[id]{scroll-margin-top:80px}.header-inner{display:flex;align-items:center;justify-content:space-between;padding-top:18px;padding-bottom:18px}.brand{display:inline-flex;align-items:center;gap:10px;color:var(--text);font-weight:700}.brand:hover{text-decoration:none}.brand-mark{display:inline-grid;place-items:center;width:28px;height:28px;background:var(--accent);color:#fff;border-radius:6px;font-size:13px;letter-spacing:.5px}.brand-name{font-size:16px;letter-spacing:-.01em}.site-nav{display:flex;gap:22px;font-size:15px;align-items:center;flex-wrap:wrap;row-gap:8px}.site-nav a{color:var(--text);min-height:44px;padding:8px 12px;display:inline-flex;align-items:center}pre,code{max-width:100%;overflow-x:auto;word-break:break-word}pre code{word-break:normal}.lang-switch{display:inline-flex;align-items:center;gap:6px;margin-left:8px;padding-left:14px;border-left:1px solid var(--border);font-size:13px;font-weight:600;letter-spacing:.04em}.lang-switch a{color:var(--text-muted);padding:2px 4px;border-radius:3px}.lang-switch a:hover{color:var(--accent);text-decoration:none}.lang-switch a[aria-current="page"]{color:var(--text);background:var(--bg-alt)}.lang-switch .sep{color:var(--border);user-select:none}.nav-trust{position:relative;display:inline-block}.nav-trust>summary{list-style:none;cursor:pointer;color:var(--text);font-size:15px;min-height:44px;padding:8px 12px;display:inline-flex;align-items:center;gap:4px}.nav-trust>summary::-webkit-details-marker{display:none}.nav-trust>summary::after{content:"▾";font-size:10px;color:var(--text-muted);margin-left:2px}.nav-trust[open]>summary::after{transform:rotate(180deg)}.nav-trust>summary:hover{color:var(--accent)}.nav-trust>ul{position:absolute;top:calc(100% + 4px);right:0;min-width:180px;margin:0;padding:8px 0;list-style:none;background:var(--bg);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.08);z-index:20}.nav-trust>ul li{margin:0}.nav-trust>ul a{display:block;padding:8px 16px;font-size:14px;color:var(--text);min-height:auto}.nav-trust>ul a:hover{background:var(--bg-alt);color:var(--accent);text-decoration:none}.nav-cta{background:var(--accent);color:#fff !important;padding:8px 14px !important;border-radius:6px;font-weight:600;font-size:14px}.nav-cta:hover{background:var(--accent-hover);color:#fff !important;text-decoration:none}@media(max-width:480px){.lang-switch{margin-left:0;padding-left:10px}.lang-switch a{min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:8px 12px}.site-nav{gap:12px;font-size:13px;row-gap:6px}.site-nav a{min-height:44px;padding:10px 12px;display:flex;align-items:center}}.trust-strip{font-family:var(--font-sans,inherit);font-size:13px;color:var(--text-muted);line-height:1.7;margin:16px 0 0}.trust-strip a{color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border)}.trust-strip a:hover{color:var(--accent);border-color:var(--accent)}.trust-strip-blocks{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-wrap:wrap;gap:8px;font-size:12px;line-height:1.5}.trust-strip-blocks li{border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text-muted);background:var(--bg-subtle)}.trust-strip-blocks li strong{color:var(--text);font-weight:600}.trust-stats{display:flex;flex-wrap:wrap;gap:18px 32px;list-style:none;padding:16px 18px;margin:18px 0 24px;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px}.trust-stats li{display:flex;flex-direction:column;gap:2px;min-width:0}.trust-stats .num{font-family:var(--font-serif,inherit);font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.01em;line-height:1.15}.trust-stats .lbl{font-size:12px;color:var(--text-muted);line-height:1.4}@media(max-width:600px){.trust-stats{gap:12px 22px;padding:14px 14px}.trust-stats .num{font-size:19px}}.hero{padding:80px 0 56px;border-bottom:1px solid var(--border)}.hero h1{font-size:44px;line-height:1.25;letter-spacing:-.02em;margin:0 0 16px;font-weight:800}.hero-sub{font-size:20px;color:var(--text);margin:0 0 18px;font-weight:500}.hero-tag{font-size:16px;color:var(--text-muted);margin:0 0 32px;max-width:640px}.hero-note{font-size:14px;color:var(--text-muted);margin:28px 0 0}.hero-note a,.pricing-note a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}.hero-note a:hover,.pricing-note a:hover{color:var(--text);text-decoration-thickness:2px}.cta-row{display:flex;gap:12px;flex-wrap:wrap}.btn{display:inline-block;padding:12px 22px;border-radius:6px;font-size:15px;font-weight:600;line-height:1.2;border:1px solid transparent;cursor:pointer;transition:background-color .12s ease,border-color .12s ease,color .12s ease}.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-hover);color:#fff;text-decoration:none}.btn-secondary{background:#fff;color:var(--text);border-color:var(--border)}.btn-secondary:hover{background:var(--bg-alt);text-decoration:none}.section-title{font-size:28px;letter-spacing:-.01em;margin:0 0 28px;font-weight:700}.features{padding:64px 0;border-bottom:1px solid var(--border)}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.card{border:1px solid var(--border);border-radius:10px;padding:24px;background:var(--bg)}.card h3{font-size:18px;margin:0 0 4px;font-weight:700}.card-lead{font-size:13px;color:var(--accent);font-weight:600;margin:0 0 12px;letter-spacing:.02em}.card p{margin:0 0 14px;color:var(--text-muted);font-size:15px}.card-list{list-style:none;padding:0;margin:0;border-top:1px solid var(--border);padding-top:12px;font-size:13px;color:var(--text-muted);font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;line-height:1.9}.code-demo{padding:64px 0;border-bottom:1px solid var(--border);background:var(--bg-alt)}.demo-lead{color:var(--text-muted);margin:-16px 0 20px}.code-block{background:var(--code-bg);color:var(--code-text);padding:18px 20px;border-radius:8px;overflow-x:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:14px;line-height:1.6;margin:0 0 18px}.code-block code{font-family:inherit;color:inherit;white-space:pre}.demo-note{font-size:14px;color:var(--text-muted);margin:0}.demo-note code{background:#fff;border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}.newsletter{padding:56px 0;border-bottom:1px solid var(--border);background:var(--bg-alt)}.newsletter-lead{color:var(--text-muted);margin:-16px 0 20px;max-width:640px}.newsletter-form{display:flex;gap:10px;flex-wrap:wrap;max-width:560px;margin:0 0 12px}.newsletter-form input[type="email"]{flex:1 1 260px;padding:12px 14px;font-size:15px;line-height:1.2;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);font-family:inherit}.newsletter-form input[type="email"]:focus-visible{border-color:var(--accent);outline:2px solid var(--focus);outline-offset:1px}.newsletter-form button{flex:0 0 auto}.newsletter-form button[disabled]{opacity:.6;cursor:progress}.newsletter-note{font-size:13px;color:var(--text-muted);margin:0 0 8px;max-width:560px}.newsletter-status{font-size:14px;margin:0;min-height:1.4em;color:var(--text-muted)}.newsletter-status.ok{color:var(--accent);font-weight:600}.newsletter-status.err{color:var(--danger);font-weight:600}.pricing-preview{padding:64px 0}.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}.pricing-table{width:100%;border-collapse:collapse;font-size:15px;background:var(--bg)}.pricing-table th,.pricing-table td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--border)}.pricing-table thead th{background:var(--bg-alt);font-weight:600;font-size:13px;letter-spacing:.03em;text-transform:uppercase;color:var(--text-muted)}.pricing-table tbody tr:last-child th,.pricing-table tbody tr:last-child td{border-bottom:0}.pricing-table tbody th{font-weight:700;color:var(--text)}.pricing-note{margin:20px 0 0;font-size:15px}.pricing-page{padding:64px 0}.pricing-page h1{font-size:36px;letter-spacing:-.02em;margin:0 0 10px;font-weight:800}.pricing-page .lead{font-size:17px;color:var(--text-muted);margin:0 0 36px;max-width:640px}.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}.price-card{border:1px solid var(--border);border-radius:10px;padding:24px;display:flex;flex-direction:column}.price-card.highlight{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.price-card h2{font-size:18px;margin:0 0 4px;font-weight:700}.price-card .tier-desc{font-size:13px;color:var(--text-muted);margin:0 0 18px}.price-card .price{font-size:28px;font-weight:800;letter-spacing:-.01em;margin:0 0 4px}.price-card .price-unit{font-size:14px;color:var(--text-muted);margin:0 0 20px}.price-card .feats{list-style:none;padding:0;margin:0 0 24px;font-size:14px;line-height:1.8;color:var(--text-muted);flex:1}.price-card .feats li::before{content:"- ";color:var(--accent);font-weight:700}.price-card .btn{width:100%;text-align:center}.legal{padding:48px 0 64px}.legal h1{font-size:30px;margin:0 0 8px;font-weight:800;letter-spacing:-.01em}.legal h2{font-size:18px;margin:32px 0 8px;font-weight:700}.legal p,.legal li{font-size:15px;color:var(--text)}.legal .meta{color:var(--text-muted);font-size:14px;margin:0 0 16px}.draft-banner{background:#fff0f0;border:1px solid var(--danger);color:var(--danger);padding:12px 16px;border-radius:6px;font-weight:700;font-size:14px;margin:0 0 32px}.legal table{width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:15px}.legal table th,.legal table td{border:1px solid var(--border);padding:10px 14px;text-align:left;vertical-align:top}.legal table th{background:var(--bg-alt);width:30%;font-weight:600}.quota-counter{border:1px solid var(--border);border-radius:10px;padding:18px 22px;background:var(--bg);margin:0 0 20px}.quota-counter .stat-label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;margin:0 0 10px;font-weight:600}.quota-counter-headline{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:0 0 10px;color:var(--text);display:flex;align-items:baseline;flex-wrap:wrap;gap:10px}.quota-counter-headline .unit{font-size:14px;font-weight:500;color:var(--text-muted)}.quota-counter-value{font-variant-numeric:tabular-nums}.quota-counter-pct{font-size:13px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums}.quota-counter-bar{position:relative;height:10px;background:var(--bg-alt);border-radius:5px;overflow:hidden;margin:0 0 8px}.quota-counter-fill{height:100%;width:0;border-radius:5px;transition:width .25s ease,background .25s ease;background:linear-gradient(90deg,#15803d,#16a34a)}.quota-counter[data-quota-state="warn"] .quota-counter-fill{background:linear-gradient(90deg,#b45309,#cc6608)}.quota-counter[data-quota-state="over"] .quota-counter-fill{background:linear-gradient(90deg,#991b1b,#dc2626)}.quota-counter[data-quota-state="over"] .quota-counter-pct,.quota-counter[data-quota-state="over"] .quota-counter-note{color:var(--danger);font-weight:600}.quota-counter[data-quota-state="warn"] .quota-counter-pct{color:#b45309}.quota-counter-note{font-size:13px;color:var(--text-muted);margin:0}.quota-counter-note a{color:inherit;text-decoration:underline}.quota-counter-note a:hover{color:var(--danger)}#dash2-summary,#dash2-tool-usage,#dash2-billing-history,#dash2-recommend,#dash2-alerts{min-height:200px}.site-footer{border-top:1px solid var(--border);padding:36px 0;background:var(--bg-alt);font-size:14px}.footer-inner{display:flex;flex-direction:column;gap:16px;align-items:stretch}.footer-brand{margin:0;font-weight:700;color:var(--text)}.footer-tag{margin:2px 0 0;color:var(--text-muted);font-size:13px}.footer-nav{display:flex;gap:14px 18px;flex-wrap:wrap;justify-content:flex-start}.footer-nav a{color:var(--text-muted)}.footer-nav a:hover{color:var(--accent)}.footer-entity{margin:0;color:var(--text-muted);font-size:13px;line-height:1.7;word-break:normal;overflow-wrap:anywhere}.footer-entity a{color:var(--accent)}.footer-copy{margin:0;color:var(--text-muted);text-align:left;font-size:13px;word-break:normal;overflow-wrap:anywhere}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}}@media(max-width:480px){input[type="text"],input[type="email"],input[type="number"],input[type="search"],select,textarea{font-size:16px}}@media(max-width:768px){.hero{padding:48px 0 40px}.hero h1{font-size:32px}.hero-sub{font-size:17px}.pricing-page h1{font-size:clamp(22px,7vw,36px)}.features,.code-demo,.newsletter,.pricing-preview,.pricing-page{padding:40px 0}.section-title{font-size:22px}.cards{grid-template-columns:1fr}.cards[style*="grid-template-columns"]{grid-template-columns:1fr !important}.pricing-grid{grid-template-columns:1fr}.pricing-grid[style*="grid-template-columns"]{grid-template-columns:1fr !important}.ps-form select,.ps-form input,.newsletter-form input,.calc input,#api_key,[id^="dash2-"] input,[id^="dash2-"] select,[id^="dash2-"] textarea,input[type="email"],input[type="url"],input[type="number"],input[type="password"],input[type="text"]:not([aria-hidden="true"]){font-size:16px}.header-inner{flex-wrap:wrap;gap:12px}.site-nav{gap:16px;font-size:14px;flex-wrap:wrap;row-gap:8px}.site-nav a,.lang-switch a,.footer-nav a{min-height:44px;padding:8px 12px;display:inline-flex;align-items:center}form input,form select,form textarea{min-height:44px;padding:10px 12px;font-size:16px}.footer-inner{text-align:center}.footer-nav{justify-content:center}.footer-copy{text-align:center}.footer-entity{text-align:center}.cta-row .btn{flex:1 1 auto;text-align:center}}.prescreen{background:var(--bg-alt);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:56px 0}.prescreen .section-title{margin-bottom:6px}.prescreen-sub{color:var(--text-muted);margin:0 0 24px;font-size:15px}.ps-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:24px}.ps-form{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px;align-items:end}.ps-form .ps-field{display:flex;flex-direction:column;gap:4px}.ps-form label{font-size:13px;color:var(--text-muted);font-weight:500}.ps-form select,.ps-form input[type="number"]{font:inherit;font-size:15px;padding:9px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);width:100%}.ps-form select:focus,.ps-form input:focus{outline:2px solid var(--focus);outline-offset:1px}.ps-submit{font:inherit;font-weight:600;padding:10px 22px;background:var(--accent);color:#fff;border:0;border-radius:6px;cursor:pointer;white-space:nowrap}.ps-submit:hover{background:var(--accent-hover)}.ps-submit:disabled{opacity:.6;cursor:progress}.ps-hint{margin:10px 0 0;font-size:13px;color:var(--text-muted)}.ps-results{margin-top:22px;display:none}.ps-results.is-visible{display:block;min-height:320px}.ps-status{margin:0 0 14px;font-size:14px;color:var(--text-muted)}.ps-error{margin:0 0 14px;padding:10px 12px;background:#fef2f2;border:1px solid #ef4444;border-radius:6px;color:var(--danger);font-size:14px}.ps-list{list-style:none;padding:0;margin:0;display:grid;gap:12px}.ps-row{border:1px solid var(--border);border-radius:6px;padding:14px 16px;background:#fff}.ps-row-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}.ps-tier{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:.04em;color:#fff;background:#6b7280}.ps-tier.t-S{background:#0f766e}.ps-tier.t-A{background:#2563eb}.ps-tier.t-B{background:#64748b}.ps-tier.t-C{background:#78716c}.tier{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.04em;color:#fff;background:#6b7280}.tier-s{background:#0f766e}.tier-a{background:#2563eb}.tier-b{background:#64748b}.tier-c{background:#78716c}.ps-name{font-weight:600;font-size:15.5px;flex:1}.ps-amount{font-size:13px;color:var(--text-muted);white-space:nowrap}.ps-reasons,.ps-caveats{margin:6px 0 0;padding-left:18px;font-size:13.5px;line-height:1.55}.ps-reasons li{color:var(--text)}.ps-caveats li{color:var(--danger)}.ps-source{margin:8px 0 0;font-size:12.5px;color:var(--text-muted);word-break:break-all}.ps-source a{color:var(--accent)}.ps-cta{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}.ps-handoff{margin:20px 0 0;padding:14px 0 18px;border-top:1px dashed var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center}.ps-handoff::before{content:"結果を共有 / 送付:";font-size:13px;color:var(--text-muted);font-weight:500;flex:0 0 100%;margin-bottom:4px}.ps-handoff .btn{font-size:14px}@media print{.site-header,.site-footer,.site-nav,.ps-form,.ps-cta,.ps-handoff,.hero,.am-feedback-trigger,.am-feedback-close{display:none !important}body{background:#fff !important;color:#000 !important}.ps-results,.ps-results.is-visible{display:block !important;min-height:0 !important;margin:0 !important}.ps-row{page-break-inside:avoid;border:1px solid #888 !important;background:#fff !important}}@media(max-width:480px){.ps-form{grid-template-columns:1fr}.ps-submit{width:100%}.ps-form select,.ps-form input[type="number"]{min-height:44px;padding:12px 12px;font-size:16px}.ps-submit{min-height:44px;width:100%;padding:12px 16px}.btn{min-height:44px;padding:12px 20px}.cta-row .btn{width:100%}.newsletter-form button{width:100%}[id]{scroll-margin-top:56px}#reqInput{width:100%;box-sizing:border-box}}.audience-card .audience-context{font-size:13px;color:var(--text-muted);font-weight:500;margin-bottom:8px}.audience-card .audience-pitch{font-size:14.5px;line-height:1.65;color:var(--text);border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:8px 0 12px}.newkey-reveal{margin:0 0 18px;padding:16px;border-radius:8px;border:1px solid #d97706;background:#fff8e6;color:#7c2d12}.dunning-banner{margin:0 0 18px;padding:16px;border-radius:8px;border:1px solid #b91c1c;background:#fff0f0;color:#7f1d1d;font-size:14px;line-height:1.55}.dunning-banner-msg{display:block;margin:0 0 10px;font-weight:600}.dunning-banner-action{display:inline-block;padding:8px 14px;border-radius:6px;background:#b91c1c;color:#fff;font-weight:600;text-decoration:none;font-size:13px}.dunning-banner-action:hover{background:#991b1b;color:#fff;text-decoration:none}.dash-section-title{font-size:16px;font-weight:700;margin:0 0 8px;color:var(--text)}.dash-subsection-title{font-size:13px;font-weight:600;margin:14px 0 8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}.dash-subsection-title.is-spaced{margin-top:22px}.newkey-value{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:var(--bg);color:var(--text);padding:10px 14px;border-radius:6px;border:1px solid #d97706;word-break:break-all;margin:0 0 10px}@media(prefers-color-scheme:dark){:root{--accent:#79b8ff;--accent-hover:#a5cdff;--text:#e6edf3;--text-muted:#8b949e;--border:#30363d;--bg:#0d1117;--bg-alt:#161b22;--bg-subtle:#161b22;--code-bg:#010409;--code-text:#e6edf3;--danger:#f85149;--focus:#79b8ff}.btn-secondary{background:var(--bg-alt)}.btn-secondary:hover{background:var(--border)}.demo-note code{background:var(--bg-alt)}.trust-strip-blocks li{background:var(--bg-alt)}.footer-brand img[src$="jpcite-mark.svg"]{background:#fff;border-radius:4px;box-sizing:border-box;filter:none;padding:2px}.newsletter-form input[type="email"]{background:var(--bg-alt)}.ps-card{background:var(--bg-alt)}.ps-form select,.ps-form input[type="number"]{background:var(--bg-alt)}.ps-row{background:var(--bg-alt)}.brand-mark{color:#0d1117}.btn-primary{color:#0d1117}.btn-primary:hover{color:#0d1117}.nav-cta,.nav-cta:hover{color:#0d1117 !important}.skip-link{color:#0d1117}.ps-submit{color:#0d1117}.ps-tier.t-S{background:#0f766e;color:#fff}.ps-tier.t-A{background:#2563eb;color:#fff}.ps-tier.t-B{background:#64748b;color:#fff}.ps-tier.t-C{background:#4b5563;color:#fff}.ps-error{background:rgba(248,81,73,0.12);border-color:rgba(248,81,73,0.4);color:#ffa198}.draft-banner{background:rgba(248,81,73,0.12);border-color:rgba(248,81,73,0.4);color:#ffa198}.quota-counter-fill{background:linear-gradient(90deg,#1a7f37,#3fb950)}.quota-counter[data-quota-state="warn"] .quota-counter-fill{background:linear-gradient(90deg,#9a6700,#d29922)}.quota-counter[data-quota-state="over"] .quota-counter-fill{background:linear-gradient(90deg,#b62324,#f85149)}.quota-counter[data-quota-state="warn"] .quota-counter-pct{color:#d29922}code{color:var(--text)}.newsletter-status.ok{color:var(--accent)}.newsletter-status.err{color:#ff7b72}.newkey-reveal{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.5);color:#fbbf24}.newkey-value{background:var(--bg-alt);color:var(--text);border-color:rgba(245,158,11,0.5)}.dunning-banner{background:#3f1d1d;border-color:rgba(248,81,73,0.5);color:#fca5a5}.dunning-banner-action{background:#f85149;color:#0d1117}.dunning-banner-action:hover{background:#ff7b72;color:#0d1117}}.prefecture-header{margin-bottom:24px}.prefecture-header h1{font-size:28px;margin-bottom:8px}.prefecture-header .byline{color:var(--text-muted);font-size:13px}.prefecture-header .byline-note{color:var(--text-muted);font-size:13px;margin-top:4px}.tldr{background:var(--bg-alt);padding:16px;border-radius:8px;margin:16px 0;border-left:3px solid var(--accent)}.program-list,.case-list,.loan-list,.enforcement-list{list-style:none;padding:0;margin:16px 0;display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}.program-card,.case-card,.loan-card,.enforcement-card{background:var(--bg-alt);border:1px solid var(--border);border-radius:8px;padding:16px}.program-card a,.case-card a,.loan-card a,.enforcement-card a{color:var(--accent);text-decoration:none;font-weight:600}.program-card a:hover,.case-card a:hover,.loan-card a:hover,.enforcement-card a:hover{text-decoration:underline}.program-amount{color:var(--text-muted);font-size:13px;display:block;margin-top:4px}.case-industry{color:var(--text-muted);font-size:13px}.case-summary{font-size:14px;margin-top:8px}.disclaimer{color:var(--text-muted);font-size:12px;margin-top:32px;padding:12px;background:var(--bg-alt);border-radius:4px}@media(max-width:480px){.program-list,.case-list,.loan-list,.enforcement-list{grid-template-columns:1fr}}@media(pointer:coarse),(max-width:768px){.btn,.ps-submit,.dunning-banner-action{min-height:44px;display:inline-flex;align-items:center;justify-content:center}.brand{min-height:44px}.link-button{min-height:44px;padding:8px 4px;display:inline-flex;align-items:center}.footer-entity a,.footer-tag a{display:inline-block;padding:6px 2px;line-height:1.8}.program-card a,.case-card a,.loan-card a,.enforcement-card a{display:inline-block;padding:6px 0;min-height:44px;line-height:1.6}.footer-nav a{min-height:44px;padding:8px 12px;display:inline-flex;align-items:center}.am-feedback-trigger,.am-feedback-close{min-width:44px;min-height:44px}}@media(max-width:420px){.header-inner{flex-wrap:wrap;gap:8px;row-gap:10px}.brand{flex:0 0 auto;max-width:100%}.site-nav{flex-wrap:wrap;gap:8px;row-gap:6px;min-width:0;flex:1 1 100%}}@media(max-width:480px){.hero h1{font-size:clamp(22px,7.2vw,32px);line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}}@media(max-width:480px){.hero-tag,.hero-sub,.hero-note,.pricing-note,.legal p,.legal li,.card p,.feature p,main p,main li{overflow-wrap:anywhere}}@media(max-width:599px){#dash2-key-form{flex-direction:column !important;align-items:stretch}#dash2-key-form #dash2-key-input{width:100% !important;min-width:0 !important;box-sizing:border-box}#dash2-key-form .btn,#dash2-key-form .btn-ghost{width:100%;box-sizing:border-box}.signin-form,form.signin{flex-direction:column;align-items:stretch}.signin-form input,form.signin input{width:100%;min-width:0;box-sizing:border-box}.signin-form button,form.signin button{width:100%}}@media(max-width:480px){.am-fb-fab{right:12px !important;bottom:12px !important;max-width:calc(100vw - 24px)}}
+/* jpcite landing — monochrome + deep-blue accent.
+   System fonts, no CDN, mobile-first.
+   Color contrast: text #111 on #fff = 19.3:1. Accent #1e3a8a on #fff = 9.4:1. */
+
+:root {
+  color-scheme: light dark;
+  --accent: #1e3a8a;
+  --accent-hover: #172b6b;
+  --text: #111111;
+  --text-muted: #404040;
+  --border: #e5e5e5;
+  --bg: #ffffff;
+  --bg-alt: #f7f7f8;
+  --bg-subtle: #fafafa;
+  --code-bg: #0f172a;
+  --code-text: #e2e8f0;
+  --danger: #b91c1c;
+  --focus: #1e3a8a;
+  --max-w: 960px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Inline number swap (e.g. live programs count) — reserve width and stop
+   wrap so a digit-count change (1234 → 12345) does not push neighboring
+   text or trigger a CLS shift. min-width keeps an empty span from being
+   zero-width before the JS swap lands. */
+[data-fact] {
+  white-space: nowrap;
+  display: inline-block;
+  min-width: 1ch;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+/* Looks like a link, behaves as a button. Used where the action does not
+   navigate (e.g. logout posts to API then reloads), so a real <button> is
+   semantically correct but the visual treatment must match adjacent anchors. */
+.link-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+}
+.link-button:hover { text-decoration: underline; }
+.link-button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link — visible only on keyboard focus. Lets screen-reader/keyboard
+   users bypass the header + nav and land directly on <main id="main">.
+   Use transform + clip-path so it's fully off-screen and unaffected by
+   font-size/line-height variance (padding alone doesn't guarantee full hide). */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  padding: 10px 14px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 0 0 6px 6px;
+  z-index: 100;
+  text-decoration: none;
+  transform: translateY(-110%);
+  transition: transform 0.1s ease;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+/* Header */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.site-header .container {
+  max-width: 1200px;
+}
+/* Sticky-header offset for in-page anchor navigation */
+[id] { scroll-margin-top: 80px; }
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-weight: 700;
+  flex: 0 0 auto;
+  min-height: 44px;
+}
+.brand:hover { text-decoration: none; }
+.brand picture,
+.brand img {
+  display: block;
+  max-width: 190px;
+  height: auto;
+}
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+.brand-name {
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+.site-nav {
+  display: flex;
+  gap: clamp(8px, 1.35vw, 18px);
+  font-size: 15px;
+  align-items: center;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  white-space: nowrap;
+}
+.site-nav::-webkit-scrollbar { display: none; }
+.site-nav a {
+  color: var(--text);
+  min-height: 44px;
+  padding: 8px clamp(8px, 0.9vw, 12px);
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* Mobile fix: prevent <code>/<pre> from blowing out viewport on phones.
+   Long flag/path strings (e.g. autonomath-mcp install commands on /program/...)
+   were forcing 472 px width inside a 390 px viewport, triggering horizontal
+   scroll on the body. Force overflow:auto on the block element + word-break
+   on inline. */
+pre, code {
+  max-width: 100%;
+  overflow-x: auto;
+  word-break: break-word;
+}
+pre code { word-break: normal; }
+
+/* Language switcher — top-right toggle next to nav links.
+   JP / EN pair rendered as plain <a> so it works without JS.
+   The current-language item carries aria-current="page" and
+   gets a high-contrast style so keyboard users see the state. */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  padding-left: 14px;
+  border-left: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+.lang-switch a {
+  color: var(--text-muted);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.lang-switch a:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+.lang-switch a[aria-current="page"] {
+  color: var(--text);
+  background: var(--bg-alt);
+}
+.lang-switch .sep {
+  color: var(--border);
+  user-select: none;
+}
+
+/* Trust dropdown (Status / Roadmap / Data Freshness / Transparency / Audit
+   Log). Pure-HTML <details><summary> so it works without JS. Closed by
+   default; clicking the summary toggles the absolutely-positioned panel.
+   IA Audit unification (2026-04-29). */
+.nav-trust {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+.nav-trust > summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 15px;
+  min-height: 44px;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.nav-trust > summary::-webkit-details-marker { display: none; }
+.nav-trust > summary::after {
+  content: "▾";
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+.nav-trust[open] > summary::after { transform: rotate(180deg); }
+.nav-trust > summary:hover { color: var(--accent); }
+.nav-trust > ul {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 180px;
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 20;
+}
+.nav-trust > ul li { margin: 0; }
+.nav-trust > ul a {
+  display: block;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--text);
+  min-height: auto;
+}
+.nav-trust > ul a:hover {
+  background: var(--bg-alt);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Audience-page nav CTA (Dashboard) — visually distinguishable from the
+   plain nav links so the primary action is obvious. */
+.nav-cta {
+  background: var(--accent);
+  color: #fff !important;
+  padding: 8px 14px !important;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.nav-cta:hover { background: var(--accent-hover); color: #fff !important; text-decoration: none; }
+
+@media (max-width: 480px) {
+  .lang-switch {
+    margin-left: 0;
+    padding-left: 10px;
+  }
+  .lang-switch a {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+  }
+  .site-nav { gap: 8px; font-size: 13px; row-gap: 0; flex-wrap: nowrap; }
+  .site-nav a {
+    min-height: 44px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Trust strip — discreet single-line "who runs this" row used in the
+   hero of every page so the first impression always carries Bookyou
+   株式会社  + 一次資料 anchor. Plain text + dot
+   separators, no badges, no icons. The trust-strip-blocks variant
+   below shows a row of small bordered tokens for cohort pages. */
+.trust-strip {
+  font-family: var(--font-sans, inherit);
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 16px 0 0;
+}
+.trust-strip a {
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+.trust-strip a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Trust strip — bordered token row. Each <li> is a single fact (legal
+   entity, payment processor, infra, disclaimer fence). No marketing
+   adjectives — every claim must point at a third-party authority the
+   visitor can self-verify. */
+.trust-strip-blocks {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.trust-strip-blocks li {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+}
+.trust-strip-blocks li strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Trust stats — numbers row used above-fold on About / Transparency /
+   Sources / index pages. Each cell is a single canonical fact (count
+   + label). Mirrors the page's data inventory without duplicating the
+   whole "データと品質" cards section. */
+.trust-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 32px;
+  list-style: none;
+  padding: 16px 18px;
+  margin: 18px 0 24px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.trust-stats li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.trust-stats .num {
+  font-family: var(--font-serif, inherit);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.trust-stats .lbl {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+@media (max-width: 600px) {
+  .trust-stats { gap: 12px 22px; padding: 14px 14px; }
+  .trust-stats .num { font-size: 19px; }
+}
+
+/* Hero */
+.hero {
+  padding: 80px 0 56px;
+  border-bottom: 1px solid var(--border);
+}
+.hero h1 {
+  font-size: 44px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  font-weight: 800;
+}
+.hero-sub {
+  font-size: 20px;
+  color: var(--text);
+  margin: 0 0 18px;
+  font-weight: 500;
+}
+.hero-tag {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0 0 32px;
+  max-width: 640px;
+}
+.hero-note {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 28px 0 0;
+}
+.hero-note a,
+.pricing-note a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.hero-note a:hover,
+.pricing-note a:hover {
+  color: var(--text);
+  text-decoration-thickness: 2px;
+}
+
+.cta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  color: #fff;
+  text-decoration: none;
+}
+.btn-secondary {
+  background: #fff;
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-secondary:hover {
+  background: var(--bg-alt);
+  text-decoration: none;
+}
+
+/* Sections */
+.section-title {
+  font-size: 28px;
+  letter-spacing: -0.01em;
+  margin: 0 0 28px;
+  font-weight: 700;
+}
+
+.features {
+  padding: 64px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  background: var(--bg);
+}
+.card h3 {
+  font-size: 18px;
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+.card-lead {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  margin: 0 0 12px;
+  letter-spacing: 0.02em;
+}
+.card p {
+  margin: 0 0 14px;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+.card-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  line-height: 1.9;
+}
+
+/* Code demo */
+.code-demo {
+  padding: 64px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+.demo-lead {
+  color: var(--text-muted);
+  margin: -16px 0 20px;
+}
+.code-block {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 18px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 18px;
+}
+.code-block code {
+  font-family: inherit;
+  color: inherit;
+  white-space: pre;
+}
+.demo-note {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+}
+.demo-note code {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Newsletter capture */
+.newsletter {
+  padding: 56px 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+.newsletter-lead {
+  color: var(--text-muted);
+  margin: -16px 0 20px;
+  max-width: 640px;
+}
+.newsletter-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  max-width: 560px;
+  margin: 0 0 12px;
+}
+.newsletter-form input[type="email"] {
+  flex: 1 1 260px;
+  padding: 12px 14px;
+  font-size: 15px;
+  line-height: 1.2;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+}
+.newsletter-form input[type="email"]:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.newsletter-form button { flex: 0 0 auto; }
+.newsletter-form button[disabled] { opacity: 0.6; cursor: progress; }
+.newsletter-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+  max-width: 560px;
+}
+.newsletter-status {
+  font-size: 14px;
+  margin: 0;
+  min-height: 1.4em;
+  color: var(--text-muted);
+}
+.newsletter-status.ok { color: var(--accent); font-weight: 600; }
+.newsletter-status.err { color: var(--danger); font-weight: 600; }
+
+/* Pricing preview */
+.pricing-preview { padding: 64px 0; }
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  background: var(--bg);
+}
+.pricing-table th,
+.pricing-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.pricing-table thead th {
+  background: var(--bg-alt);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.pricing-table tbody tr:last-child th,
+.pricing-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.pricing-table tbody th {
+  font-weight: 700;
+  color: var(--text);
+}
+.pricing-note {
+  margin: 20px 0 0;
+  font-size: 15px;
+}
+
+/* Full pricing page */
+.pricing-page { padding: 64px 0; }
+.pricing-page h1 {
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+  font-weight: 800;
+}
+.pricing-page .lead {
+  font-size: 17px;
+  color: var(--text-muted);
+  margin: 0 0 36px;
+  max-width: 640px;
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.price-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.price-card.highlight {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.price-card h2 {
+  font-size: 18px;
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+.price-card .tier-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 18px;
+}
+.price-card .price {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+.price-card .price-unit {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 20px;
+}
+.price-card .feats {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-muted);
+  flex: 1;
+}
+.price-card .feats li::before {
+  content: "- ";
+  color: var(--accent);
+  font-weight: 700;
+}
+.price-card .btn { width: 100%; text-align: center; }
+
+/* Legal pages */
+.legal { padding: 48px 0 64px; }
+.legal h1 {
+  font-size: 30px;
+  margin: 0 0 8px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.legal h2 {
+  font-size: 18px;
+  margin: 32px 0 8px;
+  font-weight: 700;
+}
+.legal p, .legal li {
+  font-size: 15px;
+  color: var(--text);
+}
+.legal .meta {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+.draft-banner {
+  background: #fff0f0;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+  margin: 0 0 32px;
+}
+.legal table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 20px;
+  font-size: 15px;
+}
+.legal table th,
+.legal table td {
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+}
+.legal table th {
+  background: var(--bg-alt);
+  width: 30%;
+  font-weight: 600;
+}
+
+/* Dashboard quota counter widget
+   Rendered by dashboard.js from /v1/me + /v1/me/usage. The bar colour is
+   thresholded via a data attribute (ok / warn / over) so CSS owns the palette
+   and dashboard.js only toggles state. */
+.quota-counter {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 22px;
+  background: var(--bg);
+  margin: 0 0 20px;
+}
+.quota-counter .stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+.quota-counter-headline {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 10px;
+  color: var(--text);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.quota-counter-headline .unit {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.quota-counter-value {
+  font-variant-numeric: tabular-nums;
+}
+.quota-counter-pct {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.quota-counter-bar {
+  position: relative;
+  height: 10px;
+  background: var(--bg-alt);
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 0 0 8px;
+}
+.quota-counter-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 5px;
+  transition: width 0.25s ease, background 0.25s ease;
+  /* WCAG 1.4.11 non-text contrast: bar track is bg-alt #f7f7f8; both
+     gradient stops must reach 3:1. Old #22c55e end = 2.13:1 (fail);
+     #16a34a (green-600) = 3.08:1 (pass). Start #15803d = 4.68:1 (pass). */
+  background: linear-gradient(90deg, #15803d, #16a34a);
+}
+/* WCAG 1.4.11 non-text contrast: gradient end-color must reach 3:1 vs the
+   bar track #f7f7f8. #f59e0b ≈ 2.15:1 (fail); #d97706 ≈ 2.98:1 (still
+   borderline fail when measured exactly); #cc6608 = 3.58:1 (pass). */
+.quota-counter[data-quota-state="warn"] .quota-counter-fill {
+  background: linear-gradient(90deg, #b45309, #cc6608);
+}
+.quota-counter[data-quota-state="over"] .quota-counter-fill {
+  background: linear-gradient(90deg, #991b1b, #dc2626);
+}
+.quota-counter[data-quota-state="over"] .quota-counter-pct,
+.quota-counter[data-quota-state="over"] .quota-counter-note {
+  color: var(--danger);
+  font-weight: 600;
+}
+.quota-counter[data-quota-state="warn"] .quota-counter-pct {
+  color: #b45309;
+}
+.quota-counter-note {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+.quota-counter-note a {
+  color: inherit;
+  text-decoration: underline;
+}
+.quota-counter-note a:hover { color: var(--danger); }
+
+/* Dashboard v2 (Bearer-flow) sections — reserve vertical space so the
+   API-driven reveal does not jolt the layout when /v1/me/dashboard,
+   /v1/me/usage_by_tool, /v1/me/billing_history, /v1/me/alerts/*
+   resolve out of order. dashboard.html marks each section
+   display:none + class="stat-card"; once dashboard_v2.js calls
+   showSections(true) the .display style is cleared and the section
+   becomes visible. Reserving 200 px while loading keeps cumulative
+   layout shift contained to <0.05 even on a slow API. */
+#dash2-summary,
+#dash2-tool-usage,
+#dash2-billing-history,
+#dash2-recommend,
+#dash2-alerts {
+  min-height: 200px;
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 36px 0;
+  background: var(--bg-alt);
+  font-size: 14px;
+}
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: stretch;
+}
+.footer-brand {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-brand > img,
+.footer-brand-mark img {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-right: 0 !important;
+  vertical-align: middle;
+}
+.footer-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.footer-tag {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.footer-nav {
+  display: flex;
+  gap: 14px 18px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.footer-nav a { color: var(--text-muted); }
+.footer-nav a:hover { color: var(--accent); }
+.footer-entity {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.7;
+  /* Override the global `word-break: break-word` on body so Japanese text
+     and long URLs don't shatter into single-character columns inside narrow
+     containers. Keep `overflow-wrap` so emails / URLs still soft-wrap. */
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+.footer-entity a { color: var(--accent); }
+.footer-copy {
+  margin: 0;
+  color: var(--text-muted);
+  text-align: left;
+  font-size: 13px;
+  /* Same break-word reset as .footer-entity. */
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Reduced motion — honor the OS-level "Reduce motion" preference.
+   Covers .btn transition, SVG demo animation, and JS-injected spinners. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* iOS Safari auto-zoom prevention (P2.7).
+   Safari iOS auto-zooms the viewport when a focused input has font-size
+   below 16px. Force 16px on form fields at phone widths so the page stays
+   pinned at the user's chosen scale. Desktop sizes are untouched. */
+@media (max-width: 480px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero { padding: 48px 0 40px; }
+  .hero h1 { font-size: 32px; }
+  .hero-sub { font-size: 17px; }
+  /* Round 3 (2026-04-30) mobile audit: products.html / pricing-page H1
+     was a hard 36px under the .pricing-page rule, with no <768/<480
+     override. Long titles on product pages can
+     push the container width on iPhone SE. Clamp shrinks to 22-28px in
+     the mobile range. */
+  .pricing-page h1 { font-size: clamp(22px, 7vw, 36px); }
+  .features,
+  .code-demo,
+  .newsletter,
+  .pricing-preview,
+  .pricing-page { padding: 40px 0; }
+  .section-title { font-size: 22px; }
+  .cards { grid-template-columns: 1fr; }
+  /* Audience pages stamp inline `style="grid-template-columns:repeat(N,1fr)"`
+     on .cards rows. Inline beats class specificity, so the .cards 1fr
+     fallback above never applies. The attribute selector + !important
+     below specifically defeats the inline override on phones, restoring
+     the single-column stack. Without this, audience hero cards force
+     the body to 1500-1850px on iPhone (P0 blocker). */
+  .cards[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-grid[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  /* iOS Safari auto-zooms text inputs whose font-size is < 16px on focus.
+     The base scaffold above doesn't reach inputs styled by id (#api_key,
+     [id^="dash2-"]) or by deeper class selectors (.ps-form, .newsletter-form,
+     .calc #reqInput). Force 16px across these explicit IDs/classes so the
+     viewport doesn't snap-zoom on tap (P1 mobile UX). */
+  .ps-form select,
+  .ps-form input,
+  .newsletter-form input,
+  .calc input,
+  #api_key,
+  [id^="dash2-"] input,
+  [id^="dash2-"] select,
+  [id^="dash2-"] textarea,
+  input[type="email"],
+  input[type="url"],
+  input[type="number"],
+  input[type="password"],
+  input[type="text"]:not([aria-hidden="true"]) {
+    font-size: 16px;
+  }
+  .header-inner { flex-wrap: nowrap; gap: 10px; }
+  .site-nav { gap: 8px; font-size: 14px; flex-wrap: nowrap; row-gap: 0; }
+  /* Mobile a11y: WCAG 2.5.5 touch target ≥44x44 on tablet+phone.
+     Extends the <480px rule to <768px so the iPad-portrait + folded-phone
+     range also gets enlarged tap targets. */
+  .site-nav a,
+  .lang-switch a,
+  .footer-nav a {
+    min-height: 44px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+  }
+  /* Mobile form: input min-height ≥44px + 16px font on phones.
+     16px prevents iOS Safari from auto-zooming on focus. Applies to all
+     hand-rolled forms (newsletter, prescreen, dashboard sign-in, alerts). */
+  form input,
+  form select,
+  form textarea {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+  /* Footer is now flex-column at all breakpoints; only center text on mobile. */
+  .footer-inner { text-align: center; }
+  .footer-brand { align-self: center; justify-content: center; }
+  .footer-nav { justify-content: center; }
+  .footer-copy { text-align: center; }
+  .footer-entity { text-align: center; }
+  .cta-row .btn { flex: 1 1 auto; text-align: center; }
+}
+
+/* Prescreen demo — interactive "try it now" widget that posts a profile
+   to /v1/programs/prescreen and renders the top-N matches. */
+.prescreen {
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 56px 0;
+}
+.prescreen .section-title { margin-bottom: 6px; }
+.prescreen-sub {
+  color: var(--text-muted);
+  margin: 0 0 24px;
+  font-size: 15px;
+}
+.ps-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+}
+.ps-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 14px;
+  align-items: end;
+}
+.ps-form .ps-field { display: flex; flex-direction: column; gap: 4px; }
+.ps-form label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.ps-form select,
+.ps-form input[type="number"] {
+  font: inherit;
+  font-size: 15px;
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  width: 100%;
+}
+.ps-form select:focus,
+.ps-form input:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.ps-submit {
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 22px;
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ps-submit:hover { background: var(--accent-hover); }
+.ps-submit:disabled { opacity: .6; cursor: progress; }
+.ps-hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+/* Reserve vertical space for the typical 5-row prescreen result so that
+   the post-submit render does not push the rest of the page down by ~400 px
+   (CWV CLS 0.05–0.10 isolated to this container). The container
+   stays display:none until results arrive — the height reservation only
+   kicks in once .is-visible is set, but we add min-height to .is-visible
+   so the loading "読み込み中…" state and the populated state share the
+   same box. */
+.ps-results { margin-top: 22px; display: none; }
+.ps-results.is-visible {
+  display: block;
+  min-height: 320px;
+}
+.ps-status {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.ps-error {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  background: #fef2f2;
+  /* WCAG 1.4.11 UI border: old #fecaca on #fff = 1.45:1 (fail); the box
+     fill #fef2f2 only reaches 1.05:1 vs white, so the border carries the
+     full state-signal. Switch to #ef4444 (red-500) = 3.76:1 (pass). */
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  color: var(--danger);
+  font-size: 14px;
+}
+.ps-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.ps-row {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  background: #fff;
+}
+.ps-row-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.ps-tier {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  letter-spacing: .04em;
+  color: #fff;
+  background: #6b7280;
+}
+.ps-tier.t-S { background: #0f766e; }
+.ps-tier.t-A { background: #2563eb; }
+.ps-tier.t-B { background: #64748b; }
+/* Tier C: was #9ca3af (white-on-2.54:1, WCAG fail). Switched to #78716c
+   (stone-500, white-on-4.80:1) — passes AA normal text and stays a warm
+   neutral that reads "lower than tier B (cool slate)" without re-coloring. */
+.ps-tier.t-C { background: #78716c; }
+/* Per-program SEO page tier badge — same color hierarchy as .ps-tier. */
+.tier {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: .04em;
+  color: #fff;
+  background: #6b7280;
+}
+.tier-s { background: #0f766e; }
+.tier-a { background: #2563eb; }
+.tier-b { background: #64748b; }
+.tier-c { background: #78716c; }
+.ps-name { font-weight: 600; font-size: 15.5px; flex: 1; }
+.ps-amount {
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.ps-reasons, .ps-caveats {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.ps-reasons li { color: var(--text); }
+.ps-caveats li { color: var(--danger); }
+.ps-source {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+.ps-source a { color: var(--accent); }
+
+/* Post-success CTA row — appended after renderRows to capture peak intent. */
+.ps-cta {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* SMB → 顧問税理士 reseller handoff. Visually separated from .ps-cta
+   (which targets the API-key signup) by a dashed border so the user
+   can tell "send this list out" from "sign up for a key". */
+.ps-handoff {
+  margin: 20px 0 0;
+  padding: 14px 0 18px;
+  border-top: 1px dashed var(--border);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.ps-handoff::before {
+  content: "結果を共有 / 送付:";
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  flex: 0 0 100%;
+  margin-bottom: 4px;
+}
+.ps-handoff .btn {
+  font-size: 14px;
+}
+
+/* Print stylesheet — used by the "PDF として保存" button. Hide every
+   navigational and conversion surface so only the result list ends up
+   on paper / in the saved PDF. */
+@media print {
+  .site-header,
+  .site-footer,
+  .site-nav,
+  .ps-form,
+  .ps-cta,
+  .ps-handoff,
+  .hero,
+  .am-feedback-trigger,
+  .am-feedback-close {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .ps-results,
+  .ps-results.is-visible {
+    display: block !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+  }
+  .ps-row {
+    page-break-inside: avoid;
+    border: 1px solid #888 !important;
+    background: #fff !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ps-form {
+    grid-template-columns: 1fr;
+  }
+  .ps-submit { width: 100%; }
+  .ps-form select,
+  .ps-form input[type="number"] {
+    min-height: 44px;
+    padding: 12px 12px;
+    font-size: 16px;
+  }
+  .ps-submit {
+    min-height: 44px;
+    width: 100%;
+    padding: 12px 16px;
+  }
+  .btn {
+    min-height: 44px;
+    padding: 12px 20px;
+  }
+  .cta-row .btn { width: 100%; }
+  .newsletter-form button { width: 100%; }
+  [id] { scroll-margin-top: 56px; }
+  #reqInput { width: 100%; box-sizing: border-box; }
+}
+
+/* Audience pitch cards (used by site/index.html #audiences) */
+.audience-card .audience-context {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.audience-card .audience-pitch {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text);
+  border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 12px;
+  margin: 8px 0 12px;
+}
+
+/* Dashboard "new API key reveal" one-time banner.
+   Amber warning palette in light mode, darker tinted in dark mode (override
+   below). Hoisted out of inline style= so dark-mode @media can re-skin. */
+.newkey-reveal {
+  margin: 0 0 18px;
+  padding: 16px;
+  border-radius: 8px;
+  /* WCAG 1.4.11 UI border: old #f59e0b on #fff = 2.15:1 (fail); the box
+     fill #fff8e6 only reaches 1.06:1, so the border is the only state cue.
+     Switch to #d97706 (amber-600) = 3.19:1 (pass). */
+  border: 1px solid #d97706;
+  background: #fff8e6;
+  color: #7c2d12;
+}
+
+/* Dashboard dunning banner (subscription past_due / unpaid / canceled).
+   Hoisted out of inline style on #dash-dunning-banner so the dark-mode
+   @media can override hex colors that would otherwise become unreadable
+   on a #0d1117 surface (#7f1d1d on #0d1117 = 1.6:1 fail).
+   Light contrast: #7f1d1d on #fff0f0 = 6.84:1 (AAA normal, AA large).
+   Dark contrast: #fca5a5 on #3f1d1d = 6.46:1 (AAA normal, AA large). */
+.dunning-banner {
+  margin: 0 0 18px;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #b91c1c;
+  background: #fff0f0;
+  color: #7f1d1d;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.dunning-banner-msg {
+  display: block;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+.dunning-banner-action {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: #b91c1c;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 13px;
+}
+.dunning-banner-action:hover {
+  background: #991b1b;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Dashboard alerts subsection headings — visual hierarchy without
+   re-introducing inline styles. The h2 carries section-level weight,
+   the h3 carries subsection-eyebrow weight. Both inherit dark-mode
+   colors via var(--text) / var(--text-muted). */
+.dash-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--text);
+}
+.dash-subsection-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 14px 0 8px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.dash-subsection-title.is-spaced {
+  margin-top: 22px;
+}
+.newkey-value {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 6px;
+  /* See .newkey-reveal: matched amber border at #d97706 (3.19:1 vs #fff). */
+  border: 1px solid #d97706;
+  word-break: break-all;
+  margin: 0 0 10px;
+}
+
+/* Dark mode — honors prefers-color-scheme: dark from macOS / iOS / Win11.
+   Strategy: override CSS variables on :root so most components auto-adapt.
+   Only elements with hardcoded #fff / #fef0f0 / #fef2f2 need explicit fixes.
+   Brand identity preserved (indigo accent, just tuned for AAA dark contrast).
+   Contrast targets:
+     --text  #e6edf3 on --bg #0d1117 = 14.6:1 (AAA)
+     --accent #79b8ff on --bg #0d1117 = 8.5:1 (AAA)
+     --text-muted #8b949e on --bg #0d1117 = 5.4:1 (AA large + AA normal) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent: #79b8ff;
+    --accent-hover: #a5cdff;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --border: #30363d;
+    --bg: #0d1117;
+    --bg-alt: #161b22;
+    --bg-subtle: #161b22;
+    --code-bg: #010409;
+    --code-text: #e6edf3;
+    --danger: #f85149;
+    --focus: #79b8ff;
+  }
+
+  /* Hardcoded #fff backgrounds → dark surfaces */
+  .btn-secondary { background: var(--bg-alt); }
+  .btn-secondary:hover { background: var(--border); }
+  .demo-note code { background: var(--bg-alt); }
+  .trust-strip-blocks li {
+    background: var(--bg-alt);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  .footer-brand img[src$="jpcite-mark.svg"] {
+    content: url("/assets/brand/jpcite-mark-dark-fill.svg");
+    background: transparent;
+    border-radius: 0;
+    box-sizing: border-box;
+    filter: none;
+    padding: 0;
+  }
+  .newsletter-form input[type="email"] { background: var(--bg-alt); }
+  .ps-card { background: var(--bg-alt); }
+  .ps-form select,
+  .ps-form input[type="number"] { background: var(--bg-alt); }
+  .ps-row { background: var(--bg-alt); }
+
+  /* Brand mark contrast — text on accent must stay readable.
+     #79b8ff has high luminance, so use dark text on it. */
+  .brand-mark { color: #0d1117; }
+  .btn-primary { color: #0d1117; }
+  .btn-primary:hover { color: #0d1117; }
+  .nav-cta,
+  .nav-cta:hover { color: #0d1117 !important; }
+  .skip-link { color: #0d1117; }
+  .ps-submit { color: #0d1117; }
+
+  /* Tier badges retain full saturation — readable on darker bg.
+     White text on these saturated greens/blues already passes on dark. */
+  .ps-tier.t-S { background: #0f766e; color: #fff; }
+  .ps-tier.t-A { background: #2563eb; color: #fff; }
+  .ps-tier.t-B { background: #64748b; color: #fff; }
+  .ps-tier.t-C { background: #4b5563; color: #fff; }
+
+  /* Error / warning surfaces: shift from light pink to dark red tinted */
+  .ps-error {
+    background: rgba(248, 81, 73, 0.12);
+    border-color: rgba(248, 81, 73, 0.4);
+    color: #ffa198;
+  }
+  .draft-banner {
+    background: rgba(248, 81, 73, 0.12);
+    border-color: rgba(248, 81, 73, 0.4);
+    color: #ffa198;
+  }
+
+  /* Quota counter gradients — keep semantic colors but darker for dark bg */
+  .quota-counter-fill {
+    background: linear-gradient(90deg, #1a7f37, #3fb950);
+  }
+  .quota-counter[data-quota-state="warn"] .quota-counter-fill {
+    background: linear-gradient(90deg, #9a6700, #d29922);
+  }
+  .quota-counter[data-quota-state="over"] .quota-counter-fill {
+    background: linear-gradient(90deg, #b62324, #f85149);
+  }
+  .quota-counter[data-quota-state="warn"] .quota-counter-pct { color: #d29922; }
+
+  /* Code blocks — GitHub Dark theme palette already matches via --code-bg */
+  /* (already handled by --code-bg / --code-text variable override above) */
+
+  /* Inline <code> in dashboard / stats / docs — readable on dark */
+  code {
+    color: var(--text);
+  }
+
+  /* Newsletter status colors retain semantic meaning */
+  .newsletter-status.ok { color: var(--accent); }
+  .newsletter-status.err { color: #ff7b72; }
+
+  /* Dashboard newkey reveal — amber warning, dark-mode skin */
+  .newkey-reveal {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: #fbbf24;
+  }
+  .newkey-value {
+    background: var(--bg-alt);
+    color: var(--text);
+    border-color: rgba(245, 158, 11, 0.5);
+  }
+
+  /* Dashboard dunning banner — dark red tinted, AA-readable.
+     Light #7f1d1d on #fff0f0 fails on dark backgrounds (1.6:1 vs #0d1117).
+     Dark #fca5a5 on #3f1d1d = 6.46:1 (AAA normal text). */
+  .dunning-banner {
+    background: #3f1d1d;
+    border-color: rgba(248, 81, 73, 0.5);
+    color: #fca5a5;
+  }
+  .dunning-banner-action {
+    background: #f85149;
+    color: #0d1117;
+  }
+  .dunning-banner-action:hover {
+    background: #ff7b72;
+    color: #0d1117;
+  }
+}
+
+/* Prefecture + program-list pages (47 都道府県 SEO landing).
+   Selectors used by site/_templates/prefecture.html for tier-S 補助金 /
+   採択事例 / 政策金融融資 / 行政処分 grids. Without these the pages render
+   as an unstyled wall of text and bounce inbound "{県名} 補助金" traffic.
+   Reuses the existing .tier / .tier-{s,a,b,c} badge palette defined above
+   (lines 877-890) — no need to redeclare. */
+.prefecture-header { margin-bottom: 24px; }
+.prefecture-header h1 { font-size: 28px; margin-bottom: 8px; }
+.prefecture-header .byline { color: var(--text-muted); font-size: 13px; }
+.prefecture-header .byline-note { color: var(--text-muted); font-size: 13px; margin-top: 4px; }
+.tldr { background: var(--bg-alt); padding: 16px; border-radius: 8px; margin: 16px 0; border-left: 3px solid var(--accent); }
+.program-list, .case-list, .loan-list, .enforcement-list { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.program-card, .case-card, .loan-card, .enforcement-card { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.program-card a, .case-card a, .loan-card a, .enforcement-card a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.program-card a:hover, .case-card a:hover, .loan-card a:hover, .enforcement-card a:hover { text-decoration: underline; }
+.program-amount { color: var(--text-muted); font-size: 13px; display: block; margin-top: 4px; }
+.case-industry { color: var(--text-muted); font-size: 13px; }
+.case-summary { font-size: 14px; margin-top: 8px; }
+.disclaimer { color: var(--text-muted); font-size: 12px; margin-top: 32px; padding: 12px; background: var(--bg-alt); border-radius: 4px; }
+
+@media (max-width: 480px) {
+  .program-list, .case-list, .loan-list, .enforcement-list { grid-template-columns: 1fr; }
+}
+
+/* WCAG 2.5.5 AAA touch-target sweep (44x44 px minimum).
+   Uses `pointer: coarse` so the rule fires on phones, tablets (iPad portrait
+   AND landscape), and Android Chromebook touch screens, while leaving the
+   visually compact desktop hit areas untouched on mouse / trackpad pointers.
+   Per-device width media queries (max-width: 480/768) above already cover
+   the most common phone sizes; this block extends coverage to non-phone
+   touch devices and adds rules for the few elements still under 44 px even
+   on phones (footer-entity inline link, dashboard link-button, dunning CTA,
+   brand mark, content-area card links).
+   Inline links inside flowing paragraph text (.hero-note a, .pricing-note a,
+   .legal p a, .footer-entity a) are technically covered by the WCAG 2.5.5
+   "Inline" exception, but we still bump line-height + offset so a fat finger
+   doesn't slip onto an adjacent line. */
+@media (pointer: coarse), (max-width: 768px) {
+  /* Buttons — base .btn rule sits at ~42 px tall (15px font * 1.2 LH + 24px
+     vertical padding). Force 44 px regardless of viewport for any touch
+     pointer (covers iPad portrait 768-1024 px range). */
+  .btn,
+  .ps-submit,
+  .dunning-banner-action {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Brand / logo link in header — without min-height the hit area is the
+     28 px brand-mark. Header padding adds visual breathing room but does
+     not extend the anchor's clickable box. */
+  .brand {
+    min-height: 44px;
+  }
+
+  /* Dashboard "logout" link-button — visually a link, semantically a button.
+     Inherits font:inherit so its hit area is just text height (~27 px). */
+  .link-button {
+    min-height: 44px;
+    padding: 8px 4px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Footer inline link inside .footer-entity ("統計の出典") — sits inside a
+     paragraph so we use a generous line-height + tap padding rather than
+     min-height (would break the paragraph rhythm). */
+  .footer-entity a,
+  .footer-tag a {
+    display: inline-block;
+    padding: 6px 2px;
+    line-height: 1.8;
+  }
+
+  /* In-flow grid card links — single-line bold links inside .program-card,
+     .case-card, .loan-card, .enforcement-card. Bump line-height so the row
+     itself is tall enough; the parent card padding (16px) gives the rest. */
+  .program-card a,
+  .case-card a,
+  .loan-card a,
+  .enforcement-card a {
+    display: inline-block;
+    padding: 6px 0;
+    min-height: 44px;
+    line-height: 1.6;
+  }
+
+  /* Footer nav already has min-height: 44px under (max-width: 768px) (line
+     ~847). Re-stating here so pointer-coarse iPad-landscape (>768 px) also
+     gets it. */
+  .footer-nav a {
+    min-height: 44px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Sticky-footer feedback widget toggle (rendered by feedback-widget.js).
+     Class fixed via the widget; we enforce 44 px without touching the JS. */
+  .am-feedback-trigger,
+  .am-feedback-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ----------------------------------------------------------------
+   JA mobile horizontal-overflow defenses (375px viewport).
+   Follow-up audit found JA pages clipping in chrome headless
+   `--screenshot` mode. Real iOS Safari / Playwright `is_mobile=true`
+   confirms the layout already wraps cleanly at 375 — but the rules
+   below add belt-and-braces protection so a future content edit
+   (longer button label, an extra nav link, a wider input) cannot
+   silently regress on small phones. All rules are scoped to
+   `(max-width: 480px)` or `(max-width: 599px)` so desktop is
+   untouched.
+   ---------------------------------------------------------------- */
+
+/* (4) Nav: keep the header to one visual row below 420px. The nav itself
+   scrolls horizontally so page-specific link counts do not create a
+   different two-row header. */
+@media (max-width: 420px) {
+  .header-inner {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .brand {
+    flex: 0 0 auto;
+    max-width: 100%;
+  }
+  .site-nav {
+    flex-wrap: nowrap;
+    gap: 8px;
+    row-gap: 0;
+    /* min-width: 0 lets the nav shrink below its content's intrinsic
+       width inside the .header-inner flex container. */
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+}
+
+/* (2) smb.html (and any other audience hero) H1 — Japanese line-break
+   awareness + fluid font sizing. `word-break: keep-all` keeps Japanese
+   words from breaking mid-character on narrow phones; `clamp()` shrinks
+   the font from 32px to 24px between 320–375px so a long compound like
+   "SMB 経営者向け jpcite" never visually clips. Scoped to mobile
+   so desktop's 44px hero font is preserved. */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: clamp(22px, 7.2vw, 32px);
+    line-height: 1.3;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    /* Prevents an unbreakable English token from forcing horizontal
+       scroll when keep-all is set on a JA-mostly heading. */
+  }
+}
+
+/* (5) Mobile body content overflow safety. Long unbroken tokens
+   (URLs, code identifiers, English compounds inside JA paragraphs)
+   should wrap rather than push the container width. Scoped to
+   <=480 so desktop typography stays untouched. */
+@media (max-width: 480px) {
+  .hero-tag,
+  .hero-sub,
+  .hero-note,
+  .pricing-note,
+  .legal p,
+  .legal li,
+  .card p,
+  .feature p,
+  main p,
+  main li {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* (3) Dashboard sign-in row — stack label/input/button vertically
+   anywhere below 600px so the legacy 320px iPhone SE and the
+   in-between phablet range (480–599) both get a vertical layout.
+   The existing dashboard.html @media (max-width: 480px) rule
+   already collapses the form, this widens that breakpoint to 600px
+   per spec (form layout intent: stack as soon as the row no longer
+   has comfortable room). */
+@media (max-width: 599px) {
+  #dash2-key-form {
+    flex-direction: column !important;
+    align-items: stretch;
+  }
+  #dash2-key-form #dash2-key-input {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+  #dash2-key-form .btn,
+  #dash2-key-form .btn-ghost {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  /* Same shape applies to the legacy cookie-session signin form
+     (.signin-form) — stack at the same breakpoint so JA + EN both
+     respond identically. */
+  .signin-form,
+  form.signin {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .signin-form input,
+  form.signin input {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .signin-form button,
+  form.signin button {
+    width: 100%;
+  }
+}
+
+/* (6) mkdocs Material — feedback FAB (`.am-fb-fab`) is positioned by
+   the widget at right:20px / bottom:20px. On the smallest phones
+   the round pill ("フィードバック") can crowd the right edge of the
+   readable area. Tighten the offset slightly + ensure max-width so
+   it can never push the body width. */
+@media (max-width: 480px) {
+  .am-fb-fab {
+    right: 12px !important;
+    bottom: 12px !important;
+    max-width: calc(100vw - 24px);
+  }
+}

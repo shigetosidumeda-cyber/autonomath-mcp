@@ -125,8 +125,8 @@
         "no_admin_paths",
         "no_pii_export"
       ],
-      "sha256_prefix": "83783d001f1213a2",
-      "size_bytes": 546604,
+      "sha256_prefix": "7cb5919b0344f449",
+      "size_bytes": 546608,
       "tier": "agent",
       "url": "https://jpcite.com/openapi.agent.json"
     },
@@ -139,8 +139,8 @@
       "description": "ChatGPT Custom GPT 30-path slim profile. OpenAI's Custom GPT Actions builder caps at 30 paths per spec; this profile is the curated minimum-viable evidence + search surface for that constraint.",
       "parent_tier": "agent",
       "path_count": 30,
-      "sha256_prefix": "1522bdaf7f9440e8",
-      "size_bytes": 383024,
+      "sha256_prefix": "dd931612249cfc7f",
+      "size_bytes": 383066,
       "tier": "gpt30",
       "url": "https://jpcite.com/openapi.agent.gpt30.json"
     }

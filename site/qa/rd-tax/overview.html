@@ -58,7 +58,7 @@
       },
       "logo": {
         "@type": "ImageObject",
-        "url": "https://jpcite.com/assets/logo.png",
+        "url": "https://jpcite.com/assets/brand/og-square-light.png",
         "width": 600,
         "height": 60
       },
@@ -260,9 +260,9 @@
         "itemListElement": [
           {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
           {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
           {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
           {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
           {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
@@ -295,14 +295,17 @@
  <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="/about.html">運営について</a>
- <a href="/products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
  <a href="/pricing.html">料金</a>
  <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
  <details class="nav-trust">
  <summary>信頼</summary>
  <ul>
+ <li><a href="/trust.html">信頼の設計</a></li>
  <li><a href="/status.html">稼働状況</a></li>
  <li><a href="/data-freshness.html">データ鮮度</a></li>
  <li><a href="/transparency.html">透明性</a></li>
@@ -310,7 +313,9 @@
  </ul>
  </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
- <a href="/qa/rd-tax/overview" lang="ja" hreflang="ja" aria-current="page">JP</a>
+ <a href="/" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/index.html" lang="en" hreflang="en">EN</a>
  </span>
  </nav>
  </div>
@@ -391,7 +396,7 @@
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
  "https://api.jpcite.com/v1/programs/search?q=%E7%A0%94%E7%A9%B6%E9%96%8B%E7%99%BA%E7%A8%8E%E5%88%B6"</code></pre>
  <p>MCP クライアント (Claude Desktop / Cursor / Cline など) では <code>search_programs(q="研究開発税制")</code>、ChatGPT Custom GPT では OpenAPI Actions 経由で同等の REST endpoint を呼べます。詳細は <a href="/docs/api-reference">API reference</a> 参照。</p>
- <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
+ <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/pricing.html#api-paid">API キー発行</a></p>
  </section>
  <p class="disclaimer">本ページは公開資料をもとに整理した概要であり、法的助言・税務助言・申請代行を構成するものではありません。本ページの内容は税理士法第52条が規定する税理士業務 (税務代理・税務書類の作成・税務相談) の提供ではなく、個別の税務判断が必要な場合は税理士・有資格専門家にご相談ください。制度の最新内容は所管官公庁の公開情報で確認してください。</p>
  </article>
@@ -402,7 +407,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand"><img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" loading="lazy" decoding="async" style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
  <p class="footer-entity">運営: Bookyou株式会社</p>
  </div>

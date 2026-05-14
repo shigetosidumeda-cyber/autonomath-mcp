@@ -304,9 +304,9 @@
         "itemListElement": [
           {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
           {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
           {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
           {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
           {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
@@ -353,7 +353,7 @@
       2. Add "active" to the new state (ok / warn / down).
       3. Update "Last updated" below.
       4. Publish the updated static page.
-    Current = down. Keep this English copy in sync with site/status.html and site/status/status.json.
+    Current = warn. Keep this English copy in sync with site/status.html and site/status/status.json.
   -->
 
  <section class="state ok" aria-label="operational">
@@ -364,15 +364,15 @@
  </div>
  </section>
 
- <section class="state warn" aria-label="degraded">
+ <section class="state warn active" aria-label="degraded">
  <span class="dot" aria-hidden="true">🟡</span>
  <div>
  <h2>Degraded</h2>
- <p>Partial outage or elevated latency. Check the note below for details.</p>
+ <p>API, billing, and dashboard are responding. MCP is degraded and data freshness is stale, so the overall status is Degraded.</p>
  </div>
  </section>
 
- <section class="state down active" aria-label="down">
+ <section class="state down" aria-label="down">
  <span class="dot" aria-hidden="true">🔴</span>
  <div>
  <h2>Overall Down (data freshness stale)</h2>
@@ -382,7 +382,7 @@
 
  <p class="updated">
  Last updated:
-<code>2026-05-15T00:25:41+09:00 (status.json)</code>
+<code>2026-05-15T03:29:10+09:00 (status.json)</code>
  </p>
 
  <p class="fallback-note">

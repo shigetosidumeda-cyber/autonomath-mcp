@@ -972,12 +972,12 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
     required_outputs = [
         "Evidence Packet",
         "会社フォルダ",
-        "公開情報 DD",
+        "M&A DD / 取引先公開情報チェック",
         "顧問先月次レビュー",
-        "申請前 Evidence Packet",
-        "併用・排他チェック表",
+        "Application Evidence Pack / 申請前整理",
+        "Funding Compatibility / 資金併用チェック",
         "インボイス取引先確認表",
-        "Source Receipt",
+        "Funding Traceback / Source Receipt",
         "法令・判例引用候補",
         "改正・保存検索通知",
         "費用・支払い制御",
@@ -994,12 +994,12 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
     for label in [
         "Evidence Packet",
         "Company Folder",
-        "Public-info DD",
+        "M&A DD / Public-info Check",
         "Monthly Client Review",
-        "Application Strategy Pack",
-        "Compatibility / Exclusion Table",
+        "Application Evidence Pack",
+        "Funding Compatibility",
         "Invoice Counterparty Check",
-        "Source Receipt",
+        "Funding Traceback / Source Receipt",
         "Law / Case Citation Candidates",
         "Amendment/Saved Search Alerts",
         "Cost/Payment Control",
@@ -1029,12 +1029,12 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
             "outputs": [
                 "Evidence Packet",
                 "会社フォルダ",
-                "公開情報 DD",
+                "M&A DD / 取引先公開情報チェック",
                 "顧問先月次レビュー",
-                "申請前 Evidence Packet",
-                "併用・排他チェック表",
+                "Application Evidence Pack / 申請前整理",
+                "Funding Compatibility / 資金併用チェック",
                 "インボイス取引先確認表",
-                "Source Receipt",
+                "Funding Traceback / Source Receipt",
                 "法令・判例引用候補",
                 "改正・保存検索通知",
                 "費用・支払い制御",
@@ -1053,12 +1053,12 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
             "outputs": [
                 "Evidence Packet",
                 "会社フォルダ",
-                "公開情報 DD",
+                "M&A DD / 取引先公開情報チェック",
                 "顧問先月次レビュー",
-                "申請前 Evidence Packet",
-                "併用・排他チェック表",
+                "Application Evidence Pack / 申請前整理",
+                "Funding Compatibility / 資金併用チェック",
                 "インボイス取引先確認表",
-                "Source Receipt",
+                "Funding Traceback / Source Receipt",
                 "法令・判例引用候補",
                 "改正・保存検索通知",
                 "費用・支払い制御",
@@ -1077,12 +1077,12 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
             "outputs": [
                 "Evidence Packet",
                 "Company Folder",
-                "Public-info DD",
+                "M&A DD / Public-info Check",
                 "Monthly Client Review",
-                "Application Strategy Pack",
-                "Compatibility / Exclusion Table",
+                "Application Evidence Pack",
+                "Funding Compatibility",
                 "Invoice Counterparty Check",
-                "Source Receipt",
+                "Funding Traceback / Source Receipt",
                 "Law / Case Citation Candidates",
                 "Amendment/Saved Search Alerts",
                 "Cost/Payment Control",
@@ -1286,7 +1286,7 @@ def test_connect_chooser_is_rich_enough_for_agent_setup() -> None:
         "8 業法",
         "Evidence Packet",
         "会社フォルダ",
-        "公開情報 DD",
+        "M&A DD / 取引先公開情報チェック",
     ):
         assert snippet in text
     assert "/pricing.html#api-paid" in text
@@ -1393,29 +1393,179 @@ def test_agent_connect_and_prompt_hubs_are_in_primary_navigation() -> None:
 
 
 def test_common_jsonld_offer_catalog_lists_all_eight_outputs() -> None:
-    targets = [
-        "site/_assets/jsonld/_common.json",
-        "site/index.html",
-        "site/dashboard.html",
-        "site/playground.html",
-        "site/en/support.html",
-    ]
+    source_targets = ["site/_assets/jsonld/_common.json"]
     required = [
         "Evidence Packet",
         "Company Folder",
-        "Public-info DD",
-        "Monthly Client Review",
-        "Application Strategy Pack",
+        "M&A DD / Public-info Check",
+        "Monthly Client Review Evidence",
+        "Application Evidence Pack",
+        "Funding Compatibility",
+        "Invoice Counterparty Check",
+        "Funding Traceback / Source Receipt",
         "Amendment and Saved Search Alerts",
         "Cost and Payment Control",
         "Agent Handoff",
     ]
-    for rel in targets:
+    for rel in source_targets:
         text = (REPO_ROOT / rel).read_text(encoding="utf-8", errors="ignore")
         for label in required:
             assert label in text, f"{rel}: missing {label}"
         assert "Company Folder Pack" not in text
         assert "Pre-Consult Triage" not in text
+        assert '"Public-info DD"' not in text
+        assert '"Application Strategy Pack"' not in text
+
+    injected_targets = [
+        "site/index.html",
+        "site/dashboard.html",
+        "site/playground.html",
+        "site/en/support.html",
+    ]
+    for rel in injected_targets:
+        text = (REPO_ROOT / rel).read_text(encoding="utf-8", errors="ignore")
+        assert "M&A DD / Public-info Check" in text
+        assert "Application Evidence Pack" in text
+        assert "Monthly Client Review Evidence" in text
+        assert "Funding Traceback / Funding Traceback" not in text
+        assert '"Public-info DD"' not in text
+        assert '"Application Strategy Pack"' not in text
+
+    generated_targets = [
+        "site/prefectures/index.html",
+        "site/prefectures/tokyo.html",
+        "site/cross/tokyo/index.html",
+        "site/industries/P/index.html",
+    ]
+    for rel in generated_targets:
+        path = REPO_ROOT / rel
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        assert "M&A DD / Public-info Check" in text
+        assert "Application Evidence Pack" in text
+        assert "Monthly Client Review Evidence" in text
+        assert "Funding Traceback / Funding Traceback" not in text
+        assert '"Public-info DD"' not in text
+        assert '"Application Strategy Pack"' not in text
+
+
+def test_primary_public_chrome_uses_canonical_logo_and_nowrap_nav() -> None:
+    pages = [
+        "site/index.html",
+        "site/products.html",
+        "site/pricing.html",
+        "site/connect/index.html",
+        "site/connect/claude-code.html",
+        "site/connect/cursor.html",
+        "site/connect/chatgpt.html",
+        "site/connect/codex.html",
+        "site/prompts/index.html",
+    ]
+    offenders: list[str] = []
+    for rel in pages:
+        text = (REPO_ROOT / rel).read_text(encoding="utf-8", errors="ignore")
+        if '<header class="site-header"' not in text:
+            offenders.append(f"{rel}: missing canonical site-header")
+        if "lockup-transparent-600-darklogo.png" not in text:
+            offenders.append(f"{rel}: missing canonical logo lockup")
+        if '<span class="brand-mark">jp</span>' in text:
+            offenders.append(f"{rel}: still uses legacy jp mark")
+        if 'href="/connect/"' not in text or 'href="/prompts/"' not in text:
+            offenders.append(f"{rel}: missing connect/prompts nav")
+        if "footer-brand-mark" not in text:
+            offenders.append(f"{rel}: missing footer brand mark")
+
+    css = (REPO_ROOT / "site" / "styles.src.css").read_text(encoding="utf-8")
+    assert re.search(r"\.site-nav\s*\{[^}]*flex-wrap:\s*nowrap", css, re.S)
+    assert re.search(r"\.site-nav\s*\{[^}]*white-space:\s*nowrap", css, re.S)
+    assert 'content: url("/assets/brand/jpcite-mark-dark-fill.svg")' in css
+    assert offenders == []
+
+
+def test_top_level_static_pages_do_not_drift_from_public_chrome() -> None:
+    offenders: list[str] = []
+    pages = set((REPO_ROOT / "site").glob("*.html"))
+    pages.update((REPO_ROOT / "site").glob("*/index.html"))
+    for path in sorted(pages):
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        if '<header class="site-header"' not in text:
+            offenders.append(f"{rel}: missing canonical site-header")
+        if "lockup-transparent-600-darklogo.png" not in text:
+            offenders.append(f"{rel}: missing canonical logo lockup")
+        nav_match = re.search(r'<nav class="site-nav"[^>]*>(.*?)</nav>', text, re.S)
+        if not nav_match:
+            offenders.append(f"{rel}: missing primary site-nav")
+        else:
+            nav = nav_match.group(1)
+            for href in ('href="/connect/"', 'href="/prompts/"'):
+                if href not in nav:
+                    offenders.append(f"{rel}: missing {href}")
+        if '<span class="brand-mark">jp</span>' in text:
+            offenders.append(f"{rel}: still uses legacy jp mark")
+        if '<footer class="site-footer"' not in text:
+            offenders.append(f"{rel}: missing site-footer")
+        elif "footer-brand-mark" not in text:
+            offenders.append(f"{rel}: missing footer brand mark")
+
+    assert offenders == []
+
+
+def test_generators_emit_current_public_chrome_when_regenerated() -> None:
+    template_backed_generators = {
+        "scripts/generate_industry_program_pages.py": "site/_templates/industry_program.html",
+        "scripts/generate_program_pages.py": "site/_templates/program.html",
+        "scripts/generate_prefecture_pages.py": "site/_templates/prefecture.html",
+    }
+    generator_paths = [
+        "scripts/build_root_indexes.py",
+        "scripts/generate_case_pages.py",
+        "scripts/generate_city_pages.py",
+        "scripts/generate_compare_pages.py",
+        "scripts/generate_cross_hub_pages.py",
+        "scripts/generate_geo_citation_pages.py",
+        "scripts/generate_geo_industry_pages.py",
+        "scripts/generate_industry_hub_pages.py",
+        "scripts/generate_industry_program_pages.py",
+        "scripts/generate_public_counts.py",
+        "scripts/generate_program_pages.py",
+        "scripts/generate_prefecture_pages.py",
+        "scripts/generate_enforcement_pages.py",
+        "scripts/etl/generate_enforcement_seo_pages.py",
+    ]
+    forbidden = [
+        '<a class="brand" href="/" aria-label="jpcite ホーム">jpcite</a>',
+        '<a href="/" class="logo">jpcite</a>',
+        '<a class="logo" href="/">jpcite</a>',
+        '<p class="footer-brand">jpcite</p>',
+        '<span class="brand-mark">jp</span>',
+        '<span class="brand-name">jpcite</span>',
+        "/assets/favicon.svg",
+        "/_assets/logo.svg",
+        "/assets/logo.png",
+        "AutonoMath",
+    ]
+    offenders: list[str] = []
+    for rel in generator_paths:
+        text = (REPO_ROOT / rel).read_text(encoding="utf-8", errors="ignore")
+        for pattern in forbidden:
+            if pattern in text:
+                offenders.append(f"{rel}: emits old chrome `{pattern}`")
+        if rel in template_backed_generators:
+            template_rel = template_backed_generators[rel]
+            template_text = (REPO_ROOT / template_rel).read_text(encoding="utf-8", errors="ignore")
+            if "footer-brand-mark" not in template_text:
+                offenders.append(f"{template_rel}: template missing footer brand mark")
+            if "lockup-transparent-600-darklogo.png" not in template_text:
+                offenders.append(f"{template_rel}: template missing canonical logo lockup")
+            continue
+        if "footer-brand-mark" not in text:
+            offenders.append(f"{rel}: generator missing footer brand mark")
+        if "lockup-transparent-600-darklogo.png" not in text:
+            offenders.append(f"{rel}: generator missing canonical logo lockup")
+
+    assert offenders == []
 
 
 def test_public_agent_and_billing_docs_use_current_auth_and_pricing_copy() -> None:
@@ -1451,11 +1601,11 @@ def test_mcp_cost_examples_match_public_pricing_scenarios() -> None:
     pricing = (REPO_ROOT / "site" / "pricing.html").read_text(encoding="utf-8")
     examples = {item["name"]: item for item in manifest["pricing"]["cost_examples"]}
 
-    assert "公開情報 DD (200社)" in examples
-    public_dd = examples["公開情報 DD (200社)"]
+    assert "M&A DD / 取引先公開情報チェック (200社)" in examples
+    public_dd = examples["M&A DD / 取引先公開情報チェック (200社)"]
     assert public_dd["req"] == 9400
     assert public_dd["jpy_inc_tax"] == 31020
-    assert "公開情報 DD (200 社)" in pricing
+    assert "M&A DD / 取引先公開情報チェック (200 社)" in pricing
     assert "9,400 req" in pricing
     assert "¥31,020" in pricing
 
@@ -1625,12 +1775,12 @@ def test_products_page_surfaces_all_twelve_outputs() -> None:
     required_outputs = [
         "Evidence Packet",
         "会社フォルダ",
-        "公開情報 DD",
+        "M&A DD / 取引先公開情報チェック",
         "顧問先月次レビュー",
-        "申請前 Evidence Packet",
-        "併用・排他チェック表",
+        "Application Evidence Pack / 申請前整理",
+        "Funding Compatibility / 資金併用チェック",
         "インボイス取引先確認表",
-        "Source Receipt",
+        "Funding Traceback / Source Receipt",
         "法令・判例引用候補",
         "改正・保存検索通知",
         "費用・支払い制御",

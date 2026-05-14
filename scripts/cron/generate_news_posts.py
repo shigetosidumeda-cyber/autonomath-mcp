@@ -467,11 +467,11 @@ def _build_news_post_context(
                     "@type": "Organization",
                     "@id": "https://jpcite.com/#publisher",
                     "name": "jpcite",
-                    "alternateName": ["AutonoMath", "Bookyou株式会社"],
+                    "alternateName": ["jpcite", "Bookyou株式会社"],
                     "url": f"https://{domain}/",
                     "logo": {
                         "@type": "ImageObject",
-                        "url": f"https://{domain}/assets/logo.png",
+                        "url": f"https://{domain}/assets/brand/og-square-light.png",
                         "width": 600,
                         "height": 60,
                     },

@@ -462,6 +462,14 @@ def probe_data_freshness() -> dict[str, Any]:
             .strftime("%Y-%m-%d")
         )
     max_age_days = (worst_age_s // 86400) if worst_age_s is not None else None
+    if worst_status != STATUS_OK and last_updated_at is None:
+        # Fail closed when the probe cannot read any freshness timestamp
+        # (for example on a static Pages runner without the SQLite corpus).
+        # A 1970 sentinel is intentionally worse than stale and keeps the
+        # public JSON actionable without exposing local DB details.
+        epoch = datetime(1970, 1, 1, tzinfo=UTC)
+        last_updated_at = epoch.strftime("%Y-%m-%d")
+        max_age_days = int((datetime.now(UTC) - epoch).total_seconds() // 86400)
 
     return {
         "status": worst_status,

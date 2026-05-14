@@ -230,7 +230,7 @@ uvx autonomath-mcp
 
 ## Data sources
 
-Program records prioritize primary sources such as 経産省, 農林水産省 (MAFF), 日本政策金融公庫 (JFC), 総務省, and 47 都道府県公報. Most public records carry `source_url` + `source_fetched_at` lineage, with known gaps documented. Public structured data is exposed through `/structured/`, `sitemap-structured.xml`, and inline JSON-LD on generated program pages.
+Program records prioritize primary sources such as 経産省, 農林水産省 (MAFF), 日本政策金融公庫 (JFC), 総務省, and 47 都道府県公報. Most public records carry `source_url` + `source_fetched_at` lineage, with known gaps documented. Public structured data is exposed through inline JSON-LD, `sitemap-structured.xml`, and the `.well-known` discovery files; the retired `/structured/` export path is intentionally not public.
 
 ## Evaluation
 

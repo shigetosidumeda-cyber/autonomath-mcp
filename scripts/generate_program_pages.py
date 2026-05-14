@@ -830,7 +830,7 @@ def _org_node(domain: str) -> dict[str, Any]:
         # 600x60 white-background PNG kept under /assets/.
         "logo": {
             "@type": "ImageObject",
-            "url": f"https://{domain}/assets/logo.png",
+            "url": f"https://{domain}/assets/logo-v2.svg",
             "width": 600,
             "height": 60,
         },
@@ -838,7 +838,7 @@ def _org_node(domain: str) -> dict[str, Any]:
         # established; emit empty array until real URLs land (do NOT publish
         # placeholder URLs, they would fail Google entity reconciliation).
         # TODO populate when LinkedIn / GitHub / X (Twitter) / Crunchbase
-        # accounts for Bookyou株式会社 / AutonoMath are live.
+        # accounts for Bookyou株式会社 / jpcite are live.
         "sameAs": [],
     }
 
@@ -1267,7 +1267,7 @@ def build_standalone_json_ld(
         "url": f"https://{domain}/",
         "logo": {
             "@type": "ImageObject",
-            "url": f"https://{domain}/assets/logo.png",
+            "url": f"https://{domain}/assets/logo-v2.svg",
             "width": 600,
             "height": 60,
         },

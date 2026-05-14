@@ -137,6 +137,9 @@ a:hover { text-decoration: underline; }
   top: 0;
   z-index: 10;
 }
+.site-header .container {
+  max-width: 1200px;
+}
 /* Sticky-header offset for in-page anchor navigation */
 [id] { scroll-margin-top: 80px; }
 .header-inner {
@@ -152,8 +155,16 @@ a:hover { text-decoration: underline; }
   gap: 10px;
   color: var(--text);
   font-weight: 700;
+  flex: 0 0 auto;
+  min-height: 44px;
 }
 .brand:hover { text-decoration: none; }
+.brand picture,
+.brand img {
+  display: block;
+  max-width: 190px;
+  height: auto;
+}
 .brand-mark {
   display: inline-grid;
   place-items: center;
@@ -171,18 +182,26 @@ a:hover { text-decoration: underline; }
 }
 .site-nav {
   display: flex;
-  gap: 22px;
+  gap: clamp(8px, 1.35vw, 18px);
   font-size: 15px;
   align-items: center;
-  flex-wrap: wrap;
-  row-gap: 8px;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  white-space: nowrap;
 }
+.site-nav::-webkit-scrollbar { display: none; }
 .site-nav a {
   color: var(--text);
   min-height: 44px;
-  padding: 8px 12px;
+  padding: 8px clamp(8px, 0.9vw, 12px);
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 /* Mobile fix: prevent <code>/<pre> from blowing out viewport on phones.
@@ -211,6 +230,8 @@ pre code { word-break: normal; }
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.04em;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 .lang-switch a {
   color: var(--text-muted);
@@ -234,7 +255,11 @@ pre code { word-break: normal; }
    Log). Pure-HTML <details><summary> so it works without JS. Closed by
    default; clicking the summary toggles the absolutely-positioned panel.
    IA Audit unification (2026-04-29). */
-.nav-trust { position: relative; display: inline-block; }
+.nav-trust {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+}
 .nav-trust > summary {
   list-style: none;
   cursor: pointer;
@@ -245,6 +270,7 @@ pre code { word-break: normal; }
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
 }
 .nav-trust > summary::-webkit-details-marker { display: none; }
 .nav-trust > summary::after {
@@ -308,7 +334,7 @@ pre code { word-break: normal; }
     justify-content: center;
     padding: 8px 12px;
   }
-  .site-nav { gap: 12px; font-size: 13px; row-gap: 6px; }
+  .site-nav { gap: 8px; font-size: 13px; row-gap: 0; flex-wrap: nowrap; }
   .site-nav a {
     min-height: 44px;
     padding: 10px 12px;
@@ -906,6 +932,23 @@ pre code { word-break: normal; }
   margin: 0;
   font-weight: 700;
   color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-brand > img,
+.footer-brand-mark img {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  margin-right: 0 !important;
+  vertical-align: middle;
+}
+.footer-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
 }
 .footer-tag {
   margin: 2px 0 0;
@@ -1017,8 +1060,8 @@ pre code { word-break: normal; }
   input[type="text"]:not([aria-hidden="true"]) {
     font-size: 16px;
   }
-  .header-inner { flex-wrap: wrap; gap: 12px; }
-  .site-nav { gap: 16px; font-size: 14px; flex-wrap: wrap; row-gap: 8px; }
+  .header-inner { flex-wrap: nowrap; gap: 10px; }
+  .site-nav { gap: 8px; font-size: 14px; flex-wrap: nowrap; row-gap: 0; }
   /* Mobile a11y: WCAG 2.5.5 touch target ≥44x44 on tablet+phone.
      Extends the <480px rule to <768px so the iPad-portrait + folded-phone
      range also gets enlarged tap targets. */
@@ -1042,6 +1085,7 @@ pre code { word-break: normal; }
   }
   /* Footer is now flex-column at all breakpoints; only center text on mobile. */
   .footer-inner { text-align: center; }
+  .footer-brand { align-self: center; justify-content: center; }
   .footer-nav { justify-content: center; }
   .footer-copy { text-align: center; }
   .footer-entity { text-align: center; }
@@ -1429,13 +1473,18 @@ pre code { word-break: normal; }
   .btn-secondary { background: var(--bg-alt); }
   .btn-secondary:hover { background: var(--border); }
   .demo-note code { background: var(--bg-alt); }
-  .trust-strip-blocks li { background: var(--bg-alt); }
+  .trust-strip-blocks li {
+    background: var(--bg-alt);
+    border-color: var(--border);
+    color: var(--text);
+  }
   .footer-brand img[src$="jpcite-mark.svg"] {
-    background: #fff;
-    border-radius: 4px;
+    content: url("/assets/brand/jpcite-mark-dark-fill.svg");
+    background: transparent;
+    border-radius: 0;
     box-sizing: border-box;
     filter: none;
-    padding: 2px;
+    padding: 0;
   }
   .newsletter-form input[type="email"] { background: var(--bg-alt); }
   .ps-card { background: var(--bg-alt); }
@@ -1646,31 +1695,26 @@ pre code { word-break: normal; }
    untouched.
    ---------------------------------------------------------------- */
 
-/* (4) Nav: explicit wrap below 420px so a 6-link JA nav (About /
-   Products / Docs / Pricing / Audiences / Prompts) can flow to a
-   third row instead of clipping. The brand mark must not steal flex
-   basis from siblings. */
+/* (4) Nav: keep the header to one visual row below 420px. The nav itself
+   scrolls horizontally so page-specific link counts do not create a
+   different two-row header. */
 @media (max-width: 420px) {
   .header-inner {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
-    row-gap: 10px;
   }
   .brand {
     flex: 0 0 auto;
-    /* brand cannot grow past its content; nav gets full row if it
-       runs out of space on row 1 */
     max-width: 100%;
   }
   .site-nav {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
-    row-gap: 6px;
+    row-gap: 0;
     /* min-width: 0 lets the nav shrink below its content's intrinsic
-       width inside the .header-inner flex container, so individual
-       <a> children can wrap to a new row. */
+       width inside the .header-inner flex container. */
     min-width: 0;
-    flex: 1 1 100%;
+    flex: 1 1 auto;
   }
 }
 

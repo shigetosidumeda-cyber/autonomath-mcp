@@ -16,11 +16,11 @@ The composition reads as "a citation pointing at a source", which is the product
 
 ### Asset paths
 
-All variants live under `site/assets/brand/`. Public-facing entry points are at `site/assets/` for backward compatibility.
+All variants live under `site/assets/brand/`. Public-facing entry points use the v2 assets under `site/assets/`.
 
 | Use case | File | Notes |
 |---|---|---|
-| Browser favicon (svg) | `assets/favicon.svg` (= `assets/mark.svg` = `assets/logo.svg`) | currentColor — inherits CSS dark mode |
+| Browser favicon (svg) | `assets/favicon-v2.svg` | currentColor — inherits CSS dark mode |
 | Browser favicon (raster) | `assets/favicon-{16,32,192,512}.png` | transparent-bg, fill `#0d1117` |
 | Apple touch icon | `assets/apple-touch-icon.png` | 180×180, transparent |
 | Lockup (cream bg) | `assets/brand/jpcite-lockup-light.png` | 1033×302, official light-theme lockup |
@@ -98,7 +98,7 @@ The wordtype in the official lockup is a custom-spaced "jpcite" rendering. When 
 
 | Asset | Dimensions | Format |
 |---|---|---|
-| `assets/favicon.svg` (= mark.svg, logo.svg) | viewBox 256×256 | SVG (currentColor) |
+| `assets/favicon-v2.svg` | viewBox 256×256 | SVG (currentColor) |
 | `assets/favicon-16.png` | 16×16 | PNG (transparent) |
 | `assets/favicon-32.png` | 32×32 | PNG (transparent) |
 | `assets/favicon-192.png` | 192×192 | PNG (transparent) |

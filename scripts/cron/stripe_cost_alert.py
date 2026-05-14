@@ -227,7 +227,7 @@ def _emit_alert(breakdown: CostBreakdown, *, dry_run: bool) -> None:
         return
 
     safe_capture_message(
-        f"AutonoMath monthly cost {breakdown.pct:.0f}% of ¥{breakdown.budget_jpy:,} "
+        f"jpcite monthly cost {breakdown.pct:.0f}% of ¥{breakdown.budget_jpy:,} "
         f"(total ¥{breakdown.total_jpy:,}, stripe ¥{breakdown.stripe_fees_jpy:,})",
         level=severity,
         month=breakdown.month,
@@ -247,7 +247,7 @@ def _emit_violation(violations: list[str], *, dry_run: bool) -> None:
     msg = (
         f"INVARIANT VIOLATION: cost_ledger contains banned providers "
         f"({', '.join(violations)}). Per feedback_autonomath_no_api_use, "
-        f"AutonoMath must not pay for LLM inference. Inspect cost_ledger "
+        f"jpcite must not pay for LLM inference. Inspect cost_ledger "
         f"and root-cause the ingest path."
     )
     logger.error(msg)

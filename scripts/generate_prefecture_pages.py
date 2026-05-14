@@ -445,7 +445,7 @@ def _org_node(domain: str) -> dict[str, Any]:
         "url": f"https://{domain}/",
         "logo": {
             "@type": "ImageObject",
-            "url": f"https://{domain}/assets/logo.png",
+            "url": f"https://{domain}/assets/logo-v2.svg",
             "width": 600,
             "height": 60,
         },

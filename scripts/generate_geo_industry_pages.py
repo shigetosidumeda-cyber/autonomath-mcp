@@ -1231,12 +1231,16 @@ def render_page(
 
 <header class="site-header" role="banner">
  <div class="container header-inner">
- <a class="brand" href="/" aria-label="jpcite ホーム">jpcite</a>
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="/about.html">運営について</a>
- <a href="/products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
- <a href="/pricing.html">料金</a>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
  <a href="/audiences/" aria-current="page">利用者層</a>
  </nav>
  </div>
@@ -1300,7 +1304,7 @@ def render_page(
  <p>本ページに掲載した制度・法令・通達・事例データは、jpcite の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から呼び出せます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\
  "https://api.{domain}/v1/programs?prefecture={_esc(pref_ja)}&amp;industry={_esc(industry["code"])}&amp;limit=20"</code></pre>
- <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/dashboard.html">API キー発行</a></p>
+ <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/pricing.html#api-paid">API キー発行</a></p>
  </section>
 
  <p class="disclaimer">本ページは jpcite が一次情報を集約・構造化したプレビューであり、税理士法 §52 が禁ずる税務代理・税務書類作成・税務相談に該当する助言を構成するものではありません。法的助言・税務助言・申請代行を必要とされる場合は、税理士・社労士・中小企業診断士等の有資格者にご相談ください。制度の最新内容・申請可否・併用可否は所管官公庁・自治体の一次情報で必ず確認してください。集約サイトは出典源から除外しています。</p>
@@ -1312,7 +1316,7 @@ def render_page(
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">

@@ -564,7 +564,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 <link rel="canonical" href="{url}">
 <link rel="alternate" hreflang="ja" href="{url}">
 <link rel="alternate" hreflang="x-default" href="{url}">
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -623,8 +623,8 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 <header class="site-header" role="banner">
   <div class="container header-inner">
     <a class="brand" href="/" aria-label="jpcite ホーム">
-      <span class="brand-name">jpcite</span>
-    </a>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/about.html">About</a>
       <a href="/products.html">Products</a>
@@ -715,7 +715,7 @@ def render_page(slug: str, page: dict, rows: list[dict]) -> str:
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
     <div class="footer-col">
-      <p class="footer-brand">jpcite</p>
+      <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
       <p class="footer-tag">日本の制度 API</p>
     </div>
     <nav class="footer-nav" aria-label="フッター">

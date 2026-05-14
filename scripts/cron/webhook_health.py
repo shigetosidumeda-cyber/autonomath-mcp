@@ -587,7 +587,7 @@ def _emit_alerts(report: HealthReport, *, dry_run: bool) -> None:
     headline = " / ".join(headline_parts) or "anomaly"
 
     safe_capture_message(
-        f"AutonoMath webhook health: {headline} "
+        f"jpcite webhook health: {headline} "
         f"(window={report.window_hours}h, σ={report.sigma}). "
         f"sub.created={report.sub_created} invoice.paid={report.invoice_paid}.",
         level=severity,

@@ -468,7 +468,9 @@ def _render_city_page(
 <a href="#main" class="skip-link">本文へスキップ</a>
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="jpcite ホーム"><span class="brand-name">jpcite</span></a>
+    <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/about.html">運営について</a>
       <a href="/products.html">プロダクト</a>
@@ -547,11 +549,23 @@ def _render_city_page(
   </article>
 </main>
 <footer class="site-footer" role="contentinfo">
-  <div class="container">
-    <p>&copy; 2026 jpcite ・
-    <a href="/about.html">運営者情報</a> ・
-    <a href="/privacy.html">プライバシーポリシー</a> ・
-    <a href="/tokushoho.html">特定商取引法に基づく表記</a></p>
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+      <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/about.html">運営について</a>
+      <a href="/products.html">成果物</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/docs/">API ドキュメント</a>
+      <a href="/trust.html">信頼</a>
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/tokushoho.html">特商法</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社</p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
     <p class="muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
   </div>
 </footer>
@@ -681,7 +695,9 @@ def _render_index_page(
 <a href="#main" class="skip-link">本文へスキップ</a>
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="jpcite ホーム"><span class="brand-name">jpcite</span></a>
+    <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
       <a href="/about.html">運営について</a>
       <a href="/products.html">プロダクト</a>
@@ -713,11 +729,23 @@ def _render_index_page(
   </article>
 </main>
 <footer class="site-footer" role="contentinfo">
-  <div class="container">
-    <p>&copy; 2026 jpcite ・
-    <a href="/about.html">運営者情報</a> ・
-    <a href="/privacy.html">プライバシーポリシー</a> ・
-    <a href="/tokushoho.html">特定商取引法に基づく表記</a></p>
+  <div class="container footer-inner">
+    <div class="footer-col">
+      <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+      <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
+    </div>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/about.html">運営について</a>
+      <a href="/products.html">成果物</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/docs/">API ドキュメント</a>
+      <a href="/trust.html">信頼</a>
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="/tokushoho.html">特商法</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社</p>
+    <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
   </div>
 </footer>
 </body>

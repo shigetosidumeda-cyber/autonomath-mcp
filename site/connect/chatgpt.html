@@ -128,9 +128,9 @@
         "itemListElement": [
           {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
           {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
           {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
           {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
           {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
@@ -150,15 +150,37 @@
 }</script>
 </head>
 <body>
-<a href="#main" class="visually-hidden-focusable">本文へスキップ</a>
-<header role="banner">
-  <nav aria-label="パンくず">
-    <ol class="breadcrumb">
-      <li><a href="/">Home</a></li>
-      <li><a href="/connect/">Connect</a></li>
-      <li aria-current="page">ChatGPT</li>
-    </ol>
-  </nav>
+<a class="skip-link" href="#main">本文へスキップ</a>
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="jpcite ホーム">
+      <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" height="32" decoding="async" fetchpriority="high" alt="jpcite" style="height:32px;width:auto;display:block;"></picture>
+    </a>
+    <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼の設計</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/index.html" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
+  </div>
 </header>
 <main id="main">
   <section class="hero">
@@ -209,9 +231,19 @@
     <details><summary>8 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Instructions にこれを書くことで GPT 自体が独占業務に踏み込まないようにできます。</p></details>
   </section>
 </main>
-<footer role="contentinfo">
-  <p>powered by Bookyou株式会社 (T8010001213708) / <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
-  <p><a href="/pricing.html">税別 ¥3/billable unit metered</a> | <a href="/tos.html">利用規約</a> | <a href="/privacy.html">プライバシー</a></p>
+<footer class="site-footer" role="contentinfo">
+  <div class="container footer-inner">
+    <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+    <nav class="footer-nav" aria-label="フッター">
+      <a href="/products.html">成果物</a>
+      <a href="/connect/">接続</a>
+      <a href="/pricing.html">料金</a>
+      <a href="/tos.html">利用規約</a>
+      <a href="/privacy.html">プライバシー</a>
+      <a href="mailto:info@bookyou.net">お問い合わせ</a>
+    </nav>
+    <p class="footer-entity">運営: Bookyou株式会社 · T8010001213708 · <a href="mailto:info@bookyou.net">info@bookyou.net</a></p>
+  </div>
 </footer>
 </body>
 </html>

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate prefecture × program SEO crosspages for AutonoMath (jpcite.com).
+"""Generate prefecture × program SEO crosspages for jpcite (jpcite.com).
 
 Generates 47 都道府県 × top-N programs (default 50) static HTML pages, plus a
 matching sitemap. Honest copy: each page declares the actual relevance —
@@ -532,7 +532,7 @@ def meta_description(
         f"{kind}・{applicability}。",
         f"{adoption_clause}。",
         f"金額目安: {amt}。",
-        "出典は中央省庁・自治体の一次資料に限定。AutonoMath 集約。",
+        "出典は中央省庁・自治体の一次資料に限定。jpcite 集約。",
     ]
     text = "".join(parts)
     return _truncate(text, 160)
@@ -780,7 +780,7 @@ def render_pair(
         provider_label = f"{resolved_agency} ({program_pref})"
 
     if adoption_count == 0:
-        adoption_label = f"{pref_ja}の事例は AutonoMath 上では未確認"
+        adoption_label = f"{pref_ja}の事例は jpcite 上では未確認"
     else:
         adoption_label = f"{pref_ja}で {adoption_count} 件確認"
 

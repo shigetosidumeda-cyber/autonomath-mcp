@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AI agent 接続ガイド — Claude / Cursor / ChatGPT / Codex | jpcite</title>
-<meta name="description" content="Claude, Cursor, ChatGPT, Codex に jpcite を接続し、Evidence Packet、会社フォルダ、公開情報 DD を AI agent へ渡す設定ガイド。MCP は uvx autonomath-mcp、ChatGPT は openapi.agent.gpt30.json + X-API-Key。">
+<meta name="description" content="Claude, Cursor, ChatGPT, Codex に jpcite を接続し、Evidence Packet、会社フォルダ、M&A DD / 取引先公開情報チェック を AI agent へ渡す設定ガイド。MCP は uvx autonomath-mcp、ChatGPT は openapi.agent.gpt30.json + X-API-Key。">
 <meta property="og:title" content="AI agent 接続ガイド — jpcite">
 <meta property="og:description" content="Claude、Cursor、ChatGPT、Codex に jpcite を接続する設定ガイド。MCP は uvx autonomath-mcp、ChatGPT は openapi.agent.gpt30.json + X-API-Key。">
 <meta property="og:type" content="website">
@@ -16,7 +16,7 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="AI agent 接続ガイド — jpcite">
-<meta name="twitter:description" content="Claude / Cursor / ChatGPT / Codex から Evidence Packet、会社フォルダ、公開情報 DD を呼び出す接続ガイド。">
+<meta name="twitter:description" content="Claude / Cursor / ChatGPT / Codex から Evidence Packet、会社フォルダ、M&A DD / 取引先公開情報チェック を呼び出す接続ガイド。">
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 <link rel="canonical" href="https://jpcite.com/connect/">
 <link rel="stylesheet" href="/styles.css?v=20260511a">
@@ -25,7 +25,7 @@
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "AI agent 接続ガイド",
-  "description": "Claude、Cursor、ChatGPT、Codex に jpcite を接続し、Evidence Packet、会社フォルダ、公開情報 DD を AI agent へ渡す設定ガイド。",
+  "description": "Claude、Cursor、ChatGPT、Codex に jpcite を接続し、Evidence Packet、会社フォルダ、M&A DD / 取引先公開情報チェック を AI agent へ渡す設定ガイド。",
   "url": "https://jpcite.com/connect/",
   "inLanguage": "ja",
   "publisher": {"@type": "Organization", "name": "Bookyou株式会社", "url": "https://jpcite.com"}
@@ -85,9 +85,9 @@
         "itemListElement": [
           {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
           {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
           {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
           {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
           {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
@@ -107,15 +107,36 @@
 }</script>
 </head>
 <body>
+<a class="skip-link" href="#main">本文へスキップ</a>
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="jpcite home"><span class="brand-mark">jp</span><span class="brand-name">jpcite</span></a>
+    <a class="brand" href="/" aria-label="jpcite ホーム">
+      <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" height="32" decoding="async" fetchpriority="high" alt="jpcite" style="height:32px;width:auto;display:block;"></picture>
+    </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/products.html">成果物</a>
-      <a href="/pricing.html">料金</a>
-      <a href="/docs/">API ドキュメント</a>
-      <a href="/status.html">稼働状況</a>
-    </nav>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼の設計</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
   </div>
 </header>
 <main id="main" class="pricing-page">
@@ -125,7 +146,7 @@
       <span aria-current="page">AI agent 接続</span>
     </nav>
     <h1>Claude / Cursor / ChatGPT / Codex に jpcite を接続する</h1>
-    <p class="lead">jpcite は回答生成前に一次資料 URL・取得時刻・known gaps・8 業法 fence を返す evidence layer です。接続後は Evidence Packet、会社フォルダ、公開情報 DD、月次レビュー、保存検索通知を普段の AI agent から呼び出せます。</p>
+    <p class="lead">jpcite は回答生成前に一次資料 URL・取得時刻・known gaps・8 業法 fence を返す evidence layer です。接続後は Evidence Packet、会社フォルダ、M&A DD / 取引先公開情報チェック、月次レビュー、保存検索通知を普段の AI agent から呼び出せます。</p>
 
     <section aria-labelledby="connect-matrix-title">
       <h2 id="connect-matrix-title" class="section-title" style="font-size:22px;">接続先別の最短ルート</h2>
@@ -197,14 +218,14 @@
 
     <section aria-labelledby="connect-output-title" style="margin-top:32px;">
       <h2 id="connect-output-title" class="section-title" style="font-size:22px;">接続後に作れるアウトプット</h2>
-      <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin:0 0 12px;">Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools は部品名です。ユーザーには Evidence Packet、会社フォルダ、公開情報 DD、顧問先月次レビュー、申請前 Evidence Packet、改正・保存検索通知として届きます。</p>
+      <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin:0 0 12px;">Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools は部品名です。ユーザーには Evidence Packet、会社フォルダ、M&A DD / 取引先公開情報チェック、顧問先月次レビュー、申請前 Evidence Packet、改正・保存検索通知として届きます。</p>
       <p><a class="btn btn-secondary" href="/products.html">成果物カタログ</a> <a class="btn btn-secondary" href="/dashboard.html">Dashboard</a> <a class="btn btn-secondary" href="/status.html">Status</a> <a class="btn btn-secondary" href="/prompts/">Prompts</a></p>
     </section>
   </div>
 </main>
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
-    <p class="footer-brand">jpcite</p>
+    <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
     <nav class="footer-nav" aria-label="フッター">
       <a href="/pricing.html">料金</a>
       <a href="/legal-fence.html">8 業法 fence</a>

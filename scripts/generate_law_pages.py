@@ -30,7 +30,7 @@ SEO contract per page:
     - e-Gov 出典 URL block with CC-BY 4.0 attribution
 
 Brand rules (per CLAUDE.md §Non-negotiable constraints):
-    - User-facing brand is "jpcite" — do NOT surface jpintel / AutonoMath / 税務会計AI.
+    - User-facing brand is "jpcite" — do NOT surface jpintel / jpcite / 税務会計AI.
     - No "Phase", no "MVP", no "Free tier" copy.
     - No LLM API import / no human-intervention surface (zero-touch ops).
 

@@ -33,4 +33,7 @@ def test_public_copy_freshness_rules_cover_recent_regressions() -> None:
     assert "bpo_first_positioning" in rule_ids
     assert "all_response_claim" in rule_ids
     assert "old_company_folder_pack_unit" in rule_ids
+    assert "old_application_strategy_pack" in rule_ids
+    assert "old_public_info_dd_label" in rule_ids
+    assert "old_authenticated_free_quota" in rule_ids
     assert "audience_dark_inline_code_bg" in rule_ids

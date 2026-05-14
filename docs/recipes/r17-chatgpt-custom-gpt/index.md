@@ -16,7 +16,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 # ChatGPT Custom GPT 化
 
 ## 想定 user
-ChatGPT Plus / Team / Enterprise を契約済の税理士事務所・行政書士事務所・中小企業診断士・補助金コンサルタント・社内バックオフィス担当者で、社内向けの jpcite 化 chatbot を Custom GPT として 5 分で立ち上げ、所員・顧問先・社員からの「ものづくり補助金の締切」「弊社の適格事業者番号 verify」「過去 3 年の採択事例」等の質問を自動回答させたい層。Action 経由で jpcite API を呼ぶことで、ChatGPT の汎用知識ではなく 1 次資料 + corpus snapshot に基づく回答を返す。
+ChatGPT Plus / Team / Enterprise を契約済の税理士事務所・行政書士事務所・中小企業診断士・補助金コンサルタント・社内担当者で、社内向け Custom GPT から jpcite API を呼び、所員・顧問先・社員からの質問に対して Evidence Packet と一次資料 URL を添えた回答案を作りたい層。Action 経由で jpcite API を呼ぶことで、ChatGPT の汎用知識ではなく 1 次資料 + corpus snapshot に基づく回答を返す。
 
 ## 必要な前提
 - jpcite API key (標準従量料金、初回 3 req/IP/日無料)

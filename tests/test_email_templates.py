@@ -58,6 +58,8 @@ _STALE_USER_FACING_COPY = (
     "AUTONOMATH_API_KEY",
     "@autonomath/mcp",
     "npx -y",
+    "Free 枠 (1日 100 リクエスト上限)",
+    "1日 100 リクエスト上限",
 )
 
 

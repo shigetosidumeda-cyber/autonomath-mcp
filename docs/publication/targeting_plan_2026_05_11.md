@@ -137,7 +137,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | 「中小 M&A の公開情報 DD を 5 分で artifact 化 — 弁護士法 §72 / 税理士法 §52 / 金商法 §29 の 3 業法 fence 設計」。M&A Online は中小 M&A 仲介・FAS・PE 系 reader、DD 効率化が最大関心軸。 |
+| 載りやすい angle | 「中小 M&A のM&A DD / 取引先公開情報チェック を 5 分で artifact 化 — 弁護士法 §72 / 税理士法 §52 / 金商法 §29 の 3 業法 fence 設計」。M&A Online は中小 M&A 仲介・FAS・PE 系 reader、DD 効率化が最大関心軸。 |
 | 既存 draft 流用度 | **流用可 (¥3/req patch 後)** (ma_online_jpcite.md、L51 API ¥600 + L66 ¥120/案件 を ¥3 base 再計算) |
 | publish 手順 | (1) M&A Online 編集部 (editor@maonline.jp 系) に寄稿企画書送付 → (2) 編集 review → (3) 採用なら maonline.jp 掲載 + メルマガ配信 |
 | review SLA | 2-4 週 (web 専業、月刊紙より速い) |

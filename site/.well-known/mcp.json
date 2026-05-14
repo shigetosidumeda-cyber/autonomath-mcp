@@ -107,7 +107,7 @@
         "jpy_inc_tax": 52800
       },
       {
-        "name": "公開情報 DD (200社)",
+        "name": "M&A DD / 取引先公開情報チェック (200社)",
         "req": 9400,
         "jpy_inc_tax": 31020,
         "note": "M&A advisor の DD Evidence Packet assembly を 200 社分に広げた月次利用例。1 社の軽量 reach ではなく、公開 pricing の 5 シナリオに合わせる。"

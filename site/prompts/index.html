@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Prompts — jpcite を AI agent に使わせる指示文</title>
-<meta name="description" content="jpcite を Claude、ChatGPT、Cursor、Codex から使うための prompt hub。Evidence Packet handoff、8 業法 fence、公開情報 DD、顧問先レビュー用の指示文を整理。">
+<meta name="description" content="jpcite を Claude、ChatGPT、Cursor、Codex から使うための prompt hub。Evidence Packet handoff、8 業法 fence、M&A DD / 取引先公開情報チェック、顧問先レビュー用の指示文を整理。">
 <meta property="og:title" content="Prompts — jpcite を AI agent に使わせる指示文">
-<meta property="og:description" content="Evidence Packet handoff、8 業法 fence、公開情報 DD、顧問先レビュー用 prompt を Claude、ChatGPT、Cursor、Codex 向けに整理。">
+<meta property="og:description" content="Evidence Packet handoff、8 業法 fence、M&A DD / 取引先公開情報チェック、顧問先レビュー用 prompt を Claude、ChatGPT、Cursor、Codex 向けに整理。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jpcite.com/prompts/">
 <meta property="og:image" content="https://jpcite.com/assets/og.png">
@@ -25,7 +25,7 @@
   "@context": "https://schema.org",
   "@type": "CollectionPage",
   "name": "jpcite Prompts",
-  "description": "jpcite を Claude、ChatGPT、Cursor、Codex から使うための prompt hub。Evidence Packet handoff、8 業法 fence、公開情報 DD、顧問先レビュー用の指示文を整理。",
+  "description": "jpcite を Claude、ChatGPT、Cursor、Codex から使うための prompt hub。Evidence Packet handoff、8 業法 fence、M&A DD / 取引先公開情報チェック、顧問先レビュー用の指示文を整理。",
   "url": "https://jpcite.com/prompts/",
   "inLanguage": "ja",
   "publisher": {"@type": "Organization", "name": "Bookyou株式会社", "url": "https://jpcite.com"}
@@ -85,9 +85,9 @@
         "itemListElement": [
           {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
           {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "Public-info DD", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Strategy Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
+          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
+          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
+          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
           {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
           {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
           {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
@@ -107,17 +107,36 @@
 }</script>
 </head>
 <body>
+<a class="skip-link" href="#main">本文へスキップ</a>
 <header class="site-header" role="banner">
   <div class="container header-inner">
-    <a class="brand" href="/" aria-label="jpcite home"><span class="brand-mark">jp</span><span class="brand-name">jpcite</span></a>
+    <a class="brand" href="/" aria-label="jpcite ホーム">
+      <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" height="32" decoding="async" fetchpriority="high" alt="jpcite" style="height:32px;width:auto;display:block;"></picture>
+    </a>
     <nav class="site-nav" aria-label="主要ナビゲーション">
-      <a href="/products.html">成果物</a>
-      <a href="/playground.html?flow=evidence3">Try</a>
-      <a href="/connect/">接続</a>
-      <a href="/pricing.html">料金</a>
-      <a href="/dashboard.html">Dashboard</a>
-      <a href="/support.html">Support</a>
-    </nav>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼の設計</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/" lang="en" hreflang="en">EN</a>
+ </span>
+ </nav>
   </div>
 </header>
 <main id="main" class="pricing-page">
@@ -146,9 +165,9 @@
         <a class="btn btn-secondary" href="/products#evidence-packet">Evidence Packet</a>
       </article>
       <article class="price-card">
-        <h2>Public-info DD prompt</h2>
+        <h2>M&A DD / 取引先公開情報チェック prompt</h2>
         <p class="tier-desc">会社フォルダ、行政処分、採択履歴、適格事業者確認を DD メモにする agent prompt。</p>
-        <a class="btn btn-secondary" href="/products#public-dd">公開情報 DD</a>
+        <a class="btn btn-secondary" href="/products#public-dd">M&A DD / 取引先公開情報チェック</a>
       </article>
       <article class="price-card">
         <h2>Runtime prompt API</h2>
@@ -174,7 +193,7 @@
 </main>
 <footer class="site-footer" role="contentinfo">
   <div class="container footer-inner">
-    <p class="footer-brand">jpcite</p>
+    <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
     <nav class="footer-nav" aria-label="フッター">
       <a href="/products.html">成果物</a>
       <a href="/connect/">接続</a>

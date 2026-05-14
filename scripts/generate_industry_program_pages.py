@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate industry × program SEO crosspages for AutonoMath (jpcite.com).
+"""Generate industry × program SEO crosspages for jpcite (jpcite.com).
 
 This script complements /programs/{slug} (per-program) and /prefectures/{slug}.html
 (per-prefecture) by creating a NEW orthogonal SEO axis: /industries/{jsic}/{slug}/
@@ -123,7 +123,7 @@ KIND_JA = {
 #
 # Construction principle: prefer false-negatives over false-positives. A
 # silent skip is recoverable; a false page about "本制度は◯◯業向けです" when
-# it actually isn't is a 詐欺 risk per CLAUDE.md "Data hygiene" + AutonoMath
+# it actually isn't is a 詐欺 risk per CLAUDE.md "Data hygiene" + jpcite
 # fraud-risk feedback. Keep the regexes narrow.
 # ---------------------------------------------------------------------------
 
@@ -923,11 +923,11 @@ def _org_node(domain: str) -> dict[str, Any]:
         "@type": "Organization",
         "@id": ORG_NODE_ID,
         "name": "jpcite",
-        "alternateName": ["jpcite", "AutonoMath", "Bookyou株式会社"],
+        "alternateName": ["jpcite", "Bookyou株式会社"],
         "url": f"https://{domain}/",
         "logo": {
             "@type": "ImageObject",
-            "url": f"https://{domain}/assets/logo.png",
+            "url": f"https://{domain}/assets/logo-v2.svg",
             "width": 600,
             "height": 60,
         },
@@ -1009,7 +1009,7 @@ def _article_node(
 
     # Article required-properties for Google rich-results:
     # datePublished / dateModified / image / author
-    # - datePublished: source_fetched_at (when AutonoMath first observed the source)
+    # - datePublished: source_fetched_at (when jpcite first observed the source)
     # - dateModified: build timestamp (current generator run, JST date)
     # - image: site default OG card (1200x630 PNG)
     # - author: same publisher Org (single-author crossref)
@@ -1128,7 +1128,7 @@ def _tldr_paragraph(
         parts.append(f"本制度は {agency} が運営する{kind}で、{amt_phrase}")
     else:
         parts.append(f"本制度は公的機関が運営する{kind}で、{amt_phrase}")
-    parts.append(f"AutonoMath による直近の出典取得は {fetched} です。")
+    parts.append(f"jpcite による直近の出典取得は {fetched} です。")
     parts.append(
         f"本ページは {jsic_name_ja} 事業者が本制度を活用する観点でのクロスリファレンスであり、申請可否は公募要領で必ずご確認ください。"
     )
@@ -1196,9 +1196,9 @@ def _qa_pairs(
             "q": f"{jsic_name_ja}事業者の採択率はどのくらいですか？",
             "a": (
                 f"{name} の業種別採択率は公募要領または採択結果公表ページで確認できます。"
-                f"AutonoMath では業種コード {jsic_code} ({jsic_name_ja}) の採択事例を集約していますが、"
+                f"jpcite では業種コード {jsic_code} ({jsic_name_ja}) の採択事例を集約していますが、"
                 "全体採択率を業種別に按分する公式データは多くの制度で公開されておらず、"
-                "推計値の提示は避けています。直近の採択率は AutonoMath API "
+                "推計値の提示は避けています。直近の採択率は jpcite API "
                 f'`search_acceptance_stats_am(program_id="{row["unified_id"]}")` '
                 "または出典欄の公式ページでご確認ください。"
             ),
@@ -1216,7 +1216,7 @@ def _qa_pairs(
         {
             "q": "公募回数は年に何回ですか？",
             "a": (
-                f"AutonoMath が直近に出典を取得した日付は {fetched} です。"
+                f"jpcite が直近に出典を取得した日付は {fetched} です。"
                 f"{name} の年間公募回数は制度・年度により異なります（複数次公募、随時受付、"
                 "通年受付などのパターンがあります）。締切と公募回数は出典欄の公式ページで"
                 "現在の状況を必ずご確認ください。"
@@ -1235,7 +1235,7 @@ def _qa_pairs(
         {
             "q": "申請の典型的な失敗パターンは何ですか？",
             "a": (
-                "AutonoMath が把握している典型的な失敗パターンは、(1) 公募要領記載の対象経費"
+                "jpcite が把握している典型的な失敗パターンは、(1) 公募要領記載の対象経費"
                 "区分に該当しない経費を計上、(2) 同一経費に対する他制度との併用受給、"
                 "(3) 事業計画書の数値根拠が不十分、(4) 提出期限直前の駆け込み申請による書類不備、"
                 "(5) 申請窓口の取り違え（中央 vs 都道府県 vs 市町村） — の5パターンです。"

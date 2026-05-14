@@ -389,9 +389,11 @@ def render_stats_html(counts: dict[str, Any]) -> str:
  </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
  <a href="about.html">運営について</a>
- <a href="products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
- <a href="pricing.html">料金</a>
+ <a href="products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
  <a href="audiences/">利用者層</a>
  <details class="nav-trust">
  <summary>信頼</summary>
@@ -491,7 +493,7 @@ def render_stats_html(counts: dict[str, Any]) -> str:
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

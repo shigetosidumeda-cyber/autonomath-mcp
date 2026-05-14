@@ -182,7 +182,7 @@ def _render_rss(rows: list[dict], *, domain: str) -> str:
     )
     lines.append("  <language>ja</language>")
     lines.append("  <copyright>(C) 2026 Bookyou株式会社</copyright>")
-    lines.append("  <generator>AutonoMath audit-log RSS (Bookyou株式会社)</generator>")
+    lines.append("  <generator>jpcite audit-log RSS (Bookyou株式会社)</generator>")
     lines.append("  <dc:rights>CC-BY-4.0 (差分メタデータ)</dc:rights>")
     lines.append(f"  <lastBuildDate>{format_datetime(last_build)}</lastBuildDate>")
     lines.append("")
