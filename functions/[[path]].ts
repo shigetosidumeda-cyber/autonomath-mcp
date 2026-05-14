@@ -4,15 +4,12 @@
  *
  * Problem
  * -------
- * jpcite ships 10,282 companion `.md` files (laws/*.md, enforcement/*.md,
- * cases/*.md, root section md) that are the canonical citation surface for
- * LLM agents — every HTML page links its `.md` sibling as the cite-able
- * plain-text source. Wave 41 Agent F confirmed 100% of these returned 404
- * from CF Pages: the `pages-deploy-main.yml` workflow excludes `*.md`
- * (per `rsync --exclude '*.md'`) because the combined `site/` tree is
- * 32,356 files vs. the Free-plan CF Pages 20,000-file deployment limit
- * (verified via direct wrangler upload 2026-05-12, error code returned
- * by Cloudflare API).
+ * jpcite ships 10,282 companion `.md` files plus large generated HTML
+ * cohorts (laws/programs/cases/enforcement) that are the canonical citation
+ * and SEO surface for LLM agents. The `pages-deploy-main.yml` workflow
+ * excludes those high-count source-backed files because the combined `site/`
+ * tree is above the Cloudflare Pages 20,000-file deployment limit (verified
+ * via direct wrangler upload on 2026-05-12 and again on 2026-05-14).
  *
  * Strategy adopted
  * ----------------
@@ -24,9 +21,9 @@
  *
  * Operational properties
  * ----------------------
- *   - Coverage: all 10,282 companion .md plus canonical `/laws/<slug>` law
- *     HTML routes become 200 immediately on first edge fetch (warm cache
- *     thereafter).
+ *   - Coverage: all 10,282 companion .md plus canonical generated HTML detail
+ *     routes under `/laws`, `/programs`, `/cases`, and `/enforcement` become
+ *     200 immediately on first edge fetch (warm cache thereafter).
  *   - Cache: 24h edge TTL via Cache API, plus immutable git ref so stale
  *     reads after a content update are bounded by 24h.
  *   - Failure mode: if raw.githubusercontent.com is unreachable (CF
@@ -42,10 +39,11 @@
  * ------------
  * This Function MUST run as a catch-all because CF Pages Functions
  * cannot register multiple specific .md routes statically. The handler
- * filters by allowlisted source-backed shape: `.md`, `/laws/<slug>`, and
- * `/laws/<slug>.html`. Everything else is passed through to ASSETS (the
- * static site). Allowlisted paths are also passed through to ASSETS first,
- * and only if ASSETS returns 404 do we proxy from GitHub raw.
+ * filters by allowlisted source-backed shape: `.md`, and generated detail
+ * HTML under `/laws`, `/programs`, `/cases`, and `/enforcement`. Everything
+ * else is passed through to ASSETS (the static site). Allowlisted paths are
+ * also passed through to ASSETS first, and only if ASSETS returns 404 do we
+ * proxy from GitHub raw.
  *
  * This single-function design is necessary because /functions/[[path]].ts
  * intercepts ALL routes. Any new Pages Function added in this repo must
@@ -77,6 +75,12 @@ const EDGE_CACHE_SECONDS = 86400;
 // LLM citation pipelines.
 const MD_CONTENT_TYPE = "text/markdown; charset=utf-8";
 const HTML_CONTENT_TYPE = "text/html; charset=utf-8";
+const SOURCE_BACKED_HTML_PREFIXES = [
+  "/laws/",
+  "/programs/",
+  "/cases/",
+  "/enforcement/",
+];
 
 type RawProxyRoute = {
   upstreamPath: string;
@@ -85,9 +89,11 @@ type RawProxyRoute = {
   unavailableMessage: string;
 };
 
-function sourceBackedLawHtmlPath(pathname: string): string | null {
-  const prefix = "/laws/";
-  if (!pathname.startsWith(prefix)) {
+function sourceBackedGeneratedHtmlPath(pathname: string): string | null {
+  const prefix = SOURCE_BACKED_HTML_PREFIXES.find((candidate) =>
+    pathname.startsWith(candidate),
+  );
+  if (prefix === undefined) {
     return null;
   }
   const filename = pathname.slice(prefix.length);
@@ -112,10 +118,10 @@ function rawProxyRoute(pathname: string): RawProxyRoute | null {
       unavailableMessage: "markdown_source_unavailable",
     };
   }
-  const lawHtmlPath = sourceBackedLawHtmlPath(pathname);
-  if (lawHtmlPath !== null) {
+  const generatedHtmlPath = sourceBackedGeneratedHtmlPath(pathname);
+  if (generatedHtmlPath !== null) {
     return {
-      upstreamPath: lawHtmlPath,
+      upstreamPath: generatedHtmlPath,
       contentType: HTML_CONTENT_TYPE,
       sourceHeader: "x-jpcite-html-source",
       unavailableMessage: "html_source_unavailable",

@@ -252,6 +252,13 @@ def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
 
     assert "https://jpcite.com/laws/chusho-kihon?$Q" in step
     assert "https://jpcite.com/laws/chusho-kihon.html?$Q" in step
+    assert (
+        "https://jpcite.com/programs/"
+        "jizoku-ka-hojokin-ippankei-tsuujou-waku-shoukou-kai-han-dai-defacd.html?$Q"
+        in step
+    )
+    assert "https://jpcite.com/enforcement/act-10084.html?$Q" in step
+    assert "https://jpcite.com/cases/mirasapo_case_118.html?$Q" in step
     assert "https://jpcite.com/laws/chusho-kihon.md?$Q" in step
     assert "https://jpcite.com/enforcement/act-10084.md?$Q" in step
     assert "https://jpcite.com/cases/mirasapo_case_118.md?$Q" in step
@@ -262,17 +269,31 @@ def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
     assert "::warning::source-backed smoke failed" not in step
 
 
-def test_pages_law_html_artifact_trim_is_backed_by_function_proxy() -> None:
+def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> None:
+    trimmed_cohorts = ("laws", "programs", "cases", "enforcement")
     for workflow in (PAGES_PREVIEW, PAGES_DEPLOY_MAIN, PAGES_REGENERATE):
         text = _text(workflow)
-        assert "--include 'laws/index.html'" in text
-        assert "--exclude 'laws/*.html'" in text
-        assert text.index("--include 'laws/index.html'") < text.index("--exclude 'laws/*.html'")
-        assert text.index("--exclude 'laws/*.html'") < text.index("--exclude '*.md'")
+        for cohort in trimmed_cohorts:
+            assert f"--include '{cohort}/index.html'" in text
+            assert f"--exclude '{cohort}/*.html'" in text
+            assert text.index(f"--include '{cohort}/index.html'") < text.index(
+                f"--exclude '{cohort}/*.html'"
+            )
+            assert text.index(f"--exclude '{cohort}/*.html'") < text.index(
+                "--exclude '*.md'"
+            )
+        assert "--include 'programs/share.html'" in text
+        assert "Cloudflare Pages artifact has ${file_count} files" in text
 
     function = _text(PAGES_CATCH_ALL_FUNCTION)
-    assert "function sourceBackedLawHtmlPath(pathname: string): string | null" in function
-    assert 'const prefix = "/laws/";' in function
+    assert (
+        "function sourceBackedGeneratedHtmlPath(pathname: string): string | null"
+        in function
+    )
+    assert '"/laws/"' in function
+    assert '"/programs/"' in function
+    assert '"/cases/"' in function
+    assert '"/enforcement/"' in function
     assert "return `${pathname}.html`;" in function
     assert 'const HTML_CONTENT_TYPE = "text/html; charset=utf-8";' in function
     assert 'sourceHeader: "x-jpcite-html-source"' in function
@@ -280,6 +301,9 @@ def test_pages_law_html_artifact_trim_is_backed_by_function_proxy() -> None:
 
     routes = _text(PAGES_ROUTES)
     assert '"/laws/*"' in routes
+    assert '"/programs/*"' in routes
+    assert '"/cases/*"' in routes
+    assert '"/enforcement/*"' in routes
     assert '"/*"' not in routes
 
 

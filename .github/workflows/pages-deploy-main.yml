@@ -250,17 +250,21 @@ jobs:
             --include 'tools/' \
             --include 'tools/*.md' \
             --include 'laws/index.html' \
+            --include 'programs/index.html' \
+            --include 'programs/share.html' \
+            --include 'cases/index.html' \
+            --include 'enforcement/index.html' \
             --exclude 'laws/*.html' \
+            --exclude 'programs/*.html' \
+            --exclude 'cases/*.html' \
+            --exclude 'enforcement/*.html' \
             --exclude '*.md' \
             site/ dist/site/
-          # 2026-05-13 Wave 50: detail laws/*.html (6,493 files; hub
-          # laws/index.html is kept static above) and
-          # 2026-05-12 Wave 45: laws/enforcement/cases/*.md (10,282 files)
-          # are intentionally NOT bundled here, but ARE served end-to-end.
-          # The full site/ tree is 32,356 files vs the Free-plan CF Pages
-          # 20,000-file deployment limit (verified via wrangler error
-          # `Pages only supports up to 20,000 files in a deployment for
-          # your current plan`, run 2026-05-12). Wave 45 wires
+          # 2026-05-14 Wave 51: detail laws/programs/cases/enforcement
+          # HTML plus companion Markdown are intentionally NOT bundled here,
+          # but ARE served end-to-end. The full site/ tree now exceeds the
+          # Cloudflare Pages 20,000-file deployment limit (verified via
+          # wrangler error, run 2026-05-14). Wave 45/51 wires
           # `functions/[[path]].ts` (catch-all Pages Function) which
           # intercepts every source-backed GET that ASSETS returns 404 for,
           # fetches the file from raw.githubusercontent.com (the source
@@ -276,7 +280,12 @@ jobs:
           echo "artifact size:"
           du -sh dist/site
           echo "file count:"
-          find dist/site -type f | wc -l
+          file_count="$(find dist/site -type f | wc -l | tr -d ' ')"
+          echo "$file_count"
+          if [ "$file_count" -gt 19000 ]; then
+            echo "::error::Cloudflare Pages artifact has ${file_count} files; limit is 20,000."
+            exit 1
+          fi
 
       - name: Validate critical JSON manifests
         if: steps.cf-secrets.outputs.available == 'true'
@@ -389,6 +398,9 @@ jobs:
           for url in \
             "https://jpcite.com/laws/chusho-kihon?$Q" \
             "https://jpcite.com/laws/chusho-kihon.html?$Q" \
+            "https://jpcite.com/programs/jizoku-ka-hojokin-ippankei-tsuujou-waku-shoukou-kai-han-dai-defacd.html?$Q" \
+            "https://jpcite.com/enforcement/act-10084.html?$Q" \
+            "https://jpcite.com/cases/mirasapo_case_118.html?$Q" \
             "https://jpcite.com/laws/chusho-kihon.md?$Q" \
             "https://jpcite.com/enforcement/act-10084.md?$Q" \
             "https://jpcite.com/cases/mirasapo_case_118.md?$Q"

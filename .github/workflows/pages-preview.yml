@@ -180,9 +180,22 @@ jobs:
             --include 'tools/' \
             --include 'tools/*.md' \
             --include 'laws/index.html' \
+            --include 'programs/index.html' \
+            --include 'programs/share.html' \
+            --include 'cases/index.html' \
+            --include 'enforcement/index.html' \
             --exclude 'laws/*.html' \
+            --exclude 'programs/*.html' \
+            --exclude 'cases/*.html' \
+            --exclude 'enforcement/*.html' \
             --exclude '*.md' \
             site/ dist/site/
+          file_count="$(find dist/site -type f | wc -l | tr -d ' ')"
+          echo "file count: ${file_count}"
+          if [ "$file_count" -gt 19000 ]; then
+            echo "::error::Cloudflare Pages artifact has ${file_count} files; limit is 20,000."
+            exit 1
+          fi
 
       - name: Check Cloudflare Pages secrets
         id: cf-secrets
