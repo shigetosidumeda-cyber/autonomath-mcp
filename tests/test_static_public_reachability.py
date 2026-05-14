@@ -1479,7 +1479,9 @@ def test_primary_public_chrome_uses_canonical_logo_and_nowrap_nav() -> None:
     css = (REPO_ROOT / "site" / "styles.src.css").read_text(encoding="utf-8")
     assert re.search(r"\.site-nav\s*\{[^}]*flex-wrap:\s*nowrap", css, re.S)
     assert re.search(r"\.site-nav\s*\{[^}]*white-space:\s*nowrap", css, re.S)
-    assert 'content: url("/assets/brand/jpcite-mark-dark-fill.svg")' in css
+    assert "footer-brand-mark" in css
+    assert "jpcite-mark.svg" not in css
+    assert ".brand-name" not in css
     assert offenders == []
 
 

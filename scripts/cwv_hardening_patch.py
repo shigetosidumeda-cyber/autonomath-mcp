@@ -159,9 +159,11 @@ def _patch_lazy_load(text: str) -> tuple[str, bool]:
 FOOTER_BRAND_MARK_RE = re.compile(r'<p class="footer-brand">[^<]*</p>')
 FOOTER_BRAND_BADGE_HTML = (
     '<p class="footer-brand">'
-    '<img src="/assets/brand/jpcite-mark.svg" alt="" width="20" height="20" '
-    'loading="lazy" decoding="async" '
-    'style="height:20px;width:20px;vertical-align:middle;margin-right:8px;display:inline-block;">'
+    '<picture class="footer-brand-mark">'
+    '<source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg">'
+    '<img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" '
+    'loading="lazy" decoding="async">'
+    '</picture>'
     'jpcite</p>'
 )
 
@@ -170,10 +172,10 @@ def _patch_footer_brand_badge(text: str) -> tuple[str, bool]:
     """Add a lazy-loaded SVG mark inside the footer brand paragraph.
 
     Footer is below-the-fold — perfect candidate for `loading="lazy"`. This
-    also surfaces the jpcite-mark.svg brand asset on every page footer, which
+    also surfaces the dark-mode-safe jpcite mark on every page footer, which
     is a brand-coherence win independent of CWV.
     """
-    if 'src="/assets/brand/jpcite-mark.svg"' in text:
+    if 'class="footer-brand-mark"' in text:
         return text, False  # already patched
     if not FOOTER_BRAND_MARK_RE.search(text):
         return text, False  # no footer-brand paragraph to extend

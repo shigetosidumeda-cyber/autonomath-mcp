@@ -7,7 +7,7 @@
 ## Bench results YYYY-MM-DD
 
 This dated report measures **Evidence Pre-fetch** and **Precomputed
-Intelligence** against a direct provider web-search baseline. It does
+Intelligence** against a caller-supplied comparison baseline. It does
 not claim that jpcite always saves tokens or always lowers cost.
 
 - Model: `claude-sonnet-4-6` (or `gpt-4o-2024-11-20`, `gemini-2.0-pro`, etc.)

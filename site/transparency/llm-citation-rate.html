@@ -26,7 +26,7 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="stylesheet" href="/styles.css?v=20260507">
+<link rel="stylesheet" href="/styles.css?v=20260515b">
 
 <script type="application/ld+json">
 {
@@ -216,10 +216,12 @@ table.llm-table th { background: #f9fafb; font-weight: 600; }
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/brand/apple-touch-icon-180.png">
 </head>
 <body>
-<header class="site-header">
-<div class="container">
-<a href="/" class="logo">jpcite</a>
-<nav>
+<header class="site-header" role="banner">
+<div class="container header-inner">
+<a class="brand" href="/" aria-label="jpcite ホーム">
+<picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+</a>
+<nav class="site-nav" aria-label="主要ナビゲーション">
 <a href="/about.html">jpcite とは</a>
 <a href="/transparency.html">出典の透明性</a>
 <a href="/transparency/llm-citation-rate.html" aria-current="page">LLM citation rate</a>

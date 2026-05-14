@@ -146,6 +146,8 @@ a:hover { text-decoration: underline; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  gap: 18px;
   padding-top: 18px;
   padding-bottom: 18px;
 }
@@ -165,21 +167,6 @@ a:hover { text-decoration: underline; }
   max-width: 190px;
   height: auto;
 }
-.brand-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 6px;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-}
-.brand-name {
-  font-size: 16px;
-  letter-spacing: -0.01em;
-}
 .site-nav {
   display: flex;
   gap: clamp(8px, 1.35vw, 18px);
@@ -188,6 +175,7 @@ a:hover { text-decoration: underline; }
   flex: 1 1 auto;
   justify-content: flex-end;
   min-width: 0;
+  padding-right: 88px;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scrollbar-width: none;
@@ -249,6 +237,41 @@ pre code { word-break: normal; }
 .lang-switch .sep {
   color: var(--border);
   user-select: none;
+}
+.site-nav .lang-switch {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  margin-left: 0;
+  transform: translateY(-50%);
+}
+.site-nav .lang-switch a {
+  min-height: 32px;
+  padding: 4px 6px;
+}
+
+.chip,
+.chip-success,
+.industry-chip,
+.pref-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin: 0 6px 6px 0;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-alt);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  vertical-align: middle;
+}
+.chip-success {
+  border-color: rgba(21, 128, 61, 0.35);
+  background: #ecfdf5;
+  color: #166534;
 }
 
 /* Trust dropdown (Status / Roadmap / Data Freshness / Transparency / Audit
@@ -1061,7 +1084,12 @@ pre code { word-break: normal; }
     font-size: 16px;
   }
   .header-inner { flex-wrap: nowrap; gap: 10px; }
-  .site-nav { gap: 8px; font-size: 14px; flex-wrap: nowrap; row-gap: 0; }
+  .site-nav { gap: 8px; font-size: 14px; flex-wrap: nowrap; row-gap: 0; padding-right: 0; }
+  .site-nav .lang-switch {
+    position: static;
+    margin-left: 8px;
+    transform: none;
+  }
   /* Mobile a11y: WCAG 2.5.5 touch target ≥44x44 on tablet+phone.
      Extends the <480px rule to <768px so the iPad-portrait + folded-phone
      range also gets enlarged tap targets. */
@@ -1478,13 +1506,17 @@ pre code { word-break: normal; }
     border-color: var(--border);
     color: var(--text);
   }
-  .footer-brand img[src$="jpcite-mark.svg"] {
-    content: url("/assets/brand/jpcite-mark-dark-fill.svg");
-    background: transparent;
-    border-radius: 0;
-    box-sizing: border-box;
-    filter: none;
-    padding: 0;
+  .chip,
+  .industry-chip,
+  .pref-chip {
+    background: rgba(148, 163, 184, 0.12);
+    color: var(--text);
+    border-color: rgba(148, 163, 184, 0.28);
+  }
+  .chip-success {
+    background: rgba(34, 197, 94, 0.14);
+    color: #bbf7d0;
+    border-color: rgba(74, 222, 128, 0.35);
   }
   .newsletter-form input[type="email"] { background: var(--bg-alt); }
   .ps-card { background: var(--bg-alt); }
@@ -1492,9 +1524,6 @@ pre code { word-break: normal; }
   .ps-form input[type="number"] { background: var(--bg-alt); }
   .ps-row { background: var(--bg-alt); }
 
-  /* Brand mark contrast — text on accent must stay readable.
-     #79b8ff has high luminance, so use dark text on it. */
-  .brand-mark { color: #0d1117; }
   .btn-primary { color: #0d1117; }
   .btn-primary:hover { color: #0d1117; }
   .nav-cta,
@@ -1625,9 +1654,7 @@ pre code { word-break: normal; }
     justify-content: center;
   }
 
-  /* Brand / logo link in header — without min-height the hit area is the
-     28 px brand-mark. Header padding adds visual breathing room but does
-     not extend the anchor's clickable box. */
+  /* Brand / logo link in header: keep the image link's hit area comfortable. */
   .brand {
     min-height: 44px;
   }

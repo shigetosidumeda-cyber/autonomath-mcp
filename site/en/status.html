@@ -18,6 +18,7 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../styles.css?v=20260515b">
 
 <script type="application/ld+json">
 {
@@ -72,6 +73,18 @@
     margin: 0 auto;
     padding: 48px 20px 64px;
   }
+  .site-header .container {
+    max-width: 1200px;
+    padding: 0 24px;
+  }
+  .site-header .brand {
+    margin-bottom: 0;
+    padding-top: 0;
+  }
+  .site-header .header-inner {
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
   .top-bar {
     display: flex;
     align-items: center;
@@ -85,17 +98,6 @@
     color: var(--text);
     font-weight: 700;
     text-decoration: none;
-  }
-  .brand-mark {
-    display: inline-grid;
-    place-items: center;
-    width: 28px;
-    height: 28px;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 6px;
-    font-size: 13px;
-    letter-spacing: 0.5px;
   }
   .lang-switch {
     font-size: 13px;
@@ -203,7 +205,6 @@
     margin: 0 auto;
   }
   .site-footer .footer-brand { font-weight: 700; color: var(--text); margin: 0 0 4px; font-size: 14px; }
-  .site-footer .footer-brand img[src$="jpcite-mark.svg"] { background: #fff; border-radius: 4px; box-sizing: border-box; padding: 2px; }
   .site-footer .footer-tag { margin: 0 0 12px; }
   .site-footer .footer-nav { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 10px; }
   .site-footer .footer-nav a { color: var(--accent); text-decoration: none; }
@@ -228,6 +229,19 @@
   }
   .skip-link:focus,
   .skip-link:focus-visible { transform: translateY(0); outline: 2px solid #fff; outline-offset: -4px; }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --accent: #8ab4f8;
+      --text: #f7f8fb;
+      --text-muted: #a9b4c3;
+      --border: #263241;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --ok: #4ade80;
+      --warn: #fbbf24;
+      --down: #f87171;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.001ms !important;
@@ -329,18 +343,40 @@
 
 <a class="skip-link" href="#main">Skip to main content</a>
 
-<main id="main" class="container">
-
- <div class="top-bar">
+<header class="site-header" role="banner">
+ <div class="container header-inner">
  <a class="brand" href="index.html" aria-label="jpcite home">
- <span>jpcite</span>
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
  </a>
+ <nav class="site-nav" aria-label="Primary navigation">
+ <a href="/en/products.html">Products</a>
+ <a href="/connect/">Connect</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/en/pricing.html">Pricing</a>
+ <a href="/en/audiences/">Audiences</a>
+ <a href="/en/getting-started.html">API Docs</a>
+ <a href="/en/about.html">About</a>
+ <details class="nav-trust">
+ <summary>Trust</summary>
+ <ul>
+ <li><a href="/trust.html">Trust</a></li>
+ <li><a href="/status.html">Status</a></li>
+ <li><a href="/data-freshness.html">Data Freshness</a></li>
+ <li><a href="/transparency.html">Transparency</a></li>
+ <li><a href="/sources.html">Sources</a></li>
+ <li><a href="/audit-log.html">Audit Log</a></li>
+ </ul>
+ </details>
  <span class="lang-switch" role="group" aria-label="Language / 言語">
  <a href="../status.html" lang="ja" hreflang="ja">JP</a>
  <span class="sep" aria-hidden="true">/</span>
  <a href="status.html" lang="en" hreflang="en" aria-current="page">EN</a>
  </span>
+ </nav>
  </div>
+</header>
+
+<main id="main" class="container">
 
  <h1>Status</h1>
  <p class="lead">
@@ -403,7 +439,7 @@
 
 <footer class="site-footer" role="contentinfo">
  <div class="footer-inner">
- <p class="footer-brand">jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">Japanese public-program API</p>
  <nav class="footer-nav" aria-label="Footer">
  <a href="tos.html">Terms</a>

@@ -36,7 +36,8 @@
     -webkit-font-smoothing: antialiased;
   }
   .container { max-width: 980px; margin: 0 auto; padding: 48px 20px 64px; }
-  .brand { color: var(--text); font-weight: 700; text-decoration: none; font-size: 16px; }
+  .brand { display: inline-flex; align-items: center; color: var(--text); text-decoration: none; }
+  .brand img { height: 24px; width: auto; display: block; }
   h1 { font-size: 28px; letter-spacing: -0.01em; margin: 0 0 12px; font-weight: 800; }
   h2 { font-size: 20px; margin: 32px 0 12px; font-weight: 700; }
   .lead { color: var(--text-muted); margin: 0 0 28px; font-size: 15px; }
@@ -183,7 +184,7 @@
 </head>
 <body>
 <div class="container">
-  <p><a class="brand" href="/">jpcite</a> / <a href="/status/">status</a> / public operations</p>
+  <p><a class="brand" href="/" aria-label="jpcite home"><picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" alt="jpcite" width="143" height="24" decoding="async"></picture></a> / <a href="/status/">status</a> / public operations</p>
   <h1>Public Operations Metrics</h1>
   <p class="lead">
     公開して差し支えない運用品質の集計値だけを毎日 aggregate。

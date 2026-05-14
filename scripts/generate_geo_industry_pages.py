@@ -1220,7 +1220,7 @@ def render_page(
 <link rel="alternate" hreflang="ja" href="{canonical}">
 <link rel="alternate" hreflang="x-default" href="{canonical}">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/styles.css?v=20260428a">
+<link rel="stylesheet" href="/styles.css?v=20260515b">
 
 <script type="application/ld+json">
 {json_ld}
@@ -1451,10 +1451,25 @@ def _render_index_fallback(domain: str, matrix_html: str) -> str:
 <title>利用者層 — jpcite</title>
 <meta name="description" content="47 都道府県 × 22 業種の制度マトリクス。jpcite が一次資料から集約。">
 <link rel="canonical" href="https://{domain}/audiences/">
-<link rel="stylesheet" href="/styles.css?v=20260428a">
+<link rel="stylesheet" href="/styles.css?v=20260515b">
 </head>
 <body>
-<header class="site-header"><div class="container"><a class="brand" href="/">jpcite</a></div></header>
+<header class="site-header" role="banner">
+ <div class="container header-inner">
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
+ <nav class="site-nav" aria-label="主要ナビゲーション">
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
+ <a href="/pricing.html">料金</a>
+ <a href="/audiences/" aria-current="page">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
+ </nav>
+ </div>
+</header>
 <main id="main">
  <section class="hero"><div class="container"><h1>利用者層</h1></div></section>
  {matrix_html}

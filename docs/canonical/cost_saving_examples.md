@@ -14,7 +14,7 @@ outcome, or professional-judgment value as a calculated result.
 
 For legacy audience and recipe parity, the allowed Japanese shorthand is
 `API fee delta` when, and only when, it refers to the API
-fee delta between a stated external model/search baseline and jpcite's
+fee delta between a stated caller-supplied comparison baseline and jpcite's
 ¥3/req metered fee. The shorthand does not claim certain invoice
 reduction or business outcome.
 

@@ -483,7 +483,7 @@ _HEAD_TEMPLATE = """<!DOCTYPE html>
 <link rel="alternate" hreflang="ja" href="https://{domain}{canonical_path}">
 <link rel="alternate" hreflang="x-default" href="https://{domain}{canonical_path}">
 <link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/styles.css?v=20260501a">
+<link rel="stylesheet" href="/styles.css?v=20260515b">
 </head>
 <body>
 <a href="#main" class="skip-link">本文へスキップ</a>

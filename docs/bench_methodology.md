@@ -22,7 +22,7 @@ customer environment. The benchmark measures whether, for a fixed
 model, prompt scaffold, query set, and run date, supplying jpcite
 evidence before the LLM call changes token use, web-search use, answer
 cost, citation behavior, and unsupported-claim rate relative to a
-direct web-search baseline.
+caller-supplied comparison baseline.
 
 Public claims about token / cost reduction must be
 backed by a paired A/B benchmark on the same questions, same model,

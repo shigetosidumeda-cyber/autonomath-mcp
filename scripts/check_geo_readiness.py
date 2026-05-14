@@ -54,7 +54,7 @@ LEGACY_BRIDGE_LLMS_FILES = {
 }
 
 FORBIDDEN_PUBLIC_TOKENS = [
-    "士業 案件紹介",
+    "Review Handoff Packet",
     "士業案件紹介",
     "広告ではありません",
 ]

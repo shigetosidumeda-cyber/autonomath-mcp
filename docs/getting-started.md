@@ -166,7 +166,7 @@ curl -X POST "https://api.jpcite.com/v1/evidence/packets/query" \
   -d '{"query_text":"東京都 製造業 省力化 補助金", "limit": 10}'
 ```
 
-この形にすると、BPO / 士業 / AI agent が「誰のために何 units 使ったか」を後で説明しやすくなります。
+この形にすると、士業 / 社内業務 / AI agent が「誰のために何 units 使ったか」を後で説明しやすくなります。
 
 ## 5. API キー発行 (継続利用)
 

@@ -28,7 +28,7 @@ Status: customer-facing evidence brief. **Primary value = verify time saved + so
 
 All figures are **input-token estimates** at Claude Opus 4.7 list price (`$5/MTok` short-context, ~¥750/MTok at $1=¥150). Output / reasoning / cache / web-search are excluded — see honest-gap (§6) below.
 
-| Case | Closed-book / web-search baseline | jpcite path | Input tokens BEFORE | Input tokens AFTER | Δ tokens | Δ ¥ / call |
+| Case | Caller-supplied comparison baseline | jpcite path | Input tokens BEFORE | Input tokens AFTER | Δ tokens | Δ ¥ / call |
 |---|---|---|---:|---:|---:|---:|
 | **A. 補助金マッチング** (法人 → top 10 program) | LLM tool-uses 公募要領 PDF + 都道府県補助金 page × ~6 sources, parses each | 1 × `POST /v1/evidence/packets/query` returns 10 program packets | ~38,000 | ~5,800 | **-32,200** | -¥24.15 |
 | **B. 法令引用 reasoning** | Web search → fetch e-Gov 法人税法 本則 (~58k chars) → parse → cite | 1 × `get_law_article_am(law_id, article_no)` returns the article body + neighbouring articles | ~18,000 | ~1,200 | **-16,800** | -¥12.60 |

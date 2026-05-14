@@ -16,6 +16,7 @@
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="stylesheet" href="/styles.css?v=20260515b">
 
 <style>
   /* Self-contained palette — keeps the page functional even when /styles.css
@@ -33,6 +34,20 @@
     --down: #b91c1c;
     --unknown: #6b7280;
   }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --accent: #8ab4f8;
+      --text: #f7f8fb;
+      --text-muted: #a9b4c3;
+      --border: #263241;
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --ok: #4ade80;
+      --warn: #fbbf24;
+      --down: #f87171;
+      --unknown: #94a3b8;
+    }
+  }
   * { box-sizing: border-box; }
   body {
     margin: 0;
@@ -49,6 +64,17 @@
     max-width: 760px;
     margin: 0 auto;
     padding: 48px 20px 64px;
+  }
+  .site-header .container {
+    max-width: 1200px;
+    padding: 0 24px;
+  }
+  .site-header .brand {
+    margin-bottom: 0;
+  }
+  .site-header .header-inner {
+    padding-top: 18px;
+    padding-bottom: 18px;
   }
   .top-bar {
     display: flex;
@@ -446,18 +472,7 @@
 </header>
 
 
-<a class="skip-link" href="#main">メインコンテンツへスキップ / Skip to main content</a>
-
 <main id="main" class="container">
-
- <div class="top-bar">
- <a class="brand" href="/" aria-label="jpcite ホーム">
- <span>jpcite</span>
- </a>
- <span class="lang-switch" style="font-size:13px;color:var(--text-muted);">
- <a href="/status/" lang="ja" hreflang="ja" aria-current="page" style="color:var(--text);font-weight:600;text-decoration:none;padding:4px 6px;">JP</a>
- </span>
- </div>
 
  <h1>jpcite ステータス / jpcite Status</h1>
  <p class="lead">
