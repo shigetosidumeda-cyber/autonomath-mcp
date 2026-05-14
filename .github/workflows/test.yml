@@ -238,6 +238,7 @@ env:
     tests/test_cron_freshness_rollup.py
     tests/test_cron_heartbeat.py
     tests/test_cron_hydrate_dry_run.py
+    tests/test_cron_program_static_links.py
     tests/test_cron_yaml_schema_validity.py
     tests/test_cross_source_baseline.py
     tests/test_customer_cap_fail_closed.py

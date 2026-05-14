@@ -358,7 +358,7 @@ pre code { word-break: normal; }
   border-radius: 6px;
   padding: 6px 10px;
   color: var(--text-muted);
-  background: #fff;
+  background: var(--bg-subtle);
 }
 .trust-strip-blocks li strong {
   color: var(--text);
@@ -1430,6 +1430,9 @@ pre code { word-break: normal; }
   .btn-secondary:hover { background: var(--border); }
   .demo-note code { background: var(--bg-alt); }
   .trust-strip-blocks li { background: var(--bg-alt); }
+  .footer-brand img[src$="jpcite-mark.svg"] {
+    filter: invert(1) brightness(1.25);
+  }
   .newsletter-form input[type="email"] { background: var(--bg-alt); }
   .ps-card { background: var(--bg-alt); }
   .ps-form select,
