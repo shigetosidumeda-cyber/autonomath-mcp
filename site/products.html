@@ -77,7 +77,7 @@
       {
         "@type": "ListItem",
         "position": 5,
-        "name": "申請戦略パック",
+        "name": "申請前 Evidence Packet",
         "url": "https://jpcite.com/playground.html?flow=evidence3"
       },
       {
@@ -258,7 +258,7 @@
 
  <section aria-labelledby="expanded-outputs-title" style="margin-top:28px;">
  <h2 id="expanded-outputs-title" style="font-size:24px;margin:0 0 8px;">拡張されたアウトプット一覧</h2>
-	 <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin:0 0 14px;">302 REST paths / 151 MCP tools / 9 dataset は部品です。画面では、AI が回答を書く前に渡す小さな Evidence Packet / output artifact として整理します。どれも「入力」「返るもの」「入口」「長い文脈の代わりに渡す根拠」が分かる単位にしています。</p>
+	 <p style="font-size:14px;line-height:1.7;color:var(--text-muted);margin:0 0 14px;">Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset は部品です。画面では、AI が回答を書く前に渡す小さな Evidence Packet / output artifact として整理します。どれも「入力」「返るもの」「入口」「長い文脈の代わりに渡す根拠」が分かる単位にしています。</p>
  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:8px;">
  <table style="width:100%;min-width:860px;border-collapse:collapse;font-size:13px;line-height:1.55;">
  <thead>
@@ -274,10 +274,10 @@
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">会社フォルダ Brief / Pack</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">法人番号 / T番号 / 会社名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">folder_readme、CRMメモ、owner_questions、source_receipts、known_gaps、次の確認キュー</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">1 unit preview</a> / <a href="/docs/getting-started/audiences/">REST</a> / <a href="/connect/">MCP</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">公開情報 DD</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">候補会社リスト / 取引先名</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">処分履歴、補助金採択、未確認範囲、担当者向けメモ</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/audiences/">REST batch</a> / <a href="/connect/">MCP</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">顧問先月次レビュー</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">顧問先名 / 業種 / 地域</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">補助金・税制・融資候補、締切、変更点、顧問先に聞く文面</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/dashboard.html#dashboard-workflows-title">Saved search</a> / <a href="/dashboard.html#dashboard-workflows-title">Email</a> / <a href="/docs/getting-started/">API</a></td></tr>
- <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">申請戦略パック</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">地域 / 業種 / 投資額 / 使途</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">候補制度、除外条件、併用注意、必要資料、面談質問</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/playground.html?flow=evidence3">Playground</a> / <a href="/widget.html">Widget</a></td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">申請前 Evidence Packet</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">地域 / 業種 / 投資額 / 使途</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">候補制度、除外条件、併用注意、一次資料 URL、known gaps、確認質問</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/playground.html?flow=evidence3">Playground</a> / <a href="/widget.html">Widget</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">併用・排他チェック表</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">制度IDリスト / 候補制度 / 資金使途</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">併用不可、前提制度不足、unknown、確認すべき一次資料</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/">REST</a> / <a href="/connect/">MCP</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">インボイス取引先確認表</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">T番号 / 法人番号 / 取引先CSV</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">登録状態、法人同定、変更履歴、再確認が必要な行</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/getting-started/audiences/">REST</a> / <a href="/connect/">MCP</a></td></tr>
- <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">Source Receipt</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">source URL / 制度ID / 法令ID</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">取得時刻、content hash、known gaps、再確認対象</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">Evidence Packet / audit log</td></tr>
+ <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">Source Receipt</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">source URL / 制度ID / 法令ID</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">取得時刻、content hash、known gaps、再確認対象</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/docs/api-reference/#evidence-packet--source-manifest">Evidence Packet / Source Manifest</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">法令・判例引用候補</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">法令名 / 条文 / 制度 / 争点キーワード</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">引用候補、関連条文、関連判例、専門家確認の注意</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/laws/">法令</a> / <a href="/docs/api-reference/">REST</a> / <a href="/connect/">MCP</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">改正・保存検索通知</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">監視キーワード / 法令 / 制度</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">改正差分、影響候補、通知ログ、Webhook delivery</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/dashboard.html#dashboard-workflows-title">Email</a> / <a href="/status/rss.xml">RSS</a> / <a href="/dashboard.html#dashboard-workflows-title">Webhook</a></td></tr>
  <tr><th scope="row" style="padding:10px 12px;border-bottom:1px solid var(--border);">費用・支払い制御</th><td style="padding:10px 12px;border-bottom:1px solid var(--border);">API key / Stripe / Wallet / x402 payment proof / cost cap / idempotency key</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);">balance state、payable/not payable、上限判定、replay status、metered units、次に取る action</td><td style="padding:10px 12px;border-bottom:1px solid var(--border);"><a href="/dashboard.html">Dashboard</a> / <a href="/pricing.html#api-paid">Stripe Checkout</a> / <a href="/docs/api-reference/">Headers</a></td></tr>
@@ -311,8 +311,8 @@
 
 	 <span id="pre-consult" class="visually-hidden" aria-hidden="true"></span>
 	 <article class="price-card" id="application-strategy-pack">
-	 <h2>申請戦略パック</h2>
-	 <p class="tier-desc">地域・業種・投資額を入れると、候補制度、除外条件、必要資料、次に聞く質問を申請前の打合せ資料として返します。一次資料確認と候補整理に課金されます。</p>
+	 <h2>申請前 Evidence Packet</h2>
+	 <p class="tier-desc">地域・業種・投資額を入れると、候補制度、除外条件、併用注意、一次資料 URL、known gaps、次に聞く質問を申請前の打合せ資料として返します。申請書作成・提出判断ではなく、一次資料確認と候補整理に課金されます。</p>
 	 <a class="btn btn-secondary" href="/playground.html?flow=evidence3">匿名 3 req 枠でプレビュー →</a>
 	 </article>
 

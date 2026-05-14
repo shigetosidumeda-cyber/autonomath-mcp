@@ -127,6 +127,12 @@ PUBLIC_DESCRIPTION_REPLACEMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
     # ---- Pricing marker normalization ----
     (re.compile(r"¥\s*3\s*/\s*(?:req|request|call)\b", re.IGNORECASE), "¥3/billable unit"),
     (re.compile(r"\bJPY\s*3\s*/\s*(?:req|request|call)\b", re.IGNORECASE), "JPY 3/billable unit"),
+    # ---- Public scope normalization ----
+    (re.compile(r"\bEvery tool response carries\b", re.IGNORECASE), "Evidence-oriented tool responses include"),
+    (re.compile(r"\bevery response carries\b", re.IGNORECASE), "covered responses include"),
+    (re.compile(r"\bevery response surfaces\b", re.IGNORECASE), "covered responses surface"),
+    (re.compile(r"\benvelope on every response\b", re.IGNORECASE), "envelope on covered responses"),
+    (re.compile(r"\battribution baked into every response\b", re.IGNORECASE), "attribution included in covered responses"),
 )
 
 # Belt-and-suspenders post-sanitize gate.  These patterns MUST NOT remain in

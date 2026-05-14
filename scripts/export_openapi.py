@@ -111,6 +111,12 @@ OPENAPI_LEAK_PATTERN_REPLACEMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bmigrations?\s+\d+(?:[-/]\d+)+\b", re.IGNORECASE), "schema update"),
     (re.compile(r"\bmigration\s+\d+\b", re.IGNORECASE), "schema update"),
     (re.compile(r"\bmig\s+\d+\b", re.IGNORECASE), "schema update"),
+    # ---- Public scope normalization ----
+    (re.compile(r"\bEvery tool response carries\b", re.IGNORECASE), "Evidence-oriented tool responses include"),
+    (re.compile(r"\bevery response carries\b", re.IGNORECASE), "covered responses include"),
+    (re.compile(r"\bevery response surfaces\b", re.IGNORECASE), "covered responses surface"),
+    (re.compile(r"\benvelope on every response\b", re.IGNORECASE), "envelope on covered responses"),
+    (re.compile(r"\battribution baked into every response\b", re.IGNORECASE), "attribution included in covered responses"),
     # ---- Operator script paths ----
     (re.compile(r"`?scripts/cron/[A-Za-z0-9_./-]+`?"), "scheduled job"),
     (re.compile(r"`?scripts/etl/[A-Za-z0-9_./-]+`?"), "background ETL"),

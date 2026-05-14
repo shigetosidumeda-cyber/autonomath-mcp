@@ -770,7 +770,7 @@ _OPERATION_GUIDANCE: dict[str, dict[str, Any]] = {
             "supporting_bpo_tax_advisor_or_subsidy_consultant_first_meeting",
         ],
         "x-jpcite-not-recommended-when": [
-            "the_user_asks_for_final_application_approval_or_adoption_probability_guarantee",
+            "the_user_asks_for_final_application_approval_or_receipt_outcome_guarantee",
             "the_business_profile_is_missing_basic_location_or_activity_context",
             "the_user_needs_private_financials_contracts_or_non_public_company_context_only",
             "the_user_asks_for_final_legal_tax_or_administrative_scrivener_judgment",
@@ -786,7 +786,7 @@ _OPERATION_GUIDANCE: dict[str, dict[str, Any]] = {
             "choosing_program_ids_before_application_strategy_pack_or_eligibility_predicate",
         ],
         "x-jpcite-not-recommended-when": [
-            "the_user_needs_final_application_eligibility_or_adoption_probability",
+            "the_user_needs_final_application_eligibility_or_receipt_outcome_prediction",
             "the_user_has_no_profile_axis_beyond_a_free_text_question",
             "the_user_needs_private_financials_contracts_or_unpublished_context_only",
         ],
@@ -801,7 +801,7 @@ _OPERATION_GUIDANCE: dict[str, dict[str, Any]] = {
         "x-jpcite-must-not-claim": [
             "final_eligibility_confirmed",
             "subsidy_or_loan_approved",
-            "adoption_probability_guaranteed",
+            "adoption_or_receipt_outcome_guaranteed",
             "professional_review_unnecessary",
         ],
         "x-jpcite-web-search-after": [

@@ -106,7 +106,8 @@ def minify_css() -> tuple[int, int]:
     try:
         import csscompressor
     except ImportError:
-        sys.exit("ERROR: pip install csscompressor")
+        LOG.warning("csscompressor not installed; skipping CSS minify")
+        return _current_size_totals(CSS_FILES)
 
     before_total = 0
     after_total = 0
@@ -143,7 +144,8 @@ def minify_js() -> tuple[int, int]:
     try:
         import rjsmin
     except ImportError:
-        sys.exit("ERROR: pip install rjsmin")
+        LOG.warning("rjsmin not installed; skipping JS minify")
+        return _current_size_totals(JS_FILES)
 
     before_total = 0
     after_total = 0
@@ -172,6 +174,14 @@ def minify_js() -> tuple[int, int]:
             100 * after / before if before else 0,
         )
     return before_total, after_total
+
+
+def _current_size_totals(paths: list[Path]) -> tuple[int, int]:
+    total = 0
+    for path in paths:
+        if path.exists():
+            total += path.stat().st_size
+    return total, total
 
 
 def generate_webp() -> tuple[int, int]:

@@ -91,7 +91,7 @@
     {"@type": "Question", "name": "Is adult guardianship support possible?", "acceptedAnswer": {"@type": "Answer", "text": "Information lookup yes — jpcite surfaces adult guardianship program timelines (中核機関整備, 任意後見, 市民後見人養成) and Civil Code §7-§876 article text via search_programs and get_law_article_en. Court filing drafts no — guardianship petitions and filing documents remain the exclusive work of licensed 司法書士 / 弁護士 under §3 / Lawyers Act §72."}},
     {"@type": "Question", "name": "What is a reasonable substitute for 反社 (organized crime) checks?", "acceptedAnswer": {"@type": "Answer", "text": "Corporate enforcement-history lookup is available: fines, grant refunds, and subsidy exclusion records by 法人番号 (corporate number). Personal credit information is not handled — APPI (個人情報保護法) compliance fences personal PII out of the surface. The licensed 司法書士 makes the final 反社 determination using their own protocol; jpcite contributes only corporate-side enforcement signals."}},
     {"@type": "Question", "name": "What is the pricing?", "acceptedAnswer": {"@type": "Answer", "text": "¥3 per billable unit tax exclusive (税込 ¥3.30 ≈ $0.022). Anonymous 3 req/day per IP free, JST midnight reset. No tier SKUs, no seat fees, no annual minimums, no Pro / Starter plan. The only free path is the IP-based anonymous quota."}},
-    {"@type": "Question", "name": "How does this differ from your tax advisor or CPA audience?", "acceptedAnswer": {"@type": "Answer", "text": "Audience-specific boundary guidance injects the relevant exclusive-work boundaries dynamically. The 司法書士 audience fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The 税理士 audience fences Tax Accountants Act §52 (tax representation / tax document preparation). The 公認会計士 audience fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different legal boundary; every response surfaces the applicable _disclaimer field."}}
+    {"@type": "Question", "name": "How does this differ from your tax advisor or CPA audience?", "acceptedAnswer": {"@type": "Answer", "text": "Audience-specific boundary guidance injects the relevant exclusive-work boundaries dynamically. The 司法書士 audience fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The 税理士 audience fences Tax Accountants Act §52 (tax representation / tax document preparation). The 公認会計士 audience fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different legal boundary; sensitive audience-specific outputs surface the applicable _disclaimer field."}}
   ]
 }
 </script>
@@ -439,7 +439,7 @@ for row in r2.json()["items"]:
 
  <article class="card">
  <h3>Q5. How does this differ from your tax advisor or CPA audience?</h3>
- <p><strong>A.</strong> Audience-specific boundary guidance injects the relevant exclusive-work boundaries dynamically. The <span lang="ja">司法書士</span> audience fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The <span lang="ja">税理士</span> audience fences Tax Accountants Act §52 (tax representation / tax document preparation). The <span lang="ja">公認会計士</span> audience fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different legal boundary &mdash; every response surfaces the applicable <code>_disclaimer</code> field.</p>
+ <p><strong>A.</strong> Audience-specific boundary guidance injects the relevant exclusive-work boundaries dynamically. The <span lang="ja">司法書士</span> audience fences Judicial Scrivener Act §3 (registration / deposit / summary court representation). The <span lang="ja">税理士</span> audience fences Tax Accountants Act §52 (tax representation / tax document preparation). The <span lang="ja">公認会計士</span> audience fences Certified Public Accountants Act §47条の2 (statutory audit). Same corpus, different legal boundary &mdash; sensitive audience-specific outputs surface the applicable <code>_disclaimer</code> field.</p>
  </article>
 
  </div>
@@ -454,7 +454,7 @@ for row in r2.json()["items"]:
 
  <article class="card">
  <h3>Citation safety (LLM-side)</h3>
- <p>Every response carries a <code>source_url</code> + <code>license</code> + <code>_disclaimer</code> field. Cite the <code>source_url</code> verbatim; surface the <code>_disclaimer</code> string in every user-facing response touching §3 / §52 / §72 / §1 territory. Do not collapse "the licensed <span lang="ja">司法書士</span> prepares the filing" into "I will prepare the filing" &mdash; the boundary is exclusive-work, not stylistic.</p>
+ <p>Covered evidence responses include <code>source_url</code>, <code>license</code>, and where applicable <code>_disclaimer</code> fields. Cite the <code>source_url</code> verbatim; surface the <code>_disclaimer</code> string in every user-facing response touching §3 / §52 / §72 / §1 territory. Do not collapse "the licensed <span lang="ja">司法書士</span> prepares the filing" into "I will prepare the filing" &mdash; the boundary is exclusive-work, not stylistic.</p>
  </article>
 
  <article class="card">

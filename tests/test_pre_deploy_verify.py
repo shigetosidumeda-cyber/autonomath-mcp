@@ -39,13 +39,16 @@ def test_build_commands_uses_required_local_checks(tmp_path):
         "release_readiness",
         "production_improvement_preflight",
         "pre_deploy_manifest_verify",
+        "public_copy_freshness",
         "perf_smoke",
     ]
     assert commands[0].argv[-1] == "--warn-only"
     assert commands[1].argv[-2:] == ["--warn-only", "--json"]
     assert commands[2].argv[-1] == "--warn-only"
     assert commands[2].argv[-2].endswith("pre_deploy_manifest_verify.py")
-    assert commands[3].argv[-7:] == [
+    assert commands[3].argv[-1] == "--json"
+    assert commands[3].argv[-2].endswith("public_copy_freshness.py")
+    assert commands[4].argv[-7:] == [
         "--samples",
         "1",
         "--warmups",
@@ -86,6 +89,7 @@ def test_build_report_passes_when_all_child_json_passes(monkeypatch, tmp_path):
         {"ok": True, "issues": []},
         {"ok": True, "issues": []},
         {"ok": True, "issues": []},
+        {"ok": True, "findings": []},
         [{"name": "healthz", "passed": True}],
     ]
     calls: list[list[str]] = []
@@ -99,9 +103,9 @@ def test_build_report_passes_when_all_child_json_passes(monkeypatch, tmp_path):
     report = module.build_report(tmp_path)
 
     assert report["ok"] is True
-    assert report["summary"] == {"pass": 4, "fail": 0, "total": 4}
+    assert report["summary"] == {"pass": 5, "fail": 0, "total": 5}
     assert report["issues"] == []
-    assert len(calls) == 4
+    assert len(calls) == 5
 
 
 def test_build_report_collects_json_and_exit_failures(monkeypatch, tmp_path):
@@ -110,6 +114,7 @@ def test_build_report_collects_json_and_exit_failures(monkeypatch, tmp_path):
         _completed({"ok": False, "issues": ["workflow_ruff_targets_synced"]}),
         _completed({"ok": True, "issues": []}, returncode=2),
         _completed({"ok": True, "issues": []}),
+        _completed({"ok": True, "findings": []}),
         _completed([{"name": "meta", "passed": False}]),
     ]
 
@@ -121,7 +126,7 @@ def test_build_report_collects_json_and_exit_failures(monkeypatch, tmp_path):
     report = module.build_report(tmp_path)
 
     assert report["ok"] is False
-    assert report["summary"] == {"pass": 1, "fail": 3, "total": 4}
+    assert report["summary"] == {"pass": 2, "fail": 3, "total": 5}
     assert report["issues"] == [
         {"name": "release_readiness", "issues": ["workflow_ruff_targets_synced"]},
         {"name": "production_improvement_preflight", "issues": ["exit_code:2"]},
@@ -143,6 +148,7 @@ def test_build_report_blocks_on_manifest_payload_failure_even_warn_only(
                 "issues": ["manifest_missing_required_migration"],
             }
         ),
+        _completed({"ok": True, "findings": []}),
         _completed([{"name": "healthz", "passed": True}]),
     ]
 
@@ -154,7 +160,7 @@ def test_build_report_blocks_on_manifest_payload_failure_even_warn_only(
     report = module.build_report(tmp_path)
 
     assert report["ok"] is False
-    assert report["summary"] == {"pass": 3, "fail": 1, "total": 4}
+    assert report["summary"] == {"pass": 4, "fail": 1, "total": 5}
     assert report["issues"] == [
         {
             "name": "pre_deploy_manifest_verify",

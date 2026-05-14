@@ -145,11 +145,12 @@ def _system_for(name: str) -> str:
 _PROMPTS: tuple[_JpcitePrompt, ...] = (
     _JpcitePrompt(
         name="company_folder_intake",
-        title="1 社フォルダ作成 intake (18 req)",
+        title="会社フォルダ Brief intake (previewCost first)",
         description=(
             "1 社の新規フォルダ intake. previewCost → createCompanyPublicBaseline "
             "→ createCompanyFolderBrief → queryEvidencePacket の sequence で "
-            "公開ベースライン + brief + evidence packet を生成. ¥3/req × 18 = ¥59.40 (税込)."
+            "公開ベースライン + brief + evidence packet を生成. Brief preview は 1 billable unit、"
+            "Pack workflow は previewCost の実行前見積もり units で確認します。"
         ),
         arguments=(
             _PromptArg(
@@ -167,7 +168,7 @@ _PROMPTS: tuple[_JpcitePrompt, ...] = (
             "- 法人番号: {company_houjin_bangou}\n"
             "- client_tag: {client_tag}\n\n"
             "## Sequence\n"
-            "1. **previewCost** — preview 18 req のコスト (¥59.40 税込) を表示し, 続行可否を 1 行で報告.\n"
+            "1. **previewCost** — planned_calls の見積もり units と税込目安を表示し, 続行可否を 1 行で報告.\n"
             "2. **createCompanyPublicBaseline** (first paid call, ¥3/req)\n"
             "   - X-API-Key + X-Client-Tag: {client_tag}\n"
             "   - input: houjin_bangou={company_houjin_bangou}\n"
@@ -179,7 +180,7 @@ _PROMPTS: tuple[_JpcitePrompt, ...] = (
             "4. **queryEvidencePacket** ×N (採択 / 行政処分 / 適格事業者 / 法令引用 を順に)\n"
             "   - 各 packet の records 数 / known_gaps / caveats を箇条書きで列挙.\n\n"
             "## Output\n"
-            "- markdown table 形式で 18 req 内訳 (call_name | req | cumulative_cost_jpy_inc_tax | source_url 抜粋)\n"
+            "- markdown table 形式で見積もり内訳 (call_name | estimated_units | cumulative_cost_jpy_inc_tax | source_url 抜粋)\n"
             "- 末尾に handoff_packet (user_goal / source_url / known_gaps / candidate_program_ids / "
             "jurisdiction_or_prefecture) を JSON で同梱.\n"
             f"{_FENCE_FOOTER}"

@@ -308,7 +308,7 @@
  </article>
  <article class="card">
  <h3>会社フォルダ</h3>
- <p>法人番号・T番号・会社名から、同定結果、インボイス確認、行政処分、採択履歴、確認質問を CRM メモに貼れる形に整理します。</p>
+ <p>法人番号・T番号・会社名から、folder_readme、CRMメモ、owner_questions、source_receipts、known_gaps、recommended_followup_by_channel を返します。Brief preview は 1 unit、Pack workflow は複数 section の見積もり units で課金されます。</p>
  <p style="margin:14px 0 0;"><a class="btn btn-primary" href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">会社フォルダを試す</a></p>
  </article>
  <article class="card">
@@ -317,8 +317,8 @@
  <p style="margin:14px 0 0;"><a class="btn btn-secondary" href="/products.html#monthly-review">出力例を見る</a></p>
  </article>
  <article class="card">
- <h3>公開情報 DD / 申請戦略パック</h3>
- <p>候補会社や投資テーマに対して、処分履歴、補助金採択、未確認範囲、除外条件、必要資料、面談質問をまとめます。</p>
+ <h3>公開情報 DD / 申請前 Evidence Packet</h3>
+ <p>候補会社や投資テーマに対して、処分履歴、補助金採択、未確認範囲、除外条件、一次資料 URL、known gaps、確認質問をまとめます。</p>
  <p style="margin:14px 0 0;"><a class="btn btn-secondary" href="/products.html#public-dd">成果物一覧を見る</a></p>
  </article>
  </div>
@@ -327,9 +327,9 @@
 
  <section class="features" aria-labelledby="cost-title">
  <div class="container">
- <h2 id="cost-title" style="margin-bottom:16px;">コスト比較は補足です</h2>
- <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: この cost saving 表の外部 baseline は API token 代だけではなく、汎用 LLM 回答を一次 URL で確認し、根拠を整える人間の確認工数込みの参考比較です。算出式は <strong>工数 × 時給</strong>、jpcite は <strong>req 数 × ¥3</strong> の固定式で、売上・利益・業務成果・専門判断の価値は含みません。token + web search の API 料金だけで比較した低い試算は <a href="/tools/cost_saving_examples.md">canonical API fee delta examples</a> v2 を参照してください。</p>
- <p style="font-size:14px;color:var(--text);margin:0 0 16px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle,#fafafa);"><strong>加重平均 external review-cost delta reference:</strong> ¥26,991。典型 case の外部確認コスト仮定と jpcite req 数の差分であり、請求削減・利益改善・専門判断の代替を示すものではありません。</p>
+ <h2 id="cost-title" style="margin-bottom:16px;">利用者ごとに「返る成果物」で見る</h2>
+ <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;"><strong>baseline 注記</strong>: この表は「どの利用者が、どの Evidence Packet / Brief / 監視出力を AI に渡せるか」を見るための対応表です。費用は <strong>req 数 × ¥3 税別</strong> の固定式で、外部サービス費、削減額、売上、利益、専門判断の価値は保証しません。token + web search の API 料金だけを比較したい場合は <a href="/tools/cost_saving_calculator.html">API fee delta calculator</a> で前提を明示して確認してください。</p>
+ <p style="font-size:14px;color:var(--text);margin:0 0 16px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg-subtle,#fafafa);"><strong>提供感:</strong> 長い資料を毎回 AI に渡す前に、source_receipts、known_gaps、確認質問、引用候補を小さな packet として返します。ユーザーが買うのは「節約額」ではなく、根拠付きの次アクションを短い文脈で AI に渡せることです。</p>
  <div class="table-wrap">
  <table class="pricing-table">
  <thead>
@@ -348,7 +348,7 @@
  <tr><th scope="row">補助金コンサル</th><td>顧問先月次レビュー</td><td>顧問先ごとの制度確認</td><td>¥12,000</td><td>3 req = ¥9</td><td><a href="/products.html#monthly-review">出力例</a></td></tr>
  <tr><th scope="row">中小企業経営者</th><td>相談前の候補制度・質問票</td><td>検索結果の読み比べ</td><td>¥10,000</td><td>3 req = ¥9</td><td><a href="smb.html">詳細</a></td></tr>
  <tr><th scope="row">VC / M&amp;A</th><td>会社フォルダ / 公開情報 DD</td><td>法人番号ベースの裏取り</td><td>¥40,000</td><td>4 req = ¥12</td><td><a href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">試す</a></td></tr>
- <tr><th scope="row">AI 開発者</th><td>MCP / REST で Evidence prefetch</td><td>自前 RAG の収集・整形</td><td>¥20,000</td><td>5 req = ¥15</td><td><a href="dev.html">詳細</a></td></tr>
+ <tr><th scope="row">AI 開発者</th><td>MCP / REST で Evidence prefetch</td><td>長文資料投入前の根拠収集・整形</td><td>¥20,000</td><td>5 req = ¥15</td><td><a href="dev.html">詳細</a></td></tr>
  <tr><th scope="row">建設業特化</th><td>補助金候補 + 除外条件</td><td>地域・業種別の制度確認</td><td>¥32,000</td><td>2 req = ¥6</td><td><a href="construction.html">詳細</a></td></tr>
  <tr><th scope="row">製造業特化</th><td>設備投資・GX・省力化候補</td><td>投資テーマ別の制度確認</td><td>¥32,000</td><td>2 req = ¥6</td><td><a href="manufacturing.html">詳細</a></td></tr>
  <tr><th scope="row">不動産業特化</th><td>賃貸・改修・地域制度メモ</td><td>自治体ページの確認</td><td>¥28,000</td><td>2 req = ¥6</td><td><a href="real_estate.html">詳細</a></td></tr>

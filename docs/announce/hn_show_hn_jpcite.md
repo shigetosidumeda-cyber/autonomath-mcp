@@ -23,7 +23,7 @@ The actual data lives across 7+ Japanese government sites
 that no Western evaluator has crawled. So tax accountants, M&A FAs,
 and consultants still do it by hand — 20–40h/month at 100 顧問先.
 
-jpcite is the 'evidence layer' under that. Every response carries
+jpcite is the 'evidence layer' under that. Evidence-oriented responses include
 source_url + fetched_at + content_hash (immutable evidence packet),
 and 8 業法 fences (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47条の2 / 行政書士法 §1の2
 / 司法書士法 §3 / 社会保険労務士法 §27 / 弁理士法 §75 / 労働基準法 §36) gate the surface so the API

@@ -151,6 +151,7 @@ plugins:
   # Requires cairosvg + pillow on the build host (added to docs-requirements.txt).
   # Falls back to a default Roboto font (no custom font configured).
   - social:
+      enabled: !ENV [MKDOCS_SOCIAL_ENABLED, true]
       cards: true
       cards_layout_options:
         background_color: "#0F172A"  # jpcite dark navy
@@ -337,7 +338,7 @@ nav:
           - 社労士 助成金マッチ: recipes/r06-sharoushi-grant-match/index.md
           - 診断士 月次伴走: recipes/r07-shindanshi-monthly-companion/index.md
           - 弁理士 IP補助金監視: recipes/r08-benrishi-ip-grant-monitor/index.md
-          - BPO 補助金トリアージ: recipes/r09-bpo-grant-triage-1000/index.md
+          - 補助金問い合わせトリアージ: recipes/r09-bpo-grant-triage-1000/index.md
           - 商工会議所 自治体スクリーニング: recipes/r10-cci-municipal-screen/index.md
           - EC 適格事業者一括確認: recipes/r11-ec-invoice-bulk-verify/index.md
           - 監査法人 KYCスイープ: recipes/r12-audit-firm-kyc-sweep/index.md
@@ -348,7 +349,7 @@ nav:
           - Cursor MCP 連携: recipes/r18-cursor-mcp-setup/index.md
           - Codex / Agents SDK 連携: recipes/r19-codex-agents-sdk/index.md
           - Continue / Cline 連携: recipes/r20-continue-cline/index.md
-          - LangChain / LlamaIndex / RAG: recipes/r21-langchain-llamaindex-rag/index.md
+          - LangChain / LlamaIndex Evidence Packet: recipes/r21-langchain-llamaindex-rag/index.md
           - n8n / Zapier / Webhook: recipes/r22-n8n-zapier-webhook/index.md
           - Slack bot 連携: recipes/r23-slack-bot/index.md
           - 法人 6-source join: recipes/r24-houjin-6source-join/index.md

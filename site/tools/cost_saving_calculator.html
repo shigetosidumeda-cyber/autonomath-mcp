@@ -38,7 +38,8 @@
 <body>
 <main>
   <h1>jpcite API fee delta calculator</h1>
-  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>external API fee</strong> (token + Anthropic web search / OpenAI web search) と <strong>jpcite fee</strong> (¥3/req) の API 料金差額を即時計算します。既定 baseline は Claude Sonnet 4.5、Anthropic web search、USD/JPY=150、jpcite ¥3。数値は stated baseline の参考比較で、provider pricing は 2026-05-13 に公式 pricing page を再確認済みです。詳細な前提は <a href="/tools/cost_saving_examples.md">API fee delta examples</a> を参照。</p>
+  <p class="muted">「普通に Claude/GPT を使う」場合の <strong>external API fee</strong> (token + Anthropic web search / OpenAI web search) と <strong>jpcite fee</strong> (¥3/billable unit) の API 料金差額を即時計算します。既定 baseline は Claude Sonnet 4.5、Anthropic web search、USD/JPY=150、jpcite ¥3。数値は stated baseline の参考比較で、provider pricing は 2026-05-13 に公式 pricing page を再確認済みです。詳細な前提は <a href="/tools/cost_saving_examples.md">API fee delta examples</a> を参照。</p>
+  <p class="muted">jpcite 側の fee は、Evidence Packet または Company Folder Brief が返す source_url、source_fetched_at、source_receipts、known_gaps、copy_paste_parts を LLM 回答前に使う前提です。費用差だけではなく、何を AI に渡せるかは <a href="/playground.html?flow=evidence3">Evidence Packet</a>、<a href="/playground.html?endpoint=/v1/artifacts/company_folder_brief">Company Folder Brief</a>、<a href="/docs/api-reference/">API fields</a> で確認できます。</p>
 
   <section class="card">
     <h2>1. 前提パラメータ</h2>
@@ -81,6 +82,7 @@
         <tr>
           <th>#</th>
           <th>use case</th>
+          <th>jpcite output</th>
           <th class="num">input tok</th>
           <th class="num">output tok</th>
           <th class="num">searches</th>
@@ -93,7 +95,7 @@
       <tbody></tbody>
       <tfoot>
         <tr>
-          <th colspan="6" style="text-align:right">合計 (6 case 1 回ずつ)</th>
+          <th colspan="7" style="text-align:right">合計 (6 case 1 回ずつ)</th>
           <th class="num pure" id="total-pure">—</th>
           <th class="num" id="total-jpcite">—</th>
           <th class="num delta" id="total-delta">—</th>
@@ -138,12 +140,12 @@
 <script>
 // USE_CASES mirror the public cost-saving examples memo.
 const USE_CASES = [
-  { id: 1, name: "M&A DD (法人 1 社 許認可+採択+処分, multi-turn 検証込)",  in_tok: 120000, out_tok: 20000, search: 25, req: 4 },
-  { id: 2, name: "補助金 1 件 要件+一次 URL+排他抽出 (multi-program 比較)", in_tok:  80000, out_tok: 15000, search: 18, req: 2 },
-  { id: 3, name: "税理士: 1 顧問先 措置法該当 + 通達 cross-reference",     in_tok:  60000, out_tok: 12000, search: 15, req: 2 },
-  { id: 4, name: "行政書士: 許認可根拠条文+通達+様式 walk",                in_tok:  90000, out_tok: 15000, search: 20, req: 2 },
-  { id: 5, name: "信金: 1 取引先 マル経+補助金候補 + 排他 verify",          in_tok:  40000, out_tok:  8000, search: 10, req: 2 },
-  { id: 6, name: "dev: 試作 endpoint 検証 (programs/laws/cases 3-5 endpoint)", in_tok: 50000, out_tok: 10000, search: 12, req: 5 },
+  { id: 1, name: "M&A DD (法人 1 社 許認可+採択+処分, multi-turn 検証込)", output: "Company Folder Brief + source_receipts", in_tok: 120000, out_tok: 20000, search: 25, req: 4 },
+  { id: 2, name: "補助金 1 件 要件+一次 URL+排他抽出 (multi-program 比較)", output: "Evidence Packet + known_gaps", in_tok:  80000, out_tok: 15000, search: 18, req: 2 },
+  { id: 3, name: "税理士: 1 顧問先 措置法該当 + 通達 cross-reference", output: "税務 Evidence Packet + disclaimer", in_tok:  60000, out_tok: 12000, search: 15, req: 2 },
+  { id: 4, name: "行政書士: 許認可根拠条文+通達+様式 walk", output: "許認可 Evidence Packet +確認質問", in_tok:  90000, out_tok: 15000, search: 20, req: 2 },
+  { id: 5, name: "信金: 1 取引先 マル経+補助金候補 + 排他 verify", output: "取引先 review packet", in_tok:  40000, out_tok:  8000, search: 10, req: 2 },
+  { id: 6, name: "dev: 試作 endpoint 検証 (programs/laws/cases 3-5 endpoint)", output: "API field sample + copy_paste_parts", in_tok: 50000, out_tok: 10000, search: 12, req: 5 },
 ];
 
 const MODELS = {
@@ -197,6 +199,7 @@ function render() {
     tr.innerHTML = `
       <td>${uc.id}</td>
       <td>${uc.name}</td>
+      <td>${uc.output}</td>
       <td class="num">${uc.in_tok.toLocaleString()}</td>
       <td class="num">${uc.out_tok.toLocaleString()}</td>
       <td class="num">${uc.search}</td>

@@ -420,7 +420,7 @@
  </div>
  <div style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg,#fff);">
  <p style="font-size:22px;font-weight:800;margin:0;font-variant-numeric:tabular-nums;">302</p>
- <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">REST paths (OpenAPI)</p>
+ <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">full REST paths (OpenAPI)</p>
  </div>
  </div>
  </section>
@@ -428,15 +428,15 @@
  <section aria-labelledby="output-gallery-title" style="margin:28px 0 20px;">
  <p style="font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--text-muted);text-transform:uppercase;margin:0 0 8px;">v0.4.0 output surface</p>
  <h2 id="output-gallery-title" style="font-size:22px;line-height:1.35;margin:0 0 8px;">増えた機能は、12 種類の「保存できるアウトプット」として使えます。</h2>
- <p style="font-size:14px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);">302 REST paths / 151 MCP tools / 9 dataset は部品名です。フロントでは、ユーザーが受け取る成果物単位で選べるように整理しています。</p>
+ <p style="font-size:14px;line-height:1.7;margin:0 0 16px;color:var(--text-muted);">Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset は部品名です。フロントでは、ユーザーが受け取る成果物単位で選べるように整理しています。</p>
  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;">
  <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
  <h3 style="font-size:15px;margin:0 0 6px;">Evidence Packet</h3>
  <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">一次資料 URL、取得時刻、known gaps、業法 fence、corpus snapshot を AI に渡せる JSON/Markdown で返します。</p>
  </article>
  <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
- <h3 style="font-size:15px;margin:0 0 6px;">会社フォルダ</h3>
- <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">法人番号・T 番号・会社名から、同定、適格事業者、行政処分、採択履歴、次の質問を 1 社単位でまとめます。</p>
+ <h3 style="font-size:15px;margin:0 0 6px;">会社フォルダ Brief / Pack</h3>
+ <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">法人番号・T番号・会社名から、folder_readme、CRMメモ、owner_questions、source_receipts、known_gaps を 1 社単位でまとめます。Brief preview は 1 unit、Pack workflow は実行前見積もりの units で課金されます。</p>
  </article>
  <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
  <h3 style="font-size:15px;margin:0 0 6px;">公開情報 DD</h3>
@@ -447,8 +447,8 @@
  <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">顧問先ごとに制度候補、税制変更、締切、確認質問を月次で再生成します。</p>
  </article>
 	 <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
-	 <h3 style="font-size:15px;margin:0 0 6px;">申請戦略パック</h3>
-	 <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">地域・業種・投資額から候補制度、除外条件、併用注意、必要資料、面談質問を下書き化します。</p>
+	 <h3 style="font-size:15px;margin:0 0 6px;">申請前 Evidence Packet</h3>
+	 <p style="font-size:13px;line-height:1.6;margin:0;color:var(--text-muted);">地域・業種・投資額から候補制度、除外条件、併用注意、一次資料 URL、known gaps、確認質問を整理します。申請書作成・提出判断は含みません。</p>
 	 </article>
 	 <article style="border:1px solid var(--border,#e5e7eb);border-radius:8px;padding:12px 14px;background:var(--bg-alt,#fafaf9);">
 	 <h3 style="font-size:15px;margin:0 0 6px;">併用・排他チェック表</h3>
@@ -501,7 +501,7 @@
  <li><a href="/connect/claude-code.html"><strong>Claude Code / MCP</strong></a> — <code>uvx autonomath-mcp</code> 1 行で 151 tool 解禁</li>
  <li><a href="/connect/cursor.html"><strong>Cursor</strong></a> — MCP 設定に貼って再起動</li>
  <li><a href="/connect/codex.html"><strong>Codex</strong></a> — agent workflow から MCP server 追加</li>
- <li><a href="/docs/getting-started/"><strong>REST direct</strong></a> — 302 REST paths を自社 AI・業務システムの根拠取得に</li>
+ <li><a href="/docs/getting-started/"><strong>REST direct</strong></a> — Full 302 REST paths / agent-safe 34 paths を自社 AI・業務システムの根拠取得に</li>
  </ul>
  </section>
 
@@ -533,11 +533,11 @@
  <p style="margin:10px 0 0;font-size:12px;color:var(--text-muted);line-height:1.6;">request 数の考え方と envelope 仕様は <a href="/audiences/">業種別 use case 詳細</a> ・ <a href="/docs/pricing/">課金根拠</a> を参照。最終判断は 8 業法の有資格者 (税理士法§52 / 弁護士法§72 / 公認会計士法§47条の2 / 行政書士法§1の2・§19 / 司法書士法§3 / 社会保険労務士法§27 / 弁理士法§75 / 労働基準法§36)。</p>
  </section>
  <ul class="hero-products" style="margin:18px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr;gap:6px;font-size:14px;line-height:1.7;">
- <li><a href="/products#company-folder" style="font-weight:600;">会社フォルダ Pack</a>: 1 社 ¥59.40 (18 req workflow、Brief preview は 1 unit)</li>
+ <li><a href="/products#company-folder" style="font-weight:600;">会社フォルダ Brief</a>: 1 unit preview。Pack workflow は実行前見積もりの units で課金</li>
  <li><a href="/products#monthly-review" style="font-weight:600;">顧問先月次レビュー</a>: 100 社月 ¥5,940</li>
- <li><a href="/products#application-strategy-pack" style="font-weight:600;">一括 1000 案件 triage</a>: 月 ¥52,800</li>
+ <li><a href="/products#application-strategy-pack" style="font-weight:600;">一括 1000 件 review</a>: 月 ¥52,800 目安</li>
  <li><a href="/products#public-dd" style="font-weight:600;">公開情報 DD</a>: 200 社月 ¥31,020</li>
- <li><a href="/products#application-strategy-pack" style="font-weight:600;">相談前プレ診断</a>: 50 件月 ¥1,320</li>
+ <li><a href="/products#application-strategy-pack" style="font-weight:600;">相談前 Evidence Packet</a>: 50 件月 ¥1,320 目安</li>
  </ul>
  <p class="hero-promise" style="margin:14px 0 0;font-size:13px;color:var(--text);line-height:1.7;">
  <span class="chip-success">匿名</span>curl で動作確認 (登録不要) ·
@@ -705,9 +705,9 @@
  <div class="cards" style="grid-template-columns:repeat(3,1fr);">
 
 	 <article class="card" aria-labelledby="pillar-api">
-	 <h3 id="pillar-api">会社フォルダ作成パック</h3>
+	 <h3 id="pillar-api">会社フォルダ Brief / Pack</h3>
 	 <p class="card-lead">顧問先 / 取引先 / 一次調査</p>
-	 <p>法人番号・T番号・会社名から、法人同定、インボイス、採択履歴、行政処分候補、known gaps、次に聞く質問を会社フォルダに貼りやすい形で整理します。</p>
+	 <p>法人番号・T番号・会社名から、folder_readme、CRMメモ、owner_questions、source_receipts、known gaps、recommended_followup_by_channel を会社フォルダに貼りやすい形で整理します。Brief は 1 unit preview、Pack は見積もり units の workflow です。</p>
 	 <ul class="card-list">
 	 <li>会社フォルダ README / CRM メモ / 顧問先質問票に転記</li>
 	 <li>匿名 <span data-fact="anonymous_quota_per_day" data-stat-key="anonymous_quota_per_day">3</span> リクエスト/日 (IP 単位) 無料</li>
@@ -728,9 +728,9 @@
 	 </article>
 
 	 <article class="card" aria-labelledby="pillar-alerts">
-	 <h3 id="pillar-alerts">申請戦略パック</h3>
+	 <h3 id="pillar-alerts">申請前 Evidence Packet</h3>
 	 <p class="card-lead">行政書士 / 診断士 / 補助金コンサル</p>
-	 <p>地域・業種・投資額・資金使途から、候補制度、併用注意、必要資料、申請前に聞く質問を提案前の下書きとして整理します。</p>
+	 <p>地域・業種・投資額・資金使途から、候補制度、併用注意、一次資料 URL、known gaps、申請前に聞く質問を提案前の確認材料として整理します。</p>
 	 <ul class="card-list">
 	 <li>採択・受給の保証ではなく、申請前確認の根拠整理</li>
 	 <li>除外条件と known gaps を必ず分けて表示</li>

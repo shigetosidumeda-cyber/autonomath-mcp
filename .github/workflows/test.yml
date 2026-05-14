@@ -56,6 +56,7 @@ env:
     scripts/ops/cf_pages_full_audit.py
     scripts/ops/cf_parity_verify.py
     scripts/ops/cf_waf_ai_bot_allowlist.py
+    scripts/ops/frontend_release_check.py
     scripts/ops/generate_identity_confidence_golden.py
     scripts/ops/harvest_value_growth_dual.py
     scripts/ops/heading_hierarchy_audit.py
@@ -69,6 +70,7 @@ env:
     scripts/ops/pre_deploy_verify.py
     scripts/ops/preflight_production_improvement.py
     scripts/ops/production_deploy_go_gate.py
+    scripts/ops/public_copy_freshness.py
     scripts/ops/release_readiness.py
     scripts/ops/repo_dirty_lane_report.py
     scripts/ops/repo_hygiene_inventory.py
@@ -561,6 +563,7 @@ env:
     tests/test_provenance_etl_id_schema.py
     tests/test_provenance_tools.py
     tests/test_pubcomment.py
+    tests/test_public_copy_freshness.py
     tests/test_public_internal_revenue_boundary.py
     tests/test_public_sanitization_p1.py
     tests/test_public_site_integrity.py

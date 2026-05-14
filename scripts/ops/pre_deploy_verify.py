@@ -72,6 +72,14 @@ def build_commands(
             ],
         ),
         VerificationCommand(
+            "public_copy_freshness",
+            [
+                sys.executable,
+                str(scripts_dir / "public_copy_freshness.py"),
+                "--json",
+            ],
+        ),
+        VerificationCommand(
             "perf_smoke",
             [
                 sys.executable,

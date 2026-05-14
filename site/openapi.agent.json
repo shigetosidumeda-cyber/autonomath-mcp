@@ -1923,7 +1923,7 @@
           "choosing_program_ids_before_application_strategy_pack_or_eligibility_predicate"
         ],
         "x-jpcite-not-recommended-when": [
-          "the_user_needs_final_application_eligibility_or_adoption_probability",
+          "the_user_needs_final_application_eligibility_or_receipt_outcome_prediction",
           "the_user_has_no_profile_axis_beyond_a_free_text_question",
           "the_user_needs_private_financials_contracts_or_unpublished_context_only"
         ],
@@ -1938,7 +1938,7 @@
         "x-jpcite-must-not-claim": [
           "final_eligibility_confirmed",
           "subsidy_or_loan_approved",
-          "adoption_probability_guaranteed",
+          "adoption_or_receipt_outcome_guaranteed",
           "professional_review_unnecessary"
         ],
         "x-jpcite-web-search-after": [
@@ -4468,7 +4468,7 @@
           "tax_rulesets"
         ],
         "summary": "Search 税務判定ルールセット (e.g. 2割特例, 適格請求書発行事業者登録, 経過措置)",
-        "description": "Search 50 税務判定ルールセット — structured, machine-evaluable tax rules covering インボイス制度 (2割特例, 80%/50% 経過措置, 少額特例), 適格請求書発行事業者登録, 住宅ローン控除, 中小企業 投資促進税制, etc. Each record has `eligibility_conditions_json` (predicate tree), `rate_or_amount`, `calculation_formula`, `filing_requirements`, and `effective_from` / `effective_until`.\n\n**Cliff dates to flag:**\n- 2026-09-30: 2割特例 / 80%経過措置 終了\n- 2027-09-30: 80% 経過措置 終了 (50% 経過措置 開始)\n- 2029-09-30: 50% 経過措置 / 少額特例 終了\n\nUse `effective_on=YYYY-MM-DD` to filter to rules that applied on a specific date — critical around cliff dates. To *evaluate* rules against a caller business profile, use `POST /v1/tax_rulesets/evaluate` (mechanical predicate matching, NOT 税務助言).\n\n**税理士法 §52 fence:** every response carries a `_disclaimer` envelope key. LLM agents MUST relay verbatim to end users.",
+        "description": "Search 50 税務判定ルールセット — structured, machine-evaluable tax rules covering インボイス制度 (2割特例, 80%/50% 経過措置, 少額特例), 適格請求書発行事業者登録, 住宅ローン控除, 中小企業 投資促進税制, etc. Each record has `eligibility_conditions_json` (predicate tree), `rate_or_amount`, `calculation_formula`, `filing_requirements`, and `effective_from` / `effective_until`.\n\n**Cliff dates to flag:**\n- 2026-09-30: 2割特例 / 80%経過措置 終了\n- 2027-09-30: 80% 経過措置 終了 (50% 経過措置 開始)\n- 2029-09-30: 50% 経過措置 / 少額特例 終了\n\nUse `effective_on=YYYY-MM-DD` to filter to rules that applied on a specific date — critical around cliff dates. To *evaluate* rules against a caller business profile, use `POST /v1/tax_rulesets/evaluate` (mechanical predicate matching, NOT 税務助言).\n\n**税理士法 §52 fence:** covered responses include a `_disclaimer` envelope key. LLM agents MUST relay verbatim to end users.",
         "operationId": "searchTaxRulesets",
         "parameters": [
           {

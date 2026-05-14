@@ -67,7 +67,7 @@ individualized professional advice — 8 業法 fences (税理士法 §52,
 弁護士法 §72, 公認会計士法 §47条の2, 行政書士法 §1の2, 司法書士法 §3,
 社会保険労務士法 §27, 弁理士法 §75, 労働基準法 §36) gate the surface so the API stays
 on the 'evidence retrieval' side and the licensed professional
-stays on the 'advice' side. Every response carries an
+stays on the 'advice' side. Evidence-oriented responses include an
 X-Jpcite-Disclaimer header making that boundary explicit.
 
 If you're building an agent that needs to know anything about a

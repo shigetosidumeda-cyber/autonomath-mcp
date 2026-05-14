@@ -962,7 +962,7 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
 
     assert "v0.4.0 output surface" in home
     assert "増えた機能は、12 種類の「保存できるアウトプット」" in home
-    assert "302 REST paths / 151 MCP tools / 9 dataset" in home
+    assert "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset" in home
     assert ">302</p>" in home
 
     required_outputs = [
@@ -970,7 +970,7 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
         "会社フォルダ",
         "公開情報 DD",
         "顧問先月次レビュー",
-        "申請戦略パック",
+        "申請前 Evidence Packet",
         "併用・排他チェック表",
         "インボイス取引先確認表",
         "Source Receipt",
@@ -983,7 +983,7 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
         assert label in home
         assert label in products
 
-    assert "302 REST paths / 151 MCP tools / Widget / Webhook" in products
+    assert "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset" in products
     assert "拡張されたアウトプット一覧" in products
     assert "302 REST paths / 151 MCP tools are the building blocks" in en_home
     assert "The 302 REST paths, 151 MCP tools, and public datasets are creation surfaces" in en_products
@@ -1017,7 +1017,7 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
         "site/index.html": {
             "marker": '<section aria-labelledby="hero-industry-title"',
             "required": [
-                "302 REST paths / 151 MCP tools / 9 dataset",
+                "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset",
                 "v0.4.0 output surface",
                 "/connect/",
                 "AI agent dev: 接続ガイド",
@@ -1027,7 +1027,7 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
                 "会社フォルダ",
                 "公開情報 DD",
                 "顧問先月次レビュー",
-                "申請戦略パック",
+                "申請前 Evidence Packet",
                 "併用・排他チェック表",
                 "インボイス取引先確認表",
                 "Source Receipt",
@@ -1040,7 +1040,7 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
         "site/products.html": {
             "marker": '<section aria-labelledby="cards-title"',
             "required": [
-                "302 REST paths / 151 MCP tools / Widget / Webhook",
+                "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset",
                 "接続・インストール",
                 "/connect/",
                 "/pricing.html#api-paid",
@@ -1051,7 +1051,7 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
                 "会社フォルダ",
                 "公開情報 DD",
                 "顧問先月次レビュー",
-                "申請戦略パック",
+                "申請前 Evidence Packet",
                 "併用・排他チェック表",
                 "インボイス取引先確認表",
                 "Source Receipt",
@@ -1588,10 +1588,10 @@ def test_public_runtime_counts_remain_visible_on_static_surfaces() -> None:
     """Keep the improved 302 REST paths / 151 MCP tools copy public."""
     expectations = {
         "site/index.html": [
-            "302 REST paths / 151 MCP tools / 9 dataset",
+            "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset",
             "151 MCP ツール",
         ],
-        "site/products.html": ["302 REST paths / 151 MCP tools / Widget / Webhook"],
+        "site/products.html": ["Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset"],
         "site/en/index.html": ["302 REST paths / 151 MCP tools"],
         "site/en/products.html": ["302 REST paths", "151 MCP tools"],
         "site/about.html": [
@@ -1623,7 +1623,7 @@ def test_products_page_surfaces_all_twelve_outputs() -> None:
         "会社フォルダ",
         "公開情報 DD",
         "顧問先月次レビュー",
-        "申請戦略パック",
+        "申請前 Evidence Packet",
         "併用・排他チェック表",
         "インボイス取引先確認表",
         "Source Receipt",

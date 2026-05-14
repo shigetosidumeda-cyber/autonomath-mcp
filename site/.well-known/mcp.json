@@ -90,15 +90,16 @@
     "tier": "completely_metered",
     "cost_examples": [
       {
-        "name": "1社フォルダ作成パック",
-        "req": 18,
-        "jpy_inc_tax": 59.40
+        "name": "会社フォルダ Brief preview",
+        "req": 1,
+        "jpy_inc_tax": 3.30,
+        "note": "company_folder_brief is a one-unit preview. Pack workflows are metered by previewCost estimated units before execution."
       },
       {
         "name": "顧問先100社月次レビュー",
         "req": 1800,
         "jpy_inc_tax": 5940,
-        "note": "100 社 × 18 req の月次レビュー例。軽量な 1 req/company チェックとは別の成果物。"
+        "note": "100 社の月次レビュー例。軽量な 1 unit/company brief とは別に、Pack workflow は previewCost の見積もり units で確認する成果物。"
       },
       {
         "name": "一括 1000案件 triage",
@@ -109,7 +110,7 @@
         "name": "公開情報 DD (200社)",
         "req": 9400,
         "jpy_inc_tax": 31020,
-        "note": "M&A advisor の DD deck assembly を 200 社分に広げた月次利用例。1 社の軽量 reach ではなく、公開 pricing の 5 シナリオに合わせる。"
+        "note": "M&A advisor の DD Evidence Packet assembly を 200 社分に広げた月次利用例。1 社の軽量 reach ではなく、公開 pricing の 5 シナリオに合わせる。"
       },
       {
         "name": "相談前プレ診断 50件",

@@ -181,7 +181,7 @@ class _Md(HTMLParser):
             else:
                 nl = 0
             out.append(ch)
-        return "".join(out).strip() + "\n"
+        return "\n".join(line.rstrip() for line in "".join(out).strip().splitlines()) + "\n"
 
 
 def _build_companion(html_path: Path, site_root: Path) -> str:

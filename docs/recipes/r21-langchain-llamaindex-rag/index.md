@@ -1,22 +1,22 @@
 ---
-title: "LangChain / LlamaIndex RAG"
+title: "LangChain / LlamaIndex Evidence Packet"
 slug: "r21-langchain-llamaindex-rag"
 audience: "AI agent (LangChain/LlamaIndex)"
 intent: "rag_setup"
 tools: ["search_programs", "get_program_detail", "get_corp_360"]
 artifact_type: "rag_pipeline.py"
 billable_units_per_run: 1
-seo_query: "LangChain LlamaIndex jpcite RAG ツール"
+seo_query: "LangChain LlamaIndex jpcite Evidence Packet ツール"
 total_time: "PT5M"
 date_created: "2026-05-11"
 date_modified: "2026-05-11"
 license: "PDL v1.0 / CC-BY-4.0"
 ---
 
-# LangChain / LlamaIndex RAG
+# LangChain / LlamaIndex Evidence Packet
 
 ## 想定 user
-LangChain (0.3+) / LlamaIndex (0.10+) を使って RAG bot を構築する agent dev / SaaS 開発者 / 大学研究者で、補助金原文 (要綱本文) を検索コーパスに、メタデータ (program_id / tier / deadline / source_url) を構造化フィルタとして使う層。jpcite を 1 つの retrieval tool として登録し、agent 推論側で組み合わせ。LLM API の選定 (OpenAI / Anthropic / Bedrock / VertexAI / GROQ 等) は agent 構築者責任、本 recipe は jpcite tool wrapping のみ。
+LangChain (0.3+) / LlamaIndex (0.10+) を使う agent dev / SaaS 開発者 / 大学研究者で、長い PDF や公式ページを直接 LLM に渡す前に jpcite の Evidence Packet を取得し、source_url / known_gaps / 構造化 metadata を回答生成や社内検索の入力に使う層。jpcite を 1 つの evidence-prefetch tool として登録し、agent 推論側で組み合わせる。LLM API の選定 (OpenAI / Anthropic / Bedrock / VertexAI / GROQ 等) は agent 構築者責任、本 recipe は jpcite tool wrapping のみ。
 
 ## 必要な前提
 - jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)

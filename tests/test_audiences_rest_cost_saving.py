@@ -128,31 +128,40 @@ def test_page_has_cost_saving_section(pages: dict[str, str], name: str) -> None:
     body = pages[name]
     assert 'aria-labelledby="cost-title"' in body, f"{name}: missing cost-title section"
     assert 'id="cost-title"' in body, f"{name}: missing cost-title heading"
-    assert "cost saving" in body, f"{name}: missing 'cost saving' phrase"
+    assert ("API fee delta" in body or "コスト比較" in body), f"{name}: missing cost comparison phrase"
 
 
 @pytest.mark.parametrize("name", TICK4_PAGES)
 def test_page_links_canonical_doc(pages: dict[str, str], name: str) -> None:
-    """Each page must link to canonical cost saving doc."""
+    """Each page must link to a public cost baseline or calculator."""
     body = pages[name]
-    assert "cost_saving_examples.md" in body, f"{name}: missing canonical doc link"
+    if name == "index.html":
+        assert "cost_saving_calculator.html" in body, f"{name}: missing API fee calculator link"
+    else:
+        assert "cost_saving_examples.md" in body, f"{name}: missing canonical doc link"
 
 
 @pytest.mark.parametrize("name", TICK4_PAGES)
 def test_page_expected_saving_in_body(pages: dict[str, str], name: str) -> None:
-    """Each page must contain its expected saving amount."""
+    """Detail pages keep canonical per-case references; index uses output framing."""
     body = pages[name]
+    if name == "index.html":
+        for phrase in (
+            "利用者ごとに「返る成果物」で見る",
+            "Evidence Packet / Brief / 監視出力",
+            "req 数 × ¥3",
+            "削減額",
+            "保証しません",
+        ):
+            assert phrase in body, f"{name}: missing output-framing phrase {phrase}"
+        return
     expected = EXPECTED_SAVINGS[name]
     formatted = f"¥{expected:,}"
     assert formatted in body, f"{name}: expected {formatted} in body"
 
 
 def test_index_cost_saving_explanation_is_readable(pages: dict[str, str]) -> None:
-    """audiences/index.html must explain the average cost-saving table plainly.
-
-    This guards the short baseline note and caveat copy, not the numeric table
-    already covered by test_page_expected_saving_in_body.
-    """
+    """audiences/index.html must explain output value without over-selling savings."""
     body = pages["index.html"]
     start = body.find('aria-labelledby="cost-title"')
     end = body.find("</section>", start)
@@ -161,16 +170,15 @@ def test_index_cost_saving_explanation_is_readable(pages: dict[str, str]) -> Non
 
     required_phrases = [
         "baseline 注記",
-        "API token 代だけではなく",
-        "汎用 LLM 回答を一次 URL で確認し",
-        "根拠を整える人間の確認工数込み",
-        "算出式は <strong>工数 × 時給</strong>",
-        "jpcite は <strong>req 数 × ¥3</strong>",
-        "token + web search の API 料金だけで比較した低い試算",
-        "推定値",
-        "実 case は工数 / hourly rate / req 数で変動する",
-        "API token-only baseline は 2026-05-12 時点",
-        "誇大広告意図なし",
+        "Evidence Packet / Brief / 監視出力",
+        "費用は <strong>req 数 × ¥3 税別</strong>",
+        "外部サービス費、削減額、売上、利益、専門判断の価値は保証しません",
+        "source_receipts",
+        "known_gaps",
+        "確認質問",
+        "引用候補",
+        "ユーザーが買うのは「節約額」ではなく",
+        "根拠付きの次アクションを短い文脈で AI に渡せること",
     ]
     for phrase in required_phrases:
         assert phrase in section, f"index.html: missing readable explanation phrase: {phrase}"

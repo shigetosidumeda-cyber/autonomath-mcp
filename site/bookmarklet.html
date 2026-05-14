@@ -149,7 +149,7 @@
   選択無しの場合は入力プロンプトが出ます。
 </p>
 
-<div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:18px;background:#f6f6f6;border:1px dashed #b0b0b0;border-radius:8px;margin:14px 0;">
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:18px;background:var(--bg-alt);border:1px dashed var(--border);border-radius:8px;margin:14px 0;">
   <a id="bookmarklet-btn"
      href="javascript:(function(){var s=((getSelection()+'')||prompt('jpcite 検索:')||'').trim(),d=s.replace(/\D/g,''),b='https://api.jpcite.com/v1/';s&&open(/^T?\d{13}$/i.test(s)?b+'houjin/'+d:b+'programs/search?q='+encodeURIComponent(s),'_blank')})()"
      style="display:inline-flex;align-items:center;gap:8px;background:#1c1917;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px;cursor:grab;"
@@ -224,7 +224,7 @@
 
 <table style="width:100%;border-collapse:collapse;margin:14px 0;">
   <thead>
-    <tr style="background:#f6f6f6;">
+    <tr style="color:var(--text);background:var(--bg-alt);">
       <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">項目</th>
       <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">ブックマークレット</th>
       <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">Chrome 拡張</th>
@@ -303,7 +303,7 @@
 
 <table style="width:100%;border-collapse:collapse;margin:14px 0;">
   <thead>
-    <tr style="background:#f6f6f6;">
+    <tr style="color:var(--text);background:var(--bg-alt);">
       <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">場面</th>
       <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">通常の手順</th>
       <th style="text-align:left;padding:10px;border:1px solid #e5e5e5;">このツール</th>
@@ -359,7 +359,7 @@
 
 <style>
   .code-block {position:relative;margin:12px 0;}
-  .code-block pre {background:#f6f6f6;color:#1c1917;padding:14px 80px 14px 14px;border-radius:6px;overflow-x:auto;margin:0;line-height:1.5;border:1px solid #e7e5e4;}
+  .code-block pre {background:var(--code-bg);color:var(--code-text);padding:14px 80px 14px 14px;border-radius:6px;overflow-x:auto;margin:0;line-height:1.5;border:1px solid var(--border);}
   .code-block pre code {color:inherit;font-family:'JetBrains Mono', monospace;font-size:0.85em;word-break:break-all;white-space:pre-wrap;}
   .code-block .copy-btn {position:absolute;top:8px;right:8px;background:#fff;border:1px solid #ccc;border-radius:4px;padding:4px 10px;font-size:0.82em;cursor:pointer;color:#333;font-family:inherit;}
   .code-block .copy-btn:hover {background:#f0f0f0;}
