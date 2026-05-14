@@ -78,7 +78,7 @@ AI agent から web search で公的制度を扱うと、aggregator 孫引き・
 
 出典 URL aggregator (noukaweb / hojyokin-portal / biz.stayway) 経由が上位、孫引きで旧版要件ミラー 省庁・自治体・公庫の一次 URL に直リンク。aggregator は source_url 登録 ban
 
-取得時刻 HTML に fetched_at なし。サイト自己申告「最終更新」のみ 全 response に source_fetched_at 、優先出典の再取得中央値 約 7 日
+取得時刻 HTML に fetched_at なし。サイト自己申告「最終更新」のみ 対応する Evidence response では source_fetched_at を返し、優先出典の再取得中央値は約 7 日
 
 業法 fence 一般的な web search では、専門判断に必要な注意書きや業法上の境界表示が応答ごとに揃わない場合があります 税務・法律・申請・監査・与信前確認などの sensitive surface では、対象領域に応じた 8 業法 fence note を返す設計です
 
