@@ -1475,6 +1475,12 @@ def test_primary_public_chrome_uses_canonical_logo_and_nowrap_nav() -> None:
             offenders.append(f"{rel}: missing connect/prompts nav")
         if "footer-brand-mark" not in text:
             offenders.append(f"{rel}: missing footer brand mark")
+        if '<p class="footer-tag">' not in text:
+            offenders.append(f"{rel}: missing footer tag copy")
+        if '<p class="footer-entity">運営: Bookyou株式会社' not in text:
+            offenders.append(f"{rel}: missing operator footer copy")
+        if '<p class="footer-copy">&copy; 2026 Bookyou株式会社</p>' not in text:
+            offenders.append(f"{rel}: missing copyright footer copy")
 
     css = (REPO_ROOT / "site" / "styles.src.css").read_text(encoding="utf-8")
     assert re.search(r"\.site-nav\s*\{[^}]*flex-wrap:\s*nowrap", css, re.S)
