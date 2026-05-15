@@ -18,6 +18,7 @@ Constraints honored
 from __future__ import annotations
 
 import asyncio
+import tomllib
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
@@ -111,6 +112,13 @@ def test_each_wired_workflow_installs_playwright(rel_path: str) -> None:
         f"{rel_path} missing 'playwright install chromium' step — "
         "Wave 36 spec requires Playwright on every cron runner."
     )
+
+
+def test_dev_extra_installs_playwright_python_package() -> None:
+    """The chromium install step requires `python -m playwright` to import."""
+    pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    dev_deps = pyproject["project"]["optional-dependencies"]["dev"]
+    assert any(dep.split(";", 1)[0].strip().startswith("playwright") for dep in dev_deps)
 
 
 # ---------------------------------------------------------------------------
