@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<!-- CWV-HARDENED -->
 <meta charset="UTF-8">
 <meta name="theme-color" content="#ffffff">
 <title>井原市 — 補助金 返還命令 — (2022-11-07) | jpcite</title>
@@ -105,91 +106,37 @@
 }
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <script type="application/ld+json" data-jpcite-jsonld="common">{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://jpcite.com/#org",
-      "name": "Bookyou株式会社",
-      "legalName": "Bookyou株式会社",
-      "url": "https://jpcite.com",
-      "logo": "https://jpcite.com/assets/logo-v2.svg",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "小日向2-22-1",
-        "addressLocality": "文京区",
-        "addressRegion": "東京都",
-        "postalCode": "112-0006",
-        "addressCountry": "JP"
-      },
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "email": "info@bookyou.net",
-        "contactType": "customer support",
-        "availableLanguage": ["ja", "en"]
-      },
-      "identifier": [
-        {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
-        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"}
-      ]
-    },
-    {
-      "@type": "WebSite",
-      "@id": "https://jpcite.com/#site",
-      "name": "jpcite",
-      "url": "https://jpcite.com",
-      "inLanguage": "ja",
-      "publisher": {"@id": "https://jpcite.com/#org"},
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://jpcite.com/search?q={query}",
-        "query-input": "required name=query"
-      }
-    },
-    {
-      "@type": "Service",
-      "@id": "https://jpcite.com/#service",
-      "serviceType": "Japanese public-program evidence API",
-      "provider": {"@id": "https://jpcite.com/#org"},
-      "areaServed": {"@type": "Country", "name": "Japan"},
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "jpcite product line",
-        "itemListElement": [
-          {"@type": "Offer", "name": "Evidence Packet", "url": "https://jpcite.com/products#evidence-packet"},
-          {"@type": "Offer", "name": "Company Folder", "url": "https://jpcite.com/products#company-folder"},
-          {"@type": "Offer", "name": "M&A DD / Public-info Check", "url": "https://jpcite.com/products#public-dd"},
-          {"@type": "Offer", "name": "Monthly Client Review Evidence", "url": "https://jpcite.com/products#monthly-review"},
-          {"@type": "Offer", "name": "Application Evidence Pack", "url": "https://jpcite.com/products#application-strategy-pack"},
-          {"@type": "Offer", "name": "Amendment and Saved Search Alerts", "url": "https://jpcite.com/products#alerts"},
-          {"@type": "Offer", "name": "Cost and Payment Control", "url": "https://jpcite.com/products#payment-control"},
-          {"@type": "Offer", "name": "Agent Handoff", "url": "https://jpcite.com/products#agent-handoff"}
-        ]
-      },
-      "offers": {"@id": "https://jpcite.com/#price"}
-    },
-    {
-      "@type": "UnitPriceSpecification",
-      "@id": "https://jpcite.com/#price",
-      "price": "3",
-      "priceCurrency": "JPY",
-      "valueAddedTaxIncluded": false,
-      "unitText": "request"
-    }
-  ]
-}</script>
 </head>
 <body>
 <a href="#main" class="skip-link">本文へスキップ</a>
 <header class="site-header" role="banner">
  <div class="container header-inner">
- <a class="brand" href="/" aria-label="jpcite ホーム">jpcite</a>
+ <a class="brand" href="/" aria-label="jpcite ホーム">
+ <picture><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/lockup-transparent-600-lightlogo.png 1x, /assets/brand/lockup-transparent-1200-lightlogo.png 2x"><img src="/assets/brand/lockup-transparent-600-darklogo.png" srcset="/assets/brand/lockup-transparent-600-darklogo.png 1x, /assets/brand/lockup-transparent-1200-darklogo.png 2x" width="190" decoding="async" fetchpriority="high" alt="jpcite" height="32" style="height:32px;width:auto;display:block;"></picture>
+ </a>
  <nav class="site-nav" aria-label="主要ナビゲーション">
- <a href="/about.html">運営について</a>
- <a href="/products.html">プロダクト</a>
- <a href="/docs/">ドキュメント</a>
+ <a href="/products.html">成果物</a>
+ <a href="/connect/">接続</a>
+ <a href="/prompts/">Prompts</a>
  <a href="/pricing.html">料金</a>
+ <a href="/audiences/">利用者層</a>
+ <a href="/docs/">API ドキュメント</a>
+ <a href="/about.html">会社</a>
+ <details class="nav-trust">
+ <summary>信頼</summary>
+ <ul>
+ <li><a href="/trust.html">信頼の設計</a></li>
+ <li><a href="/status.html">稼働状況</a></li>
+ <li><a href="/data-freshness.html">データ鮮度</a></li>
+ <li><a href="/transparency.html">透明性</a></li>
+ <li><a href="/sources.html">出典</a></li>
+ </ul>
+ </details>
+ <span class="lang-switch" role="group" aria-label="Language / 言語">
+ <a href="/" lang="ja" hreflang="ja">JP</a>
+ <span class="sep" aria-hidden="true">/</span>
+ <a href="/en/index.html" lang="en" hreflang="en">EN</a>
+ </span>
  </nav>
  </div>
 </header>
@@ -220,7 +167,7 @@
 <h2>API で取得</h2>
 <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \
  "https://api.jpcite.com/v1/enforcement/cases/jbaudit_r03_2021-r03-0047-0_5"</code></pre>
-<p class="api-cta-line">公的記録 1,185 件をプログラムから検索: <a href="/docs/">ドキュメント</a> · <a href="/pricing.html#api-paid">API キー発行</a></p>
+<p class="api-cta-line">公的記録 1,185 件をプログラムから検索: <a href="/docs/">ドキュメント</a> · <a href="/pricing.html#api-paid">API キー発行</a> · <a href="/dashboard.html">既存キー管理</a></p>
 </section>
 <section aria-labelledby="cite-title" class="cite-this-section"><h2 id="cite-title">Cite this in AI / 引用</h2><p>AI 回答に本処分記録を引用させる時の canonical URL です。出典 (jpcite) の明記をお願いします。一次資料は <a href="https://report.jbaudit.go.jp/org/r03/2021-r03-0047-0.htm" rel="external nofollow noopener">公的公表記録</a>。</p><pre class="code-block cite-block"><code>&gt; 井原市 — 補助金 返還命令 (出典: https://jpcite.com/enforcement/case-jbaudit_r03_2021-r03-0047-0_5、jpcite が政府公表記録を機械可読化)</code></pre><p class="muted"><button type="button" class="copy-cite-btn" data-cite-url="https://jpcite.com/enforcement/case-jbaudit_r03_2021-r03-0047-0_5" onclick="navigator.clipboard&amp;&amp;navigator.clipboard.writeText('https://jpcite.com/enforcement/case-jbaudit_r03_2021-r03-0047-0_5')">URL をコピー</button> <a href="https://jpcite.com/enforcement/case-jbaudit_r03_2021-r03-0047-0_5">https://jpcite.com/enforcement/case-jbaudit_r03_2021-r03-0047-0_5</a></p></section>
 <p class="disclaimer">本ページは自動生成された公開記録の要約であり、法的助言・税務助言・信用調査・コンプライアンス判断を構成するものではありません。個別の判断は弁護士・税理士・公認会計士・行政書士等の有資格者にご相談ください。処分の現況・撤回情報は所管官公庁にお問い合わせください。</p>
@@ -230,7 +177,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">

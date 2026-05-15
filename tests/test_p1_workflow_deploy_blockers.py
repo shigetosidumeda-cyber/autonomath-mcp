@@ -299,6 +299,7 @@ def test_pages_deploy_smokes_x402_edge_quote() -> None:
     assert "https://jpcite.com/x402/discovery?$Q" in step
     assert "https://jpcite.com/x402/quote?$Q" in step
     assert "x402 discovery smoke OK" in step
+    assert 'print("x402 discovery smoke OK", file=sys.stderr)' in step
     assert "x402 quote smoke skipped: edge recipient secret not configured" in step
     assert (
         '"quote_id", "amount_usdc", "amount_usdc_micro", "recipient", '

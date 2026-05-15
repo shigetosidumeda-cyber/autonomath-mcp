@@ -1318,7 +1318,7 @@ def render_page(
  <h2 id="api-title">API / MCP で取得する</h2>
  <p>本ページに掲載した制度・法令・通達・事例データは、jpcite の REST API および MCP サーバーから機械可読な形式で取得できます。Claude Desktop / Cursor / Cline などの MCP クライアント、または ChatGPT Custom GPT の OpenAPI Actions から呼び出せます。</p>
  <pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\
- "https://api.{domain}/v1/programs?prefecture={_esc(pref_ja)}&amp;industry={_esc(industry["code"])}&amp;limit=20"</code></pre>
+ "https://api.{domain}/v1/programs/search?prefecture={_esc(pref_ja)}&amp;industry={_esc(industry["code"])}&amp;limit=20"</code></pre>
  <p class="api-cta-line">無料 3 リクエスト/日。<a href="/pricing.html">料金体系</a> ・ <a href="/pricing.html#api-paid">API キー発行</a></p>
  </section>
 
@@ -1331,7 +1331,7 @@ def render_page(
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の制度 API</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">

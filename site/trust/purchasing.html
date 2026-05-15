@@ -372,7 +372,7 @@
  <h2 id="ai-use">8. AI 利用観点</h2>
  <ul>
  <li><strong>サーバ側 LLM 呼び出し: なし</strong>。 CI guard <code>tests/test_no_llm_in_production.py</code> が anthropic / openai / google.generativeai の import を hard-fail し、本番 deploy 前にブロック</li>
- <li><strong>顧客 AI agent からの利用</strong>: RAG / tool use OK。 training data としての利用は禁止 (利用規約 §5.3)</li>
+ <li><strong>顧客 AI agent からの利用</strong>: 外部 AI agent / tool-use workflow での利用は可能。training data としての利用は禁止 (利用規約 §5.3)</li>
  <li><strong>response 内の出典 traceability</strong>: 全 publish row が <code>source_url</code> + <code>source_fetched_at</code> + <code>license</code> + <code>attribution_text</code> を保持。 顧客は同等明示で license 義務を満たせる</li>
  <li><strong>AI 出力の責任</strong>: 顧客側 AI agent の出力 (要約・分析・hallucination) は当社責任範囲外。 利用規約 §7.4 (間接損害免責) で吸収</li>
  <li><strong>response 内 disclaimer 継承</strong>: <code>_disclaimer</code> field は AI agent 経由の出力にも同等付与を推奨</li>
@@ -403,7 +403,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

@@ -446,11 +446,12 @@ jobs:
           discovery_recipient="$(DISCOVERY_JSON="$discovery_json" python3 - <<'PY'
           import json
           import os
+          import sys
 
           body = json.loads(os.environ["DISCOVERY_JSON"])
           if body.get("protocol") != "x402":
               raise SystemExit(f"x402 discovery protocol mismatch: {body!r}")
-          print("x402 discovery smoke OK")
+          print("x402 discovery smoke OK", file=sys.stderr)
           print(body.get("recipient") or "")
           PY
           )"

@@ -116,7 +116,7 @@ search:
 
 ### 5.3 AI / LLM 学習利用
 
-お客様が本サービスの response を AI model の training data として利用することを禁止します。ただし、お客様の LLM agent が runtime で検索・参照する用途 (RAG / tool use) は本サービスの想定利用範囲です。
+お客様が本サービスの response を AI model の training data として利用することを禁止します。ただし、お客様の LLM agent が runtime で検索・参照し、毎回 PDF や検索結果を大量投入する代わりに根拠付きの小さい入力へ変換する用途は本サービスの想定利用範囲です。
 
 ---
 

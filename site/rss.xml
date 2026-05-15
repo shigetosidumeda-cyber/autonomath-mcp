@@ -11,9 +11,9 @@
   <lastBuildDate>Thu, 14 May 2026 06:20:00 +0900</lastBuildDate>
 
   <item>
-    <title>v0.4.0 リリース — 302 REST paths / 151 MCP tools / 8 成果物カタログを公開</title>
+    <title>v0.4.0 リリース — AI が読む前の制度データ圧縮レイヤーとして成果物カタログを公開</title>
     <link>https://jpcite.com/changelog/</link>
-    <description>2026-05-12 に v0.4.0 を公開。302 REST paths、151 MCP tools、Evidence Packet・会社フォルダ・M&A DD / 取引先公開情報チェック・改正通知など 8 種類の成果物面を整理し、RSS/LLM discovery/status surface を更新しました。</description>
+    <description>2026-05-12 に v0.4.0 を公開。REST / MCP / OpenAPI Actions / Widget / Webhook / dataset を実行手段として整理し、Evidence Packet・会社フォルダ・M&A DD / 取引先公開情報チェック・改正通知などの成果物面と RSS/LLM discovery/status surface を更新しました。</description>
     <guid isPermaLink="false">jpcite:release:v0.4.0:2026-05-12</guid>
     <pubDate>Tue, 12 May 2026 21:21:00 +0900</pubDate>
   </item>

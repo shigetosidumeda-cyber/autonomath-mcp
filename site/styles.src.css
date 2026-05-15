@@ -175,7 +175,7 @@ a:hover { text-decoration: underline; }
   flex: 1 1 auto;
   justify-content: flex-end;
   min-width: 0;
-  padding-right: 88px;
+  padding-right: 0;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scrollbar-width: none;
@@ -240,11 +240,11 @@ pre code { word-break: normal; }
   user-select: none;
 }
 .site-nav .lang-switch {
-  position: absolute;
-  right: 0;
-  top: 50%;
+  position: static;
+  right: auto;
+  top: auto;
   margin-left: 0;
-  transform: translateY(-50%);
+  transform: none;
 }
 .site-nav .lang-switch a {
   min-height: 32px;

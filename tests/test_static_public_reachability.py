@@ -966,7 +966,7 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
 
     assert "v0.4.0 output surface" in home
     assert "増えた機能は、12 種類の「保存できるアウトプット」" in home
-    assert "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset" in home
+    assert "AI が読む前の制度データ圧縮レイヤー" in home
     assert ">302</p>" in home
 
     required_outputs = [
@@ -987,10 +987,10 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
         assert label in home
         assert label in products
 
-    assert "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset" in products
+    assert "REST / MCP / OpenAPI Actions / Widget / Webhook / dataset は実行手段です" in products
     assert "拡張されたアウトプット一覧" in products
-    assert "302 REST paths / 151 MCP tools are the building blocks" in en_home
-    assert "The 302 REST paths, 151 MCP tools, and public datasets are creation surfaces" in en_products
+    assert "context-compression layer before an AI reads Japanese institutional evidence" in en_home
+    assert "REST, MCP, OpenAPI Actions, widgets, webhooks, and datasets are entry surfaces" in en_products
     for label in [
         "Evidence Packet",
         "Company Folder",
@@ -1021,7 +1021,7 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
         "site/index.html": {
             "marker": '<section aria-labelledby="hero-industry-title"',
             "required": [
-                "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset",
+                "AI が読む前の制度データ圧縮レイヤー",
                 "v0.4.0 output surface",
                 "/connect/",
                 "AI agent dev: 接続ガイド",
@@ -1044,7 +1044,7 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
         "site/products.html": {
             "marker": '<section aria-labelledby="cards-title"',
             "required": [
-                "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset",
+                "REST / MCP / OpenAPI Actions / Widget / Webhook / dataset は実行手段です",
                 "接続・インストール",
                 "/connect/",
                 "/pricing.html#api-paid",
@@ -1068,7 +1068,7 @@ def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None
         "site/en/products.html": {
             "marker": '<section aria-labelledby="compare-title"',
             "required": [
-                "The 302 REST paths, 151 MCP tools, and public datasets are creation surfaces",
+                "context-compression layer before an AI reads Japanese institutional evidence",
                 "Connect/install paths",
                 "../connect/",
                 "getting-started.html",
@@ -1479,7 +1479,7 @@ def test_primary_public_chrome_uses_canonical_logo_and_nowrap_nav() -> None:
     css = (REPO_ROOT / "site" / "styles.src.css").read_text(encoding="utf-8")
     assert re.search(r"\.site-nav\s*\{[^}]*flex-wrap:\s*nowrap", css, re.S)
     assert re.search(r"\.site-nav\s*\{[^}]*white-space:\s*nowrap", css, re.S)
-    assert re.search(r"\.site-nav\s*\{[^}]*position:\s*relative", css, re.S)
+    assert re.search(r"\.site-nav\s*\.lang-switch\s*\{[^}]*position:\s*static", css, re.S)
     assert "footer-brand-mark" in css
     assert '-webkit-mask: url("/assets/brand/jpcite-mark-light-fill.svg")' in css
     assert 'mask: url("/assets/brand/jpcite-mark-light-fill.svg")' in css
@@ -1514,6 +1514,38 @@ def test_top_level_static_pages_do_not_drift_from_public_chrome() -> None:
         elif "footer-brand-mark" not in text:
             offenders.append(f"{rel}: missing footer brand mark")
 
+    assert offenders == []
+
+
+def test_nested_audience_pages_do_not_regress_to_legacy_chrome_or_program_endpoint() -> None:
+    offenders: list[str] = []
+    for path in sorted((REPO_ROOT / "site" / "audiences").glob("*/*/index.html")):
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        if '<a class="brand" href="/" aria-label="jpcite ホーム">jpcite</a>' in text:
+            offenders.append(f"{rel}: legacy text-only logo")
+        if "lockup-transparent-600-darklogo.png" not in text:
+            offenders.append(f"{rel}: missing canonical logo lockup")
+        if "/v1/programs?prefecture=" in text:
+            offenders.append(f"{rel}: uses legacy /v1/programs query example")
+        if 'href="/pricing.html#api-paid">API キー発行' not in text:
+            offenders.append(f"{rel}: API key CTA does not point to pricing paid anchor")
+    assert offenders == []
+
+
+def test_enforcement_pages_do_not_regress_to_legacy_chrome() -> None:
+    offenders: list[str] = []
+    for path in sorted((REPO_ROOT / "site" / "enforcement").glob("*.html")):
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        if '<a class="brand" href="/" aria-label="jpcite ホーム">jpcite</a>' in text:
+            offenders.append(f"{rel}: legacy text-only logo")
+        if '<header class="site-header"' in text and "lockup-transparent-600-darklogo.png" not in text:
+            offenders.append(f"{rel}: missing canonical logo lockup")
+        if '<header class="site-header"' in text and 'class="lang-switch"' not in text:
+            offenders.append(f"{rel}: missing JP/EN language switch")
+        if "footer-brand-mark" not in text:
+            offenders.append(f"{rel}: missing footer brand mark")
     assert offenders == []
 
 
@@ -1748,7 +1780,10 @@ def test_enforcement_catalog_count_matches_runtime_case_corpus() -> None:
     text = (REPO_ROOT / "site" / "enforcement" / "index.html").read_text(encoding="utf-8")
     manifest = json.loads((REPO_ROOT / "site" / ".well-known" / "mcp.json").read_text())
 
-    assert "1,185" in text
+    assert "取得済み処分件数" in text
+    assert "22,025" in text
+    assert "静的詳細ページ生成数" in text
+    assert "300" in text
     assert "1,485" not in text
     companion_text = json.dumps(manifest.get("resources", []), ensure_ascii=False)
     assert "1,185" in companion_text
@@ -1756,15 +1791,15 @@ def test_enforcement_catalog_count_matches_runtime_case_corpus() -> None:
 
 
 def test_public_runtime_counts_remain_visible_on_static_surfaces() -> None:
-    """Keep the improved 302 REST paths / 151 MCP tools copy public."""
+    """Keep runtime counts visible without making them the product pitch."""
     expectations = {
         "site/index.html": [
-            "Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset",
+            "AI が読む前の制度データ圧縮レイヤー",
             "151 MCP ツール",
         ],
-        "site/products.html": ["Full REST 302 paths / agent-safe OpenAPI 34 paths / GPT Actions 30-path subset / 151 MCP tools / 9 dataset"],
-        "site/en/index.html": ["302 REST paths / 151 MCP tools"],
-        "site/en/products.html": ["302 REST paths", "151 MCP tools"],
+        "site/products.html": ["REST / MCP / OpenAPI Actions / Widget / Webhook / dataset は実行手段です"],
+        "site/en/index.html": ["context-compression layer before an AI reads Japanese institutional evidence"],
+        "site/en/products.html": ["REST, MCP, OpenAPI Actions, widgets, webhooks, and datasets are entry surfaces"],
         "site/about.html": [
             '<span class="num">151</span><span class="lbl">AI から呼べる MCP ツール</span>',
             '<span class="num">302</span><span class="lbl">REST paths (OpenAPI)</span>',

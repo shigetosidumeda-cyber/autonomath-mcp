@@ -290,19 +290,19 @@
  </table>
  <p style="font-size:13px;color:var(--text-muted);">制度 ↔ 法令 のクロスリファレンスは、法令メタデータと条文参照を使って、根拠法令・参照条文・関連制度をたどれるように構成しています。</p>
 
- <h2 id="新-endpoint-面">新しい交差参照エンドポイント</h2>
- <p>制度・法令・採択事例・行政処分・適格事業者・改正履歴を横断する深いリンクを、 順次以下のエンドポイントで提供します。 一部は段階提供。</p>
+ <h2 id="新-endpoint-面">現在使える交差参照エンドポイント</h2>
+ <p>制度・法令・採択事例・行政処分・適格事業者・改正履歴を横断する深いリンクは、現在の OpenAPI に出ている以下の入口から取得できます。</p>
  <table>
  <thead>
  <tr><th>エンドポイント</th><th>用途</th></tr>
  </thead>
  <tbody>
- <tr><th><code>/v1/programs/{id}/full_context</code></th><td>制度 1 件に紐づく 法令条文・採択事例・排他ルール・改正履歴・対象地域 を 1 リクエストで返す深リンク</td></tr>
+ <tr><th><code>/v1/evidence/packets/{subject_kind}/{subject_id}</code></th><td>制度・法人・法令など 1 件に紐づく source_url、取得時刻、known gaps、引用候補を小さい Evidence Packet として返す</td></tr>
  <tr><th><code>/v1/cases/cohort_match</code></th><td>同業種 同規模 の採択事例 cohort 照合 (申請傾向の手がかり)</td></tr>
  <tr><th><code>/v1/eligibility/dynamic_check</code></th><td>排他ルール 181 件 連動の動的適格性チェック (制度 ID 群 → 衝突判定)</td></tr>
- <tr><th><code>/v1/regions/{code}/coverage</code></th><td>地域コード単位の 制度・採択 カバレッジ (地理 cohort)</td></tr>
- <tr><th><code>/v1/invoice_registrants/{tnum}/risk</code></th><td>取引先 (T 番号) の登録状態 + 行政処分 履歴 リスクサマリ</td></tr>
-<tr><th><code>/v1/me/amendment_alerts</code></th><td>登録 制度・法令 群の改正アラート フィード。API / MCP 呼び出しは税別 ¥3/billable unit (税込 ¥3.30)。有料通知フローは有効化前に条件を画面で表示します。</td></tr>
+ <tr><th><code>/v1/programs/by_region/{region_code}</code></th><td>地域コード単位の制度カバレッジ。地域別の制度候補を OpenAPI 上の実在ルートで取得</td></tr>
+ <tr><th><code>/v1/invoice_registrants/{invoice_registration_number}/risk</code></th><td>取引先 (T 番号) の登録状態、名称照合、再確認が必要な点を返すリスクサマリ</td></tr>
+<tr><th><code>/v1/me/amendment_alerts/feed</code></th><td>登録 制度・法令 群の改正アラート フィード。API / MCP 呼び出しは税別 ¥3/billable unit (税込 ¥3.30)。有料通知フローは有効化前に条件を画面で表示します。</td></tr>
  </tbody>
  </table>
 
@@ -332,7 +332,7 @@
 <footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
- <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
  <p class="footer-tag">日本の公的制度を、根拠付き成果物に。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター">

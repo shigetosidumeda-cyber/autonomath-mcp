@@ -160,7 +160,7 @@ FOOTER_BRAND_MARK_RE = re.compile(r'<p class="footer-brand">[^<]*</p>')
 FOOTER_BRAND_BADGE_HTML = (
     '<p class="footer-brand">'
     '<picture class="footer-brand-mark">'
-    '<source media="(prefers-color-scheme: light)" srcset="/assets/brand/jpcite-mark-light-fill.svg">'
+    '<source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg">'
     '<img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" '
     'loading="lazy" decoding="async">'
     '</picture>'
