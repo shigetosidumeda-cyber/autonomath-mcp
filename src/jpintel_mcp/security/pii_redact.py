@@ -32,8 +32,9 @@ S7 false-positive fix (2026-04-25):
        (``1010401030882``) into ``<phone-redacted>``. The new regex
        insists on either an explicit Japanese telephone separator
        structure (``\\d{2,4}-\\d{2,4}-\\d{4}`` with hyphens / spaces) or a
-       ``0[789]0`` mobile prefix followed by exactly 8 digits. Bare 6+
-       digit substrings without separators are no longer matched.
+       ``0[789]0`` mobile prefix followed by exactly 8 digits, and uses
+       alphanumeric boundaries so 64-char hex digests are not corrupted.
+       Bare 6+ digit substrings without separators are no longer matched.
 
 Patterns (must stay synchronized with tests/test_invariants_critical.py):
     - 法人番号:  T\\d{13}              -> [REDACTED:HOUJIN]
@@ -67,20 +68,21 @@ _EMAIL_RE = re.compile(r"[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}")
 #   1. landline / 03-/06- 等: \d{2,4}[-\s.]\d{2,4}[-\s.]\d{3,4} starting with 0
 #   2. +81 国際表記:           +81[-\s]\d{1,4}[-\s.]\d{1,4}[-\s.]\d{3,4}
 #   3. 携帯 (no separators):   0[789]0\d{8} (e.g. 09012345678)
-# A ``(?<!\d)`` lookbehind + ``(?!\d)`` lookahead anchors to digit boundaries
-# so canonical_id substrings like ``...:000000:23_xxx`` (program ID hash) and
-# bare 13桁 houjin ``1010401030882`` cannot be eaten as a phone. This
-# replaces the old loose pattern that allowed bare ``0\d{1,4}`` without any
-# separator and produced ``1<phone-redacted>`` collapses on real houjin
+# A ``(?<![A-Za-z0-9])`` lookbehind + ``(?![A-Za-z0-9])`` lookahead anchors to
+# alphanumeric boundaries so canonical_id substrings like
+# ``...:000000:23_xxx`` (program ID hash), bare 13桁 houjin
+# ``1010401030882``, and 64-char SHA-256 digests cannot be eaten as a phone.
+# This replaces the old loose pattern that allowed bare ``0\d{1,4}`` without
+# any separator and produced ``1<phone-redacted>`` collapses on real houjin
 # inputs (cf test_check_enforcement_am_happy_with_real_houjin failure).
 _PHONE_RE = re.compile(
-    r"(?<!\d)"
+    r"(?<![A-Za-z0-9])"
     r"(?:"
     r"\+?81[-\s]\d{1,4}[-\s.]\d{1,4}[-\s.]\d{3,4}"
     r"|0\d{1,4}[-\s.]\d{1,4}[-\s.]\d{3,4}"
     r"|0[789]0\d{8}"
     r")"
-    r"(?!\d)"
+    r"(?![A-Za-z0-9])"
 )
 
 PII_PATTERNS: tuple[tuple[str, re.Pattern[str], str], ...] = (

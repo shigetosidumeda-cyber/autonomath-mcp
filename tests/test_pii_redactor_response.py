@@ -146,6 +146,22 @@ def test_standalone_six_digit_not_phone() -> None:
     assert "pii-phone" not in hits
 
 
+def test_sha256_digest_not_eaten_by_phone_regex() -> None:
+    """64-char hex digests can contain ``080``-like digit runs.
+
+    The response sanitizer must not corrupt audit hashes such as
+    ``bundle_sha256`` just because a digest happens to include an
+    11-digit mobile-phone-shaped substring.
+    """
+    from jpintel_mcp.api.response_sanitizer import sanitize_response_text
+
+    digest = "e9894d592f37e3528d89ae7d866757752c08012345678b99e36994a145a3519c"
+    clean, hits = sanitize_response_text(f'{{"bundle_sha256":"{digest}"}}')
+    assert digest in clean
+    assert "<phone-redacted>" not in clean
+    assert "pii-phone" not in hits
+
+
 def test_email_masked() -> None:
     """生 email を ``<email-redacted>`` に置換し pii-email を hit list に。"""
     from jpintel_mcp.api.response_sanitizer import sanitize_response_text

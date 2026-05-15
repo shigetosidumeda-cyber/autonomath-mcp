@@ -1923,6 +1923,24 @@ def test_public_html_files_do_not_have_trailing_duplicate_documents() -> None:
     assert offenders == [], "\n".join(offenders[:200])
 
 
+def test_public_html_files_do_not_reintroduce_stale_footer_brand_copy() -> None:
+    offenders: list[str] = []
+    forbidden = [
+        '<p class="footer-tag">日本の制度 API</p>',
+        "制度データ提供: jpcite",
+        "&copy; 2026 jpcite",
+        '<footer class="site-footer"><div class="container"><p>',
+    ]
+    for path in sorted((REPO_ROOT / "site").rglob("*.html")):
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for pattern in forbidden:
+            if pattern in text:
+                offenders.append(f"{rel}: stale footer brand copy `{pattern}`")
+
+    assert offenders == [], "\n".join(offenders[:200])
+
+
 def test_phase_1a_line_waitlist_surfaces_do_not_assert_live_paid_usage() -> None:
     line_page = (REPO_ROOT / "site" / "line.html").read_text(encoding="utf-8", errors="ignore")
     waitlist_or_prelaunch = any(
