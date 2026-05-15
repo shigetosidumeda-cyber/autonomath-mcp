@@ -3552,7 +3552,7 @@ def _spec_pages() -> list[QAPage]:
             topic_label="MCP連携",
             slug="what-can-jpcite-mcp-do",
             h1="jpcite MCPで何ができる?",
-            tldr="Claude Desktop / Cursor / Cline から151 toolsを呼び、日本の制度・法令・判例・税制を検索できる。",
+            tldr="Claude Desktop / Cursor / Cline から151 MCP 機能を呼び、日本の制度・法令・判例・税制を検索できる。",
             qa_pairs=[
                 (
                     "jpcite MCPは何をするサーバーですか?",
