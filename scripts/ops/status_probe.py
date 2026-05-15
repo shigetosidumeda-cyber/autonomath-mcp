@@ -56,6 +56,7 @@ import argparse
 import contextlib
 import json
 import os
+import re
 import sqlite3
 import sys
 import time
@@ -835,6 +836,44 @@ def derive_ax_dashboard_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def update_static_status_pages(
+    snapshot: dict[str, Any],
+    paths: tuple[Path, ...] = (Path("site/status.html"), Path("site/en/status.html")),
+) -> None:
+    """Keep the static status pages in sync with status.json.
+
+    The cron commit includes both the machine-readable JSON and the static
+    fallback pages. Without this, CI can see a fresh status.json with stale
+    `/status.html` timestamps.
+    """
+    snapshot_at = str(snapshot.get("snapshot_at") or "")
+    state_class = {
+        STATUS_OK: "ok",
+        STATUS_DEGRADED: "warn",
+        STATUS_DOWN: "down",
+    }.get(str(snapshot.get("overall") or STATUS_DOWN), "down")
+
+    timestamp_re = re.compile(
+        r"<code>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+09:00 \(status\.json\)</code>"
+    )
+
+    for path in paths:
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        text = re.sub(r"Current = (ok|warn|down)\.", f"Current = {state_class}.", text)
+        for candidate in ("ok", "warn", "down"):
+            active = " active" if candidate == state_class else ""
+            text = re.sub(
+                rf'<section class="state {candidate}(?: active)?"',
+                f'<section class="state {candidate}{active}"',
+                text,
+            )
+        if snapshot_at:
+            text = timestamp_re.sub(f"<code>{snapshot_at} (status.json)</code>", text)
+        path.write_text(text, encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
 
@@ -875,6 +914,7 @@ def main(argv: list[str] | None = None) -> int:
         json.dumps(derived, indent=2, ensure_ascii=False, sort_keys=False) + "\n",
         encoding="utf-8",
     )
+    update_static_status_pages(snapshot)
 
     if not args.quiet:
         # stdout payload: pretty when --pretty, else compact one-liner for

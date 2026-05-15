@@ -1576,6 +1576,10 @@ def test_generators_emit_current_public_chrome_when_regenerated() -> None:
         '<a href="/" class="logo">jpcite</a>',
         '<a class="logo" href="/">jpcite</a>',
         '<p class="footer-brand">jpcite</p>',
+        '<p class="footer-tag">日本の制度 API</p>',
+        "制度データ提供: jpcite",
+        "&copy; 2026 jpcite",
+        '<footer class="site-footer"><div class="container"><p>',
         '<span class="brand-mark">jp</span>',
         '<span class="brand-name">jpcite</span>',
         "/assets/favicon.svg",
@@ -1613,6 +1617,21 @@ def test_generators_emit_current_public_chrome_when_regenerated() -> None:
             offenders.append(f"{rel}: generator missing footer brand mark")
         if "lockup-transparent-600-darklogo.png" not in text:
             offenders.append(f"{rel}: generator missing canonical logo lockup")
+
+    for path in sorted((REPO_ROOT / "site" / "_templates").glob("*.html")):
+        rel = path.relative_to(REPO_ROOT).as_posix()
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        for pattern in forbidden:
+            if pattern in text:
+                offenders.append(f"{rel}: template emits stale chrome/copy `{pattern}`")
+        if "footer-brand-mark" not in text:
+            offenders.append(f"{rel}: template missing footer brand mark")
+        if "lockup-transparent-600-darklogo.png" not in text:
+            offenders.append(f"{rel}: template missing canonical logo lockup")
+        if "日本の公的制度を、成果物として。" not in text:
+            offenders.append(f"{rel}: template missing canonical footer tag")
+        if "&copy; 2026 Bookyou株式会社" not in text:
+            offenders.append(f"{rel}: template missing canonical operator copyright")
 
     assert offenders == []
 

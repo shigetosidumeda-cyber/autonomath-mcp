@@ -1332,7 +1332,7 @@ def render_page(
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
- <p class="footer-tag">日本の制度 API</p>
+ <p class="footer-tag">日本の公的制度を、成果物として。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">
  <a href="/tos.html">利用規約</a>
@@ -1504,7 +1504,22 @@ def _render_index_fallback(domain: str, matrix_html: str) -> str:
  <section class="hero"><div class="container"><h1>利用者層</h1></div></section>
  {matrix_html}
 </main>
-<footer class="site-footer"><div class="container"><p>&copy; 2026 {_esc(OPERATOR_NAME)}</p></div></footer>
+<footer class="site-footer" role="contentinfo">
+ <div class="container footer-inner">
+ <div class="footer-col">
+ <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
+ <p class="footer-tag">日本の公的制度を、成果物として。</p>
+ </div>
+ <nav class="footer-nav" aria-label="フッター 法務・連絡">
+ <a href="/tos.html">利用規約</a>
+ <a href="/privacy.html">プライバシー</a>
+ <a href="/tokushoho.html">特定商取引法</a>
+ <a href="/docs/faq/">ヘルプ</a>
+ </nav>
+ <p class="footer-entity">運営: {_esc(OPERATOR_NAME)} · <a href="mailto:{_esc(OPERATOR_EMAIL)}">{_esc(OPERATOR_EMAIL)}</a></p>
+ <p class="footer-copy">&copy; 2026 {_esc(OPERATOR_NAME)}</p>
+ </div>
+</footer>
 </body>
 </html>
 """

@@ -332,7 +332,7 @@ FOOTER_HTML = """<footer class="site-footer" role="contentinfo">
  <div class="container footer-inner">
  <div class="footer-col">
  <p class="footer-brand"><picture class="footer-brand-mark"><source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg"><img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" loading="lazy" decoding="async"></picture>jpcite</p>
- <p class="footer-tag">日本の制度 API</p>
+ <p class="footer-tag">日本の公的制度を、成果物として。</p>
  </div>
  <nav class="footer-nav" aria-label="フッター 法務・連絡">
  <a href="/tos.html">利用規約</a>
@@ -340,7 +340,7 @@ FOOTER_HTML = """<footer class="site-footer" role="contentinfo">
  <a href="/tokushoho.html">特定商取引法</a>
  <a href="/about.html">運営情報</a>
  </nav>
- <p class="footer-copy">&copy; 2026 jpcite</p>
+ <p class="footer-copy">&copy; 2026 Bookyou株式会社</p>
  <p class="footer-disclaimer muted">本サイトは税理士法 §52 が規定する税務代理・税務書類作成・税務相談の提供を行いません。個別の税務判断は税理士・社労士・中小企業診断士等の有資格者にご相談ください。</p>
  </div>
 </footer>
