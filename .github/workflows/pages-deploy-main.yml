@@ -13,9 +13,11 @@
 #   - `pages-regenerate.yml` regenerates per-program / per-prefecture
 #     pages from the live SQLite (≈8-12 min wall) on a nightly cron.
 #   - This file (`pages-deploy-main.yml`) is the push-to-main production
-#     publish path. It still hydrates Fly data before rsync because robots.txt
-#     advertises generated sitemap shards; deploying without regenerated pages
-#     would create public 404s.
+#     publish path. It has two lanes:
+#       * full: hydrate Fly data, regenerate generated HTML, then publish.
+#       * fast: restore the last generated HTML cache, rebuild committed docs /
+#         assets, then publish. If the cache is missing, it automatically falls
+#         back to full so sitemap targets never disappear from production.
 #
 # Required GitHub repository secrets (canonical names match the existing
 # pages-preview.yml / pages-regenerate.yml convention — DO NOT introduce
@@ -35,7 +37,8 @@
 #
 # Usage:
 #   - Push to main → auto-deploy the regenerated Pages artifact.
-#   - Manual: gh workflow run pages-deploy-main.yml.
+#   - Manual fast: gh workflow run pages-deploy-main.yml -f deploy_mode=fast.
+#   - Manual full: gh workflow run pages-deploy-main.yml -f deploy_mode=full.
 #
 # Constraint per CLAUDE.md: never push with --no-verify; pre-commit hooks
 # must pass before this file is committed.
@@ -76,7 +79,17 @@ on:
       - "scripts/regen_structured_sitemap_and_llms_meta.py"
       - "scripts/sitemap_gen.py"
       - ".github/workflows/pages-deploy-main.yml"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      deploy_mode:
+        description: "auto=fast unless generator/template changes require full; fast=cache restore; full=Fly DB snapshot + regeneration"
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - fast
+          - full
 
 concurrency:
   group: cf-pages-autonomath-${{ github.ref }}
@@ -96,32 +109,129 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          fetch-depth: 1
+          fetch-depth: 2
 
       - name: Check Cloudflare Pages secrets
         id: cf-secrets
         env:
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
           set -euo pipefail
           if [ -z "${CF_API_TOKEN:-}" ] || [ -z "${CF_ACCOUNT_ID:-}" ]; then
             echo "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required for Cloudflare Pages production deploy."
             exit 1
           fi
+          echo "available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Select Pages deploy lane
+        id: deploy-lane
+        if: steps.cf-secrets.outputs.available == 'true'
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_MODE: ${{ inputs.deploy_mode || 'auto' }}
+          BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          requested="${REQUESTED_MODE:-auto}"
+          run_full="false"
+          reason="requested ${requested}"
+
+          if [ "$requested" = "full" ]; then
+            run_full="true"
+            reason="operator requested full generation"
+          elif [ "$requested" = "fast" ]; then
+            run_full="false"
+            reason="operator requested fast cached deploy"
+          elif [ "$EVENT_NAME" = "push" ]; then
+            changed_file_list="$(mktemp)"
+            git fetch --no-tags --depth=50 origin "${REF_NAME:-main}" || true
+            if [ -n "${BEFORE_SHA:-}" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+              git diff --name-only "$BEFORE_SHA" "$HEAD_SHA" > "$changed_file_list" || true
+            fi
+            if [ ! -s "$changed_file_list" ]; then
+              git diff --name-only HEAD^ "$HEAD_SHA" > "$changed_file_list" || true
+            fi
+            echo "Changed files considered for deploy lane:"
+            sed 's/^/  - /' "$changed_file_list" || true
+            if grep -Eq '^(site/_templates/|scripts/generate_(program|prefecture|geo_industry|cross_hub|geo_program|industry_hub|industry_program|compare|public_counts|og_images)\.py$|scripts/regen_llms_full(_en)?\.py$|scripts/regen_structured_sitemap_and_llms_meta\.py$|scripts/sitemap_gen\.py$|\.github/workflows/pages-deploy-main\.yml$)' "$changed_file_list"; then
+              run_full="true"
+              reason="generator, template, sitemap, or workflow changed"
+            else
+              run_full="false"
+              reason="only committed public assets/docs/functions/status changed"
+            fi
+          else
+            run_full="false"
+            reason="workflow_dispatch auto uses cached generated artifacts"
+          fi
+
+          echo "requested_mode=$requested" >> "$GITHUB_OUTPUT"
+          echo "initial_full_generation=$run_full" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
+          echo "Pages deploy lane: initial_full_generation=${run_full}; ${reason}"
+
+      - name: Restore generated public artifact cache
+        id: generated-cache
+        if: steps.cf-secrets.outputs.available == 'true'
+        uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: |
+            site/programs
+            site/prefectures
+            site/audiences
+          key: pages-generated-${{ runner.os }}-${{ github.ref_name }}-current
+          restore-keys: |
+            pages-generated-${{ runner.os }}-${{ github.ref_name }}-
+
+      - name: Re-apply committed files after generated artifact cache
+        if: steps.cf-secrets.outputs.available == 'true' && steps.generated-cache.outputs.cache-matched-key != ''
+        run: |
+          set -euo pipefail
+          git checkout -- site/programs site/prefectures site/audiences || true
+
+      - name: Finalize Pages deploy lane
+        id: generation-plan
+        if: steps.cf-secrets.outputs.available == 'true'
+        env:
+          INITIAL_FULL: ${{ steps.deploy-lane.outputs.initial_full_generation }}
+          CACHE_MATCHED_KEY: ${{ steps.generated-cache.outputs.cache-matched-key }}
+        run: |
+          set -euo pipefail
+          cache_restored="false"
+          if [ -n "${CACHE_MATCHED_KEY:-}" ]; then
+            cache_restored="true"
+          fi
+          run_full="$INITIAL_FULL"
+          if [ "$run_full" != "true" ] && [ "$cache_restored" != "true" ]; then
+            echo "::warning::Generated public artifact cache is missing; falling back to full Pages generation."
+            run_full="true"
+          fi
+          echo "cache_restored=$cache_restored" >> "$GITHUB_OUTPUT"
+          echo "run_full_generation=$run_full" >> "$GITHUB_OUTPUT"
+          echo "Pages generation plan: run_full_generation=${run_full}; cache_restored=${cache_restored}; matched_key=${CACHE_MATCHED_KEY:-none}"
+
+      - name: Check Fly token for full generation
+        id: fly-token
+        if: steps.generation-plan.outputs.run_full_generation == 'true'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
           if [ -z "${FLY_API_TOKEN:-}" ]; then
-            echo "::error::FLY_API_TOKEN is required so generated sitemap targets are present in the Pages artifact."
+            echo "::error::FLY_API_TOKEN is required when Pages full generation is selected or cache fallback is needed."
             exit 1
           fi
           echo "available=true" >> "$GITHUB_OUTPUT"
 
       - name: Install flyctl
-        if: steps.cf-secrets.outputs.available == 'true'
+        if: steps.generation-plan.outputs.run_full_generation == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
 
       - name: Pull latest jpintel.db for generated public artifacts
-        if: steps.cf-secrets.outputs.available == 'true'
+        if: steps.generation-plan.outputs.run_full_generation == 'true'
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
@@ -171,7 +281,7 @@ jobs:
           python3 -m mkdocs build
 
       - name: Regenerate generated public artifacts
-        if: steps.cf-secrets.outputs.available == 'true'
+        if: steps.generation-plan.outputs.run_full_generation == 'true'
         run: |
           set -euo pipefail
           python3 scripts/generate_program_pages.py \
@@ -220,6 +330,17 @@ jobs:
           python3 scripts/regen_llms_full_en.py --db data/jpintel.db --out site/llms-full.en.txt
           python3 scripts/regen_structured_sitemap_and_llms_meta.py
           python3 scripts/sitemap_gen.py --site-dir site --domain jpcite.com
+
+      - name: Save generated public artifact cache
+        if: steps.generation-plan.outputs.run_full_generation == 'true'
+        continue-on-error: true
+        uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: |
+            site/programs
+            site/prefectures
+            site/audiences
+          key: pages-generated-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}-${{ github.run_id }}
 
       - name: Run deploy drift gates
         if: steps.cf-secrets.outputs.available == 'true'

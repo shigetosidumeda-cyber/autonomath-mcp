@@ -118,6 +118,50 @@ def test_pages_deploy_fails_closed_when_cloudflare_secrets_missing() -> None:
     assert "CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}" in text
     assert "CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}" in text
     assert "::error::CF_API_TOKEN and CF_ACCOUNT_ID are required" in text
+
+
+def test_pages_deploy_main_has_fast_cached_frontend_lane() -> None:
+    data = _workflow_yaml(PAGES_DEPLOY_MAIN)
+    dispatch = data["on"]["workflow_dispatch"]["inputs"]["deploy_mode"]
+    assert dispatch["default"] == "auto"
+    assert dispatch["type"] == "choice"
+    assert dispatch["options"] == ["auto", "fast", "full"]
+
+    text = _text(PAGES_DEPLOY_MAIN)
+    select_step = text.index("Select Pages deploy lane")
+    restore_step = text.index("Restore generated public artifact cache")
+    reapply_step = text.index("Re-apply committed files after generated artifact cache")
+    finalize_step = text.index("Finalize Pages deploy lane")
+    pull_db_step = text.index("Pull latest jpintel.db for generated public artifacts")
+    save_step = text.index("Save generated public artifact cache")
+    rsync_step = text.index("Build static artifact (rsync site/ → dist/site/)")
+
+    assert select_step < restore_step < reapply_step < finalize_step < pull_db_step
+    assert save_step < rsync_step
+    assert "pages-generated-${{ runner.os }}-${{ github.ref_name }}-" in text
+    assert "site/programs" in text
+    assert "site/prefectures" in text
+    assert "site/audiences" in text
+    assert "git checkout -- site/programs site/prefectures site/audiences" in text
+    assert "falling back to full Pages generation" in text
+    assert "steps.generation-plan.outputs.run_full_generation == 'true'" in text
+
+
+def test_pages_deploy_main_requires_fly_only_for_full_generation() -> None:
+    text = _text(PAGES_DEPLOY_MAIN)
+    cf_step = text[text.index("Check Cloudflare Pages secrets") : text.index("Select Pages deploy lane")]
+    fly_step = text[text.index("Check Fly token for full generation") : text.index("Install flyctl")]
+    install_step = text[text.index("Install flyctl") : text.index("Pull latest jpintel.db")]
+    pull_step = text[
+        text.index("Pull latest jpintel.db for generated public artifacts") :
+        text.index("Build docs (MkDocs Material")
+    ]
+
+    assert "FLY_API_TOKEN" not in cf_step
+    assert "steps.generation-plan.outputs.run_full_generation == 'true'" in fly_step
+    assert "::error::FLY_API_TOKEN is required when Pages full generation" in fly_step
+    assert "steps.generation-plan.outputs.run_full_generation == 'true'" in install_step
+    assert "steps.generation-plan.outputs.run_full_generation == 'true'" in pull_step
     assert "available=false" not in text
     assert "Skipping Cloudflare Pages deploy" not in text
 
@@ -205,6 +249,7 @@ def test_status_probe_workflows_commit_all_public_status_artifacts_and_dispatch_
         assert "git push origin" in text
         assert "GITHUB_TOKEN pushes do not trigger downstream push workflows" in text
         assert "gh workflow run pages-deploy-main.yml --ref" in text
+        assert "-f deploy_mode=fast" in text
 
     pages_deploy = _text(PAGES_DEPLOY_MAIN)
     assert "- \"site/**\"" in pages_deploy

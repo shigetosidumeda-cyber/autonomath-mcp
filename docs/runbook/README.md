@@ -33,6 +33,7 @@ walk `docs/runbook/*.md` and group by `category`.
 | [npm_publish_jpcite_sdk.md](npm_publish_jpcite_sdk.md) | Build + 2FA publish `@jpcite/sdk` to npm under the Bookyou org. | operator only | 2026-05-04 |
 | [freee_mf_marketplace_submit.md](freee_mf_marketplace_submit.md) | Submit the freee + MoneyForward plugin apps for marketplace review. | operator only | 2026-05-04 |
 | [stripe_meter_events_migration.md](stripe_meter_events_migration.md) | Migrate metered billing from `usage_records` → `meter_events` when Stripe deprecates the legacy API. | operator only | 2026-05-04 |
+| [pages_deploy_lanes.md](pages_deploy_lanes.md) | Choose fast cached Pages deploy vs full Fly-backed regeneration so public updates do not repeatedly pay the heavy generated-page cost. | operator only | 2026-05-15 |
 
 ### brand — brand/identity surfaces
 

@@ -43,4 +43,4 @@ jobs:
           # GITHUB_TOKEN pushes do not trigger downstream push workflows.
           # workflow_dispatch is the supported exception, so this is the one
           # Pages deploy for the status artifact update rather than a duplicate.
-          gh workflow run pages-deploy-main.yml --ref "${GITHUB_REF_NAME:-main}"
+          gh workflow run pages-deploy-main.yml --ref "${GITHUB_REF_NAME:-main}" -f deploy_mode=fast
