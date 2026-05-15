@@ -69,7 +69,9 @@ def _seed_usage(
     quantity: int = 1,
 ) -> None:
     """Insert N usage_events rows for a given endpoint at days_ago."""
-    base = datetime.now(UTC) - timedelta(days=days_ago, hours=1)
+    # Keep "days_ago=0" on the current UTC calendar day even when CI runs
+    # shortly after 00:00 UTC. The dashboard buckets by UTC date.
+    base = datetime.now(UTC) - timedelta(days=days_ago, minutes=1)
     rows = [
         (
             key_hash,
