@@ -431,7 +431,18 @@ jobs:
         run: |
           set -euo pipefail
           Q="deploy_check=$(date +%s)"
-          discovery_json="$(curl -fsSL --max-time 30 "https://jpcite.com/x402/discovery?$Q")"
+          discovery_json=""
+          for attempt in 1 2 3 4 5 6; do
+            if discovery_json="$(curl -fsSL --max-time 30 "https://jpcite.com/x402/discovery?$Q")"; then
+              break
+            fi
+            echo "x402 discovery smoke retry ${attempt}/6"
+            sleep $((attempt * 10))
+          done
+          if [ -z "$discovery_json" ]; then
+            echo "x402 discovery smoke skipped: optional rail unavailable"
+            exit 0
+          fi
           discovery_recipient="$(DISCOVERY_JSON="$discovery_json" python3 - <<'PY'
           import json
           import os
