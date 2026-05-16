@@ -1,0 +1,224 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 6,
+      "height": 4,
+      "properties": {
+        "metrics": [
+          [ "AWS/Billing", "EstimatedCharges", "Currency", "USD", { "stat": "Maximum", "label": "Actual Spend (USD)" } ]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Actual Spend (USD)",
+        "period": 21600,
+        "stat": "Maximum",
+        "singleValueFullPrecision": false,
+        "setPeriodToTimeRange": true
+      }
+    },
+    {
+      "type": "metric",
+      "x": 6,
+      "y": 0,
+      "width": 6,
+      "height": 4,
+      "properties": {
+        "metrics": [
+          [ { "expression": "FILL(m1, 0) * (DAYS(END_DATE_FORECAST) / DAYS(START_DATE_TO_NOW))", "label": "Forecasted Spend (USD, linear extrapolation)", "id": "e1" } ],
+          [ "AWS/Billing", "EstimatedCharges", "Currency", "USD", { "id": "m1", "stat": "Maximum", "visible": false } ]
+        ],
+        "view": "singleValue",
+        "region": "us-east-1",
+        "title": "Forecasted Spend (USD, linear)",
+        "period": 21600,
+        "stat": "Maximum",
+        "singleValueFullPrecision": false,
+        "setPeriodToTimeRange": true
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 0,
+      "width": 6,
+      "height": 4,
+      "properties": {
+        "metrics": [
+          [ "AWS/Batch", "RunningJobsCount", "JobQueue", "jpcite-credit-fargate-spot-short-queue", { "label": "Fargate Running" } ],
+          [ "...", "jpcite-credit-ec2-spot-cpu-queue", { "label": "EC2 Running" } ]
+        ],
+        "view": "singleValue",
+        "region": "ap-northeast-1",
+        "title": "Batch Running Jobs",
+        "period": 60,
+        "stat": "Maximum",
+        "setPeriodToTimeRange": false,
+        "sparkline": true
+      }
+    },
+    {
+      "type": "metric",
+      "x": 18,
+      "y": 0,
+      "width": 6,
+      "height": 4,
+      "properties": {
+        "metrics": [
+          [ "AWS/Batch", "FailedJobsCount", "JobQueue", "jpcite-credit-fargate-spot-short-queue", { "label": "Fargate Failed (24h)" } ],
+          [ "...", "jpcite-credit-ec2-spot-cpu-queue", { "label": "EC2 Failed (24h)" } ]
+        ],
+        "view": "singleValue",
+        "region": "ap-northeast-1",
+        "title": "Batch Failed (24h)",
+        "period": 86400,
+        "stat": "Sum",
+        "setPeriodToTimeRange": false
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 4,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/Batch", "SubmittedJobsCount", "JobQueue", "jpcite-credit-fargate-spot-short-queue", { "label": "FG-Submitted" } ],
+          [ ".", "RunnableJobsCount", ".", ".", { "label": "FG-Runnable" } ],
+          [ ".", "RunningJobsCount", ".", ".", { "label": "FG-Running" } ],
+          [ ".", "SucceededJobsCount", ".", ".", { "label": "FG-Succeeded" } ],
+          [ ".", "FailedJobsCount", ".", ".", { "label": "FG-Failed" } ],
+          [ ".", "SubmittedJobsCount", ".", "jpcite-credit-ec2-spot-cpu-queue", { "label": "EC2-Submitted" } ],
+          [ ".", "RunnableJobsCount", ".", ".", { "label": "EC2-Runnable" } ],
+          [ ".", "RunningJobsCount", ".", ".", { "label": "EC2-Running" } ],
+          [ ".", "SucceededJobsCount", ".", ".", { "label": "EC2-Succeeded" } ],
+          [ ".", "FailedJobsCount", ".", ".", { "label": "EC2-Failed" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-northeast-1",
+        "title": "Batch Jobs Over Time (6h)",
+        "period": 60,
+        "stat": "Maximum",
+        "start": "-PT6H",
+        "yAxis": {
+          "left": { "min": 0, "label": "Job count" }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 10,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/S3", "BucketSizeBytes", "BucketName", "jpcite-credit-993693061769-202605-raw", "StorageType", "StandardStorage", { "label": "raw" } ],
+          [ "...", "jpcite-credit-993693061769-202605-derived", ".", ".", { "label": "derived" } ],
+          [ "...", "jpcite-credit-993693061769-202605-reports", ".", ".", { "label": "reports" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-northeast-1",
+        "title": "S3 BucketSizeBytes (per bucket)",
+        "period": 86400,
+        "stat": "Average",
+        "yAxis": {
+          "left": { "min": 0, "label": "Bytes" }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 10,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/S3", "NumberOfObjects", "BucketName", "jpcite-credit-993693061769-202605-raw", "StorageType", "AllStorageTypes", { "label": "raw" } ],
+          [ "...", "jpcite-credit-993693061769-202605-derived", ".", ".", { "label": "derived" } ],
+          [ "...", "jpcite-credit-993693061769-202605-reports", ".", ".", { "label": "reports" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-northeast-1",
+        "title": "S3 NumberOfObjects (per bucket)",
+        "period": 86400,
+        "stat": "Average",
+        "yAxis": {
+          "left": { "min": 0, "label": "Objects" }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 16,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/Billing", "EstimatedCharges", "Currency", "USD", { "label": "Total Estimated Charges (USD)" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Billing EstimatedCharges (7d)",
+        "period": 21600,
+        "stat": "Maximum",
+        "start": "-P7D",
+        "yAxis": {
+          "left": { "min": 0, "label": "USD" }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 22,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "AWS/Batch", "vCpuUsage", "ComputeEnvironmentName", "jpcite-credit-fargate-spot-short", { "label": "Fargate vCPU" } ],
+          [ "...", "jpcite-credit-ec2-spot-cpu", { "label": "EC2 vCPU" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-northeast-1",
+        "title": "Batch CE vCPU Usage (Fargate + EC2)",
+        "period": 60,
+        "stat": "Maximum",
+        "yAxis": {
+          "left": { "min": 0, "label": "vCPU" }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 28,
+      "width": 24,
+      "height": 4,
+      "properties": {
+        "metrics": [
+          [ "jpcite/credit", "BatchJobFailures", { "label": "Batch Job Failures (log filter)" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-northeast-1",
+        "title": "Custom: jpcite/credit BatchJobFailures (log metric filter)",
+        "period": 300,
+        "stat": "Sum",
+        "yAxis": {
+          "left": { "min": 0 }
+        }
+      }
+    }
+  ]
+}
