@@ -5,6 +5,13 @@ __pycache__/
 # Misuse of file:// URI as a local Path() falls into ./file:/ at repo root.
 # Treat as transient — never commit.
 file:/
+
+# Local packet generator output dirs (e.g. aging_population_proxy_v1/, etc).
+# Wave 60-94 generators write here transiently before s3 sync — never commit.
+/*_v1/
+
+# sqlite MIG backups (PERF-17/21/22/28) — never commit (autonomath.db.bak.*).
+autonomath.db.backup-*
 .pytest_cache/
 .mypy_cache/
 .dmypy.json
