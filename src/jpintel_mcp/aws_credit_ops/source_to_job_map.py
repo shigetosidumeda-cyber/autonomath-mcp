@@ -73,8 +73,8 @@ from jpintel_mcp.l1_source_family.catalog import (
 #: discovery) pin against this string.
 MAP_VERSION: Final[str] = "jpcite.aws_credit_ops.source_to_job_map.v1"
 
-#: Canonical job_id enumeration. Mirrors the fifteen JSON files under
-#: ``data/aws_credit_jobs/`` (J01..J15). J09 is the dedicated
+#: Canonical job_id enumeration. Mirrors the sixteen JSON files under
+#: ``data/aws_credit_jobs/`` (J01..J16). J09 is the dedicated
 #: courts / judiciary / tribunal-decision fetcher (最高裁判決 last 5y +
 #: 国税不服審判所 公表裁決 + 公取委 排除/課徴金 + 中労委 命令検索 +
 #: 行政不服審査会答申 + 人事院 + 公害等調整委員会 + 知財高裁).
@@ -86,6 +86,12 @@ MAP_VERSION: Final[str] = "jpcite.aws_credit_ops.source_to_job_map.v1"
 #: J13 = EDINET XBRL 有価証券報告書 + 適時開示 (TDnet);
 #: J14 = 特許庁 公報 (特許/商標/意匠/実用新案) + J-PlatPat + 審判決定;
 #: J15 = 環境省 環境情報 (大気・水質・土壌・廃棄物 + GHG + EIA + PRTR).
+#: J16 (added 2026-05-16, post J06 HTML-walk-zero-PDFs incident) is the
+#: dedicated canonical 公的 PDF direct-URL fetcher: 中小企業庁 補助金要綱
+#: + 各省庁 白書 + 内閣府 経済財政白書 + 47 都道府県商工労働政策 PDF +
+#: 中央労働委員会 命令 PDF + 各省庁 行政告示 PDF。J06 が HTML index walk で
+#: PDF link follow に失敗 (0 PDFs) した教訓に基づき、direct .pdf URL を
+#: hardcode して raw blob acquisition path を独立に確立する。
 JobId = Literal[
     "J01_source_profile_sweep",
     "J02_nta_houjin_master_mirror",
@@ -102,10 +108,11 @@ JobId = Literal[
     "J13_edinet_xbrl_full",
     "J14_jpo_patent_gazette",
     "J15_env_ministry_data",
+    "J16_canonical_pdf_corpus",
 ]
 
-#: All fifteen job_ids in declaration order. Tests gate on
-#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J15}``
+#: All sixteen job_ids in declaration order. Tests gate on
+#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J16}``
 #: so missing entries are caught structurally.
 ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J01_source_profile_sweep",
@@ -123,6 +130,7 @@ ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J13_edinet_xbrl_full",
     "J14_jpo_patent_gazette",
     "J15_env_ministry_data",
+    "J16_canonical_pdf_corpus",
 )
 
 
@@ -251,6 +259,15 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
     # 全局 (大気 / 水 / 土 / 廃棄物 / 地球 / 化学物質 / 自然 / アセス) の
     # 規制業種 DD 軸を担う。
     "env_ministry_data": "J15_env_ministry_data",
+    # --- J16: canonical 公的 PDF corpus (direct .pdf URL acquisition) ---
+    # ``canonical_pdf_corpus`` is a NEW P2 family added 2026-05-16 alongside
+    # J16. Owns direct fetch of 220+ known canonical 公的 PDF endpoints
+    # across 中小企業庁 (補助金要綱) / 経産省 (産業政策白書) / 環境省 +
+    # 厚労省 + 文科省 + 国交省 + 農水省 + 内閣府 + 47 都道府県商工労働政策
+    # + 中央労働委員会 命令 + 各省庁 白書。J06 が HTML index walk で
+    # PDF link follow に失敗 (0 PDFs) した経路独立化のために導入。
+    # parser=pdf_fetch (Textract は別 job で後工程適用)。
+    "canonical_pdf_corpus": "J16_canonical_pdf_corpus",
     # ``nta_pdb_personal`` (P2_restricted, license_tag=restricted) is
     # explicitly excluded — restricted data does not flow through the
     # AWS-credit window. verify_coverage asserts this row is unmapped.
@@ -273,7 +290,7 @@ class CoverageReport(BaseModel):
 
     Emitted by :func:`verify_coverage`. The five counters are:
 
-    - ``total_families`` — size of ``SOURCE_FAMILY_REGISTRY`` (36 today, post J12-J15).
+    - ``total_families`` — size of ``SOURCE_FAMILY_REGISTRY`` (37 today, post J12-J16).
     - ``mapped_families`` — how many catalog rows have a job binding.
     - ``unmapped_families`` — catalog rows with no job binding
       (``nta_pdb_personal`` only, since restricted data does not flow
@@ -313,7 +330,7 @@ def get_job_for_source(source_family_id: str) -> JobId | None:
     if source_family_id not in SOURCE_FAMILY_REGISTRY:
         raise KeyError(
             f"unknown L1 source family_id={source_family_id!r}; "
-            f"see jpintel_mcp.l1_source_family.catalog for the 36 valid ids"
+            f"see jpintel_mcp.l1_source_family.catalog for the 37 valid ids"
         )
     return _SOURCE_TO_JOB.get(source_family_id)
 

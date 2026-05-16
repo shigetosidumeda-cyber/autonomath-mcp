@@ -44,8 +44,8 @@ def test_map_version_is_stable_constant() -> None:
     assert MAP_VERSION == "jpcite.aws_credit_ops.source_to_job_map.v1"
 
 
-def test_all_job_ids_has_fifteen_entries() -> None:
-    """The fifteen AWS-credit jobs J01..J15 must all appear in ALL_JOB_IDS.
+def test_all_job_ids_has_sixteen_entries() -> None:
+    """The sixteen AWS-credit jobs J01..J16 must all appear in ALL_JOB_IDS.
 
     J09 is the courts / judiciary / tribunal-decision crawler; J10 is
     the 法務局 public registry notices + 民事局 statistics +
@@ -60,8 +60,13 @@ def test_all_job_ids_has_fifteen_entries() -> None:
     (binds new P2 family ``jpo_patent_gazette_full``); J15 = 環境省 環境情報
     (大気・水質・土壌・廃棄物 + GHG + EIA + PRTR) (binds new P2 family
     ``env_ministry_data``).
+    J16 (added 2026-05-16, post J06 HTML walk 0 PDFs incident) is the
+    dedicated canonical 公的 PDF direct-URL fetcher (binds new P2 family
+    ``canonical_pdf_corpus``): 中小企業庁 補助金要綱 + 各省庁 白書 +
+    内閣府 経済財政白書 + 47 都道府県商工労働政策 + 中央労働委員会 命令 +
+    各省庁 行政告示 を direct .pdf URL で取得し、Textract は別 job で後工程。
     """
-    assert len(ALL_JOB_IDS) == 15
+    assert len(ALL_JOB_IDS) == 16
     assert set(ALL_JOB_IDS) == {
         "J01_source_profile_sweep",
         "J02_nta_houjin_master_mirror",
@@ -78,6 +83,7 @@ def test_all_job_ids_has_fifteen_entries() -> None:
         "J13_edinet_xbrl_full",
         "J14_jpo_patent_gazette",
         "J15_env_ministry_data",
+        "J16_canonical_pdf_corpus",
     }
 
 
@@ -216,6 +222,26 @@ def test_j15_env_ministry_is_bound_to_env_ministry_data() -> None:
     assert sources == {"env_ministry_data"}
 
 
+def test_j16_canonical_pdf_corpus_is_bound_to_canonical_pdf_corpus() -> None:
+    """J16 (canonical 公的 PDF direct-URL corpus) must own
+    ``canonical_pdf_corpus`` (new P2 family added 2026-05-16).
+
+    J16 owns direct .pdf URL fetch of 220+ canonical 公的 PDF endpoints
+    across 中小企業庁 (補助金要綱) / 経産省 (白書) / 環境省 + 厚労省 +
+    文科省 + 国交省 + 農水省 + 内閣府 + 47 都道府県商工労働政策 +
+    中央労働委員会 命令 + 各省庁 行政告示。Introduced post J06 HTML
+    index walk failure (0 PDFs captured); parser=pdf_fetch (Textract
+    deferred to downstream job). License = per-ministry tos_only with
+    attribution required.
+    """
+    assert (
+        get_job_for_source("canonical_pdf_corpus")
+        == "J16_canonical_pdf_corpus"
+    )
+    sources = set(get_sources_for_job("J16_canonical_pdf_corpus"))
+    assert sources == {"canonical_pdf_corpus"}
+
+
 def test_only_nta_pdb_personal_is_unmapped() -> None:
     """Restricted data is the only catalog row excluded from the AWS jobs."""
     unmapped = [
@@ -227,9 +253,11 @@ def test_only_nta_pdb_personal_is_unmapped() -> None:
 
 
 def test_mapped_count_equals_catalog_minus_restricted() -> None:
-    """36 catalog rows − 1 restricted = 35 mapped families (32 original + 4 J12-J15)."""
+    """37 catalog rows − 1 restricted = 36 mapped families
+    (32 original + 4 J12-J15 + 1 J16 canonical_pdf_corpus).
+    """
     assert len(SOURCE_TO_JOB_MAP) == len(SOURCE_FAMILY_REGISTRY) - 1
-    assert len(SOURCE_TO_JOB_MAP) == 35
+    assert len(SOURCE_TO_JOB_MAP) == 36
 
 
 # ---------------------------------------------------------------------------
@@ -341,8 +369,8 @@ def test_verify_coverage_flags_all_p0_mapped() -> None:
 
 def test_verify_coverage_counts_match_catalog_and_map() -> None:
     report = verify_coverage()
-    assert report.total_families == 36
-    assert report.mapped_families == 35
+    assert report.total_families == 37
+    assert report.mapped_families == 36
     assert report.unmapped_families == ("nta_pdb_personal",)
     # All fifteen jobs must appear in sources_per_job with ≥ 1 count.
     assert set(report.sources_per_job.keys()) == set(ALL_JOB_IDS)

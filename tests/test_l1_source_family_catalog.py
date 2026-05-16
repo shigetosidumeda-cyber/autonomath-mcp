@@ -32,13 +32,15 @@ from jpintel_mcp.l1_source_family import (
 # ---------------------------------------------------------------------------
 
 
-def test_registry_has_exactly_36_families() -> None:
-    """WAVE51_L1_SOURCE_FAMILY_CATALOG.md § 1 mandates 36 families
+def test_registry_has_exactly_37_families() -> None:
+    """WAVE51_L1_SOURCE_FAMILY_CATALOG.md § 1 mandates 37 families
     (32 original + 4 J12-J15 extensions landed 2026-05-16:
     kokkai_diet_minutes / edinet_xbrl_full / jpo_patent_gazette_full /
-    env_ministry_data)."""
-    assert len(SOURCE_FAMILY_REGISTRY) == 36
-    assert len(list_source_families()) == 36
+    env_ministry_data + 1 J16 extension same day:
+    canonical_pdf_corpus — direct 公的 PDF URL acquisition, post J06
+    HTML walk 0 PDFs incident)."""
+    assert len(SOURCE_FAMILY_REGISTRY) == 37
+    assert len(list_source_families()) == 37
 
 
 def test_registry_family_ids_are_unique() -> None:
@@ -71,10 +73,12 @@ def test_priority_distribution_matches_spec() -> None:
     assert len(p0) == 6
     assert len(p1) == 17
     # P2 extended from 8 → 12 on 2026-05-16 with J12-J15 (kokkai_diet_minutes,
-    # edinet_xbrl_full, jpo_patent_gazette_full, env_ministry_data).
-    assert len(p2) == 12
+    # edinet_xbrl_full, jpo_patent_gazette_full, env_ministry_data),
+    # then 12 → 13 same day with J16 (canonical_pdf_corpus — direct 公的
+    # PDF URL acquisition, introduced after J06 HTML walk captured 0 PDFs).
+    assert len(p2) == 13
     assert len(pr) == 1
-    assert len(p0) + len(p1) + len(p2) + len(pr) == 36
+    assert len(p0) + len(p1) + len(p2) + len(pr) == 37
 
 
 def test_p0_family_ids_match_spec() -> None:

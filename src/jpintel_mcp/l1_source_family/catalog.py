@@ -99,6 +99,7 @@ Category = Literal[
     "edinet_xbrl_disclosure",
     "patent_gazette_full",
     "environment_data_full",
+    "canonical_pdf_direct_acquire",
 ]
 
 LicenseTag = Literal[
@@ -125,6 +126,7 @@ AccessMode = Literal[
     "website_plus_pdf",
     "website_plus_playwright",
     "private_api",
+    "direct_pdf_url",
 ]
 
 RefreshFrequency = Literal[
@@ -198,7 +200,7 @@ class SourceFamily(BaseModel):
 
 # ---------------------------------------------------------------------------
 # Catalog rows — must match docs/_internal/WAVE51_L1_SOURCE_FAMILY_CATALOG.md.
-# 36 families total: P0=6, P1=17, P2=12 (8 original + 4 J12-J15), P2_restricted=1.
+# 37 families total: P0=6, P1=17, P2=13 (8 original + 4 J12-J15 + 1 J16 canonical_pdf_corpus), P2_restricted=1.
 # ---------------------------------------------------------------------------
 
 _RAW_CATALOG: tuple[SourceFamily, ...] = (
@@ -560,6 +562,21 @@ _RAW_CATALOG: tuple[SourceFamily, ...] = (
         priority="P2",
         notes="環境省 環境情報 (大気・水質・土壌・廃棄物 + GHG + EIA + PRTR) (J15)",
     ),
+    SourceFamily(
+        family_id="canonical_pdf_corpus",
+        ministry="multi_ministry",
+        category="canonical_pdf_direct_acquire",
+        license_tag="tos_only",
+        access_mode="direct_pdf_url",
+        refresh_frequency="quarterly",
+        priority="P2",
+        notes=(
+            "Canonical 公的 PDF を direct URL で取得 (HTML walk 不要)。"
+            "中小企業庁 補助金要綱 + 各省庁 白書 + 内閣府 経済財政白書 + "
+            "47 都道府県 商工労働政策 + 中央労働委員会 命令 + 各省庁 行政告示 (J16)。"
+            "J06 の HTML index 失敗 0 PDFs を回避するための raw acquisition path。"
+        ),
+    ),
     # --- P2_restricted (1) ---
     SourceFamily(
         family_id="nta_pdb_personal",
@@ -587,7 +604,7 @@ def _build_registry(rows: tuple[SourceFamily, ...]) -> Mapping[str, SourceFamily
 
 
 SOURCE_FAMILY_REGISTRY: Mapping[str, SourceFamily] = _build_registry(_RAW_CATALOG)
-"""Immutable registry of all 36 Wave 51 L1 source families, keyed by family_id (32 original + 4 J12-J15 extensions)."""
+"""Immutable registry of all 37 Wave 51 L1 source families, keyed by family_id (32 original + 4 J12-J15 + 1 J16 canonical_pdf_corpus)."""
 
 
 def list_source_families() -> tuple[SourceFamily, ...]:
