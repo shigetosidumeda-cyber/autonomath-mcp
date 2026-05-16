@@ -837,6 +837,173 @@ PACKET_TABLES: list[tuple[str, str, list[tuple[str, str]]]] = [
 ]
 
 
+# JPCIR header columns shared by every Wave 56-58 packet (super-set).
+# JsonSerDe `ignore.malformed.json = true` + missing-field semantics let us
+# use a unified kitchen-sink schema where each generator only fills the
+# subset it cares about; absent fields are returned as NULL by Athena.
+_WAVE_56_58_COLUMNS: list[tuple[str, str]] = [
+    # JPCIR header
+    ("object_id", "string"),
+    ("object_type", "string"),
+    ("package_id", "string"),
+    ("package_kind", "string"),
+    ("created_at", "string"),
+    ("generated_at", "string"),
+    ("producer", "string"),
+    ("schema_version", "string"),
+    ("subject", "string"),
+    ("cohort_definition", "string"),
+    ("metrics", "string"),
+    ("known_gaps", "string"),
+    ("sources", "string"),
+    ("disclaimer", "string"),
+    ("jpcite_cost_jpy", "string"),
+    ("request_time_llm_call_performed", "string"),
+    # Wave 56 (time-series) body fields
+    ("entity_id", "string"),
+    ("amendment_history", "string"),
+    ("snapshot_periods", "string"),
+    ("prefecture", "string"),
+    ("monthly_distribution", "string"),
+    ("peak_month", "string"),
+    ("peak_count", "string"),
+    ("total_cases", "string"),
+    ("jsic_major", "string"),
+    ("fiscal_years", "string"),
+    ("total_count", "string"),
+    ("total_amount_yen", "string"),
+    ("tax_category", "string"),
+    ("phase_changes", "string"),
+    ("monthly_registrations", "string"),
+    ("active_total", "string"),
+    ("revoked_total", "string"),
+    ("quarter", "string"),
+    ("field_top", "string"),
+    ("total_diffs", "string"),
+    ("program_entity_id", "string"),
+    ("recent_rounds", "string"),
+    ("open_month_distribution", "string"),
+    ("predicted_open_month_mode", "string"),
+    ("ministry", "string"),
+    ("total_bids", "string"),
+    ("adoption_event_monthly", "string"),
+    ("application_close_monthly", "string"),
+    ("adoption_total", "string"),
+    ("application_close_total", "string"),
+    ("scope", "string"),
+    ("bursts", "string"),
+    ("monthly_mean", "string"),
+    # Wave 57 (geographic) body fields
+    ("registrant_kind_distribution", "string"),
+    ("total_registrants", "string"),
+    ("active_registrants", "string"),
+    ("municipality_propensity", "string"),
+    ("top_prefecture", "string"),
+    ("top_adoptions", "string"),
+    ("arbitrage_candidates", "string"),
+    ("municipality_top", "string"),
+    ("municipality_program_total", "string"),
+    ("subject_area", "string"),
+    ("court_distribution", "string"),
+    ("total_decisions", "string"),
+    ("env_programs", "string"),
+    ("env_decisions", "string"),
+    ("env_enforcement", "string"),
+    ("compliance_score", "string"),
+    ("tier_distribution", "string"),
+    ("authority_distribution", "string"),
+    ("total_programs", "string"),
+    ("industry_match", "string"),
+    ("enforcement_kind_distribution", "string"),
+    ("rural_municipalities", "string"),
+    ("rural_municipality_total", "string"),
+    ("municipalities_with_coverage", "string"),
+    # Wave 58 (relationship) body fields
+    ("overlap_groups", "string"),
+    ("entity_name", "string"),
+    ("entity_role", "string"),
+    ("bid_history", "string"),
+    ("certification_id", "string"),
+    ("certification_name", "string"),
+    ("linked_houjin", "string"),
+    ("employment_programs", "string"),
+    ("houjin_bangou", "string"),
+    ("chain", "string"),
+    ("total_adoptions", "string"),
+    ("first_event_date", "string"),
+    ("latest_event_date", "string"),
+    ("name_prefix", "string"),
+    ("linked_entities", "string"),
+    ("group_size_total", "string"),
+    ("support_organizations", "string"),
+    ("top_industry_link", "string"),
+    ("permits", "string"),
+    ("company_name", "string"),
+    ("adoption_link", "string"),
+    ("bid_link", "string"),
+    ("vendor_name", "string"),
+    ("payment_history", "string"),
+    ("unique_procurer_count", "string"),
+]
+
+# (table_name, prefix) pairs for the 30 Wave 56-58 packet types — all
+# reuse the shared `_WAVE_56_58_COLUMNS` super-set schema above.
+_WAVE_56_58_TABLES: list[tuple[str, str]] = [
+    # Wave 56 — time-series (commit fe657f0c6).
+    ("packet_program_amendment_timeline_v2", "program_amendment_timeline_v2/"),
+    ("packet_enforcement_seasonal_trend_v1", "enforcement_seasonal_trend_v1/"),
+    ("packet_adoption_fiscal_cycle_v1", "adoption_fiscal_cycle_v1/"),
+    ("packet_tax_ruleset_phase_change_v1", "tax_ruleset_phase_change_v1/"),
+    ("packet_invoice_registration_velocity_v1", "invoice_registration_velocity_v1/"),
+    ("packet_regulatory_q_over_q_diff_v1", "regulatory_q_over_q_diff_v1/"),
+    (
+        "packet_subsidy_application_window_predict_v1",
+        "subsidy_application_window_predict_v1/",
+    ),
+    ("packet_bid_announcement_seasonality_v1", "bid_announcement_seasonality_v1/"),
+    ("packet_succession_event_pulse_v1", "succession_event_pulse_v1/"),
+    ("packet_kanpou_event_burst_v1", "kanpou_event_burst_v1/"),
+    # Wave 57 — geographic (commit f5aeb3168).
+    ("packet_city_jct_density_v1", "city_jct_density_v1/"),
+    ("packet_city_size_subsidy_propensity_v1", "city_size_subsidy_propensity_v1/"),
+    ("packet_cross_prefecture_arbitrage_v1", "cross_prefecture_arbitrage_v1/"),
+    (
+        "packet_municipality_subsidy_inventory_v1",
+        "municipality_subsidy_inventory_v1/",
+    ),
+    (
+        "packet_prefecture_court_decision_focus_v1",
+        "prefecture_court_decision_focus_v1/",
+    ),
+    (
+        "packet_prefecture_environmental_compliance_v1",
+        "prefecture_environmental_compliance_v1/",
+    ),
+    ("packet_prefecture_program_heatmap_v1", "prefecture_program_heatmap_v1/"),
+    ("packet_region_industry_match_v1", "region_industry_match_v1/"),
+    ("packet_regional_enforcement_density_v1", "regional_enforcement_density_v1/"),
+    ("packet_rural_subsidy_coverage_v1", "rural_subsidy_coverage_v1/"),
+    # Wave 58 — relationship (commit 54bafe53d).
+    ("packet_board_member_overlap_v1", "board_member_overlap_v1/"),
+    ("packet_business_partner_360_v1", "business_partner_360_v1/"),
+    ("packet_certification_houjin_link_v1", "certification_houjin_link_v1/"),
+    (
+        "packet_employment_program_eligibility_v1",
+        "employment_program_eligibility_v1/",
+    ),
+    ("packet_founding_succession_chain_v1", "founding_succession_chain_v1/"),
+    ("packet_houjin_parent_subsidiary_v1", "houjin_parent_subsidiary_v1/"),
+    ("packet_industry_association_link_v1", "industry_association_link_v1/"),
+    ("packet_license_houjin_jurisdiction_v1", "license_houjin_jurisdiction_v1/"),
+    ("packet_public_listed_program_link_v1", "public_listed_program_link_v1/"),
+    ("packet_vendor_payment_history_match_v1", "vendor_payment_history_match_v1/"),
+]
+
+# Append Wave 56-58 entries with the shared super-set column list.
+for _name, _prefix in _WAVE_56_58_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
