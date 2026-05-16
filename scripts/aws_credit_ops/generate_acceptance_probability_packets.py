@@ -88,13 +88,39 @@ import hashlib
 import json
 import logging
 import math
+import os
 import sqlite3
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+# PERF-11 lever 1 (acceptance generator side): orjson 5-10x stdlib
+# json. We drop the legacy ``indent=2`` formatting from ``write_packet``
+# — Athena, Glue, and the JPCIR envelope contract only require valid
+# JSON, and the indented form was tripling the byte stream + 5x'ing the
+# serialize cost without a downstream consumer. ``OPT_SORT_KEYS``
+# preserves the prior canonical-ordering guarantee (this generator's
+# downstream packet receipt SHA expects deterministic key order).
+try:  # pragma: no cover - exercised via the public path either way
+    import orjson as _orjson  # type: ignore[import-not-found,import-untyped,unused-ignore]
+
+    def _dumps_packet(obj: Any) -> bytes:
+        return _orjson.dumps(  # type: ignore[no-any-return]
+            obj, option=_orjson.OPT_SORT_KEYS
+        )
+
+    _HAS_ORJSON = True
+except ImportError:  # pragma: no cover - stdlib fallback path
+
+    def _dumps_packet(obj: Any) -> bytes:
+        return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
+
+    _HAS_ORJSON = False
 
 logger = logging.getLogger("generate_acceptance_probability_packets")
 
@@ -218,9 +244,7 @@ def _normalise_program_kind_lookup(
 
     out: dict[str, str] = {}
     with contextlib.suppress(sqlite3.OperationalError):
-        for row in conn.execute(
-            "SELECT unified_id, program_kind FROM programs WHERE excluded=0"
-        ):
+        for row in conn.execute("SELECT unified_id, program_kind FROM programs WHERE excluded=0"):
             unified_id, kind = row[0], (row[1] or "unknown") or "unknown"
             if isinstance(unified_id, str) and unified_id:
                 out[unified_id] = kind
@@ -276,9 +300,7 @@ def aggregate_cohorts(
             jsic = r[1] or "Z"
             band = scale_band(r[2])
             program_id_raw = r[3] or ""
-            program_kind = (
-                program_kind_lookup.get(program_id_raw, "unknown") or "unknown"
-            )
+            program_kind = program_kind_lookup.get(program_id_raw, "unknown") or "unknown"
             fy = _fy_from_announced_at(r[4])
             if not fy:
                 continue
@@ -429,11 +451,7 @@ def attach_adjacency(
         pref = defn.get("prefecture")
         jsic = defn.get("jsic_major")
         cid = defn.get("cohort_id")
-        if (
-            not isinstance(pref, str)
-            or not isinstance(jsic, str)
-            or not isinstance(cid, str)
-        ):
+        if not isinstance(pref, str) or not isinstance(jsic, str) or not isinstance(cid, str):
             continue
         by_axis.setdefault((pref, jsic), []).append((float(prob), cid))
 
@@ -448,11 +466,7 @@ def attach_adjacency(
         pref = defn.get("prefecture")
         jsic = defn.get("jsic_major")
         cid = defn.get("cohort_id")
-        if (
-            not isinstance(pref, str)
-            or not isinstance(jsic, str)
-            or not isinstance(cid, str)
-        ):
+        if not isinstance(pref, str) or not isinstance(jsic, str) or not isinstance(cid, str):
             continue
         bucket = by_axis.get((pref, jsic), [])
         suggestions: list[dict[str, object]] = []
@@ -480,6 +494,20 @@ def _packet_filename(cohort_id: str) -> str:
 
 
 def write_packet(out_dir: Path, packet: dict[str, object]) -> Path:
+    """Persist one cohort packet (1 file = 1 packet; Athena contract).
+
+    PERF-11 hot path:
+
+    * ``_dumps_packet`` uses orjson with OPT_SORT_KEYS (5-10x stdlib
+      json). The indented form was tripling byte size + 5x'ing serialize
+      cost; no downstream consumer requires indentation.
+    * ``os.open`` + ``os.write`` + ``os.close`` instead of
+      ``Path.write_text`` skips the per-call ``BufferedWriter``
+      allocation and the latin-1/utf-8 transcoding wrapper.
+    * ``out_dir.mkdir`` moved out of the loop — caller (``main``) now
+      ensures the directory exists once before the loop.
+    """
+
     defn = packet.get("cohort_definition")
     if not isinstance(defn, dict):
         msg = "packet missing cohort_definition"
@@ -488,16 +516,16 @@ def write_packet(out_dir: Path, packet: dict[str, object]) -> Path:
     if not isinstance(cid, str):
         msg = "cohort_definition missing cohort_id"
         raise ValueError(msg)
-    body = json.dumps(packet, ensure_ascii=False, sort_keys=True, indent=2)
-    raw = body.encode("utf-8")
+    raw = _dumps_packet(packet)
     if len(raw) > PACKET_MAX_BYTES:
-        msg = (
-            f"packet {cid} exceeds {PACKET_MAX_BYTES} byte ceiling: {len(raw)}"
-        )
+        msg = f"packet {cid} exceeds {PACKET_MAX_BYTES} byte ceiling: {len(raw)}"
         raise ValueError(msg)
-    out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / _packet_filename(cid)
-    path.write_text(body, encoding="utf-8")
+    fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
+    try:
+        os.write(fd, raw)
+    finally:
+        os.close(fd)
     return path
 
 
@@ -523,9 +551,7 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--out",
         type=Path,
-        default=(
-            repo_root / "out" / "packets" / "acceptance_probability_cohort_v1"
-        ),
+        default=(repo_root / "out" / "packets" / "acceptance_probability_cohort_v1"),
         help="Output directory.",
     )
     parser.add_argument(
@@ -562,6 +588,11 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s %(levelname)s %(name)s :: %(message)s",
     )
     out_dir = Path(ns.out).resolve()
+    # PERF-11: hoist the ``mkdir`` out of the per-packet ``write_packet``
+    # hot path. ``write_packet`` is called O(225K) times in the FULL-
+    # SCALE 採択確率 cohort run; one ``mkdir`` per call adds K's of
+    # syscalls even with ``exist_ok=True``.
+    out_dir.mkdir(parents=True, exist_ok=True)
     generated_at = dt.datetime.now(dt.UTC)
     packets: list[dict[str, object]] = []
     cohort_iter = aggregate_cohorts(

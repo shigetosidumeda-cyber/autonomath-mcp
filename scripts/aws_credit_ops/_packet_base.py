@@ -17,10 +17,54 @@ from __future__ import annotations
 
 import contextlib
 import json
+import os
 import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Final
+
+# orjson is 5-10x faster than stdlib json for the bytes-out path used by
+# upload_packet (no ensure_ascii pass, no string detour). PERF-11 lever
+# 1: serialize per packet via orjson when available, fall back to stdlib
+# json with separators=(",", ":") to keep behavior identical on
+# operator boxes that have not yet upgraded.
+try:  # pragma: no cover - exercised via `_dumps_compact` either way
+    import orjson as _orjson  # type: ignore[import-not-found,import-untyped,unused-ignore]
+
+    def _dumps_compact(obj: Any) -> bytes:
+        # orjson always returns bytes, no ensure_ascii needed (UTF-8
+        # native). We intentionally do NOT pass OPT_SORT_KEYS — JPCIR
+        # envelopes are dict-literal-ordered and Athena/Glue do not
+        # require deterministic key ordering for JSON lines / 1-packet
+        # files, only for hashes (which use the canonical SHA path).
+        return _orjson.dumps(obj)  # type: ignore[no-any-return]
+
+    _HAS_ORJSON = True
+except ImportError:  # pragma: no cover - stdlib fallback
+
+    def _dumps_compact(obj: Any) -> bytes:
+        return json.dumps(obj, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+
+    _HAS_ORJSON = False
+
+
+def _write_bytes_fast(path: Path, body: bytes) -> None:
+    """Single-syscall O_WRONLY|O_CREAT|O_TRUNC write.
+
+    ``pathlib.Path.write_bytes`` goes through ``Path.open`` →
+    ``io.FileIO`` which adds ~50 µs / packet of Python overhead. For
+    50K+ packet runs that is several seconds. ``os.open`` + ``os.write``
+    + ``os.close`` keeps the kernel call shape identical (one create +
+    one write + one close) while skipping the Python-side wrapper, and
+    crucially does not allocate a ``_io.BufferedWriter`` per call.
+    """
+
+    fd = os.open(str(path), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o644)
+    try:
+        os.write(fd, body)
+    finally:
+        os.close(fd)
+
 
 SCHEMA_VERSION: Final[str] = "jpcir.p0.v1"
 PRODUCER: Final[str] = "jpcite-ai-execution-control-plane"
@@ -120,17 +164,24 @@ def open_db_ro(db_path: Path) -> sqlite3.Connection:
     uri = f"file:{db_path}?mode=ro"
     conn = sqlite3.connect(uri, uri=True, timeout=10.0, isolation_level=None)
     conn.row_factory = sqlite3.Row
+    # PERF-11 lever 3: cursor-streaming + WAL-friendly RO PRAGMAs.
+    # ``mmap_size`` at 1 GB avoids per-row ``read()`` syscalls on the
+    # 9.7 GB ``autonomath.db`` when the aggregate query walks 192K+
+    # rows. ``cache_size`` in negative form = KB; -262144 = 256 MB
+    # page cache. ``temp_store=MEMORY`` keeps intermediate sort / hash
+    # tables out of /tmp on long GROUP BY.
     with contextlib.suppress(sqlite3.OperationalError):
         conn.execute("PRAGMA query_only=1")
         conn.execute("PRAGMA temp_store=MEMORY")
+        conn.execute("PRAGMA cache_size=-262144")
+        conn.execute("PRAGMA mmap_size=1073741824")
     return conn
 
 
 def table_exists(conn: sqlite3.Connection, name: str) -> bool:
     try:
         row = conn.execute(
-            "SELECT 1 FROM sqlite_master "
-            "WHERE type IN ('table','view') AND name = ? LIMIT 1",
+            "SELECT 1 FROM sqlite_master WHERE type IN ('table','view') AND name = ? LIMIT 1",
             (name,),
         ).fetchone()
     except sqlite3.Error:
@@ -165,9 +216,23 @@ def upload_packet(
     local_out_dir: Path,
     packet_id: str,
 ) -> tuple[str, int]:
-    body = json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    """Serialize + persist one JPCIR packet.
+
+    PERF-11 levers applied here (1 packet/file pattern preserved — Glue
+    table + Athena reference contract intact):
+
+    * ``_dumps_compact`` uses orjson (5-10x stdlib json) with a stdlib
+      fallback. Output bytes are identical (compact JSON, UTF-8).
+    * ``_write_bytes_fast`` calls ``os.open`` + ``os.write`` +
+      ``os.close`` instead of ``pathlib.Path.write_bytes`` which adds
+      a per-call ``BufferedWriter`` allocation.
+
+    Callers are expected to ``mkdir(parents=True, exist_ok=True)``
+    ``local_out_dir`` once before the hot loop (the shared runner does
+    this in ``run_generator``).
+    """
+
+    body = _dumps_compact(envelope)
     bytes_written = len(body)
     if bytes_written > MAX_PACKET_BYTES:
         msg = f"packet {packet_id} exceeds {MAX_PACKET_BYTES}: {bytes_written}"
@@ -176,17 +241,19 @@ def upload_packet(
         bucket, key_prefix = parse_s3_uri(output_prefix)
         key = f"{key_prefix.rstrip('/')}/{packet_id}.json"
         if dry_run or s3_client is None:
+            # ``local_out_dir`` is mkdir'd once by ``run_generator``;
+            # safe to skip per-packet parent creation here.
             local_path = local_out_dir / f"{packet_id}.json"
-            local_path.parent.mkdir(parents=True, exist_ok=True)
-            local_path.write_bytes(body)
+            _write_bytes_fast(local_path, body)
             return key, bytes_written
-        s3_client.put_object(
-            Bucket=bucket, Key=key, Body=body, ContentType="application/json"
-        )
+        s3_client.put_object(Bucket=bucket, Key=key, Body=body, ContentType="application/json")
         return key, bytes_written
+    # Local-only path: caller's directory might not exist yet, so we
+    # keep the legacy per-packet ``mkdir`` here. Most production
+    # generators flow through the s3:// dry-run branch above.
     local_path = Path(output_prefix).expanduser() / f"{packet_id}.json"
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    local_path.write_bytes(body)
+    _write_bytes_fast(local_path, body)
     return str(local_path), bytes_written
 
 
