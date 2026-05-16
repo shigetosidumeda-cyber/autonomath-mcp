@@ -209,3 +209,6 @@ jpintel.db-shm
 coverage.json
 coverage_report.json
 site/status/coverage.json
+
+# AWS canary build artifacts (embeddings.db etc. — 1.1 GiB scale, kept in S3 + R2)
+out/

@@ -344,7 +344,7 @@ def build_transform_job_spec(
     instance_count: int = 1,
     max_concurrent_transforms: int = 1,
     max_payload_in_mb: int = 6,
-    batch_strategy: str = "MultiRecord",
+    batch_strategy: str = "SingleRecord",
 ) -> dict[str, Any]:
     """Render a ``CreateTransformJob`` request body.
 
