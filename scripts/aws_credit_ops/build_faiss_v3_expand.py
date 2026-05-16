@@ -152,12 +152,11 @@ def _log(level: str, msg: str, **fields: Any) -> None:
 
 def _boto3_s3(profile: str, region: str) -> Any:  # pragma: no cover - I/O shim
     try:
-        import boto3
+        from scripts.aws_credit_ops._aws import s3_client
     except ImportError as exc:
         msg = "boto3 is required (pip install boto3)"
         raise BuildFaissError(msg) from exc
-    session = boto3.Session(profile_name=profile, region_name=region)
-    return session.client("s3")
+    return s3_client(region_name=region, profile_name=profile)
 
 
 def l2_normalize_inplace(arr: Any) -> None:
