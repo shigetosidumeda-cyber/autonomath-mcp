@@ -1,0 +1,79 @@
+{
+  "jobDefinitionName": "jpcite-etl-raw-to-derived",
+  "type": "container",
+  "platformCapabilities": ["FARGATE"],
+  "propagateTags": true,
+  "tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "Workload": "etl_raw_to_derived",
+    "AutoStop": "2026-05-29"
+  },
+  "containerProperties": {
+    "image": "993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:latest",
+    "command": [
+      "python",
+      "/opt/jpcite/scripts/aws_credit_ops/etl_raw_to_derived.py",
+      "--job-prefix",
+      "Ref::job_prefix",
+      "--trigger-crawler",
+      "--commit"
+    ],
+    "jobRoleArn": "arn:aws:iam::993693061769:role/jpcite-batch-etl-job-role",
+    "executionRoleArn": "arn:aws:iam::993693061769:role/jpcite-batch-execution-role",
+    "resourceRequirements": [
+      {"type": "VCPU", "value": "4"},
+      {"type": "MEMORY", "value": "8192"}
+    ],
+    "networkConfiguration": {
+      "assignPublicIp": "ENABLED"
+    },
+    "runtimePlatform": {
+      "operatingSystemFamily": "LINUX",
+      "cpuArchitecture": "X86_64"
+    },
+    "environment": [
+      {"name": "AWS_DEFAULT_REGION", "value": "ap-northeast-1"},
+      {"name": "RAW_BUCKET", "value": "jpcite-credit-993693061769-202605-raw"},
+      {"name": "DERIVED_BUCKET", "value": "jpcite-credit-993693061769-202605-derived"},
+      {"name": "GLUE_CRAWLER", "value": "jpcite-credit-derived-crawler"},
+      {"name": "DRY_RUN", "value": "0"}
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/batch/jpcite-credit-2026-05",
+        "awslogs-region": "ap-northeast-1",
+        "awslogs-stream-prefix": "jpcite-etl-raw-to-derived"
+      }
+    }
+  },
+  "parameters": {
+    "job_prefix": "J01_source_profile_sweep"
+  },
+  "timeout": {
+    "attemptDurationSeconds": 1800
+  },
+  "retryStrategy": {
+    "attempts": 2,
+    "evaluateOnExit": [
+      {
+        "onExitCode": "2",
+        "action": "EXIT"
+      },
+      {
+        "onReason": "Host*",
+        "action": "RETRY"
+      }
+    ]
+  },
+  "_notes": {
+    "purpose": "Post-job ETL stage that converts raw J0X JSONL outputs into Parquet under s3://jpcite-credit-993693061769-202605-derived/J0X_<slug>/<run_id>/<artifact_kind>.parquet and triggers the jpcite-credit-derived-crawler Glue crawler so Athena workgroup jpcite-credit-2026-05 sees the new partition.",
+    "register_cmd": "aws batch register-job-definition --cli-input-json file://infra/aws/batch/jpcite_etl_raw_to_derived_job_definition.json --profile bookyou-recovery --region ap-northeast-1",
+    "submit_example": "aws batch submit-job --job-name jpcite-etl-j01-$(date -u +%Y%m%dT%H%M%SZ) --job-queue jpcite-credit-fargate-spot-short-queue --job-definition jpcite-etl-raw-to-derived --parameters job_prefix=J01_source_profile_sweep --profile bookyou-recovery --region ap-northeast-1",
+    "exit_codes": {
+      "0": "all required artifacts written + crawler triggered",
+      "2": "required artifact (object_manifest) missing in raw bucket"
+    }
+  }
+}
