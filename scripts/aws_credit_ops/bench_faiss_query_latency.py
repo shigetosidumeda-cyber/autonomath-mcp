@@ -56,7 +56,7 @@ from typing import Any, Final
 logger = logging.getLogger("bench_faiss_query_latency")
 
 DEFAULT_BUCKET: Final[str] = "jpcite-credit-993693061769-202605-derived"
-DEFAULT_INDEX_PATH: Final[str] = "/tmp/faiss_v2.bin"
+DEFAULT_INDEX_PATH: Final[str] = "/tmp/faiss_v2.bin"  # nosec B108 - dev-default, override via --index
 DEFAULT_V2_PREFIX: Final[str] = "faiss_indexes/v2"
 DEFAULT_TUNED_PREFIX: Final[str] = "faiss_indexes/v2_tuned"
 DEFAULT_REGION: Final[str] = "ap-northeast-1"
@@ -87,12 +87,11 @@ def _log(level: str, msg: str, **fields: Any) -> None:
 
 def _boto3_s3(profile: str, region: str) -> Any:  # pragma: no cover - I/O shim
     try:
-        import boto3
+        from scripts.aws_credit_ops._aws import s3_client
     except ImportError as exc:
         msg = "boto3 is required (pip install boto3)"
         raise BenchError(msg) from exc
-    session = boto3.Session(profile_name=profile, region_name=region)
-    return session.client("s3")
+    return s3_client(region_name=region, profile_name=profile)
 
 
 def percentile(values: list[float], pct: float) -> float:
@@ -125,9 +124,7 @@ def reconstruct_index_vectors(index: Any) -> Any:
     return out
 
 
-def sample_query_vectors(
-    vectors: Any, *, n_queries: int, seed: int
-) -> tuple[Any, Any]:
+def sample_query_vectors(vectors: Any, *, n_queries: int, seed: int) -> tuple[Any, Any]:
     """Pick ``n_queries`` rows uniformly at random as query vectors.
 
     Returns ``(query_ids, query_matrix)``. Vectors are already
@@ -141,9 +138,7 @@ def sample_query_vectors(
     return ids, vectors[ids]
 
 
-def build_ground_truth(
-    vectors: Any, queries: Any, *, k: int
-) -> Any:
+def build_ground_truth(vectors: Any, queries: Any, *, k: int) -> Any:
     """Compute the brute-force top-K for each query (ground truth)."""
     import faiss
     import numpy as np
@@ -155,9 +150,7 @@ def build_ground_truth(
     return np.asarray(top, dtype="int64")
 
 
-def recall_at_k(
-    candidate: Any, ground_truth: Any, *, k: int
-) -> float:
+def recall_at_k(candidate: Any, ground_truth: Any, *, k: int) -> float:
     """Fraction of ground-truth neighbors recovered in candidate top-K.
 
     Returns the macro-average recall across queries (one recall value per
@@ -314,8 +307,7 @@ def pick_winner(
 
     def _meets_gates(row: dict[str, Any]) -> bool:
         return bool(
-            row.get("p95_ms", 1e9) < P95_BUDGET_MS
-            and row.get("recall_at_k", 0.0) >= RECALL_TARGET
+            row.get("p95_ms", 1e9) < P95_BUDGET_MS and row.get("recall_at_k", 0.0) >= RECALL_TARGET
         )
 
     meeting = [r for r in candidates if _meets_gates(r)]
@@ -331,9 +323,7 @@ def pick_winner(
         winner["selection_reason"] = "meets_p95_budget_and_recall_target"
         return winner
 
-    in_budget = [
-        r for r in candidates if r.get("p95_ms", 1e9) < P95_BUDGET_MS
-    ]
+    in_budget = [r for r in candidates if r.get("p95_ms", 1e9) < P95_BUDGET_MS]
     if in_budget:
         in_budget.sort(key=lambda r: (-r["recall_at_k"], r["p95_ms"]))
         winner = in_budget[0]
@@ -374,16 +364,12 @@ def write_markdown_report(
         " single-query latency)"
     )
     lines.append(f"- **K**: {winner.get('k', '?')}")
-    lines.append(
-        f"- **Targets**: p95 < {P95_BUDGET_MS} ms AND recall@K >= {RECALL_TARGET}"
-    )
+    lines.append(f"- **Targets**: p95 < {P95_BUDGET_MS} ms AND recall@K >= {RECALL_TARGET}")
     lines.append("- **Ground truth**: `IndexFlatIP` brute-force over the same vectors.")
     lines.append("")
     lines.append("## Results")
     lines.append("")
-    lines.append(
-        "| Index | p50 (ms) | p95 (ms) | p99 (ms) | recall@10 | size (MiB) |"
-    )
+    lines.append("| Index | p50 (ms) | p95 (ms) | p99 (ms) | recall@10 | size (MiB) |")
     lines.append("| --- | ---: | ---: | ---: | ---: | ---: |")
     rows: list[dict[str, Any]] = list(bench_results)
     if hnsw_result is not None:
@@ -479,9 +465,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Comma-separated nprobe values to sweep.",
     )
     p.add_argument("--hnsw-m", type=int, default=DEFAULT_HNSW_M)
-    p.add_argument(
-        "--hnsw-ef-construction", type=int, default=DEFAULT_HNSW_EF_CONSTRUCTION
-    )
+    p.add_argument("--hnsw-ef-construction", type=int, default=DEFAULT_HNSW_EF_CONSTRUCTION)
     p.add_argument("--hnsw-ef-search", type=int, default=DEFAULT_HNSW_EF_SEARCH)
     p.add_argument("--seed", type=int, default=20260516)
     p.add_argument(
@@ -508,9 +492,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
     import numpy as np
 
     run_id = f"perf4-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{uuid.uuid4().hex[:8]}"
-    nprobe_sweep = tuple(
-        int(x.strip()) for x in args.nprobe_sweep.split(",") if x.strip()
-    )
+    nprobe_sweep = tuple(int(x.strip()) for x in args.nprobe_sweep.split(",") if x.strip())
     _log(
         "info",
         "boot",
@@ -541,9 +523,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
     _log("info", "vectors_reconstructed", n=int(vectors.shape[0]))
 
     # 2. Sample queries + compute brute-force ground truth.
-    query_ids, queries = sample_query_vectors(
-        vectors, n_queries=args.n_queries, seed=args.seed
-    )
+    query_ids, queries = sample_query_vectors(vectors, n_queries=args.n_queries, seed=args.seed)
     _log("info", "queries_sampled", n=int(queries.shape[0]))
 
     t_gt = time.time()
@@ -667,9 +647,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
         s3.put_object(
             Bucket=args.bucket,
             Key=f"{base}/run_manifest.json",
-            Body=json.dumps(tuned_manifest, indent=2, ensure_ascii=False).encode(
-                "utf-8"
-            ),
+            Body=json.dumps(tuned_manifest, indent=2, ensure_ascii=False).encode("utf-8"),
         )
         tuned_uri = f"s3://{args.bucket}/{base}/index.faiss"
         _log(
@@ -700,7 +678,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
             "src_path": args.index,
         },
     }
-    json_path = Path(f"/tmp/faiss_perf_benchmark_{run_id}.json")
+    json_path = Path(f"/tmp/faiss_perf_benchmark_{run_id}.json")  # nosec B108 - dev report path
     json_path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     _log("info", "json_written", path=str(json_path))
 
@@ -743,7 +721,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
         winner=winner["label"],
         tuned_nprobe=int(tuned_nprobe),
         tuned_uri=tuned_uri,
-        query_ids_head=[int(x) for x in query_ids[:5].tolist()] if hasattr(query_ids, "tolist") else [int(x) for x in list(query_ids)[:5]],
+        query_ids_head=[int(x) for x in query_ids[:5].tolist()]
+        if hasattr(query_ids, "tolist")
+        else [int(x) for x in list(query_ids)[:5]],
     )
     _ = np  # quiet unused-import for ``ruff`` when np is only used via faiss
     return 0
