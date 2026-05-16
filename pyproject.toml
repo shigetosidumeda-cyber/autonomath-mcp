@@ -468,10 +468,21 @@ asyncio_mode = "auto"
 # that implicit import order — those need explicit fixtures before
 # xdist becomes the default).
 #
+# PERF-39 (2026-05-17): N-worker tuning. Bench on 944-test api+services
+# subset (8-physical-core MacBook, 32GB RAM):
+#   N=1   75.69s (1.00x baseline)
+#   N=2   42.54s (1.78x)
+#   N=4   27.15s (2.79x)
+#   N=6   25.39s (2.98x)   ← optimal sweet spot
+#   N=8   29.91s (2.53x)   ← regression (DB fixture / sqlite-WAL contention)
+#   N=auto 29.80s (2.54x)  ← regression — auto picks hw.ncpu=8
+# Inflection point at N=6 — beyond that, fixture contention dominates.
+# Use `-n 6 --dist loadscope` for local dev; CI shards use lower N per shard.
+#
 # Recommended invocations:
-#   * Local dev:  .venv/bin/pytest -n auto --dist loadscope <paths>
-#   * CI shard:   pytest -n auto --dist loadscope --shard-id=N --num-shards=4
-#   * Single test: .venv/bin/pytest <path>::<test>           (serial)
+#   * Local dev:  .venv/bin/pytest -n 6 --dist loadscope <paths>      ← PERF-39 optimal
+#   * CI shard:   pytest -n 6 --dist loadscope --shard-id=N --num-shards=4
+#   * Single test: .venv/bin/pytest <path>::<test>                    (serial)
 #
 # `--durations=10` surfaces the top-10 slowest tests on every run so
 # regressions are visible.
