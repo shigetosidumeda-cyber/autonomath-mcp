@@ -1,0 +1,157 @@
+{
+  "submission_id": "J08_J16_deep_ultradeep_wave_2026_05_16T06_07_UTC",
+  "submission_ts_utc": "2026-05-16T06:07:58Z",
+  "lane": "solo",
+  "profile": "bookyou-recovery",
+  "region": "ap-northeast-1",
+  "queue": "jpcite-credit-fargate-spot-short-queue",
+  "job_definition": "jpcite-crawl-heavy",
+  "purpose": "Maximize crawl coverage + burn for J08-J16 deep + ultradeep wave. Pre-existing J08-J11 ultradeep + J16 base were not in queue at submission time (empty queue), so all 9 jobs are fresh submissions.",
+  "manifests_uploaded_to_s3": [
+    "manifests/J12_ultradeep_kokkai_minutes_matrix.json",
+    "manifests/J13_ultradeep_edinet_xbrl_matrix.json",
+    "manifests/J14_ultradeep_jpo_patent_gazette_matrix.json",
+    "manifests/J15_ultradeep_env_ministry_matrix.json",
+    "manifests/J09_deep_courts_judiciary_full.json"
+  ],
+  "manifests_already_in_s3": [
+    "manifests/J08_ultradeep_kanpou_matrix.json",
+    "manifests/J10_ultradeep_houmu_registry_matrix.json",
+    "manifests/J11_ultradeep_estat_statistics_matrix.json",
+    "manifests/J16_canonical_pdf_corpus.json"
+  ],
+  "jobs_submitted": [
+    {
+      "job_id": "J12",
+      "variant": "ultradeep",
+      "batch_job_id": "1df77e21-e487-4df0-870c-5b02cbd3c4bb",
+      "job_name": "jpcite-j12-20260516T060743Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J12_ultradeep_kokkai_minutes_matrix.json",
+      "manifest_size_bytes": 291496,
+      "source_family": "legislative_minutes"
+    },
+    {
+      "job_id": "J13",
+      "variant": "ultradeep",
+      "batch_job_id": "3cae0c69-bc11-4234-b834-9d1afb45dc8a",
+      "job_name": "jpcite-j13-20260516T060744Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J13_ultradeep_edinet_xbrl_matrix.json",
+      "manifest_size_bytes": 292550,
+      "source_family": "edinet_xbrl"
+    },
+    {
+      "job_id": "J14",
+      "variant": "ultradeep",
+      "batch_job_id": "a42fa664-8868-458d-9c4a-5226778c56f9",
+      "job_name": "jpcite-j14-20260516T060746Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J14_ultradeep_jpo_patent_gazette_matrix.json",
+      "manifest_size_bytes": 130145,
+      "source_family": "jpo_patent_gazette"
+    },
+    {
+      "job_id": "J15",
+      "variant": "ultradeep",
+      "batch_job_id": "cc348fdd-94db-4ee5-9c8e-7a5700b3f509",
+      "job_name": "jpcite-j15-20260516T060748Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J15_ultradeep_env_ministry_matrix.json",
+      "manifest_size_bytes": 42154,
+      "source_family": "env_ministry_data"
+    },
+    {
+      "job_id": "J08",
+      "variant": "ultradeep",
+      "batch_job_id": "ccd9bc6c-7dcf-4288-890d-c437453e9c2f",
+      "job_name": "jpcite-j08-20260516T060750Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J08_ultradeep_kanpou_matrix.json",
+      "manifest_size_bytes": 159143,
+      "source_family": "kanpou_gazette"
+    },
+    {
+      "job_id": "J10",
+      "variant": "ultradeep",
+      "batch_job_id": "5bdb6dae-92bf-46fd-8d19-905166919131",
+      "job_name": "jpcite-j10-20260516T060752Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J10_ultradeep_houmu_registry_matrix.json",
+      "manifest_size_bytes": 128660,
+      "source_family": "houmu_registry"
+    },
+    {
+      "job_id": "J11",
+      "variant": "ultradeep",
+      "batch_job_id": "aacd2c9f-81f8-48e0-8826-3b122bb1bd73",
+      "job_name": "jpcite-j11-20260516T060754Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J11_ultradeep_estat_statistics_matrix.json",
+      "manifest_size_bytes": 279370,
+      "source_family": "estat_statistics"
+    },
+    {
+      "job_id": "J09-deep",
+      "variant": "deep",
+      "batch_job_id": "21466bf6-fe1e-4c02-a018-a90d1b296e25",
+      "job_name": "jpcite-j09-deep-20260516T060756Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J09_deep_courts_judiciary_full.json",
+      "manifest_size_bytes": 39214,
+      "source_family": "court_dispute_decision"
+    },
+    {
+      "job_id": "J16",
+      "variant": "canonical",
+      "batch_job_id": "47c641a2-3b62-4b64-a56c-775c359d49dc",
+      "job_name": "jpcite-j16-20260516T060758Z",
+      "manifest": "s3://jpcite-credit-993693061769-202605-reports/manifests/J16_canonical_pdf_corpus.json",
+      "manifest_size_bytes": 19681,
+      "source_family": "canonical_public_pdf",
+      "note": "J16 deep variant not generated per task allowance — submitted base canonical (~220 PDF URLs) instead"
+    }
+  ],
+  "post_submit_queue_status": {
+    "RUNNING": 8,
+    "SUCCEEDED": 1,
+    "STARTING": 0,
+    "RUNNABLE": 0,
+    "STARTING_TIMESTAMP_UTC": "2026-05-16T06:07:58Z",
+    "VERIFICATION_TS_UTC": "2026-05-16T06:11_first_describe"
+  },
+  "earlier_4_terminated": [
+    {
+      "batch_job_id": "48a075e8-4745-4109-b6b5-50e1671c196c",
+      "reason": "First-pass J12 ultradeep submitted to LIGHT job def (jpcite-crawl, 30min timeout); terminated to resubmit on jpcite-crawl-heavy per task spec"
+    },
+    {
+      "batch_job_id": "8443ca49-4018-4638-ae59-3268c0f3b42b",
+      "reason": "Same — J13 light terminated"
+    },
+    {
+      "batch_job_id": "e40049c3-e64b-40aa-96e6-5df316e17abc",
+      "reason": "Same — J14 light terminated"
+    },
+    {
+      "batch_job_id": "b57ae8d1-38ff-4837-8df3-aa0b9f3d0fb5",
+      "reason": "Same — J15 light terminated"
+    }
+  ],
+  "tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "AutoStop": "2026-05-29",
+    "Workload_examples": ["J08", "J09-deep", "J10", "J11", "J12", "J13", "J14", "J15", "J16"]
+  },
+  "constraints_followed": {
+    "aws_profile": "bookyou-recovery",
+    "tags_attached": ["Project=jpcite", "CreditRun=2026-05", "Workload=<JID>", "AutoStop=2026-05-29"],
+    "lane_marker": "[lane:solo]",
+    "crawler_code_changed": false
+  },
+  "url_coverage_summary": {
+    "J08_ultradeep_kanpou": "159143 byte manifest, ~1.5K URLs",
+    "J09_deep_courts_judiciary": "39214 byte manifest, courts.go.jp pagination + 国税不服審判所 + 公取委 + 中労委 + 行政不服審査会 + 人事院 + 知財高裁",
+    "J09_ultradeep_courts_judiciary": "192607 byte manifest",
+    "J10_ultradeep_houmu_registry": "128660 byte manifest",
+    "J11_ultradeep_estat_statistics": "279370 byte manifest",
+    "J12_ultradeep_kokkai_minutes": "291496 byte manifest, 国会会議録 + 47 都道府県議会 + 20 政令市議会",
+    "J13_ultradeep_edinet_xbrl": "292550 byte manifest, EDINET XBRL deep crawl",
+    "J14_ultradeep_jpo_patent_gazette": "130145 byte manifest, JPO patent/utility model/design/trademark gazette",
+    "J15_ultradeep_env_ministry": "42154 byte manifest, 環境省 deep crawl",
+    "J16_canonical_pdf_corpus": "19681 byte manifest, ~220 canonical 公的 PDF URLs"
+  }
+}
