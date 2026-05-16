@@ -190,7 +190,7 @@ class Fetcher:
             encoding="utf-8",
         )
         self._client = client or httpx.Client(
-            http2=True,
+            http2=False,  # h2 package not in requirements; HTTP/1.1 is sufficient for crawl
             follow_redirects=True,
             timeout=policy.timeout_seconds,
             headers=client_headers,
