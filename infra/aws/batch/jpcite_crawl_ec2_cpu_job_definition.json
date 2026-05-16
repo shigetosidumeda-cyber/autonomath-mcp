@@ -1,0 +1,57 @@
+{
+  "jobDefinitionName": "jpcite-crawl-ec2-cpu",
+  "type": "container",
+  "platformCapabilities": ["EC2"],
+  "propagateTags": true,
+  "tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "Workload": "j06_pdf_extract_ec2",
+    "AutoStop": "2026-05-29"
+  },
+  "containerProperties": {
+    "image": "993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:latest",
+    "command": [
+      "python",
+      "/app/entrypoint.py"
+    ],
+    "jobRoleArn": "arn:aws:iam::993693061769:role/jpcite-batch-job-role",
+    "executionRoleArn": "arn:aws:iam::993693061769:role/ecsTaskExecutionRole",
+    "resourceRequirements": [
+      {"type": "VCPU", "value": "16"},
+      {"type": "MEMORY", "value": "30720"}
+    ],
+    "environment": [
+      {"name": "AWS_DEFAULT_REGION", "value": "ap-northeast-1"},
+      {"name": "RAW_BUCKET", "value": "jpcite-credit-993693061769-202605-raw"},
+      {"name": "PLATFORM_CAPABILITY", "value": "EC2"}
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/batch/jpcite-credit-2026-05",
+        "awslogs-region": "ap-northeast-1",
+        "awslogs-stream-prefix": "jpcite-crawl-ec2-cpu"
+      }
+    }
+  },
+  "timeout": {
+    "attemptDurationSeconds": 14400
+  },
+  "retryStrategy": {
+    "attempts": 2,
+    "evaluateOnExit": [
+      {"onReason": "Host*", "action": "RETRY"},
+      {"onReason": "Spot*", "action": "RETRY"},
+      {"onExitCode": "0", "action": "EXIT"}
+    ]
+  },
+  "_notes": {
+    "purpose": "EC2 Spot CPU heavy job def for J06 PDF extraction (Textract integration + heavy CPU/memory). Bigger memory footprint (30 GiB) vs Fargate jpcite-crawl-heavy (32 GiB) but EC2-native to leverage Spot CE jpcite-credit-ec2-spot-cpu (512 vCPU cap, SPOT_CAPACITY_OPTIMIZED, allocation 'optimal').",
+    "register_cmd": "aws batch register-job-definition --cli-input-json file://infra/aws/batch/jpcite_crawl_ec2_cpu_job_definition.json --profile bookyou-recovery --region ap-northeast-1",
+    "submit_example": "aws batch submit-job --job-name jpcite-j06-ec2-$(date -u +%Y%m%dT%H%M%SZ) --job-queue jpcite-credit-ec2-spot-cpu-queue --job-definition jpcite-crawl-ec2-cpu --container-overrides '{\"environment\":[{\"name\":\"JOB_MANIFEST\",\"value\":\"J06_deep_ministry_pdf_full\"}]}' --profile bookyou-recovery --region ap-northeast-1",
+    "memory_note": "30720 MiB (30 GiB) — sized for r5.xlarge / m5.2xlarge class instances on Spot. Pure 32768 (32 GiB) would force m5.2xlarge (32 GiB ec2 memory minus ECS reserve ~2 GiB = unallocatable on Spot). 30720 fits comfortably under 32 GiB instance memory minus daemon overhead.",
+    "interruption_note": "EC2 Spot may be reclaimed mid-job (2-min termination notice). Retry strategy retries on Spot interruption reason; J06 sweep is idempotent at the URL level (object_manifest dedupe), so partial progress is safe.",
+    "provisioning_latency_note": "Spot CE provisioning of a fresh instance is typically 2-5 min vs Fargate <1 min. Warm pool reuse can drop to 30s on subsequent submissions."
+  }
+}
