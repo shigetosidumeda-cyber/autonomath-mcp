@@ -130,7 +130,7 @@ dependencies = [
 dev = [
     "pytest>=8.3",
     "pytest-asyncio>=0.24",
-    "pytest-cov>=6.0",
+    "pytest-cov>=7.1.0",
     # PERF-1 (2026-05-16): pytest-xdist enables process-level parallelism
     # (`pytest -n auto`) — cuts local + CI wall time materially on the 10K+
     # test suite. Pinned >=3.6 for `--dist loadscope` + `loadgroup` reliability.
