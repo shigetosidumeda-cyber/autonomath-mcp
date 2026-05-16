@@ -2153,6 +2153,136 @@
   {
     "billable": true,
     "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 Fintech license inventory packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "fintech_license_inventory_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 crypto asset disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "crypto_asset_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 資金決済法 compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "payment_service_act_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 stablecoin 発行体 signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "stablecoin_issuer_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 DeFi platform disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "defi_platform_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 digital yen (CBDC) pilot packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "digital_yen_pilot_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 Fintech サンドボックス 参加 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "fintech_sandbox_participation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 API バンキング compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "api_banking_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 モバイル決済 intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "mobile_payment_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 不正使用警告 disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "fraud_alert_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
     "display_name": "業種別 AI governance 開示 packet",
     "no_hit_semantics": "no_hit_not_absence",
     "outcome_contract_id": "ai_governance_disclosure_packet",
@@ -2533,6 +2663,266 @@
     "display_name": "法人 risk 360 packet (HHI + grant intensity + violation count)",
     "no_hit_semantics": "no_hit_not_absence",
     "outcome_contract_id": "entity_risk_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 workforce demographic signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "workforce_demographic_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 HR subsidy uptake packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "hr_subsidy_uptake_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 labor standard violation packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "labor_standard_violation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 overtime intensity disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "overtime_intensity_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 paid leave compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "paid_leave_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 diversity inclusion program packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "diversity_inclusion_program_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 foreign worker program packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "foreign_worker_program_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 internship program intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "internship_program_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 executive succession planning packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "executive_succession_planning_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 wage gap disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "wage_gap_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 unicorn potential signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "unicorn_potential_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 VC funding milestone pulse packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vc_funding_milestone_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 J-Startup certification packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "j_startup_certification_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 deeptech subsidy intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "deeptech_subsidy_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 university spinout signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "university_spinout_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 angel investor overlap packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "angel_investor_overlap_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 incubator program participation packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "incubator_program_participation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 research grant chain packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "research_grant_chain_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 IP creation velocity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "ip_creation_velocity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 growth metric disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "growth_metric_disclosure_packet",
     "packet_ids": [
       "summary",
       "source_receipts",

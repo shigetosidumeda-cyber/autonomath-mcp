@@ -109,7 +109,17 @@
     "entity_succession_360_packet",
     "entity_partner_360_packet",
     "entity_temporal_pulse_packet",
-    "entity_risk_360_packet"
+    "entity_risk_360_packet",
+    "workforce_demographic_signal_packet",
+    "hr_subsidy_uptake_packet",
+    "labor_standard_violation_packet",
+    "overtime_intensity_disclosure_packet",
+    "paid_leave_compliance_packet",
+    "diversity_inclusion_program_packet",
+    "foreign_worker_program_packet",
+    "internship_program_intensity_packet",
+    "executive_succession_planning_packet",
+    "wage_gap_disclosure_packet"
   ],
   "crosswalk": [
     {

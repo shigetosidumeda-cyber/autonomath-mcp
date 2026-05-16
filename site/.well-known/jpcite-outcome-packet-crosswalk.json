@@ -1,7 +1,7 @@
 {
   "schema_version": "jpcite.outcome_packet_athena_crosswalk.v1",
   "catalog_id": "jpcite-outcome-packet-athena-crosswalk-2026-05-16",
-  "generated_at": "2026-05-16T19:35:00+09:00",
+  "generated_at": "2026-05-16T20:30:00+09:00",
   "source_documents": {
     "outcome_catalog": "site/.well-known/jpcite-outcome-catalog.json",
     "outcome_contract_catalog": "site/releases/rc1-p0-bootstrap/outcome_contract_catalog.json",
@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 202,
+  "total_outcomes": 232,
   "wired_count": 69,
-  "pending_count": 133,
+  "pending_count": 163,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -3507,6 +3507,206 @@
       "status": "PENDING"
     },
     {
+      "outcome_id": "fintech_license_inventory_packet",
+      "display_name": "業種別 Fintech license inventory packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_fintech_license_inventory_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "crypto_asset_disclosure_packet",
+      "display_name": "業種別 crypto asset disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_crypto_asset_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "payment_service_act_compliance_packet",
+      "display_name": "業種別 資金決済法 compliance packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_payment_service_act_compliance_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "stablecoin_issuer_signal_packet",
+      "display_name": "業種別 stablecoin 発行体 signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_stablecoin_issuer_signal_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "defi_platform_disclosure_packet",
+      "display_name": "業種別 DeFi platform disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_defi_platform_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "digital_yen_pilot_packet",
+      "display_name": "業種別 digital yen (CBDC) pilot packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_digital_yen_pilot_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "fintech_sandbox_participation_packet",
+      "display_name": "業種別 Fintech サンドボックス 参加 packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_fintech_sandbox_participation_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "api_banking_compliance_packet",
+      "display_name": "業種別 API バンキング compliance packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_api_banking_compliance_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "mobile_payment_intensity_packet",
+      "display_name": "業種別 モバイル決済 intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_mobile_payment_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "fraud_alert_disclosure_packet",
+      "display_name": "業種別 不正使用警告 disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_fraud_alert_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
       "outcome_id": "ai_governance_disclosure_packet",
       "display_name": "業種別 AI governance 開示 packet",
       "billable": true,
@@ -3898,6 +4098,406 @@
         "known_gaps"
       ],
       "packet_generator": "generate_entity_risk_360_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "workforce_demographic_signal_packet",
+      "display_name": "業種別 workforce demographic signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_workforce_demographic_signal_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "hr_subsidy_uptake_packet",
+      "display_name": "業種別 HR subsidy uptake packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_hr_subsidy_uptake_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "labor_standard_violation_packet",
+      "display_name": "業種別 labor standard violation packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_labor_standard_violation_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "overtime_intensity_disclosure_packet",
+      "display_name": "業種別 overtime intensity disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_overtime_intensity_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "paid_leave_compliance_packet",
+      "display_name": "業種別 paid leave compliance packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_paid_leave_compliance_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "diversity_inclusion_program_packet",
+      "display_name": "業種別 diversity inclusion program packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_diversity_inclusion_program_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "foreign_worker_program_packet",
+      "display_name": "業種別 foreign worker program packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_foreign_worker_program_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "internship_program_intensity_packet",
+      "display_name": "業種別 internship program intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_internship_program_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "executive_succession_planning_packet",
+      "display_name": "業種別 executive succession planning packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_executive_succession_planning_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "wage_gap_disclosure_packet",
+      "display_name": "業種別 wage gap disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_wage_gap_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "unicorn_potential_signal_packet",
+      "display_name": "業種別 unicorn potential signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_unicorn_potential_signal_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "vc_funding_milestone_pulse_packet",
+      "display_name": "業種別 VC funding milestone pulse packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_vc_funding_milestone_pulse_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "j_startup_certification_packet",
+      "display_name": "業種別 J-Startup certification packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_j_startup_certification_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "deeptech_subsidy_intensity_packet",
+      "display_name": "業種別 deeptech subsidy intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_deeptech_subsidy_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "university_spinout_signal_packet",
+      "display_name": "業種別 university spinout signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_university_spinout_signal_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "angel_investor_overlap_packet",
+      "display_name": "業種別 angel investor overlap packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_angel_investor_overlap_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "incubator_program_participation_packet",
+      "display_name": "業種別 incubator program participation packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_incubator_program_participation_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "research_grant_chain_packet",
+      "display_name": "業種別 research grant chain packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_research_grant_chain_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "ip_creation_velocity_packet",
+      "display_name": "業種別 IP creation velocity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_ip_creation_velocity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "growth_metric_disclosure_packet",
+      "display_name": "業種別 growth metric disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_growth_metric_disclosure_packets.py",
       "s3_path": null,
       "glue_database": null,
       "glue_table": null,
