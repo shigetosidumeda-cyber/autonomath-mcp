@@ -909,6 +909,226 @@
       "known_gaps": [
         "coverage_thin"
       ]
+    },
+    {
+      "outcome_contract_id": "patent_environmental_link_packet",
+      "display_name": "Patent × environmental link packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8200,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "diet_question_amendment_correlate_packet",
+      "display_name": "Diet question × amendment correlate packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "program",
+        "id_hint": "program_entity_id"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8600,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "edinet_program_subsidy_compounding_packet",
+      "display_name": "EDINET × program subsidy compounding packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": true,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 11800,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "kanpou_program_event_link_packet",
+      "display_name": "官報 × program event link packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "program",
+        "id_hint": "program_entity_id"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 2000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 4600,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "kfs_saiketsu_industry_radar_packet",
+      "display_name": "国税不服審判所 × 業種 radar packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "query",
+        "id_hint": "tax_type"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 7400,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "municipal_budget_match_packet",
+      "display_name": "47都道府県 × 補助金 budget match packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "prefecture"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 7900,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "trademark_industry_density_packet",
+      "display_name": "商標 × 業種 density packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 2000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 5300,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "environmental_disposal_radar_packet",
+      "display_name": "廃棄物処理 × 行政処分 radar packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "issuing_authority"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "regulatory_change_industry_impact_packet",
+      "display_name": "法令改正 × 業種影響 packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8800,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "gbiz_invoice_dispatch_match_packet",
+      "display_name": "gBizINFO × インボイス × 取引パターン packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "invoice",
+        "id_hint": "invoice_registration_number"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 7600,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
     }
   ]
 }

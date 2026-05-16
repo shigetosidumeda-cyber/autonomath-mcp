@@ -589,5 +589,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Patent × environmental link packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "patent_environmental_link_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Diet question × amendment correlate packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "diet_question_amendment_correlate_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "EDINET × program subsidy compounding packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "edinet_program_subsidy_compounding_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "官報 × program event link packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "kanpou_program_event_link_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "国税不服審判所 × 業種 radar packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "kfs_saiketsu_industry_radar_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "47都道府県 × 補助金 budget match packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "municipal_budget_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "商標 × 業種 density packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "trademark_industry_density_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "廃棄物処理 × 行政処分 radar packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "environmental_disposal_radar_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法令改正 × 業種影響 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regulatory_change_industry_impact_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "gBizINFO × インボイス × 取引パターン packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "gbiz_invoice_dispatch_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
