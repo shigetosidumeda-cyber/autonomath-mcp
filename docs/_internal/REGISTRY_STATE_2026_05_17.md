@@ -5,6 +5,10 @@ lane: solo
 constraint: do_not_submit_self (publishing is operator decision)
 supersedes: docs/_internal/registry_status_2026_05_16_PM3.md (additive; original retained as historical state marker)
 verified_with: curl -sI (HEAD probe) + curl GET (HTML body inspect) + canonical registry API
+commit_lineage:
+  - 8d516d32333dbc3437bf3be76b5e4322e63e8425 (file landed via parallel-agent bundle with FAISS dry-run doc; this state doc was authored independently for Wave 49 G2 registry refresh lane)
+  - this commit (bind-back: explicit registry lane attribution + verify_log re-anchored at 2026-05-17 morning)
+index_entry: REGISTRY_STATE_2026_05_17 (canonical registry refresh verify SOT for 2026-05-17)
 ---
 
 # Registry State 2026-05-17
