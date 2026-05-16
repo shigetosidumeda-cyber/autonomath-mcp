@@ -1,0 +1,12 @@
+{
+  "outcome_id": "evidence_answer",
+  "expected_price_jpy": 600,
+  "assertions": [
+    "schema_present",
+    "known_gaps_valid",
+    "packet_size_within_band",
+    "citation_uri_valid",
+    "packet_freshness"
+  ],
+  "notes": "Citation-grounded evidence answer (e-Gov law primary + official notice + receipt graph). Price band: accepted_artifact_standard → ¥600 → 16 KB."
+}

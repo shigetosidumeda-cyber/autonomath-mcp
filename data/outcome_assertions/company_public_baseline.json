@@ -1,0 +1,12 @@
+{
+  "outcome_id": "company_public_baseline",
+  "expected_price_jpy": 600,
+  "assertions": [
+    "schema_present",
+    "known_gaps_valid",
+    "packet_size_within_band",
+    "citation_uri_valid",
+    "packet_freshness"
+  ],
+  "notes": "gBizINFO + nta_invoice + EDINET corporate identity baseline. Price band: accepted_artifact_standard → ¥600 → 16 KB."
+}

@@ -1,0 +1,12 @@
+{
+  "outcome_id": "application_strategy",
+  "expected_price_jpy": 900,
+  "assertions": [
+    "schema_present",
+    "known_gaps_valid",
+    "packet_size_within_band",
+    "citation_uri_valid",
+    "packet_freshness"
+  ],
+  "notes": "jgrants + sme_agency + local notice subsidy strategy pack. Price band: accepted_artifact_premium → ¥900 → 25 KB."
+}

@@ -1,0 +1,12 @@
+{
+  "outcome_id": "local_government_permit_obligation_map",
+  "expected_price_jpy": 900,
+  "assertions": [
+    "schema_present",
+    "known_gaps_valid",
+    "packet_size_within_band",
+    "citation_uri_valid",
+    "packet_freshness"
+  ],
+  "notes": "Local government notice + e-Gov national rule baseline permit map. Price band: accepted_artifact_premium → ¥900 → 25 KB."
+}

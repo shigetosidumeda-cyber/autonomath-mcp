@@ -1,0 +1,12 @@
+{
+  "outcome_id": "invoice_registrant_public_check",
+  "expected_price_jpy": 300,
+  "assertions": [
+    "schema_present",
+    "known_gaps_valid",
+    "packet_size_within_band",
+    "citation_uri_valid",
+    "packet_freshness"
+  ],
+  "notes": "NTA qualified invoice registrant status. Price band: accepted_artifact_low → ¥300 → 8 KB."
+}

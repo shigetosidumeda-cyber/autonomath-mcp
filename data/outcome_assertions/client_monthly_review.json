@@ -1,0 +1,12 @@
+{
+  "outcome_id": "client_monthly_review",
+  "expected_price_jpy": 900,
+  "assertions": [
+    "schema_present",
+    "known_gaps_valid",
+    "packet_size_within_band",
+    "citation_uri_valid",
+    "packet_freshness"
+  ],
+  "notes": "Tax advisor / accounting firm monthly client watchlist (gBizINFO + NTA invoice + jgrants + e-Gov). Price band: accepted_artifact_premium → ¥900 → 25 KB."
+}
