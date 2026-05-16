@@ -1,0 +1,72 @@
+{
+  "// purpose": "PERF-12 (2026-05-16): editor auto-format on save for jpcite contributors. Mirrors the pre-commit hook chain (ruff --fix / ruff-format / mypy strict). Keeps in-editor saves byte-equivalent to what 'make pre-commit-run' would emit.",
+
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.ruff": "explicit",
+    "source.organizeImports.ruff": "explicit"
+  },
+
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4
+  },
+
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.tabSize": 2
+  },
+
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.tabSize": 2
+  },
+
+  "[yaml]": {
+    "editor.tabSize": 2
+  },
+
+  "[markdown]": {
+    "editor.tabSize": 2,
+    "editor.trimAutoWhitespace": false
+  },
+
+  "[makefile]": {
+    "editor.insertSpaces": false
+  },
+
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+
+  "ruff.path": [".venv/bin/ruff"],
+  "ruff.nativeServer": "on",
+  "ruff.organizeImports": true,
+  "ruff.fixAll": true,
+
+  "mypy-type-checker.path": [".venv/bin/mypy"],
+  "mypy-type-checker.args": ["--strict"],
+
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+
+  "files.exclude": {
+    "**/.ruff_cache": true,
+    "**/.mypy_cache": true,
+    "**/.pytest_cache": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true
+  },
+
+  "search.exclude": {
+    "**/.ruff_cache": true,
+    "**/.mypy_cache": true,
+    "**/.pytest_cache": true,
+    "**/.venv": true,
+    "**/node_modules": true,
+    "**/data/*.db": true,
+    "**/data/*.db-*": true,
+    "**/_archive/**": true
+  }
+}

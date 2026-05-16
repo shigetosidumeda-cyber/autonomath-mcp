@@ -1,0 +1,62 @@
+# EditorConfig — jpcite (PERF-12, 2026-05-16)
+# https://editorconfig.org
+#
+# Cross-editor charset / indent / EOL contract so file mutations by humans
+# stay byte-equivalent to what `ruff format` + `pre-commit run --all-files`
+# would have emitted. Keeps the pre-commit hook from rewriting a freshly-
+# saved file on every commit (a frequent cause of "noisy diff" PRs).
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+# Python — match ruff format (line length 100 declared in pyproject.toml).
+[*.py]
+indent_size = 4
+max_line_length = 100
+
+# YAML — GitHub Actions / pre-commit / kustomize-style. 2-space is the
+# almost-universal convention; yamllint enforces it in CI.
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON — including OpenAPI / MCP manifests / schemas. 2-space matches the
+# canonical artifacts shipped under docs/openapi/, schemas/jpcir/, etc.
+[*.{json,jsonl}]
+indent_size = 2
+
+# Markdown — leave trailing whitespace alone (used for hard line breaks).
+[*.md]
+trim_trailing_whitespace = false
+indent_size = 2
+
+# Makefiles use real tabs.
+[Makefile]
+indent_style = tab
+
+# Shell scripts — match google-shellcheck / scripts/ops/ conventions.
+[*.{sh,bash}]
+indent_size = 2
+
+# TOML — pyproject.toml / fly.toml.
+[*.toml]
+indent_size = 4
+
+# HTML / templates (site/*.html, mkdocs templates).
+[*.{html,j2}]
+indent_size = 2
+
+# CSS / JS — minimal surfaces; 2-space.
+[*.{css,js,ts}]
+indent_size = 2
+
+# Shift_JIS legacy files are explicitly tracked in their own dir, never
+# rewritten by editors — see CLAUDE.md "Common gotchas".
+[*.sjis]
+charset = shift_jis
+end_of_line = crlf
