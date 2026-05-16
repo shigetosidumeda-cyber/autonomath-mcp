@@ -36,5 +36,11 @@ TBLPROPERTIES (
   'project'        = 'jpcite',
   'credit_run'     = '2026-05',
   'auto_stop'      = '2026-05-29',
-  'contract'       = 'jpcir.source_receipt.v1'
+  'contract'       = 'jpcir.source_receipt.v1',
+  -- PERF-38 (2026-05-17): partition projection. See object_manifest.sql
+  -- for the rationale. source_receipts is the hot-path join target for
+  -- claim_refs queries — Glue catalog round-trip per UNNEST + JOIN was
+  -- ~300ms; projection collapses it to single-digit ms.
+  'projection.enabled'    = 'true',
+  'projection.run_id.type' = 'injected'
 );

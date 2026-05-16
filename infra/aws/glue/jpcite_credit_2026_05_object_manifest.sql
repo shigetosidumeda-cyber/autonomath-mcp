@@ -35,5 +35,16 @@ TBLPROPERTIES (
   'project'        = 'jpcite',
   'credit_run'     = '2026-05',
   'auto_stop'      = '2026-05-29',
-  'contract'       = 'jpcir.object_manifest.v1'
+  'contract'       = 'jpcir.object_manifest.v1',
+  -- PERF-38 (2026-05-17): partition projection. The run_id partition
+  -- key is opaque (per-crawl ULID/UUID set by the writer) so
+  -- `projection.run_id.type = injected` makes Athena trust the value
+  -- coming from the WHERE clause without round-tripping Glue
+  -- `GetPartitions`. Eliminates the MSCK REPAIR loop and removes the
+  -- Glue catalog hop from every query — typical hot-path speedup
+  -- 200ms-2s per query on tables with hundreds of partitions.
+  -- Query MUST always filter `WHERE run_id = '...'` (no full-table
+  -- scans) — Athena returns an empty result when run_id is omitted.
+  'projection.enabled'   = 'true',
+  'projection.run_id.type' = 'injected'
 );

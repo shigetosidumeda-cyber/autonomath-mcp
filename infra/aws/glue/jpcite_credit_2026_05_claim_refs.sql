@@ -36,5 +36,10 @@ TBLPROPERTIES (
   'project'        = 'jpcite',
   'credit_run'     = '2026-05',
   'auto_stop'      = '2026-05-29',
-  'contract'       = 'jpcir.claim_ref.v1'
+  'contract'       = 'jpcir.claim_ref.v1',
+  -- PERF-38 (2026-05-17): partition projection. See object_manifest.sql
+  -- for the rationale. claim_refs is the AI-facing fact ledger; every
+  -- agent-facing lookup hit Glue catalog before this lands.
+  'projection.enabled'    = 'true',
+  'projection.run_id.type' = 'injected'
 );
