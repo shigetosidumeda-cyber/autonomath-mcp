@@ -849,5 +849,395 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "制度改正履歴 + 影響期間 v2 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "program_amendment_timeline_v2_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "行政処分 月別季節性 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "enforcement_seasonal_trend_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "採択事例 fiscal year cycle packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "adoption_fiscal_cycle_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "税制 段階変更 timeline packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "tax_ruleset_phase_change_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "インボイス登録 速度トレンド packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "invoice_registration_velocity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法令改正 Q-over-Q 差分 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regulatory_q_over_q_diff_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "申請期間 forecast packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "subsidy_application_window_predict_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "入札公告 季節性 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "bid_announcement_seasonality_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "事業承継 events pulse packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "succession_event_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "官報 event burst detector packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "kanpou_event_burst_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "47都道府県 × 制度 密度 heatmap packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "prefecture_program_heatmap_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "政令市 補助金 inventory packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "municipality_subsidy_inventory_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "地域 × 業種 適合 matcher packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "region_industry_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "都道府県間 制度 arbitrage packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cross_prefecture_arbitrage_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "自治体規模 × 補助金率 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "city_size_subsidy_propensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "地域別 行政処分 密度 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regional_enforcement_density_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "都道府県別 判例 focus packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "prefecture_court_decision_focus_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "市区町村 適格事業者密度 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "city_jct_density_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "過疎地域補助金 coverage packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "rural_subsidy_coverage_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "都道府県 環境compliance score packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "prefecture_environmental_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 親子関係 cross-ref packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "houjin_parent_subsidiary_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "取引先 360 (双方向 due diligence) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "business_partner_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "役員 兼任 network packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "board_member_overlap_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "設立 → 後継 chain packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "founding_succession_chain_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "認証 × 法人 (ISO/JIS/GMP) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "certification_houjin_link_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "許認可 × 法人 × 管轄 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "license_houjin_jurisdiction_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "雇用 × 制度適格 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "employment_program_eligibility_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "取引先 支払履歴 match (公開部分) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vendor_payment_history_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業界団体 × 法人 link packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "industry_association_link_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "上場法人 × 公開制度 link packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "public_listed_program_link_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
