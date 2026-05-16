@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
   "generated_at": "2026-05-16T20:30:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 262,
+  "total_outcomes": 282,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -6008,6 +6008,196 @@
       "estimated_tokens_saved": 9100,
       "public_source_family_ids": [],
       "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "scope1_2_disclosure_completeness_packet",
+      "display_name": "業種別 Scope 1+2 disclosure completeness packet",
+      "description": "業種別 Scope 1+2 GHG 排出量 disclosure completeness descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "biodiversity_disclosure_packet",
+      "display_name": "業種別 biodiversity disclosure packet",
+      "description": "業種別 生物多様性 / TNFD / 30by30 OECM disclosure descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "water_stewardship_signal_packet",
+      "display_name": "業種別 water stewardship signal packet",
+      "description": "業種別 水資源 / 取水量 / 排水量 / AWS 認証 / 水ストレス intensity descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "human_rights_due_diligence_packet",
+      "display_name": "業種別 human rights due diligence packet",
+      "description": "業種別 人権 DD (UNGPs / OECD MNE / 経産省 人権 DD 指針) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "community_engagement_intensity_packet",
+      "display_name": "業種別 community engagement intensity packet",
+      "description": "業種別 地域貢献 / 商工会議所 / NPO 連携 / 地方創生 SDGs intensity descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "circular_economy_signal_packet",
+      "display_name": "業種別 circular economy signal packet",
+      "description": "業種別 サーキュラーエコノミー / 資源循環 / EU ESPR signal descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "product_safety_recall_intensity_packet",
+      "display_name": "業種別 product safety recall intensity packet",
+      "description": "業種別 製品安全 / リコール / 消安法 / NITE intensity descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "animal_welfare_disclosure_packet",
+      "display_name": "業種別 animal welfare disclosure packet",
+      "description": "業種別 アニマルウェルフェア (WOAH / 農水省 AW 指針 / 3Rs) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "modern_slavery_compliance_packet",
+      "display_name": "業種別 modern slavery compliance packet",
+      "description": "業種別 現代奴隷法 (UK MSA §54 / US UFLPA / EU FLR / 技能実習) compliance descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "conflict_mineral_disclosure_packet",
+      "display_name": "業種別 conflict mineral disclosure packet",
+      "description": "業種別 紛争鉱物 (3TG + Cobalt / Dodd-Frank §1502 / EU CMR / OECD DD / RMI CMRT) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
     }
   ],
   "filters": {

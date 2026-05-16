@@ -3319,5 +3319,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 Scope 1+2 disclosure completeness packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "scope1_2_disclosure_completeness_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 biodiversity disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "biodiversity_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 water stewardship signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "water_stewardship_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 human rights due diligence packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "human_rights_due_diligence_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 community engagement intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "community_engagement_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 circular economy signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "circular_economy_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 product safety recall intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "product_safety_recall_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 animal welfare disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "animal_welfare_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 modern slavery compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "modern_slavery_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 conflict mineral disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "conflict_mineral_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

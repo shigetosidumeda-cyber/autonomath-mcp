@@ -1636,6 +1636,45 @@ for _name, _prefix in _WAVE_79_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 81 ESG materiality cross packet tables (10 generators, 2026-05-16). All
+# share the jsic_major industry cohort with descriptive adoption_n proxy covering
+# Scope 1+2 disclosure completeness (環境省 / 経産省 GHG 報告) / biodiversity
+# disclosure (TNFD / 30by30 OECM) / water stewardship signal (環境省 水質 /
+# AWS Alliance for Water Stewardship) / human rights due diligence (UNGPs /
+# OECD MNE / 経産省 人権 DD 指針) / community engagement intensity (内閣府
+# まち・ひと・しごと創生 / 商工会議所) / circular economy signal (資源有効
+# 利用促進法 / 容リ法 / EU ESPR) / product safety recall intensity (消安法 /
+# 食品衛生法 / NITE) / animal welfare disclosure (WOAH / 農水省 AW 指針 /
+# 3Rs) / modern slavery compliance (UK MSA §54 / US UFLPA / EU FLR / 技能実習)
+# / conflict mineral disclosure (3TG + Cobalt / Dodd-Frank §1502 / EU CMR /
+# RMI CMRT). Reuse the shared super-set columns; topic-specific fields land in
+# raw_json.
+_WAVE_81_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_scope1_2_disclosure_completeness_v1",
+        "scope1_2_disclosure_completeness_v1/",
+    ),
+    ("packet_biodiversity_disclosure_v1", "biodiversity_disclosure_v1/"),
+    ("packet_water_stewardship_signal_v1", "water_stewardship_signal_v1/"),
+    ("packet_human_rights_due_diligence_v1", "human_rights_due_diligence_v1/"),
+    (
+        "packet_community_engagement_intensity_v1",
+        "community_engagement_intensity_v1/",
+    ),
+    ("packet_circular_economy_signal_v1", "circular_economy_signal_v1/"),
+    (
+        "packet_product_safety_recall_intensity_v1",
+        "product_safety_recall_intensity_v1/",
+    ),
+    ("packet_animal_welfare_disclosure_v1", "animal_welfare_disclosure_v1/"),
+    ("packet_modern_slavery_compliance_v1", "modern_slavery_compliance_v1/"),
+    ("packet_conflict_mineral_disclosure_v1", "conflict_mineral_disclosure_v1/"),
+]
+
+for _name, _prefix in _WAVE_81_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
@@ -1696,14 +1735,18 @@ def main() -> None:
             summary.append({"table": table, "prefix": prefix, "exec_id": qid, "state": "OK"})
             print(f"[ok] {table:48s}  {prefix:42s}  exec={qid}", flush=True)
         except Exception as e:  # noqa: BLE001
-            summary.append({"table": table, "prefix": prefix, "state": "FAIL", "error": str(e)[:200]})
+            summary.append(
+                {"table": table, "prefix": prefix, "state": "FAIL", "error": str(e)[:200]}
+            )
             print(f"[fail] {table:48s}  {prefix:42s}  err={str(e)[:160]}", flush=True)
 
     out_path = "out/glue_packet_table_register.json"
     os.makedirs("out", exist_ok=True)
     with open(out_path, "w") as fh:
         json.dump({"database": DATABASE, "tables": summary}, fh, indent=2)
-    print(f"[summary] wrote {out_path}  total={len(summary)}  ok={sum(1 for s in summary if s['state']=='OK')}")
+    print(
+        f"[summary] wrote {out_path}  total={len(summary)}  ok={sum(1 for s in summary if s['state'] == 'OK')}"
+    )
 
 
 if __name__ == "__main__":
