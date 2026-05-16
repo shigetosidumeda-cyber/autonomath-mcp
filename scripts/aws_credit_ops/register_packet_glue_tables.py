@@ -1860,6 +1860,97 @@ for _name, _prefix in _WAVE_85_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 86 social media / digital presence cross packet tables (10 generators,
+# 2026-05-17). All share the jsic_major industry cohort with descriptive
+# adoption_n proxy covering 公式 corporate website signal (特商法表記 / プライ
+# バシーポリシー / cookie consent / SSL 適合) / SNS account inventory (X /
+# LinkedIn / Instagram / verified / ステマ告示遵守) / content publication
+# velocity (オウンドメディア / プレスリリース / 業法広告基準) / influencer
+# partnership (タイアップ / #PR 表記 / アフィリエイト開示) / digital marketing
+# spend proxy (検索広告 / SEO / SNS 広告 / ROAS / Ad fraud / DSP・SSP 透明性)
+# / review sentiment (口コミ件数 / やらせ review / 削除申立 / 名誉毀損) /
+# employer brand (採用 site / OpenWork / Indeed / 職業安定法) / IR intensity
+# (決算説明会 / TCFD / SS・CGコード / フェアディスクロージャー) / press
+# release pulse (PR TIMES / 適時開示) / community forum engagement (Slack /
+# Discord / Qiita / Zenn / GitHub Discussions / OSS ライセンス遵守)。Reuse
+# the shared super-set columns; topic-specific fields land in raw_json.
+_WAVE_86_TABLES: list[tuple[str, str]] = [
+    ("packet_corporate_website_signal_v1", "corporate_website_signal_v1/"),
+    (
+        "packet_social_media_account_inventory_v1",
+        "social_media_account_inventory_v1/",
+    ),
+    (
+        "packet_content_publication_velocity_v1",
+        "content_publication_velocity_v1/",
+    ),
+    (
+        "packet_influencer_partnership_signal_v1",
+        "influencer_partnership_signal_v1/",
+    ),
+    (
+        "packet_digital_marketing_spend_proxy_v1",
+        "digital_marketing_spend_proxy_v1/",
+    ),
+    ("packet_review_sentiment_aggregate_v1", "review_sentiment_aggregate_v1/"),
+    ("packet_employer_brand_signal_v1", "employer_brand_signal_v1/"),
+    (
+        "packet_investor_relations_intensity_v1",
+        "investor_relations_intensity_v1/",
+    ),
+    ("packet_press_release_pulse_v1", "press_release_pulse_v1/"),
+    ("packet_community_forum_engagement_v1", "community_forum_engagement_v1/"),
+]
+
+for _name, _prefix in _WAVE_86_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 88 corporate activism / political donation cross packet tables (10
+# generators, 2026-05-17). All share the jsic_major industry cohort with
+# descriptive adoption_n proxy covering 政治献金 record (政治資金規正法 報告
+# 書 / 政党支部 / 政治団体 寄附 / 内部統制) / ロビー活動 intensity (議員陳情 /
+# 業界団体 通じた要望 / パブコメ参加 / 議連活動) / 業界団体 加入 (経団連 /
+# 日商 / 同友会 / 業界別団体 / 協同組合) / 独禁法 settlement history (排除措
+# 置命令 / 課徴金納付命令 / 確約計画 / リニエンシー / 私訴和解) / 企業政治活
+# 動 signal (政策提言 / 意見広告 / 役員 公職就任 / OB 政策秘書 / 議連 個社派
+# 遣) / 政府委員会 seat (各府省 審議会 / 検討会 / 研究会 業界代表 / 学識委員)
+# / 公共政策 advocacy (パブコメ提出 / ホワイトペーパー / 政策提言レポート /
+# 自主規制 ガイドライン提案) / 規制関与 intensity (規制官庁 ヒアリング / 当局
+# 会合 / 規制サンドボックス / 事前協議 / RIA 参画) / Think tank 提携 (シンク
+# タンク 共同研究 / 寄附講座 / 産学連携 政策研究 / 政策提言シンクタンク 会員)
+# / Media relations pattern (記者会見 頻度 / プレスリリース量 / 業界メディア
+# 寄稿 / IR 取材対応 / 危機管理広報)。Reuse the shared super-set columns;
+# topic-specific fields land in raw_json.
+_WAVE_88_TABLES: list[tuple[str, str]] = [
+    ("packet_political_donation_record_v1", "political_donation_record_v1/"),
+    ("packet_lobby_activity_intensity_v1", "lobby_activity_intensity_v1/"),
+    (
+        "packet_trade_association_membership_v1",
+        "trade_association_membership_v1/",
+    ),
+    (
+        "packet_anti_trust_settlement_history_v1",
+        "anti_trust_settlement_history_v1/",
+    ),
+    (
+        "packet_corporate_political_activity_signal_v1",
+        "corporate_political_activity_signal_v1/",
+    ),
+    ("packet_government_committee_seat_v1", "government_committee_seat_v1/"),
+    ("packet_public_policy_advocacy_v1", "public_policy_advocacy_v1/"),
+    (
+        "packet_regulatory_engagement_intensity_v1",
+        "regulatory_engagement_intensity_v1/",
+    ),
+    ("packet_think_tank_partnership_v1", "think_tank_partnership_v1/"),
+    ("packet_media_relations_pattern_v1", "media_relations_pattern_v1/"),
+]
+
+for _name, _prefix in _WAVE_88_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)

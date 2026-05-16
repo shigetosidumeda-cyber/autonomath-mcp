@@ -1,9 +1,9 @@
 {
   "schema_version": "jpcite.outcome_catalog.public.v1",
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
-  "generated_at": "2026-05-16T23:50:00+09:00",
+  "generated_at": "2026-05-17T00:01:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 332,
+  "total_outcomes": 362,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -7148,6 +7148,386 @@
       "subject_id_hint": "jsic_major",
       "source_count": 2,
       "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "political_donation_record_packet",
+      "display_name": "業種別 political donation record packet",
+      "description": "業種別 政治献金 record / 政治資金規正法 報告書 / 政党支部 / 政治団体 寄附 / 内部統制 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "lobby_activity_intensity_packet",
+      "display_name": "業種別 lobby activity intensity packet",
+      "description": "業種別 ロビー活動 / 議員陳情 / 業界団体 通じた要望 / パブリックコメント参加 / 議連活動 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "trade_association_membership_packet",
+      "display_name": "業種別 trade association membership packet",
+      "description": "業種別 業界団体 加入 / 経団連 / 日商 / 同友会 / 業界別団体 / 協同組合 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "anti_trust_settlement_history_packet",
+      "display_name": "業種別 anti-trust settlement history packet",
+      "description": "業種別 独禁法 settlement / 公取委 排除措置命令 / 課徴金納付命令 / 確約計画 / リニエンシー / 私訴 和解 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "corporate_political_activity_signal_packet",
+      "display_name": "業種別 corporate political activity signal packet",
+      "description": "業種別 企業政治活動 / 政策提言 / 意見広告 / 役員 公職就任 / OB 政策秘書 / 議連 個社派遣 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "government_committee_seat_packet",
+      "display_name": "業種別 government committee seat packet",
+      "description": "業種別 政府委員会 seat / 各府省 審議会 / 検討会 / 研究会 業界代表 / 学識委員 / 産業政策委員 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "public_policy_advocacy_packet",
+      "display_name": "業種別 public policy advocacy packet",
+      "description": "業種別 公共政策 advocacy / パブリックコメント提出 / ホワイトペーパー / 政策提言レポート / 自主規制ガイドライン提案 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "regulatory_engagement_intensity_packet",
+      "display_name": "業種別 regulatory engagement intensity packet",
+      "description": "業種別 規制関与 / 規制官庁 ヒアリング / 当局 会合 / 規制サンドボックス / 事前協議 / 規制影響評価 RIA 参画 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "think_tank_partnership_packet",
+      "display_name": "業種別 think tank partnership packet",
+      "description": "業種別 シンクタンク 共同研究 / 寄附講座 / 産学連携 政策研究 / 政策提言シンクタンク 会員 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "media_relations_pattern_packet",
+      "display_name": "業種別 media relations pattern packet",
+      "description": "業種別 メディア対応 / 記者会見 頻度 / プレスリリース量 / 業界メディア寄稿 / IR 取材対応 / 危機管理広報 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "corporate_website_signal_packet",
+      "display_name": "業種別 corporate website signal packet",
+      "description": "業種別 corporate website / SSL 適合 / プライバシーポリシー / 特商法表記 / cookie consent (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "social_media_account_inventory_packet",
+      "display_name": "業種別 social media account inventory packet",
+      "description": "業種別 公式 SNS (X / LinkedIn / Facebook / Instagram / YouTube / TikTok / note) account / verified / ステマ告示遵守 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "content_publication_velocity_packet",
+      "display_name": "業種別 content publication velocity packet",
+      "description": "業種別 オウンドメディア / プレスリリース / コラム / ホワイトペーパー / 動画 publish 頻度 / 業法広告基準 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "influencer_partnership_signal_packet",
+      "display_name": "業種別 influencer partnership signal packet",
+      "description": "業種別 タイアップ広告 / アンバサダー契約 / #PR 表記 / アフィリエイト開示 / ライブコマース (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "digital_marketing_spend_proxy_packet",
+      "display_name": "業種別 digital marketing spend proxy packet",
+      "description": "業種別 検索広告 / SEO / SNS 広告 / ディスプレイ / アフィリエイト / EFO / MA / 媒体費 mix (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "review_sentiment_aggregate_packet",
+      "display_name": "業種別 review sentiment aggregate packet",
+      "description": "業種別 口コミ件数 / 星 / やらせ review risk / 削除申立 / 名誉毀損申立 / 反論掲載 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "employer_brand_signal_packet",
+      "display_name": "業種別 employer brand signal packet",
+      "description": "業種別 採用 site / OpenWork / Lighthouse / Indeed / 求人 platform 出稿 / リファラル / 新卒 popularity (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "investor_relations_intensity_packet",
+      "display_name": "業種別 investor relations intensity packet",
+      "description": "業種別 IR site / 決算説明会 / 統合報告書 / ESG / TCFD / 個人投資家向け / SS・CGコード (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "press_release_pulse_packet",
+      "display_name": "業種別 press release pulse packet",
+      "description": "業種別 PR TIMES / @Press / Value Press / 自社 newsroom / 自治体合同 PR / 政策連動 / 適時開示 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "community_forum_engagement_packet",
+      "display_name": "業種別 community forum engagement packet",
+      "description": "業種別 公式 community / Slack / Discord / Qiita / Zenn / GitHub Discussions / OSS 関与 / ユーザー会 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
     }
   ],
   "filters": {
@@ -7276,7 +7656,17 @@
         "entity_succession_360_packet",
         "entity_partner_360_packet",
         "entity_temporal_pulse_packet",
-        "entity_risk_360_packet"
+        "entity_risk_360_packet",
+        "corporate_website_signal_packet",
+        "social_media_account_inventory_packet",
+        "content_publication_velocity_packet",
+        "influencer_partnership_signal_packet",
+        "digital_marketing_spend_proxy_packet",
+        "review_sentiment_aggregate_packet",
+        "employer_brand_signal_packet",
+        "investor_relations_intensity_packet",
+        "press_release_pulse_packet",
+        "community_forum_engagement_packet"
       ],
       "heavy": [
         "application_strategy",

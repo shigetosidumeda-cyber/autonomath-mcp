@@ -4099,5 +4099,265 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 political donation record packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "political_donation_record_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 lobby activity intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "lobby_activity_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 trade association membership packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "trade_association_membership_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 anti-trust settlement history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "anti_trust_settlement_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 corporate political activity signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "corporate_political_activity_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 government committee seat packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "government_committee_seat_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 public policy advocacy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "public_policy_advocacy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 regulatory engagement intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regulatory_engagement_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 think tank partnership packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "think_tank_partnership_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 media relations pattern packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "media_relations_pattern_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 corporate website signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "corporate_website_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 social media account inventory packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "social_media_account_inventory_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 content publication velocity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "content_publication_velocity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 influencer partnership signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "influencer_partnership_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 digital marketing spend proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "digital_marketing_spend_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 review sentiment aggregate packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "review_sentiment_aggregate_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 employer brand signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "employer_brand_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 investor relations intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "investor_relations_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 press release pulse packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "press_release_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 community forum engagement packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "community_forum_engagement_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
