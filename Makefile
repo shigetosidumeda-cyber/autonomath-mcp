@@ -32,7 +32,7 @@ P0_K = p0 or facade or outcome_routing or csv_intake or release_capsule or agent
 
 .DEFAULT_GOAL := help
 
-.PHONY: help test test-p0 lint format typecheck typecheck-fast typecheck-fast-stop pre-commit-install pre-commit-run site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict
+.PHONY: help test test-p0 lint format typecheck typecheck-fast mypy-fast mypy-file mypy-restart typecheck-fast-stop pre-commit-install pre-commit-run site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict
 
 help:
 	@echo "jpcite Makefile targets:"
@@ -42,6 +42,9 @@ help:
 	@echo "  make format       Run ruff format + black + isort (in-place)"
 	@echo "  make typecheck    Run mypy on src/ (one-shot, sqlite-cached)"
 	@echo "  make typecheck-fast    Run dmypy daemon incremental check on src/jpintel_mcp/"
+	@echo "  make mypy-fast            Alias for typecheck-fast (PERF-37)"
+	@echo "  make mypy-file FILE=...   dmypy single-file check (<0.1s warm, PERF-37)"
+	@echo "  make mypy-restart         Recycle dmypy daemon after pip install -e (PERF-37)"
 	@echo "  make typecheck-fast-stop  Stop the dmypy daemon"
 	@echo "  make pre-commit-install   Install .git/hooks/pre-commit (one-time per clone)"
 	@echo "  make pre-commit-run       Run all pre-commit hooks across the tree"
@@ -92,12 +95,46 @@ typecheck:
 # one-shot `mypy` target writes, so the first `make typecheck-fast` after a
 # wipe takes ~30s (cold) but subsequent invocations are <1s. Use
 # `make typecheck-fast-stop` to shut the daemon down (or just let it idle).
+#
+# PERF-37 (2026-05-17): measured cold start 4.84s vs warm-check 0.087s on
+# src/jpintel_mcp/mcp/server.py (≈ 56x speedup). The previous `typecheck-fast`
+# target re-checked the entire `src/jpintel_mcp/` package (≈30 s warm on the
+# full 60+ kLOC tree) which masked the daemon win for inner-loop edits. Three
+# additions land here:
+#   1. `mypy-fast`  alias — short canonical name surfaced in the user prompt.
+#   2. `mypy-file FILE=…` — single-file daemon check; matches the 0.087 s
+#      warm-start measurement and is the recommended save-on-edit loop.
+#   3. `mypy-restart` — explicit recycle when the daemon's in-memory state
+#      goes stale (post `pip install -e`, post python upgrade, etc.).
+# All three reuse the same `.mypy_cache/` SQLite store so cold→warm is a
+# one-time tax per shell session, not per file.
 typecheck-fast:
 	@if ! .venv/bin/dmypy status >/dev/null 2>&1; then \
-		echo "[typecheck-fast] starting dmypy daemon..."; \
+		echo "[typecheck-fast] starting dmypy daemon (cold start ≈5s)..."; \
 		.venv/bin/dmypy start -- --strict; \
 	fi
 	.venv/bin/dmypy check src/jpintel_mcp/
+
+# PERF-37 alias — short name for the same daemon-backed full-package check.
+mypy-fast: typecheck-fast
+
+# PERF-37 single-file daemon check — sub-100ms after warm-up. Usage:
+#   make mypy-file FILE=src/jpintel_mcp/mcp/server.py
+mypy-file:
+	@if [ -z "$(FILE)" ]; then \
+		echo "usage: make mypy-file FILE=path/to/foo.py"; exit 2; \
+	fi
+	@if ! .venv/bin/dmypy status >/dev/null 2>&1; then \
+		echo "[mypy-file] starting dmypy daemon (cold start ≈5s)..."; \
+		.venv/bin/dmypy start -- --strict; \
+	fi
+	.venv/bin/dmypy check $(FILE)
+
+# PERF-37 daemon recycle — call after Python interpreter upgrades or
+# `pip install -e .` so the in-process module cache reloads cleanly.
+mypy-restart:
+	-.venv/bin/dmypy stop
+	.venv/bin/dmypy start -- --strict
 
 typecheck-fast-stop:
 	.venv/bin/dmypy stop || true
