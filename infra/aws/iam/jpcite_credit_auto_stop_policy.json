@@ -1,0 +1,38 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "BatchStopControl",
+      "Effect": "Allow",
+      "Action": [
+        "batch:DescribeJobQueues",
+        "batch:DescribeComputeEnvironments",
+        "batch:DescribeJobs",
+        "batch:ListJobs",
+        "batch:UpdateJobQueue",
+        "batch:UpdateComputeEnvironment",
+        "batch:CancelJob",
+        "batch:TerminateJob"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AttestationPublish",
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts"
+    },
+    {
+      "Sid": "Logs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
