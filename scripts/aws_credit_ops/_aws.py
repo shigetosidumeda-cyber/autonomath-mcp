@@ -56,24 +56,57 @@ def _import_boto3() -> Any:
 
 
 @cache
-def get_client(service: str, region_name: str = DEFAULT_REGION) -> Any:
-    """Return a cached boto3 client for ``(service, region_name)``.
+def get_session(region_name: str = DEFAULT_REGION, profile_name: str | None = None) -> Any:
+    """Return a cached ``boto3.Session`` for ``(region_name, profile_name)``.
+
+    Sessions hold the credential resolver + config + endpoint cache; the
+    construction cost (200-500 ms cold) is paid exactly once per
+    ``(region_name, profile_name)`` tuple. When ``profile_name`` is
+    ``None``, the default credential chain is used (env vars / IMDS /
+    SSO / shared credentials default profile).
+
+    PERF-35 (2026-05-17): added so ``aws_credit_ops`` scripts that need
+    a non-default profile (e.g. ``bookyou-recovery`` for the AWS credit
+    canary lane) can share a single session across calls instead of
+    paying the construction cost on each invocation.
+    """
+    boto3 = _import_boto3()
+    if profile_name is None:
+        return boto3.Session(region_name=region_name)
+    return boto3.Session(profile_name=profile_name, region_name=region_name)
+
+
+@cache
+def get_client(
+    service: str,
+    region_name: str = DEFAULT_REGION,
+    profile_name: str | None = None,
+) -> Any:
+    """Return a cached boto3 client for ``(service, region_name, profile_name)``.
 
     Calls with identical arguments return the *same* underlying client
     instance -- no second ``Session`` construction, no second metadata
     cache warm-up. This saves 200-500 ms on the second-through-N-th call
     in a single process.
+
+    PERF-35 (2026-05-17): added ``profile_name`` kwarg so the cache key
+    includes the named profile when callers route through a non-default
+    credential set (the AWS credit canary lane uses
+    ``bookyou-recovery``). Default ``None`` preserves prior behavior
+    (default credential chain).
     """
-    boto3 = _import_boto3()
-    return boto3.client(service, region_name=region_name)
+    session = get_session(region_name=region_name, profile_name=profile_name)
+    return session.client(service)
 
 
-def s3_client(region_name: str = DEFAULT_REGION) -> Any:
+def s3_client(region_name: str = DEFAULT_REGION, profile_name: str | None = None) -> Any:
     """Return the cached S3 client. Convenience wrapper for the hot path."""
-    return get_client("s3", region_name=region_name)
+    if profile_name is None:
+        return get_client("s3", region_name=region_name)
+    return get_client("s3", region_name=region_name, profile_name=profile_name)
 
 
-def ce_client(region_name: str = "us-east-1") -> Any:
+def ce_client(region_name: str = "us-east-1", profile_name: str | None = None) -> Any:
     """Return the cached Cost Explorer client.
 
     Cost Explorer is a global service surfaced via us-east-1; the default
@@ -81,37 +114,50 @@ def ce_client(region_name: str = "us-east-1") -> Any:
     behavior (callers that pass a different region get their own cache
     slot via the keyword arg).
     """
-    return get_client("ce", region_name=region_name)
+    if profile_name is None:
+        return get_client("ce", region_name=region_name)
+    return get_client("ce", region_name=region_name, profile_name=profile_name)
 
 
-def batch_client(region_name: str = DEFAULT_REGION) -> Any:
+def batch_client(region_name: str = DEFAULT_REGION, profile_name: str | None = None) -> Any:
     """Return the cached AWS Batch client."""
-    return get_client("batch", region_name=region_name)
+    if profile_name is None:
+        return get_client("batch", region_name=region_name)
+    return get_client("batch", region_name=region_name, profile_name=profile_name)
 
 
-def sns_client(region_name: str = DEFAULT_REGION) -> Any:
+def sns_client(region_name: str = DEFAULT_REGION, profile_name: str | None = None) -> Any:
     """Return the cached SNS client."""
-    return get_client("sns", region_name=region_name)
+    if profile_name is None:
+        return get_client("sns", region_name=region_name)
+    return get_client("sns", region_name=region_name, profile_name=profile_name)
 
 
-def cloudwatch_client(region_name: str = DEFAULT_REGION) -> Any:
+def cloudwatch_client(region_name: str = DEFAULT_REGION, profile_name: str | None = None) -> Any:
     """Return the cached CloudWatch client."""
-    return get_client("cloudwatch", region_name=region_name)
+    if profile_name is None:
+        return get_client("cloudwatch", region_name=region_name)
+    return get_client("cloudwatch", region_name=region_name, profile_name=profile_name)
 
 
-def sagemaker_client(region_name: str = DEFAULT_REGION) -> Any:
+def sagemaker_client(region_name: str = DEFAULT_REGION, profile_name: str | None = None) -> Any:
     """Return the cached SageMaker client."""
-    return get_client("sagemaker", region_name=region_name)
+    if profile_name is None:
+        return get_client("sagemaker", region_name=region_name)
+    return get_client("sagemaker", region_name=region_name, profile_name=profile_name)
 
 
-def textract_client(region_name: str = DEFAULT_REGION) -> Any:
+def textract_client(region_name: str = DEFAULT_REGION, profile_name: str | None = None) -> Any:
     """Return the cached Textract client."""
-    return get_client("textract", region_name=region_name)
+    if profile_name is None:
+        return get_client("textract", region_name=region_name)
+    return get_client("textract", region_name=region_name, profile_name=profile_name)
 
 
 def reset_cache() -> None:
     """Drop all cached clients. Intended for unit tests that mock boto3."""
     get_client.cache_clear()
+    get_session.cache_clear()
 
 
 __all__ = [
@@ -120,6 +166,7 @@ __all__ = [
     "ce_client",
     "cloudwatch_client",
     "get_client",
+    "get_session",
     "reset_cache",
     "s3_client",
     "sagemaker_client",
