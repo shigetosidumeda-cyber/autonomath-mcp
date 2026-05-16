@@ -1629,5 +1629,265 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 PII 分類 (要配慮 / 識別符号 / 仮名加工 / 匿名加工) compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "pii_classification_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 個人情報漏洩事案 history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_breach_event_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 オプトアウト届出 disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "opt_out_mechanism_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 第三者提供 (§27 / §28 / §29) disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "third_party_data_transfer_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 仮名加工 / 匿名加工情報 disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "anonymization_method_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 漏洩報告 SLA (速報 3-5 日 / 確報 30-60 日) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "mandatory_breach_notice_sla_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 同意取得 recordkeeping packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "consent_collection_record_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 個人データ保存期間 policy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_retention_policy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 越境個人データ移転 (§28 / GDPR SCC / APEC CBPR) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cross_border_pii_transfer_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 要配慮個人情報 (§2 第 3 項) handling packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "sensitive_data_handling_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 system outage incident log packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "system_outage_incident_log_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 cybersecurity certification packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cybersecurity_certification_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 cloud dependency disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cloud_dependency_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 OSS license compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "open_source_license_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 API uptime SLA obligation packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "api_uptime_sla_obligation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 data center location packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_center_location_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 disaster recovery capability packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "disaster_recovery_capability_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 third-party audit certification packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "third_party_audit_certification_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 DevOps maturity signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "devops_maturity_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 automation intensity index packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "automation_intensity_index_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

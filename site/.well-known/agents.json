@@ -40,9 +40,9 @@
   "policy_url": "https://jpcite.com/tos.html",
   "privacy_url": "https://jpcite.com/privacy.html",
   "tools_count": {
-    "public_default": 169,
-    "runtime_verified": 169,
-    "note": "Public MCP manifests advertise 169 tools."
+    "public_default": 179,
+    "runtime_verified": 179,
+    "note": "Public MCP manifests advertise 179 tools."
   },
   "tools": {
     "recommended_first": [

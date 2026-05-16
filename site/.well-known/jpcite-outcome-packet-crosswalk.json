@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 152,
+  "total_outcomes": 172,
   "wired_count": 69,
-  "pending_count": 63,
+  "pending_count": 83,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -2512,7 +2512,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_foreign_direct_investment_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2528,7 +2532,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_double_tax_treaty_impact_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2544,7 +2552,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_import_export_license_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2560,7 +2572,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_wto_subsidy_compliance_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2576,7 +2592,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_eu_gdpr_overlap_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2592,7 +2612,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_us_export_control_overlap_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2608,7 +2632,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_bilateral_trade_program_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2624,7 +2652,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_fdi_security_review_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2640,7 +2672,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_cross_border_data_transfer_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2656,8 +2692,412 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_international_arbitration_venue_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "pii_classification_compliance_packet",
+      "display_name": "業種別 PII 分類 (要配慮 / 識別符号 / 仮名加工 / 匿名加工) compliance packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_pii_classification_compliance_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "data_breach_event_history_packet",
+      "display_name": "業種別 個人情報漏洩事案 history packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_data_breach_event_history_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "opt_out_mechanism_disclosure_packet",
+      "display_name": "業種別 オプトアウト届出 disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_opt_out_mechanism_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "third_party_data_transfer_packet",
+      "display_name": "業種別 第三者提供 (§27 / §28 / §29) disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_third_party_data_transfer_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "anonymization_method_disclosure_packet",
+      "display_name": "業種別 仮名加工 / 匿名加工情報 disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_anonymization_method_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "mandatory_breach_notice_sla_packet",
+      "display_name": "業種別 漏洩報告 SLA (速報 3-5 日 / 確報 30-60 日) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_mandatory_breach_notice_sla_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "consent_collection_record_packet",
+      "display_name": "業種別 同意取得 recordkeeping packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_consent_collection_record_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "data_retention_policy_packet",
+      "display_name": "業種別 個人データ保存期間 policy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_data_retention_policy_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "cross_border_pii_transfer_packet",
+      "display_name": "業種別 越境個人データ移転 (§28 / GDPR SCC / APEC CBPR) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_cross_border_pii_transfer_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "sensitive_data_handling_packet",
+      "display_name": "業種別 要配慮個人情報 (§2 第 3 項) handling packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_sensitive_data_handling_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "system_outage_incident_log_packet",
+      "display_name": "業種別 system outage incident log packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_system_outage_incident_log_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "cybersecurity_certification_packet",
+      "display_name": "業種別 cybersecurity certification packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_cybersecurity_certification_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "cloud_dependency_disclosure_packet",
+      "display_name": "業種別 cloud dependency disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_cloud_dependency_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "open_source_license_compliance_packet",
+      "display_name": "業種別 OSS license compliance packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_open_source_license_compliance_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "api_uptime_sla_obligation_packet",
+      "display_name": "業種別 API uptime SLA obligation packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_api_uptime_sla_obligation_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "data_center_location_packet",
+      "display_name": "業種別 data center location packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_data_center_location_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "disaster_recovery_capability_packet",
+      "display_name": "業種別 disaster recovery capability packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_disaster_recovery_capability_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "third_party_audit_certification_packet",
+      "display_name": "業種別 third-party audit certification packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_third_party_audit_certification_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "devops_maturity_signal_packet",
+      "display_name": "業種別 DevOps maturity signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_devops_maturity_signal_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "automation_intensity_index_packet",
+      "display_name": "業種別 automation intensity index packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_automation_intensity_index_packets.py",
       "s3_path": null,
       "glue_database": null,
       "glue_table": null,
@@ -2749,7 +3189,27 @@
       "bilateral_trade_program_packet",
       "fdi_security_review_packet",
       "cross_border_data_transfer_packet",
-      "international_arbitration_venue_packet"
+      "international_arbitration_venue_packet",
+      "pii_classification_compliance_packet",
+      "data_breach_event_history_packet",
+      "opt_out_mechanism_disclosure_packet",
+      "third_party_data_transfer_packet",
+      "anonymization_method_disclosure_packet",
+      "mandatory_breach_notice_sla_packet",
+      "consent_collection_record_packet",
+      "data_retention_policy_packet",
+      "cross_border_pii_transfer_packet",
+      "sensitive_data_handling_packet",
+      "system_outage_incident_log_packet",
+      "cybersecurity_certification_packet",
+      "cloud_dependency_disclosure_packet",
+      "open_source_license_compliance_packet",
+      "api_uptime_sla_obligation_packet",
+      "data_center_location_packet",
+      "disaster_recovery_capability_packet",
+      "third_party_audit_certification_packet",
+      "devops_maturity_signal_packet",
+      "automation_intensity_index_packet"
     ],
     "control_or_meta_outcome_no_packet_backing": [
       "agent_routing_decision",

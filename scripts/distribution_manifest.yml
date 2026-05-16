@@ -6,7 +6,7 @@
 # values only; downstream distribution surfaces must be edited separately.
 #
 # Last verified on 2026-05-16 JST:
-# - Public default-gate MCP surfaces advertise 169 tools. Internal runtime
+# - Public default-gate MCP surfaces advertise 179 tools. Internal runtime
 #   manager counts may be higher while gated or experimental tools are held back.
 # - Stable-gate runtime route count is 364 and generated OpenAPI path count is 307.
 # - Pricing/free-tier language is consistent: JPY 3 per billable unit /
@@ -24,7 +24,7 @@ canonical_api_env:
   api_base: JPCITE_API_BASE
 
 pyproject_version: "0.4.0"
-tool_count_default_gates: 169  # public default-gate MCP tool count
+tool_count_default_gates: 179  # public default-gate MCP tool count
 route_count: 364              # runtime len(app.routes) with AUTONOMATH_EXPERIMENTAL_API_ENABLED=0, verified 2026-05-16 JST (Stream F sync)
 openapi_path_count: 307       # docs/openapi/v1.json stable .paths length, verified 2026-05-16 JST (Stream F sync)
 searchable_programs_total: 11601
@@ -41,7 +41,7 @@ pricing_model: "metered billable unit; no subscription tiers, seat fees, or annu
 free_tier_requests_per_day: 3
 free_tier_scope: anonymous per IP
 free_tier_reset_timezone: JST
-tagline_ja: "日本の制度 169-tool MCP — 補助金/法令/判例/税制/適格事業者/法人/採択事例/行政処分/入札/融資。税別 ¥3/課金単位、匿名 3回/日無料"
+tagline_ja: "日本の制度 179-tool MCP — 補助金/法令/判例/税制/適格事業者/法人/採択事例/行政処分/入札/融資。税別 ¥3/課金単位、匿名 3回/日無料"
 
 # Read-only drift checker surfaces. Pricing/free-tier scans are intentionally
 # narrower than version/tool-count scans because some public docs link to

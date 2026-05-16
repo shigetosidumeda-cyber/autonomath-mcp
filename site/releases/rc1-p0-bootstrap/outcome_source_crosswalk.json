@@ -39,7 +39,27 @@
     "source-receipt-ledger",
     "evidence-answer-citation-pack",
     "foreign-investor-japan-public-entry-brief",
-    "healthcare-regulatory-public-check"
+    "healthcare-regulatory-public-check",
+    "pii_classification_compliance_packet",
+    "data_breach_event_history_packet",
+    "opt_out_mechanism_disclosure_packet",
+    "third_party_data_transfer_packet",
+    "anonymization_method_disclosure_packet",
+    "mandatory_breach_notice_sla_packet",
+    "consent_collection_record_packet",
+    "data_retention_policy_packet",
+    "cross_border_pii_transfer_packet",
+    "sensitive_data_handling_packet",
+    "system_outage_incident_log-packet",
+    "cybersecurity_certification-packet",
+    "cloud_dependency_disclosure-packet",
+    "open_source_license_compliance-packet",
+    "api_uptime_sla_obligation-packet",
+    "data_center_location-packet",
+    "disaster_recovery_capability-packet",
+    "third_party_audit_certification-packet",
+    "devops_maturity_signal-packet",
+    "automation_intensity_index-packet"
   ],
   "crosswalk": [
     {

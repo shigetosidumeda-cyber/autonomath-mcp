@@ -4,7 +4,7 @@
   "display_name": "jpcite — 日本の制度 API",
   "version": "0.4.0",
   "icon": "icon.png",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者 + 166K corporate entities. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 169 tools (165 dim K-S + 4 release chains).",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者 + 166K corporate entities. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 179 tools (165 dim K-S + 4 release chains + 10 Wave 59-B outcome wrappers).",
   "long_description": "jpciteは、日本の公的制度・法令・判例・税務・入札・行政処分などの公開情報を、LLM入力用の短い根拠パケットとして取得するためのMCP拡張です。長いPDF、府省庁ページ、検索結果をそのままモデルに渡す前に、source_url、fetched_at、provenance、known_gaps、併用ルールをまとめて取得できます。入力文脈の圧縮見積もりを添え、source_url/fetched_at/known_gapsをAI回答へ載せやすい形で返すことで、一次資料にたどれる短い回答づくりを支援します。料金は課金対象単位ごとに税別3円（税込3.30円）の従量課金です。匿名利用は登録不要で1 IPあたり1日3回まで無料、翌日JSTにリセットされます。法務・税務・行政書士業務の助言ではありません。重要な判断の前には必ず一次資料を確認してください。",
   "author": {
     "name": "Bookyou株式会社",
@@ -737,6 +737,46 @@
     {
       "name": "recommend_partner_for_gap",
       "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] release dim R federated MCP recommendation. Deterministic substring + alias matcher over the curated 6-partner federation (freee/mf/notion/slack/github/linear). Returns up to max_results partners with partner_id + name + official_url + mcp_endpoint_status + capabilities. Score-tied partners ordered by canonical partner_id ASC. NEVER includes a self-reference (jpcite/public corpus/public corpus rejected at registry load). NO LLM, no HTTP, single ¥3 unit."
+    },
+    {
+      "name": "outcome_houjin_360",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 法人 due diligence 360. Heavy ¥900 (3 ¥3 units). NO LLM. Returns JPCIR envelope (Evidence + OutcomeContract + citations + known_gaps) from precomputed S3 packet."
+    },
+    {
+      "name": "outcome_program_lineage",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 制度系譜 (amendment lineage). Mid ¥600 (2 ¥3 units). NO LLM. Returns JPCIR envelope with predecessor/successor chain from am_amendment_snapshot."
+    },
+    {
+      "name": "outcome_acceptance_probability",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 採択確率 cohort. Mid ¥600 (2 ¥3 units). NO LLM. Returns JPCIR envelope with cohort-based acceptance rate estimate from jpi_adoption_records."
+    },
+    {
+      "name": "outcome_tax_ruleset_phase_change",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 税制段階変更. Mid ¥600 (2 ¥3 units). NO LLM. Returns JPCIR envelope with tax-rule + 通達 + 改正履歴 chain."
+    },
+    {
+      "name": "outcome_regulatory_q_over_q_diff",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 法令改正 Q-over-Q diff. Heavy ¥900 (3 ¥3 units). NO LLM. Returns JPCIR envelope with quarterly law diff."
+    },
+    {
+      "name": "outcome_enforcement_seasonal_trend",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 行政処分季節性. Light ¥300 (1 ¥3 unit). NO LLM. Returns JPCIR envelope with monthly enforcement-action seasonality."
+    },
+    {
+      "name": "outcome_bid_announcement_seasonality",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 入札季節性. Light ¥300 (1 ¥3 unit). NO LLM. Returns JPCIR envelope with monthly bid-announcement seasonality."
+    },
+    {
+      "name": "outcome_succession_event_pulse",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 事業承継 event pulse. Mid ¥600 (2 ¥3 units). NO LLM. Returns JPCIR envelope with succession-event signal + program matcher."
+    },
+    {
+      "name": "outcome_prefecture_program_heatmap",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1] Wave 59 outcome — 47 都道府県 × 制度 heatmap. Mid ¥600 (2 ¥3 units). NO LLM. Returns JPCIR envelope with prefecture × program heatmap rollup."
+    },
+    {
+      "name": "outcome_cross_prefecture_arbitrage",
+      "description": "[AUDIT, SENSITIVE — §52/§47条の2/§72/§1/§3] Wave 59 outcome — 都道府県間アービトラージ. Heavy ¥900 (3 ¥3 units). NO LLM. Returns JPCIR envelope with cross-prefecture program gap + 移転メリット rollup."
     }
   ],
   "resources": [
@@ -1011,7 +1051,7 @@
   ],
   "_meta": {
     "io.modelcontextprotocol.registry/publisher-provided": {
-      "tool_count": 169,
+      "tool_count": 179,
       "transports": [
         "stdio",
         "sse",
@@ -1041,7 +1081,7 @@
         }
       }
     },
-    "tool_count": 169,
+    "tool_count": 179,
     "transports": [
       "stdio",
       "sse",
