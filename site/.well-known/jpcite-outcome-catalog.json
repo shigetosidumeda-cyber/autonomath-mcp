@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-17",
   "generated_at": "2026-05-17T00:30:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 372,
+  "total_outcomes": 392,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -7718,6 +7718,386 @@
       "subject_id_hint": "jsic_major",
       "source_count": 2,
       "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "brand_recognition_proxy_packet",
+      "display_name": "業種別 brand recognition proxy packet",
+      "description": "業種別 ブランド認知度 / BAS (brand awareness score) / 想起 (unaided/aided) / 検索流入 / SEO impression / メディア露出 / 商標出願件数 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "customer_satisfaction_proxy_packet",
+      "display_name": "業種別 customer satisfaction proxy packet",
+      "description": "業種別 顧客満足度 (CSat / CES) / JCSI 日本版顧客満足度指数 / 業界別満足度ランキング / 苦情件数 / リピート率 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "net_promoter_score_proxy_packet",
+      "display_name": "業種別 net promoter score (NPS) proxy packet",
+      "description": "業種別 NPS / 推奨者 (Promoter 9-10) / 中立者 (Passive 7-8) / 批判者 (Detractor 0-6) / 推奨率 / 口コミ波及 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "market_share_signal_packet",
+      "display_name": "業種別 market share signal packet",
+      "description": "業種別 市場シェア / 上位3社占有率 (CR3) / HHI (Herfindahl-Hirschman Index) proxy / 業界統計 / 売上シェア 推計 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "product_diversification_intensity_packet",
+      "display_name": "業種別 product diversification intensity packet",
+      "description": "業種別 製品多様性 / 製品系列数 / SKU 数 / 事業セグメント数 (有報セグメント別) / 関連多角化 度合 (Rumelt 分類) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "pricing_power_signal_packet",
+      "display_name": "業種別 pricing power signal packet",
+      "description": "業種別 値上げ転嫁率 / 粗利率 推移 / 需要価格弾力性 proxy / 値上げ告知 頻度 / インフレ対応力 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "customer_concentration_risk_packet",
+      "display_name": "業種別 customer concentration risk packet",
+      "description": "業種別 顧客集中 / 上位5顧客売上比率 / 主要販売先依存度 / 10% ルール (有報注記) / vendor lock-in 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "brand_sentiment_proxy_packet",
+      "display_name": "業種別 brand sentiment proxy packet",
+      "description": "業種別 SNS 言及 ポジ/ネガ比率 / 口コミ 評点 (☆4以上比率) / 炎上 検知 頻度 / メディア論調 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "product_lifecycle_pulse_packet",
+      "display_name": "業種別 product lifecycle pulse packet",
+      "description": "業種別 新製品 投入頻度 / EOL 告知 / 後継製品 接続 / Bass diffusion パラメータ proxy / PLC ステージ (Introduction/Growth/Maturity/Decline) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "omnichannel_maturity_packet",
+      "display_name": "業種別 omnichannel maturity packet",
+      "description": "業種別 店舗 + EC + アプリ + SNS + コールセンター 統合度 / OMO (Online Merges with Offline) 実装度 / 在庫一元管理 / 顧客 ID 統合 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "employee_turnover_proxy_packet",
+      "display_name": "業種別 employee turnover proxy packet",
+      "description": "業種別 離職率 proxy / 平均勤続年数 / 雇用動向調査 / EDINET 従業員の状況 / HR 内部統制 / 産業医配置 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "executive_tenure_distribution_packet",
+      "display_name": "業種別 executive tenure distribution packet",
+      "description": "業種別 役員任期 distribution / 取締役 監査役 在任年数 / 社外取締役 比率 / 役員 再任率 / CG コード 原則4-11 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "employee_stock_option_signal_packet",
+      "display_name": "業種別 employee stock option signal packet",
+      "description": "業種別 従業員 SO / 新株予約権 / RS / RSU / 持株会 / 税制適格 SO 利用率 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "wellness_program_intensity_packet",
+      "display_name": "業種別 wellness program intensity packet",
+      "description": "業種別 健康経営 / ストレスチェック / メンタルヘルス研修 / EAP / 産業医 / 健康経営優良法人 認定 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "remote_work_adoption_signal_packet",
+      "display_name": "業種別 remote work adoption signal packet",
+      "description": "業種別 テレワーク / フルリモート / ハイブリッド / フレックスタイム / 副業可否 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "performance_review_cadence_packet",
+      "display_name": "業種別 performance review cadence packet",
+      "description": "業種別 評価 cadence / 360度評価 / 1on1 / ピアレビュー / OKR vs MBO / フィードバック制度 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "succession_planning_maturity_packet",
+      "display_name": "業種別 succession planning maturity packet",
+      "description": "業種別 後継者育成 / タレントレビュー / 9-box / 経営塾 / 事業承継税制 / 親族内承継 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "leadership_gender_balance_packet",
+      "display_name": "業種別 leadership gender balance packet",
+      "description": "業種別 リーダーシップ性別バランス / 女性管理職比率 / えるぼし / プラチナえるぼし / くるみん / 男性育休 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "employee_training_intensity_packet",
+      "display_name": "業種別 employee training intensity packet",
+      "description": "業種別 研修 / リスキリング / 人材開発支援助成金 / e-learning / 資格取得支援 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "work_life_balance_disclosure_packet",
+      "display_name": "業種別 work-life balance disclosure packet",
+      "description": "業種別 WLB disclosure / 有給取得率 / 平均残業時間 / 月60時間超 / 育介休 / フレックス / 副業可否 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
     }
   ],
   "filters": {
@@ -7856,7 +8236,17 @@
         "employer_brand_signal_packet",
         "investor_relations_intensity_packet",
         "press_release_pulse_packet",
-        "community_forum_engagement_packet"
+        "community_forum_engagement_packet",
+        "brand_recognition_proxy_packet",
+        "customer_satisfaction_proxy_packet",
+        "net_promoter_score_proxy_packet",
+        "market_share_signal_packet",
+        "product_diversification_intensity_packet",
+        "pricing_power_signal_packet",
+        "customer_concentration_risk_packet",
+        "brand_sentiment_proxy_packet",
+        "product_lifecycle_pulse_packet",
+        "omnichannel_maturity_packet"
       ],
       "heavy": [
         "application_strategy",

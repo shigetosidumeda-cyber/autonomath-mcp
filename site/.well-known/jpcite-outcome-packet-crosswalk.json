@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 352,
+  "total_outcomes": 372,
   "wired_count": 209,
-  "pending_count": 143,
+  "pending_count": 163,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -7025,6 +7025,406 @@
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_government_payment_velocity_v1 LIMIT 100",
       "status": "WIRED"
+    },
+    {
+      "outcome_id": "brand_recognition_proxy_packet",
+      "display_name": "業種別 brand recognition proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_brand_recognition_proxy_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_brand_recognition_proxy_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_brand_recognition_proxy_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "customer_satisfaction_proxy_packet",
+      "display_name": "業種別 customer satisfaction proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_customer_satisfaction_proxy_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_customer_satisfaction_proxy_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_customer_satisfaction_proxy_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "net_promoter_score_proxy_packet",
+      "display_name": "業種別 net promoter score (NPS) proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_net_promoter_score_proxy_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_net_promoter_score_proxy_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_net_promoter_score_proxy_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "market_share_signal_packet",
+      "display_name": "業種別 market share signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_market_share_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_market_share_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_market_share_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "product_diversification_intensity_packet",
+      "display_name": "業種別 product diversification intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_product_diversification_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_product_diversification_intensity_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_product_diversification_intensity_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "pricing_power_signal_packet",
+      "display_name": "業種別 pricing power signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_pricing_power_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_pricing_power_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_pricing_power_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "customer_concentration_risk_packet",
+      "display_name": "業種別 customer concentration risk packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_customer_concentration_risk_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_customer_concentration_risk_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_customer_concentration_risk_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "brand_sentiment_proxy_packet",
+      "display_name": "業種別 brand sentiment proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_brand_sentiment_proxy_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_brand_sentiment_proxy_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_brand_sentiment_proxy_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "product_lifecycle_pulse_packet",
+      "display_name": "業種別 product lifecycle pulse packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_product_lifecycle_pulse_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_product_lifecycle_pulse_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_product_lifecycle_pulse_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "omnichannel_maturity_packet",
+      "display_name": "業種別 omnichannel maturity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_omnichannel_maturity_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_omnichannel_maturity_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_omnichannel_maturity_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "employee_turnover_proxy_packet",
+      "display_name": "業種別 employee turnover proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_employee_turnover_proxy_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_employee_turnover_proxy_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_employee_turnover_proxy_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "executive_tenure_distribution_packet",
+      "display_name": "業種別 executive tenure distribution packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_executive_tenure_distribution_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_executive_tenure_distribution_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_executive_tenure_distribution_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "employee_stock_option_signal_packet",
+      "display_name": "業種別 employee stock option signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_employee_stock_option_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_employee_stock_option_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_employee_stock_option_signal_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "wellness_program_intensity_packet",
+      "display_name": "業種別 wellness program intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_wellness_program_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_wellness_program_intensity_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_wellness_program_intensity_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "remote_work_adoption_signal_packet",
+      "display_name": "業種別 remote work adoption signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_remote_work_adoption_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_remote_work_adoption_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_remote_work_adoption_signal_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "performance_review_cadence_packet",
+      "display_name": "業種別 performance review cadence packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_performance_review_cadence_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_performance_review_cadence_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_performance_review_cadence_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "succession_planning_maturity_packet",
+      "display_name": "業種別 succession planning maturity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_succession_planning_maturity_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_succession_planning_maturity_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_succession_planning_maturity_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "leadership_gender_balance_packet",
+      "display_name": "業種別 leadership gender balance packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_leadership_gender_balance_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_leadership_gender_balance_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_leadership_gender_balance_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "employee_training_intensity_packet",
+      "display_name": "業種別 employee training intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_employee_training_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_employee_training_intensity_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_employee_training_intensity_v1 LIMIT 10",
+      "status": "pending"
+    },
+    {
+      "outcome_id": "work_life_balance_disclosure_packet",
+      "display_name": "業種別 work-life balance disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_work_life_balance_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_work_life_balance_disclosure_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_work_life_balance_disclosure_v1 LIMIT 10",
+      "status": "pending"
     }
   ],
   "gap_classification": {
@@ -7788,6 +8188,186 @@
       "subject_kind": "jsic_major",
       "wired_status": "pending",
       "wave": 87
+    },
+    {
+      "outcome_contract_id": "brand_recognition_proxy_packet",
+      "package_kind": "brand_recognition_proxy_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_brand_recognition_proxy_packets.py",
+      "glue_table": "packet_brand_recognition_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "customer_satisfaction_proxy_packet",
+      "package_kind": "customer_satisfaction_proxy_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_customer_satisfaction_proxy_packets.py",
+      "glue_table": "packet_customer_satisfaction_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "net_promoter_score_proxy_packet",
+      "package_kind": "net_promoter_score_proxy_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_net_promoter_score_proxy_packets.py",
+      "glue_table": "packet_net_promoter_score_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "market_share_signal_packet",
+      "package_kind": "market_share_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_market_share_signal_packets.py",
+      "glue_table": "packet_market_share_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "product_diversification_intensity_packet",
+      "package_kind": "product_diversification_intensity_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_product_diversification_intensity_packets.py",
+      "glue_table": "packet_product_diversification_intensity_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "pricing_power_signal_packet",
+      "package_kind": "pricing_power_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_pricing_power_signal_packets.py",
+      "glue_table": "packet_pricing_power_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "customer_concentration_risk_packet",
+      "package_kind": "customer_concentration_risk_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_customer_concentration_risk_packets.py",
+      "glue_table": "packet_customer_concentration_risk_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "brand_sentiment_proxy_packet",
+      "package_kind": "brand_sentiment_proxy_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_brand_sentiment_proxy_packets.py",
+      "glue_table": "packet_brand_sentiment_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "product_lifecycle_pulse_packet",
+      "package_kind": "product_lifecycle_pulse_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_product_lifecycle_pulse_packets.py",
+      "glue_table": "packet_product_lifecycle_pulse_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "omnichannel_maturity_packet",
+      "package_kind": "omnichannel_maturity_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_omnichannel_maturity_packets.py",
+      "glue_table": "packet_omnichannel_maturity_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 91
+    },
+    {
+      "outcome_contract_id": "employee_turnover_proxy_packet",
+      "package_kind": "employee_turnover_proxy_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_employee_turnover_proxy_packets.py",
+      "glue_table": "packet_employee_turnover_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "executive_tenure_distribution_packet",
+      "package_kind": "executive_tenure_distribution_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_executive_tenure_distribution_packets.py",
+      "glue_table": "packet_executive_tenure_distribution_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "employee_stock_option_signal_packet",
+      "package_kind": "employee_stock_option_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_employee_stock_option_signal_packets.py",
+      "glue_table": "packet_employee_stock_option_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "wellness_program_intensity_packet",
+      "package_kind": "wellness_program_intensity_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_wellness_program_intensity_packets.py",
+      "glue_table": "packet_wellness_program_intensity_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "remote_work_adoption_signal_packet",
+      "package_kind": "remote_work_adoption_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_remote_work_adoption_signal_packets.py",
+      "glue_table": "packet_remote_work_adoption_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "performance_review_cadence_packet",
+      "package_kind": "performance_review_cadence_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_performance_review_cadence_packets.py",
+      "glue_table": "packet_performance_review_cadence_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "succession_planning_maturity_packet",
+      "package_kind": "succession_planning_maturity_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_succession_planning_maturity_packets.py",
+      "glue_table": "packet_succession_planning_maturity_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "leadership_gender_balance_packet",
+      "package_kind": "leadership_gender_balance_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_leadership_gender_balance_packets.py",
+      "glue_table": "packet_leadership_gender_balance_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "employee_training_intensity_packet",
+      "package_kind": "employee_training_intensity_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_employee_training_intensity_packets.py",
+      "glue_table": "packet_employee_training_intensity_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
+    },
+    {
+      "outcome_contract_id": "work_life_balance_disclosure_packet",
+      "package_kind": "work_life_balance_disclosure_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_work_life_balance_disclosure_packets.py",
+      "glue_table": "packet_work_life_balance_disclosure_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 90
     }
   ],
   "packet_generator_exists_but_glue_table_pending": [

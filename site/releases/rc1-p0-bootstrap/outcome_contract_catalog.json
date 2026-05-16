@@ -4489,5 +4489,265 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 brand recognition proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "brand_recognition_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 customer satisfaction proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "customer_satisfaction_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 net promoter score (NPS) proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "net_promoter_score_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 market share signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "market_share_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 product diversification intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "product_diversification_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 pricing power signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "pricing_power_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 customer concentration risk packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "customer_concentration_risk_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 brand sentiment proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "brand_sentiment_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 product lifecycle pulse packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "product_lifecycle_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 omnichannel maturity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "omnichannel_maturity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 employee turnover proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "employee_turnover_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 executive tenure distribution packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "executive_tenure_distribution_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 employee stock option signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "employee_stock_option_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 wellness program intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "wellness_program_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 remote work adoption signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "remote_work_adoption_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 performance review cadence packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "performance_review_cadence_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 succession planning maturity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "succession_planning_maturity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 leadership gender balance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "leadership_gender_balance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 employee training intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "employee_training_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 work-life balance disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "work_life_balance_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

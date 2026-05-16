@@ -2011,6 +2011,43 @@ for _name, _prefix in _WAVE_88_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+_WAVE_89_TABLES: list[tuple[str, str]] = [
+    ("packet_acquisition_event_signal_v1", "acquisition_event_signal_v1/"),
+    ("packet_divestiture_event_signal_v1", "divestiture_event_signal_v1/"),
+    ("packet_joint_venture_formation_v1", "joint_venture_formation_v1/"),
+    ("packet_strategic_alliance_signal_v1", "strategic_alliance_signal_v1/"),
+    ("packet_management_buyout_signal_v1", "management_buyout_signal_v1/"),
+    ("packet_going_private_signal_v1", "going_private_signal_v1/"),
+    ("packet_spin_off_event_v1", "spin_off_event_v1/"),
+    ("packet_carve_out_signal_v1", "carve_out_signal_v1/"),
+    ("packet_post_merger_integration_v1", "post_merger_integration_v1/"),
+    ("packet_hostile_takeover_proxy_v1", "hostile_takeover_proxy_v1/"),
+]
+
+for _name, _prefix in _WAVE_89_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+_WAVE_91_TABLES: list[tuple[str, str]] = [
+    ("packet_brand_recognition_proxy_v1", "brand_recognition_proxy_v1/"),
+    ("packet_customer_satisfaction_proxy_v1", "customer_satisfaction_proxy_v1/"),
+    ("packet_net_promoter_score_proxy_v1", "net_promoter_score_proxy_v1/"),
+    ("packet_market_share_signal_v1", "market_share_signal_v1/"),
+    (
+        "packet_product_diversification_intensity_v1",
+        "product_diversification_intensity_v1/",
+    ),
+    ("packet_pricing_power_signal_v1", "pricing_power_signal_v1/"),
+    ("packet_customer_concentration_risk_v1", "customer_concentration_risk_v1/"),
+    ("packet_brand_sentiment_proxy_v1", "brand_sentiment_proxy_v1/"),
+    ("packet_product_lifecycle_pulse_v1", "product_lifecycle_pulse_v1/"),
+    ("packet_omnichannel_maturity_v1", "omnichannel_maturity_v1/"),
+]
+
+for _name, _prefix in _WAVE_91_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
