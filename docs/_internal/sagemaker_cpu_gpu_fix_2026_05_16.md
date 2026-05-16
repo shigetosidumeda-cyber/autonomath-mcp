@@ -69,6 +69,18 @@ Future submissions should either:
 
 Both eliminate the chance of pulling a structured manifest file into a Line-split feature-extraction pipeline.
 
+## Live Submission Confirmation
+
+All 5 jobs verified InProgress at `2026-05-16T09:08Z`:
+
+```
+jpcite-embed-20260516T090739Z-adoption-fix1     InProgress
+jpcite-embed-20260516T090739Z-court-fix2        InProgress
+jpcite-embed-20260516T090739Z-invoice-fix3      InProgress
+jpcite-embed-20260516T090739Z-saiketsu-fix4     InProgress
+jpcite-embed-20260516T090739Z-tsutatsu-fix5     InProgress
+```
+
 ## References
 
 - Failed jobs: `jpcite-embed-20260516T060901Z-applicationroundcpu` (representative), plus 20 others on the same submission burst.
