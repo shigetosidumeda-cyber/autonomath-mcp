@@ -137,7 +137,7 @@ else
     aws iam create-role \
       --role-name "$ROLE_NAME" \
       --assume-role-policy-document "file://$TRUST_DOC" \
-      --description "jpcite credit orchestrator EventBridge → Step Functions invoke role" \
+      --description "jpcite credit orchestrator EventBridge to Step Functions invoke role (CreditRun 2026-05)" \
       --tags Key=Project,Value=jpcite Key=CreditRun,Value=2026-05 Key=AutoStop,Value=2026-05-29 >/dev/null
     aws iam put-role-policy \
       --role-name "$ROLE_NAME" \
@@ -189,7 +189,7 @@ if [ "$COMMIT" = "true" ]; then
     --region "$REGION" \
     --name "$RULE_NAME" \
     --schedule-expression "$NEW_SCHEDULE" \
-    --description "jpcite credit orchestrator scheduled trigger ($NEW_SCHEDULE) — DISABLED by default, operator-controlled" \
+    --description "jpcite credit orchestrator scheduled trigger ($NEW_SCHEDULE) - DISABLED by default, operator-controlled" \
     --state "$NEW_STATE" \
     --tags Key=Project,Value=jpcite Key=CreditRun,Value=2026-05 Key=AutoStop,Value=2026-05-29 >/dev/null
 
@@ -197,11 +197,15 @@ if [ "$COMMIT" = "true" ]; then
   echo "[burn-schedule] rule_arn: $RULE_ARN"
 
   TARGET_INPUT='{"trigger":"eventbridge-schedule","source":"jpcite-credit-orchestrator-schedule"}'
+  TARGETS_JSON_FILE="$(mktemp -t burn-schedule-targets.XXXXXX.json)"
+  trap 'rm -f "$TARGETS_JSON_FILE"' EXIT
+  python3 -c "import json,sys; json.dump([{\"Id\":sys.argv[1],\"Arn\":sys.argv[2],\"RoleArn\":sys.argv[3],\"Input\":sys.argv[4]}], open(sys.argv[5],'w'))" \
+    "$TARGET_ID" "$STATE_MACHINE_ARN" "$ROLE_ARN" "$TARGET_INPUT" "$TARGETS_JSON_FILE"
   echo "[burn-schedule] put-targets"
   aws events put-targets \
     --region "$REGION" \
     --rule "$RULE_NAME" \
-    --targets "Id=$TARGET_ID,Arn=$STATE_MACHINE_ARN,RoleArn=$ROLE_ARN,Input=$TARGET_INPUT" >/dev/null
+    --targets "file://$TARGETS_JSON_FILE" >/dev/null
   echo "[burn-schedule] target wired ($STATE_MACHINE_ARN)"
 
   echo
