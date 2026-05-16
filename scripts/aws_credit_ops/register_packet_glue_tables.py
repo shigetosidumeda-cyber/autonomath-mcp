@@ -2241,6 +2241,47 @@ _WAVE_94_TABLES: list[tuple[str, str]] = [
 for _name, _prefix in _WAVE_94_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
+
+# Wave 95 (customer journey / experience cross packets) — 10 generators wrap
+# the customer journey + UX surface across 業種 (JSIC major) cohorts:
+# Digital touchpoint inventory / Customer acquisition velocity / Conversion
+# funnel signal / Retention metric proxy / Churn risk signal / Upsell &
+# cross-sell signal / Service quality complaint / Mobile-first signal /
+# Multilingual support disclosure / Accessibility compliance signal
+# (個人情報保護法 §17 §18 §27 §28 §38 / 特商法 §3-2 §9 §11 §12 §15-2 /
+# 景表法 §5 §7 + ステマ規制告示 / 不正競争防止法 §2-1-1 / 消費者契約法
+# §4 §8 §9 §10 / 消費者基本法 / 国セ法 §10 / 消安法 §11 §12 / ASBJ 29
+# 収益認識 / 独禁法 §19 §2-9 抱き合わせ販売 / AI 事業者ガイドライン /
+# 障害者差別解消法 §7 §8 §11 + 2024-04 民間義務化 / JIS X 8341-3:2016 /
+# WCAG 2.1 AA / 観光庁 多言語対応 / JIS Q 24222 / ISO 17100 / 高齢者障
+# 害者等配慮設計指針 / WAIC). Reuse the shared super-set columns;
+# topic-specific fields land in raw_json.
+_WAVE_95_TABLES: list[tuple[str, str]] = [
+    ("packet_digital_touchpoint_inventory_v1", "digital_touchpoint_inventory_v1/"),
+    (
+        "packet_customer_acquisition_velocity_v1",
+        "customer_acquisition_velocity_v1/",
+    ),
+    ("packet_conversion_funnel_signal_v1", "conversion_funnel_signal_v1/"),
+    ("packet_retention_metric_proxy_v1", "retention_metric_proxy_v1/"),
+    ("packet_churn_risk_signal_v1", "churn_risk_signal_v1/"),
+    ("packet_upsell_cross_sell_signal_v1", "upsell_cross_sell_signal_v1/"),
+    ("packet_service_quality_complaint_v1", "service_quality_complaint_v1/"),
+    ("packet_mobile_first_signal_v1", "mobile_first_signal_v1/"),
+    (
+        "packet_multilingual_support_disclosure_v1",
+        "multilingual_support_disclosure_v1/",
+    ),
+    (
+        "packet_accessibility_compliance_signal_v1",
+        "accessibility_compliance_signal_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_95_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 96 (data governance / data ops cross packets) — 10 generators wrap the
 # enterprise data governance + data ops surface across 業種 (JSIC major)
 # cohorts: Data lineage disclosure (source-of-truth / ETL pipeline 透明性 /
