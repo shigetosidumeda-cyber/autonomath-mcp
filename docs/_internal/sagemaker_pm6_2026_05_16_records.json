@@ -1,0 +1,31 @@
+{
+  "run_id": "20260516T105156Z",
+  "predecessor_run_id": "20260516T103042Z",
+  "predecessor_commit": "c7df91f23",
+  "budget_actual_usd": 1.906e-07,
+  "quotas": {
+    "ml.c5.2xlarge for transform job usage": 8.0,
+    "ml.g4dn.xlarge for transform job usage": 4.0
+  },
+  "fix_applied": "BatchStrategy=SingleRecord (PM5 carry-over; PM4 default MULTI_RECORD broke MMS handler)",
+  "submitted": [
+    {
+      "tag": "amlaw22gpu",
+      "job_name": "jpcite-embed-20260516T105156Z-amlaw22gpu",
+      "instance_type": "ml.g4dn.xlarge",
+      "model": "jpcite-embed-allminilm-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0001.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-fix22-gpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260516T105156Z-amlaw22gpu"
+    },
+    {
+      "tag": "amlaw23gpu",
+      "job_name": "jpcite-embed-20260516T105156Z-amlaw23gpu",
+      "instance_type": "ml.g4dn.xlarge",
+      "model": "jpcite-embed-allminilm-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0002.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-fix23-gpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260516T105156Z-amlaw23gpu"
+    }
+  ]
+}
