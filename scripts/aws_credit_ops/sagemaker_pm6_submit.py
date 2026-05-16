@@ -52,7 +52,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import boto3  # type: ignore[import-untyped]
+from scripts.aws_credit_ops._aws import ce_client, sagemaker_client
 
 DERIVED_BUCKET = "jpcite-credit-993693061769-202605-derived"
 EXECUTION_ROLE_ARN = "arn:aws:iam::993693061769:role/jpcite-sagemaker-embed-role"
@@ -81,7 +81,7 @@ PM6_JOBS: list[dict[str, str]] = [
 
 def preflight_cost_check() -> float:
     """Run 5-line hard-stop preflight."""
-    ce = boto3.Session(profile_name=PROFILE, region_name=REGION).client("ce")
+    ce = ce_client(region_name=REGION, profile_name=PROFILE)
     today = dt.date.today()
     first_of_month = today.replace(day=1).isoformat()
     tomorrow = (today + dt.timedelta(days=1)).isoformat()
@@ -100,9 +100,7 @@ def preflight_cost_check() -> float:
     return amt
 
 
-def submit_transform_job(
-    sm: Any, run_id: str, job: dict[str, str]
-) -> dict[str, str]:
+def submit_transform_job(sm: Any, run_id: str, job: dict[str, str]) -> dict[str, str]:
     """Submit one SageMaker batch transform job with SingleRecord strategy."""
     job_name = f"jpcite-embed-{run_id}-{job['tag']}"
     output_path = f"s3://{DERIVED_BUCKET}/embeddings_burn/{job['output_subdir']}/"
@@ -177,7 +175,7 @@ def main() -> None:
             print(f"  - {job['tag']:14s} {job['instance']:18s} {job['input']}")
         sys.exit(0)
 
-    sm = boto3.Session(profile_name=PROFILE, region_name=REGION).client("sagemaker")
+    sm = sagemaker_client(region_name=REGION, profile_name=PROFILE)
     submitted: list[dict[str, str]] = []
     for job in PM6_JOBS:
         try:
