@@ -113,9 +113,7 @@ TOP_3: list[TableSpec] = [
             "COALESCE(json_extract_scalar(cohort_definition, '$.fiscal_year'), 'unknown') AS fiscal_year",
         ],
         sample_sql_template=(
-            "SELECT COUNT(*) AS row_cnt, "
-            "AVG(probability_estimate) AS avg_prob "
-            "FROM {table}"
+            "SELECT COUNT(*) AS row_cnt, AVG(probability_estimate) AS avg_prob FROM {table}"
         ),
     ),
     TableSpec(
@@ -138,10 +136,7 @@ TOP_3: list[TableSpec] = [
         select_extras=[
             "COALESCE(json_extract_scalar(subject, '$.kind'), 'unknown') AS subject_kind",
         ],
-        sample_sql_template=(
-            "SELECT COUNT(*) AS row_cnt "
-            "FROM {table}"
-        ),
+        sample_sql_template=("SELECT COUNT(*) AS row_cnt FROM {table}"),
     ),
 ]
 
@@ -160,26 +155,117 @@ TOP_10_NAMES = [
 ]
 
 
+# PERF-24 (2026-05-16) — top 10 expansion: ranks 4-10.
+#
+# Schema observations (Glue probe 2026-05-16):
+#   - All 6 entity_*_360_v1 / entity_temporal_pulse_v1 tables share the same
+#     `subject` JSON column shape used by packet_houjin_360 + entity_360_summary_v1.
+#     subject_kind partition is the right axis (subject.kind is typically
+#     'houjin' for these tables — 1-value partition, but column pruning is
+#     the real win).
+#   - packet_program_lineage_v1 has only 11 columns (no `subject`, no
+#     `cohort_definition`; the `program` column carries identity). There is
+#     no natural cohort axis; we treat it as flat (partition_cols=[]) and
+#     rely on Parquet ZSTD column pruning alone.
+TOP_7_REMAINING: list[TableSpec] = [
+    TableSpec(
+        name="packet_entity_court_360_v1",
+        parquet="packet_entity_court_360_v1_parquet",
+        partition_cols=["subject_kind"],
+        select_extras=[
+            "COALESCE(json_extract_scalar(subject, '$.kind'), 'unknown') AS subject_kind",
+        ],
+        sample_sql_template="SELECT COUNT(*) AS row_cnt FROM {table}",
+    ),
+    TableSpec(
+        name="packet_entity_partner_360_v1",
+        parquet="packet_entity_partner_360_v1_parquet",
+        partition_cols=["subject_kind"],
+        select_extras=[
+            "COALESCE(json_extract_scalar(subject, '$.kind'), 'unknown') AS subject_kind",
+        ],
+        sample_sql_template="SELECT COUNT(*) AS row_cnt FROM {table}",
+    ),
+    TableSpec(
+        name="packet_entity_risk_360_v1",
+        parquet="packet_entity_risk_360_v1_parquet",
+        partition_cols=["subject_kind"],
+        select_extras=[
+            "COALESCE(json_extract_scalar(subject, '$.kind'), 'unknown') AS subject_kind",
+        ],
+        sample_sql_template="SELECT COUNT(*) AS row_cnt FROM {table}",
+    ),
+    TableSpec(
+        name="packet_entity_subsidy_360_v1",
+        parquet="packet_entity_subsidy_360_v1_parquet",
+        partition_cols=["subject_kind"],
+        select_extras=[
+            "COALESCE(json_extract_scalar(subject, '$.kind'), 'unknown') AS subject_kind",
+        ],
+        sample_sql_template="SELECT COUNT(*) AS row_cnt FROM {table}",
+    ),
+    TableSpec(
+        name="packet_entity_succession_360_v1",
+        parquet="packet_entity_succession_360_v1_parquet",
+        partition_cols=["subject_kind"],
+        select_extras=[
+            "COALESCE(json_extract_scalar(subject, '$.kind'), 'unknown') AS subject_kind",
+        ],
+        sample_sql_template="SELECT COUNT(*) AS row_cnt FROM {table}",
+    ),
+    TableSpec(
+        name="packet_entity_temporal_pulse_v1",
+        parquet="packet_entity_temporal_pulse_v1_parquet",
+        partition_cols=["subject_kind"],
+        select_extras=[
+            "COALESCE(json_extract_scalar(subject, '$.kind'), 'unknown') AS subject_kind",
+        ],
+        sample_sql_template="SELECT COUNT(*) AS row_cnt FROM {table}",
+    ),
+    TableSpec(
+        name="packet_program_lineage_v1",
+        parquet="packet_program_lineage_v1_parquet",
+        partition_cols=[],  # no natural cohort axis; flat table
+        select_extras=[],
+        sample_sql_template="SELECT COUNT(*) AS row_cnt FROM {table}",
+    ),
+]
+
+# Combined catalog of all specs the runner knows about (top 3 + top 7).
+ALL_SPECS: list[TableSpec] = TOP_3 + TOP_7_REMAINING
+
+
 def build_ctas(spec: TableSpec) -> str:
     """Compose the CTAS SQL for one table.
 
     Atomic: drops _parquet if it exists then CTAS-recreates. Athena
     does NOT support `CREATE OR REPLACE TABLE`, so we issue a separate
     DROP TABLE IF EXISTS up front via run_ddl().
+
+    PERF-24 (2026-05-16): when `partition_cols` is empty the CTAS omits
+    the `partitioned_by` clause entirely (Athena rejects an empty
+    ARRAY[] there). The `external_location` is still set so the Parquet
+    files land in the canonical s3://…/parquet/<source>/ prefix; this
+    requires the workgroup's EnforceWorkGroupConfiguration to be
+    temporarily disabled before CTAS (see PERF-3 doc).
     """
-    extra_select = ",\n  ".join(spec.select_extras)
-    partitioned_by = ", ".join(f"'{c}'" for c in spec.partition_cols)
+    extra_select_clause = ",\n  " + ",\n  ".join(spec.select_extras) if spec.select_extras else ""
+    with_clauses = [
+        "format = 'PARQUET'",
+        "parquet_compression = 'ZSTD'",
+        f"external_location = '{PARQUET_S3_BASE}/{spec.name}/'",
+    ]
+    if spec.partition_cols:
+        partitioned_by = ", ".join(f"'{c}'" for c in spec.partition_cols)
+        with_clauses.append(f"partitioned_by = ARRAY[{partitioned_by}]")
+    with_block = ",\n  ".join(with_clauses)
     return f"""
 CREATE TABLE {spec.parquet}
 WITH (
-  format = 'PARQUET',
-  parquet_compression = 'ZSTD',
-  external_location = '{PARQUET_S3_BASE}/{spec.name}/',
-  partitioned_by = ARRAY[{partitioned_by}]
+  {with_block}
 ) AS
 SELECT
-  *,
-  {extra_select}
+  *{extra_select_clause}
 FROM {spec.name}
 """.strip()
 
@@ -198,9 +284,7 @@ def run_ddl(athena: Any, sql: str) -> dict[str, Any]:
     qid: str = resp["QueryExecutionId"]
     waited = 0
     while waited <= MAX_POLL_SEC:
-        info: dict[str, Any] = athena.get_query_execution(QueryExecutionId=qid)[
-            "QueryExecution"
-        ]
+        info: dict[str, Any] = athena.get_query_execution(QueryExecutionId=qid)["QueryExecution"]
         state = info["Status"]["State"]
         if state in {"SUCCEEDED", "FAILED", "CANCELLED"}:
             return info
@@ -294,6 +378,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip CTAS step (e.g., when comparing only).",
     )
+    p.add_argument(
+        "--out",
+        default="out/athena_parquet_migrate_2026_05_16.json",
+        help="JSON ledger path (default preserves PERF-3 layout; PERF-24 uses a separate path).",
+    )
     return p.parse_args()
 
 
@@ -304,7 +393,9 @@ def main() -> int:
 
     if args.tables:
         wanted = set(args.tables.split(","))
-        specs = [s for s in TOP_3 if s.name in wanted]
+        # PERF-24: search the full top-10 catalog (TOP_3 + TOP_7_REMAINING)
+        # so the same runner can target the remaining 7 expansion tables.
+        specs = [s for s in ALL_SPECS if s.name in wanted]
     else:
         specs = TOP_3
 
@@ -354,8 +445,8 @@ def main() -> int:
         "migrate_rows": migrate_rows,
         "compare_rows": compare_rows,
     }
-    Path("out").mkdir(exist_ok=True)
-    out_path = Path("out/athena_parquet_migrate_2026_05_16.json")
+    out_path = Path(args.out)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\n[summary] wrote {out_path}", flush=True)
     return 0
