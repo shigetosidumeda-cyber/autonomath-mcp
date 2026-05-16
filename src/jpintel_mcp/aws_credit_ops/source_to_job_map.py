@@ -1,21 +1,22 @@
 """Canonical L1 source-family → AWS-credit job-id map.
 
 This module bridges the Wave 51 L1 source family catalog
-(:mod:`jpintel_mcp.l1_source_family.catalog` — 32 families) with the 8
-AWS credit consumption jobs (J01..J08) declared in
-``data/aws_credit_jobs/J0{1..8}*.json``. The mapping is consumed by the
-crawler container and by the Step Functions orchestrator so each fetched
-URL can be tagged with the originating L1 family and the per-source
-contract metadata (``license_boundary``, ``robots_respect``,
-``required_notice``, ``redistribution_scope``) without having to re-walk
-the catalog at runtime.
+(:mod:`jpintel_mcp.l1_source_family.catalog` — 32 families) with the 9
+AWS credit consumption jobs (J01..J10, J09 covered by court_decisions
+in J01 sweep at present) declared in ``data/aws_credit_jobs/J*.json``.
+The mapping is consumed by the crawler container and by the Step
+Functions orchestrator so each fetched URL can be tagged with the
+originating L1 family and the per-source contract metadata
+(``license_boundary``, ``robots_respect``, ``required_notice``,
+``redistribution_scope``) without having to re-walk the catalog at
+runtime.
 
 Design constraints (mirrored from ``catalog.py``):
 
 - **Static only**: literal table at import time; no I/O, no DB, no LLM.
 - **No live HTTP**: this module imports neither ``httpx`` nor any
   scraping library.
-- **Authoritative job manifests**: ``data/aws_credit_jobs/J0{1..8}*.json``
+- **Authoritative job manifests**: ``data/aws_credit_jobs/J*.json``
   are the source of truth for the URLs each job sweeps. This map
   declares the *family-id ↔ job-id* relationship that the manifests
   reference at the ``source_family`` / ``publisher`` level.
@@ -23,10 +24,9 @@ Design constraints (mirrored from ``catalog.py``):
 Per ``docs/_internal/aws_credit_data_acquisition_jobs_agent.md``:
 
 - **J01** (source profile sweep) — every P0 family.
-- **J02** (NTA法人番号 master mirror) — corporate-identity axis;
-  backs ``gbizinfo_houjin`` because the L1 catalog has no dedicated
-  ``nta_houjin_master`` family (the houjin_bangou surface lives in the
-  gBizINFO corp master row, with NTA as the upstream authority).
+- **J02** (NTA法人番号 master mirror) — corporate-identity axis; binds
+  ``gbizinfo_houjin_extended`` (the houjin_bangou identity layer is the
+  NTA upstream authority that gBizINFO mirrors downstream — see J07).
 - **J03** (NTAインボイス) — invoice registrants axis.
 - **J04** (e-Gov law snapshot) — law / regulation axis.
 - **J05** (J-Grants public program acquisition) — subsidy portal axis.
@@ -37,10 +37,18 @@ Per ``docs/_internal/aws_credit_data_acquisition_jobs_agent.md``:
 - **J08** (官報 / kanpou gazette notice crawler) — official_gazette axis;
   daily indexes from 国立印刷局 (kanpou.npb.go.jp) for 法人設立/解散/合併/
   行政処分/告示/公告. PDL v1.0 attribution required.
+- **J10** (法務局 public registry notices + 民事局 statistics +
+  休眠会社みなし解散告示) — canonical 法務省 axis for 商業登記簿 /
+  不動産登記 / 法人設立・変更履歴 / 代表者 / 解散 / 合併. **Public
+  notice + 統計 only** — per-company registry lookup via the paid
+  登記情報提供サービス (touki.or.jp) is structurally excluded
+  (``no_per_company_lookup: true`` gate + ``paid_api_excluded`` list
+  in the manifest). Binds ``sangyo_houjin_registry`` which previously
+  rode J02 before this dedicated 法務省 fetcher landed.
 
 Use :func:`get_job_for_source` to look up the job_id for an L1 family,
 :func:`get_sources_for_job` to enumerate the families a job sweeps, and
-:func:`verify_coverage` to assert all eight jobs have at least one
+:func:`verify_coverage` to assert all jobs have at least one
 mapped source (a CI-gated invariant).
 """
 
@@ -63,8 +71,11 @@ from jpintel_mcp.l1_source_family.catalog import (
 #: discovery) pin against this string.
 MAP_VERSION: Final[str] = "jpcite.aws_credit_ops.source_to_job_map.v1"
 
-#: Canonical job_id enumeration. Mirrors the eight JSON files under
-#: ``data/aws_credit_jobs/``.
+#: Canonical job_id enumeration. Mirrors the ten JSON files under
+#: ``data/aws_credit_jobs/`` (J01..J10). J09 is the dedicated
+#: courts / judiciary / tribunal-decision fetcher (最高裁判決 last 5y +
+#: 国税不服審判所 公表裁決 + 公取委 排除/課徴金 + 中労委 命令検索 +
+#: 行政不服審査会答申 + 人事院 + 公害等調整委員会 + 知財高裁).
 JobId = Literal[
     "J01_source_profile_sweep",
     "J02_nta_houjin_master_mirror",
@@ -74,10 +85,12 @@ JobId = Literal[
     "J06_ministry_municipality_pdf_extraction",
     "J07_gbizinfo_public_business_signals",
     "J08_kanpou_gazette",
+    "J09_courts_judiciary",
+    "J10_houmu_registry_public",
 ]
 
-#: All eight job_ids in declaration order. Tests gate on
-#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J08}``
+#: All ten job_ids in declaration order. Tests gate on
+#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J10}``
 #: so missing entries are caught structurally.
 ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J01_source_profile_sweep",
@@ -88,6 +101,8 @@ ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J06_ministry_municipality_pdf_extraction",
     "J07_gbizinfo_public_business_signals",
     "J08_kanpou_gazette",
+    "J09_courts_judiciary",
+    "J10_houmu_registry_public",
 )
 
 
@@ -112,15 +127,17 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
     # --- J07: gBizINFO public business signals ---
     # gbizinfo_houjin is the corp master surface that NTA houjin (J02)
     # feeds upstream — but the *fetched* surface lives at info.gbiz.go.jp
-    # which is J07's target. J02 is therefore reserved for the
-    # houjin-bangou.nta.go.jp bulk download path, and the L1 catalog
-    # row for "corp master" lives at gbizinfo_houjin which is the J07
-    # surface. To avoid double-mapping (two jobs claim one family) we
-    # pin gbizinfo_houjin to its primary fetcher J07 and let
-    # verify_coverage assert J02 has at least one bound family via the
-    # houjin_bangou identity axis below.
+    # which is J07's target. The L1 catalog row for "corp master" lives
+    # at gbizinfo_houjin which is the J07 surface, so we pin it to J07.
     "gbizinfo_houjin": "J07_gbizinfo_public_business_signals",
-    "gbizinfo_houjin_extended": "J07_gbizinfo_public_business_signals",
+    # --- J02: NTA houjin_bangou master mirror ---
+    # ``gbizinfo_houjin_extended`` pins to J02 because the extended
+    # surface (history / merge / dissolution / address-change events)
+    # is sourced upstream from the NTA houjin_bangou bulk mirror that
+    # J02 owns. This also satisfies verify_coverage by giving J02 its
+    # canonical L1 family bind, formerly held by sangyo_houjin_registry
+    # before J10 (法務省) landed as the dedicated 法務局 fetcher.
+    "gbizinfo_houjin_extended": "J02_nta_houjin_master_mirror",
     # --- J05: J-Grants public program acquisition ---
     "jgrants_subsidy_portal": "J05_jgrants_public_program_acquisition",
     # --- J06: Ministry / municipality PDF extraction ---
@@ -140,12 +157,17 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
     # ``edinet_disclosure`` is P0 but has no dedicated bulk job, so it
     # pins to the J01 sweep until a future job_id covers EDINET XBRL.
     "edinet_disclosure": "J01_source_profile_sweep",
-    # ``sangyo_houjin_registry`` is P0 (法務省 法人登記 bulk) and is
-    # bound to J02 because the houjin_bangou identity layer (J02) is the
-    # canonical fetcher that resolves the houjin_bangou ↔ 登記
-    # houjin_meisho surface. Without this bind, J02 would have zero
-    # mapped families.
-    "sangyo_houjin_registry": "J02_nta_houjin_master_mirror",
+    # --- J10: 法務局 public registry notices + 民事局 statistics ---
+    # ``sangyo_houjin_registry`` is P0 (法務省 法人登記) and is now
+    # canonically bound to J10, the dedicated 法務局 public-notices +
+    # 休眠会社みなし解散告示 + 商業登記/不動産登記統計 fetcher. Before
+    # J10 landed it rode J02 (NTA houjin_bangou) as a placeholder.
+    # **Per-company registry record lookup is NOT in scope** — the
+    # J10 manifest carries ``no_per_company_lookup: true`` plus a
+    # ``paid_api_excluded`` list so the paid 登記情報提供サービス
+    # (touki.or.jp, per-query ¥332-¥500 + auth) cannot be invoked
+    # from this AWS-credit window.
+    "sangyo_houjin_registry": "J10_houmu_registry_public",
     # --- J08: 官報 (kanpou) gazette notice crawler ---
     # gazette_official binds to J08, the dedicated gazette daily-index
     # walker. Before J08 landed this row pointed at J01 (sweep-only)
@@ -153,13 +175,21 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
     # kanpou.npb.go.jp surface end-to-end (daily index + per-notice
     # receipt + PDL v1.0 attribution).
     "gazette_official": "J08_kanpou_gazette",
+    # --- J09: courts / judiciary / tribunal decisions ---
+    # ``court_decisions`` (最高裁判例検索 + 高裁 + 地裁 + 知財高裁) and
+    # ``enforcement_actions`` (公取委 排除措置 + 課徴金 + 中労委 命令 +
+    # 行政不服審査会答申 + 人事院 + 国税不服審判所 公表裁決) bind to
+    # J09, the dedicated courts/judiciary fetcher. Before J09 landed
+    # they were swept by J01 only. Court 判決 are public domain; tribunal
+    # rulings (KFS / JFTC / 中労委 / 人事院 / 行政不服) are公務著作権 with
+    # 出典明記による再配布可.
+    "court_decisions": "J09_courts_judiciary",
+    "enforcement_actions": "J09_courts_judiciary",
     # Remaining P1/P2 families are profiled by J01 (their bulk fetch is
     # not in scope for the AWS-credit window).
     "soumu_local_gov": "J01_source_profile_sweep",
     "jfc_loans": "J01_source_profile_sweep",
     "unic_pmda": "J01_source_profile_sweep",
-    "court_decisions": "J01_source_profile_sweep",
-    "enforcement_actions": "J01_source_profile_sweep",
     "jetro_invest": "J01_source_profile_sweep",
     "jisc_standards": "J01_source_profile_sweep",
     "tokkyo_jpo": "J01_source_profile_sweep",

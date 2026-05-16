@@ -44,9 +44,14 @@ def test_map_version_is_stable_constant() -> None:
     assert MAP_VERSION == "jpcite.aws_credit_ops.source_to_job_map.v1"
 
 
-def test_all_job_ids_has_eight_entries() -> None:
-    """The eight AWS-credit jobs J01..J08 must all appear in ALL_JOB_IDS."""
-    assert len(ALL_JOB_IDS) == 8
+def test_all_job_ids_has_ten_entries() -> None:
+    """The ten AWS-credit jobs J01..J10 must all appear in ALL_JOB_IDS.
+
+    J09 is the courts / judiciary / tribunal-decision crawler; J10 is
+    the 法務局 public registry notices + 民事局 statistics +
+    休眠会社みなし解散告示 fetcher.
+    """
+    assert len(ALL_JOB_IDS) == 10
     assert set(ALL_JOB_IDS) == {
         "J01_source_profile_sweep",
         "J02_nta_houjin_master_mirror",
@@ -56,6 +61,8 @@ def test_all_job_ids_has_eight_entries() -> None:
         "J06_ministry_municipality_pdf_extraction",
         "J07_gbizinfo_public_business_signals",
         "J08_kanpou_gazette",
+        "J09_courts_judiciary",
+        "J10_houmu_registry_public",
     }
 
 
