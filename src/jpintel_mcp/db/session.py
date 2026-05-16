@@ -133,8 +133,28 @@ def connect(db_path: Path | None = None) -> sqlite3.Connection:
     conn.execute("PRAGMA cache_size = -262144")
     # Temp B-trees in RAM (matters for ORDER BY without covering index).
     conn.execute("PRAGMA temp_store = MEMORY")
-    # Checkpoint every ~4MB of WAL (1000 * 4KB pages) to keep WAL bounded.
-    conn.execute("PRAGMA wal_autocheckpoint = 1000")
+    # WAL autocheckpoint cadence: 2500 pages * 4KB page_size = **~10MB WAL
+    # trigger**. PERF-43 (2026-05-17) re-tuned from 1000 -> 2500 for the
+    # 9.7GB autonomath.db workload:
+    #
+    #   * 1000 (4MB) was too aggressive for ETL bulk-merge bursts -- each
+    #     INSERT batch of 10-50k rows tripped 3-12 sequential checkpoints,
+    #     each one fsync'ing the 9.7GB main file with write amplification.
+    #   * 2500 (10MB) lets a single bulk batch land in 1-3 checkpoints
+    #     while keeping the WAL tail short enough that reader-side
+    #     `connect_autonomath()` workers (cache=shared, mode=ro) do not
+    #     pay the per-query WAL traversal cost.
+    #   * 10000+ (40MB+) was rejected: WAL traversal scales with tail
+    #     length, and the autonomath reader hot path (FTS5 + sqlite-vec)
+    #     opens many short-lived connections -- long WAL hurts each one.
+    #   * 0 (manual-only) was rejected: a crash with un-checkpointed WAL
+    #     forces a full recovery walk at next boot -- already banned for
+    #     this DB per `feedback_no_quick_check_on_huge_sqlite` (60s Fly
+    #     boot budget).
+    #
+    # See `docs/_internal/PERF_43_SQLITE_WAL_CHECKPOINT_2026_05_17.md` for
+    # the audit trace + WAL state measurements that justify 2500.
+    conn.execute("PRAGMA wal_autocheckpoint = 2500")
     return conn
 
 
