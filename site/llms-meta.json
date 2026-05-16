@@ -7,7 +7,7 @@
   "publisher_legal_entity": "Bookyou株式会社",
   "publisher_invoice_id": "T8010001213708",
   "canonical": "https://jpcite.com",
-  "generated_at": "2026-05-15T16:05:47Z",
+  "generated_at": "2026-05-16T23:00:31Z",
   "generator": "scripts/regen_structured_sitemap_and_llms_meta.py",
   "description": "Machine-readable index of 4 llms.txt cohort files plus 4 well-known discovery surfaces (sitemap-llms.xml, .well-known/mcp.json, agents.json, ai-plugin.json). AI agents can use this index to range-fetch a single section anchor without re-pulling the whole llms-full.txt body.",
   "license": "CC BY 4.0 (this index file). Underlying program/law data: see /data-licensing.html.",
@@ -19,10 +19,10 @@
     {
       "file": "/llms.txt",
       "lang": "ja",
-      "size_bytes": 8181,
+      "size_bytes": 8183,
       "line_count": 110,
-      "content_hash_sha256": "78679de8be650448d11975b207aab6a701b517ac47a9b0f812aae8511020ddfa",
-      "last_modified": "2026-05-15T15:45:42Z",
+      "content_hash_sha256": "084a82bcd0351f70b8de9b994c28fe7c443236034efa89ee82281331185a390a",
+      "last_modified": "2026-05-16T11:04:51Z",
       "sections": 9,
       "anchors_total": 10,
       "section_anchors": [
@@ -103,8 +103,8 @@
       "lang": "en",
       "size_bytes": 6042,
       "line_count": 94,
-      "content_hash_sha256": "2cbdb42875b9e0008361f0c7255bf83b59c6e8fff816f2381bc1e130926ef471",
-      "last_modified": "2026-05-15T11:08:06Z",
+      "content_hash_sha256": "d3e96170135248ba0d7ff0a1ff49f3ad4fc059ab27211588e58d93c71f1d158b",
+      "last_modified": "2026-05-16T11:04:51Z",
       "sections": 8,
       "anchors_total": 9,
       "section_anchors": [
@@ -176,10 +176,10 @@
     {
       "file": "/llms-full.txt",
       "lang": "ja",
-      "size_bytes": 2244331,
-      "line_count": 13135,
-      "content_hash_sha256": "e6bbf9309128fce977430b62b5717488edefb7336c4289101fcd4baff7bb3ac3",
-      "last_modified": "2026-05-15T11:08:01Z",
+      "size_bytes": 2229402,
+      "line_count": 13053,
+      "content_hash_sha256": "f8a0625b8c30dbe9fd7d32e1113eb8a90cbcc22e5f3da21eb5601db066ec0b44",
+      "last_modified": "2026-05-16T23:00:26Z",
       "sections": 83,
       "anchors_total": 129,
       "section_anchors": [
@@ -1081,8 +1081,8 @@
         },
         {
           "level": 2,
-          "text": "All Programs (11,601 searchable public program rows, compact)",
-          "anchor": "all-programs-(11,601-searchable-public-program-rows,-compact)",
+          "text": "All Programs (11,366 normalized LLM-index program rows, compact)",
+          "anchor": "all-programs-(11,366-normalized-llm-index-program-rows,-compact)",
           "line": 1681,
           "kind": "heading"
         }
@@ -1094,7 +1094,7 @@
       "size_bytes": 4392703,
       "line_count": 23245,
       "content_hash_sha256": "8287dae008b6f9b24a1ec04612da51a7019166d1222b97638d02ef00d1246327",
-      "last_modified": "2026-05-15T11:08:07Z",
+      "last_modified": "2026-05-16T01:14:25Z",
       "sections": 8,
       "anchors_total": 9,
       "section_anchors": [
@@ -1182,9 +1182,9 @@
     {
       "file": ".well-known/agents.json",
       "kind": "agents_protocol",
-      "size_bytes": 6296,
-      "content_hash_sha256": "a21475b0e33a50f7c4722043ac4b28ba3018994b3b123a03311a1368af4ea9f7",
-      "last_modified": "2026-05-15T16:05:44Z"
+      "size_bytes": 6532,
+      "content_hash_sha256": "1bc026619a8b3ba7c7c8bf9335ea84e07b17b0ca8fcce2a6c4de3a69b5516070",
+      "last_modified": "2026-05-16T11:03:25Z"
     },
     {
       "file": ".well-known/ai-plugin.json",

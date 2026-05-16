@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "snapshot_at": "2026-05-11T00:00:00Z",
+  "snapshot_at": "2026-05-16T00:00:00Z",
   "snapshot_git_sha": "d4216ffb",
   "guards": {
     "banned_terms": [

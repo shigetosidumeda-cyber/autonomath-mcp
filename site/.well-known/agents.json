@@ -42,7 +42,7 @@
   "tools_count": {
     "public_default": 184,
     "runtime_verified": 184,
-    "note": "Public MCP manifests advertise 184 tools. Lifted from 179 to 184 by Wave 51 chain B per-dim primitive composition wrappers (predictive_subscriber_fanout / session_multi_step_eligibility / rule_tree_batch_eval / anonymized_cohort_query_with_redact / time_machine_snapshot_walk)."
+    "note": "Public MCP manifests advertise 184 tools."
   },
   "tools": {
     "recommended_first": [
