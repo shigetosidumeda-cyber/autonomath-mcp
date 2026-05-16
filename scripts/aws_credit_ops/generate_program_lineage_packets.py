@@ -888,8 +888,18 @@ def upload_packet(
         norm_prefix = key_prefix if key_prefix.endswith("/") or not key_prefix else key_prefix + "/"
         key = f"{norm_prefix}{object_name}"
         if s3_client is None:
-            boto3 = _import_boto3()
-            s3_client = boto3.client("s3")
+            # PERF-35: prefer the shared client pool so the 200-500 ms
+            # boto3 cold-start tax is paid once per ``(service, region)``
+            # per process across the per-program upload loop. Falls back
+            # to the legacy ``_import_boto3`` path when the pool module
+            # is unavailable.
+            try:
+                from scripts.aws_credit_ops._aws import get_client
+            except ImportError:
+                boto3 = _import_boto3()
+                s3_client = boto3.client("s3")
+            else:
+                s3_client = get_client("s3")
         s3_client.put_object(
             Bucket=bucket,
             Key=key,

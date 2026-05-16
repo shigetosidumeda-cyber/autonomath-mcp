@@ -316,16 +316,26 @@ class S3PrefixSource(ArtifactSource):
     def _client(self) -> Any:
         if self._s3 is not None:
             return self._s3
+        # PERF-35: prefer the shared client pool so the 200-500 ms boto3
+        # cold-start tax is paid once per process across every
+        # validate_run_artifacts run (and across other aws_credit_ops
+        # modules running in the same Python interpreter). Falls back to
+        # a direct boto3.client when the pool is unavailable.
         try:
-            import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
-        except ImportError as exc:
-            msg = (
-                "boto3 is not installed. Install in the operator environment "
-                "(pip install boto3) before running validate_run_artifacts "
-                "against an s3:// prefix, or pass a local path instead."
-            )
-            raise RuntimeError(msg) from exc
-        self._s3 = boto3.client("s3")
+            from scripts.aws_credit_ops._aws import get_client
+        except ImportError:
+            try:
+                import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
+            except ImportError as exc:
+                msg = (
+                    "boto3 is not installed. Install in the operator environment "
+                    "(pip install boto3) before running validate_run_artifacts "
+                    "against an s3:// prefix, or pass a local path instead."
+                )
+                raise RuntimeError(msg) from exc
+            self._s3 = boto3.client("s3")
+        else:
+            self._s3 = get_client("s3")
         return self._s3
 
     def read(self, relative_name: str) -> bytes | None:

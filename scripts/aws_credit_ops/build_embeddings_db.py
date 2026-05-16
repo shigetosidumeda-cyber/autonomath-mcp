@@ -72,12 +72,31 @@ class BuildEmbeddingsError(RuntimeError):
 
 
 def _boto3_s3() -> Any:  # pragma: no cover - trivial shim
+    """Return a pooled S3 client (PERF-35).
+
+    Prefers the shared client cache in
+    :mod:`scripts.aws_credit_ops._aws` so the 200-500 ms boto3
+    ``Session`` + endpoint discovery cold-start is paid once per
+    ``(service, region)`` per process across the embedding-build hot
+    path (paginated list + per-batch GetObject + final PutObject).
+    Falls back to direct ``boto3.client`` construction when running
+    inside a minimal Batch container without the wider ``scripts/``
+    package on ``PYTHONPATH``. Honours the legacy
+    ``AWS_DEFAULT_REGION`` override either way.
+    """
+
+    region = os.environ.get("AWS_DEFAULT_REGION", DEFAULT_REGION)
+    try:
+        from scripts.aws_credit_ops._aws import get_client
+    except ImportError:
+        pass
+    else:
+        return get_client("s3", region_name=region)
     try:
         import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
     except ImportError as exc:
         msg = "boto3 is required (pip install boto3)"
         raise BuildEmbeddingsError(msg) from exc
-    region = os.environ.get("AWS_DEFAULT_REGION", DEFAULT_REGION)
     return boto3.client("s3", region_name=region)
 
 
@@ -143,11 +162,7 @@ def _init_db(db_path: str, dim: int) -> sqlite3.Connection:
         "surface TEXT NOT NULL"
         ")"
     )
-    conn.execute(
-        f"CREATE VIRTUAL TABLE vec_corpus USING vec0("
-        f"  embedding float[{dim}]"
-        f")"
-    )
+    conn.execute(f"CREATE VIRTUAL TABLE vec_corpus USING vec0(  embedding float[{dim}])")
     conn.execute("CREATE INDEX ix_id_map_table_src ON id_map(table_name, source_id)")
     conn.commit()
     return conn
@@ -239,9 +254,7 @@ def _ingest_table(
 
     # Re-read the input JSONL so id ↔ row index is preserved.
     keys = (
-        _list_s3_objects(s3, bucket, f"{prefix_in.rstrip('/')}/{table}/")
-        if s3 is not None
-        else []
+        _list_s3_objects(s3, bucket, f"{prefix_in.rstrip('/')}/{table}/") if s3 is not None else []
     )
     part_keys = sorted(k for k in keys if k.endswith(".jsonl"))
     cnt = 0
@@ -266,10 +279,7 @@ def _ingest_table(
                 import hashlib
 
                 h = hashlib.sha256(src_id.encode()).digest()
-                vec = [
-                    (h[(j * 2) % len(h)] - 128) / 128.0
-                    for j in range(fallback_dim)
-                ]
+                vec = [(h[(j * 2) % len(h)] - 128) / 128.0 for j in range(fallback_dim)]
             cur.execute(
                 "INSERT INTO id_map(table_name, source_id, surface) VALUES (?,?,?)",
                 (table, src_id, surface[:500]),
@@ -295,7 +305,7 @@ def build(
     db_path: str = DEFAULT_DB_PATH,
     dim: int = DEFAULT_DIM,
     tables: Iterable[str] = CORPUS_TABLES,
-    stage_dir: str = "/tmp/jpcite_embed_stage",
+    stage_dir: str = "/tmp/jpcite_embed_stage",  # noqa: S108  # nosec B108 - operator-only batch staging
     dry_run: bool = True,
     s3_client: Any | None = None,
 ) -> dict[str, Any]:
@@ -336,9 +346,7 @@ def build(
         "model": "sentence-transformers/all-MiniLM-L6-v2",
     }
     manifest_path = Path(db_path).with_suffix(".manifest.json")
-    manifest_path.write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     return manifest
 
 
@@ -354,17 +362,13 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--prefix-out", default=DEFAULT_PREFIX_OUT)
     parser.add_argument("--db-path", default=DEFAULT_DB_PATH)
     parser.add_argument("--dim", type=int, default=DEFAULT_DIM)
-    parser.add_argument(
-        "--tables", default=",".join(CORPUS_TABLES)
-    )
+    parser.add_argument("--tables", default=",".join(CORPUS_TABLES))
     parser.add_argument("--commit", action="store_true")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     args = _parse_args(argv)
     dry_run = not args.commit and os.environ.get("DRY_RUN", "1") != "0"
     tables = [t.strip() for t in args.tables.split(",") if t.strip()]

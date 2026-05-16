@@ -146,8 +146,17 @@ def load_packet(source: str | Path) -> dict[str, Any]:
 
     if isinstance(source, str) and source.startswith("s3://"):
         bucket, key = _parse_s3_uri(source)
-        boto3 = _import_boto3()
-        s3 = boto3.client("s3")
+        # PERF-35: prefer the shared client pool so the 200-500 ms boto3
+        # cold-start tax is paid once per ``(service, region)`` per
+        # process across every preview render. Falls back to the legacy
+        # ``_import_boto3`` path when the pool module is unavailable.
+        try:
+            from scripts.aws_credit_ops._aws import get_client
+        except ImportError:
+            boto3 = _import_boto3()
+            s3 = boto3.client("s3")
+        else:
+            s3 = get_client("s3")
         response = s3.get_object(Bucket=bucket, Key=key)
         body = response["Body"].read()
         raw = body.encode("utf-8") if isinstance(body, str) else bytes(body)
@@ -157,10 +166,7 @@ def load_packet(source: str | Path) -> dict[str, Any]:
         with path.open("r", encoding="utf-8") as fh:
             parsed = json.load(fh)
     if not isinstance(parsed, dict):
-        msg = (
-            f"JPCIR envelope must be a JSON object at the top level; got "
-            f"{type(parsed).__name__}"
-        )
+        msg = f"JPCIR envelope must be a JSON object at the top level; got {type(parsed).__name__}"
         raise ValueError(msg)
     return parsed
 
@@ -288,9 +294,7 @@ def render_markdown(body: str) -> str:
     def flush_bullets() -> None:
         if not bullet_buffer:
             return
-        items_html = "".join(
-            f"<li>{_inline_md_to_html(item)}</li>" for item in bullet_buffer
-        )
+        items_html = "".join(f"<li>{_inline_md_to_html(item)}</li>" for item in bullet_buffer)
         html_parts.append(f"<ul>{items_html}</ul>")
         bullet_buffer.clear()
 
@@ -310,9 +314,7 @@ def render_markdown(body: str) -> str:
             # hierarchy honest.
             level_html = max(3, level + 2)
             html_parts.append(
-                f"<h{level_html}>"
-                f"{_inline_md_to_html(heading_match.group(2))}"
-                f"</h{level_html}>"
+                f"<h{level_html}>{_inline_md_to_html(heading_match.group(2))}</h{level_html}>"
             )
             continue
         bullet_match = _BULLET_RE.match(line)
@@ -410,10 +412,10 @@ def _render_sources_table(envelope: dict[str, Any]) -> str:
         "<h2>出典 (sources)</h2>"
         "<table>"
         "<thead><tr>"
-        "<th scope=\"col\">source_url</th>"
-        "<th scope=\"col\">source_fetched_at</th>"
-        "<th scope=\"col\">publisher</th>"
-        "<th scope=\"col\">license</th>"
+        '<th scope="col">source_url</th>'
+        '<th scope="col">source_fetched_at</th>'
+        '<th scope="col">publisher</th>'
+        '<th scope="col">license</th>'
         "</tr></thead>"
         f"<tbody>{''.join(body_rows)}</tbody>"
         "</table>"
@@ -437,9 +439,7 @@ def _render_records_table(envelope: dict[str, Any]) -> str:
                 keys.append(k)
     if not keys:
         return ""
-    header_cells = "".join(
-        f'<th scope="col">{escape_text(k)}</th>' for k in keys
-    )
+    header_cells = "".join(f'<th scope="col">{escape_text(k)}</th>' for k in keys)
     body_rows: list[str] = []
     for rec in raw_records:
         if not isinstance(rec, dict):
@@ -486,15 +486,18 @@ def _render_sections(envelope: dict[str, Any]) -> str:
         title = _coerce_optional_str(sec.get("title")) or _coerce_optional_str(
             sec.get("section_id"),
         )
-        body = _coerce_optional_str(sec.get("body")) or _coerce_optional_str(
-            sec.get("section_body"),
-        ) or ""
+        body = (
+            _coerce_optional_str(sec.get("body"))
+            or _coerce_optional_str(
+                sec.get("section_body"),
+            )
+            or ""
+        )
         section_id = _coerce_optional_str(sec.get("section_id")) or ""
         anchor = re.sub(r"[^A-Za-z0-9_-]+", "-", section_id).strip("-").lower()
         if anchor:
             heading = (
-                f'<h2 id="section-{html.escape(anchor, quote=True)}">'
-                f"{escape_text(title)}</h2>"
+                f'<h2 id="section-{html.escape(anchor, quote=True)}">{escape_text(title)}</h2>'
             )
         else:
             heading = f"<h2>{escape_text(title)}</h2>"
@@ -600,16 +603,8 @@ def _render_footer(envelope: dict[str, Any]) -> str:
     if not isinstance(source_count, int):
         source_count = len(sources) if isinstance(sources, list) else 0
     disclaimer = _coerce_optional_str(envelope.get("disclaimer")) or DEFAULT_DISCLAIMER
-    cost_str = (
-        f"¥{int(cost):,}"
-        if isinstance(cost, (int, float))
-        else "—"
-    )
-    tokens_str = (
-        f"{int(tokens_saved):,} tokens"
-        if isinstance(tokens_saved, (int, float))
-        else "—"
-    )
+    cost_str = f"¥{int(cost):,}" if isinstance(cost, (int, float)) else "—"
+    tokens_str = f"{int(tokens_saved):,} tokens" if isinstance(tokens_saved, (int, float)) else "—"
     return (
         "<footer>"
         '<dl class="rollup">'
@@ -702,9 +697,7 @@ class ForbiddenWordingError(RuntimeError):
     """
 
     def __init__(self, violations: Sequence[Violation]) -> None:
-        super().__init__(
-            f"forbidden-claim violations: {len(violations)} hit(s)"
-        )
+        super().__init__(f"forbidden-claim violations: {len(violations)} hit(s)")
         self.violations: tuple[Violation, ...] = tuple(violations)
 
 

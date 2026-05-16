@@ -115,12 +115,8 @@ class TextractRequest(BaseModel):
     )
     region: str = Field(default=DEFAULT_REGION, min_length=1)
     estimated_page_count: int | None = Field(default=None, ge=1, le=3000)
-    poll_interval_seconds: float = Field(
-        default=_DEFAULT_POLL_INTERVAL_SECONDS, gt=0.0
-    )
-    poll_timeout_seconds: float = Field(
-        default=_DEFAULT_POLL_TIMEOUT_SECONDS, gt=0.0
-    )
+    poll_interval_seconds: float = Field(default=_DEFAULT_POLL_INTERVAL_SECONDS, gt=0.0)
+    poll_timeout_seconds: float = Field(default=_DEFAULT_POLL_TIMEOUT_SECONDS, gt=0.0)
 
     @field_validator("s3_bucket")
     @classmethod
@@ -227,14 +223,24 @@ def _build_client(region: str, *, client_factory: Any | None = None) -> Any:
 
     ``client_factory`` is a seam for tests: pass a callable that returns
     a fake client and the real ``boto3.client('textract', ...)`` call is
-    skipped entirely. In production this argument is ``None`` and we go
-    through the lazy ``boto3`` import.
+    skipped entirely. In production this argument is ``None`` and we
+    prefer the shared client pool from
+    :mod:`scripts.aws_credit_ops._aws` (PERF-35) so the 200-500 ms boto3
+    cold-start tax is paid once per ``(service, region)`` across every
+    Textract invocation in the same process. Falls back to the legacy
+    ``_import_boto3`` path when ``scripts.aws_credit_ops._aws`` is not
+    importable (e.g. inside a Batch container that only ships the
+    ``src/`` tree).
     """
 
     if client_factory is not None:
         return client_factory(region)
-    boto3 = _import_boto3()
-    return boto3.client("textract", region_name=region)
+    try:
+        from scripts.aws_credit_ops._aws import get_client
+    except ImportError:
+        boto3 = _import_boto3()
+        return boto3.client("textract", region_name=region)
+    return get_client("textract", region_name=region)
 
 
 def _project_text(blocks: tuple[dict[str, Any], ...]) -> str:
@@ -312,9 +318,7 @@ def _project_tables(blocks: tuple[dict[str, Any], ...]) -> tuple[TextractTable, 
                         confidence=conf,
                     )
                 )
-        tables.append(
-            TextractTable(table_index=table_index, page=page, cells=tuple(cells))
-        )
+        tables.append(TextractTable(table_index=table_index, page=page, cells=tuple(cells)))
         table_index += 1
     return tuple(tables)
 
@@ -414,15 +418,11 @@ def _build_confidence_map(
 
     text_avg = 100.0 if text else 0.0
     table_conf_values = [c.confidence for tbl in tables for c in tbl.cells]
-    table_avg = (
-        sum(table_conf_values) / len(table_conf_values) if table_conf_values else 0.0
-    )
+    table_avg = sum(table_conf_values) / len(table_conf_values) if table_conf_values else 0.0
     form_conf_values: list[float] = []
     for f in forms:
         form_conf_values.extend([f.key_confidence, f.value_confidence])
-    form_avg = (
-        sum(form_conf_values) / len(form_conf_values) if form_conf_values else 0.0
-    )
+    form_avg = sum(form_conf_values) / len(form_conf_values) if form_conf_values else 0.0
     return {
         "extracted_text_present": text_avg,
         "tables_avg": table_avg,
@@ -513,10 +513,7 @@ def _analyze_async(
         # IN_PROGRESS or any other status — sleep and re-poll.
         sleeper(req.poll_interval_seconds)
     else:
-        msg = (
-            f"Textract job {job_id} did not finish within "
-            f"{req.poll_timeout_seconds}s"
-        )
+        msg = f"Textract job {job_id} did not finish within {req.poll_timeout_seconds}s"
         raise TextractClientError(msg)
 
     if not seen_succeeded and not blocks:
@@ -559,9 +556,6 @@ def analyze_document(
     if client is None:
         client = _build_client(req.region, client_factory=client_factory)
 
-    if (
-        req.estimated_page_count is not None
-        and req.estimated_page_count <= SYNC_PAGE_LIMIT
-    ):
+    if req.estimated_page_count is not None and req.estimated_page_count <= SYNC_PAGE_LIMIT:
         return _analyze_sync(req, client)
     return _analyze_async(req, client, sleep=sleep)

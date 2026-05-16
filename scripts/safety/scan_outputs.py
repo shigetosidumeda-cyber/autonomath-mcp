@@ -84,18 +84,25 @@ def _iter_s3_objects(uri: str) -> Iterator[tuple[str, dict[str, Any]]]:
     """Yield ``(s3_uri, envelope_dict)`` for every object under the prefix.
 
     Imports ``boto3`` lazily so a developer can use the local-file scanner
-    without installing AWS extras.
+    without installing AWS extras. PERF-35: prefers the shared client
+    pool in :mod:`scripts.aws_credit_ops._aws` so the 200-500 ms boto3
+    cold-start tax is paid once per ``(service, region)`` per process,
+    and falls back to a direct ``boto3.client`` call when the pool
+    module is unavailable (e.g. minimal CI runners).
     """
-    try:
-        import boto3  # type: ignore[import-not-found]
-    except ImportError as exc:  # pragma: no cover - only hit when AWS extra missing
-        raise RuntimeError(
-            "S3 scanning requires the `boto3` package. "
-            "Install with: pip install boto3"
-        ) from exc
-
     bucket, key_or_prefix = _split_s3_uri(uri)
-    client = boto3.client("s3")
+    try:
+        from scripts.aws_credit_ops._aws import get_client
+    except ImportError:
+        try:
+            import boto3
+        except ImportError as exc:  # pragma: no cover - only hit when AWS extra missing
+            raise RuntimeError(
+                "S3 scanning requires the `boto3` package. Install with: pip install boto3"
+            ) from exc
+        client = boto3.client("s3")
+    else:
+        client = get_client("s3")
     if key_or_prefix and not key_or_prefix.endswith("/"):
         # Single-object form.
         obj = client.get_object(Bucket=bucket, Key=key_or_prefix)
@@ -216,8 +223,7 @@ def _parse_argv(argv: list[str] | None = None) -> list[str]:
     parser = argparse.ArgumentParser(
         prog="scan_outputs",
         description=(
-            "Scan JPCIR envelope JSON files for no-hit regression + "
-            "forbidden-claim violations."
+            "Scan JPCIR envelope JSON files for no-hit regression + forbidden-claim violations."
         ),
     )
     parser.add_argument(

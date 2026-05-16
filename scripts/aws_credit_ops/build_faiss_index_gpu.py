@@ -105,12 +105,31 @@ def _log(level: str, msg: str, **fields: Any) -> None:
 
 
 def _boto3_s3() -> Any:  # pragma: no cover - trivial shim
+    """Return a pooled S3 client (PERF-35).
+
+    Prefers the shared client cache in
+    :mod:`scripts.aws_credit_ops._aws` so the 200-500 ms boto3
+    ``Session`` + endpoint discovery cold-start is paid once per
+    ``(service, region)`` per process. Falls back to direct
+    ``boto3.client`` construction when the script runs inside a
+    minimal Batch container that ships ``build_faiss_index_gpu.py`` at
+    ``/app/`` without the wider ``scripts/`` package on
+    ``PYTHONPATH``. Honours the legacy ``AWS_DEFAULT_REGION`` override
+    either way.
+    """
+
+    region = os.environ.get("AWS_DEFAULT_REGION", DEFAULT_REGION)
+    try:
+        from scripts.aws_credit_ops._aws import get_client
+    except ImportError:
+        pass
+    else:
+        return get_client("s3", region_name=region)
     try:
         import boto3
     except ImportError as exc:
         msg = "boto3 is required (pip install boto3)"
         raise BuildFaissError(msg) from exc
-    region = os.environ.get("AWS_DEFAULT_REGION", DEFAULT_REGION)
     return boto3.client("s3", region_name=region)
 
 
@@ -496,9 +515,7 @@ def main(argv: list[str] | None = None) -> int:
         pad_used = gpu_burn_pad(float(args.min_runtime_seconds))
         return 0 if pad_used else 1
 
-    id_map, embeddings = encode_records(
-        model, records, args.batch_size, device=device
-    )
+    id_map, embeddings = encode_records(model, records, args.batch_size, device=device)
     faiss_index, telemetry = build_faiss_ivf_pq(
         embeddings,
         dim=args.dim,

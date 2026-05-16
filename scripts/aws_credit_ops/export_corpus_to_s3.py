@@ -106,9 +106,7 @@ CORPUS_SPECS: Final[dict[str, dict[str, Any]]] = {
     "am_law_article": {
         "source_table": "am_law_article",
         "id_column": "article_id",
-        "text_template": (
-            "{law_canonical_id} 第{article_number}条 | {title} | {text_summary}"
-        ),
+        "text_template": ("{law_canonical_id} 第{article_number}条 | {title} | {text_summary}"),
         "columns": [
             "article_id",
             "law_canonical_id",
@@ -140,8 +138,7 @@ CORPUS_SPECS: Final[dict[str, dict[str, Any]]] = {
         "source_table": "nta_tsutatsu_index",
         "id_column": "id",
         "text_template": (
-            "{code} | {law_canonical_id} | 第{article_number}条 | {title} | "
-            "{body_excerpt}"
+            "{code} | {law_canonical_id} | 第{article_number}条 | {title} | {body_excerpt}"
         ),
         "columns": [
             "id",
@@ -363,10 +360,7 @@ def export_table(
 
     spec = CORPUS_SPECS.get(table)
     if spec is None:
-        msg = (
-            f"table {table!r} not in CORPUS_SPECS. Known: "
-            f"{sorted(CORPUS_SPECS)}"
-        )
+        msg = f"table {table!r} not in CORPUS_SPECS. Known: {sorted(CORPUS_SPECS)}"
         raise CorpusExportError(msg)
     report = TableReport(
         table=table,
@@ -442,12 +436,30 @@ def open_readonly_db(db_path: str) -> sqlite3.Connection:
 
 
 def _boto3_s3() -> Any:  # pragma: no cover - trivial shim
+    """Return a pooled S3 client (PERF-35).
+
+    Prefers the shared client cache in
+    :mod:`scripts.aws_credit_ops._aws` so the 200-500 ms boto3
+    ``Session`` + endpoint discovery cold-start is paid once per
+    ``(service, region)`` per process. Falls back to direct
+    ``boto3.client`` construction when running inside a minimal
+    Batch container without the wider ``scripts/`` package on
+    ``PYTHONPATH``. Honours the legacy ``AWS_DEFAULT_REGION``
+    override either way.
+    """
+
+    region = os.environ.get("AWS_DEFAULT_REGION", DEFAULT_REGION)
+    try:
+        from scripts.aws_credit_ops._aws import get_client
+    except ImportError:
+        pass
+    else:
+        return get_client("s3", region_name=region)
     try:
         import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
     except ImportError as exc:
         msg = "boto3 is required in live mode (pip install boto3)"
         raise CorpusExportError(msg) from exc
-    region = os.environ.get("AWS_DEFAULT_REGION", DEFAULT_REGION)
     return boto3.client("s3", region_name=region)
 
 
@@ -513,18 +525,14 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Comma-separated table names from CORPUS_SPECS.",
     )
     parser.add_argument("--chunk-rows", type=int, default=DEFAULT_CHUNK_ROWS)
-    parser.add_argument(
-        "--max-part-bytes", type=int, default=DEFAULT_MAX_PART_BYTES
-    )
+    parser.add_argument("--max-part-bytes", type=int, default=DEFAULT_MAX_PART_BYTES)
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--json", action="store_true")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
-    )
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     args = _parse_args(argv)
     dry_run = not args.commit and os.environ.get("DRY_RUN", "1") != "0"
     tables = [t.strip() for t in args.tables.split(",") if t.strip()]
