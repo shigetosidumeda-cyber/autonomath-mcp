@@ -1,0 +1,44 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/fact_metadata.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "source_doc": {
+      "description": "Primary-source citation identifier (法令番号 / 公報号 / first-party URL). Aggregator URLs banned at ingest layer.",
+      "minLength": 1,
+      "title": "Source Doc",
+      "type": "string"
+    },
+    "extracted_at": {
+      "description": "ISO 8601 timestamp of the ETL extraction. Used for staleness detection in dim Q time-machine queries.",
+      "minLength": 1,
+      "title": "Extracted At",
+      "type": "string"
+    },
+    "verified_by": {
+      "description": "How the fact has been verified. manual = human operator, cron_etl_v3 = current-gen ETL job, ed25519_sig = signed by operator key.",
+      "enum": [
+        "manual",
+        "cron_etl_v3",
+        "ed25519_sig"
+      ],
+      "title": "Verified By",
+      "type": "string"
+    },
+    "confidence": {
+      "description": "Confidence score in [0.0, 1.0]. Typically driven by cross-source agreement (dim I).",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    }
+  },
+  "required": [
+    "source_doc",
+    "extracted_at",
+    "verified_by",
+    "confidence"
+  ],
+  "title": "FactMetadata",
+  "type": "object"
+}
