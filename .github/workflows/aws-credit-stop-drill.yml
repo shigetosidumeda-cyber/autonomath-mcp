@@ -1,0 +1,120 @@
+name: aws-credit-stop-drill
+
+# Operator-only emergency stop drill for the jpcite-credit AWS Batch run.
+#
+# Runs `scripts/aws_credit_ops/stop_drill.sh`. DRY_RUN by default — the
+# only path to LIVE side-effects (disable queues, cancel/terminate jobs,
+# disable compute environments) is:
+#   * workflow_dispatch input `confirm_live` == 'I-CONFIRM-STOP'  AND
+#   * workflow_dispatch input `mode` == 'live'
+# Both gates must align, else the workflow forces DRY_RUN.
+#
+# NOT scheduled. NEVER auto-fires. The operator deliberately triggers it
+# from the GHA UI / `gh workflow run` when:
+#   * aws-credit-cost-monitor.yml opened an `aws-credit-breach` issue, or
+#   * out-of-band signal (Slack page, AWS budget SNS) suggests runaway burn.
+#
+# Required GitHub repository secrets:
+#   AWS_ACCESS_KEY_ID       IAM principal with:
+#                             batch:DescribeJobQueues
+#                             batch:UpdateJobQueue
+#                             batch:ListJobs
+#                             batch:CancelJob
+#                             batch:TerminateJob
+#                             batch:DescribeComputeEnvironments
+#                             batch:UpdateComputeEnvironment
+#   AWS_SECRET_ACCESS_KEY   matching secret
+# Optional:
+#   AWS_REGION              default ap-northeast-1
+#   AWS_PROFILE             ignored on GHA (script falls through to default credentials)
+#
+# [lane:solo]
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "mode: 'dry_run' (default, preview only) or 'live' (executes)"
+        required: true
+        default: "dry_run"
+        type: choice
+        options:
+          - dry_run
+          - live
+      confirm_live:
+        description: "for LIVE mode, type 'I-CONFIRM-STOP' (any other value forces dry_run)"
+        required: false
+        default: ""
+
+concurrency:
+  group: aws-credit-stop-drill
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  stop-drill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'ap-northeast-1' }}
+      REGION: ${{ secrets.AWS_REGION || 'ap-northeast-1' }}
+      AWS_PROFILE: ""
+      MODE_INPUT: ${{ github.event.inputs.mode }}
+      CONFIRM_INPUT: ${{ github.event.inputs.confirm_live }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Fail-closed on missing AWS secrets
+        run: |
+          set -euo pipefail
+          if [ -z "${AWS_ACCESS_KEY_ID:-}" ] || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ]; then
+            echo "::error::AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY GHA secrets are not set."
+            echo "::error::Operator runbook: docs/runbook/aws_credit_run_workflows.md"
+            exit 1
+          fi
+
+      - name: Resolve mode (LIVE requires confirm-by-input)
+        id: mode
+        run: |
+          set -euo pipefail
+          LIVE=false
+          if [ "${MODE_INPUT}" = "live" ] && [ "${CONFIRM_INPUT}" = "I-CONFIRM-STOP" ]; then
+            LIVE=true
+          elif [ "${MODE_INPUT}" = "live" ]; then
+            echo "::warning::mode=live requested but confirm_live != 'I-CONFIRM-STOP' — forcing DRY_RUN."
+          fi
+          echo "live=$LIVE" >> "$GITHUB_OUTPUT"
+          echo "[stop-drill] resolved mode: $([ "$LIVE" = "true" ] && echo LIVE || echo DRY_RUN)"
+
+      - name: Run stop_drill.sh
+        env:
+          JPCITE_STOP_DRILL_LIVE: ${{ steps.mode.outputs.live }}
+        run: |
+          set -euo pipefail
+          bash scripts/aws_credit_ops/stop_drill.sh | tee stop_drill.out
+
+      - name: Summary
+        if: always()
+        env:
+          LIVE: ${{ steps.mode.outputs.live }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## aws-credit-stop-drill"
+            echo ""
+            echo "* mode_input:   \`${MODE_INPUT}\`"
+            echo "* confirm:      \`${CONFIRM_INPUT:-(empty)}\`"
+            echo "* resolved:     **$([ "$LIVE" = "true" ] && echo LIVE || echo DRY_RUN)**"
+            echo "* actor:        \`${{ github.actor }}\`"
+            echo "* run:          ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo ""
+            echo "### stop_drill.sh output (tail)"
+            echo '```'
+            tail -200 stop_drill.out || echo "(no stop_drill.out)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

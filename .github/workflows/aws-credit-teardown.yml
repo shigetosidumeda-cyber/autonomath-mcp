@@ -1,0 +1,151 @@
+name: aws-credit-teardown
+
+# Operator-only final teardown for jpcite-credit-* AWS Batch infrastructure.
+#
+# Runs `scripts/aws_credit_ops/teardown_credit_run.sh`. DRY_RUN by default.
+# LIVE side-effects (delete queues / deregister job defs / delete CEs /
+# delete log group / [opt] delete buckets) require ALL of:
+#   * input `mode` == 'live'
+#   * input `confirm_live` == 'I-CONFIRM-TEARDOWN'
+#   * GHA secret `JPCITE_TEARDOWN_LIVE_TOKEN` set to literal:
+#       I-AM-TEARING-DOWN-jpcite-credit-2026-05
+#     (matches the script's `LIVE_TOKEN_EXPECTED` constant.)
+#
+# Bucket deletion (raw + reports) is irreversible data loss — fenced
+# behind an additional input `delete_buckets` defaulting to 'no'. Even
+# then the script requires JPCITE_TEARDOWN_DELETE_BUCKETS=1.
+#
+# NOT scheduled. NEVER auto-fires.
+#
+# Required GitHub repository secrets:
+#   AWS_ACCESS_KEY_ID                   IAM principal with batch:*, logs:*, s3:* (scoped to jpcite-credit-*)
+#   AWS_SECRET_ACCESS_KEY               matching secret
+#   JPCITE_TEARDOWN_LIVE_TOKEN          literal: I-AM-TEARING-DOWN-jpcite-credit-2026-05
+# Optional:
+#   AWS_REGION                          default ap-northeast-1
+#
+# [lane:solo]
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "mode: 'dry_run' (default) or 'live' (executes irreversible teardown)"
+        required: true
+        default: "dry_run"
+        type: choice
+        options:
+          - dry_run
+          - live
+      confirm_live:
+        description: "for LIVE mode, type 'I-CONFIRM-TEARDOWN' (any other value forces dry_run)"
+        required: false
+        default: ""
+      delete_buckets:
+        description: "delete S3 raw + reports buckets (data loss) — 'yes' or 'no' (default 'no')"
+        required: false
+        default: "no"
+        type: choice
+        options:
+          - "no"
+          - "yes"
+
+concurrency:
+  group: aws-credit-teardown
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  teardown:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'ap-northeast-1' }}
+      REGION: ${{ secrets.AWS_REGION || 'ap-northeast-1' }}
+      AWS_PROFILE: ""
+      MODE_INPUT: ${{ github.event.inputs.mode }}
+      CONFIRM_INPUT: ${{ github.event.inputs.confirm_live }}
+      DELETE_BUCKETS_INPUT: ${{ github.event.inputs.delete_buckets }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Fail-closed on missing AWS secrets
+        run: |
+          set -euo pipefail
+          if [ -z "${AWS_ACCESS_KEY_ID:-}" ] || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ]; then
+            echo "::error::AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY GHA secrets are not set."
+            echo "::error::Operator runbook: docs/runbook/aws_credit_run_workflows.md"
+            exit 1
+          fi
+
+      - name: Resolve mode (LIVE requires confirm-by-input + token secret)
+        id: mode
+        env:
+          LIVE_TOKEN_SECRET: ${{ secrets.JPCITE_TEARDOWN_LIVE_TOKEN }}
+        run: |
+          set -euo pipefail
+          DRY_RUN=true
+          PASS_TOKEN=""
+          if [ "${MODE_INPUT}" = "live" ] && [ "${CONFIRM_INPUT}" = "I-CONFIRM-TEARDOWN" ]; then
+            if [ -z "${LIVE_TOKEN_SECRET:-}" ]; then
+              echo "::warning::mode=live + confirm_live OK but JPCITE_TEARDOWN_LIVE_TOKEN secret missing — forcing DRY_RUN."
+            else
+              DRY_RUN=false
+              PASS_TOKEN="$LIVE_TOKEN_SECRET"
+            fi
+          elif [ "${MODE_INPUT}" = "live" ]; then
+            echo "::warning::mode=live requested but confirm_live != 'I-CONFIRM-TEARDOWN' — forcing DRY_RUN."
+          fi
+          # Buckets gate
+          DELETE_BUCKETS=0
+          if [ "${DELETE_BUCKETS_INPUT}" = "yes" ]; then
+            DELETE_BUCKETS=1
+          fi
+          echo "dry_run=$DRY_RUN" >> "$GITHUB_OUTPUT"
+          echo "delete_buckets=$DELETE_BUCKETS" >> "$GITHUB_OUTPUT"
+          # Pass token through job env without echoing it
+          {
+            echo "PASS_TOKEN<<__EOM__"
+            echo "$PASS_TOKEN"
+            echo "__EOM__"
+          } >> "$GITHUB_ENV"
+          echo "[teardown] resolved mode: $([ "$DRY_RUN" = "false" ] && echo LIVE || echo DRY_RUN)"
+          echo "[teardown] delete_buckets: $DELETE_BUCKETS"
+
+      - name: Run teardown_credit_run.sh
+        env:
+          DRY_RUN: ${{ steps.mode.outputs.dry_run }}
+          STEP_DELETE_BUCKETS: ${{ steps.mode.outputs.delete_buckets }}
+          JPCITE_TEARDOWN_DELETE_BUCKETS: ${{ steps.mode.outputs.delete_buckets }}
+          JPCITE_TEARDOWN_LIVE_TOKEN: ${{ env.PASS_TOKEN }}
+        run: |
+          set -euo pipefail
+          bash scripts/aws_credit_ops/teardown_credit_run.sh | tee teardown.out
+
+      - name: Summary
+        if: always()
+        env:
+          DRY_RUN: ${{ steps.mode.outputs.dry_run }}
+          DELETE_BUCKETS: ${{ steps.mode.outputs.delete_buckets }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## aws-credit-teardown"
+            echo ""
+            echo "* mode_input:        \`${MODE_INPUT}\`"
+            echo "* confirm:           \`${CONFIRM_INPUT:-(empty)}\`"
+            echo "* resolved:          **$([ "$DRY_RUN" = "false" ] && echo LIVE || echo DRY_RUN)**"
+            echo "* delete_buckets:    \`${DELETE_BUCKETS}\` (1=enabled, 0=skipped)"
+            echo "* actor:             \`${{ github.actor }}\`"
+            echo "* run:               ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo ""
+            echo "### teardown_credit_run.sh output (tail)"
+            echo '```'
+            tail -300 teardown.out || echo "(no teardown.out)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

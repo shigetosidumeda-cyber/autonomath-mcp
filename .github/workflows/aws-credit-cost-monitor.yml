@@ -1,0 +1,177 @@
+name: aws-credit-cost-monitor
+
+# Hourly cost guard for the jpcite credit run (2026-05-16..2026-05-29).
+#
+# Pipeline:
+#   1. burn_target.py  — compute hourly burn target vs MTD CE spend,
+#                        emit RAMP / SLOWDOWN / STOP status.
+#   2. cost_ledger.sh  — last 24h daily breakdown by service.
+#   3. Post a summary comment to a sticky tracking issue (label
+#      `aws-credit-cost-monitor`); if the latest burn_target.py status is
+#      STOP or SLOWDOWN, ALSO open a new high-priority issue tagged
+#      `aws-credit-breach` so the operator sees a fresh notification
+#      (not just a comment buried on the sticky thread).
+#
+# Read-only: this workflow does NOT call stop_drill.sh. Auto-stop is the
+# operator's deliberate action via aws-credit-stop-drill.yml (manual +
+# confirm-by-input). Mirrors the project's "destruction-free organization"
+# rule — surfaces breach loudly, never destroys silently.
+#
+# Required GitHub repository secrets:
+#   AWS_ACCESS_KEY_ID       IAM principal with:
+#                             ce:GetCostAndUsage
+#                             ce:GetCostForecast
+#   AWS_SECRET_ACCESS_KEY   matching secret
+# Optional:
+#   AWS_REGION              default ap-northeast-1 (CE itself is us-east-1)
+#
+# [lane:solo]
+
+on:
+  schedule:
+    # Hourly at :07 to dodge the top-of-hour cron storm. CE has ~24h lag
+    # for finalized rows but emits estimated unblended within ~6h.
+    - cron: "7 * * * *"
+  workflow_dispatch:
+    inputs:
+      target_usd:
+        description: "credit target USD (default 18300)"
+        required: false
+        default: "18300"
+      deadline:
+        description: "deadline YYYY-MM-DD (default 2026-05-29)"
+        required: false
+        default: "2026-05-29"
+
+concurrency:
+  group: aws-credit-cost-monitor
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'ap-northeast-1' }}
+      TARGET_USD: ${{ github.event.inputs.target_usd || '18300' }}
+      DEADLINE: ${{ github.event.inputs.deadline || '2026-05-29' }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Fail-closed on missing AWS secrets
+        run: |
+          set -euo pipefail
+          if [ -z "${AWS_ACCESS_KEY_ID:-}" ] || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ]; then
+            echo "::error::AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY GHA secrets are not set."
+            echo "::error::Operator runbook: docs/runbook/aws_credit_run_workflows.md"
+            exit 1
+          fi
+
+      - name: Run burn_target.py
+        id: burn
+        run: |
+          set -euo pipefail
+          set +e
+          python3 scripts/aws_credit_ops/burn_target.py \
+            --target "$TARGET_USD" \
+            --deadline "$DEADLINE" \
+            > burn_target.out 2>&1
+          rc=$?
+          set -e
+          cat burn_target.out
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          # exit codes from burn_target.py:
+          #   0 RAMP, 2 SLOWDOWN, 1 STOP (emergency line)
+          if [ "$rc" -eq 1 ]; then
+            echo "status=STOP" >> "$GITHUB_OUTPUT"
+          elif [ "$rc" -eq 2 ]; then
+            echo "status=SLOWDOWN" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=RAMP" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run cost_ledger.sh (last 24h)
+        id: ledger
+        run: |
+          set -euo pipefail
+          set +e
+          bash scripts/aws_credit_ops/cost_ledger.sh > cost_ledger.out 2>&1
+          rc=$?
+          set -e
+          cat cost_ledger.out
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+
+      - name: Compose summary body
+        id: summary
+        env:
+          STATUS: ${{ steps.burn.outputs.status }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## aws-credit cost monitor — $(date -u +%FT%TZ)"
+            echo ""
+            echo "* status: **${STATUS}**"
+            echo "* run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo ""
+            echo "### burn_target.py"
+            echo '```'
+            cat burn_target.out || echo "(no burn_target.out)"
+            echo '```'
+            echo ""
+            echo "### cost_ledger.sh (last 24h)"
+            echo '```'
+            cat cost_ledger.out || echo "(no cost_ledger.out)"
+            echo '```'
+          } > summary.md
+          # GH_OUTPUT multiline marker
+          {
+            echo "body<<__EOM__"
+            cat summary.md
+            echo "__EOM__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Find or create sticky tracking issue
+        id: sticky
+        run: |
+          set -euo pipefail
+          NUM=$(gh issue list --label aws-credit-cost-monitor --state open --limit 1 --json number --jq '.[0].number' || true)
+          if [ -z "${NUM:-}" ] || [ "$NUM" = "null" ]; then
+            NUM=$(gh issue create \
+              --title "aws-credit cost monitor (sticky tracking issue, 2026-05 credit run)" \
+              --label aws-credit-cost-monitor \
+              --label automation \
+              --body "Sticky thread for hourly burn-target + cost-ledger snapshots. Each workflow run appends a comment." \
+              | tail -1 | sed -E 's|.*/||')
+          fi
+          echo "number=$NUM" >> "$GITHUB_OUTPUT"
+
+      - name: Comment summary on sticky issue
+        env:
+          BODY: ${{ steps.summary.outputs.body }}
+          ISSUE_NUMBER: ${{ steps.sticky.outputs.number }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$BODY" | gh issue comment "$ISSUE_NUMBER" --body-file -
+
+      - name: Open breach issue on SLOWDOWN / STOP
+        if: steps.burn.outputs.status == 'STOP' || steps.burn.outputs.status == 'SLOWDOWN'
+        env:
+          STATUS: ${{ steps.burn.outputs.status }}
+          BODY: ${{ steps.summary.outputs.body }}
+        run: |
+          set -euo pipefail
+          TITLE="aws-credit BREACH (${STATUS}) — $(date -u +%FT%TZ)"
+          printf '%s' "$BODY" | gh issue create \
+            --title "$TITLE" \
+            --label aws-credit-breach \
+            --label "aws-credit-${STATUS}" \
+            --label automation \
+            --body-file -

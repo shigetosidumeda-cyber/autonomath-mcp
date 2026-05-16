@@ -1,0 +1,144 @@
+name: aws-credit-orchestrator
+
+# Kick off the jpcite-credit Step Functions state machine that orchestrates
+# the J01 → J02/J03/J04 (parallel) → J05 → J06 → J07 sequence + aggregate.
+#
+# This workflow ONLY starts the execution. The state machine itself runs
+# long (hours to days depending on J06 PDF volume); the GHA job exits as
+# soon as start-execution returns the executionArn.
+#
+# Trigger window: 2026-05-16 .. 2026-05-29 (jpcite credit run window).
+# Schedule cadence: every 6 hours (00, 06, 12, 18 UTC) so a missed kick
+# from a manual op gets self-healed within 6h. Outside the window the
+# schedule still fires but the first step checks the calendar guard env
+# and short-circuits — set JPCITE_CREDIT_RUN_END to extend.
+#
+# Required GitHub repository secrets (NOT in commits — operator sets):
+#   AWS_ACCESS_KEY_ID       IAM principal with states:StartExecution on
+#                           arn:aws:states:ap-northeast-1:993693061769:stateMachine:jpcite-credit-orchestrator
+#   AWS_SECRET_ACCESS_KEY   matching secret
+# Optional:
+#   AWS_REGION              default ap-northeast-1
+#
+# [lane:solo]
+
+on:
+  schedule:
+    # Every 6 hours during the credit run window. Calendar guard inside
+    # the first step short-circuits when today > JPCITE_CREDIT_RUN_END.
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      execution_name:
+        description: "executionName override (default: jpcite-credit-<UTC ISO>)"
+        required: false
+        default: ""
+      input_json:
+        description: "Step Functions input JSON (default: {})"
+        required: false
+        default: "{}"
+      force_outside_window:
+        description: "bypass 2026-05-16..2026-05-29 calendar guard"
+        required: false
+        default: "false"
+
+concurrency:
+  group: aws-credit-orchestrator
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  start-execution:
+    runs-on: ubuntu-latest
+    # Workflow only kicks off the state machine; it does NOT wait for the
+    # parallel branches to finish (those run hours). 15 min is generous
+    # for the AWS SDK call + calendar guard + a couple of retries.
+    timeout-minutes: 15
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION || 'ap-northeast-1' }}
+      STATE_MACHINE_ARN: "arn:aws:states:ap-northeast-1:993693061769:stateMachine:jpcite-credit-orchestrator"
+      JPCITE_CREDIT_RUN_START: "2026-05-16"
+      JPCITE_CREDIT_RUN_END: "2026-05-29"
+    steps:
+      - name: Fail-closed on missing AWS secrets
+        run: |
+          set -euo pipefail
+          if [ -z "${AWS_ACCESS_KEY_ID:-}" ] || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ]; then
+            echo "::error::AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY GHA secrets are not set."
+            echo "::error::Operator runbook: docs/runbook/aws_credit_run_workflows.md"
+            exit 1
+          fi
+
+      - name: Calendar guard (2026-05-16 .. 2026-05-29 window)
+        id: guard
+        env:
+          FORCE: ${{ github.event.inputs.force_outside_window }}
+        run: |
+          set -euo pipefail
+          TODAY=$(date -u +%Y-%m-%d)
+          if [ "${FORCE:-false}" = "true" ]; then
+            echo "force_outside_window=true — bypassing calendar guard"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ "$TODAY" < "$JPCITE_CREDIT_RUN_START" ]] || [[ "$TODAY" > "$JPCITE_CREDIT_RUN_END" ]]; then
+            echo "::notice::today=$TODAY outside window [$JPCITE_CREDIT_RUN_START..$JPCITE_CREDIT_RUN_END] — skipping start-execution"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "today=$TODAY inside window — proceeding"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Start Step Functions execution
+        if: steps.guard.outputs.skip == 'false'
+        env:
+          EXEC_NAME_OVERRIDE: ${{ github.event.inputs.execution_name }}
+          INPUT_JSON: ${{ github.event.inputs.input_json }}
+        run: |
+          set -euo pipefail
+          TS="$(date -u +%Y%m%dT%H%M%SZ)"
+          if [ -n "${EXEC_NAME_OVERRIDE:-}" ]; then
+            EXEC_NAME="$EXEC_NAME_OVERRIDE"
+          else
+            EXEC_NAME="jpcite-credit-${TS}"
+          fi
+          INPUT="${INPUT_JSON:-{}}"
+          if ! echo "$INPUT" | python3 -c "import json,sys; json.loads(sys.stdin.read())" >/dev/null 2>&1; then
+            echo "::error::input_json is not valid JSON: $INPUT"
+            exit 1
+          fi
+          echo "[orchestrator] starting execution:"
+          echo "  state_machine = $STATE_MACHINE_ARN"
+          echo "  execution     = $EXEC_NAME"
+          echo "  input         = $INPUT"
+          OUT=$(aws stepfunctions start-execution \
+            --state-machine-arn "$STATE_MACHINE_ARN" \
+            --name "$EXEC_NAME" \
+            --input "$INPUT" \
+            --output json)
+          echo "$OUT"
+          EXEC_ARN=$(echo "$OUT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('executionArn',''))")
+          if [ -z "$EXEC_ARN" ]; then
+            echo "::error::start-execution did not return executionArn"
+            exit 1
+          fi
+          echo "::notice::executionArn=$EXEC_ARN"
+          echo "EXEC_ARN=$EXEC_ARN" >> "$GITHUB_ENV"
+
+      - name: Summary
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ "${{ steps.guard.outputs.skip }}" = "true" ]; then
+            echo "## aws-credit-orchestrator (skipped — outside window)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## aws-credit-orchestrator" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "* state_machine: \`$STATE_MACHINE_ARN\`" >> "$GITHUB_STEP_SUMMARY"
+            echo "* executionArn:  \`${EXEC_ARN:-unknown}\`" >> "$GITHUB_STEP_SUMMARY"
+            echo "* trigger:       \`${{ github.event_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          fi
