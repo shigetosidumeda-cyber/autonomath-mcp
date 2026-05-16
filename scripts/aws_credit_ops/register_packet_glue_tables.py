@@ -1453,6 +1453,49 @@ for _name, _prefix in _WAVE_69_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 75 — employment / labor cross packets (catalog 232 → 242). All 10 share
+# the jsic_major industry cohort with descriptive adoption_n proxy covering
+# workforce demographic signal / HR subsidy uptake / labor standard violation
+# / overtime intensity disclosure / paid leave compliance / D&I program
+# participation / foreign worker program / internship intensity / executive
+# succession planning / wage gap disclosure. Each carries 2 一次 sources
+# (厚労省 / 内閣府 男女共同参画局 / 出入国在留管理庁 / OTIT / 文科省 / 経産省
+# / 中小企業庁 / 中小機構) + topic-specific disclaimer (労基法、女性活躍
+# 推進法、障害者雇用促進法、入管法、技能実習法、経営承継円滑化法、社労士
+# 法、行政書士法 等)。Reuse the shared super-set columns; topic-specific
+# fields land in raw_json.
+_WAVE_75_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_workforce_demographic_signal_v1",
+        "workforce_demographic_signal_v1/",
+    ),
+    ("packet_hr_subsidy_uptake_v1", "hr_subsidy_uptake_v1/"),
+    ("packet_labor_standard_violation_v1", "labor_standard_violation_v1/"),
+    (
+        "packet_overtime_intensity_disclosure_v1",
+        "overtime_intensity_disclosure_v1/",
+    ),
+    ("packet_paid_leave_compliance_v1", "paid_leave_compliance_v1/"),
+    (
+        "packet_diversity_inclusion_program_v1",
+        "diversity_inclusion_program_v1/",
+    ),
+    ("packet_foreign_worker_program_v1", "foreign_worker_program_v1/"),
+    (
+        "packet_internship_program_intensity_v1",
+        "internship_program_intensity_v1/",
+    ),
+    (
+        "packet_executive_succession_planning_v1",
+        "executive_succession_planning_v1/",
+    ),
+    ("packet_wage_gap_disclosure_v1", "wage_gap_disclosure_v1/"),
+]
+
+for _name, _prefix in _WAVE_75_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 76 — startup / scaleup signal cross packets (catalog 242 → 252). All 10
 # share the jsic_major industry cohort with descriptive adoption_n proxy
 # covering unicorn potential signal / VC funding milestone pulse / J-Startup
