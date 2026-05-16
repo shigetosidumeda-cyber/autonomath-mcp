@@ -906,9 +906,15 @@ jobs:
         run: npm ci --prefix functions
 
       - name: Pytest with coverage
+        # PERF-1 (2026-05-16): outer dimension = 4-way file shard (matrix.shard-index);
+        # inner dimension = xdist `-n auto` process-level parallelism inside each
+        # shard (GHA ubuntu-latest = 4 vCPU → ~3-4 workers per shard). Combined
+        # speedup vs the pre-xdist single-shard single-process baseline is ~10-15x.
+        # `--dist loadscope` keeps every test of the same module on one worker
+        # so module-level os.environ setup in tests/conftest.py stays coherent.
         run: |
           mapfile -t TARGETS < pytest-shard-targets.txt
-          pytest "${TARGETS[@]}" -q
+          pytest "${TARGETS[@]}" -q -n auto --dist loadscope
 
       - name: Upload coverage to Codecov
         # Non-blocking: coverage reporting shouldn't gate PRs.

@@ -131,6 +131,10 @@ dev = [
     "pytest>=8.3",
     "pytest-asyncio>=0.24",
     "pytest-cov>=6.0",
+    # PERF-1 (2026-05-16): pytest-xdist enables process-level parallelism
+    # (`pytest -n auto`) — cuts local + CI wall time materially on the 10K+
+    # test suite. Pinned >=3.6 for `--dist loadscope` + `loadgroup` reliability.
+    "pytest-xdist>=3.6",
     "ruff>=0.8",
     "mypy>=1.13",
     "httpx>=0.28",
@@ -239,6 +243,20 @@ strict = true
 plugins = ["pydantic.mypy"]
 warn_unused_ignores = true  # tick3 audit 完了 2026-05-16 で復元
 ignore_missing_imports = false
+# PERF-2 (Wave 51, 2026-05-16): incremental + sqlite-backed cache. Cold-start
+# mypy --strict over src/jpintel_mcp/ scans 593 files in ~31s; with the sqlite
+# cache hot, repeat runs land in <1s. sqlite_cache is faster than the default
+# fs-backed cache when many small files exist.
+#
+# NOTE: `cache_fine_grained = true` is intentionally OMITTED. Combined with
+# the lazy PEP-562 `__getattr__` stripe shim in `api/billing.py` /
+# `api/credit_pack_routes.py` / `api/compliance.py`, fine-grained mode
+# loses the module-level `stripe` symbol and surfaces 26 phantom
+# `Name "stripe" is not defined` errors. The `dmypy` daemon (Makefile
+# target `typecheck-fast`) still gives sub-second incremental checks for
+# the strict gate without it.
+incremental = true
+cache_dir = ".mypy_cache"
 # Stream BB (Wave 50 tick 9): mypy_path を src に固定して src/jpintel_mcp の
 # package 解釈は 1 経路に保ちつつ、scripts/ 配下の duplicate-module 衝突を回避する。
 # explicit_package_bases は scripts/ 配下にのみ必要なので overrides で局所化。
@@ -440,6 +458,21 @@ ignore = ["E501"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+# PERF-1 (2026-05-16): duration accounting on by default; xdist parallelism
+# opt-in via CLI/CI to avoid breaking module-ordering-sensitive tests
+# (a handful of tests depend on a sibling module having imported `stripe`
+# at module scope; `loadscope` distributes modules across workers and breaks
+# that implicit import order — those need explicit fixtures before
+# xdist becomes the default).
+#
+# Recommended invocations:
+#   * Local dev:  .venv/bin/pytest -n auto --dist loadscope <paths>
+#   * CI shard:   pytest -n auto --dist loadscope --shard-id=N --num-shards=4
+#   * Single test: .venv/bin/pytest <path>::<test>           (serial)
+#
+# `--durations=10` surfaces the top-10 slowest tests on every run so
+# regressions are visible.
+addopts = ["--durations=10"]
 markers = [
     "slow: runtime/import-heavy checks that are not part of the fastest local loop",
     "aws_live: tests that hit live AWS APIs (canary, budget guard); off by default in local loop",
