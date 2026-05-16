@@ -1,0 +1,94 @@
+{
+  "package_id": "pkg_sample_001",
+  "package_kind": "evidence_packet",
+  "template_id": "application_strategy_v1",
+  "template_version": "2026-05-15",
+  "subject": {
+    "kind": "program",
+    "id": "program_demo_42"
+  },
+  "generated_at": "2026-05-16T12:00:00+09:00",
+  "corpus_snapshot_id": "snap_2026_05_16_a",
+  "corpus_checksum": "sha256:abcdef0123",
+  "bundle_sha256": "sha256:0011223344",
+  "jpcite_cost_jpy": 3,
+  "estimated_tokens_saved": 17680,
+  "source_count": 2,
+  "known_gaps": [
+    {
+      "code": "no_hit_not_absence",
+      "description": "no_hit は不在を意味しません。窓口確認が必要です。"
+    },
+    {
+      "code": "professional_review_required",
+      "description": "税理士による最終確認が必要です。"
+    }
+  ],
+  "human_review_required": true,
+  "records": [
+    {
+      "record_id": "rec_001",
+      "candidate_priority": "high",
+      "amount_jpy": 5000000,
+      "amount_url": "https://www.meti.go.jp/example/program_demo_42"
+    },
+    {
+      "record_id": "rec_002",
+      "candidate_priority": "medium",
+      "amount_jpy": 1000000,
+      "amount_url": null
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "ranked_candidates",
+      "title": "候補制度ランキング",
+      "body": "# 概要\n\n候補は 2 件です。\n\n- **重要**: 出典の `source_fetched_at` を確認してください。\n- 期限と除外条件は別途確認が必要です。\n\nここでは確定ではなく `候補` の提示にとどめます。"
+    },
+    {
+      "section_id": "questions_for_window_or_professional",
+      "title": "窓口・専門家確認事項",
+      "body": "- 経費区分の最新版を確認するための窓口問い合わせが必要です。\n- 他制度との `requires_review` 関係は別 packet で確認してください。"
+    }
+  ],
+  "sources": [
+    {
+      "source_url": "https://www.meti.go.jp/example/program_demo_42",
+      "source_fetched_at": "2026-05-15T09:00:00+09:00",
+      "source_checksum": "sha256:1a2b3c",
+      "publisher": "official_primary",
+      "license": "gov_standard"
+    },
+    {
+      "source_url": "https://www.example.pref.example.lg.jp/notice.pdf",
+      "source_fetched_at": "2026-05-14T10:30:00+09:00",
+      "source_checksum": "sha256:9f8e7d",
+      "publisher": "official_secondary",
+      "license": "public_domain"
+    }
+  ],
+  "source_receipts": [],
+  "coverage": {
+    "coverage_score": 0.86,
+    "coverage_grade": "A",
+    "critical_unknown_count": 0
+  },
+  "compression": {
+    "source_tokens_estimate": 22000,
+    "packet_tokens_estimate": 1800,
+    "input_context_reduction_rate": 0.918
+  },
+  "copy_paste_parts": {},
+  "agent_handoff": {
+    "answer_outline": ["候補列挙", "窓口確認質問", "出典明示"],
+    "must_cite_fields": ["source_url", "source_fetched_at", "known_gaps"],
+    "do_not_claim": [
+      "legal_advice",
+      "tax_advice",
+      "grant_award",
+      "audit_opinion",
+      "credit_approval"
+    ]
+  },
+  "disclaimer": "jpcite は情報検索・根拠確認の補助に徹し、個別具体的な税務・法律・申請・監査・登記・労務・知財・労基の判断は行いません。"
+}

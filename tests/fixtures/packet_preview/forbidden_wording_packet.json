@@ -1,0 +1,28 @@
+{
+  "package_id": "pkg_forbidden_demo_001",
+  "package_kind": "evidence_packet",
+  "subject": {"kind": "program", "id": "program_x"},
+  "generated_at": "2026-05-16T12:00:00+09:00",
+  "jpcite_cost_jpy": 3,
+  "estimated_tokens_saved": 100,
+  "source_count": 1,
+  "known_gaps": [],
+  "human_review_required": true,
+  "records": [],
+  "sections": [
+    {
+      "section_id": "claim_section",
+      "title": "結論",
+      "body": "この事業者は eligible です。"
+    }
+  ],
+  "sources": [
+    {
+      "source_url": "https://www.example.go.jp/x",
+      "source_fetched_at": "2026-05-15T09:00:00+09:00",
+      "publisher": "official_primary",
+      "license": "gov_standard"
+    }
+  ],
+  "disclaimer": "jpcite は情報検索・根拠確認の補助に徹します。"
+}
