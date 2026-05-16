@@ -1,0 +1,447 @@
+{
+  "Comment": "jpcite credit run orchestrator (2026-05). Runs J01 -> {J02, J03, J04 in parallel} -> J05 -> J06 -> J07 against AWS Batch on Fargate Spot. Each state submits the manifest S3 URI as env var. On failure, emit SNS notification and continue. Tagged Project=jpcite CreditRun=2026-05 AutoStop=2026-05-29. [lane:solo]",
+  "StartAt": "J01_source_profile_sweep",
+  "TimeoutSeconds": 86400,
+  "States": {
+    "J01_source_profile_sweep": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::batch:submitJob.sync",
+      "Parameters": {
+        "JobName": "jpcite-credit-J01-src-profile",
+        "JobQueue": "arn:aws:batch:ap-northeast-1:993693061769:job-queue/jpcite-credit-fargate-spot-short-queue",
+        "JobDefinition": "arn:aws:batch:ap-northeast-1:993693061769:job-definition/jpcite-crawl",
+        "ContainerOverrides": {
+          "Environment": [
+            { "Name": "JPCITE_JOB_ID", "Value": "J01_source_profile_sweep" },
+            { "Name": "JPCITE_MANIFEST_S3", "Value": "s3://jpcite-credit-993693061769-202605-reports/manifests/J01_source_profile_sweep.json" },
+            { "Name": "JPCITE_CREDIT_RUN", "Value": "2026-05" },
+            { "Name": "AWS_REGION", "Value": "ap-northeast-1" }
+          ]
+        },
+        "Tags": {
+          "Project": "jpcite",
+          "CreditRun": "2026-05",
+          "AutoStop": "2026-05-29",
+          "JobId": "J01"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": ["Batch.AWSBatchException", "States.TaskFailed"],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 1,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "J01_Failed_Notify",
+          "ResultPath": "$.error"
+        }
+      ],
+      "ResultPath": "$.J01_result",
+      "Next": "Parallel_J02_J03_J04"
+    },
+    "J01_Failed_Notify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+        "Subject": "jpcite credit J01 FAILED — orchestrator continues",
+        "Message.$": "States.JsonToString($)"
+      },
+      "ResultPath": "$.J01_notify",
+      "Next": "Parallel_J02_J03_J04"
+    },
+    "Parallel_J02_J03_J04": {
+      "Type": "Parallel",
+      "ResultPath": "$.parallel_result",
+      "Branches": [
+        {
+          "StartAt": "J02_nta_houjin_master_mirror",
+          "States": {
+            "J02_nta_houjin_master_mirror": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::batch:submitJob.sync",
+              "Parameters": {
+                "JobName": "jpcite-credit-J02-nta-houjin",
+                "JobQueue": "arn:aws:batch:ap-northeast-1:993693061769:job-queue/jpcite-credit-fargate-spot-short-queue",
+                "JobDefinition": "arn:aws:batch:ap-northeast-1:993693061769:job-definition/jpcite-crawl",
+                "ContainerOverrides": {
+                  "Environment": [
+                    { "Name": "JPCITE_JOB_ID", "Value": "J02_nta_houjin_master_mirror" },
+                    { "Name": "JPCITE_MANIFEST_S3", "Value": "s3://jpcite-credit-993693061769-202605-reports/manifests/J02_nta_houjin_master_mirror.json" },
+                    { "Name": "JPCITE_CREDIT_RUN", "Value": "2026-05" },
+                    { "Name": "AWS_REGION", "Value": "ap-northeast-1" }
+                  ]
+                },
+                "Tags": {
+                  "Project": "jpcite",
+                  "CreditRun": "2026-05",
+                  "AutoStop": "2026-05-29",
+                  "JobId": "J02"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": ["Batch.AWSBatchException", "States.TaskFailed"],
+                  "IntervalSeconds": 30,
+                  "MaxAttempts": 1,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "Next": "J02_Failed_Notify",
+                  "ResultPath": "$.error"
+                }
+              ],
+              "End": true
+            },
+            "J02_Failed_Notify": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sns:publish",
+              "Parameters": {
+                "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+                "Subject": "jpcite credit J02 FAILED — parallel branch continues",
+                "Message.$": "States.JsonToString($)"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "J03_nta_invoice_registrants_mirror",
+          "States": {
+            "J03_nta_invoice_registrants_mirror": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::batch:submitJob.sync",
+              "Parameters": {
+                "JobName": "jpcite-credit-J03-nta-invoice",
+                "JobQueue": "arn:aws:batch:ap-northeast-1:993693061769:job-queue/jpcite-credit-fargate-spot-short-queue",
+                "JobDefinition": "arn:aws:batch:ap-northeast-1:993693061769:job-definition/jpcite-crawl",
+                "ContainerOverrides": {
+                  "Environment": [
+                    { "Name": "JPCITE_JOB_ID", "Value": "J03_nta_invoice_registrants_mirror" },
+                    { "Name": "JPCITE_MANIFEST_S3", "Value": "s3://jpcite-credit-993693061769-202605-reports/manifests/J03_nta_invoice_registrants_mirror.json" },
+                    { "Name": "JPCITE_CREDIT_RUN", "Value": "2026-05" },
+                    { "Name": "AWS_REGION", "Value": "ap-northeast-1" }
+                  ]
+                },
+                "Tags": {
+                  "Project": "jpcite",
+                  "CreditRun": "2026-05",
+                  "AutoStop": "2026-05-29",
+                  "JobId": "J03"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": ["Batch.AWSBatchException", "States.TaskFailed"],
+                  "IntervalSeconds": 30,
+                  "MaxAttempts": 1,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "Next": "J03_Failed_Notify",
+                  "ResultPath": "$.error"
+                }
+              ],
+              "End": true
+            },
+            "J03_Failed_Notify": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sns:publish",
+              "Parameters": {
+                "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+                "Subject": "jpcite credit J03 FAILED — parallel branch continues",
+                "Message.$": "States.JsonToString($)"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "J04_egov_law_snapshot",
+          "States": {
+            "J04_egov_law_snapshot": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::batch:submitJob.sync",
+              "Parameters": {
+                "JobName": "jpcite-credit-J04-egov-law",
+                "JobQueue": "arn:aws:batch:ap-northeast-1:993693061769:job-queue/jpcite-credit-fargate-spot-short-queue",
+                "JobDefinition": "arn:aws:batch:ap-northeast-1:993693061769:job-definition/jpcite-crawl",
+                "ContainerOverrides": {
+                  "Environment": [
+                    { "Name": "JPCITE_JOB_ID", "Value": "J04_egov_law_snapshot" },
+                    { "Name": "JPCITE_MANIFEST_S3", "Value": "s3://jpcite-credit-993693061769-202605-reports/manifests/J04_egov_law_snapshot.json" },
+                    { "Name": "JPCITE_CREDIT_RUN", "Value": "2026-05" },
+                    { "Name": "AWS_REGION", "Value": "ap-northeast-1" }
+                  ]
+                },
+                "Tags": {
+                  "Project": "jpcite",
+                  "CreditRun": "2026-05",
+                  "AutoStop": "2026-05-29",
+                  "JobId": "J04"
+                }
+              },
+              "Retry": [
+                {
+                  "ErrorEquals": ["Batch.AWSBatchException", "States.TaskFailed"],
+                  "IntervalSeconds": 30,
+                  "MaxAttempts": 1,
+                  "BackoffRate": 2.0
+                }
+              ],
+              "Catch": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "Next": "J04_Failed_Notify",
+                  "ResultPath": "$.error"
+                }
+              ],
+              "End": true
+            },
+            "J04_Failed_Notify": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::sns:publish",
+              "Parameters": {
+                "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+                "Subject": "jpcite credit J04 FAILED — parallel branch continues",
+                "Message.$": "States.JsonToString($)"
+              },
+              "End": true
+            }
+          }
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "Parallel_Failed_Notify",
+          "ResultPath": "$.error"
+        }
+      ],
+      "Next": "J05_jgrants_public_program_acquisition"
+    },
+    "Parallel_Failed_Notify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+        "Subject": "jpcite credit parallel branch FAILED — orchestrator continues to J05",
+        "Message.$": "States.JsonToString($)"
+      },
+      "ResultPath": "$.parallel_notify",
+      "Next": "J05_jgrants_public_program_acquisition"
+    },
+    "J05_jgrants_public_program_acquisition": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::batch:submitJob.sync",
+      "Parameters": {
+        "JobName": "jpcite-credit-J05-jgrants",
+        "JobQueue": "arn:aws:batch:ap-northeast-1:993693061769:job-queue/jpcite-credit-fargate-spot-short-queue",
+        "JobDefinition": "arn:aws:batch:ap-northeast-1:993693061769:job-definition/jpcite-crawl",
+        "ContainerOverrides": {
+          "Environment": [
+            { "Name": "JPCITE_JOB_ID", "Value": "J05_jgrants_public_program_acquisition" },
+            { "Name": "JPCITE_MANIFEST_S3", "Value": "s3://jpcite-credit-993693061769-202605-reports/manifests/J05_jgrants_public_program_acquisition.json" },
+            { "Name": "JPCITE_CREDIT_RUN", "Value": "2026-05" },
+            { "Name": "AWS_REGION", "Value": "ap-northeast-1" }
+          ]
+        },
+        "Tags": {
+          "Project": "jpcite",
+          "CreditRun": "2026-05",
+          "AutoStop": "2026-05-29",
+          "JobId": "J05"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": ["Batch.AWSBatchException", "States.TaskFailed"],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 1,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "J05_Failed_Notify",
+          "ResultPath": "$.error"
+        }
+      ],
+      "ResultPath": "$.J05_result",
+      "Next": "J06_ministry_municipality_pdf_extraction"
+    },
+    "J05_Failed_Notify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+        "Subject": "jpcite credit J05 FAILED — orchestrator continues to J06",
+        "Message.$": "States.JsonToString($)"
+      },
+      "ResultPath": "$.J05_notify",
+      "Next": "J06_ministry_municipality_pdf_extraction"
+    },
+    "J06_ministry_municipality_pdf_extraction": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::batch:submitJob.sync",
+      "Parameters": {
+        "JobName": "jpcite-credit-J06-ministry-pdf",
+        "JobQueue": "arn:aws:batch:ap-northeast-1:993693061769:job-queue/jpcite-credit-fargate-spot-short-queue",
+        "JobDefinition": "arn:aws:batch:ap-northeast-1:993693061769:job-definition/jpcite-crawl",
+        "ContainerOverrides": {
+          "Environment": [
+            { "Name": "JPCITE_JOB_ID", "Value": "J06_ministry_municipality_pdf_extraction" },
+            { "Name": "JPCITE_MANIFEST_S3", "Value": "s3://jpcite-credit-993693061769-202605-reports/manifests/J06_ministry_municipality_pdf_extraction.json" },
+            { "Name": "JPCITE_CREDIT_RUN", "Value": "2026-05" },
+            { "Name": "AWS_REGION", "Value": "ap-northeast-1" }
+          ]
+        },
+        "Tags": {
+          "Project": "jpcite",
+          "CreditRun": "2026-05",
+          "AutoStop": "2026-05-29",
+          "JobId": "J06"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": ["Batch.AWSBatchException", "States.TaskFailed"],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 1,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "J06_Failed_Notify",
+          "ResultPath": "$.error"
+        }
+      ],
+      "ResultPath": "$.J06_result",
+      "Next": "J07_gbizinfo_public_business_signals"
+    },
+    "J06_Failed_Notify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+        "Subject": "jpcite credit J06 FAILED — orchestrator continues to J07",
+        "Message.$": "States.JsonToString($)"
+      },
+      "ResultPath": "$.J06_notify",
+      "Next": "J07_gbizinfo_public_business_signals"
+    },
+    "J07_gbizinfo_public_business_signals": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::batch:submitJob.sync",
+      "Parameters": {
+        "JobName": "jpcite-credit-J07-gbizinfo",
+        "JobQueue": "arn:aws:batch:ap-northeast-1:993693061769:job-queue/jpcite-credit-fargate-spot-short-queue",
+        "JobDefinition": "arn:aws:batch:ap-northeast-1:993693061769:job-definition/jpcite-crawl",
+        "ContainerOverrides": {
+          "Environment": [
+            { "Name": "JPCITE_JOB_ID", "Value": "J07_gbizinfo_public_business_signals" },
+            { "Name": "JPCITE_MANIFEST_S3", "Value": "s3://jpcite-credit-993693061769-202605-reports/manifests/J07_gbizinfo_public_business_signals.json" },
+            { "Name": "JPCITE_CREDIT_RUN", "Value": "2026-05" },
+            { "Name": "AWS_REGION", "Value": "ap-northeast-1" }
+          ]
+        },
+        "Tags": {
+          "Project": "jpcite",
+          "CreditRun": "2026-05",
+          "AutoStop": "2026-05-29",
+          "JobId": "J07"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": ["Batch.AWSBatchException", "States.TaskFailed"],
+          "IntervalSeconds": 30,
+          "MaxAttempts": 1,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "J07_Failed_Notify",
+          "ResultPath": "$.error"
+        }
+      ],
+      "ResultPath": "$.J07_result",
+      "Next": "Aggregate_Run_Manifest"
+    },
+    "J07_Failed_Notify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+        "Subject": "jpcite credit J07 FAILED — proceeding to aggregate manifest",
+        "Message.$": "States.JsonToString($)"
+      },
+      "ResultPath": "$.J07_notify",
+      "Next": "Aggregate_Run_Manifest"
+    },
+    "Aggregate_Run_Manifest": {
+      "Type": "Pass",
+      "Comment": "Aggregate per-job manifest hashes into a single run-level manifest. The container in each Batch job is expected to PutObject run_manifest.json under its output_prefix; this Pass state composes the run-level pointer payload, and the downstream Task writes it to the reports bucket.",
+      "Parameters": {
+        "RunId.$": "$$.Execution.Name",
+        "StartedAt.$": "$$.Execution.StartTime",
+        "Jobs": {
+          "J01.$": "States.JsonToString($.J01_result)",
+          "J02.$": "States.JsonToString($.parallel_result[0])",
+          "J03.$": "States.JsonToString($.parallel_result[1])",
+          "J04.$": "States.JsonToString($.parallel_result[2])",
+          "J05.$": "States.JsonToString($.J05_result)",
+          "J06.$": "States.JsonToString($.J06_result)",
+          "J07.$": "States.JsonToString($.J07_result)"
+        }
+      },
+      "ResultPath": "$.aggregate_payload",
+      "Next": "Write_Aggregate_Manifest"
+    },
+    "Write_Aggregate_Manifest": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:s3:putObject",
+      "Parameters": {
+        "Bucket": "jpcite-credit-993693061769-202605-reports",
+        "Key.$": "States.Format('aggregate_manifests/{}.json', $$.Execution.Name)",
+        "Body.$": "States.JsonToString($.aggregate_payload)",
+        "ContentType": "application/json",
+        "Tagging": "Project=jpcite&CreditRun=2026-05&AutoStop=2026-05-29"
+      },
+      "ResultPath": "$.aggregate_write_result",
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "Aggregate_Write_Failed_Notify",
+          "ResultPath": "$.error"
+        }
+      ],
+      "End": true
+    },
+    "Aggregate_Write_Failed_Notify": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+        "Subject": "jpcite credit aggregate manifest write FAILED",
+        "Message.$": "States.JsonToString($)"
+      },
+      "End": true
+    }
+  }
+}
