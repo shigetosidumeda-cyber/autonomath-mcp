@@ -29,9 +29,16 @@ DEFAULT_TOP_N = 10
 DEFAULT_MAX_HOUJIN = 50_000
 
 INDUSTRY_CHAIN_PAIRS = {
-    ("E", "I"): 25, ("D", "M"): 25, ("J", "G"): 25, ("E", "G"): 25,
-    ("K", "I"): 22, ("F", "E"): 22, ("L", "G"): 22, ("E", "K"): 18,
-    ("H", "I"): 18, ("P", "Q"): 18,
+    ("E", "I"): 25,
+    ("D", "M"): 25,
+    ("J", "G"): 25,
+    ("E", "G"): 25,
+    ("K", "I"): 22,
+    ("F", "E"): 22,
+    ("L", "G"): 22,
+    ("E", "K"): 18,
+    ("H", "I"): 18,
+    ("P", "Q"): 18,
 }
 
 ADJACENT_PREFECTURES = {
@@ -58,37 +65,45 @@ def _ensure_tables(conn):
 
 def _cohort_houjin(conn, max_houjin):
     try:
-        rows = list(conn.execute(
-            "SELECT houjin_bangou FROM jpi_adoption_records "
-            "WHERE houjin_bangou IS NOT NULL AND houjin_bangou <> '' "
-            "GROUP BY houjin_bangou ORDER BY COUNT(*) DESC LIMIT ?",
-            (max_houjin,),
-        ))
+        rows = list(
+            conn.execute(
+                "SELECT houjin_bangou FROM jpi_adoption_records "
+                "WHERE houjin_bangou IS NOT NULL AND houjin_bangou <> '' "
+                "GROUP BY houjin_bangou ORDER BY COUNT(*) DESC LIMIT ?",
+                (max_houjin,),
+            )
+        )
         if rows:
             return [r[0] for r in rows]
     except sqlite3.Error as exc:
         LOG.warning("adoption walk failed: %s", exc)
     try:
-        return [r[0] for r in conn.execute(
-            "SELECT canonical_id FROM am_entities WHERE record_kind = 'corporate_entity' "
-            "ORDER BY canonical_id LIMIT ?", (max_houjin,)
-        )]
+        return [
+            r[0]
+            for r in conn.execute(
+                "SELECT canonical_id FROM am_entities WHERE record_kind = 'corporate_entity' "
+                "ORDER BY canonical_id LIMIT ?",
+                (max_houjin,),
+            )
+        ]
     except sqlite3.Error:
         return []
 
 
 def _co_adoption_partners(conn, houjin):
     try:
-        rows = list(conn.execute(
-            "SELECT p2.houjin_bangou AS partner, COUNT(*) AS n "
-            "FROM jpi_adoption_records p1 "
-            "JOIN jpi_adoption_records p2 ON p1.program_unified_id = p2.program_unified_id "
-            "  AND p1.fiscal_year = p2.fiscal_year "
-            "  AND p1.houjin_bangou <> p2.houjin_bangou "
-            "WHERE p1.houjin_bangou = ? AND p2.houjin_bangou IS NOT NULL "
-            "GROUP BY p2.houjin_bangou ORDER BY n DESC LIMIT 200",
-            (houjin,),
-        ))
+        rows = list(
+            conn.execute(
+                "SELECT p2.houjin_bangou AS partner, COUNT(*) AS n "
+                "FROM jpi_adoption_records p1 "
+                "JOIN jpi_adoption_records p2 ON p1.program_unified_id = p2.program_unified_id "
+                "  AND p1.fiscal_year = p2.fiscal_year "
+                "  AND p1.houjin_bangou <> p2.houjin_bangou "
+                "WHERE p1.houjin_bangou = ? AND p2.houjin_bangou IS NOT NULL "
+                "GROUP BY p2.houjin_bangou ORDER BY n DESC LIMIT 200",
+                (houjin,),
+            )
+        )
         return {r["partner"]: r["n"] for r in rows if r["partner"]}
     except sqlite3.Error:
         return {}
@@ -106,8 +121,13 @@ def _houjin_attrs(conn, houjin):
             continue
         if row:
             return dict(row)
-    return {"primary_name": None, "jsic_major": None, "jsic_middle": None,
-            "prefecture": None, "employee_count": None}
+    return {
+        "primary_name": None,
+        "jsic_major": None,
+        "jsic_middle": None,
+        "prefecture": None,
+        "employee_count": None,
+    }
 
 
 def _industry_chain_score(a_major, b_major):
@@ -202,17 +222,38 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN, top_n=DEFA
         for partner, co_count in partners.items():
             attrs_b = _houjin_attrs(conn, partner)
             co_score = _co_adoption_score(co_count)
-            ind_score, ind_pair = _industry_chain_score(attrs_a.get("jsic_major"), attrs_b.get("jsic_major"))
-            size_score = _size_balance_score(attrs_a.get("employee_count"), attrs_b.get("employee_count"))
-            region_score = _region_proximity_score(attrs_a.get("prefecture"), attrs_b.get("prefecture"))
+            ind_score, ind_pair = _industry_chain_score(
+                attrs_a.get("jsic_major"), attrs_b.get("jsic_major")
+            )
+            size_score = _size_balance_score(
+                attrs_a.get("employee_count"), attrs_b.get("employee_count")
+            )
+            region_score = _region_proximity_score(
+                attrs_a.get("prefecture"), attrs_b.get("prefecture")
+            )
             compat_score = _compat_with_programs_score(conn, houjin, partner)
             composite = co_score + ind_score + size_score + region_score + compat_score
             composite = max(0, min(100, composite))
-            scored.append((composite, partner, {
-                "co_score": co_score, "ind_score": ind_score, "size_score": size_score,
-                "region_score": region_score, "compat_score": compat_score, "co_count": co_count,
-            }, {"name_b": attrs_b.get("primary_name"), "ind_pair": ind_pair,
-                "region_a": attrs_a.get("prefecture"), "region_b": attrs_b.get("prefecture")}))
+            scored.append(
+                (
+                    composite,
+                    partner,
+                    {
+                        "co_score": co_score,
+                        "ind_score": ind_score,
+                        "size_score": size_score,
+                        "region_score": region_score,
+                        "compat_score": compat_score,
+                        "co_count": co_count,
+                    },
+                    {
+                        "name_b": attrs_b.get("primary_name"),
+                        "ind_pair": ind_pair,
+                        "region_a": attrs_a.get("prefecture"),
+                        "region_b": attrs_b.get("prefecture"),
+                    },
+                )
+            )
         scored.sort(key=lambda t: (-t[0], t[1]))
         top = scored[:top_n]
         if not top:
@@ -234,10 +275,22 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN, top_n=DEFA
                 " co_adoption_count, industry_chain_pair, region_a, region_b, reason_json, refreshed_at) "
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
-                    houjin, rank, partner, meta["name_b"], score,
-                    parts["co_score"], parts["ind_score"], parts["size_score"],
-                    parts["region_score"], parts["compat_score"], parts["co_count"],
-                    meta["ind_pair"], meta["region_a"], meta["region_b"], reason_json, refreshed_at,
+                    houjin,
+                    rank,
+                    partner,
+                    meta["name_b"],
+                    score,
+                    parts["co_score"],
+                    parts["ind_score"],
+                    parts["size_score"],
+                    parts["region_score"],
+                    parts["compat_score"],
+                    parts["co_count"],
+                    meta["ind_pair"],
+                    meta["region_a"],
+                    meta["region_b"],
+                    reason_json,
+                    refreshed_at,
                 ),
             )
             pairs_written += 1
@@ -250,7 +303,13 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN, top_n=DEFA
             "UPDATE am_alliance_opportunity_refresh_log SET finished_at = ?, "
             "  houjin_count = ?, partner_pairs_written = ?, skipped_no_co_adoption = ? "
             "WHERE refresh_id = ?",
-            (datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"), len(cohort), pairs_written, skipped, refresh_id),
+            (
+                datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"),
+                len(cohort),
+                pairs_written,
+                skipped,
+                refresh_id,
+            ),
         )
         conn.commit()
     conn.close()
@@ -270,10 +329,13 @@ def _parse_args(argv=None):
 
 def main(argv=None):
     args = _parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO),
-                        format="%(asctime)s %(levelname)s %(name)s %(message)s")
-    result = refresh(args.autonomath_db, dry_run=args.dry_run,
-                     max_houjin=args.max_houjin, top_n=args.top_n)
+    logging.basicConfig(
+        level=getattr(logging, args.log_level.upper(), logging.INFO),
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    )
+    result = refresh(
+        args.autonomath_db, dry_run=args.dry_run, max_houjin=args.max_houjin, top_n=args.top_n
+    )
     print(json.dumps(result, ensure_ascii=False))
     return 0
 

@@ -48,14 +48,14 @@ _TOP_UA_LIMIT = 200  # CF caps at 10k; 200 is plenty for the AI-bot long tail.
 # Keep this in sync with web-vitals SKIP list in site/assets/rum.js so the
 # two layers agree on "what is a bot".
 _BOT_FAMILIES: dict[str, tuple[str, ...]] = {
-    "GPTBot":         ("gptbot",),
-    "ClaudeBot":      ("claudebot", "claude-web", "anthropic-ai"),
-    "PerplexityBot":  ("perplexitybot", "perplexity-ai"),
-    "Bytespider":     ("bytespider",),
-    "Diffbot":        ("diffbot",),
-    "cohere-ai":      ("cohere-ai", "coherebot"),
-    "YouBot":         ("youbot",),
-    "MistralAI":      ("mistralai", "mistral-ai"),
+    "GPTBot": ("gptbot",),
+    "ClaudeBot": ("claudebot", "claude-web", "anthropic-ai"),
+    "PerplexityBot": ("perplexitybot", "perplexity-ai"),
+    "Bytespider": ("bytespider",),
+    "Diffbot": ("diffbot",),
+    "cohere-ai": ("cohere-ai", "coherebot"),
+    "YouBot": ("youbot",),
+    "MistralAI": ("mistralai", "mistral-ai"),
 }
 
 _QUERY = """
@@ -180,8 +180,7 @@ def main() -> int:
 
     total_reqs = sum(int(b["requests"]) for b in buckets.values())
     print(
-        f"[cf_ai_audit] wrote {out_path.name} families={rows_written} "
-        f"total_requests={total_reqs}"
+        f"[cf_ai_audit] wrote {out_path.name} families={rows_written} total_requests={total_reqs}"
     )
     return 0
 

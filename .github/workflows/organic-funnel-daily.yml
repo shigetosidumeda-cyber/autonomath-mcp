@@ -1,0 +1,142 @@
+name: organic-funnel-daily
+
+# Wave 49 G1 — daily organic-funnel rollup.
+#
+# Reads Cloudflare R2 ``funnel/{date}/*.json`` objects landed by
+# ``functions/api/rum_beacon.ts`` (Pages Function) for the previous UTC
+# day, rolls them up into per-stage counts + uniq-visitor totals, and
+# evaluates the G1 gate (3 consecutive days with uniq_visitor >= 10).
+# Outputs land in ``analytics/organic_funnel_daily.jsonl`` (append-only)
+# and ``site/status/organic_funnel_state.json`` (14-day rolling sidecar).
+#
+# G1 transition emits a stdout marker the workflow grep'd to open a
+# one-shot GitHub Issue, so the operator gets a single notification
+# when the gate first goes green rather than a daily noise stream.
+#
+# Required GitHub repository secrets (mirrored from weekly-backup-autonomath):
+#   R2_ENDPOINT             https://<acct>.r2.cloudflarestorage.com
+#   R2_ACCESS_KEY_ID        Cloudflare R2 access key id
+#   R2_SECRET_ACCESS_KEY    Cloudflare R2 access secret
+#   R2_BUCKET               Bucket holding the funnel/ prefix
+# Optional:
+#   WAVE49_FUNNEL_R2_BUCKET Overrides R2_BUCKET specifically for the
+#                           funnel bucket if it differs from the backup
+#                           bucket. Falls back to R2_BUCKET when unset.
+
+on:
+  schedule:
+    # 19:30 UTC == 04:30 JST. Off-peak window, after the UTC day closes.
+    - cron: "30 19 * * *"
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "UTC date to aggregate (YYYY-MM-DD). Default = yesterday."
+        required: false
+        default: ""
+      dry_run:
+        description: "If 'true', skip the commit + push step and don't write."
+        required: false
+        default: "false"
+
+concurrency:
+  group: organic-funnel-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  aggregate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install rclone
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y rclone
+          rclone version | head -1
+
+      - name: Run organic funnel aggregator
+        id: aggregate
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          WAVE49_FUNNEL_R2_BUCKET: ${{ secrets.WAVE49_FUNNEL_R2_BUCKET }}
+          LOG_LEVEL: INFO
+        run: |
+          set -euo pipefail
+          DATE_ARG=""
+          if [ -n "${{ inputs.date || '' }}" ]; then
+            DATE_ARG="--date ${{ inputs.date }}"
+          fi
+          DRY_RUN_ARG=""
+          if [ "${{ inputs.dry_run || 'false' }}" = "true" ]; then
+            DRY_RUN_ARG="--dry-run"
+          fi
+          # Always capture stdout into a log file so the grep step below
+          # can detect the G1 transition marker without re-running.
+          python scripts/cron/aggregate_organic_funnel_daily.py \
+            $DATE_ARG $DRY_RUN_ARG --emit-issue \
+            | tee /tmp/organic_funnel_run.log
+
+      - name: Detect G1 achievement transition
+        id: g1
+        run: |
+          set -euo pipefail
+          if grep -q "::organic-funnel-g1-achieved::" /tmp/organic_funnel_run.log; then
+            echo "achieved=true" >> "$GITHUB_OUTPUT"
+            grep "::organic-funnel-g1-achieved::" /tmp/organic_funnel_run.log \
+              | head -1 > /tmp/g1_marker.txt
+          else
+            echo "achieved=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open G1 achievement Issue
+        if: steps.g1.outputs.achieved == 'true' && (inputs.dry_run != 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          MARKER=$(cat /tmp/g1_marker.txt)
+          {
+            echo "Wave 49 G1 gate transition detected by organic-funnel-daily.";
+            echo "";
+            echo "Marker:";
+            echo "    ${MARKER}";
+            echo "";
+            echo "See site/status/organic_funnel_state.json for the 14-day rolling window";
+            echo "and analytics/organic_funnel_daily.jsonl for the append-only history.";
+          } > /tmp/g1_issue_body.md
+          gh issue create \
+            --title "Wave 49 G1 達成: organic funnel uniq>=10 が 3 日連続" \
+            --body-file /tmp/g1_issue_body.md \
+            --label wave49 --label organic-funnel || true
+
+      - name: Commit + push deltas
+        if: inputs.dry_run != 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "jpcite-organic-funnel-bot"
+          git config user.email "info@bookyou.net"
+          # analytics/ is gitignored; force-add the canonical JSONL.
+          git add -f analytics/organic_funnel_daily.jsonl \
+                     site/status/organic_funnel_state.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No funnel deltas to commit."
+            exit 0
+          fi
+          DATE=$(date -u +"%Y-%m-%d")
+          git commit -m "chore(funnel): wave49 G1 daily rollup ${DATE}"
+          git push origin HEAD:main

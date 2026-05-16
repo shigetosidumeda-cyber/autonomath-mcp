@@ -71,6 +71,7 @@ def _load_sqlite_vec(conn):
         return False
     try:
         import sqlite_vec  # type: ignore[import-not-found]
+
         sqlite_vec.load(conn)
         return True
     except (ImportError, sqlite3.OperationalError) as exc:
@@ -83,12 +84,14 @@ def _load_embed_model(model_name):
         return None, HASH_FALLBACK_DIM, HASH_FALLBACK_MODEL
     try:
         from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found]
+
         model = SentenceTransformer(model_name)
         dim = int(model.get_sentence_embedding_dimension() or HASH_FALLBACK_DIM)
         return model, dim, model_name
     except (ImportError, OSError, RuntimeError) as exc:
-        LOG.warning("sentence-transformers '%s' unavailable (%s); using hash fallback",
-                    model_name, exc)
+        LOG.warning(
+            "sentence-transformers '%s' unavailable (%s); using hash fallback", model_name, exc
+        )
         return None, HASH_FALLBACK_DIM, HASH_FALLBACK_MODEL
 
 
@@ -181,8 +184,15 @@ def _candidate_entities(conn, mode, model_id, max_entities):
         return []
 
 
-def refresh(db_path, *, mode="incremental", dry_run=False, max_entities=None,
-            model_name="intfloat/multilingual-e5-small", batch_size=DEFAULT_BATCH):
+def refresh(
+    db_path,
+    *,
+    mode="incremental",
+    dry_run=False,
+    max_entities=None,
+    model_name="intfloat/multilingual-e5-small",
+    batch_size=DEFAULT_BATCH,
+):
     if mode not in ("full", "incremental"):
         raise ValueError(f"invalid mode: {mode}")
     refresh_id = f"vec_{uuid.uuid4().hex[:12]}"
@@ -260,8 +270,7 @@ def refresh(db_path, *, mode="incremental", dry_run=False, max_entities=None,
         conn.commit()
     conn.close()
     LOG.info("embed_knowledge_graph_vec done processed=%d skipped=%d", processed, skipped)
-    return {"processed": processed, "skipped": skipped, "dim": dim,
-            "model": model_id, "mode": mode}
+    return {"processed": processed, "skipped": skipped, "dim": dim, "model": model_id, "mode": mode}
 
 
 def _parse_args(argv=None):
@@ -278,11 +287,18 @@ def _parse_args(argv=None):
 
 def main(argv=None):
     args = _parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO),
-                        format="%(asctime)s %(levelname)s %(name)s %(message)s")
-    result = refresh(args.autonomath_db, mode=args.mode, dry_run=args.dry_run,
-                     max_entities=args.max_entities, model_name=args.model,
-                     batch_size=args.batch_size)
+    logging.basicConfig(
+        level=getattr(logging, args.log_level.upper(), logging.INFO),
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    )
+    result = refresh(
+        args.autonomath_db,
+        mode=args.mode,
+        dry_run=args.dry_run,
+        max_entities=args.max_entities,
+        model_name=args.model,
+        batch_size=args.batch_size,
+    )
     print(json.dumps(result, ensure_ascii=False))
     return 0
 

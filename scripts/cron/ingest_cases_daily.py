@@ -12,6 +12,7 @@ Usage:
     python scripts/cron/ingest_cases_daily.py
     python scripts/cron/ingest_cases_daily.py --prefectures tokyo,osaka --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -93,10 +94,17 @@ CENTRAL_RSS: tuple[tuple[str, str], ...] = (
     ("j-grants", "https://www.jgrants-portal.go.jp/rss/"),
 )
 
-BANNED_HOSTS: frozenset[str] = frozenset({
-    "noukaweb", "hojyokin-portal", "biz.stayway",
-    "subsidy-portal", "hojyokin-go", "hojo-navi", "mirai-joho",
-})
+BANNED_HOSTS: frozenset[str] = frozenset(
+    {
+        "noukaweb",
+        "hojyokin-portal",
+        "biz.stayway",
+        "subsidy-portal",
+        "hojyokin-go",
+        "hojo-navi",
+        "mirai-joho",
+    }
+)
 
 RATE_LIMIT_SECONDS = 1.0
 MAX_ITEMS_PER_FEED = 200
@@ -111,9 +119,7 @@ DEFAULT_DB_PATH = _REPO_ROOT / "autonomath.db"
 _ITEM_RE = re.compile(r"<item[^>]*>(.*?)</item>", re.DOTALL | re.IGNORECASE)
 _ENTRY_RE = re.compile(r"<entry[^>]*>(.*?)</entry>", re.DOTALL | re.IGNORECASE)
 _TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.DOTALL | re.IGNORECASE)
-_LINK_RE = re.compile(
-    r"<link[^>]*(?:href=\"([^\"]+)\"|>(.*?)</link>)", re.DOTALL | re.IGNORECASE
-)
+_LINK_RE = re.compile(r"<link[^>]*(?:href=\"([^\"]+)\"|>(.*?)</link>)", re.DOTALL | re.IGNORECASE)
 _DESC_RE = re.compile(
     r"<(?:description|summary)[^>]*>(.*?)</(?:description|summary)>",
     re.DOTALL | re.IGNORECASE,
@@ -129,7 +135,10 @@ _DATE_RE = re.compile(r"(\d{4})[/\-年](\d{1,2})[/\-月](\d{1,2})")
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
-    p.add_argument("--db", default=get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(DEFAULT_DB_PATH)))
+    p.add_argument(
+        "--db",
+        default=get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(DEFAULT_DB_PATH)),
+    )
     p.add_argument("--days", type=int, default=7)
     p.add_argument("--prefectures", default="all")
     p.add_argument("--max-workers", type=int, default=DEFAULT_MAX_WORKERS)
@@ -199,12 +208,14 @@ def _parse_feed_body(body: str) -> list[dict[str, str]]:
         link = ""
         if link_m:
             link = (link_m.group(1) or link_m.group(2) or "").strip()
-        items.append({
-            "title": _strip_cdata(title_m.group(1)) if title_m else "",
-            "link": link,
-            "description": _strip_cdata(desc_m.group(1)) if desc_m else "",
-            "pub_date": _strip_cdata(date_m.group(1)) if date_m else "",
-        })
+        items.append(
+            {
+                "title": _strip_cdata(title_m.group(1)) if title_m else "",
+                "link": link,
+                "description": _strip_cdata(desc_m.group(1)) if desc_m else "",
+                "pub_date": _strip_cdata(date_m.group(1)) if date_m else "",
+            }
+        )
     return items
 
 
@@ -228,7 +239,9 @@ def _is_banned(url: str) -> bool:
     return any(b in host for b in BANNED_HOSTS)
 
 
-def _build_row(item: dict[str, str], source_feed: str, prefecture: str | None) -> dict[str, Any] | None:
+def _build_row(
+    item: dict[str, str], source_feed: str, prefecture: str | None
+) -> dict[str, Any] | None:
     title = (item.get("title") or "").strip()
     link = (item.get("link") or "").strip()
     desc = (item.get("description") or "").strip()
@@ -243,10 +256,14 @@ def _build_row(item: dict[str, str], source_feed: str, prefecture: str | None) -
     houjin = houjin_m.group(1) if houjin_m else None
     sha = hashlib.sha256(f"{link}|{title}|{pub}".encode()).hexdigest()
     return {
-        "program_id": None, "program_name": title[:300],
-        "adopter_name": None, "adopter_houjin_bangou": houjin,
-        "adopted_at": pub, "announce_url": link,
-        "source_feed": source_feed, "sha256": sha,
+        "program_id": None,
+        "program_name": title[:300],
+        "adopter_name": None,
+        "adopter_houjin_bangou": houjin,
+        "adopted_at": pub,
+        "announce_url": link,
+        "source_feed": source_feed,
+        "sha256": sha,
         "retrieved_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "prefecture": prefecture,
     }
@@ -305,11 +322,16 @@ def _upsert(conn: sqlite3.Connection, row: dict[str, Any]) -> int:
     return int(cur.rowcount or 0)
 
 
-def run(db_path: Path, days: int, dry_run: bool,
-        prefectures: list[str], max_workers: int) -> dict[str, Any]:
+def run(
+    db_path: Path, days: int, dry_run: bool, prefectures: list[str], max_workers: int
+) -> dict[str, Any]:
     counters: dict[str, int] = {
-        "fetched": 0, "parsed": 0, "inserted": 0,
-        "skipped": 0, "feeds_ok": 0, "feeds_fail": 0,
+        "fetched": 0,
+        "parsed": 0,
+        "inserted": 0,
+        "skipped": 0,
+        "feeds_ok": 0,
+        "feeds_fail": 0,
     }
     pref_counts: dict[str, int] = {}
     cutoff = (datetime.now(UTC) - timedelta(days=days)).date().isoformat()
@@ -331,12 +353,12 @@ def run(db_path: Path, days: int, dry_run: bool,
             else:
                 logger.warning("unknown prefecture: %s", pref)
 
-    logger.info("[plan] %d feeds, max_workers=%d cutoff=%s",
-                len(feeds), max_workers, cutoff)
+    logger.info("[plan] %d feeds, max_workers=%d cutoff=%s", len(feeds), max_workers, cutoff)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
-        futures = {pool.submit(_fetch_one, label, url): (label, url, pref)
-                   for label, url, pref in feeds}
+        futures = {
+            pool.submit(_fetch_one, label, url): (label, url, pref) for label, url, pref in feeds
+        }
         for fut in concurrent.futures.as_completed(futures):
             label, _url, pref = futures[fut]
             try:
@@ -388,8 +410,11 @@ def main(argv: list[str] | None = None) -> int:
         prefectures = [p.strip() for p in args.prefectures.split(",") if p.strip()]
     try:
         out = run(
-            Path(args.db), days=args.days, dry_run=args.dry_run,
-            prefectures=prefectures, max_workers=args.max_workers,
+            Path(args.db),
+            days=args.days,
+            dry_run=args.dry_run,
+            prefectures=prefectures,
+            max_workers=args.max_workers,
         )
     except FileNotFoundError as exc:
         logger.error("db_missing path=%s err=%s", args.db, exc)

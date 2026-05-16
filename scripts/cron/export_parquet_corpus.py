@@ -241,6 +241,7 @@ TABLE_LICENSE: dict[str, LicenseEntry] = {
     },
 }
 
+
 # Lazy import — pyarrow is heavy (~50 MB) and we don't want it on the
 # request-path. Only the monthly cron + dry-run smoke import this.
 def _import_pyarrow() -> Any:
@@ -248,9 +249,7 @@ def _import_pyarrow() -> Any:
         import pyarrow as pa  # type: ignore
         import pyarrow.parquet as pq  # type: ignore
     except ImportError as exc:
-        raise RuntimeError(
-            "pyarrow is required for parquet export — pip install pyarrow"
-        ) from exc
+        raise RuntimeError("pyarrow is required for parquet export — pip install pyarrow") from exc
     return pa, pq
 
 
@@ -269,7 +268,8 @@ def _ensure_dir(path: Path) -> None:
 
 def _table_exists(conn: sqlite3.Connection, name: str) -> bool:
     row = conn.execute(
-        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,),
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?",
+        (name,),
     ).fetchone()
     return row is not None
 
@@ -357,7 +357,7 @@ def _build_readme(period: str, manifest: dict[str, Any], parquet_size_bytes: int
     lines = [
         f"# jpcite Corpus Export — {period}",
         "",
-        f"- Operator: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708)",
+        "- Operator: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708)",
         f"- Generated at: {datetime.now(UTC).isoformat()}",
         f"- File size: {size_mb:.1f} MB",
         f"- Tables: {len(manifest['tables'])}",
@@ -430,7 +430,8 @@ def _write_parquet(
         # Tag every row with the canonical table name so a consumer that
         # later concatenates the per-table frames doesn't lose lineage.
         tagged = tbl.append_column(
-            "_table", pa.array([name] * tbl.num_rows, type=pa.string()),
+            "_table",
+            pa.array([name] * tbl.num_rows, type=pa.string()),
         )
         target = out_path / f"{name}.parquet"
         pq.write_table(
@@ -537,8 +538,11 @@ def run(argv: list[str] | None = None) -> int:
     logger.info(
         "export_parquet_corpus.start period=%s autonomath_db=%s jpintel_db=%s "
         "row_limit=%s dry_run=%s",
-        period, args.autonomath_db, args.jpintel_db,
-        args.row_limit_per_table, args.dry_run,
+        period,
+        args.autonomath_db,
+        args.jpintel_db,
+        args.row_limit_per_table,
+        args.dry_run,
     )
 
     try:
@@ -568,16 +572,24 @@ def run(argv: list[str] | None = None) -> int:
                 if not _table_exists(conn, tname):
                     logger.debug(
                         "export_parquet_corpus.table_missing db=%s table=%s — skip",
-                        db_path.name, tname,
+                        db_path.name,
+                        tname,
                     )
                     continue
                 rc_total = _table_rowcount(conn, tname)
                 logger.info(
                     "export_parquet_corpus.read db=%s table=%s rows=%d limit=%s",
-                    db_path.name, tname, rc_total, args.row_limit_per_table,
+                    db_path.name,
+                    tname,
+                    rc_total,
+                    args.row_limit_per_table,
                 )
                 tbl = _read_sqlite_table_to_arrow(
-                    pa, conn, tname, TABLE_LICENSE[tname], fetched_at,
+                    pa,
+                    conn,
+                    tname,
+                    TABLE_LICENSE[tname],
+                    fetched_at,
                     limit=args.row_limit_per_table,
                 )
                 tables_out.append((tname, tbl))
@@ -608,12 +620,16 @@ def run(argv: list[str] | None = None) -> int:
         encoding="utf-8",
     )
     readme_path.write_text(
-        _build_readme(period, manifest, size_bytes), encoding="utf-8",
+        _build_readme(period, manifest, size_bytes),
+        encoding="utf-8",
     )
 
     logger.info(
         "export_parquet_corpus.built path=%s size_mb=%.1f sha256=%s tables=%d",
-        parquet_path, size_bytes / (1024 * 1024), sha, len(tables_out),
+        parquet_path,
+        size_bytes / (1024 * 1024),
+        sha,
+        len(tables_out),
     )
 
     if args.dry_run:
@@ -642,27 +658,34 @@ def run(argv: list[str] | None = None) -> int:
     for child in sorted(parquet_path.iterdir()):
         if child.is_file() and child.suffix == ".parquet":
             artifacts.append((child, f"{prefix}/{parquet_path.name}/{child.name}"))
-    artifacts.extend([
-        (sha_path, f"{prefix}/{sha_path.name}"),
-        (license_path, f"{prefix}/{license_path.name}"),
-        (readme_path, f"{prefix}/{readme_path.name}"),
-    ])
+    artifacts.extend(
+        [
+            (sha_path, f"{prefix}/{sha_path.name}"),
+            (license_path, f"{prefix}/{license_path.name}"),
+            (readme_path, f"{prefix}/{readme_path.name}"),
+        ]
+    )
     for local_path, remote_key in artifacts:
         try:
             upload(local_path, remote_key, bucket=bucket)
             logger.info(
                 "export_parquet_corpus.uploaded key=%s bytes=%d",
-                remote_key, local_path.stat().st_size,
+                remote_key,
+                local_path.stat().st_size,
             )
         except Exception as exc:
             logger.exception(
-                "export_parquet_corpus.upload_error key=%s err=%s", remote_key, exc,
+                "export_parquet_corpus.upload_error key=%s err=%s",
+                remote_key,
+                exc,
             )
             return 4
 
     logger.info(
         "export_parquet_corpus.done period=%s url=https://r2.jpcite.com/%s/%s",
-        period, prefix, parquet_path.name,
+        period,
+        prefix,
+        parquet_path.name,
     )
     return 0
 

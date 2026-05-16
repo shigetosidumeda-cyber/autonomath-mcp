@@ -144,9 +144,7 @@ def compute_deltas(
         delta = round(cur - base, 3)
         if delta < -REGRESSION_THRESHOLD:
             regressed.append(axis)
-        deltas.append(
-            {"axis": axis, "baseline": base, "current": cur, "delta": delta}
-        )
+        deltas.append({"axis": axis, "baseline": base, "current": cur, "delta": delta})
     return (deltas, regressed)
 
 
@@ -208,8 +206,7 @@ def post_slack_digest(payload: dict[str, Any]) -> bool:
     ]
     for d in payload.get("deltas", []):
         lines.append(
-            f"{d['axis']:<22} {d['baseline']:>8.2f} {d['current']:>8.2f} "
-            f"{d['delta']:>+8.2f}"
+            f"{d['axis']:<22} {d['baseline']:>8.2f} {d['current']:>8.2f} {d['delta']:>+8.2f}"
         )
     lines.append("```")
     if payload.get("auto_pr_url"):
@@ -229,9 +226,7 @@ def post_slack_digest(payload: dict[str, Any]) -> bool:
         return False
 
 
-def open_draft_pr(
-    suggestions_path: pathlib.Path, regressed: list[str]
-) -> str | None:
+def open_draft_pr(suggestions_path: pathlib.Path, regressed: list[str]) -> str | None:
     """Open a draft PR via `gh pr create --draft` with the suggestions body.
 
     Returns the PR URL on success, None otherwise.
@@ -239,9 +234,7 @@ def open_draft_pr(
     if not regressed:
         return None
     branch = f"bot/self-improve-v2-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}"
-    rc, _stdout, _stderr = _run(
-        ["git", "checkout", "-b", branch], timeout=30
-    )
+    rc, _stdout, _stderr = _run(["git", "checkout", "-b", branch], timeout=30)
     if rc != 0:
         logger.warning("draft_pr_checkout_failed")
         return None
@@ -316,9 +309,7 @@ def main(argv: list[str] | None = None) -> int:
         "suggestions_path": str(suggestions_path) if suggestions_path else None,
     }
     sidecar_path = args.out_dir / f"self_improve_v2_{date_part}.json"
-    sidecar_path.write_text(
-        json.dumps(combined, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    sidecar_path.write_text(json.dumps(combined, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # 6. Slack digest
     if args.slack:

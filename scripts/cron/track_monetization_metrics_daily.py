@@ -133,9 +133,7 @@ def _compute_arc_rows(conn: sqlite3.Connection) -> int:
     if not _table_exists(conn, "usage_events"):
         return 0
     since = (datetime.now(UTC) - timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
-    row = conn.execute(
-        "SELECT COUNT(*) FROM usage_events WHERE ts >= ?", (since,)
-    ).fetchone()
+    row = conn.execute("SELECT COUNT(*) FROM usage_events WHERE ts >= ?", (since,)).fetchone()
     last30 = int(row[0] if row else 0)
     return int(last30 * 365.0 / 30.0)
 
@@ -145,9 +143,7 @@ def _compute_cost_to_serve_jpy(conn: sqlite3.Connection) -> int:
     if not (_table_exists(conn, "usage_events") and _table_exists(conn, "cost_ledger")):
         return 0
     since = (datetime.now(UTC) - timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
-    req_row = conn.execute(
-        "SELECT COUNT(*) FROM usage_events WHERE ts >= ?", (since,)
-    ).fetchone()
+    req_row = conn.execute("SELECT COUNT(*) FROM usage_events WHERE ts >= ?", (since,)).fetchone()
     req_count = int(req_row[0] if req_row else 0) or 1  # avoid div by zero
     cost_row = conn.execute(
         "SELECT COALESCE(SUM(amount_jpy), 0) FROM cost_ledger WHERE incurred_at >= ?",
@@ -178,8 +174,7 @@ def _compute_agent_retention_d30(conn: sqlite3.Connection) -> float:
     today_active = {
         r[0]
         for r in conn.execute(
-            "SELECT DISTINCT key_hash FROM usage_events "
-            "WHERE ts >= ? AND key_hash IS NOT NULL",
+            "SELECT DISTINCT key_hash FROM usage_events WHERE ts >= ? AND key_hash IS NOT NULL",
             (d0_lo,),
         ).fetchall()
     }

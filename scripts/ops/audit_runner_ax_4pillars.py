@@ -512,7 +512,7 @@ def context_pillar() -> Pillar:
 def tools_pillar() -> Pillar:
     p = Pillar("Tools")
 
-    # 1. MCP server live (151 tools at default gates)
+    # 1. MCP server live (155 tools at default gates)
     server_py = SRC_MCP / "server.py"
     has_server = server_py.exists() and server_py.stat().st_size > 1024
     # Manifest tool_count cross-check.

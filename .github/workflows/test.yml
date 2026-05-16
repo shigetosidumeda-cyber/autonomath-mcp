@@ -69,6 +69,7 @@ env:
     scripts/ops/pre_deploy_manifest_verify.py
     scripts/ops/pre_deploy_verify.py
     scripts/ops/preflight_production_improvement.py
+    scripts/ops/production_deploy_readiness_gate.py
     scripts/ops/production_deploy_go_gate.py
     scripts/ops/public_copy_freshness.py
     scripts/ops/release_readiness.py
@@ -549,6 +550,7 @@ env:
     tests/test_pricing_cost_saving.py
     tests/test_probe_geps_feasibility.py
     tests/test_production_deploy_go_gate.py
+    tests/test_production_deploy_readiness_gate.py
     tests/test_production_improvement_preflight.py
     tests/test_production_smoke_3axis.py
     tests/test_program_abstract_structured.py

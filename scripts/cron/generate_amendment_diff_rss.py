@@ -53,7 +53,6 @@ from datetime import datetime, timedelta
 try:
     from datetime import UTC  # Python 3.11+
 except ImportError:  # pragma: no cover — Python 3.9/3.10 fallback for local dry-runs
-
     UTC = UTC  # type: ignore[misc, assignment]
 from email.utils import format_datetime
 from pathlib import Path
@@ -80,7 +79,9 @@ except Exception:  # noqa: BLE001
         yield {}
 
 
-_DEFAULT_DB = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
+_DEFAULT_DB = Path(
+    get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
+)
 _DEFAULT_OUT = _REPO_ROOT / "site" / "feeds" / "amendment_diff.xml"
 _DOMAIN = "jpcite.com"
 _DEFAULT_WINDOW_DAYS = 7
@@ -144,10 +145,7 @@ def _build(db_path: Path, *, window_days: int) -> str:
             f"[{xml_escape(kind)}] {xml_escape(display)} — "
             f"{xml_escape(r['field_name'] or 'unknown_field')}"
         )
-        link = (
-            r["source_url"]
-            or f"https://{_DOMAIN}/feeds/amendment_diff.xml#diff-{r['diff_id']}"
-        )
+        link = r["source_url"] or f"https://{_DOMAIN}/feeds/amendment_diff.xml#diff-{r['diff_id']}"
         try:
             pub_dt = datetime.fromisoformat(str(r["detected_at"]).replace("Z", "+00:00"))
             if pub_dt.tzinfo is None:

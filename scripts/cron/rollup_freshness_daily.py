@@ -36,6 +36,7 @@ Constraints
 - Graceful when ``gh`` CLI is absent (``gh_unavailable`` flag).
 - Idempotent — re-running overwrites the same day's snapshot.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -47,7 +48,7 @@ import sqlite3
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -58,7 +59,7 @@ ANALYTICS_DIR = REPO_ROOT / "analytics"
 WORKFLOWS_DIR = REPO_ROOT / ".github" / "workflows"
 
 JST = timezone(timedelta(hours=9))
-UTC = timezone.utc
+UTC = UTC
 
 
 @dataclass(frozen=True)
@@ -77,29 +78,163 @@ class CronSpec:
 # Mirrors docs/runbook/cron_schedule_master.md §3 + §5.
 CANONICAL_CRONS: list[CronSpec] = [
     # Lane A — ETL ingest
-    CronSpec("knowledge-graph-vec-embed", "0 17 * * *", "A", 24, "autonomath", "Knowledge graph vec embed", ("am_entities_vec",)),
-    CronSpec("portfolio-optimize-daily", "30 17 * * *", "A", 24, "autonomath", "Portfolio optimize refresh", ("am_metrics",)),
-    CronSpec("houjin-risk-score-daily", "0 18 * * *", "A", 24, "autonomath", "Houjin risk score refresh", ("am_metrics",)),
-    CronSpec("edinet-daily", "30 19 * * *", "A", 24, "jpintel", "EDINET XBRL/PDF ingest", ("edinet_documents",)),
-    CronSpec("adoption-rss-daily", "0 20 * * *", "A", 24, "jpintel", "Adoption RSS poll", ("adoption_records",)),
+    CronSpec(
+        "knowledge-graph-vec-embed",
+        "0 17 * * *",
+        "A",
+        24,
+        "autonomath",
+        "Knowledge graph vec embed",
+        ("am_entities_vec",),
+    ),
+    CronSpec(
+        "portfolio-optimize-daily",
+        "30 17 * * *",
+        "A",
+        24,
+        "autonomath",
+        "Portfolio optimize refresh",
+        ("am_metrics",),
+    ),
+    CronSpec(
+        "houjin-risk-score-daily",
+        "0 18 * * *",
+        "A",
+        24,
+        "autonomath",
+        "Houjin risk score refresh",
+        ("am_metrics",),
+    ),
+    CronSpec(
+        "edinet-daily",
+        "30 19 * * *",
+        "A",
+        24,
+        "jpintel",
+        "EDINET XBRL/PDF ingest",
+        ("edinet_documents",),
+    ),
+    CronSpec(
+        "adoption-rss-daily",
+        "0 20 * * *",
+        "A",
+        24,
+        "jpintel",
+        "Adoption RSS poll",
+        ("adoption_records",),
+    ),
     # Lane B — Precompute
-    CronSpec("axis2-precompute-daily", "45 20 * * *", "B", 24, "autonomath", "Cohort 5d / risk 4d / supplier chain", ("am_cohort_5d", "am_program_risk_4d", "am_supplier_chain")),
-    CronSpec("egov-amendment-daily", "0 21 * * *", "B", 24, "jpintel", "e-Gov amendments", ("laws",)),
-    CronSpec("ax-metrics-daily", "15 21 * * *", "B", 24, "autonomath", "AX aggregate metrics", ("am_metrics",)),
-    CronSpec("enforcement-press-daily", "0 22 * * *", "B", 24, "jpintel", "Enforcement press releases", ("enforcement_cases",)),
+    CronSpec(
+        "axis2-precompute-daily",
+        "45 20 * * *",
+        "B",
+        24,
+        "autonomath",
+        "Cohort 5d / risk 4d / supplier chain",
+        ("am_cohort_5d", "am_program_risk_4d", "am_supplier_chain"),
+    ),
+    CronSpec(
+        "egov-amendment-daily", "0 21 * * *", "B", 24, "jpintel", "e-Gov amendments", ("laws",)
+    ),
+    CronSpec(
+        "ax-metrics-daily",
+        "15 21 * * *",
+        "B",
+        24,
+        "autonomath",
+        "AX aggregate metrics",
+        ("am_metrics",),
+    ),
+    CronSpec(
+        "enforcement-press-daily",
+        "0 22 * * *",
+        "B",
+        24,
+        "jpintel",
+        "Enforcement press releases",
+        ("enforcement_cases",),
+    ),
     # Lane C — Monitoring
-    CronSpec("budget-subsidy-chain-daily", "0 23 * * *", "C", 24, "autonomath", "Budget→subsidy chain detect", ("am_budget_chain",)),
-    CronSpec("jpo-patents-daily", "30 23 * * *", "C", 24, "jpintel", "JPO patent ingest", ("patents",)),
-    CronSpec("invoice-diff-daily", "0 0 * * *", "C", 24, "jpintel", "Invoice registrant delta", ("invoice_registrants",)),
+    CronSpec(
+        "budget-subsidy-chain-daily",
+        "0 23 * * *",
+        "C",
+        24,
+        "autonomath",
+        "Budget→subsidy chain detect",
+        ("am_budget_chain",),
+    ),
+    CronSpec(
+        "jpo-patents-daily", "30 23 * * *", "C", 24, "jpintel", "JPO patent ingest", ("patents",)
+    ),
+    CronSpec(
+        "invoice-diff-daily",
+        "0 0 * * *",
+        "C",
+        24,
+        "jpintel",
+        "Invoice registrant delta",
+        ("invoice_registrants",),
+    ),
     # Lane D — Weekly
-    CronSpec("municipality-subsidy-weekly", "0 18 * * 0", "D", 168, "jpintel", "47 prefecture fan-out", ("programs",)),
-    CronSpec("axis2def-promote-weekly", "0 18 * * 4", "D", 168, "autonomath", "Definition promote", ("am_compat_matrix", "am_amount_condition", "am_amendment_snapshot")),
-    CronSpec("alliance-opportunity-weekly", "0 20 * * 0", "D", 168, "autonomath", "Alliance opportunity precompute", ("am_alliance_opportunity",)),
-    CronSpec("multilingual-weekly", "0 4 * * 0", "D", 168, "jpintel", "EN/KO/ZH fill", ("law_articles",)),
-    CronSpec("extended-corpus-weekly", "0 2 * * 2", "D", 168, "jpintel", "Kokkai/shingikai/brand", ("kokkai_records",)),
+    CronSpec(
+        "municipality-subsidy-weekly",
+        "0 18 * * 0",
+        "D",
+        168,
+        "jpintel",
+        "47 prefecture fan-out",
+        ("programs",),
+    ),
+    CronSpec(
+        "axis2def-promote-weekly",
+        "0 18 * * 4",
+        "D",
+        168,
+        "autonomath",
+        "Definition promote",
+        ("am_compat_matrix", "am_amount_condition", "am_amendment_snapshot"),
+    ),
+    CronSpec(
+        "alliance-opportunity-weekly",
+        "0 20 * * 0",
+        "D",
+        168,
+        "autonomath",
+        "Alliance opportunity precompute",
+        ("am_alliance_opportunity",),
+    ),
+    CronSpec(
+        "multilingual-weekly", "0 4 * * 0", "D", 168, "jpintel", "EN/KO/ZH fill", ("law_articles",)
+    ),
+    CronSpec(
+        "extended-corpus-weekly",
+        "0 2 * * 2",
+        "D",
+        168,
+        "jpintel",
+        "Kokkai/shingikai/brand",
+        ("kokkai_records",),
+    ),
     # Lane D — Monthly
-    CronSpec("axis6-output-monthly", "0 21 1 * *", "D", 744, "autonomath", "Monthly 6-axis PDF report", ()),
-    CronSpec("subsidy-30yr-forecast-monthly", "0 19 4 * *", "D", 744, "autonomath", "30y subsidy cycle forecast", ("am_forecast_30yr",)),
+    CronSpec(
+        "axis6-output-monthly",
+        "0 21 1 * *",
+        "D",
+        744,
+        "autonomath",
+        "Monthly 6-axis PDF report",
+        (),
+    ),
+    CronSpec(
+        "subsidy-30yr-forecast-monthly",
+        "0 19 4 * *",
+        "D",
+        744,
+        "autonomath",
+        "30y subsidy cycle forecast",
+        ("am_forecast_30yr",),
+    ),
 ]
 
 
@@ -340,7 +475,9 @@ def verify_schedule_drift() -> list[dict[str, str]]:
     for spec in CANONICAL_CRONS:
         actual = workflow_file_schedule(spec.workflow)
         if actual is None:
-            drift.append({"workflow": spec.workflow, "expected": spec.cron_utc, "actual": "MISSING"})
+            drift.append(
+                {"workflow": spec.workflow, "expected": spec.cron_utc, "actual": "MISSING"}
+            )
             continue
         if actual != spec.cron_utc:
             drift.append({"workflow": spec.workflow, "expected": spec.cron_utc, "actual": actual})

@@ -48,7 +48,9 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 from jpintel_mcp._jpcite_env_bridge import get_flag  # noqa: E402
 from jpintel_mcp.observability import heartbeat  # noqa: E402
 
-_DEFAULT_DB = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
+_DEFAULT_DB = Path(
+    get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
+)
 _DEFAULT_OUT = _REPO_ROOT / "site" / "audit-log.rss.new"
 _DEFAULT_DOMAIN = "jpcite.com"
 _UTC = UTC

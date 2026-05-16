@@ -46,8 +46,10 @@ try:
     sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "src"))
     from jpintel_mcp.observability import safe_capture_exception  # type: ignore
 except Exception:  # pragma: no cover — defensive: never block the backup on import errors
+
     def safe_capture_exception(exc: BaseException, **scope: object) -> None:  # type: ignore[no-redef]
         return
+
 
 _LOG = logging.getLogger("jpintel.backup_autonomath")
 _KEY_RE = re.compile(r"^autonomath-(\d{8})-(\d{6})\.db\.gz$")

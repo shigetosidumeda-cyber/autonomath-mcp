@@ -63,12 +63,8 @@ logger = logging.getLogger("jpcite.cron.budget_subsidy_chain")
 # Sources — *.go.jp only
 # ---------------------------------------------------------------------------
 
-SHUGIIN_GIAN_URL = (
-    "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu_kaiji.htm"
-)
-SANGIIN_GIAN_URL = (
-    "https://www.sangiin.go.jp/japanese/joho1/kousei/gian/menu.htm"
-)
+SHUGIIN_GIAN_URL = "https://www.shugiin.go.jp/internet/itdb_gian.nsf/html/gian/menu_kaiji.htm"
+SANGIIN_GIAN_URL = "https://www.sangiin.go.jp/japanese/joho1/kousei/gian/menu.htm"
 
 MINISTRY_FEEDS: tuple[tuple[str, str], ...] = (
     ("METI", "https://www.meti.go.jp/feed/press.rss"),
@@ -91,9 +87,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_AUTONOMATH_DB = _REPO_ROOT / "autonomath.db"
 
 # Heuristic for budget bills.
-BUDGET_BILL_RE = re.compile(
-    r"(?:補正)?予算(?:案)?(?:.{0,20})(?:本会議.*?可決|成立)"
-)
+BUDGET_BILL_RE = re.compile(r"(?:補正)?予算(?:案)?(?:.{0,20})(?:本会議.*?可決|成立)")
 KOKKAI_ID_RE = re.compile(r"第(\d{1,3})回.*?(?:議案)?\D(\d{1,4})")
 SUBSIDY_KEYWORDS = ("補助金", "助成金", "交付金", "補助事業", "公募", "公募開始")
 DATE_RE = re.compile(r"(\d{4})[/\-年](\d{1,2})[/\-月](\d{1,2})")
@@ -214,16 +208,16 @@ def _parse_budget_passings(body: str, window_start: date) -> list[dict[str, str]
         if d < window_start:
             continue
         kid_m = KOKKAI_ID_RE.search(line)
-        kokkai_id = (
-            f"{kid_m.group(1)}-{kid_m.group(2)}" if kid_m else f"{d.isoformat()}-?"
-        )
+        kokkai_id = f"{kid_m.group(1)}-{kid_m.group(2)}" if kid_m else f"{d.isoformat()}-?"
         kind = "supplementary_budget" if "補正" in line else "main_budget"
-        out.append({
-            "kokkai_id": kokkai_id,
-            "passing_date": d.isoformat(),
-            "kind": kind,
-            "title": line.strip()[:300],
-        })
+        out.append(
+            {
+                "kokkai_id": kokkai_id,
+                "passing_date": d.isoformat(),
+                "kind": kind,
+                "title": line.strip()[:300],
+            }
+        )
     return out
 
 

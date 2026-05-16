@@ -63,9 +63,18 @@ def _cohort_houjin(conn, max_houjin):
     seen = set()
     candidates = []
     queries = (
-        ("am_enforcement_detail", "SELECT DISTINCT houjin_bangou FROM am_enforcement_detail WHERE houjin_bangou IS NOT NULL"),
-        ("jpi_invoice_registrants", "SELECT DISTINCT houjin_bangou FROM jpi_invoice_registrants WHERE houjin_bangou IS NOT NULL"),
-        ("jpi_adoption_records", "SELECT DISTINCT houjin_bangou FROM jpi_adoption_records WHERE houjin_bangou IS NOT NULL"),
+        (
+            "am_enforcement_detail",
+            "SELECT DISTINCT houjin_bangou FROM am_enforcement_detail WHERE houjin_bangou IS NOT NULL",
+        ),
+        (
+            "jpi_invoice_registrants",
+            "SELECT DISTINCT houjin_bangou FROM jpi_invoice_registrants WHERE houjin_bangou IS NOT NULL",
+        ),
+        (
+            "jpi_adoption_records",
+            "SELECT DISTINCT houjin_bangou FROM jpi_adoption_records WHERE houjin_bangou IS NOT NULL",
+        ),
     )
     for label, sql in queries:
         try:
@@ -81,20 +90,26 @@ def _cohort_houjin(conn, max_houjin):
     if candidates:
         return candidates[:max_houjin]
     try:
-        return [row[0] for row in conn.execute(
-            "SELECT canonical_id FROM am_entities WHERE record_kind = 'corporate_entity' "
-            "ORDER BY canonical_id LIMIT ?", (max_houjin,)
-        )]
+        return [
+            row[0]
+            for row in conn.execute(
+                "SELECT canonical_id FROM am_entities WHERE record_kind = 'corporate_entity' "
+                "ORDER BY canonical_id LIMIT ?",
+                (max_houjin,),
+            )
+        ]
     except sqlite3.Error:
         return []
 
 
 def _enforcement_subscore(conn, houjin):
     try:
-        rows = list(conn.execute(
-            "SELECT record_kind, occurred_at FROM am_enforcement_detail WHERE houjin_bangou = ?",
-            (houjin,),
-        ))
+        rows = list(
+            conn.execute(
+                "SELECT record_kind, occurred_at FROM am_enforcement_detail WHERE houjin_bangou = ?",
+                (houjin,),
+            )
+        )
     except sqlite3.Error:
         return 0, 0
     if not rows:
@@ -143,11 +158,13 @@ def _invoice_subscore(conn, houjin):
 
 def _adoption_subscore(conn, houjin):
     try:
-        rows = list(conn.execute(
-            "SELECT adoption_status FROM jpi_adoption_records "
-            "WHERE houjin_bangou = ? AND adoption_status IS NOT NULL",
-            (houjin,),
-        ))
+        rows = list(
+            conn.execute(
+                "SELECT adoption_status FROM jpi_adoption_records "
+                "WHERE houjin_bangou = ? AND adoption_status IS NOT NULL",
+                (houjin,),
+            )
+        )
     except sqlite3.Error:
         return 0, 0
     score = 0
@@ -221,12 +238,21 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN):
             high_count += 1
         if bucket == "critical":
             critical_count += 1
-        signals = {"enforcement_5y_count": enf_count, "invoice_status": inv_status,
-                   "adoption_revoked": adp_revoked, "credit_age_year": est_year}
+        signals = {
+            "enforcement_5y_count": enf_count,
+            "invoice_status": inv_status,
+            "adoption_revoked": adp_revoked,
+            "credit_age_year": est_year,
+        }
         if dry_run:
             if hi < 5:
-                LOG.info("dry-run houjin=%s score=%d bucket=%s signals=%s",
-                         houjin, composite, bucket, signals)
+                LOG.info(
+                    "dry-run houjin=%s score=%d bucket=%s signals=%s",
+                    houjin,
+                    composite,
+                    bucket,
+                    signals,
+                )
             continue
         conn.execute(
             "INSERT OR REPLACE INTO am_houjin_risk_score "
@@ -236,9 +262,19 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN):
             " established_year, refreshed_at) "
             "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
-                houjin, composite, enf_score, inv_score, adp_score, age_score,
-                bucket, json.dumps(signals, ensure_ascii=False),
-                enf_count, inv_status, adp_revoked, est_year, refreshed_at,
+                houjin,
+                composite,
+                enf_score,
+                inv_score,
+                adp_score,
+                age_score,
+                bucket,
+                json.dumps(signals, ensure_ascii=False),
+                enf_count,
+                inv_status,
+                adp_revoked,
+                est_year,
+                refreshed_at,
             ),
         )
         if (hi + 1) % 5000 == 0:
@@ -251,11 +287,22 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN):
             "UPDATE am_houjin_risk_score_refresh_log SET finished_at = ?, "
             "  houjin_count = ?, high_risk_count = ?, critical_risk_count = ? "
             "WHERE refresh_id = ?",
-            (datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"), len(cohort), high_count, critical_count, refresh_id),
+            (
+                datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"),
+                len(cohort),
+                high_count,
+                critical_count,
+                refresh_id,
+            ),
         )
         conn.commit()
     conn.close()
-    LOG.info("refresh_houjin_risk_score_daily done houjin=%d high=%d crit=%d", len(cohort), high_count, critical_count)
+    LOG.info(
+        "refresh_houjin_risk_score_daily done houjin=%d high=%d crit=%d",
+        len(cohort),
+        high_count,
+        critical_count,
+    )
     return {"houjin": len(cohort), "high": high_count, "critical": critical_count}
 
 
@@ -270,8 +317,10 @@ def _parse_args(argv=None):
 
 def main(argv=None):
     args = _parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO),
-                        format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    logging.basicConfig(
+        level=getattr(logging, args.log_level.upper(), logging.INFO),
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    )
     result = refresh(args.autonomath_db, dry_run=args.dry_run, max_houjin=args.max_houjin)
     print(json.dumps(result, ensure_ascii=False))
     return 0

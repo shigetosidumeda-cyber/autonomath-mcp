@@ -69,7 +69,9 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 logger = logging.getLogger("autonomath.cron.health_drill")
 
 _DEFAULT_HEALTH_URL = "https://autonomath.fly.dev/healthz"
-_DEFAULT_DB_PATH = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", "/data/autonomath.db")
+_DEFAULT_DB_PATH = get_flag(
+    "JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", "/data/autonomath.db"
+)
 
 
 # ---------------------------------------------------------------------------

@@ -21,6 +21,7 @@ is the only optional similarity engine. Aggregator URLs are refused.
 一次資料 only — sentence-transformer candidates land in review_queue,
 not body_en directly.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -59,10 +60,7 @@ LICENSE_DISCLAIMER = (
     "(japaneselawtranslation.go.jp) under CC-BY 4.0. The Japanese-language "
     "original is the only legally authoritative version."
 )
-USER_AGENT = (
-    "jpcite-multilingual-bot/1.0 (+https://jpcite.com/bots; "
-    "operator=info@bookyou.net)"
-)
+USER_AGENT = "jpcite-multilingual-bot/1.0 (+https://jpcite.com/bots; operator=info@bookyou.net)"
 
 JLT_INDEX_URLS = (
     "https://www.japaneselawtranslation.go.jp/en/laws/list",
@@ -155,7 +153,7 @@ def _harvest_jlt_index() -> list[str]:
             continue
         for m in re.finditer(r'href="(/en/laws/view/[^"#?]+)"', body):
             path = m.group(1)
-            slug = path[len(JLT_VIEW_PREFIX):]
+            slug = path[len(JLT_VIEW_PREFIX) :]
             slug = urllib.parse.unquote(slug).strip("/")
             if slug and slug not in seen:
                 seen.add(slug)
@@ -174,7 +172,9 @@ def _build_translation_urls(canonical_id: str) -> list[str]:
     ]
 
 
-def _candidate_laws(conn: sqlite3.Connection, max_laws: int | None, resume: bool) -> list[sqlite3.Row]:
+def _candidate_laws(
+    conn: sqlite3.Connection, max_laws: int | None, resume: bool
+) -> list[sqlite3.Row]:
     sql = "SELECT canonical_id, canonical_name AS name, body_en FROM am_law"
     if resume:
         sql += " WHERE body_en IS NULL"
@@ -191,9 +191,9 @@ def _candidate_laws(conn: sqlite3.Connection, max_laws: int | None, resume: bool
 def _audit_counts(conn: sqlite3.Connection) -> dict[str, int]:
     try:
         total = conn.execute("SELECT COUNT(*) FROM am_law").fetchone()[0]
-        present = conn.execute(
-            "SELECT COUNT(*) FROM am_law WHERE body_en IS NOT NULL"
-        ).fetchone()[0]
+        present = conn.execute("SELECT COUNT(*) FROM am_law WHERE body_en IS NOT NULL").fetchone()[
+            0
+        ]
     except sqlite3.Error:
         return {"laws_total": 0, "body_en_present": 0, "body_en_null": 0}
     return {
@@ -226,14 +226,21 @@ def _now() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ")
 
 
-def _process_law(conn: sqlite3.Connection, law: sqlite3.Row, *, dry_run: bool,
-                 refresh_id: str, network: bool = True,
-                 jlt_index: set[str] | None = None) -> dict[str, int]:
+def _process_law(
+    conn: sqlite3.Connection,
+    law: sqlite3.Row,
+    *,
+    dry_run: bool,
+    refresh_id: str,
+    network: bool = True,
+    jlt_index: set[str] | None = None,
+) -> dict[str, int]:
     counters = {"filled": 0, "skipped_no_source": 0, "review_queue_added": 0}
     canonical_id = law["canonical_id"]
     if not network:
-        primary_urls = [u for u in _build_translation_urls(canonical_id)
-                        if _is_primary(u) and not _is_banned(u)]
+        primary_urls = [
+            u for u in _build_translation_urls(canonical_id) if _is_primary(u) and not _is_banned(u)
+        ]
         counters["filled" if primary_urls else "skipped_no_source"] += 1
         return counters
     if jlt_index is not None and canonical_id not in jlt_index:
@@ -251,22 +258,34 @@ def _process_law(conn: sqlite3.Connection, law: sqlite3.Row, *, dry_run: bool,
                     "UPDATE am_law SET body_en = ?, body_en_source_url = ?, "
                     "body_en_fetched_at = ?, body_en_license = 'cc_by_4.0' "
                     "WHERE canonical_id = ?",
-                    (text, url, _now(), canonical_id))
+                    (text, url, _now(), canonical_id),
+                )
             counters["filled"] += 1
             return counters
     counters["skipped_no_source"] += 1
     return counters
 
 
-def run(db_path: str, *, max_laws: int | None, dry_run: bool, resume: bool,
-        network: bool = True, use_jlt_index: bool = True) -> dict[str, object]:
+def run(
+    db_path: str,
+    *,
+    max_laws: int | None,
+    dry_run: bool,
+    resume: bool,
+    network: bool = True,
+    use_jlt_index: bool = True,
+) -> dict[str, object]:
     conn = _connect(db_path)
     _ensure_tables(conn)
     refresh_id = _refresh_id()
     started = _now()
     mode = "dry-run" if dry_run else ("incremental" if resume else "full")
-    totals = {"laws_processed": 0, "articles_filled": 0,
-              "review_queue_added": 0, "skipped_no_source": 0}
+    totals = {
+        "laws_processed": 0,
+        "articles_filled": 0,
+        "review_queue_added": 0,
+        "skipped_no_source": 0,
+    }
     audit_before = _audit_counts(conn)
     article_audit = _article_audit(conn)
     jlt_index: set[str] | None = None
@@ -276,11 +295,18 @@ def run(db_path: str, *, max_laws: int | None, dry_run: bool, resume: bool,
         conn.execute(
             "INSERT INTO am_law_translation_refresh_log "
             "(refresh_id, target_lang, started_at, mode) VALUES (?, 'en', ?, ?)",
-            (refresh_id, started, mode))
+            (refresh_id, started, mode),
+        )
     for law in _candidate_laws(conn, max_laws, resume):
         try:
-            c = _process_law(conn, law, dry_run=dry_run, refresh_id=refresh_id,
-                             network=network, jlt_index=jlt_index)
+            c = _process_law(
+                conn,
+                law,
+                dry_run=dry_run,
+                refresh_id=refresh_id,
+                network=network,
+                jlt_index=jlt_index,
+            )
         except Exception as exc:  # noqa: BLE001
             LOG.warning("process_law error %s: %s", law["canonical_id"], exc)
             continue
@@ -296,8 +322,15 @@ def run(db_path: str, *, max_laws: int | None, dry_run: bool, resume: bool,
             "UPDATE am_law_translation_refresh_log "
             "SET finished_at = ?, laws_processed = ?, articles_filled = ?, "
             " review_queue_added = ?, skipped_no_source = ? WHERE refresh_id = ?",
-            (_now(), totals["laws_processed"], totals["articles_filled"],
-             totals["review_queue_added"], totals["skipped_no_source"], refresh_id))
+            (
+                _now(),
+                totals["laws_processed"],
+                totals["articles_filled"],
+                totals["review_queue_added"],
+                totals["skipped_no_source"],
+                refresh_id,
+            ),
+        )
         conn.commit()
     conn.close()
     return {
@@ -315,21 +348,41 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--max-laws", type=int, default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--resume", action="store_true")
-    parser.add_argument("--no-network", action="store_true",
-                        help="Skip HTTP fetches; classify URLs only (test mode)")
-    parser.add_argument("--no-jlt-index", action="store_true",
-                        help="Skip JLT index harvest (rely on canonical_id only)")
+    parser.add_argument(
+        "--no-network",
+        action="store_true",
+        help="Skip HTTP fetches; classify URLs only (test mode)",
+    )
+    parser.add_argument(
+        "--no-jlt-index",
+        action="store_true",
+        help="Skip JLT index harvest (rely on canonical_id only)",
+    )
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
-    result = run(args.autonomath_db, max_laws=args.max_laws, dry_run=args.dry_run,
-                 resume=args.resume, network=not args.no_network,
-                 use_jlt_index=not args.no_jlt_index)
-    print(json.dumps({"ok": True, "mode": "dry-run" if args.dry_run else "full",
-                      **result, "disclaimer": LICENSE_DISCLAIMER},
-                     ensure_ascii=False))
+        format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
+    )
+    result = run(
+        args.autonomath_db,
+        max_laws=args.max_laws,
+        dry_run=args.dry_run,
+        resume=args.resume,
+        network=not args.no_network,
+        use_jlt_index=not args.no_jlt_index,
+    )
+    print(
+        json.dumps(
+            {
+                "ok": True,
+                "mode": "dry-run" if args.dry_run else "full",
+                **result,
+                "disclaimer": LICENSE_DISCLAIMER,
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

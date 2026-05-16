@@ -11,6 +11,7 @@ zh_v2 strategy:
 NEVER calls an LLM API. 一次資料 only. Catch-rate is intentionally small
 (~10-50 laws); the operator queue is the auditable path.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -38,15 +39,18 @@ DEFAULT_DB = os.environ.get("AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db"))
 DEFAULT_REVIEW_CSV = str(_REPO / "data" / "laws_ko_review_queue.csv")
 
 PRIMARY_DOMAINS = (
-    "japaneselawtranslation.go.jp", "mofa.go.jp",
-    "jetro.go.jp", "jnto.go.jp", "mhlw.go.jp", "mlit.go.jp",
-    "meti.go.jp", "moj.go.jp", "soumu.go.jp",
+    "japaneselawtranslation.go.jp",
+    "mofa.go.jp",
+    "jetro.go.jp",
+    "jnto.go.jp",
+    "mhlw.go.jp",
+    "mlit.go.jp",
+    "meti.go.jp",
+    "moj.go.jp",
+    "soumu.go.jp",
 )
 BANNED_DOMAINS = ("noukaweb", "hojyokin-portal", "biz.stayway")
-USER_AGENT = (
-    "jpcite-multilingual-bot/1.0 (+https://jpcite.com/bots; "
-    "operator=info@bookyou.net)"
-)
+USER_AGENT = "jpcite-multilingual-bot/1.0 (+https://jpcite.com/bots; operator=info@bookyou.net)"
 
 KO_HUB_URLS = (
     "https://www.mofa.go.jp/mofaj/area/korea/index.html",
@@ -149,8 +153,9 @@ def _harvest_ko_hubs() -> dict[str, str]:
     return found
 
 
-def _ko_mirror_urls(jp_url: str, canonical_id: str,
-                    ko_hub_map: dict[str, str] | None = None) -> list[str]:
+def _ko_mirror_urls(
+    jp_url: str, canonical_id: str, ko_hub_map: dict[str, str] | None = None
+) -> list[str]:
     candidates: list[str] = []
     if jp_url:
         parsed = urllib.parse.urlparse(jp_url)
@@ -186,9 +191,9 @@ def _candidate_laws(conn: sqlite3.Connection, max_laws: int | None) -> list[sqli
 def _audit_counts(conn: sqlite3.Connection) -> dict[str, int]:
     try:
         total = conn.execute("SELECT COUNT(*) FROM am_law").fetchone()[0]
-        present = conn.execute(
-            "SELECT COUNT(*) FROM am_law WHERE body_ko IS NOT NULL"
-        ).fetchone()[0]
+        present = conn.execute("SELECT COUNT(*) FROM am_law WHERE body_ko IS NOT NULL").fetchone()[
+            0
+        ]
     except sqlite3.Error:
         return {"laws_total": 0, "body_ko_present": 0}
     return {"laws_total": int(total), "body_ko_present": int(present)}
@@ -202,15 +207,22 @@ def _now() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ")
 
 
-def _process_law(conn: sqlite3.Connection, law: sqlite3.Row, *, dry_run: bool,
-                 network: bool = True,
-                 ko_hub_map: dict[str, str] | None = None
-                 ) -> tuple[dict[str, int], str | None]:
+def _process_law(
+    conn: sqlite3.Connection,
+    law: sqlite3.Row,
+    *,
+    dry_run: bool,
+    network: bool = True,
+    ko_hub_map: dict[str, str] | None = None,
+) -> tuple[dict[str, int], str | None]:
     counters = {"filled": 0, "skipped_no_source": 0, "review_queue_added": 0}
     canonical_id = law["canonical_id"]
     if not network:
-        primary_urls = [u for u in _ko_mirror_urls("", canonical_id, None)
-                        if _is_primary(u) and not _is_banned(u)]
+        primary_urls = [
+            u
+            for u in _ko_mirror_urls("", canonical_id, None)
+            if _is_primary(u) and not _is_banned(u)
+        ]
         counters["filled" if primary_urls else "skipped_no_source"] += 1
         return counters, None
     for url in _ko_mirror_urls("", canonical_id, ko_hub_map):
@@ -224,7 +236,8 @@ def _process_law(conn: sqlite3.Connection, law: sqlite3.Row, *, dry_run: bool,
                     "UPDATE am_law SET body_ko = ?, body_ko_source_url = ?, "
                     "body_ko_fetched_at = ?, body_ko_license = 'gov_public' "
                     "WHERE canonical_id = ?",
-                    (text, url, _now(), canonical_id))
+                    (text, url, _now(), canonical_id),
+                )
             counters["filled"] += 1
             return counters, None
     counters["skipped_no_source"] += 1
@@ -237,26 +250,48 @@ def _write_review_csv(rows: list[sqlite3.Row], csv_path: str, target_lang: str) 
     with open(csv_path, "a", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh)
         if write_header:
-            w.writerow([
-                "canonical_id", "name", "target_lang", "operator_url",
-                "operator_notes", "queued_at",
-            ])
+            w.writerow(
+                [
+                    "canonical_id",
+                    "name",
+                    "target_lang",
+                    "operator_url",
+                    "operator_notes",
+                    "queued_at",
+                ]
+            )
         for r in rows:
-            w.writerow([
-                r["canonical_id"], r["name"], target_lang, "", "", _now(),
-            ])
+            w.writerow(
+                [
+                    r["canonical_id"],
+                    r["name"],
+                    target_lang,
+                    "",
+                    "",
+                    _now(),
+                ]
+            )
 
 
-def run(db_path: str, *, max_laws: int | None, dry_run: bool,
-        network: bool = True,
-        review_csv: str = DEFAULT_REVIEW_CSV) -> dict[str, object]:
+def run(
+    db_path: str,
+    *,
+    max_laws: int | None,
+    dry_run: bool,
+    network: bool = True,
+    review_csv: str = DEFAULT_REVIEW_CSV,
+) -> dict[str, object]:
     conn = _connect(db_path)
     _ensure_tables(conn)
     refresh_id = _refresh_id()
     started = _now()
     mode = "dry-run" if dry_run else "incremental"
-    totals = {"laws_processed": 0, "articles_filled": 0,
-              "review_queue_added": 0, "skipped_no_source": 0}
+    totals = {
+        "laws_processed": 0,
+        "articles_filled": 0,
+        "review_queue_added": 0,
+        "skipped_no_source": 0,
+    }
     ko_hub_map: dict[str, str] | None = None
     if network:
         ko_hub_map = _harvest_ko_hubs()
@@ -266,14 +301,16 @@ def run(db_path: str, *, max_laws: int | None, dry_run: bool,
             conn.execute(
                 "INSERT INTO am_law_translation_refresh_log "
                 "(refresh_id, target_lang, started_at, mode) VALUES (?, 'ko', ?, ?)",
-                (refresh_id, started, mode))
+                (refresh_id, started, mode),
+            )
         except sqlite3.Error:
             pass
     review_rows: list[sqlite3.Row] = []
     for law in _candidate_laws(conn, max_laws):
         try:
-            c, queued = _process_law(conn, law, dry_run=dry_run, network=network,
-                                     ko_hub_map=ko_hub_map)
+            c, queued = _process_law(
+                conn, law, dry_run=dry_run, network=network, ko_hub_map=ko_hub_map
+            )
         except Exception as exc:  # noqa: BLE001
             LOG.warning("process_law error %s: %s", law["canonical_id"], exc)
             continue
@@ -294,8 +331,15 @@ def run(db_path: str, *, max_laws: int | None, dry_run: bool,
                 "UPDATE am_law_translation_refresh_log "
                 "SET finished_at = ?, laws_processed = ?, articles_filled = ?, "
                 " review_queue_added = ?, skipped_no_source = ? WHERE refresh_id = ?",
-                (_now(), totals["laws_processed"], totals["articles_filled"],
-                 totals["review_queue_added"], totals["skipped_no_source"], refresh_id))
+                (
+                    _now(),
+                    totals["laws_processed"],
+                    totals["articles_filled"],
+                    totals["review_queue_added"],
+                    totals["skipped_no_source"],
+                    refresh_id,
+                ),
+            )
             conn.commit()
         except sqlite3.Error:
             pass
@@ -320,10 +364,15 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
-    result = run(args.autonomath_db, max_laws=args.max_laws,
-                 dry_run=args.dry_run, network=not args.no_network,
-                 review_csv=args.review_csv)
+        format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
+    )
+    result = run(
+        args.autonomath_db,
+        max_laws=args.max_laws,
+        dry_run=args.dry_run,
+        network=not args.no_network,
+        review_csv=args.review_csv,
+    )
     print(json.dumps({"ok": True, **result}, ensure_ascii=False))
     return 0
 

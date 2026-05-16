@@ -151,9 +151,12 @@ def _cf_daily_per_day(window_days: int) -> dict[str, dict[str, Any]]:
                 path = str(item.get("path") or "")
                 reqs = int(item.get("requests") or 0)
                 low = path.lower()
-                if low.endswith("/llms.txt") or low.endswith(
-                    "/llms-full.txt"
-                ) or low.endswith(".md") or "/llms" in low:
+                if (
+                    low.endswith("/llms.txt")
+                    or low.endswith("/llms-full.txt")
+                    or low.endswith(".md")
+                    or "/llms" in low
+                ):
                     bucket["llms_requests"] += reqs
                 if low.endswith(".html") or low == "/" or low.endswith("/"):
                     bucket["html_requests"] += reqs
@@ -250,28 +253,16 @@ def _build_series(window_days: int) -> list[dict[str, Any]]:
         ai_total = sum(ai_audit.get(d, {}).values())
         agent_reqs = ai_total or int(cf.get("agent_requests", 0))
         total_reqs = int(cf.get("total_requests", 0))
-        agent_ratio = (
-            round((agent_reqs / total_reqs) * 100.0, 2)
-            if total_reqs > 0
-            else None
-        )
+        agent_ratio = round((agent_reqs / total_reqs) * 100.0, 2) if total_reqs > 0 else None
 
         mcp_calls = mcp_per_day.get(d, 0)
         task_b = task_per_day.get(d, {"ok": 0, "err": 0})
         task_total = task_b["ok"] + task_b["err"]
-        task_success = (
-            round((task_b["ok"] / task_total) * 100.0, 2)
-            if task_total > 0
-            else None
-        )
+        task_success = round((task_b["ok"] / task_total) * 100.0, 2) if task_total > 0 else None
 
         auth_b = auth_per_day.get(d, {"ok": 0, "fail": 0})
         auth_total = auth_b["ok"] + auth_b["fail"]
-        auth_success = (
-            round((auth_b["ok"] / auth_total) * 100.0, 2)
-            if auth_total > 0
-            else None
-        )
+        auth_success = round((auth_b["ok"] / auth_total) * 100.0, 2) if auth_total > 0 else None
 
         llms_reqs = int(cf.get("llms_requests", 0))
         html_reqs = int(cf.get("html_requests", 0)) or 1
@@ -280,9 +271,7 @@ def _build_series(window_days: int) -> list[dict[str, Any]]:
         conv_b = conv_per_day.get(d, {"agent_grants": 0, "total_grants": 0, "tokens": 0})
         conv_total = conv_b["total_grants"]
         agent_conv = (
-            round((conv_b["agent_grants"] / conv_total) * 100.0, 2)
-            if conv_total > 0
-            else None
+            round((conv_b["agent_grants"] / conv_total) * 100.0, 2) if conv_total > 0 else None
         )
 
         out.append(
@@ -315,14 +304,12 @@ def _summary(days: list[dict[str, Any]]) -> dict[str, Any]:
         "agent_ratio_p95": _percentile(ratios, 95),
         "agent_ratio_p99": _percentile(ratios, 99),
         "mcp_calls_weekly": sum(d.get("mcp_tool_calls") or 0 for d in days),
-        "mcp_calls_monthly": sum(d.get("mcp_tool_calls") or 0 for d in days) * 30 // max(1, len(days)),
-        "iserror_pct": (
-            round(statistics.fmean(iserrors), 2) if iserrors else None
-        ),
+        "mcp_calls_monthly": sum(d.get("mcp_tool_calls") or 0 for d in days)
+        * 30
+        // max(1, len(days)),
+        "iserror_pct": (round(statistics.fmean(iserrors), 2) if iserrors else None),
         "llms_relative_to_html": (
-            round(statistics.fmean(d["llms_relative_to_html"] for d in days), 3)
-            if days
-            else None
+            round(statistics.fmean(d["llms_relative_to_html"] for d in days), 3) if days else None
         ),
         "agent_tokens_issued": sum(d.get("agent_tokens") or 0 for d in days),
     }
@@ -339,8 +326,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Compute the rollup and emit the JSON to stdout without "
-        "writing the output file.",
+        help="Compute the rollup and emit the JSON to stdout without writing the output file.",
     )
     parser.add_argument(
         "--out",

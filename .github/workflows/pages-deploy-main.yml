@@ -351,6 +351,8 @@ jobs:
           set -euo pipefail
           python3 scripts/check_openapi_drift.py
           python3 scripts/check_mcp_drift.py
+          python3 scripts/check_agent_runtime_contracts.py --repo-root .
+          python3 scripts/ops/validate_release_capsule.py --repo-root .
 
       - name: Build static artifact (rsync site/ → dist/site/)
         if: steps.cf-secrets.outputs.available == 'true'
@@ -421,6 +423,16 @@ jobs:
             dist/site/.well-known/mcp.json \
             dist/site/.well-known/agents.json \
             dist/site/.well-known/llms.json \
+            dist/site/.well-known/jpcite-release.json \
+            dist/site/releases/current/runtime_pointer.json \
+            dist/site/releases/rc1-p0-bootstrap/release_capsule_manifest.json \
+            dist/site/releases/rc1-p0-bootstrap/agent_surface/p0_facade.json \
+            dist/site/releases/rc1-p0-bootstrap/preflight_scorecard.json \
+            dist/site/releases/rc1-p0-bootstrap/outcome_catalog.json \
+            dist/site/releases/rc1-p0-bootstrap/outcome_source_crosswalk.json \
+            dist/site/releases/rc1-p0-bootstrap/packet_skeletons.json \
+            dist/site/releases/rc1-p0-bootstrap/aws_spend_program.json \
+            dist/site/releases/rc1-p0-bootstrap/aws_execution_templates.json \
             dist/site/llms-meta.json \
             dist/site/.well-known/openapi-discovery.json \
             dist/site/docs/openapi/v1.json \
@@ -484,6 +496,10 @@ jobs:
             "https://jpcite.com/.well-known/mcp.json?$Q" \
             "https://jpcite.com/.well-known/agents.json?$Q" \
             "https://jpcite.com/.well-known/llms.json?$Q" \
+            "https://jpcite.com/.well-known/jpcite-release.json?$Q" \
+            "https://jpcite.com/releases/current/runtime_pointer.json?$Q" \
+            "https://jpcite.com/release/current/capsule_manifest.json?$Q" \
+            "https://jpcite.com/release/current/agent_surface/p0_facade.json?$Q" \
             "https://jpcite.com/.well-known/openapi-discovery.json?$Q" \
             "https://jpcite.com/docs/openapi/v1.json?$Q" \
             "https://jpcite.com/openapi.agent.json?$Q" \
@@ -503,6 +519,17 @@ jobs:
               echo "::error::post-deploy smoke failed for $url"
               exit 1
             fi
+          done
+          for url in \
+            "https://jpcite.com/.well-known/jpcite-release.json?$Q" \
+            "https://jpcite.com/releases/current/runtime_pointer.json?$Q" \
+            "https://jpcite.com/release/current/capsule_manifest.json?$Q"
+          do
+            headers="$(curl -fsSI --max-time 30 "$url")"
+            printf "%s\n" "$headers" | grep -i '^content-type: application/json' >/dev/null
+            printf "%s\n" "$headers" | grep -i '^access-control-allow-origin: \*' >/dev/null
+            printf "%s\n" "$headers" | grep -i '^cross-origin-resource-policy: cross-origin' >/dev/null
+            printf "%s\n" "$headers" | grep -i '^cache-control:' >/dev/null
           done
           echo "post-deploy smoke OK"
 

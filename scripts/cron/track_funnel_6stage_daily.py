@@ -267,9 +267,9 @@ def stage4_accessibility(conn: sqlite3.Connection | None) -> dict[str, Any]:
 def stage5_payability(conn: sqlite3.Connection | None) -> dict[str, Any]:
     if conn is None or not _table_exists(conn, "api_keys"):
         return {"stage": "payability", "score": 0.0, "reason": "no_db"}
-    active_keys = conn.execute(
-        "SELECT COUNT(*) FROM api_keys WHERE revoked_at IS NULL"
-    ).fetchone()[0]
+    active_keys = conn.execute("SELECT COUNT(*) FROM api_keys WHERE revoked_at IS NULL").fetchone()[
+        0
+    ]
     stripe_linked = 0
     cols = {r[1] for r in conn.execute("PRAGMA table_info(api_keys)").fetchall()}
     if "stripe_subscription_id" in cols:
@@ -324,8 +324,7 @@ def stage6_retainability(conn: sqlite3.Connection | None) -> dict[str, Any]:
     today = {
         r[0]
         for r in conn.execute(
-            "SELECT DISTINCT key_hash FROM usage_events "
-            "WHERE ts >= ? AND key_hash IS NOT NULL",
+            "SELECT DISTINCT key_hash FROM usage_events WHERE ts >= ? AND key_hash IS NOT NULL",
             (d0_lo,),
         ).fetchall()
     }

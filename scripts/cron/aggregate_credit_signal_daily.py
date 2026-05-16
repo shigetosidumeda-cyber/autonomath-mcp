@@ -364,9 +364,7 @@ def _aggregate(signals: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
 # --------------------------------------------------------------------------- #
 
 
-def _persist_signals(
-    conn: sqlite3.Connection, signals: list[dict[str, Any]]
-) -> int:
+def _persist_signals(conn: sqlite3.Connection, signals: list[dict[str, Any]]) -> int:
     written = 0
     for s in signals:
         try:
@@ -390,9 +388,7 @@ def _persist_signals(
     return written
 
 
-def _persist_aggregate(
-    conn: sqlite3.Connection, aggregates: dict[str, dict[str, Any]]
-) -> int:
+def _persist_aggregate(conn: sqlite3.Connection, aggregates: dict[str, dict[str, Any]]) -> int:
     written = 0
     for h, agg in aggregates.items():
         try:

@@ -305,12 +305,8 @@ def _cleanup_sweep(conn: sqlite3.Connection) -> tuple[int, int]:
     now = datetime.now(UTC)
     replayed_cutoff = (now - timedelta(days=_RETAIN_REPLAYED_DAYS)).isoformat()
     abandoned_cutoff = (now - timedelta(days=_RETAIN_ABANDONED_DAYS)).isoformat()
-    committed_cutoff = (
-        now - timedelta(days=_RETAIN_CHECKPOINT_COMMITTED_DAYS)
-    ).isoformat()
-    failed_cutoff = (
-        now - timedelta(days=_RETAIN_CHECKPOINT_FAILED_DAYS)
-    ).isoformat()
+    committed_cutoff = (now - timedelta(days=_RETAIN_CHECKPOINT_COMMITTED_DAYS)).isoformat()
+    failed_cutoff = (now - timedelta(days=_RETAIN_CHECKPOINT_FAILED_DAYS)).isoformat()
 
     cur = conn.execute(
         """
@@ -339,8 +335,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--batch-size", type=int, default=100)
     parser.add_argument("--max-replay-attempts", type=int, default=5)
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--cleanup", action="store_true",
-                        help="Also purge old replayed/abandoned + state_checkpoint rows.")
+    parser.add_argument(
+        "--cleanup",
+        action="store_true",
+        help="Also purge old replayed/abandoned + state_checkpoint rows.",
+    )
     parser.add_argument("--db", type=str, default=None)
     parser.add_argument("--log-level", default="INFO")
     args = parser.parse_args(argv)
@@ -385,15 +384,21 @@ def main(argv: list[str] | None = None) -> int:
             dlq_purged, ck_purged = _cleanup_sweep(conn)
             logger.info(
                 "cleanup: dlq_purged=%d state_checkpoint_purged=%d",
-                dlq_purged, ck_purged,
+                dlq_purged,
+                ck_purged,
             )
 
         _finish_run(conn, run_id, scanned, replayed_ok, replayed_failed, abandoned)
         logger.info(
             "drain done: run_id=%d scanned=%d replayed_ok=%d "
             "replayed_failed=%d abandoned=%d dlq_purged=%d ck_purged=%d",
-            run_id, scanned, replayed_ok, replayed_failed, abandoned,
-            dlq_purged, ck_purged,
+            run_id,
+            scanned,
+            replayed_ok,
+            replayed_failed,
+            abandoned,
+            dlq_purged,
+            ck_purged,
         )
         return 0
     finally:

@@ -52,9 +52,7 @@ def main(argv: list[str] | None = None) -> int:
         return 3
     sys.stdout.write(r.stdout)
     sys.stderr.write(r.stderr)
-    logger.info(
-        "refresh_foundation_weekly finished rc=%d (started=%s)", r.returncode, started
-    )
+    logger.info("refresh_foundation_weekly finished rc=%d (started=%s)", r.returncode, started)
     return r.returncode
 
 

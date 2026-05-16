@@ -94,6 +94,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev,site]"
 
+      - name: Set up Node for Pages functions checks
+        if: steps.fly-token.outputs.available == 'true'
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install Pages functions TypeScript tooling
+        if: steps.fly-token.outputs.available == 'true'
+        run: npm ci --prefix functions
+
       - name: Prepare production deploy operator ACK
         if: steps.fly-token.outputs.available == 'true'
         id: operator-ack
@@ -127,6 +139,10 @@ jobs:
         env:
           JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
         run: python scripts/ops/pre_deploy_verify.py
+
+      - name: Run production deploy readiness gate
+        if: steps.fly-token.outputs.available == 'true'
+        run: python scripts/ops/production_deploy_readiness_gate.py
 
       - name: Run production deploy GO gate
         if: steps.fly-token.outputs.available == 'true'

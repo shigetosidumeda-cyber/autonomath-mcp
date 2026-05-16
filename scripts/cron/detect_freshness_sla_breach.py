@@ -21,6 +21,7 @@ Usage::
   python scripts/cron/detect_freshness_sla_breach.py \
     --snapshot analytics/freshness_rollup_2026-05-12.json
 """
+
 from __future__ import annotations
 
 import argparse
@@ -29,7 +30,7 @@ import logging
 import os
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from urllib import parse, request
@@ -40,7 +41,7 @@ logger = logging.getLogger("detect_freshness_sla_breach")
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_SNAPSHOT = REPO_ROOT / "analytics" / "freshness_rollup_latest.json"
 
-UTC = timezone.utc
+UTC = UTC
 JST = timezone(timedelta(hours=9))
 
 FAIL_CONCLUSIONS = {"failure", "cancelled", "timed_out", "action_required"}
@@ -202,16 +203,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(payload)
 
-    token = (
-        os.environ.get("TG_BOT_TOKEN")
-        or os.environ.get("TELEGRAM_BOT_TOKEN")
-        or ""
-    )
-    chat_id = (
-        os.environ.get("TG_CHAT_ID")
-        or os.environ.get("TELEGRAM_CHAT_ID")
-        or ""
-    )
+    token = os.environ.get("TG_BOT_TOKEN") or os.environ.get("TELEGRAM_BOT_TOKEN") or ""
+    chat_id = os.environ.get("TG_CHAT_ID") or os.environ.get("TELEGRAM_CHAT_ID") or ""
 
     if args.dry_run:
         logger.info("dry-run: skipping telegram post")

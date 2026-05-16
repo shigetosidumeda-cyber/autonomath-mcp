@@ -170,7 +170,7 @@ def module_routes_500_zero(args: argparse.Namespace) -> ModuleResult:
 
 
 # ---------------------------------------------------------------------------
-# Module 2 — MCP tools/list ≥ 151
+# Module 2 — MCP tools/list ≥ 155
 # ---------------------------------------------------------------------------
 
 
@@ -533,7 +533,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--mcp-cmd", default=os.environ.get("JPCITE_SMOKE_MCP_CMD", "autonomath-mcp")
     )
     parser.add_argument("--mcp-timeout", type=float, default=30.0)
-    parser.add_argument("--mcp-min-tools", type=int, default=151)
+    parser.add_argument("--mcp-min-tools", type=int, default=155)
     parser.add_argument(
         "--skip-stripe", action="store_true", help="Skip the Stripe webhook module."
     )

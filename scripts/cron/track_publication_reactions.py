@@ -35,7 +35,6 @@ import argparse
 import datetime as _dt
 import json
 import pathlib
-import sys
 import urllib.error
 import urllib.request
 
@@ -47,7 +46,9 @@ SNAPSHOT_FILE = ANALYTICS_DIR / "publication_reactions_w41.jsonl"
 USER_AGENT = "jpcite-reaction-tracker/1.0 (+https://jpcite.com)"
 
 
-def _http_get_json(url: str, headers: dict[str, str] | None = None, timeout: int = 15) -> tuple[int, object | str]:
+def _http_get_json(
+    url: str, headers: dict[str, str] | None = None, timeout: int = 15
+) -> tuple[int, object | str]:
     req = urllib.request.Request(url, method="GET")
     req.add_header("User-Agent", USER_AGENT)
     req.add_header("Accept", "application/json")
@@ -130,7 +131,9 @@ query Post($slug: String!, $host: String!) {
   }
 }
 """.strip()
-    payload = json.dumps({"query": query, "variables": {"slug": slug, "host": host}}).encode("utf-8")
+    payload = json.dumps({"query": query, "variables": {"slug": slug, "host": host}}).encode(
+        "utf-8"
+    )
     req = urllib.request.Request("https://gql.hashnode.com/", data=payload, method="POST")
     req.add_header("User-Agent", USER_AGENT)
     req.add_header("Content-Type", "application/json")
@@ -138,7 +141,7 @@ query Post($slug: String!, $host: String!) {
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:  # noqa: S310 - read-only GraphQL
             data = json.loads(resp.read().decode("utf-8", errors="replace"))
-            post = (((data.get("data") or {}).get("publication") or {}).get("post") or {})
+            post = ((data.get("data") or {}).get("publication") or {}).get("post") or {}
             out["http_status"] = resp.status
             out["reaction_count"] = post.get("reactionCount")
             out["response_count"] = post.get("responseCount")
@@ -183,11 +186,20 @@ def probe_producthunt(post_slug: str) -> dict[str, object]:
 # (fresh checkout, CI runner) the cron falls back to these placeholders so
 # the run still completes (rows will be 404/0 — expected on first day).
 DEFAULT_TARGETS: list[dict[str, str]] = [
-    {"platform": "zenn", "slug": "shigetosidumeda-cyber/jpcite-mcp-launch", "note": "update once published"},
+    {
+        "platform": "zenn",
+        "slug": "shigetosidumeda-cyber/jpcite-mcp-launch",
+        "note": "update once published",
+    },
     {"platform": "note", "slug": "n0000000000a0", "note": "replace once posted"},
     {"platform": "qiita", "item_id": "0000000000000000000a", "note": "replace once posted"},
     {"platform": "devto", "article_id": "0000000", "note": "replace once posted"},
-    {"platform": "hashnode", "slug": "jpcite-mcp-launch", "host": "bookyou.hashnode.dev", "note": "replace host once blog created"},
+    {
+        "platform": "hashnode",
+        "slug": "jpcite-mcp-launch",
+        "host": "bookyou.hashnode.dev",
+        "note": "replace host once blog created",
+    },
     {"platform": "hn", "item_id": "0", "note": "replace with Show HN item id"},
     {"platform": "producthunt", "slug": "jpcite", "note": "manual tracking"},
 ]
@@ -200,7 +212,9 @@ def load_targets() -> list[dict[str, str]]:
         # the dir is read-only (CI runner).
         try:
             ANALYTICS_DIR.mkdir(parents=True, exist_ok=True)
-            TARGETS_FILE.write_text(json.dumps(DEFAULT_TARGETS, ensure_ascii=False, indent=2), encoding="utf-8")
+            TARGETS_FILE.write_text(
+                json.dumps(DEFAULT_TARGETS, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
         except OSError:
             pass
         return DEFAULT_TARGETS
@@ -209,8 +223,12 @@ def load_targets() -> list[dict[str, str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dry-run", action="store_true", help="Print to stdout only, do not append JSONL.")
-    parser.add_argument("--platforms", default="", help="Comma-separated subset of platforms to probe.")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print to stdout only, do not append JSONL."
+    )
+    parser.add_argument(
+        "--platforms", default="", help="Comma-separated subset of platforms to probe."
+    )
     args = parser.parse_args()
 
     targets = load_targets()
@@ -218,7 +236,7 @@ def main() -> int:
         wanted = {p.strip() for p in args.platforms.split(",") if p.strip()}
         targets = [t for t in targets if t.get("platform") in wanted]
 
-    ts = _dt.datetime.now(_dt.timezone.utc).isoformat()
+    ts = _dt.datetime.now(_dt.UTC).isoformat()
     snapshots: list[dict[str, object]] = []
 
     for t in targets:

@@ -94,10 +94,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n", 1)[0])
     p.add_argument(
         "--period",
-        help=(
-            "Period as YYYY-MM. Default = previous calendar month "
-            "computed from now (JST)."
-        ),
+        help=("Period as YYYY-MM. Default = previous calendar month computed from now (JST)."),
     )
     p.add_argument(
         "--aggregate-dir",
@@ -296,13 +293,16 @@ def run(argv: list[str] | None = None) -> int:
         if refund_jpy < REFUND_MIN_JPY:
             logger.debug(
                 "sla_breach_refund.skip_noise customer=%s refund=%d",
-                customer_id, refund_jpy,
+                customer_id,
+                refund_jpy,
             )
             skipped += 1
             continue
         logger.info(
             "sla_breach_refund.compute customer=%s downtime=%.2fmin refund_jpy=%d",
-            customer_id, downtime_min, refund_jpy,
+            customer_id,
+            downtime_min,
+            refund_jpy,
         )
         total_refund += refund_jpy
         if args.dry_run or conn is None or stripe_client is None:
@@ -315,7 +315,8 @@ def run(argv: list[str] | None = None) -> int:
         if existing is not None:
             logger.info(
                 "sla_breach_refund.already_granted customer=%s credit_note=%s",
-                customer_id, existing["stripe_credit_note_id"],
+                customer_id,
+                existing["stripe_credit_note_id"],
             )
             continue
         try:
@@ -323,7 +324,8 @@ def run(argv: list[str] | None = None) -> int:
             if invoice_id is None:
                 logger.warning(
                     "sla_breach_refund.no_invoice customer=%s period=%s — skipped",
-                    customer_id, period,
+                    customer_id,
+                    period,
                 )
                 continue
             note = _issue_stripe_credit_note(
@@ -344,16 +346,24 @@ def run(argv: list[str] | None = None) -> int:
             issued += 1
             logger.info(
                 "sla_breach_refund.granted customer=%s credit_note=%s refund_jpy=%d",
-                customer_id, getattr(note, "id", None), refund_jpy,
+                customer_id,
+                getattr(note, "id", None),
+                refund_jpy,
             )
         except Exception as exc:
             logger.exception(
-                "sla_breach_refund.stripe_error customer=%s err=%s", customer_id, exc,
+                "sla_breach_refund.stripe_error customer=%s err=%s",
+                customer_id,
+                exc,
             )
 
     logger.info(
         "sla_breach_refund.done period=%s issued=%d skipped=%d total_refund_jpy=%d dry_run=%s",
-        period, issued, skipped, total_refund, args.dry_run,
+        period,
+        issued,
+        skipped,
+        total_refund,
+        args.dry_run,
     )
     if conn is not None:
         conn.close()

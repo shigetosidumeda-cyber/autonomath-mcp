@@ -144,9 +144,7 @@ def _ensure_tables(conn: sqlite3.Connection) -> None:
 
 
 def _load_cursor(conn: sqlite3.Connection) -> str:
-    row = conn.execute(
-        "SELECT value FROM invoice_diff_state WHERE key = 'since_cursor'"
-    ).fetchone()
+    row = conn.execute("SELECT value FROM invoice_diff_state WHERE key = 'since_cursor'").fetchone()
     if row is None:
         return (datetime.now(UTC) - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%S")
     return str(row["value"])
@@ -171,9 +169,7 @@ def _allowed_host(url: str) -> bool:
     return urlparse(url).netloc.lower().endswith(NTA_INVOICE_API_HOST_SUFFIX)
 
 
-def _fetch_page(
-    client: httpx.Client, since: str, page: int
-) -> list[dict[str, Any]]:
+def _fetch_page(client: httpx.Client, since: str, page: int) -> list[dict[str, Any]]:
     if not _allowed_host(NTA_INVOICE_API_BASE):
         return []
     params = {
@@ -240,9 +236,7 @@ def _row_from_api(rec: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
-def _upsert(
-    conn: sqlite3.Connection, row: dict[str, Any]
-) -> tuple[int, int, int]:
+def _upsert(conn: sqlite3.Connection, row: dict[str, Any]) -> tuple[int, int, int]:
     """Returns (inserted, updated, soft_deleted)."""
     existing = conn.execute(
         "SELECT row_hash, is_active FROM invoice_registrants WHERE houjin_bangou = ?",

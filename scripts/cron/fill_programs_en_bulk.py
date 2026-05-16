@@ -19,6 +19,7 @@ variant extends with:
 NEVER calls an LLM API. Aggregator URLs refused (memory
 `feedback_no_fake_data`). 一次資料 only.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -47,19 +48,37 @@ DEFAULT_DB = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH", str(_REPO / "data" / 
 DEFAULT_REVIEW_CSV = str(_REPO / "data" / "programs_en_review_queue.csv")
 
 PRIMARY_DOMAINS = (
-    "mhlw.go.jp", "meti.go.jp", "maff.go.jp", "mext.go.jp", "mlit.go.jp",
-    "env.go.jp", "kantei.go.jp", "nta.go.jp", "fsa.go.jp", "jpo.go.jp",
-    "jisha.go.jp", "smrj.go.jp", "chusho.meti.go.jp", "jfc.go.jp",
-    "nichigin.go.jp", "jstage.jst.go.jp", "jetro.go.jp", "jasso.go.jp",
-    "amed.go.jp", "nedo.go.jp", "soumu.go.jp", "moj.go.jp", "mod.go.jp",
+    "mhlw.go.jp",
+    "meti.go.jp",
+    "maff.go.jp",
+    "mext.go.jp",
+    "mlit.go.jp",
+    "env.go.jp",
+    "kantei.go.jp",
+    "nta.go.jp",
+    "fsa.go.jp",
+    "jpo.go.jp",
+    "jisha.go.jp",
+    "smrj.go.jp",
+    "chusho.meti.go.jp",
+    "jfc.go.jp",
+    "nichigin.go.jp",
+    "jstage.jst.go.jp",
+    "jetro.go.jp",
+    "jasso.go.jp",
+    "amed.go.jp",
+    "nedo.go.jp",
+    "soumu.go.jp",
+    "moj.go.jp",
+    "mod.go.jp",
 )
 BANNED_DOMAINS = (
-    "noukaweb", "hojyokin-portal", "biz.stayway", "jgrants-portal.go.jp",
+    "noukaweb",
+    "hojyokin-portal",
+    "biz.stayway",
+    "jgrants-portal.go.jp",
 )
-USER_AGENT = (
-    "jpcite-multilingual-bot/1.0 (+https://jpcite.com/bots; "
-    "operator=info@bookyou.net)"
-)
+USER_AGENT = "jpcite-multilingual-bot/1.0 (+https://jpcite.com/bots; operator=info@bookyou.net)"
 
 # Ministry-specific EN path overrides (path_prefix replacement).
 # Each entry: (host_suffix, jp_path_prefix, en_path_prefix)
@@ -118,21 +137,23 @@ def _english_mirror_urls(source_url: str) -> list[str]:
     candidates: list[str] = []
     # Generic prefix-prepend patterns.
     for prefix in ("/english", "/en", "/e"):
-        candidates.append(urllib.parse.urlunparse(
-            parsed._replace(path=prefix + parsed.path)))
+        candidates.append(urllib.parse.urlunparse(parsed._replace(path=prefix + parsed.path)))
     # Path substitution patterns.
     if "/jp/" in parsed.path:
-        candidates.append(urllib.parse.urlunparse(
-            parsed._replace(path=parsed.path.replace("/jp/", "/en/", 1))))
+        candidates.append(
+            urllib.parse.urlunparse(parsed._replace(path=parsed.path.replace("/jp/", "/en/", 1)))
+        )
     # Subdomain swap to en.<host>.
     if not host.startswith("en."):
-        candidates.append(urllib.parse.urlunparse(
-            parsed._replace(netloc="en." + host)))
+        candidates.append(urllib.parse.urlunparse(parsed._replace(netloc="en." + host)))
     # Ministry-specific overrides.
     for host_suffix, jp_prefix, en_prefix in MINISTRY_PATH_OVERRIDES:
         if host.endswith(host_suffix) and parsed.path.startswith(jp_prefix):
-            candidates.append(urllib.parse.urlunparse(
-                parsed._replace(path=en_prefix + parsed.path[len(jp_prefix):])))
+            candidates.append(
+                urllib.parse.urlunparse(
+                    parsed._replace(path=en_prefix + parsed.path[len(jp_prefix) :])
+                )
+            )
     # Deduplicate, preserve order.
     seen: set[str] = set()
     uniq: list[str] = []
@@ -198,22 +219,25 @@ def _now() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ")
 
 
-def _candidate_programs(conn: sqlite3.Connection, max_programs: int | None,
-                        refresh: bool) -> list[sqlite3.Row]:
+def _candidate_programs(
+    conn: sqlite3.Connection, max_programs: int | None, refresh: bool
+) -> list[sqlite3.Row]:
     try:
         if refresh:
             sql = (
                 "SELECT unified_id, primary_name, source_url, tier, translation_status "
                 "FROM programs "
                 "WHERE COALESCE(excluded, 0) = 0 AND tier IN ('S','A','B','C') "
-                "ORDER BY tier, unified_id")
+                "ORDER BY tier, unified_id"
+            )
         else:
             sql = (
                 "SELECT unified_id, primary_name, source_url, tier, translation_status "
                 "FROM programs "
                 "WHERE COALESCE(excluded, 0) = 0 AND tier IN ('S','A','B','C') "
                 "  AND (translation_status IS NULL OR translation_status = 'unavailable') "
-                "ORDER BY tier, unified_id")
+                "ORDER BY tier, unified_id"
+            )
         if max_programs is not None:
             sql += f" LIMIT {int(max_programs)}"
         return list(conn.execute(sql))
@@ -224,20 +248,22 @@ def _candidate_programs(conn: sqlite3.Connection, max_programs: int | None,
 
 def _audit_distribution(conn: sqlite3.Connection) -> dict[str, int]:
     try:
-        rows = list(conn.execute(
-            "SELECT COALESCE(translation_status, 'null') AS status, COUNT(*) AS n "
-            "FROM programs WHERE COALESCE(excluded,0)=0 AND tier IN ('S','A','B','C') "
-            "GROUP BY 1"))
+        rows = list(
+            conn.execute(
+                "SELECT COALESCE(translation_status, 'null') AS status, COUNT(*) AS n "
+                "FROM programs WHERE COALESCE(excluded,0)=0 AND tier IN ('S','A','B','C') "
+                "GROUP BY 1"
+            )
+        )
     except sqlite3.Error:
         return {}
     return {row["status"]: int(row["n"]) for row in rows}
 
 
-def _process_program(conn: sqlite3.Connection, program: sqlite3.Row, *,
-                     dry_run: bool, network: bool = True
-                     ) -> tuple[dict[str, int], str | None]:
-    counters = {"filled": 0, "skipped_no_english_page": 0,
-                "refused_aggregator": 0}
+def _process_program(
+    conn: sqlite3.Connection, program: sqlite3.Row, *, dry_run: bool, network: bool = True
+) -> tuple[dict[str, int], str | None]:
+    counters = {"filled": 0, "skipped_no_english_page": 0, "refused_aggregator": 0}
     source_url = program["source_url"] or ""
     if _is_banned(source_url):
         counters["refused_aggregator"] += 1
@@ -259,7 +285,9 @@ def _process_program(conn: sqlite3.Connection, program: sqlite3.Row, *,
             conn.execute(
                 "UPDATE programs SET translation_status = 'unavailable' "
                 "WHERE unified_id = ? AND (translation_status IS NULL "
-                "      OR translation_status = '')", (program["unified_id"],))
+                "      OR translation_status = '')",
+                (program["unified_id"],),
+            )
         # Surface the ja URL into review queue CSV for operator follow-up.
         return counters, source_url
     url, body = primary_hit
@@ -271,7 +299,8 @@ def _process_program(conn: sqlite3.Connection, program: sqlite3.Row, *,
             "UPDATE programs SET title_en = ?, summary_en = ?, source_url_en = ?, "
             "translation_fetched_at = ?, translation_status = 'full' "
             "WHERE unified_id = ?",
-            (title, summary, url, _now(), program["unified_id"]))
+            (title, summary, url, _now(), program["unified_id"]),
+        )
     counters["filled"] += 1
     return counters, None
 
@@ -282,35 +311,60 @@ def _write_review_csv(rows: list[tuple[sqlite3.Row, str]], csv_path: str) -> Non
     with open(csv_path, "a", encoding="utf-8", newline="") as fh:
         w = csv.writer(fh)
         if write_header:
-            w.writerow([
-                "unified_id", "primary_name", "tier", "ja_source_url",
-                "operator_en_url", "operator_notes", "queued_at",
-            ])
+            w.writerow(
+                [
+                    "unified_id",
+                    "primary_name",
+                    "tier",
+                    "ja_source_url",
+                    "operator_en_url",
+                    "operator_notes",
+                    "queued_at",
+                ]
+            )
         for prog, ja_url in rows:
-            w.writerow([
-                prog["unified_id"], prog["primary_name"], prog["tier"],
-                ja_url, "", "", _now(),
-            ])
+            w.writerow(
+                [
+                    prog["unified_id"],
+                    prog["primary_name"],
+                    prog["tier"],
+                    ja_url,
+                    "",
+                    "",
+                    _now(),
+                ]
+            )
 
 
-def run(db_path: str, *, max_programs: int | None, dry_run: bool,
-        network: bool = True, refresh: bool = False,
-        review_csv: str = DEFAULT_REVIEW_CSV) -> dict[str, object]:
+def run(
+    db_path: str,
+    *,
+    max_programs: int | None,
+    dry_run: bool,
+    network: bool = True,
+    refresh: bool = False,
+    review_csv: str = DEFAULT_REVIEW_CSV,
+) -> dict[str, object]:
     conn = _connect(db_path)
     _ensure_tables(conn)
     refresh_id = _refresh_id()
     started = _now()
     mode = "dry-run" if dry_run else ("refresh" if refresh else "incremental")
-    totals = {"programs_processed": 0, "programs_filled": 0,
-              "review_queue_added": 0, "skipped_no_english_page": 0,
-              "refused_aggregator": 0}
+    totals = {
+        "programs_processed": 0,
+        "programs_filled": 0,
+        "review_queue_added": 0,
+        "skipped_no_english_page": 0,
+        "refused_aggregator": 0,
+    }
     audit_before = _audit_distribution(conn)
     if not dry_run:
         try:
             conn.execute(
                 "INSERT INTO programs_translation_refresh_log "
                 "(refresh_id, target_lang, started_at, mode) VALUES (?, 'en', ?, ?)",
-                (refresh_id, started, mode))
+                (refresh_id, started, mode),
+            )
         except sqlite3.Error:
             pass
     queue_rows: list[tuple[sqlite3.Row, str]] = []
@@ -339,9 +393,16 @@ def run(db_path: str, *, max_programs: int | None, dry_run: bool,
                 "SET finished_at = ?, programs_processed = ?, programs_filled = ?, "
                 " review_queue_added = ?, skipped_no_english_page = ?, "
                 " refused_aggregator = ? WHERE refresh_id = ?",
-                (_now(), totals["programs_processed"], totals["programs_filled"],
-                 totals["review_queue_added"], totals["skipped_no_english_page"],
-                 totals["refused_aggregator"], refresh_id))
+                (
+                    _now(),
+                    totals["programs_processed"],
+                    totals["programs_filled"],
+                    totals["review_queue_added"],
+                    totals["skipped_no_english_page"],
+                    totals["refused_aggregator"],
+                    refresh_id,
+                ),
+            )
             conn.commit()
         except sqlite3.Error:
             pass
@@ -359,19 +420,31 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--jpintel-db", default=DEFAULT_DB)
     parser.add_argument("--max-programs", type=int, default=None)
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--refresh", action="store_true",
-                        help="Re-fetch even rows already marked translation_status='full'")
-    parser.add_argument("--no-network", action="store_true",
-                        help="Skip HTTP fetches; classify URLs only (test mode)")
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Re-fetch even rows already marked translation_status='full'",
+    )
+    parser.add_argument(
+        "--no-network",
+        action="store_true",
+        help="Skip HTTP fetches; classify URLs only (test mode)",
+    )
     parser.add_argument("--review-csv", default=DEFAULT_REVIEW_CSV)
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
-    result = run(args.jpintel_db, max_programs=args.max_programs,
-                 dry_run=args.dry_run, network=not args.no_network,
-                 refresh=args.refresh, review_csv=args.review_csv)
+        format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
+    )
+    result = run(
+        args.jpintel_db,
+        max_programs=args.max_programs,
+        dry_run=args.dry_run,
+        network=not args.no_network,
+        refresh=args.refresh,
+        review_csv=args.review_csv,
+    )
     print(json.dumps({"ok": True, **result}, ensure_ascii=False))
     return 0
 

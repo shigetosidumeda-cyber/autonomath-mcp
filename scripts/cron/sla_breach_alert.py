@@ -17,6 +17,7 @@ per Wave 41 pattern.
 
 Cron handle: ``.github/workflows/sla-breach-hourly.yml`` (hourly).
 """
+
 from __future__ import annotations
 
 import json
@@ -25,7 +26,7 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -39,23 +40,107 @@ SIDECAR = SITE_STATUS / "sla_breach_w43_3_10.json"
 # 12 SLA metrics. Each row: (id, source_relpath, threshold_field, op, value, label).
 # op = "lt" means breach when value < threshold; "gt" means breach when value > threshold.
 METRICS: list[dict[str, Any]] = [
-    {"id": "healthz_uptime_24h", "src": "site/status/status.json", "field": "uptime_24h_pct", "op": "lt", "threshold": 99.0, "label": "healthz uptime"},
-    {"id": "endpoint_surface_200_rate", "src": "site/status/status.json", "field": "endpoint_200_rate", "op": "lt", "threshold": 0.98, "label": "60-endpoint surface 200 rate"},
-    {"id": "freshness_axes_ok", "src": "analytics/freshness_rollup.json", "field": "axes_ok_count", "op": "lt", "threshold": 10, "label": "freshness rollup green axes"},
-    {"id": "cron_success_rate_24h", "src": "analytics/cron_health_24h.json", "field": "success_rate_24h", "op": "lt", "threshold": 0.95, "label": "cron 24h success rate"},
-    {"id": "rum_lcp_p75", "src": "site/status/rum.json", "field": "p75_lcp_ms", "op": "gt", "threshold": 4000, "label": "RUM LCP p75"},
-    {"id": "dlq_depth", "src": "analytics/dlq_depth.json", "field": "depth", "op": "gt", "threshold": 100, "label": "DLQ depth"},
-    {"id": "circuit_state_open", "src": "analytics/circuit_state.json", "field": "open_count", "op": "gt", "threshold": 0, "label": "circuit breaker open"},
-    {"id": "backup_integrity_pass", "src": "analytics/backup_verify_daily.json", "field": "integrity_pass", "op": "lt", "threshold": 1, "label": "backup integrity"},
-    {"id": "r2_hash_match", "src": "analytics/backup_verify_daily.json", "field": "r2_hash_match", "op": "lt", "threshold": 1, "label": "R2 hash match"},
-    {"id": "postmortem_queue", "src": "analytics/postmortem_queue.json", "field": "open_count", "op": "gt", "threshold": 0, "label": "postmortem queue"},
-    {"id": "status_alerts_critical", "src": "site/status/status_alerts_w41.json", "field": "critical_count", "op": "gt", "threshold": 0, "label": "status_alerts critical"},
-    {"id": "ax_5pillars_average", "src": "site/status/ax_5pillars.json", "field": "average_score", "op": "lt", "threshold": 8.0, "label": "AX 5pillars verdict"},
+    {
+        "id": "healthz_uptime_24h",
+        "src": "site/status/status.json",
+        "field": "uptime_24h_pct",
+        "op": "lt",
+        "threshold": 99.0,
+        "label": "healthz uptime",
+    },
+    {
+        "id": "endpoint_surface_200_rate",
+        "src": "site/status/status.json",
+        "field": "endpoint_200_rate",
+        "op": "lt",
+        "threshold": 0.98,
+        "label": "60-endpoint surface 200 rate",
+    },
+    {
+        "id": "freshness_axes_ok",
+        "src": "analytics/freshness_rollup.json",
+        "field": "axes_ok_count",
+        "op": "lt",
+        "threshold": 10,
+        "label": "freshness rollup green axes",
+    },
+    {
+        "id": "cron_success_rate_24h",
+        "src": "analytics/cron_health_24h.json",
+        "field": "success_rate_24h",
+        "op": "lt",
+        "threshold": 0.95,
+        "label": "cron 24h success rate",
+    },
+    {
+        "id": "rum_lcp_p75",
+        "src": "site/status/rum.json",
+        "field": "p75_lcp_ms",
+        "op": "gt",
+        "threshold": 4000,
+        "label": "RUM LCP p75",
+    },
+    {
+        "id": "dlq_depth",
+        "src": "analytics/dlq_depth.json",
+        "field": "depth",
+        "op": "gt",
+        "threshold": 100,
+        "label": "DLQ depth",
+    },
+    {
+        "id": "circuit_state_open",
+        "src": "analytics/circuit_state.json",
+        "field": "open_count",
+        "op": "gt",
+        "threshold": 0,
+        "label": "circuit breaker open",
+    },
+    {
+        "id": "backup_integrity_pass",
+        "src": "analytics/backup_verify_daily.json",
+        "field": "integrity_pass",
+        "op": "lt",
+        "threshold": 1,
+        "label": "backup integrity",
+    },
+    {
+        "id": "r2_hash_match",
+        "src": "analytics/backup_verify_daily.json",
+        "field": "r2_hash_match",
+        "op": "lt",
+        "threshold": 1,
+        "label": "R2 hash match",
+    },
+    {
+        "id": "postmortem_queue",
+        "src": "analytics/postmortem_queue.json",
+        "field": "open_count",
+        "op": "gt",
+        "threshold": 0,
+        "label": "postmortem queue",
+    },
+    {
+        "id": "status_alerts_critical",
+        "src": "site/status/status_alerts_w41.json",
+        "field": "critical_count",
+        "op": "gt",
+        "threshold": 0,
+        "label": "status_alerts critical",
+    },
+    {
+        "id": "ax_5pillars_average",
+        "src": "site/status/ax_5pillars.json",
+        "field": "average_score",
+        "op": "lt",
+        "threshold": 8.0,
+        "label": "AX 5pillars verdict",
+    },
 ]
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _load(src_rel: str) -> dict[str, Any] | None:
@@ -87,14 +172,26 @@ def _evaluate(metric: dict[str, Any]) -> dict[str, Any]:
     data = _load(metric["src"])
     value = _extract(data, metric["field"])
     if value is None:
-        return {"id": metric["id"], "label": metric["label"], "value": None,
-                "threshold": metric["threshold"], "breach": False, "state": "unknown"}
+        return {
+            "id": metric["id"],
+            "label": metric["label"],
+            "value": None,
+            "threshold": metric["threshold"],
+            "breach": False,
+            "state": "unknown",
+        }
     op = metric["op"]
     threshold = float(metric["threshold"])
     breach = (value < threshold) if op == "lt" else (value > threshold)
-    return {"id": metric["id"], "label": metric["label"], "value": value,
-            "threshold": threshold, "op": op, "breach": bool(breach),
-            "state": "breach" if breach else "ok"}
+    return {
+        "id": metric["id"],
+        "label": metric["label"],
+        "value": value,
+        "threshold": threshold,
+        "op": op,
+        "breach": bool(breach),
+        "state": "breach" if breach else "ok",
+    }
 
 
 def _send_telegram(message: str) -> str:
@@ -103,11 +200,13 @@ def _send_telegram(message: str) -> str:
     if not token or not chat_id:
         return "skip:env"
     url = f"https://api.telegram.org/bot{token}/sendMessage"
-    data = urllib.parse.urlencode({
-        "chat_id": chat_id,
-        "text": message,
-        "disable_web_page_preview": "1",
-    }).encode("ascii")
+    data = urllib.parse.urlencode(
+        {
+            "chat_id": chat_id,
+            "text": message,
+            "disable_web_page_preview": "1",
+        }
+    ).encode("ascii")
     req = urllib.request.Request(url, data=data, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310 - telegram https
@@ -131,12 +230,20 @@ def run() -> int:
     SIDECAR.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     JSONL.parent.mkdir(parents=True, exist_ok=True)
     with JSONL.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps({"ts": ts, "breach_count": len(breaches),
-                             "ids": [b["id"] for b in breaches]}, ensure_ascii=False) + "\n")
+        fh.write(
+            json.dumps(
+                {"ts": ts, "breach_count": len(breaches), "ids": [b["id"] for b in breaches]},
+                ensure_ascii=False,
+            )
+            + "\n"
+        )
 
     tg_status = "skip:no_breach"
     if breaches:
-        lines = [f"[{b['id']}] {b['label']} value={b['value']} threshold={b['threshold']}" for b in breaches]
+        lines = [
+            f"[{b['id']}] {b['label']} value={b['value']} threshold={b['threshold']}"
+            for b in breaches
+        ]
         tg_status = _send_telegram("jpcite W43.3.10 SLA breach\n" + "\n".join(lines))
 
     def _rel(p: Path) -> str:
@@ -145,10 +252,19 @@ def run() -> int:
         except ValueError:
             return str(p)
 
-    print(json.dumps({"snapshot_ts": ts, "breach_count": len(breaches),
-                      "metric_count": len(METRICS), "telegram": tg_status,
-                      "sidecar": _rel(SIDECAR), "jsonl": _rel(JSONL)},
-                     ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "snapshot_ts": ts,
+                "breach_count": len(breaches),
+                "metric_count": len(METRICS),
+                "telegram": tg_status,
+                "sidecar": _rel(SIDECAR),
+                "jsonl": _rel(JSONL),
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

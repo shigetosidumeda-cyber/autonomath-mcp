@@ -104,9 +104,9 @@ SLA_AMENDMENT_DIFF = 7 * 86_400  # 7d  — am_amendment_diff.detected_at (cron)
 SLA_INVOICE_REGS = 30 * 86_400  # 30d — invoice_registrants.fetched_at (monthly bulk)
 SLA_CASE_STUDIES = 30 * 86_400  # 30d — case_studies.fetched_at
 
-# Expected runtime cohort. 151 = current default-gate manifest figure
+# Expected runtime cohort. 155 = current default-gate manifest figure
 # (`mcp-server.json` tool_count). Probe degrades if drift > 5 either way.
-EXPECTED_TOOL_COUNT = 151
+EXPECTED_TOOL_COUNT = 155
 TOOL_COUNT_TOLERANCE = 5
 
 # Expected recurring agent workflows count (advertised in mcp-server.json
@@ -199,7 +199,7 @@ def probe_api(base: str) -> dict[str, Any]:
 
 
 def probe_mcp(base: str) -> dict[str, Any]:
-    """Probe `/v1/mcp-server.json` (manifest reachability + 151 tools).
+    """Probe `/v1/mcp-server.json` (manifest reachability + 155 tools).
 
     Also verifies the `recurring_agent_workflows` extension surface
     advertises ≥3 entries (digest / saved-search / quarterly). Drift in

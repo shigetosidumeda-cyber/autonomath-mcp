@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Wave 43.1.4: weekly aggregate over am_program_agriculture (mig 251). NO LLM."""
+
 from __future__ import annotations
 
 import argparse
@@ -32,7 +33,9 @@ def _configure_logging(verbose=False):
     for h in list(root.handlers):
         root.removeHandler(h)
     fmt = logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s")
-    sh = logging.StreamHandler(stream=sys.stderr); sh.setFormatter(fmt); root.addHandler(sh)
+    sh = logging.StreamHandler(stream=sys.stderr)
+    sh.setFormatter(fmt)
+    root.addHandler(sh)
 
 
 def _db_path():
@@ -52,7 +55,13 @@ def _open_rw(db_path):
 
 def _table_exists(conn, name):
     try:
-        return conn.execute("SELECT 1 FROM sqlite_master WHERE type IN ('table','view') AND name = ? LIMIT 1", (name,)).fetchone() is not None
+        return (
+            conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type IN ('table','view') AND name = ? LIMIT 1",
+                (name,),
+            ).fetchone()
+            is not None
+        )
     except sqlite3.Error:
         return False
 
@@ -60,20 +69,28 @@ def _table_exists(conn, name):
 def _classify_agri_type(text):
     t = text or ""
     for label, keywords in _KW_AGRI_TYPE:
-        if any(k in t for k in keywords): return label
+        if any(k in t for k in keywords):
+            return label
     return "一般"
 
 
 def _reclassify(conn):
-    if not _table_exists(conn, "am_program_agriculture"): return 0
+    if not _table_exists(conn, "am_program_agriculture"):
+        return 0
     touched = 0
-    rows = conn.execute("SELECT program_agri_id, title, agriculture_type FROM am_program_agriculture").fetchall()
+    rows = conn.execute(
+        "SELECT program_agri_id, title, agriculture_type FROM am_program_agriculture"
+    ).fetchall()
     for r in rows:
         new = _classify_agri_type(r["title"] or "")
-        if new not in _VALID_AGRI_TYPES: new = "一般"
+        if new not in _VALID_AGRI_TYPES:
+            new = "一般"
         if new != r["agriculture_type"]:
             try:
-                conn.execute("UPDATE am_program_agriculture SET agriculture_type = ?, refreshed_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE program_agri_id = ?", (new, r["program_agri_id"]))
+                conn.execute(
+                    "UPDATE am_program_agriculture SET agriculture_type = ?, refreshed_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE program_agri_id = ?",
+                    (new, r["program_agri_id"]),
+                )
                 touched += 1
             except sqlite3.Error:
                 pass
@@ -81,16 +98,24 @@ def _reclassify(conn):
 
 
 def _annotate_passed(conn):
-    if not _table_exists(conn, "am_program_agriculture"): return 0
+    if not _table_exists(conn, "am_program_agriculture"):
+        return 0
     today = date.today().isoformat()
-    rows = conn.execute("SELECT program_agri_id, deadline, notes FROM am_program_agriculture WHERE deadline IS NOT NULL AND deadline < ?", (today,)).fetchall()
+    rows = conn.execute(
+        "SELECT program_agri_id, deadline, notes FROM am_program_agriculture WHERE deadline IS NOT NULL AND deadline < ?",
+        (today,),
+    ).fetchall()
     touched = 0
     for r in rows:
         notes = r["notes"] or ""
-        if "deadline_passed" in notes: continue
+        if "deadline_passed" in notes:
+            continue
         new_notes = (notes + " | deadline_passed").strip(" |")
         try:
-            conn.execute("UPDATE am_program_agriculture SET notes = ? WHERE program_agri_id = ?", (new_notes[:1000], r["program_agri_id"]))
+            conn.execute(
+                "UPDATE am_program_agriculture SET notes = ? WHERE program_agri_id = ?",
+                (new_notes[:1000], r["program_agri_id"]),
+            )
             touched += 1
         except sqlite3.Error:
             pass
@@ -98,7 +123,9 @@ def _annotate_passed(conn):
 
 
 def _build_argparser():
-    p = argparse.ArgumentParser(description="Weekly aggregate over am_program_agriculture (NO ML, NO LLM).")
+    p = argparse.ArgumentParser(
+        description="Weekly aggregate over am_program_agriculture (NO ML, NO LLM)."
+    )
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--verbose", action="store_true")
     return p
@@ -110,15 +137,28 @@ def main(argv=None):
     started_at = datetime.now(UTC).isoformat()
     db_path = _db_path()
     if args.dry_run:
-        logger.info("[dry-run] would open %s", db_path); return 0
+        logger.info("[dry-run] would open %s", db_path)
+        return 0
     if not db_path.exists():
-        logger.error("autonomath.db missing at %s — run migration 251 first", db_path); return 2
+        logger.error("autonomath.db missing at %s — run migration 251 first", db_path)
+        return 2
     conn = _open_rw(db_path)
     try:
-        reclassed = _reclassify(conn); passed = _annotate_passed(conn)
+        reclassed = _reclassify(conn)
+        passed = _annotate_passed(conn)
         with contextlib.suppress(sqlite3.Error):
-            conn.execute("INSERT INTO am_program_agriculture_ingest_log (started_at, finished_at, rows_seen, rows_upserted, rows_skipped, source_kind, error_text) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (started_at, datetime.now(UTC).isoformat(), reclassed + passed, reclassed, passed, "cron_weekly", None))
+            conn.execute(
+                "INSERT INTO am_program_agriculture_ingest_log (started_at, finished_at, rows_seen, rows_upserted, rows_skipped, source_kind, error_text) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (
+                    started_at,
+                    datetime.now(UTC).isoformat(),
+                    reclassed + passed,
+                    reclassed,
+                    passed,
+                    "cron_weekly",
+                    None,
+                ),
+            )
         result = {"reclassified": reclassed, "deadline_passed_marked": passed}
         print(json.dumps(result, ensure_ascii=False))
         return 0

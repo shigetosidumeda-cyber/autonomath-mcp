@@ -91,7 +91,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 # Canonical boot-time foot-gun ops on autonomath.db (per CLAUDE.md SOT +
 # memory feedback_no_quick_check_on_huge_sqlite). Any of these lines
@@ -557,7 +557,7 @@ def main() -> int:
         help="Skip gh-based checks (RC2/RC4/RC5). Useful if gh is unavailable.",
     )
     args = parser.parse_args()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     lines = fetch_recent_lines()
     runs: list[GhRun] = []
     prs: list[GhPr] = []
@@ -670,9 +670,7 @@ def main() -> int:
             f"<code>{conflict_list}</code>\n"
             "Strategy W (worktree-isolate) required before Strategy F retry."
         )
-        payload["rc5_conflicts"] = [
-            {"number": p.number, "title": p.title} for p in rc5_conflicts
-        ]
+        payload["rc5_conflicts"] = [{"number": p.number, "title": p.title} for p in rc5_conflicts]
 
     text = "\n\n".join(pieces) + (
         "\n\nRunbook v3: docs/runbook/incident_response_v3_multi_root_cause.md\n"

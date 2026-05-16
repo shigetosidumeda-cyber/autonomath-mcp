@@ -1,0 +1,131 @@
+name: detect-first-g4-g5-txn
+
+# Wave 49 G4/G5 first-transaction observation watchdog.
+#
+# Polls `am_x402_payment_log` (G4 — x402 USDC payment) and
+# `am_credit_transaction_log` (G5 — Wallet ¥ topup) every 30 minutes
+# from inside the Fly production machine via `flyctl ssh console`.
+# When either ledger transitions 0 row → ≥1 row, the script writes a
+# detection event to `/data/monitoring/first_txn_detected.json` AND
+# posts a Slack message if `SLACK_WEBHOOK_URL` is configured.
+#
+# Observation only: the script opens the DB read-only and never fakes
+# a synthetic transaction. The 0 → 1 transition fires exactly once
+# per rail; subsequent runs are sealed replays.
+#
+# Required Fly machine secrets (set via `flyctl secrets set ...`):
+#   AUTONOMATH_DB_PATH    Path to the volume-mounted autonomath.db
+#                         (defaults to /data/autonomath.db on Fly).
+#   SLACK_WEBHOOK_URL     Optional. If set, the script POSTs a short
+#                         message on each new transition. Missing
+#                         secret skips notification, exits clean.
+#
+# Required GitHub repository secret:
+#   FLY_API_TOKEN         Fly.io deploy token with ssh access to
+#                         autonomath-api.
+#
+# Issue creation: when the script reports a NEW transition, the
+# workflow opens a GitHub issue tagged `wave49`/`g4-g5-first-txn` so
+# the operator timeline has a permanent marker. Failures of the cron
+# itself open a separate `automation`/`cron-failure` issue.
+
+on:
+  schedule:
+    # Every 30 minutes — the first real transaction can land any
+    # time, and 30 min is well below any reasonable "first ¥ flowed"
+    # observability SLA.
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no state write, no Slack)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: detect-first-g4-g5-txn
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Run detector inside Fly machine
+        id: detect
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          FLAGS="--check"
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="--dry-run"; fi
+          # The Fly volume mounts autonomath.db under /data and the
+          # detector defaults to writing /data/monitoring/first_txn_detected.json
+          # via the --output override below.
+          flyctl ssh console -a autonomath-api -C \
+            "/opt/venv/bin/python /app/scripts/cron/detect_first_g4_g5_txn.py \
+              ${FLAGS} \
+              --db /data/autonomath.db \
+              --output /data/monitoring/first_txn_detected.json" \
+            | tee detector_output.log
+
+          # Surface whether a new transition fired this run (best-effort
+          # parse — the script always exits 0 on observation success).
+          if grep -q "new transition" detector_output.log 2>/dev/null; then
+            echo "transition_fired=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "transition_fired=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open issue on new first-transaction detection
+        if: steps.detect.outputs.transition_fired == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Wave 49: first G4/G5 transaction observed ${new Date().toISOString()}`,
+              body: [
+                `First real transaction detected on the x402 / Wallet rail.`,
+                ``,
+                `Run: ${runUrl}`,
+                ``,
+                `Inspect the canonical detection event at`,
+                ``,
+                `    flyctl ssh console -a autonomath-api -C "cat /data/monitoring/first_txn_detected.json"`,
+                ``,
+                `Observation-only watchdog — no rows were synthesised.`,
+              ].join("\n"),
+              labels: ["wave49", "g4-g5-first-txn", "automation"],
+            });
+
+      - name: Open issue on cron failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `detect-first-g4-g5-txn cron failed ${new Date().toISOString()}`,
+              body: `Run: ${runUrl}\n\nLikely causes: flyctl ssh outage, /data/autonomath.db unreadable, machine restart in progress.`,
+              labels: ["automation", "cron-failure", "wave49"],
+            });

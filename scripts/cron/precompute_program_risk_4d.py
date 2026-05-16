@@ -226,9 +226,7 @@ def _tsutatsu_code_index(conn: sqlite3.Connection) -> dict[str, int]:
     if not _table_exists(conn, "nta_tsutatsu_index"):
         return idx
     try:
-        rows = conn.execute(
-            "SELECT code FROM nta_tsutatsu_index ORDER BY code"
-        ).fetchall()
+        rows = conn.execute("SELECT code FROM nta_tsutatsu_index ORDER BY code").fetchall()
     except sqlite3.OperationalError:
         return idx
     for i, r in enumerate(rows, start=1):

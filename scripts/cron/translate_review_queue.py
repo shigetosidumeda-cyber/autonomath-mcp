@@ -10,6 +10,7 @@ Operator workflow:
 
 ABSOLUTE: never auto-translate. Operator decision required.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,15 +27,27 @@ from jpintel_mcp._jpcite_env_bridge import get_flag
 _REPO = Path(__file__).resolve().parent.parent.parent
 LOG = logging.getLogger("translate_review_queue")
 DEFAULT_AUTONOMATH_DB = get_flag(
-    "JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db"))
+    "JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db")
+)
 DEFAULT_JPINTEL_DB = get_flag(
-    "JPCITE_DB_PATH", "JPINTEL_DB_PATH", str(_REPO / "data" / "jpintel.db"))
+    "JPCITE_DB_PATH", "JPINTEL_DB_PATH", str(_REPO / "data" / "jpintel.db")
+)
 
 CSV_COLUMNS = (
-    "source_db", "queue_id", "target_kind", "canonical_or_unified_id",
-    "article_id", "target_lang", "field_name", "candidate_text",
-    "candidate_source_url", "candidate_license", "similarity_score",
-    "model_name", "operator_decision", "operator_notes",
+    "source_db",
+    "queue_id",
+    "target_kind",
+    "canonical_or_unified_id",
+    "article_id",
+    "target_lang",
+    "field_name",
+    "candidate_text",
+    "candidate_source_url",
+    "candidate_license",
+    "similarity_score",
+    "model_name",
+    "operator_decision",
+    "operator_notes",
 )
 
 
@@ -50,68 +63,78 @@ def _now() -> str:
 
 def _export_autonomath(conn: sqlite3.Connection) -> list[dict]:
     try:
-        rows = list(conn.execute(
-            "SELECT queue_id, target_kind, canonical_id, article_id, "
-            "       target_lang, field_name, candidate_text, "
-            "       candidate_source_url, candidate_license, "
-            "       similarity_score, model_name, operator_decision, "
-            "       operator_notes "
-            "FROM am_law_translation_review_queue "
-            "WHERE operator_decision IS NULL OR operator_decision = 'pending'"))
+        rows = list(
+            conn.execute(
+                "SELECT queue_id, target_kind, canonical_id, article_id, "
+                "       target_lang, field_name, candidate_text, "
+                "       candidate_source_url, candidate_license, "
+                "       similarity_score, model_name, operator_decision, "
+                "       operator_notes "
+                "FROM am_law_translation_review_queue "
+                "WHERE operator_decision IS NULL OR operator_decision = 'pending'"
+            )
+        )
     except sqlite3.Error as exc:
         LOG.warning("autonomath export failed: %s", exc)
         return []
     out = []
     for r in rows:
-        out.append({
-            "source_db": "autonomath",
-            "queue_id": r["queue_id"],
-            "target_kind": r["target_kind"],
-            "canonical_or_unified_id": r["canonical_id"],
-            "article_id": r["article_id"] or "",
-            "target_lang": r["target_lang"],
-            "field_name": r["field_name"],
-            "candidate_text": (r["candidate_text"] or "")[:4000],
-            "candidate_source_url": r["candidate_source_url"] or "",
-            "candidate_license": r["candidate_license"] or "",
-            "similarity_score": r["similarity_score"] or "",
-            "model_name": r["model_name"] or "",
-            "operator_decision": r["operator_decision"] or "pending",
-            "operator_notes": r["operator_notes"] or "",
-        })
+        out.append(
+            {
+                "source_db": "autonomath",
+                "queue_id": r["queue_id"],
+                "target_kind": r["target_kind"],
+                "canonical_or_unified_id": r["canonical_id"],
+                "article_id": r["article_id"] or "",
+                "target_lang": r["target_lang"],
+                "field_name": r["field_name"],
+                "candidate_text": (r["candidate_text"] or "")[:4000],
+                "candidate_source_url": r["candidate_source_url"] or "",
+                "candidate_license": r["candidate_license"] or "",
+                "similarity_score": r["similarity_score"] or "",
+                "model_name": r["model_name"] or "",
+                "operator_decision": r["operator_decision"] or "pending",
+                "operator_notes": r["operator_notes"] or "",
+            }
+        )
     return out
 
 
 def _export_jpintel(conn: sqlite3.Connection) -> list[dict]:
     try:
-        rows = list(conn.execute(
-            "SELECT queue_id, unified_id, target_lang, field_name, "
-            "       candidate_text, candidate_source_url, "
-            "       candidate_license, similarity_score, model_name, "
-            "       operator_decision, operator_notes "
-            "FROM programs_translation_review_queue "
-            "WHERE operator_decision IS NULL OR operator_decision = 'pending'"))
+        rows = list(
+            conn.execute(
+                "SELECT queue_id, unified_id, target_lang, field_name, "
+                "       candidate_text, candidate_source_url, "
+                "       candidate_license, similarity_score, model_name, "
+                "       operator_decision, operator_notes "
+                "FROM programs_translation_review_queue "
+                "WHERE operator_decision IS NULL OR operator_decision = 'pending'"
+            )
+        )
     except sqlite3.Error as exc:
         LOG.warning("jpintel export failed: %s", exc)
         return []
     out = []
     for r in rows:
-        out.append({
-            "source_db": "jpintel",
-            "queue_id": r["queue_id"],
-            "target_kind": "program",
-            "canonical_or_unified_id": r["unified_id"],
-            "article_id": "",
-            "target_lang": r["target_lang"],
-            "field_name": r["field_name"],
-            "candidate_text": (r["candidate_text"] or "")[:4000],
-            "candidate_source_url": r["candidate_source_url"] or "",
-            "candidate_license": r["candidate_license"] or "",
-            "similarity_score": r["similarity_score"] or "",
-            "model_name": r["model_name"] or "",
-            "operator_decision": r["operator_decision"] or "pending",
-            "operator_notes": r["operator_notes"] or "",
-        })
+        out.append(
+            {
+                "source_db": "jpintel",
+                "queue_id": r["queue_id"],
+                "target_kind": "program",
+                "canonical_or_unified_id": r["unified_id"],
+                "article_id": "",
+                "target_lang": r["target_lang"],
+                "field_name": r["field_name"],
+                "candidate_text": (r["candidate_text"] or "")[:4000],
+                "candidate_source_url": r["candidate_source_url"] or "",
+                "candidate_license": r["candidate_license"] or "",
+                "similarity_score": r["similarity_score"] or "",
+                "model_name": r["model_name"] or "",
+                "operator_decision": r["operator_decision"] or "pending",
+                "operator_notes": r["operator_notes"] or "",
+            }
+        )
     return out
 
 
@@ -143,7 +166,8 @@ def _apply_autonomath(conn: sqlite3.Connection, row: dict, decision: str) -> Non
         "UPDATE am_law_translation_review_queue "
         "SET operator_decision = ?, operator_decision_at = ?, operator_notes = ? "
         "WHERE queue_id = ?",
-        (decision, now, row.get("operator_notes", ""), qid))
+        (decision, now, row.get("operator_notes", ""), qid),
+    )
     if decision != "promote":
         return
     lang = row["target_lang"]
@@ -158,9 +182,9 @@ def _apply_autonomath(conn: sqlite3.Connection, row: dict, decision: str) -> Non
         url_col = f"body_{lang}_source_url"
         fetched_col = f"body_{lang}_fetched_at"
         conn.execute(
-            f"UPDATE am_law SET {col} = ?, {url_col} = ?, {fetched_col} = ? "
-            f"WHERE canonical_id = ?",
-            (text, src_url, now, canonical))
+            f"UPDATE am_law SET {col} = ?, {url_col} = ?, {fetched_col} = ? WHERE canonical_id = ?",
+            (text, src_url, now, canonical),
+        )
     elif kind == "article":
         try:
             aid = int(row.get("article_id") or 0)
@@ -172,7 +196,8 @@ def _apply_autonomath(conn: sqlite3.Connection, row: dict, decision: str) -> Non
         conn.execute(
             f"UPDATE am_law_article SET {col} = ?, {url_col} = ?, {fetched_col} = ? "
             f"WHERE article_id = ?",
-            (text, src_url, now, aid))
+            (text, src_url, now, aid),
+        )
 
 
 def _apply_jpintel(conn: sqlite3.Connection, row: dict, decision: str) -> None:
@@ -182,7 +207,8 @@ def _apply_jpintel(conn: sqlite3.Connection, row: dict, decision: str) -> None:
         "UPDATE programs_translation_review_queue "
         "SET operator_decision = ?, operator_decision_at = ?, operator_notes = ? "
         "WHERE queue_id = ?",
-        (decision, now, row.get("operator_notes", ""), qid))
+        (decision, now, row.get("operator_notes", ""), qid),
+    )
     if decision != "promote":
         return
     unified = row["canonical_or_unified_id"]
@@ -196,7 +222,9 @@ def _apply_jpintel(conn: sqlite3.Connection, row: dict, decision: str) -> None:
     conn.execute(
         f"UPDATE programs SET {col} = ?, source_url_en = ?, "
         f"translation_fetched_at = ?, translation_status = 'partial' "
-        f"WHERE unified_id = ?", (text, src_url, now, unified))
+        f"WHERE unified_id = ?",
+        (text, src_url, now, unified),
+    )
 
 
 def cmd_import(args: argparse.Namespace) -> int:
@@ -250,7 +278,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
+        format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
+    )
     if args.export:
         return cmd_export(args)
     if args.do_import:

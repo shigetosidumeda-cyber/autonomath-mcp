@@ -90,8 +90,7 @@ def _load_private_key() -> Any:
 
     if len(seed) != 32:
         _log.error(
-            "AUTONOMATH_FACT_SIGN_PRIVATE_KEY must be 32 raw bytes "
-            "(hex-encoded); got len=%d",
+            "AUTONOMATH_FACT_SIGN_PRIVATE_KEY must be 32 raw bytes (hex-encoded); got len=%d",
             len(seed),
         )
         sys.exit(1)
@@ -107,9 +106,7 @@ def _load_private_key() -> Any:
     return Ed25519PrivateKey.from_private_bytes(seed)
 
 
-def _canonical_payload(
-    fact_row: sqlite3.Row, snapshot_id: str | None
-) -> bytes:
+def _canonical_payload(fact_row: sqlite3.Row, snapshot_id: str | None) -> bytes:
     """Canonical signing payload — MUST match api/fact_verify.py exactly.
 
     Any divergence between signer and verifier yields 409 on every
@@ -128,9 +125,9 @@ def _canonical_payload(
         "source_document_id": fact_row["source_document_id"],
         "corpus_snapshot_id": snapshot_id,
     }
-    return json.dumps(
-        payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")
-    ).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode(
+        "utf-8"
+    )
 
 
 def _current_snapshot_id(conn: sqlite3.Connection) -> str | None:
@@ -141,17 +138,14 @@ def _current_snapshot_id(conn: sqlite3.Connection) -> str | None:
     """
     try:
         row = conn.execute(
-            "SELECT snapshot_id FROM corpus_snapshot "
-            "ORDER BY created_at DESC LIMIT 1"
+            "SELECT snapshot_id FROM corpus_snapshot ORDER BY created_at DESC LIMIT 1"
         ).fetchone()
         return row["snapshot_id"] if row else None
     except sqlite3.OperationalError:
         return None
 
 
-def _walk_pending_facts(
-    conn: sqlite3.Connection, max_rows: int | None
-) -> list[sqlite3.Row]:
+def _walk_pending_facts(conn: sqlite3.Connection, max_rows: int | None) -> list[sqlite3.Row]:
     """Indexed walk of facts needing fresh signatures.
 
     Predicates:
@@ -212,13 +206,15 @@ def _sign_and_upsert(
         version_prefix = b"AMFSv1\x00\x00"  # 8 bytes
         key_suffix = key_id.encode("ascii")[:8].ljust(8, b"\x00")
         framed_sig = version_prefix + sig_core + key_suffix  # 80 bytes
-        batch_buffer.append((
-            row["fact_id"],
-            framed_sig,
-            snapshot_id,
-            key_id,
-            payload_hash,
-        ))
+        batch_buffer.append(
+            (
+                row["fact_id"],
+                framed_sig,
+                snapshot_id,
+                key_id,
+                payload_hash,
+            )
+        )
         if len(batch_buffer) >= 5_000:
             if not dry_run:
                 conn.executemany(
@@ -262,23 +258,26 @@ def _sign_and_upsert(
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Weekly Ed25519 re-sign of extracted_fact rows"
-    )
+    parser = argparse.ArgumentParser(description="Weekly Ed25519 re-sign of extracted_fact rows")
     parser.add_argument(
-        "--max-rows", type=int, default=None,
+        "--max-rows",
+        type=int,
+        default=None,
         help="cap a single run; None = sign all pending",
     )
     parser.add_argument(
-        "--key-id", default=DEFAULT_KEY_ID,
+        "--key-id",
+        default=DEFAULT_KEY_ID,
         help=f"key rotation identifier (default {DEFAULT_KEY_ID})",
     )
     parser.add_argument(
-        "--dry-run", action="store_true",
+        "--dry-run",
+        action="store_true",
         help="walk + sign but do not write am_fact_signature",
     )
     parser.add_argument(
-        "--verbose", action="store_true",
+        "--verbose",
+        action="store_true",
         help="emit DEBUG-level log lines",
     )
     args = parser.parse_args(argv)
@@ -302,9 +301,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         snapshot_id = _current_snapshot_id(conn)
         _log.info(
-            "weekly fact-signature refresh start db=%s snapshot=%s "
-            "key_id=%s dry_run=%s",
-            db_path, snapshot_id, args.key_id, args.dry_run,
+            "weekly fact-signature refresh start db=%s snapshot=%s key_id=%s dry_run=%s",
+            db_path,
+            snapshot_id,
+            args.key_id,
+            args.dry_run,
         )
 
         pending = _walk_pending_facts(conn, args.max_rows)
@@ -312,14 +313,18 @@ def main(argv: list[str] | None = None) -> int:
 
         if not pending:
             elapsed = time.monotonic() - started
-            print(json.dumps({
-                "status": "ok",
-                "signed": 0,
-                "pending": 0,
-                "snapshot_id": snapshot_id,
-                "elapsed_s": round(elapsed, 3),
-                "dry_run": args.dry_run,
-            }))
+            print(
+                json.dumps(
+                    {
+                        "status": "ok",
+                        "signed": 0,
+                        "pending": 0,
+                        "snapshot_id": snapshot_id,
+                        "elapsed_s": round(elapsed, 3),
+                        "dry_run": args.dry_run,
+                    }
+                )
+            )
             return 0
 
         signed = _sign_and_upsert(
@@ -328,16 +333,21 @@ def main(argv: list[str] | None = None) -> int:
         elapsed = time.monotonic() - started
         _log.info(
             "weekly fact-signature refresh done signed=%d elapsed=%.3fs",
-            signed, elapsed,
+            signed,
+            elapsed,
         )
-        print(json.dumps({
-            "status": "ok",
-            "signed": signed,
-            "pending": len(pending),
-            "snapshot_id": snapshot_id,
-            "elapsed_s": round(elapsed, 3),
-            "dry_run": args.dry_run,
-        }))
+        print(
+            json.dumps(
+                {
+                    "status": "ok",
+                    "signed": signed,
+                    "pending": len(pending),
+                    "snapshot_id": snapshot_id,
+                    "elapsed_s": round(elapsed, 3),
+                    "dry_run": args.dry_run,
+                }
+            )
+        )
         return 0
     except sqlite3.Error as exc:
         _log.exception("sqlite I/O error: %s", exc)

@@ -399,9 +399,7 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     return p.parse_args(argv)
 
 
-def _render_slack_blocks(
-    payload: dict[str, Any], customer_key: str | None
-) -> dict[str, Any]:
+def _render_slack_blocks(payload: dict[str, Any], customer_key: str | None) -> dict[str, Any]:
     """Render the 3-section Block Kit payload documented in
     ``docs/integrations/slack_digest.md`` (Wave 26).
 
@@ -474,9 +472,7 @@ def _render_slack_blocks(
     }
 
 
-def _post_slack_block_kit(
-    webhook_url: str, payload: dict[str, Any]
-) -> tuple[int, str]:
+def _post_slack_block_kit(webhook_url: str, payload: dict[str, Any]) -> tuple[int, str]:
     """POST the Block Kit payload to a Slack incoming webhook.
 
     Returns ``(status, body)``. Slack expects a 200 on success;
@@ -577,9 +573,7 @@ def main(argv: list[str] | None = None) -> int:
         # below still carries the canonical exit status.
         slack_status: int | None = None
         if slack_blocks is not None and args.webhook_url:
-            slack_status, slack_body = _post_slack_block_kit(
-                args.webhook_url, slack_blocks
-            )
+            slack_status, slack_body = _post_slack_block_kit(args.webhook_url, slack_blocks)
             if slack_status and 200 <= slack_status < 300:
                 print(f"[info] slack ok HTTP {slack_status}")
             else:

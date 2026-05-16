@@ -97,9 +97,8 @@ def _judge_rum(rum: dict[str, Any] | None) -> dict[str, Any]:
     if isinstance(cls, (int, float)) and cls > thresholds.get("cls", {}).get("warn", 0.25):
         breaches.append(f"CLS={cls}")
         level = "warn"
-    summary = (
-        f"RUM p75 latest day: LCP={lcp}ms INP={inp}ms CLS={cls}"
-        + (f" — breach: {', '.join(breaches)}" if breaches else "")
+    summary = f"RUM p75 latest day: LCP={lcp}ms INP={inp}ms CLS={cls}" + (
+        f" — breach: {', '.join(breaches)}" if breaches else ""
     )
     return {"axis": "rum", "level": level, "summary": summary}
 
@@ -107,7 +106,7 @@ def _judge_rum(rum: dict[str, Any] | None) -> dict[str, Any]:
 def _judge_status_components(status: dict[str, Any] | None) -> dict[str, Any]:
     if not status:
         return {"axis": "audit", "level": "unknown", "summary": "status.json not found"}
-    comps = (status.get("components") or {})
+    comps = status.get("components") or {}
     down = [k for k, v in comps.items() if (v or {}).get("status") == "down"]
     degraded = [k for k, v in comps.items() if (v or {}).get("status") == "degraded"]
     if down:
@@ -128,7 +127,7 @@ def _judge_six_axis(report: dict[str, Any] | None) -> dict[str, Any]:
     axes = report.get("axes") or []
     failing = []
     for axis in axes:
-        for sub in (axis.get("sub_axes") or []):
+        for sub in axis.get("sub_axes") or []:
             if (sub or {}).get("sla_status") == "fail":
                 failing.append(f"{axis.get('id')}/{sub.get('id')}")
     if failing:
@@ -166,15 +165,15 @@ def _judge_cron_health(snapshot: dict[str, Any] | None) -> dict[str, Any]:
         return {
             "axis": "cron",
             "level": "critical" if success_rate < 0.8 else "warn",
-            "summary": (
-                f"cron success_rate_24h={success_rate:.2f} < threshold {threshold}"
-            ),
+            "summary": (f"cron success_rate_24h={success_rate:.2f} < threshold {threshold}"),
         }
     return {
         "axis": "cron",
         "level": "info",
         "summary": (
-            f"cron success_rate_24h={success_rate}" if success_rate is not None else "cron health snapshot empty"
+            f"cron success_rate_24h={success_rate}"
+            if success_rate is not None
+            else "cron health snapshot empty"
         ),
     }
 
@@ -213,7 +212,10 @@ def _render_atom(entries: list[dict[str, Any]], snapshot_ts: str) -> str:
     esc = _saxutils.escape
     body_entries: list[str] = []
     for e in reversed(entries):  # newest first
-        eid = e.get("id") or f"tag:jpcite.com,{e.get('ts', snapshot_ts)[:10]}:{e.get('axis', 'axis')}-{e.get('level', 'info')}"
+        eid = (
+            e.get("id")
+            or f"tag:jpcite.com,{e.get('ts', snapshot_ts)[:10]}:{e.get('axis', 'axis')}-{e.get('level', 'info')}"
+        )
         title = f"[{e.get('level', 'info').upper()}] {e.get('axis', '?')}: {e.get('summary', '')}"
         body_entries.append(
             "  <entry>\n"
@@ -221,23 +223,23 @@ def _render_atom(entries: list[dict[str, Any]], snapshot_ts: str) -> str:
             f"    <id>{esc(eid)}</id>\n"
             f"    <updated>{esc(e.get('ts', snapshot_ts))}</updated>\n"
             f"    <published>{esc(e.get('ts', snapshot_ts))}</published>\n"
-            "    <link href=\"https://jpcite.com/status/monitoring.html\" rel=\"alternate\" type=\"text/html\"/>\n"
-            f"    <category term=\"{esc(e.get('level', 'info'))}\" label=\"{esc(e.get('level', 'info'))}\"/>\n"
-            f"    <category term=\"{esc(e.get('axis', 'axis'))}\" label=\"{esc(e.get('axis', 'axis'))}\"/>\n"
+            '    <link href="https://jpcite.com/status/monitoring.html" rel="alternate" type="text/html"/>\n'
+            f'    <category term="{esc(e.get("level", "info"))}" label="{esc(e.get("level", "info"))}"/>\n'
+            f'    <category term="{esc(e.get("axis", "axis"))}" label="{esc(e.get("axis", "axis"))}"/>\n'
             "    <author><name>jpcite</name></author>\n"
-            f"    <summary type=\"text\">{esc(e.get('summary', ''))}</summary>\n"
+            f'    <summary type="text">{esc(e.get("summary", ""))}</summary>\n'
             "  </entry>"
         )
     return (
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<feed xmlns=\"http://www.w3.org/2005/Atom\">\n"
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<feed xmlns="http://www.w3.org/2005/Atom">\n'
         "  <title>jpcite 監視 alert feed</title>\n"
         "  <subtitle>SLA breach / cron failure / deploy issue / endpoint 5xx を Real-time に publish (Wave 41 Agent H)</subtitle>\n"
-        "  <link href=\"https://jpcite.com/status/feed.atom\" rel=\"self\" type=\"application/atom+xml\"/>\n"
-        "  <link href=\"https://jpcite.com/status/monitoring.html\" rel=\"alternate\" type=\"text/html\"/>\n"
+        '  <link href="https://jpcite.com/status/feed.atom" rel="self" type="application/atom+xml"/>\n'
+        '  <link href="https://jpcite.com/status/monitoring.html" rel="alternate" type="text/html"/>\n'
         "  <id>https://jpcite.com/status/feed.atom</id>\n"
         f"  <updated>{esc(snapshot_ts)}</updated>\n"
-        "  <generator uri=\"https://jpcite.com/\" version=\"w41\">jpcite-status-aggregator</generator>\n"
+        '  <generator uri="https://jpcite.com/" version="w41">jpcite-status-aggregator</generator>\n'
         "  <icon>https://jpcite.com/assets/favicon-32.png</icon>\n"
         "  <logo>https://jpcite.com/assets/og.png</logo>\n"
         "  <rights>Bookyou株式会社 — operational transparency feed, CC0 metadata.</rights>\n"
@@ -253,11 +255,13 @@ def _send_telegram(message: str) -> str:
     if not token or not chat_id:
         return "skip"
     url = f"https://api.telegram.org/bot{token}/sendMessage"
-    data = urllib.parse.urlencode({
-        "chat_id": chat_id,
-        "text": message,
-        "disable_web_page_preview": "1",
-    }).encode("ascii")
+    data = urllib.parse.urlencode(
+        {
+            "chat_id": chat_id,
+            "text": message,
+            "disable_web_page_preview": "1",
+        }
+    ).encode("ascii")
     req = urllib.request.Request(url, data=data, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -300,7 +304,9 @@ def run() -> int:
         "alerts": alerts,
     }
     SIDECAR_JSON.parent.mkdir(parents=True, exist_ok=True)
-    SIDECAR_JSON.write_text(json.dumps(sidecar_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    SIDECAR_JSON.write_text(
+        json.dumps(sidecar_payload, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
 
     recent = _read_recent_jsonl(ALERT_JSONL, ATOM_MAX_ENTRIES)
     FEED_ATOM.write_text(_render_atom(recent, snapshot_ts), encoding="utf-8")
@@ -308,13 +314,9 @@ def run() -> int:
     tg_status = "skip"
     if max_level == "critical":
         critical_lines = [
-            f"[{a['axis']}] {a['summary']}"
-            for a in alerts
-            if a["level"] == "critical"
+            f"[{a['axis']}] {a['summary']}" for a in alerts if a["level"] == "critical"
         ]
-        tg_status = _send_telegram(
-            "jpcite WAVE41 critical alert\n" + "\n".join(critical_lines)
-        )
+        tg_status = _send_telegram("jpcite WAVE41 critical alert\n" + "\n".join(critical_lines))
 
     def _rel(p: Path) -> str:
         try:

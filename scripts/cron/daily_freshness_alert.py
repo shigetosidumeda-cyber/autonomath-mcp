@@ -114,9 +114,7 @@ def _ensure_log_table(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
-def _latest_for_source(
-    conn: sqlite3.Connection, source: str
-) -> dict[str, Any] | None:
+def _latest_for_source(conn: sqlite3.Connection, source: str) -> dict[str, Any] | None:
     row = conn.execute(
         """
         SELECT counters, ran_at
@@ -161,9 +159,7 @@ def _anomalies(snapshot: dict[str, Any]) -> list[str]:
         if fetched > 0:
             ratio = (counters.get("skipped", 0) + feed_failed) / max(fetched, 1)
             if ratio > ERROR_RATIO_THRESHOLD and feed_failed:
-                out.append(
-                    f"{src}: HIGH_ERROR_RATIO ratio={ratio:.2%} feed_failed={feed_failed}"
-                )
+                out.append(f"{src}: HIGH_ERROR_RATIO ratio={ratio:.2%} feed_failed={feed_failed}")
         if ran_at_raw:
             try:
                 ran_at = _dt.datetime.fromisoformat(ran_at_raw.replace("Z", "+00:00"))
@@ -189,9 +185,7 @@ def _render_dashboard(snapshot: dict[str, Any], anomalies: list[str]) -> str:
                 + "</pre>"
             )
             ran_at = data.get("ran_at") or "&mdash;"
-        rows.append(
-            f"<tr><td>{src}</td><td>{ran_at}</td><td>{counters_html}</td></tr>"
-        )
+        rows.append(f"<tr><td>{src}</td><td>{ran_at}</td><td>{counters_html}</td></tr>")
     anomalies_html = (
         "<ul>" + "".join(f"<li>{a}</li>" for a in anomalies) + "</ul>"
         if anomalies
@@ -212,7 +206,7 @@ def _render_dashboard(snapshot: dict[str, Any], anomalies: list[str]) -> str:
 <table>
 <thead><tr><th>source</th><th>ran_at (UTC)</th><th>counters</th></tr></thead>
 <tbody>
-{''.join(rows)}
+{"".join(rows)}
 </tbody>
 </table>
 <section><h2>Anomalies ({len(anomalies)})</h2>{anomalies_html}</section>

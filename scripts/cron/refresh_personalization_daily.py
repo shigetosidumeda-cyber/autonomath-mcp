@@ -43,34 +43,70 @@ _INDUSTRY_PACKS: dict[str, dict[str, Any]] = {
     "pack_construction": {
         "jsic_major_prefix": ("D",),
         "keywords": {
-            "建設", "建築", "住宅", "耐震", "改修", "空き家", "工事", "下請",
-            "リフォーム", "解体", "リノベーション",
+            "建設",
+            "建築",
+            "住宅",
+            "耐震",
+            "改修",
+            "空き家",
+            "工事",
+            "下請",
+            "リフォーム",
+            "解体",
+            "リノベーション",
         },
     },
     "pack_manufacturing": {
         "jsic_major_prefix": ("E",),
         "keywords": {
-            "ものづくり", "製造", "設備投資", "省エネ", "GX", "脱炭素",
-            "事業再構築", "IT導入", "DX", "工場", "生産性",
+            "ものづくり",
+            "製造",
+            "設備投資",
+            "省エネ",
+            "GX",
+            "脱炭素",
+            "事業再構築",
+            "IT導入",
+            "DX",
+            "工場",
+            "生産性",
         },
     },
     "pack_real_estate": {
         "jsic_major_prefix": ("K",),
         "keywords": {
-            "不動産", "空き家", "住宅", "賃貸", "改修", "流通", "店舗",
+            "不動産",
+            "空き家",
+            "住宅",
+            "賃貸",
+            "改修",
+            "流通",
+            "店舗",
         },
     },
     "pack_information": {
         "jsic_major_prefix": ("G",),
         "keywords": {
-            "IT導入", "DX", "デジタル", "ソフトウェア", "AI", "セキュリティ",
-            "クラウド", "サイバー",
+            "IT導入",
+            "DX",
+            "デジタル",
+            "ソフトウェア",
+            "AI",
+            "セキュリティ",
+            "クラウド",
+            "サイバー",
         },
     },
     "pack_health_welfare": {
         "jsic_major_prefix": ("P",),
         "keywords": {
-            "医療", "介護", "福祉", "保育", "看護", "薬局", "在宅医療",
+            "医療",
+            "介護",
+            "福祉",
+            "保育",
+            "看護",
+            "薬局",
+            "在宅医療",
         },
     },
 }
@@ -95,9 +131,7 @@ def _tokenize(text: str | None) -> set[str]:
     return {tok.strip() for tok in _TOKEN_SPLIT.split(text) if tok.strip()}
 
 
-def _client_fit_score(
-    profile: sqlite3.Row, program: sqlite3.Row
-) -> tuple[int, str]:
+def _client_fit_score(profile: sqlite3.Row, program: sqlite3.Row) -> tuple[int, str]:
     score = 0
     reasons: list[str] = []
 
@@ -166,9 +200,7 @@ def _ensure_am_tables(am_conn: sqlite3.Connection) -> bool:
     return row is not None
 
 
-def _load_saved_search_tokens(
-    jp_conn: sqlite3.Connection, key_hash: str
-) -> list[dict[str, Any]]:
+def _load_saved_search_tokens(jp_conn: sqlite3.Connection, key_hash: str) -> list[dict[str, Any]]:
     try:
         rows = jp_conn.execute(
             """SELECT name, canonical_query FROM saved_searches
@@ -232,10 +264,14 @@ def _upsert_score(
                     score_breakdown_json, reasoning_json, industry_pack, refreshed_at
                ) VALUES (?,?,?,?,?,?,?,?)""",
             (
-                api_key_hash, client_id, program_id, score,
+                api_key_hash,
+                client_id,
+                program_id,
+                score,
                 json.dumps(breakdown, ensure_ascii=False),
                 json.dumps(reasoning, ensure_ascii=False),
-                industry_pack, refreshed_at,
+                industry_pack,
+                refreshed_at,
             ),
         )
     except sqlite3.IntegrityError:
@@ -248,8 +284,11 @@ def _upsert_score(
                 score,
                 json.dumps(breakdown, ensure_ascii=False),
                 json.dumps(reasoning, ensure_ascii=False),
-                industry_pack, refreshed_at,
-                api_key_hash, client_id, program_id,
+                industry_pack,
+                refreshed_at,
+                api_key_hash,
+                client_id,
+                program_id,
             ),
         )
 

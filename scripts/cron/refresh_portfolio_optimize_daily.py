@@ -232,7 +232,9 @@ def _freshness(conn: sqlite3.Connection, program_id: str) -> float:
     return 0.3
 
 
-def _houjin_jsic(conn: sqlite3.Connection, houjin_bangou: str) -> tuple[str | None, str | None, str | None]:
+def _houjin_jsic(
+    conn: sqlite3.Connection, houjin_bangou: str
+) -> tuple[str | None, str | None, str | None]:
     for table in ("jpi_houjin_master", "houjin_master"):
         try:
             row = conn.execute(
@@ -254,19 +256,26 @@ def _score_pair(conn, houjin_bangou, houjin_axes, program):
     compat = _compat_with_others(conn, program["program_unified_id"])
     window = _application_window(conn, program["program_unified_id"])
     freshness = _freshness(conn, program["program_unified_id"])
-    composite = int(round(
-        WEIGHT_ELIGIBILITY_PASS * elig
-        + WEIGHT_AMOUNT_BAND_FIT * amount
-        + WEIGHT_JSIC_ALIGNMENT * jsic
-        + WEIGHT_REGION_MATCH * region
-        + WEIGHT_COMPAT_WITH_OTHERS * compat
-        + WEIGHT_APPLICATION_WINDOW * window
-        + WEIGHT_FRESHNESS * freshness
-    ))
+    composite = int(
+        round(
+            WEIGHT_ELIGIBILITY_PASS * elig
+            + WEIGHT_AMOUNT_BAND_FIT * amount
+            + WEIGHT_JSIC_ALIGNMENT * jsic
+            + WEIGHT_REGION_MATCH * region
+            + WEIGHT_COMPAT_WITH_OTHERS * compat
+            + WEIGHT_APPLICATION_WINDOW * window
+            + WEIGHT_FRESHNESS * freshness
+        )
+    )
     composite = max(0, min(100, composite))
     return {
-        "elig": elig, "amount": amount, "jsic": jsic, "region": region,
-        "compat": compat, "window": window, "freshness": freshness,
+        "elig": elig,
+        "amount": amount,
+        "jsic": jsic,
+        "region": region,
+        "compat": compat,
+        "window": window,
+        "freshness": freshness,
         "score": float(composite),
     }
 
@@ -309,7 +318,11 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN, top_n=DEFA
         if dry_run:
             pairs_written += len(top)
             if hi < 3:
-                LOG.info("dry-run houjin=%s top=%s", houjin, [(t[0], t[2]["program_unified_id"]) for t in top])
+                LOG.info(
+                    "dry-run houjin=%s top=%s",
+                    houjin,
+                    [(t[0], t[2]["program_unified_id"]) for t in top],
+                )
             continue
         conn.execute("DELETE FROM am_portfolio_optimize WHERE houjin_bangou = ?", (houjin,))
         for rank, (score, parts, prog) in enumerate(top, start=1):
@@ -322,16 +335,33 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN, top_n=DEFA
                 " application_window_score, freshness_score, reason_json, tier, "
                 " program_amount_max_yen) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
-                    houjin, rank, prog["program_unified_id"], prog["primary_name"],
-                    score, parts["elig"], parts["amount"], parts["jsic"], parts["region"],
-                    parts["compat"], parts["window"], parts["freshness"], reason_json,
-                    prog["tier"], prog["amount_max_yen"],
+                    houjin,
+                    rank,
+                    prog["program_unified_id"],
+                    prog["primary_name"],
+                    score,
+                    parts["elig"],
+                    parts["amount"],
+                    parts["jsic"],
+                    parts["region"],
+                    parts["compat"],
+                    parts["window"],
+                    parts["freshness"],
+                    reason_json,
+                    prog["tier"],
+                    prog["amount_max_yen"],
                 ),
             )
             pairs_written += 1
         if (hi + 1) % 1000 == 0:
             conn.commit()
-            LOG.info("progress houjin=%d/%d pairs=%d elapsed=%.1fs", hi + 1, len(houjin_list), pairs_written, time.time() - t0)
+            LOG.info(
+                "progress houjin=%d/%d pairs=%d elapsed=%.1fs",
+                hi + 1,
+                len(houjin_list),
+                pairs_written,
+                time.time() - t0,
+            )
 
     if not dry_run:
         conn.commit()
@@ -339,13 +369,24 @@ def refresh(db_path, *, dry_run=False, max_houjin=DEFAULT_MAX_HOUJIN, top_n=DEFA
             "UPDATE am_portfolio_optimize_refresh_log SET finished_at = ?, "
             "  houjin_count = ?, program_pairs_written = ?, skipped_no_data = ? "
             "WHERE refresh_id = ?",
-            (datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"), len(houjin_list), pairs_written, skipped, refresh_id),
+            (
+                datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"),
+                len(houjin_list),
+                pairs_written,
+                skipped,
+                refresh_id,
+            ),
         )
         conn.commit()
 
     conn.close()
-    LOG.info("refresh_portfolio_optimize_daily done houjin=%d pairs=%d skipped=%d elapsed=%.1fs",
-             len(houjin_list), pairs_written, skipped, time.time() - t0)
+    LOG.info(
+        "refresh_portfolio_optimize_daily done houjin=%d pairs=%d skipped=%d elapsed=%.1fs",
+        len(houjin_list),
+        pairs_written,
+        skipped,
+        time.time() - t0,
+    )
     return {"houjin": len(houjin_list), "pairs": pairs_written, "skipped": skipped}
 
 
@@ -361,10 +402,13 @@ def _parse_args(argv=None):
 
 def main(argv=None):
     args = _parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO),
-                        format="%(asctime)s %(levelname)s %(name)s %(message)s")
-    result = refresh(args.autonomath_db, dry_run=args.dry_run,
-                     max_houjin=args.max_houjin, top_n=args.top_n)
+    logging.basicConfig(
+        level=getattr(logging, args.log_level.upper(), logging.INFO),
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    )
+    result = refresh(
+        args.autonomath_db, dry_run=args.dry_run, max_houjin=args.max_houjin, top_n=args.top_n
+    )
     print(json.dumps(result, ensure_ascii=False))
     return 0
 

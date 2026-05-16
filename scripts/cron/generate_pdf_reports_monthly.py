@@ -65,9 +65,7 @@ def _connect(read_only: bool = False) -> sqlite3.Connection:
     return conn
 
 
-def _due_subscriptions(
-    cadence: str, client_id: str | None
-) -> list[dict[str, Any]]:
+def _due_subscriptions(cadence: str, client_id: str | None) -> list[dict[str, Any]]:
     conn = _connect(read_only=True)
     try:
         if client_id:
@@ -119,9 +117,18 @@ def _log_generation(
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
             """,
             (
-                log_id, subscription_id, client_id, cadence, started_at,
-                finished_at, 1 if success else 0, r2_key, byte_size,
-                page_count, error_text, billing_units,
+                log_id,
+                subscription_id,
+                client_id,
+                cadence,
+                started_at,
+                finished_at,
+                1 if success else 0,
+                r2_key,
+                byte_size,
+                page_count,
+                error_text,
+                billing_units,
             ),
         )
         if success and subscription_id:
@@ -188,10 +195,7 @@ def _render_one(sub: dict[str, Any], dry_run: bool) -> dict[str, Any]:
         sha256 = hashlib.sha256(blob).hexdigest()
         byte_size = len(blob)
         yyyymm = datetime.now(UTC).strftime("%Y%m")
-        template = (
-            sub.get("r2_url_template")
-            or "pdf_reports/{client_id}/{yyyymm}.pdf"
-        )
+        template = sub.get("r2_url_template") or "pdf_reports/{client_id}/{yyyymm}.pdf"
         r2_key = template.format(client_id=client_id, yyyymm=yyyymm)
 
         staging_dir = Path("/tmp/pdf_report_monthly")  # noqa: S108
@@ -225,7 +229,11 @@ def _render_one(sub: dict[str, Any], dry_run: bool) -> dict[str, Any]:
         elapsed = int((time.monotonic() - started) * 1000)
         log.info(
             "rendered client_id=%s bytes=%d sha256=%s elapsed_ms=%d uploaded=%s",
-            client_id, byte_size, sha256[:12], elapsed, uploaded,
+            client_id,
+            byte_size,
+            sha256[:12],
+            elapsed,
+            uploaded,
         )
         return {
             "subscription_id": sub_id,
@@ -290,7 +298,9 @@ def main(argv: list[str] | None = None) -> int:
     ok_n = sum(1 for r in results if r.get("ok"))
     log.info(
         "monthly PDF run done: %d OK / %d failed / %d total",
-        ok_n, len(results) - ok_n, len(results),
+        ok_n,
+        len(results) - ok_n,
+        len(results),
     )
     return 0 if ok_n == len(results) else 1
 

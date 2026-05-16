@@ -377,9 +377,7 @@ def precompute(
         direct = _direct_edges_for_anchor(conn, anchor, partners_per_anchor)
         direct_total += len(direct)
 
-        transitive = _walk_transitive(
-            conn, anchor, direct, max_hops, partners_per_anchor
-        )
+        transitive = _walk_transitive(conn, anchor, direct, max_hops, partners_per_anchor)
         transitive_total += len(transitive)
 
         for e in direct:

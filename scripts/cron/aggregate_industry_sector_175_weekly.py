@@ -478,9 +478,7 @@ def _refresh_aggregates(conn: sqlite3.Connection) -> int:
                 enf_counts_by_major[r["mj"]] = int(r["c"])
 
         # Pull all sectors and update each.
-        for r in conn.execute(
-            "SELECT jsic_code, major_code FROM am_industry_jsic_175"
-        ).fetchall():
+        for r in conn.execute("SELECT jsic_code, major_code FROM am_industry_jsic_175").fetchall():
             jc = r["jsic_code"]
             mc = r["major_code"]
             pc = prog_counts.get(jc, 0)

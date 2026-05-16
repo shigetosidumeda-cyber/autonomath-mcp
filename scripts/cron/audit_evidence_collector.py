@@ -38,6 +38,7 @@ Exit codes
 1 fatal (repo root not detected, write failure)
 2 some evidence paths missing -- still writes output, but rc=2 for CI
 """
+
 from __future__ import annotations
 
 import argparse
@@ -180,13 +181,13 @@ def _collect_row(repo: Path, control_id: str, rel: str) -> dict:
     if exists:
         try:
             st = p.stat()
-            mtime_utc = _dt.datetime.fromtimestamp(st.st_mtime, tz=_dt.timezone.utc).isoformat()
+            mtime_utc = _dt.datetime.fromtimestamp(st.st_mtime, tz=_dt.UTC).isoformat()
             byte_size = st.st_size if not is_dir else None
         except OSError:
             notes.append("stat-failed")
     # RSS / audit feed freshness check
     if rel.endswith(".rss") and mtime_utc:
-        age = (_dt.datetime.now(tz=_dt.timezone.utc) - _dt.datetime.fromisoformat(mtime_utc)).days
+        age = (_dt.datetime.now(tz=_dt.UTC) - _dt.datetime.fromisoformat(mtime_utc)).days
         if age > 7:
             notes.append(f"stale-{age}d")
     return {
@@ -203,12 +204,16 @@ def _collect_row(repo: Path, control_id: str, rel: str) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dry-run", action="store_true", help="Print rows to stdout, do not write file.")
-    parser.add_argument("--week", default=None, help="ISO week (YYYY-Www). Default: current UTC week.")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print rows to stdout, do not write file."
+    )
+    parser.add_argument(
+        "--week", default=None, help="ISO week (YYYY-Www). Default: current UTC week."
+    )
     args = parser.parse_args(argv)
 
     repo = _repo_root()
-    now = _dt.datetime.now(tz=_dt.timezone.utc)
+    now = _dt.datetime.now(tz=_dt.UTC)
     iso_y, iso_w, _ = now.isocalendar()
     week = args.week or f"{iso_y:04d}-W{iso_w:02d}"
 

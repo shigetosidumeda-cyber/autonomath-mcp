@@ -27,6 +27,7 @@ Optional env: JPINTEL_BACKUP_PREFIX (default jpintel/),
 
 Exit codes: 0 ok / 1 config / 2 r2-missing-stale / 3 hash-mismatch.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -229,9 +230,14 @@ def run(argv: list[str] | None = None) -> int:
 
     ts = _now_iso()
     payload: dict[str, Any] = {
-        "snapshot_ts": ts, "schema_version": 1,
-        "integrity_pass": 0, "r2_hash_match": 0, "gzip_ok": 0, "rpo_pass": 0,
-        "integrity_check_ran": 0, "details": {},
+        "snapshot_ts": ts,
+        "schema_version": 1,
+        "integrity_pass": 0,
+        "r2_hash_match": 0,
+        "gzip_ok": 0,
+        "rpo_pass": 0,
+        "integrity_check_ran": 0,
+        "details": {},
     }
 
     if args.dry_run and _is_production_path():
@@ -331,6 +337,7 @@ def run(argv: list[str] | None = None) -> int:
         staged_db = stage_dir / (Path(key).stem)  # strip .gz
         try:
             import shutil
+
             with gzip.open(gz_local, "rb") as src, staged_db.open("wb") as dst:
                 shutil.copyfileobj(src, dst)
             payload["integrity_check_ran"] = 1
@@ -353,9 +360,18 @@ def run(argv: list[str] | None = None) -> int:
     if payload["integrity_pass"] != 1:
         logger.warning("verify_failed payload=%s", payload)
         return 3
-    print(json.dumps({"ts": ts, "key": key, "integrity_pass": payload["integrity_pass"],
-                      "r2_hash_match": payload["r2_hash_match"], "gzip_ok": payload["gzip_ok"]},
-                     ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "ts": ts,
+                "key": key,
+                "integrity_pass": payload["integrity_pass"],
+                "r2_hash_match": payload["r2_hash_match"],
+                "gzip_ok": payload["gzip_ok"],
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 

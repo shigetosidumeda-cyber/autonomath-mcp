@@ -180,9 +180,7 @@ def main() -> int:
                 print("[cc-audit] no snapshots discovered — exit 0")
                 hb["rows_processed"] = 0
                 return 0
-            print(
-                f"[cc-audit] auditing {len(snapshots)} snapshot(s) for {HOST} → {out_path.name}"
-            )
+            print(f"[cc-audit] auditing {len(snapshots)} snapshot(s) for {HOST} → {out_path.name}")
             with out_path.open("a", encoding="utf-8") as fh:
                 for snap in snapshots:
                     summary = _audit_snapshot(cli, snap, HOST)

@@ -71,6 +71,7 @@ def _resolve_db_path() -> Path:
     """Resolve autonomath.db path; tolerate import failure in CI."""
     try:
         from jpintel_mcp.config import settings  # noqa: WPS433
+
         return Path(settings.autonomath_db_path)
     except Exception:  # noqa: BLE001 — fall back to repo-root default
         return _REPO / "autonomath.db"
@@ -97,7 +98,8 @@ def disable_stale_subscribers(conn: sqlite3.Connection, *, dry_run: bool) -> int
     if dry_run:
         logger.info(
             "stale_disable dry_run targets=%d threshold=%d",
-            len(rows), FAILURE_STREAK_THRESHOLD,
+            len(rows),
+            FAILURE_STREAK_THRESHOLD,
         )
         return len(rows)
     conn.execute(
@@ -116,7 +118,10 @@ def disable_stale_subscribers(conn: sqlite3.Connection, *, dry_run: bool) -> int
 
 
 def prune_dispatch_history(
-    conn: sqlite3.Connection, *, retention_days: int, dry_run: bool,
+    conn: sqlite3.Connection,
+    *,
+    retention_days: int,
+    dry_run: bool,
 ) -> int:
     """Delete ``am_realtime_dispatch_history`` rows older than retention. Returns count."""
     cutoff = (datetime.now(UTC) - timedelta(days=retention_days)).isoformat()
@@ -178,7 +183,9 @@ def run(
         try:
             disabled_n = disable_stale_subscribers(conn, dry_run=dry_run)
             pruned_n = prune_dispatch_history(
-                conn, retention_days=retention_days, dry_run=dry_run,
+                conn,
+                retention_days=retention_days,
+                dry_run=dry_run,
             )
             counts = _summary_counts(conn)
         except sqlite3.OperationalError as exc:
@@ -209,7 +216,9 @@ def _main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dry-run", action="store_true", help="log only, no writes")
     parser.add_argument(
-        "--retention-days", type=int, default=DEFAULT_RETENTION_DAYS,
+        "--retention-days",
+        type=int,
+        default=DEFAULT_RETENTION_DAYS,
         help=f"dispatch_history retention window (default {DEFAULT_RETENTION_DAYS})",
     )
     parser.add_argument("--db-path", type=Path, default=None, help="autonomath.db override")

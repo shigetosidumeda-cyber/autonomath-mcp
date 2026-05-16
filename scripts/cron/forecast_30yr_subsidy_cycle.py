@@ -70,12 +70,14 @@ def _candidate_programs(conn, max_programs):
 
 def _derive_transitions(conn, program_id):
     try:
-        rounds = list(conn.execute(
-            "SELECT application_open_date, application_close_date "
-            "FROM am_application_round WHERE program_unified_id = ? "
-            "ORDER BY application_close_date",
-            (program_id,),
-        ))
+        rounds = list(
+            conn.execute(
+                "SELECT application_open_date, application_close_date "
+                "FROM am_application_round WHERE program_unified_id = ? "
+                "ORDER BY application_close_date",
+                (program_id,),
+            )
+        )
     except sqlite3.Error:
         return DEFAULT_TRANSITIONS
     if len(rounds) < 3:
@@ -116,10 +118,18 @@ def _derive_transitions(conn, program_id):
     p_active_paused = max(0.1, 0.45 - 0.10 * snap_density)
     p_paused_paused = max(0.0, 1.0 - p_active_paused - p_renewed_paused - p_sunset_paused)
     return {
-        "active": {"active": p_active_active, "paused": p_paused_active,
-                   "renewed": p_renewed_active, "sunset": p_sunset_active},
-        "paused": {"active": p_active_paused, "paused": p_paused_paused,
-                   "renewed": p_renewed_paused, "sunset": p_sunset_paused},
+        "active": {
+            "active": p_active_active,
+            "paused": p_paused_active,
+            "renewed": p_renewed_active,
+            "sunset": p_sunset_active,
+        },
+        "paused": {
+            "active": p_active_paused,
+            "paused": p_paused_paused,
+            "renewed": p_renewed_paused,
+            "sunset": p_sunset_paused,
+        },
         "renewed": {"active": 0.65, "paused": 0.20, "renewed": 0.10, "sunset": 0.05},
         "sunset": {"active": 0.0, "paused": 0.0, "renewed": 0.0, "sunset": 1.0},
     }
@@ -166,12 +176,23 @@ def _most_likely(state):
     return max(state.items(), key=lambda kv: kv[1])[0]
 
 
-def refresh(db_path, *, dry_run=False, max_programs=None,
-            horizon_years=DEFAULT_HORIZON_YEARS, horizon_months=DEFAULT_HORIZON_MONTHS):
+def refresh(
+    db_path,
+    *,
+    dry_run=False,
+    max_programs=None,
+    horizon_years=DEFAULT_HORIZON_YEARS,
+    horizon_months=DEFAULT_HORIZON_MONTHS,
+):
     refresh_id = f"fc30_{uuid.uuid4().hex[:10]}"
     started_at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ")
-    LOG.info("forecast_30yr_subsidy_cycle start id=%s db=%s horizon=%dy x %dm",
-             refresh_id, db_path, horizon_years, horizon_months)
+    LOG.info(
+        "forecast_30yr_subsidy_cycle start id=%s db=%s horizon=%dy x %dm",
+        refresh_id,
+        db_path,
+        horizon_years,
+        horizon_months,
+    )
     conn = _connect(db_path)
     _ensure_tables(conn)
 
@@ -199,7 +220,9 @@ def refresh(db_path, *, dry_run=False, max_programs=None,
             skipped += 1
             continue
         if not dry_run:
-            conn.execute("DELETE FROM am_subsidy_30yr_forecast WHERE program_unified_id = ?", (program_id,))
+            conn.execute(
+                "DELETE FROM am_subsidy_30yr_forecast WHERE program_unified_id = ?", (program_id,)
+            )
         expected_calls = 0.0
         for year in range(horizon_years):
             for month in range(horizon_months):
@@ -207,8 +230,14 @@ def refresh(db_path, *, dry_run=False, max_programs=None,
                 expected_calls += state["active"] + 0.3 * state["renewed"]
                 if dry_run:
                     if pi < 1 and year < 3 and month == 0:
-                        LOG.info("dry-run program=%s y=%d m=%d state=%s p_active=%.2f",
-                                 program_id, year, month, most_likely, state["active"])
+                        LOG.info(
+                            "dry-run program=%s y=%d m=%d state=%s p_active=%.2f",
+                            program_id,
+                            year,
+                            month,
+                            most_likely,
+                            state["active"],
+                        )
                 else:
                     conn.execute(
                         "INSERT INTO am_subsidy_30yr_forecast "
@@ -216,16 +245,30 @@ def refresh(db_path, *, dry_run=False, max_programs=None,
                         " p_active, p_paused, p_sunset, p_renewed, expected_call_count, "
                         " program_tier, refreshed_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                         (
-                            program_id, year, month, most_likely,
-                            state["active"], state["paused"], state["sunset"], state["renewed"],
-                            expected_calls, prog["tier"], refreshed_at,
+                            program_id,
+                            year,
+                            month,
+                            most_likely,
+                            state["active"],
+                            state["paused"],
+                            state["sunset"],
+                            state["renewed"],
+                            expected_calls,
+                            prog["tier"],
+                            refreshed_at,
                         ),
                     )
                     rows_written += 1
                 state = _step_markov(state, transitions)
         if (pi + 1) % 500 == 0 and not dry_run:
             conn.commit()
-            LOG.info("progress %d/%d rows=%d elapsed=%.1fs", pi + 1, len(programs), rows_written, time.time() - t0)
+            LOG.info(
+                "progress %d/%d rows=%d elapsed=%.1fs",
+                pi + 1,
+                len(programs),
+                rows_written,
+                time.time() - t0,
+            )
 
     if not dry_run:
         conn.commit()
@@ -233,7 +276,13 @@ def refresh(db_path, *, dry_run=False, max_programs=None,
             "UPDATE am_subsidy_30yr_forecast_refresh_log SET finished_at = ?, "
             "  programs_processed = ?, rows_written = ?, skipped_no_round_data = ? "
             "WHERE refresh_id = ?",
-            (datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"), len(programs), rows_written, skipped, refresh_id),
+            (
+                datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"),
+                len(programs),
+                rows_written,
+                skipped,
+                refresh_id,
+            ),
         )
         conn.commit()
     conn.close()
@@ -254,10 +303,17 @@ def _parse_args(argv=None):
 
 def main(argv=None):
     args = _parse_args(argv)
-    logging.basicConfig(level=getattr(logging, args.log_level.upper(), logging.INFO),
-                        format="%(asctime)s %(levelname)s %(name)s %(message)s")
-    result = refresh(args.autonomath_db, dry_run=args.dry_run, max_programs=args.max_programs,
-                     horizon_years=args.horizon_years, horizon_months=args.horizon_months)
+    logging.basicConfig(
+        level=getattr(logging, args.log_level.upper(), logging.INFO),
+        format="%(asctime)s %(levelname)s %(name)s %(message)s",
+    )
+    result = refresh(
+        args.autonomath_db,
+        dry_run=args.dry_run,
+        max_programs=args.max_programs,
+        horizon_years=args.horizon_years,
+        horizon_months=args.horizon_months,
+    )
     print(json.dumps(result, ensure_ascii=False))
     return 0
 

@@ -80,9 +80,9 @@ VOLUME_REBATE_METADATA_KIND: str = "volume_rebate"
 
 def _previous_month_yyyymm(today: _dt.date | None = None) -> str:
     """Return the previous calendar month as YYYYMM (JST)."""
-    today = today or _dt.datetime.now(_dt.UTC).astimezone(
-        _dt.timezone(_dt.timedelta(hours=9))
-    ).date()
+    today = (
+        today or _dt.datetime.now(_dt.UTC).astimezone(_dt.timezone(_dt.timedelta(hours=9))).date()
+    )
     first_of_this_month = today.replace(day=1)
     last_of_prev = first_of_this_month - _dt.timedelta(days=1)
     return f"{last_of_prev.year:04d}{last_of_prev.month:02d}"
@@ -166,7 +166,9 @@ def _aggregate_monthly_units(
     return [(str(r[0]), int(r[1])) for r in rows]
 
 
-def _previous_month_invoice_id(stripe_client: Any, customer_id: str, period_yyyymm: str) -> str | None:
+def _previous_month_invoice_id(
+    stripe_client: Any, customer_id: str, period_yyyymm: str
+) -> str | None:
     """Find the metered invoice issued for the period, if any."""
     year = int(period_yyyymm[:4])
     month = int(period_yyyymm[4:])
@@ -230,7 +232,13 @@ def run(period_yyyymm: str | None = None, *, dry_run: bool = False) -> int:
     """Process a calendar month. Returns 0 on success, non-zero on partial failure."""
     period = period_yyyymm or _previous_month_yyyymm()
     start_iso, end_iso = _period_bounds_jst(period)
-    logger.info("volume_rebate.start period=%s window=[%s, %s) dry_run=%s", period, start_iso, end_iso, dry_run)
+    logger.info(
+        "volume_rebate.start period=%s window=[%s, %s) dry_run=%s",
+        period,
+        start_iso,
+        end_iso,
+        dry_run,
+    )
 
     if stripe is None and not dry_run:
         logger.error("stripe SDK not importable and not dry-run; aborting")
@@ -256,12 +264,16 @@ def run(period_yyyymm: str | None = None, *, dry_run: bool = False) -> int:
             if existing is not None:
                 logger.info(
                     "volume_rebate.skip already_granted customer=%s period=%s credit_note=%s",
-                    customer_id, period, existing["stripe_credit_note_id"],
+                    customer_id,
+                    period,
+                    existing["stripe_credit_note_id"],
                 )
                 continue
             logger.info(
                 "volume_rebate.compute customer=%s units=%d rebate_jpy=%d",
-                customer_id, units, rebate_jpy,
+                customer_id,
+                units,
+                rebate_jpy,
             )
             if dry_run:
                 continue
@@ -270,7 +282,8 @@ def run(period_yyyymm: str | None = None, *, dry_run: bool = False) -> int:
                 if invoice_id is None:
                     logger.warning(
                         "volume_rebate.no_invoice customer=%s period=%s — skipped",
-                        customer_id, period,
+                        customer_id,
+                        period,
                     )
                     failures += 1
                     continue
@@ -291,7 +304,9 @@ def run(period_yyyymm: str | None = None, *, dry_run: bool = False) -> int:
                 conn.commit()
                 logger.info(
                     "volume_rebate.granted customer=%s credit_note=%s rebate_jpy=%d",
-                    customer_id, getattr(note, "id", None), rebate_jpy,
+                    customer_id,
+                    getattr(note, "id", None),
+                    rebate_jpy,
                 )
             except Exception:
                 logger.exception("volume_rebate.failed customer=%s", customer_id)

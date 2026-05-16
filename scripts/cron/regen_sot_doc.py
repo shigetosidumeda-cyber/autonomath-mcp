@@ -123,7 +123,17 @@ def load_claude_md_overview_excerpt() -> str:
 
 def open_prs_via_gh() -> list[dict[str, Any]]:
     rc, stdout, _ = _run(
-        ["gh", "pr", "list", "--state", "open", "--limit", "20", "--json", "number,title,headRefName,createdAt,author"]
+        [
+            "gh",
+            "pr",
+            "list",
+            "--state",
+            "open",
+            "--limit",
+            "20",
+            "--json",
+            "number,title,headRefName,createdAt,author",
+        ]
     )
     if rc != 0 or not stdout.strip():
         return []
@@ -163,7 +173,9 @@ def latest_state_snapshot() -> dict[str, Any]:
 
 
 def recent_commits(limit: int = 15) -> list[str]:
-    rc, stdout, _ = _run(["git", "log", "-n", str(limit), "--pretty=format:- %s (%h, %ad)", "--date=short"])
+    rc, stdout, _ = _run(
+        ["git", "log", "-n", str(limit), "--pretty=format:- %s (%h, %ad)", "--date=short"]
+    )
     if rc != 0:
         return []
     return [line for line in stdout.splitlines() if line.strip()]
@@ -293,8 +305,7 @@ def render_doc(date_str: str) -> str:
             "`docs/_internal/PRODUCTION_DEPLOY_PACKET_*.md`.",
             "4. Memory: `~/.claude/projects/-Users-shigetoumeda/memory/MEMORY.md` "
             "(jpcite session state lives under `project_jpcite_*` keys).",
-            "5. CI guard for LLM imports: "
-            "`tests/test_no_llm_in_production.py` — never weaken it.",
+            "5. CI guard for LLM imports: `tests/test_no_llm_in_production.py` — never weaken it.",
             "",
         ]
     )
@@ -325,7 +336,9 @@ def main(argv: list[str] | None = None) -> int:
     body = render_doc(date_str)
     if args.smoke:
         if len(body) < 300:
-            print(f"[regen_sot_doc] SMOKE FAIL: body too short ({len(body)} chars)", file=sys.stderr)
+            print(
+                f"[regen_sot_doc] SMOKE FAIL: body too short ({len(body)} chars)", file=sys.stderr
+            )
             return 1
         print(f"[regen_sot_doc] SMOKE OK: body={len(body)} chars")
         return 0

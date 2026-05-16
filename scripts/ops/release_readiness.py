@@ -309,6 +309,7 @@ def check_deploy_preflight_gate_present(repo_root: Path) -> Check:
     required_tokens = [
         "PRODUCTION_DEPLOY_OPERATOR_ACK_YAML",
         "scripts/ops/pre_deploy_verify.py",
+        "scripts/ops/production_deploy_readiness_gate.py",
         "scripts/ops/production_deploy_go_gate.py --operator-ack",
         "flyctl deploy --remote-only",
     ]
@@ -318,15 +319,17 @@ def check_deploy_preflight_gate_present(repo_root: Path) -> Check:
         evidence.append(f"missing={missing}")
     try:
         preflight_index = text.index("scripts/ops/pre_deploy_verify.py")
+        readiness_index = text.index("scripts/ops/production_deploy_readiness_gate.py")
         go_gate_index = text.index("scripts/ops/production_deploy_go_gate.py --operator-ack")
         deploy_index = text.index("flyctl deploy --remote-only")
     except ValueError:
-        preflight_index = go_gate_index = deploy_index = -1
+        preflight_index = readiness_index = go_gate_index = deploy_index = -1
     if (
         preflight_index == -1
+        or readiness_index == -1
         or go_gate_index == -1
         or deploy_index == -1
-        or not (preflight_index < deploy_index and go_gate_index < deploy_index)
+        or not (preflight_index < readiness_index < go_gate_index < deploy_index)
     ):
         evidence.append("deploy_preflight_order:invalid")
     if "--warn-only" in text[max(0, preflight_index - 250) : deploy_index]:
@@ -334,12 +337,12 @@ def check_deploy_preflight_gate_present(repo_root: Path) -> Check:
     if evidence:
         return _fail(
             "deploy_preflight_gate_present",
-            "deploy.yml must run local pre-deploy and GO gates before flyctl deploy.",
+            "deploy.yml must run local pre-deploy, readiness, and GO gates before flyctl deploy.",
             evidence,
         )
     return _pass(
         "deploy_preflight_gate_present",
-        "deploy.yml runs local pre-deploy and GO gates before flyctl deploy.",
+        "deploy.yml runs local pre-deploy, readiness, and GO gates before flyctl deploy.",
         required_tokens,
     )
 
