@@ -1,0 +1,58 @@
+{
+  "run_id": "20260516T160602Z",
+  "predecessor_run_id": "20260516T154052Z",
+  "predecessor_wave": "PM9",
+  "budget_actual_usd": 1.931e-07,
+  "quotas": {
+    "ml.c5.2xlarge for transform job usage": 8.0,
+    "ml.g4dn.xlarge for transform job usage": 4.0
+  },
+  "fix_applied": "BatchStrategy=SingleRecord (PM5..PM9 carry-over)",
+  "submitted": [
+    {
+      "tag": "amlaw37cpu",
+      "job_name": "jpcite-embed-20260516T160602Z-amlaw37cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0000.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-fix37-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260516T160602Z-amlaw37cpu"
+    },
+    {
+      "tag": "adoption38cpu",
+      "job_name": "jpcite-embed-20260516T160602Z-adoption38cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/adoption_records/part-0000.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/adoption-fix38-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260516T160602Z-adoption38cpu"
+    },
+    {
+      "tag": "amlaw39gpu",
+      "job_name": "jpcite-embed-20260516T160602Z-amlaw39gpu",
+      "instance_type": "ml.g4dn.xlarge",
+      "model": "jpcite-embed-allminilm-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0007.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-fix39-gpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260516T160602Z-amlaw39gpu"
+    },
+    {
+      "tag": "amlaw40gpu",
+      "job_name": "jpcite-embed-20260516T160602Z-amlaw40gpu",
+      "instance_type": "ml.g4dn.xlarge",
+      "model": "jpcite-embed-allminilm-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0008.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-fix40-gpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260516T160602Z-amlaw40gpu"
+    },
+    {
+      "tag": "amlaw41gpu",
+      "job_name": "jpcite-embed-20260516T160602Z-amlaw41gpu",
+      "instance_type": "ml.g4dn.xlarge",
+      "model": "jpcite-embed-allminilm-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0009.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-fix41-gpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260516T160602Z-amlaw41gpu"
+    }
+  ]
+}
