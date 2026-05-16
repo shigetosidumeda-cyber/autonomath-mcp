@@ -236,3 +236,14 @@ out/
 /earthquake_hazard_overlay/
 /flood_zone_exposure/
 /heat_stress_economic_impact/
+/landslide_geotechnical_risk/
+/tsunami_zone_exposure/
+/typhoon_path_frequency/
+/volcanic_zone_overlay/
+/wildfire_risk_proxy/
+/packet_
+
+# Wave NN smoke + generator transient outputs (logs / smoke / wave*_smoke):
+/logs/
+/smoke/
+/wave*_smoke/
