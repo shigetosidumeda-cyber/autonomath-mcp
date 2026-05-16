@@ -8,6 +8,184 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-05-17
+
+Delta from v0.5.0 (Wave 50 RC1 contract layer LANDED 2026-05-16 PM, commit `b5247dd3a`)
+covers **299 commits** through 2026-05-17. This entry is **additive**: v0.5.0
+release notes (`docs/releases/v0.5.0_wave50_rc1.md`) and v0.4.1 entry above remain
+authoritative for their respective scope. `pyproject.toml` version bump is **not**
+included — that is an intentional release-train decision deferred to operator.
+
+Across this window the operator absolute condition `live_aws_commands_allowed=false`
+was lifted to **True** under explicit unlock to drive AWS canary infrastructure
+LIVE under hard $19,490 cap (Phase 1-8 ramp). All landings honored the
+`feedback_no_operator_llm_api` + `feedback_no_quick_check_on_huge_sqlite` +
+`feedback_destruction_free_organization` + `feedback_overwrite_stale_state`
+contracts. No public REST / MCP tool removals.
+
+### Added — Wave 51 dim K-S 9/9 modules + L1 source family + L2 math sweep + L3 cross_outcome_routing
+
+- **Wave 51 dim K-S (9 modules landed)** — `predictive_service` (dim K) /
+  `session_context` (dim L, file-backed) / `rule_tree` (dim M, server-side eval) /
+  `anonymized_query` (dim N, PII redact + audit log) /
+  `explainable_fact` (dim O, Ed25519 signing) / `composable_tools` (dim P,
+  4 server-side composition chains) / `time_machine` (dim Q, snapshot +
+  counterfactual query) / `federated_mcp` (dim R, 6 curated partners:
+  freee/MF/Notion/Slack/GitHub/Linear) / `copilot_scaffold` (dim S).
+  Pure SQLite + Python, no LLM inference. SOT closeout in
+  `docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md`.
+- **Wave 51 L1 source family** — foundational source-family taxonomy landed
+  for cross-outcome lineage tracking.
+- **Wave 51 L2 math engine** — applicability + spending forecast scoring
+  algorithm landed (`feat(l2-math): implement L2 applicability + spending
+  forecast scoring`); API spec in `docs/_internal/WAVE51_L2_MATH_ENGINE_API_SPEC.md`.
+- **Wave 51 L3 cross_outcome_routing** — landed 2026-05-17, routes a single
+  outcome request across multiple cohort generators.
+- **Wave 51 chain B (179 → 184, +5 tools)** — 5 additional chain MCP wrappers
+  on top of v0.4.1's 4 chains, covering
+  predictive / session / rule_tree / anonymized / time_machine compositions.
+
+### Added — Wave 95-99 packet generators (50+ generators)
+
+- **Wave 95**: roadmap + Phase 9 plan substrate.
+- **Wave 96**: 12 data governance + 4 data packet generator refinements.
+- **Wave 97**: 10 vendor due diligence + third-party risk packets
+  (catalog 452 → 462), `_WAVE_97_TABLES` Glue register sync, 3-file outcome
+  catalog sync (432 → 452).
+- **Wave 98**: 5 lifecycle / cohort / cross-ref packet generators
+  + 4 mega cross-join Athena SQL files (Q50-Q53).
+- **Wave 99**: 10 next-theme packet generators (in-progress, partial landing).
+
+### Added — Wave 60-94 generator catalog grow (282 → 432, +150 generators)
+
+Cumulative under v0.5.0 → v0.5.1: catalog grew from ~92 entries to **432**
+across 5 sector domains (cross-industry macro, financial/monetary,
+sectoral / governance / compliance / international / financial markets / PII
+compliance / supply chain / tech infra / entity_360 / industry×geo /
+geographic fill / AI-ML compliance / climate finance / fintech / employment /
+startup / lifecycle / license / trade / ESG materiality / IP / supply-chain
+risk / demographics / cybersecurity / social media / procurement / corporate
+activism / M&A / talent retention / brand metrics / real estate /
+insurance / risk transfer).
+
+### Added — AWS canary Phase 1-8 LIVE under hard $19,490 cap
+
+Phase 1 (guardrail: budgets + S3 + IAM + ECR + Logs), Phase 2 (Batch infra:
+2 CE + 2 queue + job def), Phase 3-7 (CodeBuild crawler image, container code
++ 7 job manifests, CloudWatch alarms + Step Functions orchestrator, ops scripts
+for stop drill + cost ledger + burn target, J06 Textract client + Glue Data
+Catalog + Athena workgroup), Phase 8 (CloudFront sustained burn + 6 long-running
+GPU jobs + EC2 Spot GPU). Auto-stop Lambda subscribed to budget alarm SNS,
+emit_canary_attestation Lambda + smoke test, 5-line CW alarm defense, Budget
+Action hard-stop at $18,900, Wave 53-98 FULL-SCALE packet upload pipeline
+through Batch + S3 + Glue + Athena. Phase 9 (Step Functions schedule re-enable)
+remains in dry-run; wet-run requires user explicit + UNLOCK gate. SOT in
+`docs/_internal/AWS_CANARY_*_2026_05_16.md` + memory
+`project_jpcite_aws_canary_infra_live_2026_05_16` +
+`project_jpcite_canary_phase_9_dryrun`.
+
+### Added — Athena Q43-Q57 (15 mega cross-join queries)
+
+- **Q23-Q27** Wave 80-82 + back-ref (5 cross-joins).
+- **Q28-Q32** Wave 83-85 + back-ref (5 cross-joins).
+- **Q33-Q37** Wave 86-88 + back-ref (5 cross-joins).
+- **Q38-Q42** Wave 89-91 + back-ref (5 cross-joins).
+- **Q43-Q47** Wave 92-94 + back-ref (5 cross-joins).
+- **Q50-Q53** Wave 98 mega cross-join (4 queries).
+- **Q54-Q57** Wave 99 cross-joins (partial in-flight).
+- Plus Q1/Q2 post-sync retry + Q9/Q10 / Q16/Q17 / Q18-Q22 ultra-aggregate
+  re-runs from earlier wave catalog. Backed by 129 Glue tables registered.
+
+### Performance — PERF-31 through PERF-40
+
+- **PERF-31**: lazy-load `autonomath_tools` chain modules — cold start <1s target.
+- **PERF-32**: ruff project-wide 0 (23 + 25 + earlier fixes across
+  tools/sdk/pdf-app/tools/offline scopes).
+- **PERF-33**: lazy-load `fastapi.openapi.models` from API hot path.
+- **PERF-34**: Athena Parquet ZSTD top 11-30 sweep (partial in-flight).
+- **PERF-35**: boto3 client pool (PERF-16 baseline) rolled out to 8 of 14
+  remaining scripts.
+- **PERF-36**: pytest collection cache + 3-tier landing proposal.
+- **PERF-37**: dmypy single-file mode + `make mypy-fast` / `mypy-restart` targets.
+- **PERF-38**: Athena `projection.enabled` on 4 partitioned tables.
+- **PERF-39**: pytest-xdist N-worker tune (in-flight).
+- **PERF-40**: FAISS nprobe vs recall trade (in-flight).
+- Plus rollouts of earlier PERF-17 through PERF-30: MIG-A/B/C sqlite indexes
+  applied (`jpi_adoption_records` prefecture+announced_at, amount_granted_yen,
+  houjin_master prefecture+jsic_major), Parquet ZSTD top 10 expansion,
+  orjson + os.write packet generator pattern rolled out, sqlite ANALYZE,
+  CI import-time regression gate (MCP + API cold start).
+
+### Added — Coverage push 35% → 40%+ (project-wide)
+
+- Stream SS/TT/UU honest re-baseline lift to ~35% project-wide
+  (subset 80-90% remains via Stream EE/HH/LL targets, not project-wide).
+- Lane #1 (this session): `+110` tests for `api/main` + `api/programs`.
+- Lane #2 (this session): `+117` tests for `services` + `mcp` modules.
+- Lanes #3 (db/migrate + ingest) + #4 (mcp/server.py 70% target) pending.
+
+### Tooling
+
+- `safe_commit.sh` wrapper — defensive pre-commit stash conflict diagnostic
+  (commit `c97be8a22`), addresses bulk-stage + per-PR partial stage race
+  (see `feedback_partial_stage_from_bulk_stage`).
+- MEMORY.md compaction: 25.3 KB → 19.68 KB via append-only superseded marker
+  collapse (Wave 60-68 → Wave 60-82 → Wave 60-94 lineage consolidation,
+  PERF-1..16 → PERF-1..28 → PERF-1..32 collapse).
+- `.gitignore` extended for `_v1/` packet gen output dirs +
+  `autonomath.db.backup-*`.
+- perf-bench weekly GHA workflow registered (ID 277896765), continuous
+  regression guard for PERF cascade landings.
+
+### Fixed
+
+- Step Functions: SNS Subject ≤100 ASCII chars (3rd bug),
+  EventBridge dual namespace audit (Rules vs Scheduler),
+  `Write_Aggregate_Manifest` + `ResultPath` collision, IAM
+  cross-region SNS publish constraint.
+- Federation: manifest tool count drift 155 → 179 sync.
+- Crosswalk: `outcome_source_crosswalk` coverage count consistency,
+  Wave 56-58 Glue table prefix fix (PENDING → WIRED),
+  `release_capsule_validator` drift across 4 surfaces.
+- Wave 66 PII / Wave 67 tech / Wave 62 sectoral backfill (Athena 0/27/33 rows).
+- Wave 70 packets local → S3 sync (row=0 fix).
+- Wave 71 geographic re-run (404 rows → 5000+).
+- `crawl.py` UA + http2 fix.
+- `validate_run_artifacts.py` privacy_class false positive.
+- `/healthz` HTTP 404 on jpcite.com.
+- SageMaker CPU/GPU image mismatch.
+- mypy `semantic_search_v2.py:250` unused-ignore, ruff `x402_payment/models.py:44`
+  UP042 (StrEnum).
+- Wave 59-A2 subject_kind enum hygiene for Wave 56-58 outcomes.
+
+### Changed
+
+- `release.yml` ruff target sync to include Wave 51 dim K-S modules.
+- Test `no-llm` scope tightened to include `scripts/aws_credit_ops/`
+  (309 generators).
+- `mkdocs` + `program_pages` parallel generation (3.15x speedup, PERF cascade).
+- 73-tick monitoring stamp loop reverted (anti-pattern remediation
+  per `feedback_18_agent_10_tick_rc1_pattern` lesson).
+
+### Notes
+
+- v0.4.1 was tagged + landed at commit `57f4ecdcb` mid-window
+  (`release(v0.4.1): Wave 51 dim K-S + Wave 59-B (179 tools)`). Its scope is
+  documented in the `[0.4.1] - 2026-05-16` section below. v0.5.1 is a
+  superset capturing the additional landings since then.
+- `pyproject.toml` / `server.json` / `mcp-server.json` / `dxt/manifest.json` /
+  `smithery.yaml` version bump to **0.5.1** is **deferred** to the operator's
+  release-train decision. PyPI republish + MCP registry refresh are
+  user-action.
+- AWS canary `live_aws_commands_allowed=True` was flipped under explicit
+  unlock and remains ARMED with hard $19,490 cap. Operator-paused
+  2026-05-16 16:56 JST (memory `project_jpcite_pause_2026_05_16_1656jst`).
+- `tool_count` 184 (post Wave 51 chain B); manifest still publishes 179.
+  Next manifest bump must re-reconcile (`len(await mcp.list_tools())`).
+- 7/7 production gate maintained across 30+ tick monitoring stamps within
+  the window. mypy strict 0 maintained. pytest 9300+ → 10,966 PASS / 9.24s
+  (PERF-10 SOT baseline).
+
 ## [0.4.1] - 2026-05-16
 
 ### Added — tool surface 155 → 179 (+24 tools)
