@@ -12,23 +12,35 @@ from here so they cannot drift.
 
 pykakasi is in the `[site]` optional-dependency group (`pyproject.toml`)
 and is also installed by the production Dockerfile (`pip install
-".[site]"`). The import is therefore safe at API boot. A graceful
-fallback path (sha1-6 only) is kept for defensive use in test
-environments where pykakasi is not present.
+".[site]"`). The import is deferred to the first call to
+``program_static_slug()`` via :func:`_kakasi` so that importing this
+module is cheap — measured ~100 ms cold-start savings on MCP / API
+boot (PERF-30, PERF-27). A graceful fallback path (sha1-6 only) is kept
+for defensive use in test environments where pykakasi is not present.
 """
 
 from __future__ import annotations
 
 import hashlib
 import re
+from functools import cache
+from typing import Any
 
-_KKS: object | None
-try:  # pragma: no cover — exercised via integration only
-    import pykakasi
 
-    _KKS = pykakasi.kakasi()  # type: ignore[no-untyped-call]
-except ImportError:  # pragma: no cover — fallback path
-    _KKS = None
+@cache
+def _kakasi() -> Any | None:
+    """Lazy-construct a pykakasi converter, or ``None`` if unavailable.
+
+    Deferred so module import is cheap (PERF-30). The first call pays
+    the ~100 ms pykakasi load cost; subsequent calls return the cached
+    converter. ``ImportError`` is swallowed to preserve the legacy
+    sha1-6-only fallback used in test envs without the ``[site]`` extra.
+    """
+    try:
+        import pykakasi
+    except ImportError:  # pragma: no cover — fallback path
+        return None
+    return pykakasi.kakasi()  # type: ignore[no-untyped-call]
 
 
 _NON_SLUG_RE = re.compile(r"[^a-z0-9]+")
@@ -41,15 +53,16 @@ def program_static_slug(primary_name: str | None, unified_id: str) -> str:
     change here must be made there too — the static page filenames are
     written by that script and resolved by this function.
 
-    - hepburn romaji via pykakasi (JA → ASCII-ish)
+    - hepburn romaji via pykakasi (JA → ASCII-ish; lazy-loaded)
     - lowercase + non-[a-z0-9] collapsed to '-'
     - cap at 60 chars, trim at last word boundary
     - sha1-6 of unified_id as collision-free suffix
     """
     romaji = ""
-    if _KKS is not None:
+    kks = _kakasi()
+    if kks is not None:
         try:
-            parts = _KKS.convert(primary_name or "")  # type: ignore[attr-defined]
+            parts = kks.convert(primary_name or "")
             romaji = " ".join(p.get("hepburn", "") for p in parts)
         except Exception:  # pragma: no cover — defensive
             romaji = ""
