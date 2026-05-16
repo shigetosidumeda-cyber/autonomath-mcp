@@ -1,0 +1,33 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "JpciteCreditReadRawAndDerived",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:GetObjectVersion"
+      ],
+      "Resource": [
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-raw",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-raw/*",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-derived",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-derived/*"
+      ]
+    },
+    {
+      "Sid": "JpciteCreditWriteDerived",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-derived",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-derived/*"
+      ]
+    }
+  ]
+}
