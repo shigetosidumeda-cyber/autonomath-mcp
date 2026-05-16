@@ -77,7 +77,13 @@ class FakeS3Client:
         Prefix: str,
         Delimiter: str = "/",
         MaxKeys: int = 1000,
+        ContinuationToken: str | None = None,
     ) -> dict[str, Any]:
+        # ContinuationToken is accepted for boto3 parity but unused; the
+        # in-memory fixture always returns the full match set in one
+        # response so the production paginator-style loop terminates on
+        # the first iteration.
+        _ = ContinuationToken
         prefixes: set[str] = set()
         contents: list[dict[str, Any]] = []
         for full_key in self.objects:
@@ -314,7 +320,77 @@ def test_list_job_prefixes_discovers_only_present_prefixes() -> None:
     }
     s3 = FakeS3Client(objects)
     prefixes = agg.list_job_prefixes(s3, raw_bucket=bucket)
+    # Bare ``J0X/`` layout — discovery falls back to the per-prefix
+    # enumeration after the canonical ``J0X_<slug>/`` sweep finds zero
+    # matches.
     assert prefixes == ["J01/", "J03/", "J05/"]
+
+
+def test_list_job_prefixes_discovers_canonical_slug_shape() -> None:
+    """The production raw bucket uses ``J0X_<short_slug>/`` prefixes."""
+
+    bucket = "jpcite-credit-993693061769-202605-raw"
+    objects = {
+        f"{bucket}/J01_source_profile/run_manifest.json": b"{}",
+        f"{bucket}/J02_nta_houjin/run_manifest.json": b"{}",
+        f"{bucket}/J03_nta_invoice/run_manifest.json": b"{}",
+        f"{bucket}/J04_egov_law/run_manifest.json": b"{}",
+        f"{bucket}/J05_jgrants_program/run_manifest.json": b"{}",
+        f"{bucket}/J06_ministry_pdf/run_manifest.json": b"{}",
+        f"{bucket}/J07_gbizinfo/run_manifest.json": b"{}",
+    }
+    s3 = FakeS3Client(objects)
+    prefixes = agg.list_job_prefixes(s3, raw_bucket=bucket)
+    assert prefixes == [
+        "J01_source_profile/",
+        "J02_nta_houjin/",
+        "J03_nta_invoice/",
+        "J04_egov_law/",
+        "J05_jgrants_program/",
+        "J06_ministry_pdf/",
+        "J07_gbizinfo/",
+    ]
+
+
+def test_list_job_prefixes_rejects_out_of_range_and_bare_siblings() -> None:
+    """Discovery must filter out ``J08_*/``, ``J00_*/`` and accidental siblings."""
+
+    bucket = "jpcite-credit-993693061769-202605-raw"
+    objects = {
+        f"{bucket}/J01_source_profile/run_manifest.json": b"{}",
+        # Out-of-range numeric: J08 / J00 / J10.
+        f"{bucket}/J08_extra_unused/run_manifest.json": b"{}",
+        f"{bucket}/J00_invalid/run_manifest.json": b"{}",
+        f"{bucket}/J10_too_high/run_manifest.json": b"{}",
+        # Non-canonical separator (dash instead of underscore).
+        f"{bucket}/J02-nta-houjin/run_manifest.json": b"{}",
+        # Empty slug (bare ``J03_/``) — regex requires non-empty slug.
+        f"{bucket}/J03_/run_manifest.json": b"{}",
+        # Capital-letter slug — regex restricts to ``[a-z_]+``.
+        f"{bucket}/J04_EGOV_LAW/run_manifest.json": b"{}",
+    }
+    s3 = FakeS3Client(objects)
+    prefixes = agg.list_job_prefixes(s3, raw_bucket=bucket)
+    assert prefixes == ["J01_source_profile/"]
+
+
+def test_job_prefix_regex_matches_seven_canonical_slugs() -> None:
+    """The seven production slugs all match ``JOB_PREFIX_REGEX``."""
+
+    canonical = [
+        "J01_source_profile/",
+        "J02_nta_houjin/",
+        "J03_nta_invoice/",
+        "J04_egov_law/",
+        "J05_jgrants_program/",
+        "J06_ministry_pdf/",
+        "J07_gbizinfo/",
+    ]
+    for prefix in canonical:
+        assert agg.JOB_PREFIX_REGEX.match(prefix), prefix
+    # Negative cases.
+    for bad in ("J01/", "J08_unused/", "J0_invalid/", "J01-foo/", "j01_foo/"):
+        assert not agg.JOB_PREFIX_REGEX.match(bad), bad
 
 
 def test_fetch_artifact_payload_returns_none_on_missing_key() -> None:

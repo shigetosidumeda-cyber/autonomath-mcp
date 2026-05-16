@@ -7,7 +7,11 @@ reproducibility checks, and the Wave 50 RC1 closeout doc can pin to.
 
 What it does (in order):
 
-1. **List** S3 prefixes matching ``s3://<RAW_BUCKET>/J0?/`` (J01..J07).
+1. **List** S3 prefixes matching ``s3://<RAW_BUCKET>/J0X_<slug>/`` (the
+   canonical shape, e.g. ``J01_source_profile/`` ..
+   ``J07_gbizinfo/``). The pattern is enforced by
+   :data:`JOB_PREFIX_REGEX` so accidental siblings (``J01/`` bare,
+   ``J08_x/`` out-of-range) are filtered out.
 2. For each prefix, download + parse the 6 standard-output-contract
    artifacts (§1.2 of
    ``docs/_internal/aws_credit_data_acquisition_jobs_agent.md``):
@@ -94,6 +98,7 @@ import datetime as dt
 import hashlib
 import json
 import logging
+import re
 import sys
 from collections.abc import Mapping  # noqa: TC003 -- runtime use by Pydantic
 from pathlib import Path
@@ -136,6 +141,22 @@ DEFAULT_RUN_START: Final[str] = "2026-05-15T00:00:00Z"
 
 #: Canonical seven job_ids (mirrors ``ALL_JOB_IDS`` in
 #: ``src/jpintel_mcp/aws_credit_ops/source_to_job_map.py``).
+#:
+#: Production S3 prefix shape is ``J0X_<short_slug>/`` (not bare ``J0X/``):
+#:
+#:   * ``J01_source_profile/``
+#:   * ``J02_nta_houjin/``
+#:   * ``J03_nta_invoice/``
+#:   * ``J04_egov_law/``
+#:   * ``J05_jgrants_program/``
+#:   * ``J06_ministry_pdf/``
+#:   * ``J07_gbizinfo/``
+#:
+#: This constant retains the short ``J0X`` numeric ids as a stable
+#: fallback enumeration for callers that explicitly pass prefixes; the
+#: live discovery path (:func:`list_job_prefixes`) uses
+#: :data:`JOB_PREFIX_REGEX` to match the actual ``J0X_<slug>/`` shape
+#: under the raw bucket.
 ALL_JOB_PREFIXES: Final[tuple[str, ...]] = (
     "J01",
     "J02",
@@ -145,6 +166,14 @@ ALL_JOB_PREFIXES: Final[tuple[str, ...]] = (
     "J06",
     "J07",
 )
+
+#: Regex matching the canonical production ``J0X_<short_slug>/`` prefix
+#: shape returned by ``list_objects_v2(... Delimiter='/')`` at the raw
+#: bucket root. The slug must be a non-empty lowercase ``a-z`` /
+#: underscore segment (matches ``J01_source_profile/``,
+#: ``J05_jgrants_program/`` etc.; rejects ``J01/`` bare, ``J08_x/``
+#: out-of-range, and ``J01-source/`` non-canonical separator).
+JOB_PREFIX_REGEX: Final[re.Pattern[str]] = re.compile(r"^J0[1-7]_[a-z_]+/$")
 
 #: The 6 standard output contract files we hash per job (§1.2).
 ARTIFACT_FILES: Final[tuple[str, ...]] = (
@@ -568,12 +597,50 @@ def list_job_prefixes(
 ) -> list[str]:
     """List the per-job prefixes present under ``s3://raw_bucket/``.
 
-    Returns a sorted list of canonical prefixes (e.g. ``["J01/", "J02/"]``).
+    Returns a sorted list of canonical ``J0X_<slug>/`` prefixes (e.g.
+    ``["J01_source_profile/", "J02_nta_houjin/", ...]``) discovered at
+    the bucket root via ``list_objects_v2(... Delimiter='/')``. The
+    regex :data:`JOB_PREFIX_REGEX` filters out accidental siblings
+    (``J01/`` bare, ``J08_x/`` out-of-range, etc.) and bare-numeric
+    legacy paths.
+
+    Falls back to enumerating ``f"{prefix}/"`` for each entry of
+    ``job_prefixes`` when the bucket-root sweep returns no canonical
+    matches (kept so test fixtures and historical bare-``J0X/`` layouts
+    still work).
+
     The S3 client must implement ``list_objects_v2(Bucket=..., Prefix=...,
-    Delimiter='/')`` returning ``{"CommonPrefixes": [{"Prefix": "..."}]}``.
+    Delimiter='/', ContinuationToken=...)`` returning
+    ``{"CommonPrefixes": [{"Prefix": "..."}], "NextContinuationToken":
+    "..." | None}``.
     """
 
     found: set[str] = set()
+
+    # Primary path: bucket-root sweep matching JOB_PREFIX_REGEX.
+    continuation: str | None = None
+    while True:
+        kwargs: dict[str, Any] = {
+            "Bucket": raw_bucket,
+            "Prefix": "",
+            "Delimiter": "/",
+        }
+        if continuation is not None:
+            kwargs["ContinuationToken"] = continuation
+        response = s3_client.list_objects_v2(**kwargs)
+        for entry in response.get("CommonPrefixes", []) or []:
+            candidate = entry.get("Prefix", "")
+            if JOB_PREFIX_REGEX.match(candidate):
+                found.add(candidate)
+        continuation = response.get("NextContinuationToken")
+        if not continuation:
+            break
+
+    if found:
+        return sorted(found)
+
+    # Fallback: bare ``J0X/`` enumeration (test fixtures, legacy bucket
+    # layouts that pre-date the ``_<slug>`` convention).
     for prefix in job_prefixes:
         response = s3_client.list_objects_v2(
             Bucket=raw_bucket,
