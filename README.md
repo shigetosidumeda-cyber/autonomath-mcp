@@ -20,7 +20,7 @@ mcp-name: io.github.shigetosidumeda-cyber/autonomath-mcp
 [![mcphub.dev](https://img.shields.io/badge/mcphub-Listed-0EA5E9.svg)](https://mcphub.dev/servers/jpcite)
 [![awesome-mcp](https://img.shields.io/badge/awesome--mcp-pending-yellow.svg)](https://github.com/punkpeye/awesome-mcp-servers/pull/6192)
 
-**Launch state (2026-05-07 hardening)** — quality gates cleared, LIVE on Fly Tokyo:
+**Launch state (2026-05-07 hardening; Wave 50 RC1 LANDED + Wave 51 tick 0 closed 2026-05-16)** — quality gates cleared, LIVE on Fly Tokyo:
 
 [![mypy strict](https://img.shields.io/badge/mypy%20strict-0%20errors-4c1.svg)](./CHANGELOG.md)
 [![bandit](https://img.shields.io/badge/bandit-0%20findings-4c1.svg)](./CHANGELOG.md)
@@ -312,7 +312,7 @@ Offline / mirrored copies of the same badges live in [`badges/`](./badges/)
 
 ## Wave 50 status (2026-05-16, append-only)
 
-Wave 50 RC1 contract layer 完成 + production deploy preflight gate substrate landed. Architecture-snapshot counts above remain authoritative; this section is **additive** alongside the 2026-05-07 hardening / 2026-05-12 v0.4.0 LIVE markers.
+**Wave 50 RC1 = LANDED (2026-05-16).** Contract layer + production deploy preflight gate substrate fully landed across 20 commits (Stream G 6 PR + cleanup PR7 + Wave 49 G2 + 73-tick revert + Wave 51 dim K-S foundational). Wave 51 tick 0 (9/9 dim K-S + L1 source-family + L2 math sweep, 11 modules, 416 tests PASS) closed in the same session. Architecture-snapshot counts above remain authoritative; this section is **additive** alongside the 2026-05-07 hardening / 2026-05-12 v0.4.0 LIVE markers. Canonical closeouts: [`docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md`](./docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md), [`docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md`](./docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md), [`docs/_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md`](./docs/_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md), [`docs/_internal/WAVE52_HINT_2026_05_16.md`](./docs/_internal/WAVE52_HINT_2026_05_16.md).
 
 - **mypy strict**: tick 5 → tick 6 で **71 → 0 errors achieved** (Optional / Pydantic v1↔v2 boundary 残務 sweep + Python target version 引き直し).
 - **pytest**: **8215/8628 PASS, 0 fail** (tick 6 で coverage gap top 5 を +190 tests で fill、collected 8628 維持).
@@ -334,9 +334,9 @@ Additive to the 2026-05-07 hardening / 2026-05-12 v0.4.0 LIVE / above Wave 50 st
 [![mypy strict](https://img.shields.io/badge/mypy%20strict-0%20errors-4c1.svg)](./CHANGELOG.md)
 [![pytest](https://img.shields.io/badge/pytest-8215%2B%20PASS-4c1.svg)](./tests/)
 [![coverage](https://img.shields.io/badge/coverage-76%25-4c1.svg)](./tests/)
-[![AWS canary](https://img.shields.io/badge/AWS%20canary-READY%20(operator%20unlock%20pending)-yellow.svg)](./docs/runbook/aws_canary.md)
+[![AWS canary infra](https://img.shields.io/badge/AWS%20canary%20infra-Phase%201%2B2%20LIVE%20(smoke%20pending)-blue.svg)](./docs/_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md)
 
-### Wave 50 RC1 final state (2026-05-16)
+### Wave 50 RC1 final state (2026-05-16, LANDED)
 
 - **production deploy readiness gate**: **7/7 PASSING** (tick 6 で regression を経て tick 7-9 で 7/7 維持)
 - **mypy strict**: **0 errors** (tick 6 で 71 → 0 achieved、新規 strict error は red gate)
@@ -349,5 +349,9 @@ Additive to the 2026-05-07 hardening / 2026-05-12 v0.4.0 LIVE / above Wave 50 st
 - **RC1 contract layer**: 19 Pydantic models + 20 JSON Schema、`scripts/check_schema_contract_parity.py` で双方向 round-trip 0 drift
 - **Release Capsule**: 21 artifacts in manifest + 14 outcome contracts (¥300-¥900 band 実値 fill 完了) + 3 inline packets
 - **AWS canary readiness**: 8/8 prerequisites + 追加 4 gate audit OK、Stream W concern separation で `live_aws=true` flip を operator token gate 経由のみに分離
+
+### What's new — 2026-05-16
+
+Wave 50 RC1 contract layer landed in production-ready shape today: 20 commits across Stream G's 6 PR + cleanup PR7 + Wave 49 G2 paste-ready registry packages + 73-tick monitoring-stamp revert + the Wave 51 tick 0 foundational substrate (L1 source-family registry + L2 math-engine sweep + 9 dim K-S modules covering predictive_service / session_context / rule_tree / anonymized_query / explainable_fact / composable_tools / time_machine / federated_mcp / copilot_scaffold) closed the same session, with the 11 new modules wrapped as 10 MCP tools bumping the public default-gate surface from 155 to **165 tools** (416 module-level tests PASS, mypy --strict 0 across the 41 new source files, no LLM SDK imports in any new runtime path). Separately the AWS canary infrastructure stepped from "ready" to **Phase 1+2 LIVE**: 3 AWS Budgets (USD 17K / 18.3K / 18.9K) + 3 S3 buckets + IAM (SLR + 3 roles) + ECR repo + image + 2 Batch compute environments + 2 queues + Glue Data Catalog + Athena workgroup + Step Functions orchestrator + auto-stop Lambda are all provisioned, with `live_aws_commands_allowed=true` flipped for the first time today via the Stream W `--unlock-live-aws-commands` concern-separation flag — infrastructure ready, awaiting first-run smoke validation (Phase 3 J01 smoke job in progress, J02-J07 fan-out pending). See `docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md`, `docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md`, `docs/_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md`, and `docs/_internal/WAVE52_HINT_2026_05_16.md` for full closeout detail.
 
 last_updated: 2026-05-16

@@ -1,0 +1,44 @@
+{
+  "Name": "jpcite-credit-derived-crawler",
+  "Role": "arn:aws:iam::993693061769:role/jpcite-glue-crawler-role",
+  "DatabaseName": "jpcite_credit_2026_05",
+  "Description": "Auto-discovers schema of J0X output artifacts (Parquet/JSONL) landed under s3://jpcite-credit-993693061769-202605-derived/J0X/<run_id>/. On-demand only (no schedule). Auto-stop 2026-05-29.",
+  "Targets": {
+    "S3Targets": [
+      {
+        "Path": "s3://jpcite-credit-993693061769-202605-derived/",
+        "Exclusions": [
+          "**.tmp",
+          "**.bak",
+          "**.part"
+        ]
+      }
+    ]
+  },
+  "SchemaChangePolicy": {
+    "UpdateBehavior": "LOG",
+    "DeleteBehavior": "LOG"
+  },
+  "RecrawlPolicy": {
+    "RecrawlBehavior": "CRAWL_NEW_FOLDERS_ONLY"
+  },
+  "LineageConfiguration": {
+    "CrawlerLineageSettings": "DISABLE"
+  },
+  "Configuration": "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}},\"Grouping\":{\"TableGroupingPolicy\":\"CombineCompatibleSchemas\"}}",
+  "Tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "AutoStop": "2026-05-29"
+  },
+  "_notes": {
+    "iam_role_arn": "arn:aws:iam::993693061769:role/jpcite-glue-crawler-role",
+    "iam_role_policies": [
+      "arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole",
+      "inline:jpcite-glue-crawler-s3-access (R/W to derived + reports buckets)"
+    ],
+    "schema_change_policy_rationale": "CRAWL_NEW_FOLDERS_ONLY requires LOG/LOG per AWS API (InvalidInputException otherwise). New <run_id>/ folders are immutable once landed, so LOG is functionally equivalent — schema drift across runs surfaces as separate tables, not in-place updates, which matches the J06 variable-schema use case.",
+    "create_cmd": "aws glue create-crawler --cli-input-json file://infra/aws/glue/jpcite_credit_derived_crawler.json --profile bookyou-recovery --region ap-northeast-1",
+    "first_crawl_2026_05_16": "SUCCEEDED (empty bucket, LogGroup=/aws-glue/crawlers, LogStream=jpcite-credit-derived-crawler)"
+  }
+}

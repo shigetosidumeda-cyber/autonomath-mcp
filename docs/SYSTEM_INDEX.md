@@ -18,7 +18,7 @@ Brand: **jpcite** (PyPI dist: `autonomath-mcp`, import: `jpintel_mcp`) — launc
 | Component | Path | Notes |
 |---|---|---|
 | REST API | [`src/jpintel_mcp/api/`](../src/jpintel_mcp/api/) | FastAPI, ~80 router files, mounted `/v1/*` (≈194-240 paths post Wave 21-23) |
-| MCP server | [`src/jpintel_mcp/mcp/`](../src/jpintel_mcp/mcp/) | FastMCP stdio, **155 tools** at default gates |
+| MCP server | [`src/jpintel_mcp/mcp/`](../src/jpintel_mcp/mcp/) | FastMCP stdio, **165 tools** at default gates (Wave 51 tick 0 added 10 wrappers over dim K-S internal modules, 2026-05-16) |
 | DB layer | [`src/jpintel_mcp/db/`](../src/jpintel_mcp/db/) | `schema.sql`, `session.py`, `id_translator.py` |
 | Billing | [`src/jpintel_mcp/billing/`](../src/jpintel_mcp/billing/) | Stripe metered ¥3/billable unit |
 | Primary DB | [`autonomath.db`](../autonomath.db) (~11 GB) + [`jpintel.db`](../jpintel.db) (~1.6 MB live) | unified post mig 032; `data/jpintel.db` ~352 MB |
@@ -50,6 +50,10 @@ Brand: **jpcite** (PyPI dist: `autonomath-mcp`, import: `jpintel_mcp`) — launc
 | W22 | 2026-04-29 | 5 wave22 tools (DD/kessan/forecast/jurisdiction/kit), inbox quality, sensitive law map — [W22_INBOX_QUALITY_AUDIT.md](_internal/W22_INBOX_QUALITY_AUDIT.md), [W22_NEW_LAW_PROGRAM_LINKS.md](_internal/W22_NEW_LAW_PROGRAM_LINKS.md), [W22_SENSITIVE_LAW_MAP.md](_internal/W22_SENSITIVE_LAW_MAP.md) |
 | W23 | 2026-04-29 | 3 industry packs (construction / manufacturing / real_estate), 8 sample programs each, saved-search seeds (CLAUDE.md §"Wave 23 changelog") |
 | W24 | 2026-04-24 (precompute) | 9 agents, 78 wave24_*.sql migrations, mat tables refresher — see [`analysis_wave18/wave24/`](../analysis_wave18/wave24/) |
+| W50 RC1 | 2026-05-16 | **LANDED** — contract layer (19 Pydantic + 20 JSON schemas) + 5 preflight gate artifacts + 20 commits across 7 PR + production deploy readiness 7/7 PASS + mypy strict 0 → see [`_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md`](_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md) |
+| W51 tick 0 | 2026-05-16 | 9/9 dim K-S modules (predictive_service / session_context / rule_tree / anonymized_query / explainable_fact / composable_tools / time_machine / federated_mcp / copilot_scaffold) + L1 source-family + L2 math sweep landed, 11 modules / 416 tests PASS, 10 MCP wrappers bumped tool count 155 → **165** → see [`_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md`](_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md) |
+| AWS canary | 2026-05-16 | **Phase 1+2 LIVE, smoke pending** — 3 Budgets + 3 S3 + IAM + ECR + 2 Batch CE/queue + Glue + Athena + Step Functions + auto-stop Lambda provisioned; `live_aws_commands_allowed=true` first flipped via Stream W `--unlock-live-aws-commands` flag; Phase 3 J01 smoke in progress → see [`_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md`](_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md) |
+| W52 hint | 2026-05-16 | Direction memo (NOT a plan) — 5 promising directions for Wave 52 → see [`_internal/WAVE52_HINT_2026_05_16.md`](_internal/WAVE52_HINT_2026_05_16.md) |
 
 ---
 
@@ -66,6 +70,11 @@ Brand: **jpcite** (PyPI dist: `autonomath-mcp`, import: `jpintel_mcp`) — launc
 - **Cookbook / examples**: [`docs/cookbook/`](cookbook/), [`examples/`](../examples/)
 - **Deploy**: [`fly.toml`](../fly.toml), [`Dockerfile`](../Dockerfile), [`entrypoint.sh`](../entrypoint.sh), [`docs/_internal/DEPLOY_CHECKLIST_2026-05-01.md`](_internal/DEPLOY_CHECKLIST_2026-05-01.md)
 - **Handoffs**: [`HANDOFF_2026-04-25.md`](../HANDOFF_2026-04-25.md), [`docs/_internal/handoff_consolidated_strategy_2026-05-01.md`](_internal/handoff_consolidated_strategy_2026-05-01.md), [`docs/_internal/handoff_full_takeover_2026-05-01.md`](_internal/handoff_full_takeover_2026-05-01.md)
+- **Latest closeouts (2026-05-16)**:
+  - [`docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md`](_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md) — Wave 50 RC1 LANDED, 20 commits, 7/7 production gate
+  - [`docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md`](_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md) — Wave 51 tick 0, 11 modules, 416 tests PASS, 155 → 165 tools
+  - [`docs/_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md`](_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md) — AWS canary Phase 1+2 LIVE, smoke pending
+  - [`docs/_internal/WAVE52_HINT_2026_05_16.md`](_internal/WAVE52_HINT_2026_05_16.md) — Wave 52 direction memo (5 promising directions, NOT a plan)
 - **Changelog**: [`CHANGELOG.md`](../CHANGELOG.md)
 
 ---
@@ -102,7 +111,7 @@ Run: `.venv/bin/python scripts/cron/precompute_refresh.py --only <name>` or `--a
 | Local MCP | `.venv/bin/autonomath-mcp` |
 | Tests | `.venv/bin/pytest` (unit+integ) / `.venv/bin/pytest tests/e2e/` |
 | Migration apply | `entrypoint.sh §4` (autonomath-target auto-discovered on boot, header `-- target_db: autonomath`); jpintel-target via `python scripts/migrate.py` |
-| MCP tool count probe | `len(await mcp.list_tools())` (must be 155 at default gates) |
+| MCP tool count probe | `len(await mcp.list_tools())` (must be 165 at default gates as of 2026-05-16 Wave 51 tick 0) |
 | Static pages regen | `.venv/bin/python scripts/generate_program_pages.py` |
 | Source liveness | `.venv/bin/python scripts/refresh_sources.py --tier S,A` |
 | OpenAPI export | `.venv/bin/python scripts/export_openapi.py --out docs/openapi/v1.json` |
@@ -149,4 +158,4 @@ Cohort revenue model (8 cohorts, locked 2026-04-29) → [`CLAUDE.md` §"Cohort r
 
 ---
 
-**Last reviewed**: 2026-05-05. Update when a new wave lands or component reshapes.
+**Last reviewed**: 2026-05-16 (Wave 50 RC1 LANDED + Wave 51 tick 0 + AWS canary Phase 1+2 LIVE sync). Update when a new wave lands or component reshapes.
