@@ -1,0 +1,39 @@
+{
+  "PolicyName": "JpciteCreditRunBatchJobRoleTextractAccess",
+  "PolicyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "TextractOCRAndStructuredExtractionForJ06",
+        "Effect": "Allow",
+        "Action": [
+          "textract:AnalyzeDocument",
+          "textract:DetectDocumentText",
+          "textract:StartDocumentAnalysis",
+          "textract:GetDocumentAnalysis"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringEquals": {
+            "aws:RequestedRegion": "ap-northeast-1"
+          }
+        }
+      }
+    ]
+  },
+  "_meta": {
+    "policy_id": "jpcite_batch_job_role_textract_access_v1",
+    "purpose": "J06 ministry/municipality PDF extraction — OCR + Forms/Tables only. NO Bedrock LLM, NO AnalyzeExpense, NO AnalyzeID.",
+    "target_role": "JpciteCreditRunBatchJobRole",
+    "attach_command_hint": "aws iam put-role-policy --profile bookyou-recovery --role-name JpciteCreditRunBatchJobRole --policy-name JpciteCreditRunBatchJobRoleTextractAccess --policy-document file://infra/aws/iam/jpcite_batch_job_role_textract_policy.json",
+    "deny_list_not_included_here": [
+      "textract:AnalyzeExpense",
+      "textract:AnalyzeID",
+      "bedrock:*"
+    ],
+    "region_constraint": "ap-northeast-1",
+    "budget_band_usd": "2000-3200",
+    "design_ref": "docs/_internal/aws_credit_review_05_ocr_bedrock_opensearch.md#4-textract",
+    "job_ref": "data/aws_credit_jobs/J06_ministry_municipality_pdf_extraction.json"
+  }
+}
