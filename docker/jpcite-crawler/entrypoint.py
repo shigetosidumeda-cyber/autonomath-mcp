@@ -345,8 +345,30 @@ def run() -> int:
         or os.environ.get("AWS_BATCH_JOB_ID", "")
         or "j-unknown"
     )
-    output_bucket = str(spec["output_bucket"])
-    output_prefix = str(spec.get("output_prefix") or f"runs/{run_id}/{job_id}")
+    # Output target resolution priority:
+    #   1) spec["output_bucket"] + spec["output_prefix"] (legacy split form)
+    #   2) spec["output_prefix"] as s3://bucket/prefix URI (master plan canonical form)
+    #   3) env OUTPUT_S3_BUCKET + spec["output_prefix"] (Batch container override)
+    raw_out_prefix = str(spec.get("output_prefix") or f"runs/{run_id}/{job_id}")
+    if "output_bucket" in spec:
+        output_bucket = str(spec["output_bucket"])
+        output_prefix = raw_out_prefix
+    elif raw_out_prefix.startswith("s3://"):
+        without_scheme = raw_out_prefix[len("s3://"):]
+        bucket_part, _, key_part = without_scheme.partition("/")
+        output_bucket = bucket_part
+        output_prefix = key_part or f"runs/{run_id}/{job_id}"
+    else:
+        env_bucket = os.environ.get("OUTPUT_S3_BUCKET", "").strip()
+        if not env_bucket:
+            _log(
+                "error",
+                "output_bucket_unresolved",
+                detail="manifest lacks output_bucket and output_prefix is not s3:// URI, env OUTPUT_S3_BUCKET unset",
+            )
+            return 4
+        output_bucket = env_bucket
+        output_prefix = raw_out_prefix
 
     ctx = manifest.JobContext(
         run_id=run_id,
