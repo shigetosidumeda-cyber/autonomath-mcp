@@ -1,7 +1,7 @@
 {
   "rule": {
     "name": "jpcite-credit-orchestrator-schedule",
-    "description": "Triggers jpcite-credit-orchestrator Step Functions state machine on a fixed cadence for continuous credit burn. DISABLED by default — operator must explicitly enable to start the burn window.",
+    "description": "Triggers jpcite-credit-orchestrator Step Functions state machine on a fixed cadence for continuous credit burn. DISABLED by default — operator must explicitly enable to start the burn window. Re-DISABLED 2026-05-16 after SF success rate 0% (0/30 succeeded, 27 FAILED) — see docs/_internal/eventbridge_rule_state_decision_2026_05_16.md.",
     "region": "ap-northeast-1",
     "account_id": "993693061769",
     "schedule_expression": "rate(10 minutes)",
