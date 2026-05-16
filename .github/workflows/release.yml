@@ -67,6 +67,7 @@ env:
     scripts/ops/check_jpcir_schema_fixtures.py
     scripts/ops/check_mcp_drift.py
     scripts/ops/check_p0_facade_discovery_consistency.py
+    scripts/ops/ci_budget_check.py
     scripts/ops/frontend_release_check.py
     scripts/ops/generate_identity_confidence_golden.py
     scripts/ops/generate_schema_docs.py
@@ -259,6 +260,7 @@ env:
     tests/test_cf_pages_rum_beacon.py
     tests/test_chain_integrity.py
     tests/test_children_keys.py
+    tests/test_ci_budget_check.py
     tests/test_ci_workflows.py
     tests/test_citation_badge.py
     tests/test_citation_sample_logger.py
@@ -918,6 +920,7 @@ jobs:
             scripts/ops/check_jpcir_schema_fixtures.py \
             scripts/ops/check_mcp_drift.py \
             scripts/ops/check_p0_facade_discovery_consistency.py \
+            scripts/ops/ci_budget_check.py \
             scripts/ops/frontend_release_check.py \
             scripts/ops/generate_identity_confidence_golden.py \
             scripts/ops/generate_schema_docs.py \

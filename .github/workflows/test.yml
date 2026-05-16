@@ -62,6 +62,7 @@ env:
     scripts/ops/check_jpcir_schema_fixtures.py
     scripts/ops/check_mcp_drift.py
     scripts/ops/check_p0_facade_discovery_consistency.py
+    scripts/ops/ci_budget_check.py
     scripts/ops/frontend_release_check.py
     scripts/ops/generate_identity_confidence_golden.py
     scripts/ops/generate_schema_docs.py
@@ -254,6 +255,7 @@ env:
     tests/test_cf_pages_rum_beacon.py
     tests/test_chain_integrity.py
     tests/test_children_keys.py
+    tests/test_ci_budget_check.py
     tests/test_ci_workflows.py
     tests/test_citation_badge.py
     tests/test_citation_sample_logger.py
@@ -830,15 +832,39 @@ jobs:
   # mypy+mkdocs tail behind shard 0). All jobs declare fail-fast: false at the
   # matrix level so a green-light shard never gets cancelled by an unrelated
   # failure (surfaces all failures in one run rather than serial-debug).
+
+  # PERF-42 (2026-05-17): emit the pytest python-version matrix from a tiny
+  # builder job so PR runs scope the matrix to 3.12 only (active dev version)
+  # while push to main + scheduled runs still exercise the 3.11 floor + 3.13
+  # ceiling. Shrinks PR matrix from 12 (3 versions × 4 shards) to 4 jobs
+  # (3.12 × 4 shards) = ~67% runner-min reduction per PR.
+  pytest-matrix:
+    name: build pytest python matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      python-versions: ${{ steps.matrix.outputs.python-versions }}
+    steps:
+      - name: Build python-version matrix
+        id: matrix
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo 'python-versions=["3.12"]' >> "$GITHUB_OUTPUT"
+          else
+            echo 'python-versions=["3.13","3.12","3.11"]' >> "$GITHUB_OUTPUT"
+          fi
+
   pytest:
     name: pytest (${{ matrix.python-version }} shard ${{ matrix.shard-index }}/${{ matrix.shard-count }})
+    needs: pytest-matrix
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        # 3.13 first so it reports earliest; 3.11 is the floor declared in pyproject.toml.
-        python-version: ["3.13", "3.12", "3.11"]
+        # PERF-42 (2026-05-17): python-version axis is event-driven via pytest-matrix.
+        # PR runs => ["3.12"]; push/main + scheduled => ["3.13","3.12","3.11"].
+        python-version: ${{ fromJSON(needs.pytest-matrix.outputs.python-versions) }}
         shard-index: [0, 1, 2, 3]
         shard-count: [4]
 
@@ -994,10 +1020,14 @@ jobs:
             mypy-cache-${{ runner.os }}-
 
       - name: Install package with dev extras
+        # PERF-42 (2026-05-17): the secondary `pip install mypy types-requests
+        # pydantic pydantic-settings fastapi` line was redundant — every one
+        # of those packages is already pinned in pyproject.toml's [dev,site]
+        # extras. Removing the redundant invocation saves the second resolver
+        # pass (~30-60s warm, ~2min cold) on every CI mypy run.
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev,site]"
-          pip install mypy types-requests pydantic>=2.9 pydantic-settings>=2.6 fastapi>=0.115
 
       - name: mypy type-check
         run: mypy src/
@@ -1055,3 +1085,34 @@ jobs:
 
       - name: mkdocs build --strict
         run: mkdocs build --strict
+
+  # PERF-42 (2026-05-17): CI runtime budget gate. Runs after every upstream
+  # gate has reported (always(): so a regression in any single job still emits
+  # the budget verdict). Pulls each job's started_at / completed_at via the GH
+  # REST API and fails if the workflow's wall-clock duration exceeds the
+  # JPCITE_CI_BUDGET_MINUTES budget (default 15 min).
+  #
+  # Wall clock = max(completed_at) - min(started_at) across all upstream jobs
+  # (this job is excluded so the gate doesn't fight itself). That captures
+  # the longest critical path including queue time, which is what an engineer
+  # experiences. Per-job durations are also printed for triage.
+  ci-budget:
+    name: CI runtime budget gate (<= ${{ env.JPCITE_CI_BUDGET_MINUTES }} min)
+    needs: [pytest, ruff, mypy, pip-audit, mkdocs]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      JPCITE_CI_BUDGET_MINUTES: "15"
+    steps:
+      - name: Checkout (for analyzer script)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run CI runtime budget analyzer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          JPCITE_CI_BUDGET_MINUTES: ${{ env.JPCITE_CI_BUDGET_MINUTES }}
+        run: |
+          python scripts/ops/ci_budget_check.py

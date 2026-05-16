@@ -32,7 +32,7 @@ P0_K = p0 or facade or outcome_routing or csv_intake or release_capsule or agent
 
 .DEFAULT_GOAL := help
 
-.PHONY: help test test-p0 lint format typecheck typecheck-fast mypy-fast mypy-file mypy-restart typecheck-fast-stop pre-commit-install pre-commit-run safe-commit site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict
+.PHONY: help test test-p0 lint format typecheck typecheck-fast mypy-fast mypy-file mypy-restart typecheck-fast-stop pre-commit-install pre-commit-run safe-commit site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict ci-budget-check
 
 help:
 	@echo "jpcite Makefile targets:"
@@ -70,6 +70,7 @@ help:
 	@echo "                    Optional step 08 (ECR attacker-repo cleanup, dual-region):"
 	@echo "                    JPCITE_INCLUDE_ECR_CLEANUP=true to append 08_ecr_attacker_cleanup.sh"
 	@echo "                    (requires Awano-san confirmation on the compromise ticket)."
+	@echo "  make ci-budget-check    PERF-42 GHA wall-clock budget gate (local summary mode)"
 	@echo "  make help         Show this list"
 
 test:
