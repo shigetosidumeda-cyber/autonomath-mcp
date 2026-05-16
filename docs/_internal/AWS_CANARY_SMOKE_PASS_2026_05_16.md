@@ -149,17 +149,33 @@ Four parallel axes to consume USD 19,500 in 3-5 days:
 
 ---
 
-## 6. Phase status table (post-Phase-3)
+## 6. Phase status table (post-Phase-3, updated 13:30 JST)
 
 | phase | scope | status |
 | --- | --- | --- |
 | 1 | guardrail | **DONE** |
 | 2 | infrastructure | **DONE** |
 | 3 | smoke J01-J07 (7/7 SUCCEEDED, 82 artifacts, $0) | **DONE** (2026-05-16 12:42 JST) |
-| 4 | ramp burn (heavy job def + EventBridge + Textract + SageMaker) | **IN_PROGRESS** |
+| 4 | deep ramp (7 deep J0X submitted, 2,726 URLs, $9,200 budget, SNS apne1 fix + EventBridge rate(10m) LIVE) | **IN_PROGRESS** (2026-05-16 13:30 JST) |
 | 5 | drain + aggregate_run_ledger + Athena refresh | pending |
 | 6 | teardown_credit_run + verify_zero_aws | pending |
 | 7 | attestation emit + `aws_budget_canary_attestation` bind | pending |
+
+---
+
+## 6.1 Phase 4 deep ramp launch note (2026-05-16 13:30 JST)
+
+Phase 3 smoke 終了 ~48 min 後の 13:30 JST に Phase 4 deep ramp を **LIVE submit**:
+
+- **7 deep J0X jobs submitted** to `jpcite-crawl-heavy` (16 vCPU / 32 GB Fargate max)
+- **累計 2,726 URLs** (smoke 106 → deep 2,726、**25.7x scale-up**)
+- **累計 budget USD 9,200** for deep window
+- **SNS apne1 cross-region fix**: `jpcite-credit-cost-alerts` を apne1 で create + Step Functions ASL の TopicArn を same-region に切替。SF `arn:aws:states:::sns:publish` integration は cross-region TopicArn を silent failure する仕様 (`feedback_aws_cross_region_sns_publish.md` 参照)。
+- **EventBridge `rate(10 minutes)` LIVE**: orchestrator schedule を DISABLED → ENABLED へ flip、10 分毎に Step Functions を auto-trigger。連続駆動で deep manifest depth + Textract burn を厚く積む。
+- **validate_run_artifacts false positive fix**: 13 internal JPCIR fields (`_jpcir_*` 系) を validator exempt list に追加、smoke で出ていた 13 false-positive 警告を解消。
+- **aggregate_run_ledger discovery fix**: J0X slug 規約 `J0X_<slug>` を regex で拾うよう修正、Phase 5 で cross-job rollup を取れる状態に。
+
+**Estimated burn rate (deep manifest scale)**: **USD 1,500-3,000/day**。deep manifest の long-tail (depth heavy) 性質を反映、tiny smoke の "spike then idle" より緩やか。旧 USD 4,000-6,000/day target は heavy job def の最大 saturation 前提だった。window 3-5 day で 2026-05-19..21 への着地軌道。
 
 ---
 
