@@ -43,7 +43,7 @@ import time
 from datetime import UTC, datetime
 from typing import Any
 
-import boto3
+from scripts.aws_credit_ops._aws import get_session
 
 DEFAULT_PROFILE = "bookyou-recovery"
 DEFAULT_REGION = "ap-southeast-1"
@@ -151,7 +151,7 @@ def _project(blocks: list[dict[str, Any]]) -> tuple[list[str], int, int]:
 
 
 def run(args: argparse.Namespace) -> int:
-    sess = boto3.Session(profile_name=args.profile, region_name=args.region)
+    sess = get_session(region_name=args.region, profile_name=args.profile)
     s3 = sess.client("s3")
     textract = sess.client("textract")
 
