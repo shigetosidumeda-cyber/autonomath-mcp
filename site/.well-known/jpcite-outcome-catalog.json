@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
   "generated_at": "2026-05-16T20:30:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 242,
+  "total_outcomes": 262,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -5592,6 +5592,406 @@
       "outcome_contract_id": "business_transfer_signal_packet",
       "display_name": "業種別 business transfer signal packet",
       "description": "業種別 事業譲渡 signal 兆候 (採択密度 proxy) descriptive signal",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "tariff_classification_match_packet",
+      "display_name": "業種別 tariff classification match packet",
+      "description": "業種別 関税分類 HS code match 兆候 descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "export_control_regulation_packet",
+      "display_name": "業種別 export control regulation packet",
+      "description": "業種別 経産省 安管令 / リスト規制 / キャッチオール compliance descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "origin_certification_intensity_packet",
+      "display_name": "業種別 origin certification intensity packet",
+      "description": "業種別 原産地証明 (EPA/FTA) intensity descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "customs_violation_history_packet",
+      "display_name": "業種別 customs violation history packet",
+      "description": "業種別 通関違反 history 兆候 descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "dual_use_item_disclosure_packet",
+      "display_name": "業種別 dual-use item disclosure packet",
+      "description": "業種別 軍民両用品 (dual-use) disclosure 兆候 descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "strategic_goods_signal_packet",
+      "display_name": "業種別 strategic goods signal packet",
+      "description": "業種別 戦略物資 / 重要鉱物 / 経済安全保障推進法 signal descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "eu_carbon_border_adjustment_packet",
+      "display_name": "業種別 EU CBAM exposure packet",
+      "description": "業種別 EU 炭素国境調整メカニズム exposure descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "us_iran_sanction_compliance_packet",
+      "display_name": "業種別 US Iran sanction compliance packet",
+      "description": "業種別 米国イラン制裁 (OFAC SDN) compliance descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "wto_agreement_eligibility_packet",
+      "display_name": "業種別 WTO agreement eligibility packet",
+      "description": "業種別 WTO GPA / SCM 協定 eligibility descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "trade_remedy_petition_history_packet",
+      "display_name": "業種別 trade remedy petition history packet",
+      "description": "業種別 AD / SG / CVD 申立 history 兆候 descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "construction_license_overlay_packet",
+      "display_name": "業種別 construction license overlay packet",
+      "description": "業種別 建設業許可 overlay 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "medical_facility_license_packet",
+      "display_name": "業種別 medical facility license packet",
+      "description": "業種別 医療施設許可 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "food_business_permit_packet",
+      "display_name": "業種別 food business permit packet",
+      "description": "業種別 食品営業許可 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "education_authority_license_packet",
+      "display_name": "業種別 education authority license packet",
+      "description": "業種別 教育機関認可 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "transport_passenger_license_packet",
+      "display_name": "業種別 transport passenger license packet",
+      "description": "業種別 旅客運送許可 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "alcohol_retail_license_packet",
+      "display_name": "業種別 alcohol retail license packet",
+      "description": "業種別 酒類販売業免許 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "financial_business_license_packet",
+      "display_name": "業種別 financial business license packet",
+      "description": "業種別 金商業 license 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "environmental_facility_permit_packet",
+      "display_name": "業種別 environmental facility permit packet",
+      "description": "業種別 環境施設許可 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "waste_disposal_permit_packet",
+      "display_name": "業種別 waste disposal permit packet",
+      "description": "業種別 廃棄物処理 permit 兆候 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "real_estate_broker_license_packet",
+      "display_name": "業種別 real estate broker license packet",
+      "description": "業種別 宅建業免許 兆候 (採択密度 proxy) descriptive overlay",
       "billable": true,
       "packet_ids": [
         "summary",

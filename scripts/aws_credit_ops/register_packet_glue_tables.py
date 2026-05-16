@@ -1550,6 +1550,46 @@ for _name, _prefix in _WAVE_77_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 79 export / import trade compliance cross packet tables (10 generators,
+# 2026-05-16). All share the jsic_major industry cohort with descriptive
+# adoption_n proxy covering tariff classification match (HS code) / export
+# control regulation (経産省 安管令) / origin certification intensity
+# (EPA/FTA) / customs violation history / dual-use item disclosure / strategic
+# goods signal / EU CBAM exposure / US Iran sanction compliance (OFAC) / WTO
+# agreement eligibility (GPA/SCM) / trade remedy petition history (AD/SG/CVD).
+# Reuse the shared super-set columns; topic-specific fields land in raw_json.
+_WAVE_79_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_tariff_classification_match_v1",
+        "tariff_classification_match_v1/",
+    ),
+    ("packet_export_control_regulation_v1", "export_control_regulation_v1/"),
+    (
+        "packet_origin_certification_intensity_v1",
+        "origin_certification_intensity_v1/",
+    ),
+    ("packet_customs_violation_history_v1", "customs_violation_history_v1/"),
+    ("packet_dual_use_item_disclosure_v1", "dual_use_item_disclosure_v1/"),
+    ("packet_strategic_goods_signal_v1", "strategic_goods_signal_v1/"),
+    (
+        "packet_eu_carbon_border_adjustment_v1",
+        "eu_carbon_border_adjustment_v1/",
+    ),
+    (
+        "packet_us_iran_sanction_compliance_v1",
+        "us_iran_sanction_compliance_v1/",
+    ),
+    ("packet_wto_agreement_eligibility_v1", "wto_agreement_eligibility_v1/"),
+    (
+        "packet_trade_remedy_petition_history_v1",
+        "trade_remedy_petition_history_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_79_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)

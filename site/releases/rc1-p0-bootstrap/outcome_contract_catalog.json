@@ -3059,5 +3059,265 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 tariff classification match packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "tariff_classification_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 export control regulation packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "export_control_regulation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 origin certification intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "origin_certification_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 customs violation history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "customs_violation_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 dual-use item disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "dual_use_item_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 strategic goods signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "strategic_goods_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 EU CBAM exposure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "eu_carbon_border_adjustment_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 US Iran sanction compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "us_iran_sanction_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 WTO agreement eligibility packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "wto_agreement_eligibility_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 trade remedy petition history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "trade_remedy_petition_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 construction license overlay packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "construction_license_overlay_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 medical facility license packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "medical_facility_license_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 food business permit packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "food_business_permit_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 education authority license packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "education_authority_license_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 transport passenger license packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "transport_passenger_license_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 alcohol retail license packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "alcohol_retail_license_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 financial business license packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "financial_business_license_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 environmental facility permit packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "environmental_facility_permit_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 waste disposal permit packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "waste_disposal_permit_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 real estate broker license packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "real_estate_broker_license_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
