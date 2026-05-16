@@ -2929,5 +2929,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 establishment pulse packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "establishment_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 dissolution signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "dissolution_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 merger event pulse packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "merger_event_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 demerger split signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "demerger_split_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 bankruptcy risk proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "bankruptcy_risk_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 rehabilitation petition history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "rehabilitation_petition_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 liquidation program match packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "liquidation_program_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 subsidiary creation pulse packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "subsidiary_creation_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 headquarters relocation packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "headquarters_relocation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 business transfer signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "business_transfer_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

@@ -1523,6 +1523,33 @@ for _name, _prefix in _WAVE_76_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 77 corporate lifecycle event packet tables (10 generators, 2026-05-16). All
+# share the jsic_major industry cohort with descriptive adoption_n proxy covering
+# establishment pulse / dissolution signal / merger event pulse / demerger split
+# signal / bankruptcy risk proxy / rehabilitation petition history / liquidation
+# program match / subsidiary creation pulse / headquarters relocation / business
+# transfer signal. Reuse the shared super-set columns; topic-specific fields land
+# in raw_json.
+_WAVE_77_TABLES: list[tuple[str, str]] = [
+    ("packet_establishment_pulse_v1", "establishment_pulse_v1/"),
+    ("packet_dissolution_signal_v1", "dissolution_signal_v1/"),
+    ("packet_merger_event_pulse_v1", "merger_event_pulse_v1/"),
+    ("packet_demerger_split_signal_v1", "demerger_split_signal_v1/"),
+    ("packet_bankruptcy_risk_proxy_v1", "bankruptcy_risk_proxy_v1/"),
+    (
+        "packet_rehabilitation_petition_history_v1",
+        "rehabilitation_petition_history_v1/",
+    ),
+    ("packet_liquidation_program_match_v1", "liquidation_program_match_v1/"),
+    ("packet_subsidiary_creation_pulse_v1", "subsidiary_creation_pulse_v1/"),
+    ("packet_headquarters_relocation_v1", "headquarters_relocation_v1/"),
+    ("packet_business_transfer_signal_v1", "business_transfer_signal_v1/"),
+]
+
+for _name, _prefix in _WAVE_77_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
