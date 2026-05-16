@@ -493,6 +493,7 @@
           }
         ]
       },
+      "ResultPath": "$.metric_result",
       "Next": "Final_Notify_Aggregation_Ready"
     },
     "Final_Notify_Aggregation_Ready": {
