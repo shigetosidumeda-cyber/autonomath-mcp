@@ -1,7 +1,7 @@
 # Outcome → Packet → Athena Crosswalk
 
 **Schema version**: `jpcite.outcome_packet_athena_crosswalk.v1`  
-**Generated**: `2026-05-16T15:30:00+09:00`  
+**Generated**: `2026-05-16T20:30:00+09:00`  
 **Machine-readable artifact**: `site/.well-known/jpcite-outcome-packet-crosswalk.json`
 
 This document maps every purchasable outcome to its backing packet, S3 path, Glue table,
@@ -11,17 +11,17 @@ where does it live"_ before issuing a `/v1/cost/preview` or paid call.
 ## Summary
 
 - **Total outcomes**: 122
-- **WIRED** (packet generator + Glue table both registered): **39**
-- **PENDING** (gap — see classification below): **83**
+- **WIRED** (packet generator + Glue table both registered): **69**
+- **PENDING** (gap — see classification below): **33**
 
 ### Gap classification
 
-- **40 outcomes**: packet generator exists (Wave 53-58 landings) but Glue Data Catalog has not been crawled against the new prefixes yet. Flip to WIRED after `aws glue start-crawler --name jpcite_credit_derived_crawler` completes.
+- **10 outcomes**: packet generator exists (Wave 53-58 landings) but Glue Data Catalog has not been crawled against the new prefixes yet (was 40 — Wave 56-58 30 tables flipped to WIRED on 2026-05-16 after Athena `COUNT(*)` smoke verified all 30 tables have rows present). Flip remaining 10 to WIRED after `aws glue start-crawler --name jpcite_credit_derived_crawler` completes.
 - **13 outcomes**: control or meta surfaces (e.g. `agent_routing_decision`, `cost_preview`, `source_receipt_ledger`, `evidence_answer`) that intentionally do not have a packet-table backing — they are routed through `/v1/*` endpoints with on-the-fly composition.
 
 ### Live Glue catalog reconciliation (`aws glue get-tables --database-name jpcite_credit_2026_05 --region ap-northeast-1 --profile bookyou-recovery`, 2026-05-16)
 
-Live Glue has 43 tables: 39 `packet_*` (matches WIRED count above 1:1) + 4 auxiliary (`claim_refs`, `known_gaps`, `object_manifest`, `source_receipts`). The auxiliary tables back receipt-verifiable envelopes (`source_receipts` join) and gap reporting (`known_gaps`) — they are not outcome-bound. See `site/releases/rc1-p0-bootstrap/outcome_source_crosswalk.json` for the upstream source-family map.
+Live Glue has 70+ tables: 69 `packet_*` (matches WIRED count above 1:1) + 4 auxiliary (`claim_refs`, `known_gaps`, `object_manifest`, `source_receipts`). The auxiliary tables back receipt-verifiable envelopes (`source_receipts` join) and gap reporting (`known_gaps`) — they are not outcome-bound. See `site/releases/rc1-p0-bootstrap/outcome_source_crosswalk.json` for the upstream source-family map.
 
 ## AWS Constants
 
@@ -96,36 +96,36 @@ Live Glue has 43 tables: 39 `packet_*` (matches WIRED count above 1:1) + 4 auxil
 | 60 | `bid_subsidy_substitution_packet` | 入札 × 補助金 代替性 (発注機関 × 制度) packet | **PENDING** | mid | ¥600 | `generate_bid_subsidy_substitution_packets.py` | `—` | — |
 | 61 | `administrative_disposition_recovery_packet` | 行政処分 後 復活率 (採択履歴 × 処分庁) packet | **PENDING** | mid | ¥600 | `generate_administrative_disposition_recovery_packets.py` | `—` | — |
 | 62 | `environmental_certification_match_packet` | 環境認証 × 補助金 × 制度 マッチ packet | **PENDING** | mid | ¥600 | `generate_environmental_certification_match_packets.py` | `—` | — |
-| 63 | `program_amendment_timeline_v2_packet` | 制度改正履歴 + 影響期間 v2 packet | **PENDING** | mid | ¥600 | `generate_program_amendment_timeline_v2_packets.py` | `—` | — |
-| 64 | `enforcement_seasonal_trend_packet` | 行政処分 月別季節性 packet | **PENDING** | mid | ¥600 | `generate_enforcement_seasonal_trend_packets.py` | `—` | — |
-| 65 | `adoption_fiscal_cycle_packet` | 採択事例 fiscal year cycle packet | **PENDING** | mid | ¥600 | `generate_adoption_fiscal_cycle_packets.py` | `—` | — |
-| 66 | `tax_ruleset_phase_change_packet` | 税制 段階変更 timeline packet | **PENDING** | mid | ¥600 | `generate_tax_ruleset_phase_change_packets.py` | `—` | — |
-| 67 | `invoice_registration_velocity_packet` | インボイス登録 速度トレンド packet | **PENDING** | mid | ¥600 | `generate_invoice_registration_velocity_packets.py` | `—` | — |
-| 68 | `regulatory_q_over_q_diff_packet` | 法令改正 Q-over-Q 差分 packet | **PENDING** | mid | ¥600 | `generate_regulatory_q_over_q_diff_packets.py` | `—` | — |
-| 69 | `subsidy_application_window_predict_packet` | 申請期間 forecast packet | **PENDING** | mid | ¥600 | `generate_subsidy_application_window_predict_packets.py` | `—` | — |
-| 70 | `bid_announcement_seasonality_packet` | 入札公告 季節性 packet | **PENDING** | mid | ¥600 | `generate_bid_announcement_seasonality_packets.py` | `—` | — |
-| 71 | `succession_event_pulse_packet` | 事業承継 events pulse packet | **PENDING** | mid | ¥600 | `generate_succession_event_pulse_packets.py` | `—` | — |
-| 72 | `kanpou_event_burst_packet` | 官報 event burst detector packet | **PENDING** | mid | ¥600 | `generate_kanpou_event_burst_packets.py` | `—` | — |
-| 73 | `prefecture_program_heatmap_packet` | 47都道府県 × 制度 密度 heatmap packet | **PENDING** | mid | ¥600 | `generate_prefecture_program_heatmap_packets.py` | `—` | — |
-| 74 | `municipality_subsidy_inventory_packet` | 政令市 補助金 inventory packet | **PENDING** | mid | ¥600 | `generate_municipality_subsidy_inventory_packets.py` | `—` | — |
-| 75 | `region_industry_match_packet` | 地域 × 業種 適合 matcher packet | **PENDING** | mid | ¥600 | `generate_region_industry_match_packets.py` | `—` | — |
-| 76 | `cross_prefecture_arbitrage_packet` | 都道府県間 制度 arbitrage packet | **PENDING** | mid | ¥600 | `generate_cross_prefecture_arbitrage_packets.py` | `—` | — |
-| 77 | `city_size_subsidy_propensity_packet` | 自治体規模 × 補助金率 packet | **PENDING** | mid | ¥600 | `generate_city_size_subsidy_propensity_packets.py` | `—` | — |
-| 78 | `regional_enforcement_density_packet` | 地域別 行政処分 密度 packet | **PENDING** | mid | ¥600 | `generate_regional_enforcement_density_packets.py` | `—` | — |
-| 79 | `prefecture_court_decision_focus_packet` | 都道府県別 判例 focus packet | **PENDING** | mid | ¥600 | `generate_prefecture_court_decision_focus_packets.py` | `—` | — |
-| 80 | `city_jct_density_packet` | 市区町村 適格事業者密度 packet | **PENDING** | mid | ¥600 | `generate_city_jct_density_packets.py` | `—` | — |
-| 81 | `rural_subsidy_coverage_packet` | 過疎地域補助金 coverage packet | **PENDING** | mid | ¥600 | `generate_rural_subsidy_coverage_packets.py` | `—` | — |
-| 82 | `prefecture_environmental_compliance_packet` | 都道府県 環境compliance score packet | **PENDING** | mid | ¥600 | `generate_prefecture_environmental_compliance_packets.py` | `—` | — |
-| 83 | `houjin_parent_subsidiary_packet` | 法人 親子関係 cross-ref packet | **PENDING** | mid | ¥600 | `generate_houjin_parent_subsidiary_packets.py` | `—` | — |
-| 84 | `business_partner_360_packet` | 取引先 360 (双方向 due diligence) packet | **PENDING** | mid | ¥600 | `generate_business_partner_360_packets.py` | `—` | — |
-| 85 | `board_member_overlap_packet` | 役員 兼任 network packet | **PENDING** | mid | ¥600 | `generate_board_member_overlap_packets.py` | `—` | — |
-| 86 | `founding_succession_chain_packet` | 設立 → 後継 chain packet | **PENDING** | mid | ¥600 | `generate_founding_succession_chain_packets.py` | `—` | — |
-| 87 | `certification_houjin_link_packet` | 認証 × 法人 (ISO/JIS/GMP) packet | **PENDING** | mid | ¥600 | `generate_certification_houjin_link_packets.py` | `—` | — |
-| 88 | `license_houjin_jurisdiction_packet` | 許認可 × 法人 × 管轄 packet | **PENDING** | mid | ¥600 | `generate_license_houjin_jurisdiction_packets.py` | `—` | — |
-| 89 | `employment_program_eligibility_packet` | 雇用 × 制度適格 packet | **PENDING** | mid | ¥600 | `generate_employment_program_eligibility_packets.py` | `—` | — |
-| 90 | `vendor_payment_history_match_packet` | 取引先 支払履歴 match (公開部分) packet | **PENDING** | mid | ¥600 | `generate_vendor_payment_history_match_packets.py` | `—` | — |
-| 91 | `industry_association_link_packet` | 業界団体 × 法人 link packet | **PENDING** | mid | ¥600 | `generate_industry_association_link_packets.py` | `—` | — |
-| 92 | `public_listed_program_link_packet` | 上場法人 × 公開制度 link packet | **PENDING** | mid | ¥600 | `generate_public_listed_program_link_packets.py` | `—` | — |
+| 63 | `program_amendment_timeline_v2_packet` | 制度改正履歴 + 影響期間 v2 packet | **WIRED** | mid | ¥600 | `generate_program_amendment_timeline_v2_packets.py` | `packet_program_amendment_timeline_v2` | 5000 |
+| 64 | `enforcement_seasonal_trend_packet` | 行政処分 月別季節性 packet | **WIRED** | mid | ¥600 | `generate_enforcement_seasonal_trend_packets.py` | `packet_enforcement_seasonal_trend_v1` | 47 |
+| 65 | `adoption_fiscal_cycle_packet` | 採択事例 fiscal year cycle packet | **WIRED** | mid | ¥600 | `generate_adoption_fiscal_cycle_packets.py` | `packet_adoption_fiscal_cycle_v1` | 17 |
+| 66 | `tax_ruleset_phase_change_packet` | 税制 段階変更 timeline packet | **WIRED** | mid | ¥600 | `generate_tax_ruleset_phase_change_packets.py` | `packet_tax_ruleset_phase_change_v1` | 3 |
+| 67 | `invoice_registration_velocity_packet` | インボイス登録 速度トレンド packet | **WIRED** | mid | ¥600 | `generate_invoice_registration_velocity_packets.py` | `packet_invoice_registration_velocity_v1` | 47 |
+| 68 | `regulatory_q_over_q_diff_packet` | 法令改正 Q-over-Q 差分 packet | **WIRED** | mid | ¥600 | `generate_regulatory_q_over_q_diff_packets.py` | `packet_regulatory_q_over_q_diff_v1` | 1 |
+| 69 | `subsidy_application_window_predict_packet` | 申請期間 forecast packet | **WIRED** | mid | ¥600 | `generate_subsidy_application_window_predict_packets.py` | `packet_subsidy_application_window_predict_v1` | 928 |
+| 70 | `bid_announcement_seasonality_packet` | 入札公告 季節性 packet | **WIRED** | mid | ¥600 | `generate_bid_announcement_seasonality_packets.py` | `packet_bid_announcement_seasonality_v1` | 1 |
+| 71 | `succession_event_pulse_packet` | 事業承継 events pulse packet | **WIRED** | mid | ¥600 | `generate_succession_event_pulse_packets.py` | `packet_succession_event_pulse_v1` | 55 |
+| 72 | `kanpou_event_burst_packet` | 官報 event burst detector packet | **WIRED** | mid | ¥600 | `generate_kanpou_event_burst_packets.py` | `packet_kanpou_event_burst_v1` | 1 |
+| 73 | `prefecture_program_heatmap_packet` | 47都道府県 × 制度 密度 heatmap packet | **WIRED** | mid | ¥600 | `generate_prefecture_program_heatmap_packets.py` | `packet_prefecture_program_heatmap_v1` | 48 |
+| 74 | `municipality_subsidy_inventory_packet` | 政令市 補助金 inventory packet | **WIRED** | mid | ¥600 | `generate_municipality_subsidy_inventory_packets.py` | `packet_municipality_subsidy_inventory_v1` | 47 |
+| 75 | `region_industry_match_packet` | 地域 × 業種 適合 matcher packet | **WIRED** | mid | ¥600 | `generate_region_industry_match_packets.py` | `packet_region_industry_match_v1` | 50 |
+| 76 | `cross_prefecture_arbitrage_packet` | 都道府県間 制度 arbitrage packet | **WIRED** | mid | ¥600 | `generate_cross_prefecture_arbitrage_packets.py` | `packet_cross_prefecture_arbitrage_v1` | 17 |
+| 77 | `city_size_subsidy_propensity_packet` | 自治体規模 × 補助金率 packet | **WIRED** | mid | ¥600 | `generate_city_size_subsidy_propensity_packets.py` | `packet_city_size_subsidy_propensity_v1` | 51 |
+| 78 | `regional_enforcement_density_packet` | 地域別 行政処分 密度 packet | **WIRED** | mid | ¥600 | `generate_regional_enforcement_density_packets.py` | `packet_regional_enforcement_density_v1` | 47 |
+| 79 | `prefecture_court_decision_focus_packet` | 都道府県別 判例 focus packet | **WIRED** | mid | ¥600 | `generate_prefecture_court_decision_focus_packets.py` | `packet_prefecture_court_decision_focus_v1` | 5 |
+| 80 | `city_jct_density_packet` | 市区町村 適格事業者密度 packet | **WIRED** | mid | ¥600 | `generate_city_jct_density_packets.py` | `packet_city_jct_density_v1` | 47 |
+| 81 | `rural_subsidy_coverage_packet` | 過疎地域補助金 coverage packet | **WIRED** | mid | ¥600 | `generate_rural_subsidy_coverage_packets.py` | `packet_rural_subsidy_coverage_v1` | 47 |
+| 82 | `prefecture_environmental_compliance_packet` | 都道府県 環境compliance score packet | **WIRED** | mid | ¥600 | `generate_prefecture_environmental_compliance_packets.py` | `packet_prefecture_environmental_compliance_v1` | 45 |
+| 83 | `houjin_parent_subsidiary_packet` | 法人 親子関係 cross-ref packet | **WIRED** | mid | ¥600 | `generate_houjin_parent_subsidiary_packets.py` | `packet_houjin_parent_subsidiary_v1` | 2918 |
+| 84 | `business_partner_360_packet` | 取引先 360 (双方向 due diligence) packet | **WIRED** | mid | ¥600 | `generate_business_partner_360_packets.py` | `packet_business_partner_360_v1` | 1 |
+| 85 | `board_member_overlap_packet` | 役員 兼任 network packet | **WIRED** | mid | ¥600 | `generate_board_member_overlap_packets.py` | `packet_board_member_overlap_v1` | 49 |
+| 86 | `founding_succession_chain_packet` | 設立 → 後継 chain packet | **WIRED** | mid | ¥600 | `generate_founding_succession_chain_packets.py` | `packet_founding_succession_chain_v1` | 1005 |
+| 87 | `certification_houjin_link_packet` | 認証 × 法人 (ISO/JIS/GMP) packet | **WIRED** | mid | ¥600 | `generate_certification_houjin_link_packets.py` | `packet_certification_houjin_link_v1` | 3 |
+| 88 | `license_houjin_jurisdiction_packet` | 許認可 × 法人 × 管轄 packet | **WIRED** | mid | ¥600 | `generate_license_houjin_jurisdiction_packets.py` | `packet_license_houjin_jurisdiction_v1` | 5 |
+| 89 | `employment_program_eligibility_packet` | 雇用 × 制度適格 packet | **WIRED** | mid | ¥600 | `generate_employment_program_eligibility_packets.py` | `packet_employment_program_eligibility_v1` | 47 |
+| 90 | `vendor_payment_history_match_packet` | 取引先 支払履歴 match (公開部分) packet | **WIRED** | mid | ¥600 | `generate_vendor_payment_history_match_packets.py` | `packet_vendor_payment_history_match_v1` | 1 |
+| 91 | `industry_association_link_packet` | 業界団体 × 法人 link packet | **WIRED** | mid | ¥600 | `generate_industry_association_link_packets.py` | `packet_industry_association_link_v1` | 50 |
+| 92 | `public_listed_program_link_packet` | 上場法人 × 公開制度 link packet | **WIRED** | mid | ¥600 | `generate_public_listed_program_link_packets.py` | `packet_public_listed_program_link_v1` | 191 |
 
 ## Athena query templates
 
@@ -176,4 +176,4 @@ AI agents should fetch the JSON artifact (`site/.well-known/jpcite-outcome-packe
 - `estimated_rows` is **honest unknown** (`—`) for the 41 packet-generator-exists-but-Glue-pending outcomes — those numbers fill in after the next ETL crawler pass.
 - `agent_routing_decision` and `cost_preview` are **deliberately** non-billable, no-packet control surfaces; do not mark them as PENDING bugs.
 
-_Last updated: 2026-05-16T15:00:00+09:00_
+_Last updated: 2026-05-16T20:30:00+09:00_

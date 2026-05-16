@@ -1,7 +1,7 @@
 {
   "schema_version": "jpcite.outcome_packet_athena_crosswalk.v1",
   "catalog_id": "jpcite-outcome-packet-athena-crosswalk-2026-05-16",
-  "generated_at": "2026-05-16T15:30:00+09:00",
+  "generated_at": "2026-05-16T18:47:05+09:00",
   "source_documents": {
     "outcome_catalog": "site/.well-known/jpcite-outcome-catalog.json",
     "outcome_contract_catalog": "site/releases/rc1-p0-bootstrap/outcome_contract_catalog.json",
@@ -11,8 +11,8 @@
     "glue_region": "ap-northeast-1"
   },
   "total_outcomes": 122,
-  "wired_count": 39,
-  "pending_count": 83,
+  "wired_count": 69,
+  "pending_count": 33,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -1317,14 +1317,14 @@
         "source_receipts",
         "known_gaps"
       ],
-      "packet_generator": "generate_program_amendment_timeline_v2_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "packet_generator": "generate_program_amendment_timeline_packets.py",
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/program_amendment_timeline_v2/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_program_amendment_timeline_v2",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 5000,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_program_amendment_timeline_v2\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "enforcement_seasonal_trend_packet",
@@ -1338,13 +1338,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_enforcement_seasonal_trend_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/enforcement_seasonal_trend_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_enforcement_seasonal_trend_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 47,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_enforcement_seasonal_trend_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "adoption_fiscal_cycle_packet",
@@ -1358,13 +1358,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_adoption_fiscal_cycle_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/adoption_fiscal_cycle_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_adoption_fiscal_cycle_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_adoption_fiscal_cycle_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "tax_ruleset_phase_change_packet",
@@ -1378,13 +1378,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_tax_ruleset_phase_change_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/tax_ruleset_phase_change_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_tax_ruleset_phase_change_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 3,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_tax_ruleset_phase_change_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "invoice_registration_velocity_packet",
@@ -1398,13 +1398,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_invoice_registration_velocity_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/invoice_registration_velocity_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_invoice_registration_velocity_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 47,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_invoice_registration_velocity_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "regulatory_q_over_q_diff_packet",
@@ -1418,13 +1418,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_regulatory_q_over_q_diff_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/regulatory_q_over_q_diff_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_regulatory_q_over_q_diff_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 1,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_regulatory_q_over_q_diff_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "subsidy_application_window_predict_packet",
@@ -1438,13 +1438,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_subsidy_application_window_predict_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/subsidy_application_window_predict_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_subsidy_application_window_predict_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 928,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_subsidy_application_window_predict_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "bid_announcement_seasonality_packet",
@@ -1458,13 +1458,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_bid_announcement_seasonality_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/bid_announcement_seasonality_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_bid_announcement_seasonality_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 1,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_bid_announcement_seasonality_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "succession_event_pulse_packet",
@@ -1478,13 +1478,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_succession_event_pulse_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/succession_event_pulse_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_succession_event_pulse_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 55,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_succession_event_pulse_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "kanpou_event_burst_packet",
@@ -1498,13 +1498,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_kanpou_event_burst_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/kanpou_event_burst_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_kanpou_event_burst_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 1,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_kanpou_event_burst_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "prefecture_program_heatmap_packet",
@@ -1518,13 +1518,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_prefecture_program_heatmap_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/prefecture_program_heatmap_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_prefecture_program_heatmap_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 48,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_prefecture_program_heatmap_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "municipality_subsidy_inventory_packet",
@@ -1538,13 +1538,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_municipality_subsidy_inventory_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/municipality_subsidy_inventory_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_municipality_subsidy_inventory_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 47,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_municipality_subsidy_inventory_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "region_industry_match_packet",
@@ -1558,13 +1558,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_region_industry_match_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/region_industry_match_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_region_industry_match_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 50,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_region_industry_match_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "cross_prefecture_arbitrage_packet",
@@ -1578,13 +1578,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_cross_prefecture_arbitrage_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/cross_prefecture_arbitrage_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_cross_prefecture_arbitrage_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_cross_prefecture_arbitrage_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "city_size_subsidy_propensity_packet",
@@ -1598,13 +1598,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_city_size_subsidy_propensity_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/city_size_subsidy_propensity_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_city_size_subsidy_propensity_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 51,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_city_size_subsidy_propensity_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "regional_enforcement_density_packet",
@@ -1618,13 +1618,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_regional_enforcement_density_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/regional_enforcement_density_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_regional_enforcement_density_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 47,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_regional_enforcement_density_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "prefecture_court_decision_focus_packet",
@@ -1638,13 +1638,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_prefecture_court_decision_focus_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/prefecture_court_decision_focus_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_prefecture_court_decision_focus_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 5,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_prefecture_court_decision_focus_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "city_jct_density_packet",
@@ -1658,13 +1658,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_city_jct_density_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/city_jct_density_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_city_jct_density_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 47,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_city_jct_density_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "rural_subsidy_coverage_packet",
@@ -1678,13 +1678,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_rural_subsidy_coverage_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/rural_subsidy_coverage_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_rural_subsidy_coverage_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 47,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_rural_subsidy_coverage_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "prefecture_environmental_compliance_packet",
@@ -1698,13 +1698,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_prefecture_environmental_compliance_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/prefecture_environmental_compliance_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_prefecture_environmental_compliance_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 45,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_prefecture_environmental_compliance_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "houjin_parent_subsidiary_packet",
@@ -1718,13 +1718,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_houjin_parent_subsidiary_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/houjin_parent_subsidiary_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_houjin_parent_subsidiary_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 2918,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_houjin_parent_subsidiary_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "business_partner_360_packet",
@@ -1738,13 +1738,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_business_partner_360_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/business_partner_360_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_business_partner_360_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 1,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_business_partner_360_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "board_member_overlap_packet",
@@ -1758,13 +1758,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_board_member_overlap_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/board_member_overlap_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_board_member_overlap_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 49,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_board_member_overlap_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "founding_succession_chain_packet",
@@ -1778,13 +1778,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_founding_succession_chain_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/founding_succession_chain_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_founding_succession_chain_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 1005,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_founding_succession_chain_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "certification_houjin_link_packet",
@@ -1798,13 +1798,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_certification_houjin_link_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/certification_houjin_link_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_certification_houjin_link_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 3,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_certification_houjin_link_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "license_houjin_jurisdiction_packet",
@@ -1818,13 +1818,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_license_houjin_jurisdiction_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/license_houjin_jurisdiction_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_license_houjin_jurisdiction_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 5,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_license_houjin_jurisdiction_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "employment_program_eligibility_packet",
@@ -1838,13 +1838,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_employment_program_eligibility_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/employment_program_eligibility_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_employment_program_eligibility_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 47,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_employment_program_eligibility_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "vendor_payment_history_match_packet",
@@ -1858,13 +1858,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_vendor_payment_history_match_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/vendor_payment_history_match_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_vendor_payment_history_match_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 1,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_vendor_payment_history_match_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "industry_association_link_packet",
@@ -1878,13 +1878,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_industry_association_link_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/industry_association_link_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_industry_association_link_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 50,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_industry_association_link_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "public_listed_program_link_packet",
@@ -1898,13 +1898,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_public_listed_program_link_packets.py",
-      "s3_path": null,
-      "glue_database": null,
-      "glue_table": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/public_listed_program_link_v1/",
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_public_listed_program_link_v1",
       "aws_region": "ap-northeast-1",
-      "estimated_rows": null,
-      "athena_query_template": null,
-      "status": "PENDING"
+      "estimated_rows": 191,
+      "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_public_listed_program_link_v1\" WHERE entity_id = ? LIMIT 100",
+      "status": "WIRED"
     },
     {
       "outcome_id": "healthcare_compliance_subsidy_packet",
@@ -1912,7 +1912,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_healthcare_compliance_subsidy_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -1928,7 +1932,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_agriculture_program_intensity_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -1944,7 +1952,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_transport_logistics_grants_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -1960,7 +1972,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_energy_efficiency_subsidy_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -1976,7 +1992,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_construction_public_works_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -1992,7 +2012,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_manufacturing_dx_grants_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2008,7 +2032,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_retail_inbound_subsidy_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2024,7 +2052,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_education_research_grants_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2040,7 +2072,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_finance_fintech_regulation_packets.py",
       "s3_path": null,
       "glue_database": null,
@@ -2056,7 +2092,11 @@
       "billable": true,
       "cost_band": "mid",
       "estimated_price_jpy": 600,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "packet_generator": "generate_non_profit_program_overlay_packets.py",
       "s3_path": null,
       "glue_database": null,
