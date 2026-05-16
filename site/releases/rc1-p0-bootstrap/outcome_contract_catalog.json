@@ -5009,5 +5009,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 product recall history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "product_recall_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 safety certification intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "safety_certification_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 food label compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "food_label_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 drug pharmaceutical audit packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "drug_pharmaceutical_audit_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 medical device compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "medical_device_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 cosmetic safety signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cosmetic_safety_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 toy safety certification (STマーク) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "toy_safety_certification_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 chemical substance disclosure (化審法/PRTR/SDS/GHS) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "chemical_substance_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 electrical safety audit (電安法/PSE) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "electrical_safety_audit_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 consumer complaint pulse (PIO-NET) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "consumer_complaint_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
