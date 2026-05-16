@@ -278,6 +278,27 @@ Phase 9 is the *end of the AWS canary*. It runs *after* Wave 56-58
 - Memory `project_jpcite_canary_burn_phase_by_phase_2026_05_16.md`
   updated with Phase 9 = DONE + final $burn.
 
+### Phase 9 DRY_RUN corrections (2026-05-16 verified)
+
+DRY_RUN executed against profile `bookyou-recovery`
+(see `docs/_internal/phase9_dry_run_2026_05_16.md` for full step-by-step
+results). 6/7 steps verified — the corrections below close the gaps:
+
+- **Step 1 schedule discovery**: explicitly query both
+  `aws scheduler list-schedules --name-prefix jpcite` (EventBridge Scheduler
+  API) **and** `aws events list-rules --name-prefix jpcite` (EventBridge Rules
+  API), since the canary schedule may live in either namespace. DRY_RUN
+  showed Scheduler API empty; Rules API has not been independently confirmed.
+- **Step 3 cost freeze**: call `aws ce get-cost-and-usage --region us-east-1
+  ...` directly with explicit region pin, rather than depending on
+  `burn_target.py` MTD aggregate (which reads $0 under cross-region token
+  default).
+- **Step 5 attestation**: prepend "deploy Lambda first
+  (`bash scripts/aws_credit_ops/deploy_canary_attestation_lambda.sh`) before
+  invoking attestation". Alternatively, allow CLI fallback via
+  `.venv/bin/python scripts/aws_credit_ops/emit_canary_attestation.py` so
+  Phase 9 is not blocked by task #108.
+
 ## 6. Out of scope
 
 - LLM-side enrichment of outcomes (banned by
