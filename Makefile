@@ -32,7 +32,7 @@ P0_K = p0 or facade or outcome_routing or csv_intake or release_capsule or agent
 
 .DEFAULT_GOAL := help
 
-.PHONY: help test test-p0 lint format typecheck typecheck-fast typecheck-fast-stop site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown
+.PHONY: help test test-p0 lint format typecheck typecheck-fast typecheck-fast-stop pre-commit-install pre-commit-run site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict
 
 help:
 	@echo "jpcite Makefile targets:"
@@ -43,6 +43,8 @@ help:
 	@echo "  make typecheck    Run mypy on src/ (one-shot, sqlite-cached)"
 	@echo "  make typecheck-fast    Run dmypy daemon incremental check on src/jpintel_mcp/"
 	@echo "  make typecheck-fast-stop  Stop the dmypy daemon"
+	@echo "  make pre-commit-install   Install .git/hooks/pre-commit (one-time per clone)"
+	@echo "  make pre-commit-run       Run all pre-commit hooks across the tree"
 	@echo "  make site         Regenerate sitemap + llms metadata"
 	@echo "  make api          Re-export OpenAPI v1 spec"
 	@echo "  make mcp          Run server.json drift check"
@@ -51,6 +53,9 @@ help:
 	@echo "  make validate     Validate release capsule"
 	@echo "  make sync-manifest-sha  Idempotently sync release manifest sha256 -> well-known"
 	@echo "  make schema-docs  Regenerate docs/_internal/JPCIR_SCHEMA_REFERENCE.md from schemas/jpcir/"
+	@echo "  make docs         Build mkdocs site (no strict, social plugin honoured)"
+	@echo "  make docs-fast    PERF-15 incremental dev build (no strict, --dirty, social OFF)"
+	@echo "  make docs-strict  CI-equivalent build (--strict, fails on warnings)"
 	@echo "  make e2e          bootstrap -> api -> mcp -> sync-manifest-sha -> validate -> gate"
 	@echo "  make emergency-stop"
 	@echo "                    PANIC BUTTON. Stream I/E kill switch (AWS + CF rollback)."
@@ -96,6 +101,25 @@ typecheck-fast:
 
 typecheck-fast-stop:
 	.venv/bin/dmypy stop || true
+
+# PERF-12 (Wave 51, 2026-05-16): pre-commit install + run targets.
+#
+# `pre-commit-install` writes .git/hooks/pre-commit so every `git commit` runs
+# the .pre-commit-config.yaml hook chain (ruff --fix / ruff-format / mypy /
+# bandit / gitleaks / yamllint / distribution drift). One-time setup per clone.
+#
+# `pre-commit-run` is the manual full-tree sweep used by CI parity checks and
+# whenever a developer wants to lint+format the whole repo without committing.
+# Ruff hits .ruff_cache (warm ~30ms on src/scripts/tests, cold ~330ms after a
+# .ruff_cache wipe — verified 2026-05-16) so the run cost is dominated by mypy
+# strict, not ruff.
+pre-commit-install:
+	.venv/bin/pre-commit install
+	@echo "[pre-commit] hook installed at .git/hooks/pre-commit"
+	@echo "[pre-commit] run 'make pre-commit-run' to sweep the whole tree"
+
+pre-commit-run:
+	.venv/bin/pre-commit run --all-files
 
 site:
 	$(PY) scripts/regen_structured_sitemap_and_llms_meta.py
@@ -145,3 +169,33 @@ emergency-stop:
 teardown:
 	@echo "[teardown] DRY_RUN=$${DRY_RUN:-true} JPCITE_INCLUDE_ECR_CLEANUP=$${JPCITE_INCLUDE_ECR_CLEANUP:-false}"
 	bash scripts/teardown/run_all.sh
+
+# PERF-15 (Wave 51, 2026-05-16): mkdocs build performance targets.
+#
+# Baseline: full build of ~1,074 source .md → ~250 published pages = 2.74s
+# (social plugin OFF, no --strict). CI continues to run --strict via the
+# pages-preview.yml workflow; the dev-loop targets below trade strictness
+# for iteration speed.
+#
+# - `make docs`        clean build, no strict (warnings non-fatal)
+# - `make docs-fast`   incremental --dirty build (only rebuilds changed pages,
+#                      skips social plugin which needs cairo arm64 on macOS).
+#                      Typical: <1s on hot cache, ~2.5s cold.
+# - `make docs-strict` mirrors the CI gate (--strict + social plugin on).
+#                      Use before merging doc changes that touch nav/links.
+#
+# All three honour the MKDOCS_SOCIAL_ENABLED env var (default true). Set to
+# false locally to skip the cairo-dependent social card generation that is
+# broken under macOS Rosetta. CI sets it to true (via Linux runner) so OG
+# images are still emitted for every published page.
+MKDOCS ?= .venv/bin/mkdocs
+
+docs:
+	$(MKDOCS) build
+
+docs-fast:
+	@echo "[docs-fast] incremental build (--dirty); social plugin OFF for arm64-mac compat"
+	MKDOCS_SOCIAL_ENABLED=false $(MKDOCS) build --dirty
+
+docs-strict:
+	$(MKDOCS) build --strict
