@@ -1,7 +1,7 @@
 {
   "schema_version": "jpcite.outcome_packet_athena_crosswalk.v1",
   "catalog_id": "jpcite-outcome-packet-crosswalk-2026-05-17",
-  "generated_at": "2026-05-17T01:15:00Z",
+  "generated_at": "2026-05-16T16:07:40Z",
   "source_documents": {
     "outcome_catalog": "site/.well-known/jpcite-outcome-catalog.json",
     "outcome_contract_catalog": "site/releases/rc1-p0-bootstrap/outcome_contract_catalog.json",
@@ -11,8 +11,8 @@
     "glue_region": "ap-northeast-1"
   },
   "total_outcomes": 412,
-  "wired_count": 239,
-  "pending_count": 173,
+  "wired_count": 269,
+  "pending_count": 143,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -7618,13 +7618,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_commercial_real_estate_footprint_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/commercial_real_estate_footprint_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_commercial_real_estate_footprint_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "headquarters_lease_signal_packet",
@@ -7638,13 +7638,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_headquarters_lease_signal_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/headquarters_lease_signal_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_headquarters_lease_signal_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "property_tax_signal_packet",
@@ -7658,13 +7658,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_property_tax_signal_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/property_tax_signal_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_property_tax_signal_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "office_relocation_event_packet",
@@ -7678,13 +7678,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_office_relocation_event_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/office_relocation_event_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_office_relocation_event_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "manufacturing_facility_inventory_packet",
@@ -7698,13 +7698,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_manufacturing_facility_inventory_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/manufacturing_facility_inventory_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_manufacturing_facility_inventory_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "warehouse_logistics_node_packet",
@@ -7718,13 +7718,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_warehouse_logistics_node_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/warehouse_logistics_node_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_warehouse_logistics_node_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "retail_store_footprint_packet",
@@ -7738,13 +7738,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_retail_store_footprint_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/retail_store_footprint_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_retail_store_footprint_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "real_estate_investment_signal_packet",
@@ -7758,13 +7758,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_real_estate_investment_signal_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/real_estate_investment_signal_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_real_estate_investment_signal_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "j_reit_holding_proxy_packet",
@@ -7778,13 +7778,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_j_reit_holding_proxy_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/j_reit_holding_proxy_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_j_reit_holding_proxy_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "lease_obligation_disclosure_packet",
@@ -7798,13 +7798,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_lease_obligation_disclosure_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/lease_obligation_disclosure_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_lease_obligation_disclosure_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": null,
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "product_recall_history_packet",
@@ -7818,13 +7818,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_product_recall_history_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/product_recall_history_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_product_recall_history_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_product_recall_history_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "safety_certification_intensity_packet",
@@ -7838,13 +7838,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_safety_certification_intensity_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/safety_certification_intensity_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_safety_certification_intensity_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_safety_certification_intensity_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "food_label_compliance_packet",
@@ -7858,13 +7858,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_food_label_compliance_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/food_label_compliance_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_food_label_compliance_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_food_label_compliance_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "drug_pharmaceutical_audit_packet",
@@ -7878,13 +7878,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_drug_pharmaceutical_audit_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/drug_pharmaceutical_audit_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_drug_pharmaceutical_audit_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_drug_pharmaceutical_audit_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "medical_device_compliance_packet",
@@ -7898,13 +7898,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_medical_device_compliance_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/medical_device_compliance_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_medical_device_compliance_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_medical_device_compliance_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "cosmetic_safety_signal_packet",
@@ -7918,13 +7918,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_cosmetic_safety_signal_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/cosmetic_safety_signal_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_cosmetic_safety_signal_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_cosmetic_safety_signal_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "toy_safety_certification_packet",
@@ -7938,13 +7938,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_toy_safety_certification_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/toy_safety_certification_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_toy_safety_certification_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_toy_safety_certification_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "chemical_substance_disclosure_packet",
@@ -7958,13 +7958,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_chemical_substance_disclosure_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/chemical_substance_disclosure_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_chemical_substance_disclosure_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_chemical_substance_disclosure_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "electrical_safety_audit_packet",
@@ -7978,13 +7978,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_electrical_safety_audit_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/electrical_safety_audit_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_electrical_safety_audit_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_electrical_safety_audit_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "consumer_complaint_pulse_packet",
@@ -7998,13 +7998,13 @@
         "known_gaps"
       ],
       "packet_generator": "generate_consumer_complaint_pulse_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/consumer_complaint_pulse_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_consumer_complaint_pulse_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_consumer_complaint_pulse_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "liability_insurance_coverage_packet",
@@ -8016,13 +8016,13 @@
         "liability_insurance_coverage_v1"
       ],
       "packet_generator": "generate_liability_insurance_coverage_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/liability_insurance_coverage_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_liability_insurance_coverage_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_liability_insurance_coverage_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "directors_officers_insurance_packet",
@@ -8034,13 +8034,13 @@
         "directors_officers_insurance_v1"
       ],
       "packet_generator": "generate_directors_officers_insurance_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/directors_officers_insurance_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_directors_officers_insurance_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_directors_officers_insurance_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "cyber_insurance_uptake_packet",
@@ -8052,13 +8052,13 @@
         "cyber_insurance_uptake_v1"
       ],
       "packet_generator": "generate_cyber_insurance_uptake_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/cyber_insurance_uptake_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_cyber_insurance_uptake_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_cyber_insurance_uptake_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "business_interruption_coverage_packet",
@@ -8070,13 +8070,13 @@
         "business_interruption_coverage_v1"
       ],
       "packet_generator": "generate_business_interruption_coverage_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/business_interruption_coverage_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_business_interruption_coverage_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_business_interruption_coverage_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "employer_practices_liability_packet",
@@ -8088,13 +8088,13 @@
         "employer_practices_liability_v1"
       ],
       "packet_generator": "generate_employer_practices_liability_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/employer_practices_liability_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_employer_practices_liability_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_employer_practices_liability_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "product_liability_insurance_packet",
@@ -8106,13 +8106,13 @@
         "product_liability_insurance_v1"
       ],
       "packet_generator": "generate_product_liability_insurance_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/product_liability_insurance_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_product_liability_insurance_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_product_liability_insurance_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "professional_indemnity_insurance_packet",
@@ -8124,13 +8124,13 @@
         "professional_indemnity_insurance_v1"
       ],
       "packet_generator": "generate_professional_indemnity_insurance_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/professional_indemnity_insurance_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_professional_indemnity_insurance_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_professional_indemnity_insurance_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "earthquake_insurance_uptake_packet",
@@ -8142,13 +8142,13 @@
         "earthquake_insurance_uptake_v1"
       ],
       "packet_generator": "generate_earthquake_insurance_uptake_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/earthquake_insurance_uptake_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_earthquake_insurance_uptake_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_earthquake_insurance_uptake_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "captive_insurance_signal_packet",
@@ -8160,13 +8160,13 @@
         "captive_insurance_signal_v1"
       ],
       "packet_generator": "generate_captive_insurance_signal_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/captive_insurance_signal_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_captive_insurance_signal_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_captive_insurance_signal_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     },
     {
       "outcome_id": "risk_management_certification_packet",
@@ -8178,13 +8178,13 @@
         "risk_management_certification_v1"
       ],
       "packet_generator": "generate_risk_management_certification_packets.py",
-      "s3_path": null,
+      "s3_path": "s3://jpcite-credit-993693061769-202605-derived/risk_management_certification_v1/",
       "glue_database": "jpcite_credit_2026_05",
       "glue_table": "packet_risk_management_certification_v1",
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_risk_management_certification_v1 LIMIT 100",
-      "status": "PENDING"
+      "status": "WIRED"
     }
   ],
   "gap_classification": {
@@ -9135,7 +9135,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_commercial_real_estate_footprint_packets.py",
       "glue_table": "packet_commercial_real_estate_footprint_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9144,7 +9144,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_headquarters_lease_signal_packets.py",
       "glue_table": "packet_headquarters_lease_signal_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9153,7 +9153,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_property_tax_signal_packets.py",
       "glue_table": "packet_property_tax_signal_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9162,7 +9162,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_office_relocation_event_packets.py",
       "glue_table": "packet_office_relocation_event_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9171,7 +9171,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_manufacturing_facility_inventory_packets.py",
       "glue_table": "packet_manufacturing_facility_inventory_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9180,7 +9180,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_warehouse_logistics_node_packets.py",
       "glue_table": "packet_warehouse_logistics_node_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9189,7 +9189,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_retail_store_footprint_packets.py",
       "glue_table": "packet_retail_store_footprint_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9198,7 +9198,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_real_estate_investment_signal_packets.py",
       "glue_table": "packet_real_estate_investment_signal_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9207,7 +9207,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_j_reit_holding_proxy_packets.py",
       "glue_table": "packet_j_reit_holding_proxy_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9216,7 +9216,7 @@
       "generator_script": "scripts/aws_credit_ops/generate_lease_obligation_disclosure_packets.py",
       "glue_table": "packet_lease_obligation_disclosure_v1",
       "subject_kind": "jsic_major",
-      "wired_status": "pending",
+      "wired_status": "wired",
       "wave": 93
     },
     {
@@ -9226,7 +9226,7 @@
       "package_kind": "liability_insurance_coverage_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_directors_officers_insurance_packets.py",
@@ -9235,7 +9235,7 @@
       "package_kind": "directors_officers_insurance_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_cyber_insurance_uptake_packets.py",
@@ -9244,7 +9244,7 @@
       "package_kind": "cyber_insurance_uptake_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_business_interruption_coverage_packets.py",
@@ -9253,7 +9253,7 @@
       "package_kind": "business_interruption_coverage_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_employer_practices_liability_packets.py",
@@ -9262,7 +9262,7 @@
       "package_kind": "employer_practices_liability_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_product_liability_insurance_packets.py",
@@ -9271,7 +9271,7 @@
       "package_kind": "product_liability_insurance_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_professional_indemnity_insurance_packets.py",
@@ -9280,7 +9280,7 @@
       "package_kind": "professional_indemnity_insurance_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_earthquake_insurance_uptake_packets.py",
@@ -9289,7 +9289,7 @@
       "package_kind": "earthquake_insurance_uptake_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_captive_insurance_signal_packets.py",
@@ -9298,7 +9298,7 @@
       "package_kind": "captive_insurance_signal_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
-      "wired_status": "pending"
+      "wired_status": "wired"
     },
     {
       "generator_script": "scripts/aws_credit_ops/generate_risk_management_certification_packets.py",
@@ -9307,6 +9307,186 @@
       "package_kind": "risk_management_certification_v1",
       "subject_kind": "jsic_major",
       "wave": 94,
+      "wired_status": "wired"
+    },
+    {
+      "outcome_contract_id": "product_recall_history_packet",
+      "package_kind": "product_recall_history_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_product_recall_history_packets.py",
+      "glue_table": "packet_product_recall_history_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "safety_certification_intensity_packet",
+      "package_kind": "safety_certification_intensity_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_safety_certification_intensity_packets.py",
+      "glue_table": "packet_safety_certification_intensity_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "food_label_compliance_packet",
+      "package_kind": "food_label_compliance_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_food_label_compliance_packets.py",
+      "glue_table": "packet_food_label_compliance_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "drug_pharmaceutical_audit_packet",
+      "package_kind": "drug_pharmaceutical_audit_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_drug_pharmaceutical_audit_packets.py",
+      "glue_table": "packet_drug_pharmaceutical_audit_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "medical_device_compliance_packet",
+      "package_kind": "medical_device_compliance_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_medical_device_compliance_packets.py",
+      "glue_table": "packet_medical_device_compliance_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "cosmetic_safety_signal_packet",
+      "package_kind": "cosmetic_safety_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_cosmetic_safety_signal_packets.py",
+      "glue_table": "packet_cosmetic_safety_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "toy_safety_certification_packet",
+      "package_kind": "toy_safety_certification_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_toy_safety_certification_packets.py",
+      "glue_table": "packet_toy_safety_certification_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "chemical_substance_disclosure_packet",
+      "package_kind": "chemical_substance_disclosure_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_chemical_substance_disclosure_packets.py",
+      "glue_table": "packet_chemical_substance_disclosure_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "electrical_safety_audit_packet",
+      "package_kind": "electrical_safety_audit_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_electrical_safety_audit_packets.py",
+      "glue_table": "packet_electrical_safety_audit_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "outcome_contract_id": "consumer_complaint_pulse_packet",
+      "package_kind": "consumer_complaint_pulse_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_consumer_complaint_pulse_packets.py",
+      "glue_table": "packet_consumer_complaint_pulse_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "wired",
+      "wave": 92
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_digital_touchpoint_inventory_packets.py",
+      "glue_table": "packet_digital_touchpoint_inventory_v1",
+      "outcome_contract_id": "digital_touchpoint_inventory_packet",
+      "package_kind": "digital_touchpoint_inventory_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_customer_acquisition_velocity_packets.py",
+      "glue_table": "packet_customer_acquisition_velocity_v1",
+      "outcome_contract_id": "customer_acquisition_velocity_packet",
+      "package_kind": "customer_acquisition_velocity_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_conversion_funnel_signal_packets.py",
+      "glue_table": "packet_conversion_funnel_signal_v1",
+      "outcome_contract_id": "conversion_funnel_signal_packet",
+      "package_kind": "conversion_funnel_signal_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_retention_metric_proxy_packets.py",
+      "glue_table": "packet_retention_metric_proxy_v1",
+      "outcome_contract_id": "retention_metric_proxy_packet",
+      "package_kind": "retention_metric_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_churn_risk_signal_packets.py",
+      "glue_table": "packet_churn_risk_signal_v1",
+      "outcome_contract_id": "churn_risk_signal_packet",
+      "package_kind": "churn_risk_signal_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_upsell_cross_sell_signal_packets.py",
+      "glue_table": "packet_upsell_cross_sell_signal_v1",
+      "outcome_contract_id": "upsell_cross_sell_signal_packet",
+      "package_kind": "upsell_cross_sell_signal_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_service_quality_complaint_packets.py",
+      "glue_table": "packet_service_quality_complaint_v1",
+      "outcome_contract_id": "service_quality_complaint_packet",
+      "package_kind": "service_quality_complaint_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_mobile_first_signal_packets.py",
+      "glue_table": "packet_mobile_first_signal_v1",
+      "outcome_contract_id": "mobile_first_signal_packet",
+      "package_kind": "mobile_first_signal_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_multilingual_support_disclosure_packets.py",
+      "glue_table": "packet_multilingual_support_disclosure_v1",
+      "outcome_contract_id": "multilingual_support_disclosure_packet",
+      "package_kind": "multilingual_support_disclosure_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_accessibility_compliance_signal_packets.py",
+      "glue_table": "packet_accessibility_compliance_signal_v1",
+      "outcome_contract_id": "accessibility_compliance_signal_packet",
+      "package_kind": "accessibility_compliance_signal_v1",
+      "subject_kind": "jsic_major",
+      "wave": 95,
       "wired_status": "pending"
     }
   ],
