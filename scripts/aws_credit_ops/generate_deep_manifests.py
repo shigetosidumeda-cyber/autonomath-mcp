@@ -473,7 +473,7 @@ def build_j01_deep() -> dict[str, Any]:
 
     # 47 都道府県 apex (each contributes 4 URLs: top / 補助金 / 入札 / robots).
     pref_urls: list[str] = []
-    for code, apex in PREF_APEX.items():
+    for _code, apex in PREF_APEX.items():
         pref_urls.extend(
             [
                 f"https://www.{apex}/",
@@ -1133,7 +1133,7 @@ def build_j06_deep() -> dict[str, Any]:
         "/keiei/hojokin/",
         "/nyusatsu/",
     ]
-    for code, apex in PREF_APEX.items():
+    for _code, apex in PREF_APEX.items():
         for path in pref_paths:
             pref_entries.append(f"https://www.{apex}{path}")
 

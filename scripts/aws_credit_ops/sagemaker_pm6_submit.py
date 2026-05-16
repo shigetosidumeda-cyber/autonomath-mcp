@@ -168,7 +168,7 @@ def main() -> None:
     actual_usd = preflight_cost_check()
     print(f"[preflight] actual_usd={actual_usd} < {HARD_STOP_USD} OK")
 
-    run_id = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    run_id = dt.datetime.now(dt.UTC).strftime("%Y%m%dT%H%M%SZ")
     print(f"[run_id] {run_id}")
 
     if not args.commit:

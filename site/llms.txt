@@ -2,7 +2,7 @@
 
 Brand identity: current primary brand is jpcite. Canonical domain: https://jpcite.com.
 Brand history: formerly discovered as 税務会計AI / AutonoMath / zeimu-kaikei.ai; current primary brand is jpcite.
-MCP package: autonomath-mcp. Public MCP tools: 169. Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included); anonymous usage is 3 requests/day/IP.
+MCP package: autonomath-mcp. Public MCP tools: 184. Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included); anonymous usage is 3 requests/day/IP.
 Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included). Ordinary successful search/detail lookup requests are usually 1 billable unit; anonymous evaluation is 3 requests/day/IP.
 Agent keywords: Evidence prefetch, compact Evidence Packet, token-cost control, company_public_baseline, source_url, source_fetched_at, known_gaps, Source Receipt, Review Handoff Packet, ¥3.30, 匿名 3 回/日, 外部LLM charges are separate, openapi.agent.json, mcp-server.json.
 
@@ -33,7 +33,7 @@ Do not invent entity pages. For individual programs, cases, laws, companies, or 
 
 ## P0 Facade
 
-P0 deterministic facade for agent-runtime packet planning. 4 tools, no request-time LLM call, no AWS dependency, no Stripe charge except on accepted_artifact delivery via `jpcite_execute_packet`. Each REST endpoint is mirrored 1:1 by an MCP tool of the same name; the `x-mcp-tool` extension in the OpenAPI spec is the binding.
+P0 deterministic facade for agent-runtime packet planning. 184 tools, no request-time LLM call, no AWS dependency, no Stripe charge except on accepted_artifact delivery via `jpcite_execute_packet`. Each REST endpoint is mirrored 1:1 by an MCP tool of the same name; the `x-mcp-tool` extension in the OpenAPI spec is the binding.
 
 1. `jpcite_route` — `POST /v1/jpcite/route`. Free. Routes an agent intent to the cheapest sufficient jpcite deliverable across the outcome catalog. Returns recommended_tool, outcome_contract_id, deliverable_slug, estimated_price_jpy, execute_input_hash, free_inline_packets, and next_action.
 2. `jpcite_preview_cost` — `POST /v1/jpcite/preview_cost`. Free preflight. Returns predicted_total_jpy = ¥0 for free packets and estimated_price_jpy + cap_passed for paid outcomes. Use before `jpcite_execute_packet` to confirm price + scope.

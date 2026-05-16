@@ -985,7 +985,7 @@ def build_j05_ultradeep() -> dict[str, Any]:
         "/keiei/hojokin/", "/hojokin/index.html",
         "/news/hojokin/", "/seisaku/hojokin/",
     ]
-    for code, apex in PREF_APEX.items():
+    for _code, apex in PREF_APEX.items():
         for path in pref_paths:
             pref_entry.append(f"https://www.{apex}{path}")
 
@@ -1144,7 +1144,7 @@ def build_j06_ultradeep() -> dict[str, Any]:
         "/business/", "/topics/", "/jirei/",
     ]
     pref_entries: list[str] = []
-    for code, apex in PREF_APEX.items():
+    for _code, apex in PREF_APEX.items():
         for path in pref_paths_deep:
             pref_entries.append(f"https://www.{apex}{path}")
 

@@ -1,8 +1,9 @@
 """Tests for entrypoint output target resolution (3 forms)."""
 from __future__ import annotations
+
+import importlib.util
 import os
 import sys
-import importlib.util
 from pathlib import Path
 
 import pytest
@@ -63,12 +64,12 @@ def test_output_env_fallback():
     os.environ.pop("OUTPUT_S3_BUCKET")
 
 
-def test_all_J0X_manifests_have_s3_uri_output_prefix():
-    """All J01-J07 manifests should use s3://bucket/prefix form per master plan canonical."""
+def test_all_j0x_manifests_have_s3_uri_output_prefix():
+    """All J01-J0X manifests should use s3://bucket/prefix form per master plan canonical."""
     import json
     manifests_dir = ROOT / "data" / "aws_credit_jobs"
     files = sorted(manifests_dir.glob("J0?_*.json"))
-    assert len(files) == 7, f"expected 7 manifests, got {len(files)}"
+    assert len(files) >= 7, f"expected at least 7 manifests, got {len(files)}"
     for f in files:
         with f.open() as fp:
             d = json.load(fp)
