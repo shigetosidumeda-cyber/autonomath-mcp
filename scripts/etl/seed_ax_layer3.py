@@ -99,14 +99,14 @@ _A2A_HANDSHAKES: tuple[dict[str, str], ...] = (
 # pillar (4) plus four Layer 3 specific signals (webmcp / a2a /
 # handshake_success / handshake_failure).
 _OBSERVABILITY_METRICS: tuple[dict[str, str | float], ...] = (
-    {"metric_name": "ax.layer3.webmcp.endpoints_active",       "value": 3.0,    "unit": "count"},
-    {"metric_name": "ax.layer3.a2a.handshakes_total",           "value": 2.0,    "unit": "count"},
-    {"metric_name": "ax.layer3.a2a.handshake_success_rate",     "value": 1.0,    "unit": "ratio"},
-    {"metric_name": "ax.layer3.observability.metrics_emitted",  "value": 8.0,    "unit": "count"},
-    {"metric_name": "ax.pillar.access.surfaces_active",         "value": 12.0,   "unit": "count"},
-    {"metric_name": "ax.pillar.context.surfaces_active",        "value": 9.0,    "unit": "count"},
-    {"metric_name": "ax.pillar.tools.surfaces_active",          "value": 139.0,  "unit": "count"},
-    {"metric_name": "ax.pillar.orchestration.surfaces_active",  "value": 6.0,    "unit": "count"},
+    {"metric_name": "ax.layer3.webmcp.endpoints_active", "value": 3.0, "unit": "count"},
+    {"metric_name": "ax.layer3.a2a.handshakes_total", "value": 2.0, "unit": "count"},
+    {"metric_name": "ax.layer3.a2a.handshake_success_rate", "value": 1.0, "unit": "ratio"},
+    {"metric_name": "ax.layer3.observability.metrics_emitted", "value": 8.0, "unit": "count"},
+    {"metric_name": "ax.pillar.access.surfaces_active", "value": 12.0, "unit": "count"},
+    {"metric_name": "ax.pillar.context.surfaces_active", "value": 9.0, "unit": "count"},
+    {"metric_name": "ax.pillar.tools.surfaces_active", "value": 139.0, "unit": "count"},
+    {"metric_name": "ax.pillar.orchestration.surfaces_active", "value": 6.0, "unit": "count"},
 )
 
 
@@ -136,8 +136,7 @@ def _upsert_webmcp_endpoint(
     dry_run: bool,
 ) -> str:
     cur = conn.execute(
-        "SELECT endpoint_id FROM am_webmcp_endpoint "
-        "WHERE path = ? AND transport = ?",
+        "SELECT endpoint_id FROM am_webmcp_endpoint WHERE path = ? AND transport = ?",
         (row["path"], row["transport"]),
     )
     existing = cur.fetchone()
@@ -203,9 +202,7 @@ def _maybe_append_metric(
             return "noop"
     if not dry_run:
         conn.execute(
-            "INSERT INTO am_observability_metric "
-            "(metric_name, value, unit) "
-            "VALUES (?, ?, ?)",
+            "INSERT INTO am_observability_metric (metric_name, value, unit) VALUES (?, ?, ?)",
             (row["metric_name"], row["value"], row["unit"]),
         )
     return "inserted"

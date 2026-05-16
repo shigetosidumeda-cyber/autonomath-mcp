@@ -32,6 +32,7 @@ Usage
     python scripts/etl/fill_program_private_foundation_2x.py --source all
     python scripts/etl/fill_program_private_foundation_2x.py --source koeki_info --max-rows 500
 """
+
 from __future__ import annotations
 
 import sys
@@ -54,9 +55,7 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 4
-        spec = importlib.util.spec_from_file_location(
-            "fill_programs_foundation_2x", sibling
-        )
+        spec = importlib.util.spec_from_file_location("fill_programs_foundation_2x", sibling)
         if spec is None or spec.loader is None:
             print("import spec build failed for sibling ETL", file=sys.stderr)
             return 5

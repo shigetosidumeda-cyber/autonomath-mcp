@@ -82,9 +82,7 @@ _SRC = _REPO_ROOT / "src"
 if _SRC.is_dir() and str(_SRC) not in sys.path:
     sys.path.insert(0, str(_SRC))
 
-_DEFAULT_DB = Path(
-    os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db"))
-)
+_DEFAULT_DB = Path(os.environ.get("AUTONOMATH_DB_PATH", str(_REPO_ROOT / "autonomath.db")))
 
 # Wilson score 95% CI constant (z-value).
 _WILSON_Z_95 = 1.959963984540054
@@ -177,9 +175,7 @@ def _load_signing_key():
             Ed25519PrivateKey,
         )
     except ImportError:
-        logger.warning(
-            "cryptography not installed; falling back to SHA-256 digest"
-        )
+        logger.warning("cryptography not installed; falling back to SHA-256 digest")
         return None
     try:
         seed = bytes.fromhex(seed_hex)
@@ -230,9 +226,7 @@ def _has_v3_columns(conn: sqlite3.Connection) -> bool:
     try:
         cols = {
             row["name"]
-            for row in conn.execute(
-                "PRAGMA table_info(am_fact_source_agreement)"
-            ).fetchall()
+            for row in conn.execute("PRAGMA table_info(am_fact_source_agreement)").fetchall()
         }
     except sqlite3.OperationalError:
         return False
@@ -257,9 +251,7 @@ def _maybe_add_v3_columns(conn: sqlite3.Connection) -> bool:
     try:
         cols = {
             row["name"]
-            for row in conn.execute(
-                "PRAGMA table_info(am_fact_source_agreement)"
-            ).fetchall()
+            for row in conn.execute("PRAGMA table_info(am_fact_source_agreement)").fetchall()
         }
     except sqlite3.OperationalError:
         return False
@@ -276,9 +268,7 @@ def _maybe_add_v3_columns(conn: sqlite3.Connection) -> bool:
         if col in cols:
             continue
         try:
-            conn.execute(
-                f"ALTER TABLE am_fact_source_agreement ADD COLUMN {col} {decl}"
-            )
+            conn.execute(f"ALTER TABLE am_fact_source_agreement ADD COLUMN {col} {decl}")
             logger.info("added v3 column: %s", col)
         except sqlite3.OperationalError as exc:
             logger.warning("ADD COLUMN %s failed: %s", col, exc)
@@ -319,14 +309,10 @@ def _aggregate_fact(rows: list[sqlite3.Row]) -> dict[str, object]:
         # are >= 2 distinct values, surface canonical=None.
         if top_count > 1 or len(counter) == 1:
             canonical = top
-    sources_total = sum(1 for k in _KNOWN_KINDS if k in per_source) + (
-        1 if other_values else 0
-    )
+    sources_total = sum(1 for k in _KNOWN_KINDS if k in per_source) + (1 if other_values else 0)
     sources_agree = 0
     if canonical is not None:
-        sources_agree = sum(
-            1 for k in _KNOWN_KINDS if per_source.get(k) == canonical
-        )
+        sources_agree = sum(1 for k in _KNOWN_KINDS if per_source.get(k) == canonical)
         if canonical in other_values:
             sources_agree += 1
     breakdown = {k: (1 if k in per_source else 0) for k in _KNOWN_KINDS}

@@ -27,7 +27,7 @@ Registry name:   io.github.shigetosidumeda-cyber/autonomath-mcp
 Repo:            https://github.com/shigetosidumeda-cyber/autonomath-mcp
 Homepage:        https://jpcite.com
 License:         MIT
-Tools:           151 at default gates (verified)
+Tools:           155 at default gates (verified)
 Transport:       stdio + Streamable HTTP (MCP 2025-06-18)
 Pricing:         anonymous 3 req/day per IP free; metered ¥3/unit
 Operator:        Bookyou株式会社 (T8010001213708), info@bookyou.net

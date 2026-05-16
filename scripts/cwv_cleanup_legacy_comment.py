@@ -6,6 +6,7 @@ replaced — only the comment-marker line remains, and that line still matches
 canonical hardening patch no longer inserts this comment going forward
 (`scripts/cwv_hardening_patch.py` was updated to drop the marker).
 """
+
 from __future__ import annotations
 
 import re
@@ -17,7 +18,7 @@ SITE = REPO / "site"
 # Matches the audit-comment line including the trailing newline. The inner
 # <link> tag contains `>` characters, so we use a non-greedy `.*?` with DOTALL.
 COMMENT_RE = re.compile(
-    r'<!-- legacy CDN font \(kept for audit, self-host below\):.*?-->\n?',
+    r"<!-- legacy CDN font \(kept for audit, self-host below\):.*?-->\n?",
     re.DOTALL,
 )
 
@@ -26,8 +27,17 @@ def main() -> int:
     targets = []
     targets.extend(sorted(SITE.glob("*.html")))
     for sub in (
-        "_templates", "blog", "cases", "integrations", "audiences",
-        "industries", "prefectures", "programs", "cross", "qa", "news",
+        "_templates",
+        "blog",
+        "cases",
+        "integrations",
+        "audiences",
+        "industries",
+        "prefectures",
+        "programs",
+        "cross",
+        "qa",
+        "news",
         "compare",
     ):
         sd = SITE / sub

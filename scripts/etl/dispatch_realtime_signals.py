@@ -117,8 +117,7 @@ def _select_pending(
         LIMIT ?
     """
     return [
-        (r[0], r[1], r[2], r[3], r[4], r[5])
-        for r in conn.execute(sql, (int(limit),)).fetchall()
+        (r[0], r[1], r[2], r[3], r[4], r[5]) for r in conn.execute(sql, (int(limit),)).fetchall()
     ]
 
 
@@ -217,7 +216,11 @@ def dispatch(
                 skipped += 1
                 LOG.debug(
                     "dry-run: would POST event=%d sub=%d type=%s url=%s bytes=%d",
-                    event_id, subscriber_id, signal_type, webhook_url, len(body),
+                    event_id,
+                    subscriber_id,
+                    signal_type,
+                    webhook_url,
+                    len(body),
                 )
                 continue
 
@@ -227,14 +230,21 @@ def dispatch(
                 delivered += 1
                 LOG.info(
                     "delivered event=%d sub=%d type=%s status=%d",
-                    event_id, subscriber_id, signal_type, status,
+                    event_id,
+                    subscriber_id,
+                    signal_type,
+                    status,
                 )
             else:
                 _mark_failed(conn, event_id, status, error)
                 failed += 1
                 LOG.warning(
                     "failed event=%d sub=%d type=%s status=%s error=%s",
-                    event_id, subscriber_id, signal_type, status or "—", error or "—",
+                    event_id,
+                    subscriber_id,
+                    signal_type,
+                    status or "—",
+                    error or "—",
                 )
 
         if not dry_run:
@@ -253,19 +263,26 @@ def dispatch(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--db", type=Path, default=DEFAULT_DB_PATH,
+        "--db",
+        type=Path,
+        default=DEFAULT_DB_PATH,
         help="path to autonomath.db (default: repo root)",
     )
     parser.add_argument(
-        "--limit", type=int, default=DEFAULT_LIMIT,
+        "--limit",
+        type=int,
+        default=DEFAULT_LIMIT,
         help=f"max events to attempt in one pass (default: {DEFAULT_LIMIT})",
     )
     parser.add_argument(
-        "--timeout", type=float, default=DEFAULT_TIMEOUT_S,
+        "--timeout",
+        type=float,
+        default=DEFAULT_TIMEOUT_S,
         help=f"per-request timeout seconds (default: {DEFAULT_TIMEOUT_S})",
     )
     parser.add_argument(
-        "--dry-run", action="store_true",
+        "--dry-run",
+        action="store_true",
         help="report what would deliver without writing",
     )
     parser.add_argument("--verbose", action="store_true", help="DEBUG logging")
@@ -290,7 +307,10 @@ def main(argv: list[str] | None = None) -> int:
     LOG.info(
         "dispatcher %s: pending=%d delivered=%d failed=%d skipped=%d",
         "dry-run" if args.dry_run else "applied",
-        stats["pending"], stats["delivered"], stats["failed"], stats["skipped"],
+        stats["pending"],
+        stats["delivered"],
+        stats["failed"],
+        stats["skipped"],
     )
     # Emit machine-readable summary as the final stdout line for cron/CI.
     print(json.dumps({"dispatcher": "realtime_signal", **stats}))

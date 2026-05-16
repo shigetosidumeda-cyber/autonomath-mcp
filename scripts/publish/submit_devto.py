@@ -7,6 +7,7 @@ Usage:
 Token acquisition (~30 sec):
     https://dev.to/settings/extensions → "DEV Community API Keys" → Generate New Token
 """
+
 from __future__ import annotations
 
 import json

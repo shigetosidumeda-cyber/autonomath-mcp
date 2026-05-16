@@ -18,6 +18,7 @@ Cookie acquisition (~30 sec):
     3. Copy the value of `_note_session_v5`
     4. Export the User-Agent string from `navigator.userAgent` for the same session
 """
+
 from __future__ import annotations
 
 import os
@@ -44,7 +45,10 @@ def main() -> int:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        print("ERROR: playwright not installed. .venv/bin/pip install playwright && playwright install chromium", file=sys.stderr)
+        print(
+            "ERROR: playwright not installed. .venv/bin/pip install playwright && playwright install chromium",
+            file=sys.stderr,
+        )
         return 3
 
     text = SRC.read_text(encoding="utf-8")
@@ -56,21 +60,27 @@ def main() -> int:
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         ctx = browser.new_context(user_agent=ua, locale="ja-JP")
-        ctx.add_cookies([{
-            "name": "_note_session_v5",
-            "value": cookie,
-            "domain": ".note.com",
-            "path": "/",
-            "httpOnly": True,
-            "secure": True,
-            "sameSite": "Lax",
-        }])
+        ctx.add_cookies(
+            [
+                {
+                    "name": "_note_session_v5",
+                    "value": cookie,
+                    "domain": ".note.com",
+                    "path": "/",
+                    "httpOnly": True,
+                    "secure": True,
+                    "sameSite": "Lax",
+                }
+            ]
+        )
         page = ctx.new_page()
         page.goto("https://note.com/notes/new", wait_until="networkidle", timeout=45_000)
 
         # Title input — note.com editor uses a contenteditable for title and body.
         # Field structure last verified 2026-05 (will need refresh if editor refactors).
-        page.wait_for_selector("input[placeholder*='タイトル'], textarea[placeholder*='タイトル']", timeout=30_000)
+        page.wait_for_selector(
+            "input[placeholder*='タイトル'], textarea[placeholder*='タイトル']", timeout=30_000
+        )
         try:
             page.fill("input[placeholder*='タイトル']", title)
         except Exception:
@@ -83,7 +93,9 @@ def main() -> int:
         page.wait_for_timeout(2_000)
 
         # Publish — click 公開 button (note editor exposes 「公開設定」 → 「公開」)
-        publish_btn = page.locator("button:has-text('公開設定'), button:has-text('公開に進む')").first
+        publish_btn = page.locator(
+            "button:has-text('公開設定'), button:has-text('公開に進む')"
+        ).first
         publish_btn.click(timeout=15_000)
         page.wait_for_timeout(2_000)
         final_btn = page.locator("button:has-text('投稿')", has_not_text="下書き").first

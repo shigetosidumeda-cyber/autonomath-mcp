@@ -67,8 +67,7 @@ MAX_RETRIES = 3
 RETRY_BACKOFF_BASE_S = 1.5
 
 JPCITE_USER_AGENT = (
-    "jpcite-etl/0.3 (+https://jpcite.com/about/etl) "
-    "Playwright/HeadlessChromium operator-side fetch"
+    "jpcite-etl/0.3 (+https://jpcite.com/about/etl) Playwright/HeadlessChromium operator-side fetch"
 )
 
 
@@ -217,9 +216,7 @@ async def _render_async(
                     final_url = page.url or url
 
                     with contextlib.suppress(Exception):
-                        await page.wait_for_load_state(
-                            "networkidle", timeout=min(timeout_ms, 8000)
-                        )
+                        await page.wait_for_load_state("networkidle", timeout=min(timeout_ms, 8000))
 
                     text = await _extract_text(page)
                     extractor = _classify_extractor(text)
@@ -345,9 +342,7 @@ class FetchResult:
 _HTTPX_DEFAULT_TIMEOUT_S = 30.0
 
 
-def _httpx_get(
-    url: str, *, timeout_s: float, user_agent: str
-) -> tuple[int, str, str, str | None]:
+def _httpx_get(url: str, *, timeout_s: float, user_agent: str) -> tuple[int, str, str, str | None]:
     """First-pass httpx fetch. Returns (status, text, final_url, error)."""
     try:
         import httpx  # type: ignore[import-untyped]
@@ -408,11 +403,7 @@ async def fetch_with_fallback(
         lambda: _httpx_get(url, timeout_s=timeout_s, user_agent=user_agent),
     )
 
-    httpx_ok = (
-        200 <= status < 300
-        and len(text) >= min_body_bytes
-        and err is None
-    )
+    httpx_ok = 200 <= status < 300 and len(text) >= min_body_bytes and err is None
     if httpx_ok:
         return FetchResult(
             status=status,

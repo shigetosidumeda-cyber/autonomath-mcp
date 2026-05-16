@@ -217,11 +217,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     stats = aggregate(args.db, dry_run=args.dry_run)
-    print(
-        json.dumps(
-            {"dim": "N", "aggregate_stats": stats}, ensure_ascii=False
-        )
-    )
+    print(json.dumps({"dim": "N", "aggregate_stats": stats}, ensure_ascii=False))
     return 0
 
 

@@ -3489,7 +3489,7 @@ def _spec_pages() -> list[QAPage]:
                 ),
                 (
                     "出典はどの程度入っていますか?",
-                    "公開ファクトシート上の最新値では、検索対象 11,601 制度、50 税務ルールセット、151 MCP tools を掲示しています。一次資料URLと取得時刻は主要な公開行で保持し、欠落や保留行は正本側で明示します。",
+                    "公開ファクトシート上の最新値では、検索対象 11,601 制度、50 税務ルールセット、155 MCP tools を掲示しています。一次資料URLと取得時刻は主要な公開行で保持し、欠落や保留行は正本側で明示します。",
                 ),
                 (
                     "LLMに渡す文脈をどう整理しますか?",
@@ -3552,7 +3552,7 @@ def _spec_pages() -> list[QAPage]:
             topic_label="MCP連携",
             slug="what-can-jpcite-mcp-do",
             h1="jpcite MCPで何ができる?",
-            tldr="Claude Desktop / Cursor / Cline から151 MCP 機能を呼び、日本の制度・法令・判例・税制を検索できる。",
+            tldr="Claude Desktop / Cursor / Cline から155 MCP 機能を呼び、日本の制度・法令・判例・税制を検索できる。",
             qa_pairs=[
                 (
                     "jpcite MCPは何をするサーバーですか?",
@@ -3564,7 +3564,7 @@ def _spec_pages() -> list[QAPage]:
                 ),
                 (
                     "ツール数はいくつですか?",
-                    "公開ファクトシート上の正本では、標準構成で 151 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。",
+                    "公開ファクトシート上の正本では、標準構成で 155 MCP tools です。制度検索、制度詳細、batch detail、排他ルール、採択事例、法令、税制、判例、provenance lookup などに分かれます。",
                 ),
                 (
                     "匿名で試せますか?",

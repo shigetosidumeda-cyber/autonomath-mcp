@@ -254,9 +254,7 @@ def main(argv: list[str] | None = None) -> int:
                         file=sys.stderr,
                     )
                     return 2
-                watches, alerts, by_type = _seed_incremental(
-                    conn, args.count, args.tick
-                )
+                watches, alerts, by_type = _seed_incremental(conn, args.count, args.tick)
                 summary_tick = args.tick
             else:
                 watches, alerts, by_type = _seed(conn)

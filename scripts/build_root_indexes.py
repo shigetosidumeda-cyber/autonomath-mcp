@@ -9,6 +9,7 @@ files with Schema.org JSON-LD (DataCatalog/Dataset/CollectionPage/BreadcrumbList
 
 No external dependencies; reads only filesystem.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -24,14 +25,52 @@ LAWS_DIR = ROOT / "laws"
 ENFORCEMENT_DIR = ROOT / "enforcement"
 
 PREF_ORDER = [
-    "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
-    "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
-    "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県",
-    "岐阜県", "静岡県", "愛知県", "三重県",
-    "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県",
-    "鳥取県", "島根県", "岡山県", "広島県", "山口県",
-    "徳島県", "香川県", "愛媛県", "高知県",
-    "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県",
+    "北海道",
+    "青森県",
+    "岩手県",
+    "宮城県",
+    "秋田県",
+    "山形県",
+    "福島県",
+    "茨城県",
+    "栃木県",
+    "群馬県",
+    "埼玉県",
+    "千葉県",
+    "東京都",
+    "神奈川県",
+    "新潟県",
+    "富山県",
+    "石川県",
+    "福井県",
+    "山梨県",
+    "長野県",
+    "岐阜県",
+    "静岡県",
+    "愛知県",
+    "三重県",
+    "滋賀県",
+    "京都府",
+    "大阪府",
+    "兵庫県",
+    "奈良県",
+    "和歌山県",
+    "鳥取県",
+    "島根県",
+    "岡山県",
+    "広島県",
+    "山口県",
+    "徳島県",
+    "香川県",
+    "愛媛県",
+    "高知県",
+    "福岡県",
+    "佐賀県",
+    "長崎県",
+    "熊本県",
+    "大分県",
+    "宮崎県",
+    "鹿児島県",
     "沖縄県",
 ]
 
@@ -58,7 +97,18 @@ LAW_CATEGORY_KEYWORDS: list[tuple[str, str]] = [
 ]
 
 CATEGORY_ORDER = [
-    "憲法", "法律", "政令", "府令", "省令", "命令", "規則", "通達", "告示", "要綱", "条例", "その他"
+    "憲法",
+    "法律",
+    "政令",
+    "府令",
+    "省令",
+    "命令",
+    "規則",
+    "通達",
+    "告示",
+    "要綱",
+    "条例",
+    "その他",
 ]
 
 
@@ -222,10 +272,7 @@ def slurp_head(path: Path, n_bytes: int = 6000) -> str:
 def build_enforcement_groups() -> dict:
     # Two filename conventions: act-*.html (MAFF/MLIT/FSA/etc.) and
     # case-jbaudit-*.html (会計検査院 r03 検査結果) — both live in /enforcement/.
-    files = sorted(
-        p.name for p in ENFORCEMENT_DIR.glob("*.html")
-        if p.name != "index.html"
-    )
+    files = sorted(p.name for p in ENFORCEMENT_DIR.glob("*.html") if p.name != "index.html")
     min_buckets: dict[str, list[tuple[str, str, str]]] = defaultdict(list)
     for fname in files:
         head = slurp_head(ENFORCEMENT_DIR / fname)
@@ -275,7 +322,11 @@ ORG_JSONLD = {
     },
     "identifier": [
         {"@type": "PropertyValue", "propertyID": "jp-corporate-number", "value": "8010001213708"},
-        {"@type": "PropertyValue", "propertyID": "jp-qualified-invoice-number", "value": "T8010001213708"},
+        {
+            "@type": "PropertyValue",
+            "propertyID": "jp-qualified-invoice-number",
+            "value": "T8010001213708",
+        },
     ],
 }
 
@@ -374,7 +425,7 @@ def page_head(title: str, description: str, canonical: str, page_kind: str) -> s
 <meta name="twitter:image" content="https://jpcite.com/assets/og-twitter.png">
 <link rel="canonical" href="{he(canonical)}">
 <link rel="alternate" hreflang="ja" href="{he(canonical)}">
-<link rel="alternate" hreflang="en" href="{he(canonical.replace('jpcite.com/', 'jpcite.com/en/'))}">
+<link rel="alternate" hreflang="en" href="{he(canonical.replace("jpcite.com/", "jpcite.com/en/"))}">
 <link rel="alternate" hreflang="x-default" href="{he(canonical)}">
 {COMMON_HEAD_TAIL}"""
 
@@ -385,6 +436,7 @@ def jsonld_block(graph: list[dict]) -> str:
 
 
 # ---------- /cases/index.html ----------
+
 
 def render_cases_index(data: dict) -> str:
     total = data["total"]
@@ -398,7 +450,12 @@ def render_cases_index(data: dict) -> str:
         "@type": "BreadcrumbList",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
-            {"@type": "ListItem", "position": 2, "name": "採択事例", "item": "https://jpcite.com/cases/"},
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "採択事例",
+                "item": "https://jpcite.com/cases/",
+            },
         ],
     }
     dataset = {
@@ -450,7 +507,7 @@ def render_cases_index(data: dict) -> str:
     parts: list[str] = []
     parts.append(head)
     parts.append(jsonld)
-    parts.append('</head>\n<body>\n')
+    parts.append("</head>\n<body>\n")
     parts.append('<a href="#main" class="skip-link">本文へスキップ</a>\n')
     parts.append(header_html())
     parts.append('<main id="main" class="cases-index">\n <div class="container">\n')
@@ -458,64 +515,66 @@ def render_cases_index(data: dict) -> str:
         '<nav class="breadcrumb" aria-label="パンくず">'
         '<a href="/">ホーム</a> &rsaquo; <span aria-current="page">採択事例</span></nav>\n'
     )
-    parts.append('<article>\n<header>\n')
-    parts.append(f'<h1>日本の中小企業 採択事例 {total:,} 件 (jpcite)</h1>\n')
+    parts.append("<article>\n<header>\n")
+    parts.append(f"<h1>日本の中小企業 採択事例 {total:,} 件 (jpcite)</h1>\n")
     parts.append(
         f'<p class="byline"><span class="updated">生成日時: {NOW_ISO}</span> '
         f'<span class="sep">/</span> <span class="author">jpcite</span></p>\n'
     )
-    parts.append('</header>\n')
+    parts.append("</header>\n")
     parts.append(
         '<aside class="disclaimer-block" role="note" aria-label="重要な注意事項" '
         'style="border:1px solid #ccc;padding:12px;margin:16px 0;background:#fafafa;">'
-        '<p><strong>概要:</strong> 政府が公表した中小企業の補助金採択事例を、'
-        '都道府県別に集計したインデックスです。一次資料 URL は各事例ページに掲載。</p></aside>\n'
+        "<p><strong>概要:</strong> 政府が公表した中小企業の補助金採択事例を、"
+        "都道府県別に集計したインデックスです。一次資料 URL は各事例ページに掲載。</p></aside>\n"
     )
 
     # Summary section
     parts.append('<section class="summary">\n<h2>収録概要</h2>\n')
-    parts.append('<ul>\n')
-    parts.append(f'<li>収録件数: <strong>{total:,}</strong> 件</li>\n')
-    parts.append(f'<li>都道府県カバー: <strong>{len([p for p in pref_seq if p in PREF_SET])}</strong> / 47</li>\n')
-    parts.append('<li>出典: 中小企業庁 mirasapo / jirei-navi 等 (一次資料 URL 完全保持)</li>\n')
-    parts.append('<li>ライセンス: 政府標準利用規約 v2.0 (CC-BY 互換)</li>\n')
-    parts.append('</ul>\n</section>\n')
+    parts.append("<ul>\n")
+    parts.append(f"<li>収録件数: <strong>{total:,}</strong> 件</li>\n")
+    parts.append(
+        f"<li>都道府県カバー: <strong>{len([p for p in pref_seq if p in PREF_SET])}</strong> / 47</li>\n"
+    )
+    parts.append("<li>出典: 中小企業庁 mirasapo / jirei-navi 等 (一次資料 URL 完全保持)</li>\n")
+    parts.append("<li>ライセンス: 政府標準利用規約 v2.0 (CC-BY 互換)</li>\n")
+    parts.append("</ul>\n</section>\n")
 
     # Index of prefectures (anchor TOC)
-    parts.append('<nav class="pref-toc" aria-label="都道府県インデックス">\n<h2>都道府県別 一覧</h2>\n<ul class="pref-list">\n')
+    parts.append(
+        '<nav class="pref-toc" aria-label="都道府県インデックス">\n<h2>都道府県別 一覧</h2>\n<ul class="pref-list">\n'
+    )
     for pref in pref_seq:
         n = len(buckets[pref])
-        anchor = f"pref-{abs(hash(pref))%999999:06d}"
+        anchor = f"pref-{abs(hash(pref)) % 999999:06d}"
         parts.append(f'<li><a href="#{anchor}">{he(pref)} ({n:,})</a></li>\n')
-    parts.append('</ul>\n</nav>\n')
+    parts.append("</ul>\n</nav>\n")
 
     # Per-prefecture sections
     for pref in pref_seq:
         rows = buckets[pref]
         n = len(rows)
-        anchor = f"pref-{abs(hash(pref))%999999:06d}"
+        anchor = f"pref-{abs(hash(pref)) % 999999:06d}"
         parts.append(f'<section id="{anchor}" class="pref-section">\n')
         parts.append(f'<h3>{he(pref)} <span class="count">({n:,} 件)</span></h3>\n')
         parts.append('<ol class="case-top5">\n')
         for case_id, company, _title in rows[:5]:
-            parts.append(
-                f'<li><a href="/cases/{he(case_id)}.html">{he(company)}</a></li>\n'
-            )
-        parts.append('</ol>\n')
+            parts.append(f'<li><a href="/cases/{he(case_id)}.html">{he(company)}</a></li>\n')
+        parts.append("</ol>\n")
         if n > 5:
             parts.append(
                 f'<p class="more-link"><a href="/search?q=&prefecture={he(pref)}">'
-                f'{he(pref)} の全 {n:,} 件を検索</a></p>\n'
+                f"{he(pref)} の全 {n:,} 件を検索</a></p>\n"
             )
-        parts.append('</section>\n')
+        parts.append("</section>\n")
 
     # API CTA
     parts.append(
         '<section class="api-cta">\n<h2>API で取得</h2>\n'
-        '<p>本ページの全件データは REST / MCP の両方で取得できます。</p>\n'
+        "<p>本ページの全件データは REST / MCP の両方で取得できます。</p>\n"
         '<pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\\n'
         ' "https://api.jpcite.com/v1/cases?prefecture=東京都"</code></pre>\n'
-        '<p>MCP クライアントからは <code>similar_cases(...)</code> で呼べます。'
+        "<p>MCP クライアントからは <code>similar_cases(...)</code> で呼べます。"
         '詳細は <a href="/docs/">API reference</a> 参照。</p>\n'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
@@ -525,16 +584,17 @@ def render_cases_index(data: dict) -> str:
 
     parts.append(
         '<p class="disclaimer">本ページは政府公表記録から機械生成された一覧で、'
-        '法的助言・税務助言・調査報告を構成するものではありません。最新情報は'
-        '所管官公庁の一次情報を必ず確認してください。</p>\n'
+        "法的助言・税務助言・調査報告を構成するものではありません。最新情報は"
+        "所管官公庁の一次情報を必ず確認してください。</p>\n"
     )
-    parts.append('</article>\n </div>\n</main>\n')
+    parts.append("</article>\n </div>\n</main>\n")
     parts.append(FOOTER_HTML)
-    parts.append('</body>\n</html>\n')
+    parts.append("</body>\n</html>\n")
     return "".join(parts)
 
 
 # ---------- /laws/index.html ----------
+
 
 def render_laws_index(data: dict) -> str:
     total = data["total"]
@@ -547,7 +607,12 @@ def render_laws_index(data: dict) -> str:
         "@type": "BreadcrumbList",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
-            {"@type": "ListItem", "position": 2, "name": "法令", "item": "https://jpcite.com/laws/"},
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "法令",
+                "item": "https://jpcite.com/laws/",
+            },
         ],
     }
     dataset = {
@@ -594,7 +659,9 @@ def render_laws_index(data: dict) -> str:
         "inLanguage": "ja",
         "isPartOf": {"@id": "https://jpcite.com/#site"},
     }
-    jsonld = jsonld_block([ORG_JSONLD, SITE_JSONLD, catalog, dataset, legislation, collection, breadcrumb])
+    jsonld = jsonld_block(
+        [ORG_JSONLD, SITE_JSONLD, catalog, dataset, legislation, collection, breadcrumb]
+    )
 
     title = f"日本の法令 {total:,} 件 (e-Gov CC-BY) — jpcite"
     description = (
@@ -607,7 +674,7 @@ def render_laws_index(data: dict) -> str:
     parts: list[str] = []
     parts.append(head)
     parts.append(jsonld)
-    parts.append('</head>\n<body>\n')
+    parts.append("</head>\n<body>\n")
     parts.append('<a href="#main" class="skip-link">本文へスキップ</a>\n')
     parts.append(header_html())
     parts.append('<main id="main" class="laws-index">\n <div class="container">\n')
@@ -615,64 +682,64 @@ def render_laws_index(data: dict) -> str:
         '<nav class="breadcrumb" aria-label="パンくず">'
         '<a href="/">ホーム</a> &rsaquo; <span aria-current="page">法令</span></nav>\n'
     )
-    parts.append('<article>\n<header>\n')
-    parts.append(f'<h1>日本の法令 {total:,} 件 (e-Gov CC-BY、jpcite)</h1>\n')
+    parts.append("<article>\n<header>\n")
+    parts.append(f"<h1>日本の法令 {total:,} 件 (e-Gov CC-BY、jpcite)</h1>\n")
     parts.append(
         f'<p class="byline"><span class="updated">生成日時: {NOW_ISO}</span> '
         f'<span class="sep">/</span> <span class="author">jpcite</span></p>\n'
     )
-    parts.append('</header>\n')
+    parts.append("</header>\n")
     parts.append(
         '<aside class="disclaimer-block" role="note" aria-label="重要な注意事項" '
         'style="border:1px solid #ccc;padding:12px;margin:16px 0;background:#fafafa;">'
-        '<p><strong>出典:</strong> 本ページは e-Gov 法令検索 (CC-BY 4.0) を一次資料として'
-        '機械再構成したインデックスです。法令の最新本文は e-Gov 公式版を必ず確認してください。</p></aside>\n'
+        "<p><strong>出典:</strong> 本ページは e-Gov 法令検索 (CC-BY 4.0) を一次資料として"
+        "機械再構成したインデックスです。法令の最新本文は e-Gov 公式版を必ず確認してください。</p></aside>\n"
     )
 
     parts.append('<section class="summary">\n<h2>収録概要</h2>\n')
-    parts.append('<ul>\n')
-    parts.append(f'<li>収録件数: <strong>{total:,}</strong> 件</li>\n')
-    parts.append(f'<li>法令種別カテゴリ: <strong>{len(cat_seq)}</strong></li>\n')
-    parts.append('<li>出典: e-Gov 法令検索 (CC-BY 4.0)</li>\n')
-    parts.append('<li>ライセンス: クリエイティブ・コモンズ表示 4.0 国際</li>\n')
-    parts.append('</ul>\n</section>\n')
+    parts.append("<ul>\n")
+    parts.append(f"<li>収録件数: <strong>{total:,}</strong> 件</li>\n")
+    parts.append(f"<li>法令種別カテゴリ: <strong>{len(cat_seq)}</strong></li>\n")
+    parts.append("<li>出典: e-Gov 法令検索 (CC-BY 4.0)</li>\n")
+    parts.append("<li>ライセンス: クリエイティブ・コモンズ表示 4.0 国際</li>\n")
+    parts.append("</ul>\n</section>\n")
 
-    parts.append('<nav class="cat-toc" aria-label="法令種別インデックス">\n<h2>法令種別 一覧</h2>\n<ul class="cat-list">\n')
+    parts.append(
+        '<nav class="cat-toc" aria-label="法令種別インデックス">\n<h2>法令種別 一覧</h2>\n<ul class="cat-list">\n'
+    )
     for cat in cat_seq:
         n = len(buckets[cat])
-        anchor = f"cat-{abs(hash(cat))%999999:06d}"
+        anchor = f"cat-{abs(hash(cat)) % 999999:06d}"
         parts.append(f'<li><a href="#{anchor}">{he(cat)} ({n:,})</a></li>\n')
-    parts.append('</ul>\n</nav>\n')
+    parts.append("</ul>\n</nav>\n")
 
     for cat in cat_seq:
         rows = buckets[cat]
         # sort by date desc, fallback alpha
         rows_sorted = sorted(rows, key=lambda r: (r[2] or "", r[1]), reverse=True)
         n = len(rows_sorted)
-        anchor = f"cat-{abs(hash(cat))%999999:06d}"
+        anchor = f"cat-{abs(hash(cat)) % 999999:06d}"
         parts.append(f'<section id="{anchor}" class="cat-section">\n')
         parts.append(f'<h3>{he(cat)} <span class="count">({n:,} 件)</span></h3>\n')
         parts.append('<ol class="law-top5">\n')
         for slug, name, date in rows_sorted[:5]:
             label = f"{name} ({date} 施行)" if date else name
-            parts.append(
-                f'<li><a href="/laws/{he(slug)}">{he(label)}</a></li>\n'
-            )
-        parts.append('</ol>\n')
+            parts.append(f'<li><a href="/laws/{he(slug)}">{he(label)}</a></li>\n')
+        parts.append("</ol>\n")
         if n > 5:
             parts.append(
                 f'<p class="more-link"><a href="/search?q=&law_type={he(cat)}">'
-                f'{he(cat)} の全 {n:,} 件を検索</a></p>\n'
+                f"{he(cat)} の全 {n:,} 件を検索</a></p>\n"
             )
-        parts.append('</section>\n')
+        parts.append("</section>\n")
 
     parts.append(
         '<section class="api-cta">\n<h2>API で取得</h2>\n'
-        '<p>本ページの全件データは REST / MCP の両方で取得できます。</p>\n'
+        "<p>本ページの全件データは REST / MCP の両方で取得できます。</p>\n"
         '<pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\\n'
         ' "https://api.jpcite.com/v1/laws?law_type=法律"</code></pre>\n'
-        '<p>MCP クライアントからは <code>get_law_article_am(law_id=...)</code> '
-        'または <code>search_by_law(...)</code> で呼べます。'
+        "<p>MCP クライアントからは <code>get_law_article_am(law_id=...)</code> "
+        "または <code>search_by_law(...)</code> で呼べます。"
         '詳細は <a href="/docs/">API reference</a> 参照。</p>\n'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
@@ -682,15 +749,16 @@ def render_laws_index(data: dict) -> str:
 
     parts.append(
         '<p class="disclaimer">本ページは e-Gov 公開法令の機械再構成インデックスです。'
-        '法令の解釈・適用は弁護士・税理士・有資格専門家にご相談ください。</p>\n'
+        "法令の解釈・適用は弁護士・税理士・有資格専門家にご相談ください。</p>\n"
     )
-    parts.append('</article>\n </div>\n</main>\n')
+    parts.append("</article>\n </div>\n</main>\n")
     parts.append(FOOTER_HTML)
-    parts.append('</body>\n</html>\n')
+    parts.append("</body>\n</html>\n")
     return "".join(parts)
 
 
 # ---------- /enforcement/index.html ----------
+
 
 def render_enforcement_index(data: dict) -> str:
     total = data["total"]
@@ -702,7 +770,12 @@ def render_enforcement_index(data: dict) -> str:
         "@type": "BreadcrumbList",
         "itemListElement": [
             {"@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://jpcite.com/"},
-            {"@type": "ListItem", "position": 2, "name": "行政処分", "item": "https://jpcite.com/enforcement/"},
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "行政処分",
+                "item": "https://jpcite.com/enforcement/",
+            },
         ],
     }
     dataset = {
@@ -752,7 +825,7 @@ def render_enforcement_index(data: dict) -> str:
     parts: list[str] = []
     parts.append(head)
     parts.append(jsonld)
-    parts.append('</head>\n<body>\n')
+    parts.append("</head>\n<body>\n")
     parts.append('<a href="#main" class="skip-link">本文へスキップ</a>\n')
     parts.append(header_html())
     parts.append('<main id="main" class="enforcement-page">\n <div class="container">\n')
@@ -760,68 +833,70 @@ def render_enforcement_index(data: dict) -> str:
         '<nav class="breadcrumb" aria-label="パンくず">'
         '<a href="/">ホーム</a> &rsaquo; <span aria-current="page">行政処分</span></nav>\n'
     )
-    parts.append('<article>\n<header>\n')
-    parts.append(f'<h1>行政処分 公開記録 サマリー — 所管官庁別 {total:,} 件</h1>\n')
+    parts.append("<article>\n<header>\n")
+    parts.append(f"<h1>行政処分 公開記録 サマリー — 所管官庁別 {total:,} 件</h1>\n")
     parts.append(
         f'<p class="byline"><span class="updated">生成日時: {NOW_ISO}</span> '
         f'<span class="sep">/</span> <span class="author">jpcite</span></p>\n'
     )
-    parts.append('</header>\n')
+    parts.append("</header>\n")
 
     parts.append(
         '<aside class="disclaimer-block" role="note" aria-label="重要な注意事項" '
         'style="border:1px solid #ccc;padding:12px;margin:16px 0;background:#fafafa;">'
-        '<p><strong>重要:</strong> 本ページは jpcite が政府・自治体の公式プレスリリースから'
-        '機械収集した行政処分の公開記録です。掲載対象は法人番号 13 桁が公表され、かつ法人格を持つ'
-        '事業者のみです。個人事業主や特定個人が識別される可能性のある記録は掲載対象外です。'
-        '処分は当時の公開記録であり、現在は撤回・取消・期間満了している可能性があります。'
-        '監査責任・法的判断は弁護士・税理士・公認会計士など有資格者へご相談ください。'
-        '本サイトの集計は官報全件ではなく、政府公表記録の取得済みサブセットです。</p></aside>\n'
+        "<p><strong>重要:</strong> 本ページは jpcite が政府・自治体の公式プレスリリースから"
+        "機械収集した行政処分の公開記録です。掲載対象は法人番号 13 桁が公表され、かつ法人格を持つ"
+        "事業者のみです。個人事業主や特定個人が識別される可能性のある記録は掲載対象外です。"
+        "処分は当時の公開記録であり、現在は撤回・取消・期間満了している可能性があります。"
+        "監査責任・法的判断は弁護士・税理士・公認会計士など有資格者へご相談ください。"
+        "本サイトの集計は官報全件ではなく、政府公表記録の取得済みサブセットです。</p></aside>\n"
     )
 
     # Summary section
     parts.append('<section class="summary">\n<h2>集計概要</h2>\n')
-    parts.append('<ul>\n')
-    parts.append(f'<li>取得済み処分件数 (静的詳細ページ): <strong>{total:,}</strong> 件</li>\n')
-    parts.append(f'<li>所管官庁・自治体カバー: <strong>{len(ministries)}</strong> 機関</li>\n')
-    parts.append('<li>掲載基準: 法人番号 13 桁 公表済み + 法人格保有 (個人事業主・特定個人は除外)</li>\n')
-    parts.append('<li>収録対象期間: 1998年〜2026年 (公表済み処分日ベース)</li>\n')
-    parts.append('</ul>\n</section>\n')
+    parts.append("<ul>\n")
+    parts.append(f"<li>取得済み処分件数 (静的詳細ページ): <strong>{total:,}</strong> 件</li>\n")
+    parts.append(f"<li>所管官庁・自治体カバー: <strong>{len(ministries)}</strong> 機関</li>\n")
+    parts.append(
+        "<li>掲載基準: 法人番号 13 桁 公表済み + 法人格保有 (個人事業主・特定個人は除外)</li>\n"
+    )
+    parts.append("<li>収録対象期間: 1998年〜2026年 (公表済み処分日ベース)</li>\n")
+    parts.append("</ul>\n</section>\n")
 
     # TOC by ministry
-    parts.append('<nav class="ministry-toc" aria-label="所管官庁インデックス">\n<h2>所管官庁別 ロールアップ</h2>\n<ul class="ministry-list">\n')
+    parts.append(
+        '<nav class="ministry-toc" aria-label="所管官庁インデックス">\n<h2>所管官庁別 ロールアップ</h2>\n<ul class="ministry-list">\n'
+    )
     for m in ministries:
         n = len(buckets[m])
-        anchor = f"min-{abs(hash(m))%999999:06d}"
+        anchor = f"min-{abs(hash(m)) % 999999:06d}"
         parts.append(f'<li><a href="#{anchor}">{he(m)} ({n:,})</a></li>\n')
-    parts.append('</ul>\n</nav>\n')
+    parts.append("</ul>\n</nav>\n")
 
     # Per-ministry sections
     for m in ministries:
         rows = buckets[m]
         n = len(rows)
-        anchor = f"min-{abs(hash(m))%999999:06d}"
+        anchor = f"min-{abs(hash(m)) % 999999:06d}"
         parts.append(f'<section id="{anchor}" class="ministry-section">\n')
         parts.append(f'<h3>{he(m)} <span class="count">({n:,} 件)</span></h3>\n')
         parts.append('<ol class="enforcement-top5">\n')
         for slug, name, _title in rows[:5]:
-            parts.append(
-                f'<li><a href="/enforcement/{he(slug)}">{he(name)}</a></li>\n'
-            )
-        parts.append('</ol>\n')
+            parts.append(f'<li><a href="/enforcement/{he(slug)}">{he(name)}</a></li>\n')
+        parts.append("</ol>\n")
         if n > 5:
             parts.append(
                 f'<p class="more-link"><a href="/search?q=&ministry={he(m)}">'
-                f'{he(m)} の全 {n:,} 件を検索</a></p>\n'
+                f"{he(m)} の全 {n:,} 件を検索</a></p>\n"
             )
-        parts.append('</section>\n')
+        parts.append("</section>\n")
 
     parts.append(
         '<section class="api-cta">\n<h2>API で取得</h2>\n'
-        '<p>本ページの全件データは REST / MCP の両方で取得できます。</p>\n'
+        "<p>本ページの全件データは REST / MCP の両方で取得できます。</p>\n"
         '<pre class="code-block"><code>curl -H "X-API-Key: YOUR_API_KEY" \\\n'
         ' "https://api.jpcite.com/v1/am/enforcement?houjin_bangou=&lt;13桁&gt;"</code></pre>\n'
-        '<p>MCP クライアントからは <code>check_enforcement_am(houjin_bangou=...)</code> '
+        "<p>MCP クライアントからは <code>check_enforcement_am(houjin_bangou=...)</code> "
         'で呼べます。詳細は <a href="/docs/">API reference</a> 参照。</p>\n'
         '<p class="api-cta-line">無料 3 リクエスト/日。'
         '<a href="/pricing.html">料金体系</a> · '
@@ -832,16 +907,17 @@ def render_enforcement_index(data: dict) -> str:
 
     parts.append(
         '<p class="disclaimer">本ページは自動生成された公開記録のロールアップであり、'
-        '法的助言・税務助言・調査報告を構成するものではありません。処分の最新内容は'
-        '所管官公庁の一次情報を必ず確認してください。</p>\n'
+        "法的助言・税務助言・調査報告を構成するものではありません。処分の最新内容は"
+        "所管官公庁の一次情報を必ず確認してください。</p>\n"
     )
-    parts.append('</article>\n </div>\n</main>\n')
+    parts.append("</article>\n </div>\n</main>\n")
     parts.append(FOOTER_HTML)
-    parts.append('</body>\n</html>\n')
+    parts.append("</body>\n</html>\n")
     return "".join(parts)
 
 
 # ---------- main ----------
+
 
 def main() -> None:
     print("Scanning cases...")

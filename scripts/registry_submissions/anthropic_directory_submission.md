@@ -39,7 +39,7 @@ MCP server (external)
 ### Short description (160 characters max)
 
 ```
-Search Japanese institutional data: 11,601 subsidies + 6,493 laws full-text indexed + 2,065 court decisions + 13,801 invoice registrants. 151 MCP tools. ¥3/billable unit (¥3.30 tax-incl). 3/day free anon.
+Search Japanese institutional data: 11,601 subsidies + 6,493 laws full-text indexed + 2,065 court decisions + 13,801 invoice registrants. 155 MCP tools. ¥3/billable unit (¥3.30 tax-incl). 3/day free anon.
 ```
 
 (Length: 156 characters.)
@@ -47,7 +47,7 @@ Search Japanese institutional data: 11,601 subsidies + 6,493 laws full-text inde
 ### Long description (500–800 characters)
 
 ```
-AutonoMath exposes Japanese institutional public data via 151 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; aggregator-only rows are excluded from public sourcing. ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1の2), or 労務判断 (社労士法).
+AutonoMath exposes Japanese institutional public data via 155 MCP tools at default gates (39 core + 50 autonomath at runtime, protocol 2025-06-18, stdio): 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 / 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 適格事業者 (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at; aggregator-only rows are excluded from public sourcing. ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive), 3 req/day per IP free (anonymous, JST next-day reset). Information retrieval only — not 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1の2), or 労務判断 (社労士法).
 ```
 
 ### Repository URL
@@ -214,7 +214,7 @@ Square variant: site/static/icons/autonomath-icon-512.png (if needed)
 
 ```
 1. Claude Desktop tool-call demo: search_programs with prefecture=東京都, q=農業
-2. Tool list (151 tools enumerated)
+2. Tool list (155 tools enumerated)
 3. Cross-dataset glue example: trace_program_to_law output with law_id + article
 ```
 

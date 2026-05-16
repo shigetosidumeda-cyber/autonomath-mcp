@@ -37,6 +37,7 @@ Exit codes
 * 2 — autonomath.db unavailable (boot-time path drift).
 * 3 — jpintel.db unavailable.
 """
+
 from __future__ import annotations
 
 import argparse

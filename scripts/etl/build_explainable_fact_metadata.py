@@ -55,7 +55,6 @@ Source discipline
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import logging
 import os
@@ -130,9 +129,9 @@ def _canonical_metadata_payload(
         "confidence_lower": conf_lo,
         "confidence_upper": conf_hi,
     }
-    return json.dumps(
-        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+        "utf-8"
+    )
 
 
 def _has_column(conn: sqlite3.Connection, table: str, column: str) -> bool:
@@ -285,9 +284,7 @@ def _enrich_one(
     return "upserted"
 
 
-def _walk(
-    conn: sqlite3.Connection, priv_key: Any, max_rows: int, dry_run: bool
-) -> dict[str, int]:
+def _walk(conn: sqlite3.Connection, priv_key: Any, max_rows: int, dry_run: bool) -> dict[str, int]:
     counts = {"upserted": 0, "unchanged": 0, "skipped": 0, "errors": 0}
     cursor: str | None = None
     walked = 0
@@ -295,8 +292,7 @@ def _walk(
     while True:
         if cursor is None:
             cur = conn.execute(
-                "SELECT fact_id, signed_at FROM am_fact_signature "
-                "ORDER BY fact_id ASC LIMIT ?",
+                "SELECT fact_id, signed_at FROM am_fact_signature ORDER BY fact_id ASC LIMIT ?",
                 (CHUNK_SIZE,),
             )
         else:
@@ -313,9 +309,7 @@ def _walk(
             if max_rows and walked >= max_rows:
                 return counts
             try:
-                outcome = _enrich_one(
-                    conn, fact_id, signed_at, priv_key, dry_run=dry_run
-                )
+                outcome = _enrich_one(conn, fact_id, signed_at, priv_key, dry_run=dry_run)
                 counts[outcome] += 1
             except sqlite3.IntegrityError:
                 counts["errors"] += 1
@@ -356,9 +350,7 @@ def main(argv: list[str] | None = None) -> int:
             conn.execute("SELECT 1 FROM am_fact_metadata LIMIT 1")
             conn.execute("SELECT 1 FROM am_fact_attestation_log LIMIT 1")
         except sqlite3.OperationalError:
-            _log.error(
-                "migration 275 tables missing — apply 275_explainable_fact.sql"
-            )
+            _log.error("migration 275 tables missing — apply 275_explainable_fact.sql")
             return 2
 
         counts = _walk(conn, priv_key, args.max_rows, args.dry_run)

@@ -37,6 +37,7 @@ Usage
     .venv/bin/python scripts/etl/build_audit_workpaper_v2.py \
         --only 1234567890123,7000020131008 --fiscal-year 2025
 """
+
 from __future__ import annotations
 
 import argparse
@@ -132,9 +133,7 @@ def _candidate_houjin(
         return []
 
 
-def _compose_one(
-    conn: sqlite3.Connection, houjin_id: str, fiscal_year: int
-) -> dict | None:
+def _compose_one(conn: sqlite3.Connection, houjin_id: str, fiscal_year: int) -> dict | None:
     """Mirrors api/audit_workpaper_v2.py::_build_workpaper.
 
     Returns None when the 法人 is unknown in jpi_houjin_master.
@@ -186,15 +185,17 @@ def _compose_one(
             (houjin_id, fy_start, fy_stop),
         ).fetchall()
         for r in rows:
-            adoptions.append({
-                "program_id": r["program_id"],
-                "program_name": r["program_name_raw"],
-                "applicant_name": r["company_name_raw"],
-                "award_date": r["announced_at"],
-                "amount_yen": r["amount_granted_yen"],
-                "fiscal_year": fiscal_year,
-                "announce_date": r["announced_at"],
-            })
+            adoptions.append(
+                {
+                    "program_id": r["program_id"],
+                    "program_name": r["program_name_raw"],
+                    "applicant_name": r["company_name_raw"],
+                    "award_date": r["announced_at"],
+                    "amount_yen": r["amount_granted_yen"],
+                    "fiscal_year": fiscal_year,
+                    "announce_date": r["announced_at"],
+                }
+            )
     except sqlite3.Error:
         pass
 
@@ -212,14 +213,16 @@ def _compose_one(
             (houjin_id, fy_start, fy_end),
         ).fetchall()
         for r in rows:
-            enforcement.append({
-                "detail_id": r["enforcement_id"],
-                "enforcement_kind": r["enforcement_kind"],
-                "enforcement_date": r["issuance_date"],
-                "amount_yen": r["amount_yen"],
-                "summary": r["reason_summary"],
-                "source_url": r["source_url"],
-            })
+            enforcement.append(
+                {
+                    "detail_id": r["enforcement_id"],
+                    "enforcement_kind": r["enforcement_kind"],
+                    "enforcement_date": r["issuance_date"],
+                    "amount_yen": r["amount_yen"],
+                    "summary": r["reason_summary"],
+                    "source_url": r["source_url"],
+                }
+            )
     except sqlite3.Error:
         pass
 
@@ -403,7 +406,11 @@ def main(argv: list[str] | None = None) -> int:
 
     logger.info(
         "done in %.1fs: scanned=%d upserted=%d skipped=%d errors=%d",
-        time.perf_counter() - t0, scanned, upserted, skipped, errors,
+        time.perf_counter() - t0,
+        scanned,
+        upserted,
+        skipped,
+        errors,
     )
     return 0 if errors == 0 else 1
 

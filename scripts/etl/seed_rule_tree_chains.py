@@ -149,9 +149,7 @@ def _canonical_hash(payload: Any) -> str:
     ).hexdigest()
 
 
-def _seed_history_for_existing_trees(
-    conn: sqlite3.Connection, *, dry_run: bool
-) -> int:
+def _seed_history_for_existing_trees(conn: sqlite3.Connection, *, dry_run: bool) -> int:
     """Back-fill am_rule_tree_version_history for any am_rule_trees rows.
 
     The first time mig 273 is applied, the history table is empty; for
@@ -159,9 +157,7 @@ def _seed_history_for_existing_trees(
     row so the audit trail starts at the actual current state.
     """
     if not _table_exists(conn, "am_rule_trees"):
-        LOG.warning(
-            "am_rule_trees missing — skip history back-fill (mig 271 not yet applied)"
-        )
+        LOG.warning("am_rule_trees missing — skip history back-fill (mig 271 not yet applied)")
         return 0
     rows = conn.execute(
         "SELECT tree_id, version, tree_def_json FROM am_rule_trees "
@@ -170,8 +166,7 @@ def _seed_history_for_existing_trees(
     inserted = 0
     for tree_id, version, tree_def_json in rows:
         existing = conn.execute(
-            "SELECT 1 FROM am_rule_tree_version_history "
-            "WHERE tree_id=? AND version_seq=?",
+            "SELECT 1 FROM am_rule_tree_version_history WHERE tree_id=? AND version_seq=?",
             (tree_id, version),
         ).fetchone()
         if existing:
@@ -219,19 +214,14 @@ def seed(db_path: Path, *, dry_run: bool = False) -> dict[str, int]:
     try:
         if not _table_exists(conn, "am_rule_tree_chain"):
             raise RuntimeError(
-                "am_rule_tree_chain missing — apply migration "
-                "273_rule_tree_v2_chain.sql first"
+                "am_rule_tree_chain missing — apply migration 273_rule_tree_v2_chain.sql first"
             )
-        history_backfilled = _seed_history_for_existing_trees(
-            conn, dry_run=dry_run
-        )
+        history_backfilled = _seed_history_for_existing_trees(conn, dry_run=dry_run)
 
         chains_inserted = 0
         chains_skipped = 0
         for chain in SEED_CHAINS:
-            ordered_json = json.dumps(
-                chain["ordered_tree_ids"], ensure_ascii=False, sort_keys=True
-            )
+            ordered_json = json.dumps(chain["ordered_tree_ids"], ensure_ascii=False, sort_keys=True)
             existing = conn.execute(
                 "SELECT 1 FROM am_rule_tree_chain WHERE chain_id=?",
                 (chain["chain_id"],),

@@ -73,12 +73,18 @@ BANNED_LEAK_PATTERNS: tuple[re.Pattern[str], ...] = (
 
 
 def _maybe_reexec_venv() -> None:
-    """Use the repo virtualenv when invoked by a bare system python."""
+    """Use the repo virtualenv when invoked by a bare system python.
 
-    venv_python = ROOT / ".venv" / "bin" / "python"
+    uv-managed venvs symlink to a shared interpreter, so ``Path.resolve()``
+    collapses ``.venv/bin/python`` and the global ``python3.12`` to the same
+    file. Detect "already in venv" via ``sys.prefix`` instead.
+    """
+
+    venv_dir = ROOT / ".venv"
+    venv_python = venv_dir / "bin" / "python"
     if (
         venv_python.exists()
-        and pathlib.Path(sys.executable).resolve() != venv_python.resolve()
+        and pathlib.Path(sys.prefix).resolve() != venv_dir.resolve()
         and os.environ.get("JPCITE_NO_VENV_REEXEC") != "1"
     ):
         os.environ["JPCITE_NO_VENV_REEXEC"] = "1"

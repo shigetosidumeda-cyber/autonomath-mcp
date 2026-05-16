@@ -8,6 +8,7 @@ Token acquisition (~30 sec):
     https://qiita.com/settings/applications → "個人用アクセストークン" → 発行
     scope: write_qiita (read+write)
 """
+
 from __future__ import annotations
 
 import json

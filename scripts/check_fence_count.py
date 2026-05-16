@@ -56,12 +56,8 @@ def main() -> int:
     reg = json.loads(REGISTRY.read_text("utf-8"))
     guards = reg["guards"]
     canon = guards["fence_count_canonical"]
-    fence_path_prefixes: list[str] = guards.get(
-        "fence_count_allow_in_context_path_prefix", []
-    )
-    fence_ctx_substrs: list[str] = guards.get(
-        "fence_count_context_allow_substrings", []
-    )
+    fence_path_prefixes: list[str] = guards.get("fence_count_allow_in_context_path_prefix", [])
+    fence_ctx_substrs: list[str] = guards.get("fence_count_context_allow_substrings", [])
 
     targets: list[pathlib.Path] = []
     for sub in ("site", "docs"):
@@ -110,9 +106,7 @@ def main() -> int:
             if fence_ctx_substrs and any(sub in window for sub in fence_ctx_substrs):
                 continue
             ctx = text[max(0, m.start() - 20) : m.end() + 20].replace("\n", " ")
-            drifts.append(
-                f"{rel}:{m.start()} FENCE {token} != canonical {canon}業法 ctx={ctx!r}"
-            )
+            drifts.append(f"{rel}:{m.start()} FENCE {token} != canonical {canon}業法 ctx={ctx!r}")
 
     if drifts:
         for d in drifts[:50]:

@@ -50,13 +50,13 @@ https://jpcite.com/docs/
 ### Short description (~1 line, ~140 chars)
 
 ```
-151 MCP tools over Japanese institutional data: 11,601 searchable programs + laws + court + tax + invoice registrants. ¥3/billable unit (¥3.30 tax-incl). 3/day free anon.
+155 MCP tools over Japanese institutional data: 11,601 searchable programs + laws + court + tax + invoice registrants. ¥3/billable unit (¥3.30 tax-incl). 3/day free anon.
 ```
 
 ### Long description (4–8 sentences)
 
 ```
-AutonoMath exposes Japanese institutional public data via 151 MCP tools at default gates (protocol 2025-06-18, stdio). Coverage: 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis 担保/個人保証人/第三者保証人 decomposition + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at where available; known aggregator sources are excluded where detected. Pricing: ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
+AutonoMath exposes Japanese institutional public data via 155 MCP tools at default gates (protocol 2025-06-18, stdio). Coverage: 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis 担保/個人保証人/第三者保証人 decomposition + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check. Major public rows carry source_url + fetched_at where available; known aggregator sources are excluded where detected. Pricing: ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive) fully metered, first 3 requests/day per IP free (anonymous, JST next-day reset), no tier SKUs.
 
 Disclaimer (税理士法 §52 fence): AutonoMath is information retrieval, not advice. It does not perform 税務代理 (税理士法 §52), 法律事務 (弁護士法 §72), 申請代理 (行政書士法 §1の2), or 労務判断 (社労士法). Verify primary-source URLs and consult licensed professionals for individual cases.
 ```
@@ -154,7 +154,7 @@ Square 512 icon: site/static/icons/autonomath-icon-512.png
 
 ```
 Honest counts (verified 2026-04-29 audit, v0.3.2):
-- 151 tools at default gates (3 additional gated off pending fix: query_at_snapshot, intent_of, reason_answer)
+- 155 tools at default gates (3 additional gated off pending fix: query_at_snapshot, intent_of, reason_answer)
 - 6,493 laws full-text indexed; 9,484 law metadata records (full-text load incremental)
 - 4,300 sourced compatibility pairs (status='confirmed'); 44,515 heuristic inferences are flagged status='unknown' and never surfaced as truth
 - major public rows carry source_url + fetched_at
@@ -171,7 +171,7 @@ Earlier strings of "55 tools" / "59 tools" / "66 tools" / "72 tools" / "11,547 p
 If mcp.so's web form is unavailable, the same content can be filed as an issue on the mcp.so source repository (find via the `submit` page footer). Use the long description above as the issue body, prefix the title with:
 
 ```
-[Server submission] AutonoMath — 151-tool MCP for Japanese institutional data
+[Server submission] AutonoMath — 155-tool MCP for Japanese institutional data
 ```
 
 ---

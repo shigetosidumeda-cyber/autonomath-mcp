@@ -340,15 +340,11 @@ def seed(db_path: Path, *, dry_run: bool = False) -> dict[str, int]:
     conn = sqlite3.connect(str(db_path))
     try:
         if not _table_exists(conn, "am_rule_trees"):
-            raise RuntimeError(
-                "am_rule_trees missing — apply migration 271_rule_tree.sql first"
-            )
+            raise RuntimeError("am_rule_trees missing — apply migration 271_rule_tree.sql first")
         inserted = 0
         skipped = 0
         for tree in SEED_TREES:
-            tree_def_json = json.dumps(
-                tree["tree_def"], ensure_ascii=False, sort_keys=True
-            )
+            tree_def_json = json.dumps(tree["tree_def"], ensure_ascii=False, sort_keys=True)
             existing = conn.execute(
                 "SELECT 1 FROM am_rule_trees WHERE tree_id=? AND version=?",
                 (tree["tree_id"], 1),

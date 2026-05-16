@@ -349,6 +349,105 @@ def sync_llms_well_known_hashes() -> None:
     )
 
 
+def sync_agents_discovery_counts() -> None:
+    agents_path = SITE / ".well-known" / "agents.json"
+    mcp_path = SITE / "mcp-server.json"
+    if not agents_path.exists() or not mcp_path.exists():
+        return
+
+    agents = json.loads(agents_path.read_text(encoding="utf-8"))
+    mcp = json.loads(mcp_path.read_text(encoding="utf-8"))
+    tool_count = len(mcp.get("tools") or [])
+    tools_count = agents.setdefault("tools_count", {})
+    tools_count["public_default"] = tool_count
+    tools_count["runtime_verified"] = tool_count
+    tools_count["note"] = f"Public MCP manifests advertise {tool_count} tools."
+    agents_path.write_text(
+        json.dumps(agents, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def sync_openapi_discovery() -> None:
+    discovery_path = SITE / ".well-known" / "openapi-discovery.json"
+    if not discovery_path.exists():
+        return
+
+    discovery = json.loads(discovery_path.read_text(encoding="utf-8"))
+    tiers = {
+        "full": SITE / "docs" / "openapi" / "v1.json",
+        "agent": SITE / "openapi.agent.json",
+        "gpt30": SITE / "openapi.agent.gpt30.json",
+    }
+    for tier in discovery.get("tiers") or []:
+        if not isinstance(tier, dict):
+            continue
+        spec_path = tiers.get(str(tier.get("tier")))
+        if spec_path is None or not spec_path.exists():
+            continue
+        spec_text = spec_path.read_text(encoding="utf-8")
+        spec = json.loads(spec_text)
+        tier["path_count"] = len(spec.get("paths") or {})
+        tier["size_bytes"] = spec_path.stat().st_size
+        tier["sha256_prefix"] = _sha256_hex(spec_text.encode("utf-8"))[:16]
+
+    if isinstance(discovery.get("snapshot_at"), str):
+        discovery["snapshot_at"] = "2026-05-15"
+    discovery_path.write_text(
+        json.dumps(discovery, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def sync_visible_runtime_counts() -> None:
+    counts_path = SITE / "_data" / "public_counts.json"
+    full_openapi_path = SITE / "docs" / "openapi" / "v1.json"
+    if not counts_path.exists() or not full_openapi_path.exists():
+        return
+
+    counts = json.loads(counts_path.read_text(encoding="utf-8"))
+    tool_count = int(counts.get("mcp_tools_total", 0) or 0)
+    path_count = len(json.loads(full_openapi_path.read_text(encoding="utf-8")).get("paths") or {})
+    replacements: dict[Path, tuple[tuple[str, str], ...]] = {
+        SITE / "about.html": (
+            (
+                r'<span class="num">\d+</span><span class="lbl">AI から呼べる MCP ツール</span>',
+                f'<span class="num">{tool_count}</span><span class="lbl">AI から呼べる MCP ツール</span>',
+            ),
+            (
+                r'<span class="num">\d+</span><span class="lbl">REST paths \(OpenAPI\)</span>',
+                f'<span class="num">{path_count}</span><span class="lbl">REST paths (OpenAPI)</span>',
+            ),
+        ),
+        SITE / "about.html.md": (
+            (r"- \d+ AI から呼べる MCP ツール", f"- {tool_count} AI から呼べる MCP ツール"),
+        ),
+        SITE / "facts.html": (
+            (r"MCP 機能数: \d+", f"MCP 機能数: {tool_count}"),
+            (r"既定で \d+ 機能", f"既定で {tool_count} 機能"),
+            (r"public runtime cohort=\d+", f"public runtime cohort={tool_count}"),
+        ),
+        SITE / "facts.html.md": (
+            (r"MCP 機能数: \d+", f"MCP 機能数: {tool_count}"),
+            (r"既定で \d+ 機能", f"既定で {tool_count} 機能"),
+            (r"public runtime cohort=\d+", f"public runtime cohort={tool_count}"),
+        ),
+        SITE / "playground.html": (
+            (
+                r'"endpoint_catalog_paths", "value": \d+',
+                f'"endpoint_catalog_paths", "value": {path_count}',
+            ),
+        ),
+    }
+    for path, rules in replacements.items():
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for pattern, replacement in rules:
+            text = re.sub(pattern, replacement, text)
+        path.write_text(text, encoding="utf-8")
+
+
 def main() -> int:
     sm_xml, url_count = build_structured_sitemap()
     (SITE / "sitemap-structured.xml").write_text(sm_xml, encoding="utf-8")
@@ -359,6 +458,9 @@ def main() -> int:
         encoding="utf-8",
     )
     sync_llms_well_known_hashes()
+    sync_agents_discovery_counts()
+    sync_openapi_discovery()
+    sync_visible_runtime_counts()
 
     print(f"sitemap-structured.xml: {url_count} URLs", file=sys.stderr)
     print(

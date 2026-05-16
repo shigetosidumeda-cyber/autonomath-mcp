@@ -72,26 +72,78 @@ CABINET_NPO_BASE = "https://www.npo-homepage.go.jp"
 
 # Curated 公益財団 official site list — primary domain only.
 OFFICIAL_FOUNDATION_SITES: list[dict[str, str]] = [
-    {"name": "公益財団法人トヨタ財団", "url": "https://www.toyotafound.or.jp/grant/", "type": "公益財団"},
-    {"name": "公益財団法人サントリー文化財団", "url": "https://www.suntory.co.jp/sfnd/", "type": "公益財団"},
+    {
+        "name": "公益財団法人トヨタ財団",
+        "url": "https://www.toyotafound.or.jp/grant/",
+        "type": "公益財団",
+    },
+    {
+        "name": "公益財団法人サントリー文化財団",
+        "url": "https://www.suntory.co.jp/sfnd/",
+        "type": "公益財団",
+    },
     {"name": "公益財団法人SOMPO環境財団", "url": "https://www.sompo-ef.org/", "type": "公益財団"},
-    {"name": "公益財団法人大林財団", "url": "https://obayashifoundation.or.jp/", "type": "公益財団"},
-    {"name": "公益財団法人三菱財団", "url": "https://www.mitsubishi-zaidan.jp/", "type": "公益財団"},
+    {
+        "name": "公益財団法人大林財団",
+        "url": "https://obayashifoundation.or.jp/",
+        "type": "公益財団",
+    },
+    {
+        "name": "公益財団法人三菱財団",
+        "url": "https://www.mitsubishi-zaidan.jp/",
+        "type": "公益財団",
+    },
     {"name": "公益財団法人日産財団", "url": "https://www.nissan-zaidan.or.jp/", "type": "公益財団"},
     {"name": "公益財団法人旭硝子財団", "url": "https://www.af-info.or.jp/", "type": "公益財団"},
     {"name": "公益財団法人かめのり財団", "url": "https://www.kamenori.jp/", "type": "公益財団"},
-    {"name": "公益財団法人中島記念国際交流財団", "url": "https://www.nakajimafound.or.jp/", "type": "公益財団"},
-    {"name": "公益財団法人野村財団", "url": "https://www.nomurafoundation.or.jp/", "type": "公益財団"},
+    {
+        "name": "公益財団法人中島記念国際交流財団",
+        "url": "https://www.nakajimafound.or.jp/",
+        "type": "公益財団",
+    },
+    {
+        "name": "公益財団法人野村財団",
+        "url": "https://www.nomurafoundation.or.jp/",
+        "type": "公益財団",
+    },
     {"name": "公益財団法人住友財団", "url": "https://www.sumitomo.or.jp/", "type": "公益財団"},
-    {"name": "公益財団法人カシオ科学振興財団", "url": "https://casiozaidan.org/", "type": "公益財団"},
+    {
+        "name": "公益財団法人カシオ科学振興財団",
+        "url": "https://casiozaidan.org/",
+        "type": "公益財団",
+    },
     {"name": "公益財団法人キヤノン財団", "url": "https://canon-foundation.jp/", "type": "公益財団"},
-    {"name": "公益財団法人セコム科学技術振興財団", "url": "https://www.secomzaidan.jp/", "type": "公益財団"},
-    {"name": "公益財団法人ホクト生物科学振興財団", "url": "https://hokto-foundation.jp/", "type": "公益財団"},
+    {
+        "name": "公益財団法人セコム科学技術振興財団",
+        "url": "https://www.secomzaidan.jp/",
+        "type": "公益財団",
+    },
+    {
+        "name": "公益財団法人ホクト生物科学振興財団",
+        "url": "https://hokto-foundation.jp/",
+        "type": "公益財団",
+    },
     {"name": "公益財団法人かんぽ財団", "url": "https://www.kampozaidan.or.jp/", "type": "公益財団"},
-    {"name": "公益財団法人前川報恩会", "url": "https://www.mayekawa-houon.or.jp/", "type": "公益財団"},
-    {"name": "公益財団法人パブリックリソース財団", "url": "https://www.public.or.jp/", "type": "公益財団"},
-    {"name": "公益財団法人ヤマト福祉財団", "url": "https://www.yamato-fukushi.jp/", "type": "公益財団"},
-    {"name": "公益財団法人福武教育文化振興財団", "url": "https://fukutake-foundation.jp/", "type": "公益財団"},
+    {
+        "name": "公益財団法人前川報恩会",
+        "url": "https://www.mayekawa-houon.or.jp/",
+        "type": "公益財団",
+    },
+    {
+        "name": "公益財団法人パブリックリソース財団",
+        "url": "https://www.public.or.jp/",
+        "type": "公益財団",
+    },
+    {
+        "name": "公益財団法人ヤマト福祉財団",
+        "url": "https://www.yamato-fukushi.jp/",
+        "type": "公益財団",
+    },
+    {
+        "name": "公益財団法人福武教育文化振興財団",
+        "url": "https://fukutake-foundation.jp/",
+        "type": "公益財団",
+    },
 ]
 
 UA = "AutonoMath/0.3.5 jpcite-etl (+https://bookyou.net; info@bookyou.net)"
@@ -112,9 +164,7 @@ BANNED_HOSTS: frozenset[str] = frozenset(
 )
 
 # Closed enum mirroring migration 250 CHECK constraints.
-_VALID_FOUNDATION_TYPES: frozenset[str] = frozenset(
-    {"公益財団", "一般財団", "NPO", "業界団体"}
-)
+_VALID_FOUNDATION_TYPES: frozenset[str] = frozenset({"公益財団", "一般財団", "NPO", "業界団体"})
 _VALID_DONATION_CATEGORIES: frozenset[str] = frozenset(
     {"specified_public_interest", "public_interest", "general", "unknown"}
 )
@@ -387,9 +437,7 @@ def _fetch_koeki_info_rows(max_rows: int) -> list[dict[str, Any]]:
     text = body.decode("utf-8", errors="ignore")
     # koeki-info publishes 公益法人 list rows via <a href> with the
     # 公益法人 name in the anchor text. Best-effort regex pull.
-    for m in re.finditer(
-        r'<a\s+href="([^"]+)"[^>]*>([^<]{4,80})</a>', text
-    ):
+    for m in re.finditer(r'<a\s+href="([^"]+)"[^>]*>([^<]{4,80})</a>', text):
         if len(out) >= max_rows:
             break
         href, name = m.group(1), m.group(2).strip()
@@ -433,9 +481,7 @@ def _fetch_official_site_rows(max_rows: int) -> list[dict[str, Any]]:
         donation = _classify_donation_category(text, entry["type"])
         # Each site may host multiple grant programs; we pull up to 5
         # program-name candidates from H2/H3 headers.
-        program_names = re.findall(
-            r"<h[23][^>]*>([^<]{4,80}?助成[^<]{0,60})</h[23]>", text
-        )
+        program_names = re.findall(r"<h[23][^>]*>([^<]{4,80}?助成[^<]{0,60})</h[23]>", text)
         if not program_names:
             program_names = [page_title[:80]]
         for pname in program_names[:5]:
@@ -625,9 +671,7 @@ def _log_run(
 
 
 def _build_argparser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(
-        description="Wave 43.1.3 — Ingest 民間助成財団 2,000+ programs."
-    )
+    p = argparse.ArgumentParser(description="Wave 43.1.3 — Ingest 民間助成財団 2,000+ programs.")
     p.add_argument(
         "--source",
         choices=("koeki_info", "official_site", "cabinet_npo", "gyokai_dantai", "all"),
@@ -690,9 +734,7 @@ def main(argv: list[str] | None = None) -> int:
                 source_kind=source_kind,
                 error=None,
             )
-            logger.info(
-                "%s seen=%d upserted=%d skipped=%d", source_kind, seen, up, sk
-            )
+            logger.info("%s seen=%d upserted=%d skipped=%d", source_kind, seen, up, sk)
             total_seen += seen
             total_upserted += up
             total_skipped += sk

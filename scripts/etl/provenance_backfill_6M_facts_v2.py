@@ -105,9 +105,7 @@ def _try_load_private_key() -> Any | None:
         _log.warning("AUTONOMATH_FACT_SIGN_PRIVATE_KEY not valid hex — using placeholder")
         return None
     if len(seed) != 32:
-        _log.warning(
-            "AUTONOMATH_FACT_SIGN_PRIVATE_KEY must be 32 raw bytes; got %d", len(seed)
-        )
+        _log.warning("AUTONOMATH_FACT_SIGN_PRIVATE_KEY must be 32 raw bytes; got %d", len(seed))
         return None
     try:
         from cryptography.hazmat.primitives.asymmetric.ed25519 import (
@@ -135,9 +133,9 @@ def _canonical_payload(
         "confidence_lower": conf_lo,
         "confidence_upper": conf_hi,
     }
-    return json.dumps(
-        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+        "utf-8"
+    )
 
 
 def _has_column(conn: sqlite3.Connection, table: str, column: str) -> bool:
@@ -268,9 +266,7 @@ def _upsert_one(
     if dry_run:
         return "upserted"
 
-    payload = _canonical_payload(
-        fact_id, source_doc, extracted_at, verified_by, conf_lo, conf_hi
-    )
+    payload = _canonical_payload(fact_id, source_doc, extracted_at, verified_by, conf_lo, conf_hi)
     prefixed_sig, sig_hex = _sign(priv_key, payload)
 
     conn.execute(
@@ -326,15 +322,12 @@ def _walk(
     while True:
         if cursor is None:
             cur = conn.execute(
-                "SELECT id FROM am_entity_facts "
-                "ORDER BY id ASC LIMIT ?",
+                "SELECT id FROM am_entity_facts ORDER BY id ASC LIMIT ?",
                 (chunk_size,),
             )
         else:
             cur = conn.execute(
-                "SELECT id FROM am_entity_facts "
-                "WHERE id > ? "
-                "ORDER BY id ASC LIMIT ?",
+                "SELECT id FROM am_entity_facts WHERE id > ? ORDER BY id ASC LIMIT ?",
                 (cursor, chunk_size),
             )
         batch = cur.fetchall()
@@ -349,9 +342,7 @@ def _walk(
                 counts[outcome] += 1
             except sqlite3.IntegrityError as exc:
                 counts["errors"] += 1
-                _log.warning(
-                    "integrity error fact_id=%s err=%s", source_fact_id, exc
-                )
+                _log.warning("integrity error fact_id=%s err=%s", source_fact_id, exc)
             walked += 1
             cursor = source_fact_id
 

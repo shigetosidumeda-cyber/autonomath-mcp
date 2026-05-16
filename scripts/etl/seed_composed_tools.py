@@ -181,18 +181,14 @@ def seed(db_path: Path, *, dry_run: bool = False) -> dict[str, int]:
     try:
         if not _table_exists(conn, "am_composed_tool_catalog"):
             raise RuntimeError(
-                "am_composed_tool_catalog missing — apply migration "
-                "276_composable_tools.sql first"
+                "am_composed_tool_catalog missing — apply migration 276_composable_tools.sql first"
             )
         inserted = 0
         skipped = 0
         for tool in SEED_COMPOSED_TOOLS:
-            chain_json = json.dumps(
-                tool["chain"], ensure_ascii=False, sort_keys=True
-            )
+            chain_json = json.dumps(tool["chain"], ensure_ascii=False, sort_keys=True)
             existing = conn.execute(
-                "SELECT 1 FROM am_composed_tool_catalog "
-                "WHERE tool_id=? AND version=?",
+                "SELECT 1 FROM am_composed_tool_catalog WHERE tool_id=? AND version=?",
                 (tool["tool_id"], 1),
             ).fetchone()
             if existing:

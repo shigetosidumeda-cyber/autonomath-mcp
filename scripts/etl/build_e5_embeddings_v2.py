@@ -39,16 +39,16 @@ if str(_REPO) not in sys.path:
 
 LOG = logging.getLogger("build_e5_embeddings_v2")
 
-DEFAULT_DB = get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db"))
+DEFAULT_DB = get_flag(
+    "JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db")
+)
 DEFAULT_CHUNK_SIZE = 5_000
 DEFAULT_BATCH_SIZE = 64
 DEFAULT_MODEL = "intfloat/multilingual-e5-small"
 EXPECTED_DIM = 384
 HASH_FALLBACK_MODEL = "hash-fallback-e5-small-v1"
 
-MIGRATION_PATH = (
-    _REPO / "scripts" / "migrations" / "260_vec_e5_small_384.sql"
-)
+MIGRATION_PATH = _REPO / "scripts" / "migrations" / "260_vec_e5_small_384.sql"
 
 _INTERRUPTED = False
 
@@ -123,9 +123,7 @@ def _load_embed_model(model_name: str) -> tuple[Any, int, str]:
         LOG.info("loading sentence-transformers model: %s", model_name)
         t0 = time.time()
         local_only = os.environ.get("HF_HUB_OFFLINE", "0") == "1"
-        cache_dir = os.environ.get("HF_HOME") or os.environ.get(
-            "SENTENCE_TRANSFORMERS_HOME"
-        )
+        cache_dir = os.environ.get("HF_HOME") or os.environ.get("SENTENCE_TRANSFORMERS_HOME")
         kwargs: dict[str, Any] = {}
         if cache_dir:
             kwargs["cache_folder"] = cache_dir
@@ -176,9 +174,7 @@ def _embed_batch(
         return [_hash_vector(t, dim=dim) for t in texts]
     try:
         prefixed = [f"passage: {t}" for t in texts]
-        vecs = model.encode(
-            prefixed, normalize_embeddings=True, batch_size=len(prefixed)
-        )
+        vecs = model.encode(prefixed, normalize_embeddings=True, batch_size=len(prefixed))
         return [[float(x) for x in v] for v in vecs]
     except Exception as exc:  # noqa: BLE001
         LOG.warning("batch encode failed (%s) — falling back to hash", exc)

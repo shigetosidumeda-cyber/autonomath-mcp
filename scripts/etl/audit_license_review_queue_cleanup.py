@@ -91,10 +91,11 @@ def _is_public_url(source_url: str) -> bool:
 def _is_internal_or_quarantined(row: dict[str, str]) -> bool:
     source_url = _clean(row.get("source_url"))
     domain = _domain(row)
-    return (
-        source_url.startswith(("internal://", "autonomath:", "quarantined://"))
-        or domain in {"autonomath", "autonomath.internal", "banned"}
-    )
+    return source_url.startswith(("internal://", "autonomath:", "quarantined://")) or domain in {
+        "autonomath",
+        "autonomath.internal",
+        "banned",
+    }
 
 
 def read_queue_rows(path: Path) -> list[dict[str, str]]:
@@ -194,9 +195,7 @@ def build_cleanup_report(
             proposed_by_license[item.recommended_license] += 1
 
     by_action_complete = {action: by_action.get(action, 0) for action in ALL_ACTIONS}
-    linked_by_action_complete = {
-        action: linked_by_action.get(action, 0) for action in ALL_ACTIONS
-    }
+    linked_by_action_complete = {action: linked_by_action.get(action, 0) for action in ALL_ACTIONS}
 
     report: dict[str, Any] = {
         "schema_version": "license_review_cleanup_report.v1",

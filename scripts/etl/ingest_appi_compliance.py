@@ -250,9 +250,7 @@ def _fetch_ppc_rows(max_rows: int) -> list[dict[str, Any]]:
         return out
     text = body.decode("utf-8", errors="ignore")
     # PPC publishes operator notifications via <li><a href="...">{title}</a></li>
-    for m in re.finditer(
-        r'<a\s+href="(/[^"]+)"[^>]*>([^<]{4,200})</a>', text
-    ):
+    for m in re.finditer(r'<a\s+href="(/[^"]+)"[^>]*>([^<]{4,200})</a>', text):
         if len(out) >= max_rows:
             break
         href, title = m.group(1), m.group(2)
@@ -284,7 +282,7 @@ def _fetch_jipdec_rows(max_rows: int) -> list[dict[str, Any]]:
     text = body.decode("utf-8", errors="ignore")
     # JIPDEC publishes per-org rows; we surface registered status with the
     # PrivacyMark/ISMS-P cert flag.
-    for m in re.finditer(r'<td[^>]*>([^<]{2,150})</td>', text):
+    for m in re.finditer(r"<td[^>]*>([^<]{2,150})</td>", text):
         if len(out) >= max_rows:
             break
         name = m.group(1).strip()
@@ -454,9 +452,7 @@ def main(argv: list[str] | None = None) -> int:
                 source_kind=source_kind,
                 error=None,
             )
-            logger.info(
-                "%s seen=%d upserted=%d skipped=%d", source_kind, seen, up, sk
-            )
+            logger.info("%s seen=%d upserted=%d skipped=%d", source_kind, seen, up, sk)
             total_seen += seen
             total_upserted += up
             total_skipped += sk

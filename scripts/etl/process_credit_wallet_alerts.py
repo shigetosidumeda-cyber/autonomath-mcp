@@ -60,9 +60,7 @@ _THRESHOLDS_PCT: tuple[int, ...] = (50, 80, 100)
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(
-        description="Process Dim U credit-wallet spending alerts (hourly)"
-    )
+    p = argparse.ArgumentParser(description="Process Dim U credit-wallet spending alerts (hourly)")
     p.add_argument("--db", default=str(DEFAULT_DB_PATH))
     p.add_argument("--dry-run", action="store_true")
     p.add_argument(

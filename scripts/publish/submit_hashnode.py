@@ -8,6 +8,7 @@ Token acquisition (~30 sec):
     https://hashnode.com/settings/developer → "Generate New Token"
     publication id: visit your blog → settings → general → copy "Publication ID"
 """
+
 from __future__ import annotations
 
 import json
@@ -88,7 +89,10 @@ def main() -> int:
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             if "errors" in data:
-                print(f"GraphQL errors: {json.dumps(data['errors'], ensure_ascii=False)}", file=sys.stderr)
+                print(
+                    f"GraphQL errors: {json.dumps(data['errors'], ensure_ascii=False)}",
+                    file=sys.stderr,
+                )
                 return 1
             post = data.get("data", {}).get("publishPost", {}).get("post", {})
             print(f"OK status={resp.status} id={post.get('id')} url={post.get('url')}")

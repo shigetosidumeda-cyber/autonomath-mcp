@@ -82,24 +82,18 @@ def _ensure_tables(conn: sqlite3.Connection) -> None:
 
 def _mark_expired(conn: sqlite3.Connection, *, now: int, dry_run: bool) -> int:
     """Flip status='open' rows past their TTL to status='expired'."""
-    sql_count = (
-        "SELECT COUNT(*) FROM am_session_context "
-        "WHERE status = 'open' AND expires_at < ?"
-    )
+    sql_count = "SELECT COUNT(*) FROM am_session_context WHERE status = 'open' AND expires_at < ?"
     n = conn.execute(sql_count, (now,)).fetchone()[0]
     if dry_run or n == 0:
         return int(n)
     conn.execute(
-        "UPDATE am_session_context SET status = 'expired' "
-        "WHERE status = 'open' AND expires_at < ?",
+        "UPDATE am_session_context SET status = 'expired' WHERE status = 'open' AND expires_at < ?",
         (now,),
     )
     return int(n)
 
 
-def _delete_aged_context(
-    conn: sqlite3.Connection, *, now: int, dry_run: bool
-) -> int:
+def _delete_aged_context(conn: sqlite3.Connection, *, now: int, dry_run: bool) -> int:
     """Drop expired/closed rows older than the 7-day forensic window."""
     cutoff = now - _RETENTION_SECONDS
     # `expires_at` is epoch; `closed_at` is epoch; pick the maximum of the two
@@ -121,9 +115,7 @@ def _delete_aged_context(
     return int(n)
 
 
-def _delete_orphan_step_log(
-    conn: sqlite3.Connection, *, dry_run: bool
-) -> int:
+def _delete_orphan_step_log(conn: sqlite3.Connection, *, dry_run: bool) -> int:
     """Drop step-log rows whose parent session_id no longer exists."""
     sql_count = (
         "SELECT COUNT(*) FROM am_session_step_log s "
@@ -144,16 +136,10 @@ def _delete_orphan_step_log(
     return int(n)
 
 
-def _delete_aged_step_log(
-    conn: sqlite3.Connection, *, now: int, dry_run: bool
-) -> int:
+def _delete_aged_step_log(conn: sqlite3.Connection, *, now: int, dry_run: bool) -> int:
     """Drop step-log rows older than the 7-day forensic window."""
-    cutoff_iso = time.strftime(
-        "%Y-%m-%dT%H:%M:%fZ", time.gmtime(now - _RETENTION_SECONDS)
-    )
-    sql_count = (
-        "SELECT COUNT(*) FROM am_session_step_log WHERE created_at < ?"
-    )
+    cutoff_iso = time.strftime("%Y-%m-%dT%H:%M:%fZ", time.gmtime(now - _RETENTION_SECONDS))
+    sql_count = "SELECT COUNT(*) FROM am_session_step_log WHERE created_at < ?"
     n = conn.execute(sql_count, (cutoff_iso,)).fetchone()[0]
     if dry_run or n == 0:
         return int(n)
@@ -167,8 +153,7 @@ def _delete_aged_step_log(
 def _alive_remaining(conn: sqlite3.Connection, *, now: int) -> int:
     return int(
         conn.execute(
-            "SELECT COUNT(*) FROM am_session_context "
-            "WHERE status = 'open' AND expires_at >= ?",
+            "SELECT COUNT(*) FROM am_session_context WHERE status = 'open' AND expires_at >= ?",
             (now,),
         ).fetchone()[0]
     )
@@ -183,9 +168,7 @@ def run(db_path: Path, *, dry_run: bool) -> dict:
         expired_marked = _mark_expired(conn, now=now, dry_run=dry_run)
         context_deleted = _delete_aged_context(conn, now=now, dry_run=dry_run)
         orphan_deleted = _delete_orphan_step_log(conn, dry_run=dry_run)
-        aged_step_deleted = _delete_aged_step_log(
-            conn, now=now, dry_run=dry_run
-        )
+        aged_step_deleted = _delete_aged_step_log(conn, now=now, dry_run=dry_run)
         if not dry_run:
             conn.commit()
         alive = _alive_remaining(conn, now=now)

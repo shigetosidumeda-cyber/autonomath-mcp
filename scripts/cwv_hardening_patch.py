@@ -45,6 +45,7 @@ Idempotent: a marker comment `<!-- CWV-HARDENED -->` is inserted on first run
 and short-circuits subsequent passes (but reapplies any per-element fixes
 that were lost to a generator rewrite).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -109,6 +110,7 @@ def _patch_font_block(text: str) -> tuple[str, bool]:
 
 def _patch_header_logo(text: str) -> tuple[str, bool]:
     """Add fetchpriority="high" decoding="async" width="190" to the header logo img."""
+
     def _replace(match: re.Match[str]) -> str:
         head = match.group(1)
         tail = match.group(2)
@@ -127,7 +129,7 @@ def _patch_header_logo(text: str) -> tuple[str, bool]:
 # Detect a content <img> that is OUTSIDE the first <picture> block (i.e. below
 # the header). Heuristic: split text on the first </picture>; any <img> in the
 # tail that doesn't already have loading= gets `loading="lazy" decoding="async"`.
-CONTENT_IMG_RE = re.compile(r'<img\s+(?![^>]*loading=)(?![^>]*data-no-lazy)([^>]*?)(/?)>')
+CONTENT_IMG_RE = re.compile(r"<img\s+(?![^>]*loading=)(?![^>]*data-no-lazy)([^>]*?)(/?)>")
 
 
 def _patch_lazy_load(text: str) -> tuple[str, bool]:
@@ -140,7 +142,7 @@ def _patch_lazy_load(text: str) -> tuple[str, bool]:
         tail = text
     else:
         head = text[: idx + len("</picture>")]
-        tail = text[idx + len("</picture>"):]
+        tail = text[idx + len("</picture>") :]
 
     def _replace(match: re.Match[str]) -> str:
         attrs = match.group(1).strip()
@@ -163,8 +165,8 @@ FOOTER_BRAND_BADGE_HTML = (
     '<source media="(prefers-color-scheme: dark)" srcset="/assets/brand/jpcite-mark-light-fill.svg">'
     '<img src="/assets/brand/jpcite-mark-dark-fill.svg" alt="" width="20" height="20" '
     'loading="lazy" decoding="async">'
-    '</picture>'
-    'jpcite</p>'
+    "</picture>"
+    "jpcite</p>"
 )
 
 
@@ -188,7 +190,7 @@ def _ensure_marker(text: str) -> tuple[str, bool]:
         return text, False
     # Insert after <head> open (if present) so it shows up in view-source.
     new = text
-    head_open = re.search(r'<head[^>]*>', text)
+    head_open = re.search(r"<head[^>]*>", text)
     if head_open:
         i = head_open.end()
         new = text[:i] + f"\n{MARKER_HARDENED}" + text[i:]
@@ -238,9 +240,7 @@ def _patch_csp_headers() -> bool:
         LOG.info("_headers: report-only CSP already present, skipping")
         return False
     # Insert report-only line after the enforced CSP line under /*.
-    csp_line_re = re.compile(
-        r'(  Content-Security-Policy: [^\n]+\n)'
-    )
+    csp_line_re = re.compile(r"(  Content-Security-Policy: [^\n]+\n)")
     report_only = (
         "  Content-Security-Policy-Report-Only: "
         "default-src 'self'; "
@@ -252,7 +252,7 @@ def _patch_csp_headers() -> bool:
         "frame-src 'none'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; "
         "form-action 'self' https://checkout.stripe.com https://billing.stripe.com\n"
     )
-    new_text, n = csp_line_re.subn(r'\1' + report_only, text, count=1)
+    new_text, n = csp_line_re.subn(r"\1" + report_only, text, count=1)
     if n == 0:
         LOG.info("_headers: enforced CSP line not found, cannot insert report-only")
         return False
@@ -277,7 +277,7 @@ def _externalize_inline_js(html_path: Path) -> bool:
     # executable JS, JSON-LD is data, not behaviour, and is not subject to
     # 'unsafe-inline' enforcement).
     pattern = re.compile(
-        r'<script(?![^>]*\bsrc=)([^>]*)>(.*?)</script>',
+        r"<script(?![^>]*\bsrc=)([^>]*)>(.*?)</script>",
         re.DOTALL,
     )
     for match in pattern.finditer(text):
@@ -309,7 +309,13 @@ def patch_html(html_path: Path, dry_run: bool = False) -> dict[str, bool]:
         # Some legacy generated pages may be Shift_JIS or carry mixed bytes —
         # we leave those alone per the no-corrupt-shiftjis rule.
         return {"font": False, "logo": False, "lazy": False, "marker": False, "skip_encoding": True}
-    changed: dict[str, bool] = {"font": False, "logo": False, "lazy": False, "footer": False, "marker": False}
+    changed: dict[str, bool] = {
+        "font": False,
+        "logo": False,
+        "lazy": False,
+        "footer": False,
+        "marker": False,
+    }
     text, changed["font"] = _patch_font_block(text)
     text, changed["logo"] = _patch_header_logo(text)
     text, changed["lazy"] = _patch_lazy_load(text)
@@ -339,13 +345,31 @@ def main() -> int:
     # the long-tail SEO corpus. Skipping site/docs/* (mkdocs handles those via
     # build_minify.py::patch_mkdocs_html).
     for sub in (
-        "blog", "cases", "integrations", "audiences", "industries",
-        "prefectures", "programs", "cross", "qa", "news", "compare",
+        "blog",
+        "cases",
+        "integrations",
+        "audiences",
+        "industries",
+        "prefectures",
+        "programs",
+        "cross",
+        "qa",
+        "news",
+        "compare",
         # 2026-05-11 W14 CWV: additional cohorts caught up in the Google
         # Fonts CDN dependency. mkdocs `docs/` is excluded — build_minify.py
         # handles it during the mkdocs theme build, not at static patch time.
-        "benchmark", "intel", "transparency", "calculator", "security",
-        "dashboard", "trust", "laws", "enforcement", "stats", "status",
+        "benchmark",
+        "intel",
+        "transparency",
+        "calculator",
+        "security",
+        "dashboard",
+        "trust",
+        "laws",
+        "enforcement",
+        "stats",
+        "status",
     ):
         sd = SITE / sub
         if sd.is_dir():

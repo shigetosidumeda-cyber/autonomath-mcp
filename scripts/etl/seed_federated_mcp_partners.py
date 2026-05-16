@@ -106,8 +106,7 @@ def seed(db_path: Path, *, dry_run: bool = False) -> dict[str, int]:
     try:
         if not _table_exists(conn, "am_federated_mcp_partner"):
             raise RuntimeError(
-                "am_federated_mcp_partner missing — apply migration "
-                "278_federated_mcp.sql first"
+                "am_federated_mcp_partner missing — apply migration 278_federated_mcp.sql first"
             )
 
         inserted = 0

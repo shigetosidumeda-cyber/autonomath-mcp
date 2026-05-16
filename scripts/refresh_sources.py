@@ -80,7 +80,7 @@ FAILURE_OUTCOMES: frozenset[str] = frozenset({"fail", "error", "unsafe_url"})
 # entry is dropped on overflow via OrderedDict.move_to_end on access.
 _DNS_RESOLVE_TTL_SEC: float = 300.0  # 5 minutes
 _DNS_RESOLVE_CACHE_MAX: int = 10_000
-_DNS_RESOLVE_CACHE: "OrderedDict[str, tuple[bool, str | None, float]]" = OrderedDict()
+_DNS_RESOLVE_CACHE: OrderedDict[str, tuple[bool, str | None, float]] = OrderedDict()
 
 
 def _url_scheme_is_safe(url: str) -> bool:
@@ -205,6 +205,7 @@ def is_url_safe(url: str) -> tuple[bool, str | None]:
     if not host:
         return False, "no_host"
     return _resolve_host_safely(host)
+
 
 # Tier scope is now S,A,B,C by default — Tier X is the quarantine tier per
 # CLAUDE.md and is intentionally excluded from every search path, this scan
@@ -648,9 +649,7 @@ def commit_changes(
 
         if outcome in FAILURE_OUTCOMES:
             new_count = ch["fail_count_after"]
-            reason = ch.get("error") or (
-                f"http_{status}" if status is not None else "unknown"
-            )
+            reason = ch.get("error") or (f"http_{status}" if status is not None else "unknown")
             action = f"increment_fail_count:{outcome}:{reason}"
             if ch.get("quarantined"):
                 cur.execute(

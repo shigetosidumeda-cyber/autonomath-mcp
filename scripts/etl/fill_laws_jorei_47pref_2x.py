@@ -39,6 +39,7 @@ Usage
     .venv/bin/python scripts/etl/fill_laws_jorei_47pref_2x.py \
         --dry-run                # crawl plan only, no DB writes
 """
+
 from __future__ import annotations
 
 import argparse
@@ -71,40 +72,68 @@ LOG = logging.getLogger("fill_laws_jorei_47pref_2x")
 DEFAULT_DB = os.environ.get("AUTONOMATH_DB_PATH", str(_REPO / "autonomath.db"))
 DEFAULT_REVIEW_CSV = str(_REPO / "data" / "laws_jorei_pref_review_queue.csv")
 
-USER_AGENT = (
-    "jpcite-jorei-bot/1.0 (+https://jpcite.com/bots; "
-    "operator=info@bookyou.net)"
-)
+USER_AGENT = "jpcite-jorei-bot/1.0 (+https://jpcite.com/bots; operator=info@bookyou.net)"
 
 # Primary-source allow-list — only `*.pref.{slug}.lg.jp` and the canonical
 # Reiki-DB endpoint hosted under `.lg.jp` subdomain are accepted.
 PRIMARY_DOMAINS = (
-    ".lg.jp",                       # 全自治体 一次配信 root
-    "pref.hokkaido.lg.jp", "pref.aomori.lg.jp", "pref.iwate.jp",
-    "pref.miyagi.jp", "pref.akita.lg.jp", "pref.yamagata.jp",
+    ".lg.jp",  # 全自治体 一次配信 root
+    "pref.hokkaido.lg.jp",
+    "pref.aomori.lg.jp",
+    "pref.iwate.jp",
+    "pref.miyagi.jp",
+    "pref.akita.lg.jp",
+    "pref.yamagata.jp",
     "pref.fukushima.lg.jp",
-    "pref.ibaraki.jp", "pref.tochigi.lg.jp", "pref.gunma.jp",
-    "pref.saitama.lg.jp", "pref.chiba.lg.jp", "metro.tokyo.lg.jp",
+    "pref.ibaraki.jp",
+    "pref.tochigi.lg.jp",
+    "pref.gunma.jp",
+    "pref.saitama.lg.jp",
+    "pref.chiba.lg.jp",
+    "metro.tokyo.lg.jp",
     "pref.kanagawa.jp",
-    "pref.niigata.lg.jp", "pref.toyama.jp", "pref.ishikawa.lg.jp",
-    "pref.fukui.lg.jp", "pref.yamanashi.jp", "pref.nagano.lg.jp",
-    "pref.gifu.lg.jp", "pref.shizuoka.jp", "pref.aichi.jp",
+    "pref.niigata.lg.jp",
+    "pref.toyama.jp",
+    "pref.ishikawa.lg.jp",
+    "pref.fukui.lg.jp",
+    "pref.yamanashi.jp",
+    "pref.nagano.lg.jp",
+    "pref.gifu.lg.jp",
+    "pref.shizuoka.jp",
+    "pref.aichi.jp",
     "pref.mie.lg.jp",
-    "pref.shiga.lg.jp", "pref.kyoto.jp", "pref.osaka.lg.jp",
-    "pref.hyogo.lg.jp", "pref.nara.jp", "pref.wakayama.lg.jp",
-    "pref.tottori.lg.jp", "pref.shimane.lg.jp", "pref.okayama.jp",
-    "pref.hiroshima.lg.jp", "pref.yamaguchi.lg.jp",
-    "pref.tokushima.lg.jp", "pref.kagawa.lg.jp", "pref.ehime.jp",
+    "pref.shiga.lg.jp",
+    "pref.kyoto.jp",
+    "pref.osaka.lg.jp",
+    "pref.hyogo.lg.jp",
+    "pref.nara.jp",
+    "pref.wakayama.lg.jp",
+    "pref.tottori.lg.jp",
+    "pref.shimane.lg.jp",
+    "pref.okayama.jp",
+    "pref.hiroshima.lg.jp",
+    "pref.yamaguchi.lg.jp",
+    "pref.tokushima.lg.jp",
+    "pref.kagawa.lg.jp",
+    "pref.ehime.jp",
     "pref.kochi.lg.jp",
-    "pref.fukuoka.lg.jp", "pref.saga.lg.jp", "pref.nagasaki.jp",
-    "pref.kumamoto.jp", "pref.oita.jp", "pref.miyazaki.lg.jp",
+    "pref.fukuoka.lg.jp",
+    "pref.saga.lg.jp",
+    "pref.nagasaki.jp",
+    "pref.kumamoto.jp",
+    "pref.oita.jp",
+    "pref.miyazaki.lg.jp",
     "pref.kagoshima.jp",
     "pref.okinawa.jp",
 )
 
 BANNED_DOMAINS = (
-    "noukaweb", "hojyokin-portal", "biz.stayway",
-    "jichitai.com", "jichi-souken", "subsidy-port",
+    "noukaweb",
+    "hojyokin-portal",
+    "biz.stayway",
+    "jichitai.com",
+    "jichi-souken",
+    "subsidy-port",
 )
 
 
@@ -112,121 +141,79 @@ BANNED_DOMAINS = (
 # Prefecture metadata
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class PrefectureCfg:
-    code: str          # '01' .. '47'
-    name: str          # 都道府県 名
-    slug: str          # romanized slug, lowercase
-    base_url: str      # 例規 root URL
+    code: str  # '01' .. '47'
+    name: str  # 都道府県 名
+    slug: str  # romanized slug, lowercase
+    base_url: str  # 例規 root URL
     rss_url: str | None = None
-    parse_kind: str = "table"   # 'table' | 'list' | 'json'
+    parse_kind: str = "table"  # 'table' | 'list' | 'json'
 
 
 # 47 都道府県 official 例規 base URLs. Each entry's `base_url` is the
 # canonical 例規データベース (公式 OR 自治体 委託 Reiki-DB on `.lg.jp`).
 # RSS where the prefecture publishes 改正告示 RSS feed.
 PREFECTURES: tuple[PrefectureCfg, ...] = (
-    PrefectureCfg("01", "北海道",     "hokkaido",
-                  "https://www.pref.hokkaido.lg.jp/file/reiki/index.html"),
-    PrefectureCfg("02", "青森県",     "aomori",
-                  "https://www.pref.aomori.lg.jp/reiki/"),
-    PrefectureCfg("03", "岩手県",     "iwate",
-                  "https://www.pref.iwate.jp/reiki/index.html"),
-    PrefectureCfg("04", "宮城県",     "miyagi",
-                  "https://www.pref.miyagi.jp/reiki/"),
-    PrefectureCfg("05", "秋田県",     "akita",
-                  "https://www.pref.akita.lg.jp/pages/genre/reiki"),
-    PrefectureCfg("06", "山形県",     "yamagata",
-                  "https://www.pref.yamagata.jp/reiki/"),
-    PrefectureCfg("07", "福島県",     "fukushima",
-                  "https://www.pref.fukushima.lg.jp/reiki/"),
-    PrefectureCfg("08", "茨城県",     "ibaraki",
-                  "https://www.pref.ibaraki.jp/reiki/"),
-    PrefectureCfg("09", "栃木県",     "tochigi",
-                  "https://www.pref.tochigi.lg.jp/reiki/"),
-    PrefectureCfg("10", "群馬県",     "gunma",
-                  "https://www.pref.gunma.jp/reiki/"),
-    PrefectureCfg("11", "埼玉県",     "saitama",
-                  "https://www.pref.saitama.lg.jp/reiki/"),
-    PrefectureCfg("12", "千葉県",     "chiba",
-                  "https://www.pref.chiba.lg.jp/reiki/"),
-    PrefectureCfg("13", "東京都",     "tokyo",
-                  "https://www.reiki.metro.tokyo.lg.jp/menu.html",
-                  rss_url=None),
-    PrefectureCfg("14", "神奈川県",   "kanagawa",
-                  "https://www.pref.kanagawa.jp/reiki/index.html"),
-    PrefectureCfg("15", "新潟県",     "niigata",
-                  "https://www.pref.niigata.lg.jp/reiki/"),
-    PrefectureCfg("16", "富山県",     "toyama",
-                  "https://www.pref.toyama.jp/reiki/"),
-    PrefectureCfg("17", "石川県",     "ishikawa",
-                  "https://www.pref.ishikawa.lg.jp/reiki/"),
-    PrefectureCfg("18", "福井県",     "fukui",
-                  "https://www.pref.fukui.lg.jp/reiki/"),
-    PrefectureCfg("19", "山梨県",     "yamanashi",
-                  "https://www.pref.yamanashi.jp/reiki/"),
-    PrefectureCfg("20", "長野県",     "nagano",
-                  "https://www.pref.nagano.lg.jp/reiki/"),
-    PrefectureCfg("21", "岐阜県",     "gifu",
-                  "https://www.pref.gifu.lg.jp/reiki/"),
-    PrefectureCfg("22", "静岡県",     "shizuoka",
-                  "https://www.pref.shizuoka.jp/reiki/"),
-    PrefectureCfg("23", "愛知県",     "aichi",
-                  "https://www.pref.aichi.jp/reiki/"),
-    PrefectureCfg("24", "三重県",     "mie",
-                  "https://www.pref.mie.lg.jp/reiki/"),
-    PrefectureCfg("25", "滋賀県",     "shiga",
-                  "https://www.pref.shiga.lg.jp/reiki/"),
-    PrefectureCfg("26", "京都府",     "kyoto",
-                  "https://www.pref.kyoto.jp/reiki/"),
-    PrefectureCfg("27", "大阪府",     "osaka",
-                  "https://www.pref.osaka.lg.jp/reiki/"),
-    PrefectureCfg("28", "兵庫県",     "hyogo",
-                  "https://www.pref.hyogo.lg.jp/reiki/"),
-    PrefectureCfg("29", "奈良県",     "nara",
-                  "https://www.pref.nara.jp/reiki/"),
-    PrefectureCfg("30", "和歌山県",   "wakayama",
-                  "https://www.pref.wakayama.lg.jp/reiki/"),
-    PrefectureCfg("31", "鳥取県",     "tottori",
-                  "https://www.pref.tottori.lg.jp/reiki/"),
-    PrefectureCfg("32", "島根県",     "shimane",
-                  "https://www.pref.shimane.lg.jp/reiki/"),
-    PrefectureCfg("33", "岡山県",     "okayama",
-                  "https://www.pref.okayama.jp/reiki/"),
-    PrefectureCfg("34", "広島県",     "hiroshima",
-                  "https://www.pref.hiroshima.lg.jp/reiki/"),
-    PrefectureCfg("35", "山口県",     "yamaguchi",
-                  "https://www.pref.yamaguchi.lg.jp/reiki/"),
-    PrefectureCfg("36", "徳島県",     "tokushima",
-                  "https://www.pref.tokushima.lg.jp/reiki/"),
-    PrefectureCfg("37", "香川県",     "kagawa",
-                  "https://www.pref.kagawa.lg.jp/reiki/"),
-    PrefectureCfg("38", "愛媛県",     "ehime",
-                  "https://www.pref.ehime.jp/reiki/"),
-    PrefectureCfg("39", "高知県",     "kochi",
-                  "https://www.pref.kochi.lg.jp/reiki/"),
-    PrefectureCfg("40", "福岡県",     "fukuoka",
-                  "https://www.pref.fukuoka.lg.jp/reiki/"),
-    PrefectureCfg("41", "佐賀県",     "saga",
-                  "https://www.pref.saga.lg.jp/reiki/"),
-    PrefectureCfg("42", "長崎県",     "nagasaki",
-                  "https://www.pref.nagasaki.jp/reiki/"),
-    PrefectureCfg("43", "熊本県",     "kumamoto",
-                  "https://www.pref.kumamoto.jp/reiki/"),
-    PrefectureCfg("44", "大分県",     "oita",
-                  "https://www.pref.oita.jp/reiki/"),
-    PrefectureCfg("45", "宮崎県",     "miyazaki",
-                  "https://www.pref.miyazaki.lg.jp/reiki/"),
-    PrefectureCfg("46", "鹿児島県",   "kagoshima",
-                  "https://www.pref.kagoshima.jp/reiki/"),
-    PrefectureCfg("47", "沖縄県",     "okinawa",
-                  "https://www.pref.okinawa.jp/reiki/"),
+    PrefectureCfg(
+        "01", "北海道", "hokkaido", "https://www.pref.hokkaido.lg.jp/file/reiki/index.html"
+    ),
+    PrefectureCfg("02", "青森県", "aomori", "https://www.pref.aomori.lg.jp/reiki/"),
+    PrefectureCfg("03", "岩手県", "iwate", "https://www.pref.iwate.jp/reiki/index.html"),
+    PrefectureCfg("04", "宮城県", "miyagi", "https://www.pref.miyagi.jp/reiki/"),
+    PrefectureCfg("05", "秋田県", "akita", "https://www.pref.akita.lg.jp/pages/genre/reiki"),
+    PrefectureCfg("06", "山形県", "yamagata", "https://www.pref.yamagata.jp/reiki/"),
+    PrefectureCfg("07", "福島県", "fukushima", "https://www.pref.fukushima.lg.jp/reiki/"),
+    PrefectureCfg("08", "茨城県", "ibaraki", "https://www.pref.ibaraki.jp/reiki/"),
+    PrefectureCfg("09", "栃木県", "tochigi", "https://www.pref.tochigi.lg.jp/reiki/"),
+    PrefectureCfg("10", "群馬県", "gunma", "https://www.pref.gunma.jp/reiki/"),
+    PrefectureCfg("11", "埼玉県", "saitama", "https://www.pref.saitama.lg.jp/reiki/"),
+    PrefectureCfg("12", "千葉県", "chiba", "https://www.pref.chiba.lg.jp/reiki/"),
+    PrefectureCfg(
+        "13", "東京都", "tokyo", "https://www.reiki.metro.tokyo.lg.jp/menu.html", rss_url=None
+    ),
+    PrefectureCfg("14", "神奈川県", "kanagawa", "https://www.pref.kanagawa.jp/reiki/index.html"),
+    PrefectureCfg("15", "新潟県", "niigata", "https://www.pref.niigata.lg.jp/reiki/"),
+    PrefectureCfg("16", "富山県", "toyama", "https://www.pref.toyama.jp/reiki/"),
+    PrefectureCfg("17", "石川県", "ishikawa", "https://www.pref.ishikawa.lg.jp/reiki/"),
+    PrefectureCfg("18", "福井県", "fukui", "https://www.pref.fukui.lg.jp/reiki/"),
+    PrefectureCfg("19", "山梨県", "yamanashi", "https://www.pref.yamanashi.jp/reiki/"),
+    PrefectureCfg("20", "長野県", "nagano", "https://www.pref.nagano.lg.jp/reiki/"),
+    PrefectureCfg("21", "岐阜県", "gifu", "https://www.pref.gifu.lg.jp/reiki/"),
+    PrefectureCfg("22", "静岡県", "shizuoka", "https://www.pref.shizuoka.jp/reiki/"),
+    PrefectureCfg("23", "愛知県", "aichi", "https://www.pref.aichi.jp/reiki/"),
+    PrefectureCfg("24", "三重県", "mie", "https://www.pref.mie.lg.jp/reiki/"),
+    PrefectureCfg("25", "滋賀県", "shiga", "https://www.pref.shiga.lg.jp/reiki/"),
+    PrefectureCfg("26", "京都府", "kyoto", "https://www.pref.kyoto.jp/reiki/"),
+    PrefectureCfg("27", "大阪府", "osaka", "https://www.pref.osaka.lg.jp/reiki/"),
+    PrefectureCfg("28", "兵庫県", "hyogo", "https://www.pref.hyogo.lg.jp/reiki/"),
+    PrefectureCfg("29", "奈良県", "nara", "https://www.pref.nara.jp/reiki/"),
+    PrefectureCfg("30", "和歌山県", "wakayama", "https://www.pref.wakayama.lg.jp/reiki/"),
+    PrefectureCfg("31", "鳥取県", "tottori", "https://www.pref.tottori.lg.jp/reiki/"),
+    PrefectureCfg("32", "島根県", "shimane", "https://www.pref.shimane.lg.jp/reiki/"),
+    PrefectureCfg("33", "岡山県", "okayama", "https://www.pref.okayama.jp/reiki/"),
+    PrefectureCfg("34", "広島県", "hiroshima", "https://www.pref.hiroshima.lg.jp/reiki/"),
+    PrefectureCfg("35", "山口県", "yamaguchi", "https://www.pref.yamaguchi.lg.jp/reiki/"),
+    PrefectureCfg("36", "徳島県", "tokushima", "https://www.pref.tokushima.lg.jp/reiki/"),
+    PrefectureCfg("37", "香川県", "kagawa", "https://www.pref.kagawa.lg.jp/reiki/"),
+    PrefectureCfg("38", "愛媛県", "ehime", "https://www.pref.ehime.jp/reiki/"),
+    PrefectureCfg("39", "高知県", "kochi", "https://www.pref.kochi.lg.jp/reiki/"),
+    PrefectureCfg("40", "福岡県", "fukuoka", "https://www.pref.fukuoka.lg.jp/reiki/"),
+    PrefectureCfg("41", "佐賀県", "saga", "https://www.pref.saga.lg.jp/reiki/"),
+    PrefectureCfg("42", "長崎県", "nagasaki", "https://www.pref.nagasaki.jp/reiki/"),
+    PrefectureCfg("43", "熊本県", "kumamoto", "https://www.pref.kumamoto.jp/reiki/"),
+    PrefectureCfg("44", "大分県", "oita", "https://www.pref.oita.jp/reiki/"),
+    PrefectureCfg("45", "宮崎県", "miyazaki", "https://www.pref.miyazaki.lg.jp/reiki/"),
+    PrefectureCfg("46", "鹿児島県", "kagoshima", "https://www.pref.kagoshima.jp/reiki/"),
+    PrefectureCfg("47", "沖縄県", "okinawa", "https://www.pref.okinawa.jp/reiki/"),
 )
 
 
 # ---------------------------------------------------------------------------
 # Helpers (connection / fetch / classification)
 # ---------------------------------------------------------------------------
+
 
 def _connect(path: str) -> sqlite3.Connection:
     conn = sqlite3.connect(path)
@@ -396,6 +383,7 @@ def _parse_dates(body: str) -> tuple[str | None, str | None]:
 # Crawl + upsert
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class IngestStats:
     pref_attempted: int = 0
@@ -442,23 +430,25 @@ def _crawl_prefecture(
             if m_no:
                 jorei_no = m_no.group(0)
             enacted, revised = _parse_dates(text)
-        rows.append({
-            "canonical_id": canonical_id,
-            "law_id": None,
-            "prefecture_code": cfg.code,
-            "prefecture_name": cfg.name,
-            "jorei_number": jorei_no,
-            "jorei_title": title,
-            "jorei_kind": kind,
-            "enacted_date": enacted,
-            "last_revised": revised,
-            "body_text_excerpt": excerpt,
-            "body_url": url,
-            "source_url": url,
-            "license": "gov_public",
-            "fetched_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"),
-            "confidence": 0.9 if excerpt else 0.6,
-        })
+        rows.append(
+            {
+                "canonical_id": canonical_id,
+                "law_id": None,
+                "prefecture_code": cfg.code,
+                "prefecture_name": cfg.name,
+                "jorei_number": jorei_no,
+                "jorei_title": title,
+                "jorei_kind": kind,
+                "enacted_date": enacted,
+                "last_revised": revised,
+                "body_text_excerpt": excerpt,
+                "body_url": url,
+                "source_url": url,
+                "license": "gov_public",
+                "fetched_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%fZ"),
+                "confidence": 0.9 if excerpt else 0.6,
+            }
+        )
         fetched_count += 1
     LOG.info("crawl %s upsertable rows=%d", cfg.code, len(rows))
     return rows
@@ -522,8 +512,10 @@ def _upsert_fts(conn: sqlite3.Connection, rows: list[dict]) -> int:
                 ) VALUES (?, ?, ?, ?)
                 """,
                 (
-                    r["canonical_id"], r["prefecture_code"],
-                    r["jorei_title"], r["body_text_excerpt"] or "",
+                    r["canonical_id"],
+                    r["prefecture_code"],
+                    r["jorei_title"],
+                    r["body_text_excerpt"] or "",
                 ),
             )
             n += 1
@@ -548,9 +540,12 @@ def _log_run(
             ) VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
-                started_at, finished_at,
-                stats.pref_attempted, stats.pref_ok,
-                stats.rows_upserted, stats.rows_skipped,
+                started_at,
+                finished_at,
+                stats.pref_attempted,
+                stats.pref_ok,
+                stats.rows_upserted,
+                stats.rows_skipped,
                 ("\n".join(stats.errors[:20]) or None),
             ),
         )
@@ -563,8 +558,7 @@ def _audit_counts(conn: sqlite3.Connection) -> dict:
     try:
         total = conn.execute("SELECT COUNT(*) FROM am_law_jorei_pref").fetchone()[0]
         per_pref = conn.execute(
-            "SELECT prefecture_code, COUNT(*) FROM am_law_jorei_pref "
-            "GROUP BY prefecture_code"
+            "SELECT prefecture_code, COUNT(*) FROM am_law_jorei_pref GROUP BY prefecture_code"
         ).fetchall()
     except sqlite3.Error:
         return {"total": 0, "per_pref": {}}
@@ -577,8 +571,13 @@ def _audit_counts(conn: sqlite3.Connection) -> dict:
 def _export_review_queue(rows: list[dict], path: str) -> int:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     fieldnames = (
-        "canonical_id", "prefecture_code", "prefecture_name",
-        "jorei_kind", "jorei_title", "source_url", "license",
+        "canonical_id",
+        "prefecture_code",
+        "prefecture_name",
+        "jorei_kind",
+        "jorei_title",
+        "source_url",
+        "license",
     )
     with open(path, "w", encoding="utf-8", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=fieldnames, extrasaction="ignore")
@@ -592,19 +591,30 @@ def _export_review_queue(rows: list[dict], path: str) -> int:
 # Entry point
 # ---------------------------------------------------------------------------
 
+
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="都道府県条例 ETL (47 pref × ~100 ordinances)")
     p.add_argument("--db", default=DEFAULT_DB, help="autonomath.db path")
     p.add_argument("--pref-from", default="01", help="start prefecture code (01..47)")
     p.add_argument("--pref-to", default="47", help="end prefecture code inclusive")
-    p.add_argument("--limit-per-pref", type=int, default=100,
-                   help="max ordinances harvested per prefecture (default 100)")
-    p.add_argument("--pause-seconds", type=float, default=1.0,
-                   help="pause between sub-page fetches (politeness)")
-    p.add_argument("--dry-run", action="store_true",
-                   help="print plan + sample crawl, do not write to DB")
-    p.add_argument("--review-csv", default=DEFAULT_REVIEW_CSV,
-                   help="export full harvested set as review CSV")
+    p.add_argument(
+        "--limit-per-pref",
+        type=int,
+        default=100,
+        help="max ordinances harvested per prefecture (default 100)",
+    )
+    p.add_argument(
+        "--pause-seconds",
+        type=float,
+        default=1.0,
+        help="pause between sub-page fetches (politeness)",
+    )
+    p.add_argument(
+        "--dry-run", action="store_true", help="print plan + sample crawl, do not write to DB"
+    )
+    p.add_argument(
+        "--review-csv", default=DEFAULT_REVIEW_CSV, help="export full harvested set as review CSV"
+    )
     p.add_argument("--verbose", "-v", action="store_true")
     return p.parse_args(argv)
 
@@ -624,8 +634,13 @@ def main(argv: list[str] | None = None) -> int:
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
     prefs = _select_prefs(args)
-    LOG.info("plan: %d prefectures, limit %d/pref, db=%s, dry_run=%s",
-             len(prefs), args.limit_per_pref, args.db, args.dry_run)
+    LOG.info(
+        "plan: %d prefectures, limit %d/pref, db=%s, dry_run=%s",
+        len(prefs),
+        args.limit_per_pref,
+        args.db,
+        args.dry_run,
+    )
 
     if args.dry_run:
         for cfg in prefs[:5]:
@@ -669,15 +684,19 @@ def main(argv: list[str] | None = None) -> int:
         LOG.info("exported %d rows to %s", n_csv, args.review_csv)
 
     audit = _audit_counts(conn)
-    LOG.info("audit: total=%d prefectures covered=%d",
-             audit["total"], len(audit["per_pref"]))
-    LOG.info("stats: %s", json.dumps({
-        "pref_attempted": stats.pref_attempted,
-        "pref_ok": stats.pref_ok,
-        "rows_upserted": stats.rows_upserted,
-        "rows_skipped": stats.rows_skipped,
-        "errors": len(stats.errors),
-    }))
+    LOG.info("audit: total=%d prefectures covered=%d", audit["total"], len(audit["per_pref"]))
+    LOG.info(
+        "stats: %s",
+        json.dumps(
+            {
+                "pref_attempted": stats.pref_attempted,
+                "pref_ok": stats.pref_ok,
+                "rows_upserted": stats.rows_upserted,
+                "rows_skipped": stats.rows_skipped,
+                "errors": len(stats.errors),
+            }
+        ),
+    )
     conn.close()
     return 0
 

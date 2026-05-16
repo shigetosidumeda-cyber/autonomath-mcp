@@ -205,9 +205,7 @@ def main() -> int:
                 conn.commit()
 
         # Baseline counters
-        cur.execute(
-            "SELECT visibility, COUNT(*) FROM am_compat_matrix GROUP BY visibility"
-        )
+        cur.execute("SELECT visibility, COUNT(*) FROM am_compat_matrix GROUP BY visibility")
         baseline_visibility = Counter({row[0]: row[1] for row in cur.fetchall()})
 
         # Pull candidates: has URL + non-unknown status

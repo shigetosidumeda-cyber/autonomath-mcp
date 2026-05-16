@@ -98,7 +98,7 @@ script intentionally does NOT auto-fix — see "Why no auto-apply?" below.
 Per `docs/_internal/value_maximization_plan_no_llm_api.md` §28.9 + the
 operator memory `feedback_dont_extrapolate_principles`, the drift checker
 discovers state but does NOT correct it. Fixing drift correctly often
-requires rewriting paragraphs (e.g. "151-tool MCP" prose in
+requires rewriting paragraphs (e.g. "155-tool MCP" prose in
 `scripts/mcp_registries_submission.json` is more than just changing a number; the
 surrounding "38 core + 28 autonomath" breakdown is also stale and needs a
 fresh count). A naive replace would corrupt the document.

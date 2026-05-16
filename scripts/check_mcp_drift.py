@@ -19,12 +19,18 @@ REGISTRY = ROOT / "data" / "facts_registry.json"
 
 
 def _maybe_reexec_venv() -> None:
-    """Use the repo virtualenv when invoked by a bare system python."""
+    """Use the repo virtualenv when invoked by a bare system python.
 
-    venv_python = ROOT / ".venv" / "bin" / "python"
+    uv-managed venvs symlink to a shared interpreter, so ``Path.resolve()``
+    collapses ``.venv/bin/python`` and the global ``python3.12`` to the same
+    file. Detect "already in venv" via ``sys.prefix`` instead.
+    """
+
+    venv_dir = ROOT / ".venv"
+    venv_python = venv_dir / "bin" / "python"
     if (
         venv_python.exists()
-        and pathlib.Path(sys.executable).resolve() != venv_python.resolve()
+        and pathlib.Path(sys.prefix).resolve() != venv_dir.resolve()
         and os.environ.get("JPCITE_NO_VENV_REEXEC") != "1"
     ):
         os.environ["JPCITE_NO_VENV_REEXEC"] = "1"
@@ -190,8 +196,7 @@ def _check_manifest_versions(fails: list[str]) -> None:
         top_version = spec.get("version")
         if top_version != expected:
             fails.append(
-                f"{rel}: version={top_version!r} does not match "
-                f"pyproject.toml {expected!r}"
+                f"{rel}: version={top_version!r} does not match pyproject.toml {expected!r}"
             )
         else:
             print(f"OK {rel}: version={top_version}")
@@ -280,7 +285,9 @@ def _check_runtime_manifest_sync(runtime_names: list[str], fails: list[str]) -> 
             ("publisher.tool_count", _publisher_meta(spec).get("tool_count")),
         ):
             if count != len(runtime_names):
-                fails.append(f"{rel}: {label}={count!r} does not match runtime {len(runtime_names)}")
+                fails.append(
+                    f"{rel}: {label}={count!r} does not match runtime {len(runtime_names)}"
+                )
 
     for rel in SUBSET_TOOL_MANIFESTS:
         spec = _load_json(rel, fails)
@@ -291,7 +298,9 @@ def _check_runtime_manifest_sync(runtime_names: list[str], fails: list[str]) -> 
             fails.append(f"{rel}: tools must be a list")
             continue
         names = [tool.get("name") for tool in tools if isinstance(tool, dict)]
-        unknown = sorted(name for name in names if isinstance(name, str) and name not in runtime_set)
+        unknown = sorted(
+            name for name in names if isinstance(name, str) and name not in runtime_set
+        )
         if unknown:
             fails.append(f"{rel}: subset references tools absent from runtime: {unknown[:20]}")
         else:
@@ -309,7 +318,9 @@ def _check_runtime_manifest_sync(runtime_names: list[str], fails: list[str]) -> 
             ("publisher.tool_count", _publisher_meta(spec).get("tool_count")),
         ):
             if count != len(runtime_names):
-                fails.append(f"{rel}: {label}={count!r} does not match runtime {len(runtime_names)}")
+                fails.append(
+                    f"{rel}: {label}={count!r} does not match runtime {len(runtime_names)}"
+                )
         print(f"OK {rel}: registry tool counts match runtime ({len(runtime_names)})")
 
 

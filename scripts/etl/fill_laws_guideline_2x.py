@@ -6,6 +6,7 @@ industry_body. Idempotent.
 Usage:
     python scripts/etl/fill_laws_guideline_2x.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -32,6 +33,7 @@ except ImportError:
 
 try:
     import certifi
+
     _SSL_CTX = ssl.create_default_context(cafile=certifi.where())
 except Exception:
     _SSL_CTX = ssl.create_default_context()
@@ -46,105 +48,239 @@ DEFAULT_DELAY = 2.0
 DEFAULT_TIMEOUT = 30
 
 BANNED_SOURCE_HOSTS = (
-    "noukaweb", "hojyokin-portal", "biz.stayway",
-    "hojo-navi", "mirai-joho", "subsidy-portal",
+    "noukaweb",
+    "hojyokin-portal",
+    "biz.stayway",
+    "hojo-navi",
+    "mirai-joho",
+    "subsidy-portal",
 )
 
 ISSUERS: list[dict[str, Any]] = [
-    {"issuer_type": "ministry", "issuer_org": "経済産業省", "issuer_agency_id": "meti",
-     "default_jsic_major": "E", "license": "gov_standard", "seeds": [
-        ("rss", "https://www.meti.go.jp/rss/topics.rdf"),
-        ("html_index", "https://www.meti.go.jp/policy/economy/index.html"),
-        ("html_index", "https://www.meti.go.jp/policy/safety_security/industrial_safety/sangyo/guideline/index.html"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "厚生労働省", "issuer_agency_id": "mhlw",
-     "default_jsic_major": "P", "license": "gov_standard", "seeds": [
-        ("rss", "https://www.mhlw.go.jp/stf/news.rdf"),
-        ("html_index", "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/index.html"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "環境省", "issuer_agency_id": "env",
-     "default_jsic_major": "E", "license": "gov_standard", "seeds": [
-        ("rss", "https://www.env.go.jp/rss/all.rdf"),
-        ("html_index", "https://www.env.go.jp/policy/guideline.html"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "農林水産省", "issuer_agency_id": "maff",
-     "default_jsic_major": "A", "license": "gov_standard", "seeds": [
-        ("rss", "https://www.maff.go.jp/index.rdf"),
-        ("html_index", "https://www.maff.go.jp/j/guide/"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "国土交通省", "issuer_agency_id": "mlit",
-     "default_jsic_major": "F", "license": "gov_standard", "seeds": [
-        ("rss", "https://www.mlit.go.jp/index.rdf"),
-        ("html_index", "https://www.mlit.go.jp/page/kanbo01_hy_001247.html"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "文部科学省", "issuer_agency_id": "mext",
-     "default_jsic_major": "O", "license": "gov_standard", "seeds": [
-        ("rss", "https://www.mext.go.jp/rss/index.xml"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "金融庁", "issuer_agency_id": "fsa",
-     "default_jsic_major": "J", "license": "gov_standard", "seeds": [
-        ("html_index", "https://www.fsa.go.jp/common/law/guide/index.html"),
-        ("html_index", "https://www.fsa.go.jp/news/index.html"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "公正取引委員会", "issuer_agency_id": "jftc",
-     "default_jsic_major": "R", "license": "gov_standard", "seeds": [
-        ("html_index", "https://www.jftc.go.jp/dk/guideline/unyoukijun/index.html"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "総務省", "issuer_agency_id": "soumu",
-     "default_jsic_major": "H", "license": "gov_standard", "seeds": [
-        ("rss", "https://www.soumu.go.jp/news.rdf"),
-        ("html_index", "https://www.soumu.go.jp/menu_hourei/index.html"),
-    ]},
-    {"issuer_type": "ministry", "issuer_org": "国税庁", "issuer_agency_id": "nta",
-     "default_jsic_major": "K", "license": "gov_standard", "seeds": [
-        ("html_index", "https://www.nta.go.jp/law/joho-zeikaishaku/index.htm"),
-    ]},
-    {"issuer_type": "public_corp", "issuer_org": "中小企業庁", "issuer_agency_id": "meti",
-     "default_jsic_major": "R", "license": "gov_standard", "seeds": [
-        ("html_index", "https://www.chusho.meti.go.jp/keiei/sapoin/index.html"),
-        ("html_index", "https://www.chusho.meti.go.jp/zaimu/shokibo/index.html"),
-    ]},
-    {"issuer_type": "public_corp", "issuer_org": "中小企業基盤整備機構", "issuer_agency_id": None,
-     "default_jsic_major": "R", "license": "industry_body", "seeds": [
-        ("html_index", "https://www.smrj.go.jp/regional_hq/index.html"),
-    ]},
-    {"issuer_type": "industry_body", "issuer_org": "日本商工会議所", "issuer_agency_id": None,
-     "default_jsic_major": "R", "license": "industry_body", "seeds": [
-        ("html_index", "https://www.jcci.or.jp/news/"),
-    ]},
-    {"issuer_type": "industry_body", "issuer_org": "全国商工会連合会", "issuer_agency_id": None,
-     "default_jsic_major": "R", "license": "industry_body", "seeds": [
-        ("html_index", "https://www.shokokai.or.jp/"),
-    ]},
-    {"issuer_type": "industry_body", "issuer_org": "日本経済団体連合会", "issuer_agency_id": None,
-     "default_jsic_major": "R", "license": "industry_body", "seeds": [
-        ("html_index", "https://www.keidanren.or.jp/policy/index.html"),
-    ]},
-    {"issuer_type": "industry_body", "issuer_org": "日本税理士会連合会", "issuer_agency_id": None,
-     "default_jsic_major": "K", "license": "industry_body", "seeds": [
-        ("html_index", "https://www.nichizeiren.or.jp/news/"),
-    ]},
-    {"issuer_type": "industry_body", "issuer_org": "日本公認会計士協会", "issuer_agency_id": None,
-     "default_jsic_major": "K", "license": "industry_body", "seeds": [
-        ("html_index", "https://jicpa.or.jp/specialized_field/index.html"),
-    ]},
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "経済産業省",
+        "issuer_agency_id": "meti",
+        "default_jsic_major": "E",
+        "license": "gov_standard",
+        "seeds": [
+            ("rss", "https://www.meti.go.jp/rss/topics.rdf"),
+            ("html_index", "https://www.meti.go.jp/policy/economy/index.html"),
+            (
+                "html_index",
+                "https://www.meti.go.jp/policy/safety_security/industrial_safety/sangyo/guideline/index.html",
+            ),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "厚生労働省",
+        "issuer_agency_id": "mhlw",
+        "default_jsic_major": "P",
+        "license": "gov_standard",
+        "seeds": [
+            ("rss", "https://www.mhlw.go.jp/stf/news.rdf"),
+            ("html_index", "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/index.html"),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "環境省",
+        "issuer_agency_id": "env",
+        "default_jsic_major": "E",
+        "license": "gov_standard",
+        "seeds": [
+            ("rss", "https://www.env.go.jp/rss/all.rdf"),
+            ("html_index", "https://www.env.go.jp/policy/guideline.html"),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "農林水産省",
+        "issuer_agency_id": "maff",
+        "default_jsic_major": "A",
+        "license": "gov_standard",
+        "seeds": [
+            ("rss", "https://www.maff.go.jp/index.rdf"),
+            ("html_index", "https://www.maff.go.jp/j/guide/"),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "国土交通省",
+        "issuer_agency_id": "mlit",
+        "default_jsic_major": "F",
+        "license": "gov_standard",
+        "seeds": [
+            ("rss", "https://www.mlit.go.jp/index.rdf"),
+            ("html_index", "https://www.mlit.go.jp/page/kanbo01_hy_001247.html"),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "文部科学省",
+        "issuer_agency_id": "mext",
+        "default_jsic_major": "O",
+        "license": "gov_standard",
+        "seeds": [
+            ("rss", "https://www.mext.go.jp/rss/index.xml"),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "金融庁",
+        "issuer_agency_id": "fsa",
+        "default_jsic_major": "J",
+        "license": "gov_standard",
+        "seeds": [
+            ("html_index", "https://www.fsa.go.jp/common/law/guide/index.html"),
+            ("html_index", "https://www.fsa.go.jp/news/index.html"),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "公正取引委員会",
+        "issuer_agency_id": "jftc",
+        "default_jsic_major": "R",
+        "license": "gov_standard",
+        "seeds": [
+            ("html_index", "https://www.jftc.go.jp/dk/guideline/unyoukijun/index.html"),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "総務省",
+        "issuer_agency_id": "soumu",
+        "default_jsic_major": "H",
+        "license": "gov_standard",
+        "seeds": [
+            ("rss", "https://www.soumu.go.jp/news.rdf"),
+            ("html_index", "https://www.soumu.go.jp/menu_hourei/index.html"),
+        ],
+    },
+    {
+        "issuer_type": "ministry",
+        "issuer_org": "国税庁",
+        "issuer_agency_id": "nta",
+        "default_jsic_major": "K",
+        "license": "gov_standard",
+        "seeds": [
+            ("html_index", "https://www.nta.go.jp/law/joho-zeikaishaku/index.htm"),
+        ],
+    },
+    {
+        "issuer_type": "public_corp",
+        "issuer_org": "中小企業庁",
+        "issuer_agency_id": "meti",
+        "default_jsic_major": "R",
+        "license": "gov_standard",
+        "seeds": [
+            ("html_index", "https://www.chusho.meti.go.jp/keiei/sapoin/index.html"),
+            ("html_index", "https://www.chusho.meti.go.jp/zaimu/shokibo/index.html"),
+        ],
+    },
+    {
+        "issuer_type": "public_corp",
+        "issuer_org": "中小企業基盤整備機構",
+        "issuer_agency_id": None,
+        "default_jsic_major": "R",
+        "license": "industry_body",
+        "seeds": [
+            ("html_index", "https://www.smrj.go.jp/regional_hq/index.html"),
+        ],
+    },
+    {
+        "issuer_type": "industry_body",
+        "issuer_org": "日本商工会議所",
+        "issuer_agency_id": None,
+        "default_jsic_major": "R",
+        "license": "industry_body",
+        "seeds": [
+            ("html_index", "https://www.jcci.or.jp/news/"),
+        ],
+    },
+    {
+        "issuer_type": "industry_body",
+        "issuer_org": "全国商工会連合会",
+        "issuer_agency_id": None,
+        "default_jsic_major": "R",
+        "license": "industry_body",
+        "seeds": [
+            ("html_index", "https://www.shokokai.or.jp/"),
+        ],
+    },
+    {
+        "issuer_type": "industry_body",
+        "issuer_org": "日本経済団体連合会",
+        "issuer_agency_id": None,
+        "default_jsic_major": "R",
+        "license": "industry_body",
+        "seeds": [
+            ("html_index", "https://www.keidanren.or.jp/policy/index.html"),
+        ],
+    },
+    {
+        "issuer_type": "industry_body",
+        "issuer_org": "日本税理士会連合会",
+        "issuer_agency_id": None,
+        "default_jsic_major": "K",
+        "license": "industry_body",
+        "seeds": [
+            ("html_index", "https://www.nichizeiren.or.jp/news/"),
+        ],
+    },
+    {
+        "issuer_type": "industry_body",
+        "issuer_org": "日本公認会計士協会",
+        "issuer_agency_id": None,
+        "default_jsic_major": "K",
+        "license": "industry_body",
+        "seeds": [
+            ("html_index", "https://jicpa.or.jp/specialized_field/index.html"),
+        ],
+    },
 ]
 
 
 JSIC_KEYWORD_MAP: list[tuple[str, str]] = [
-    ("建設", "F"), ("製造", "E"), ("農業", "A"), ("林業", "A"),
-    ("漁業", "B"), ("水産", "B"), ("医療", "P"), ("介護", "P"),
-    ("教育", "O"), ("運輸", "H"), ("情報通信", "G"), ("IT", "G"),
-    ("不動産", "K"), ("飲食", "M"), ("宿泊", "M"),
-    ("小売", "I"), ("卸売", "I"), ("金融", "J"), ("保険", "J"),
-    ("税理士", "K"), ("税務", "K"), ("会計", "K"),
-    ("環境", "R"), ("廃棄物", "R"),
+    ("建設", "F"),
+    ("製造", "E"),
+    ("農業", "A"),
+    ("林業", "A"),
+    ("漁業", "B"),
+    ("水産", "B"),
+    ("医療", "P"),
+    ("介護", "P"),
+    ("教育", "O"),
+    ("運輸", "H"),
+    ("情報通信", "G"),
+    ("IT", "G"),
+    ("不動産", "K"),
+    ("飲食", "M"),
+    ("宿泊", "M"),
+    ("小売", "I"),
+    ("卸売", "I"),
+    ("金融", "J"),
+    ("保険", "J"),
+    ("税理士", "K"),
+    ("税務", "K"),
+    ("会計", "K"),
+    ("環境", "R"),
+    ("廃棄物", "R"),
 ]
 
 GUIDELINE_KEYWORDS = (
-    "ガイドライン", "指針", "手引", "マニュアル",
-    "ベストプラクティス", "モデル規程", "事例集",
-    "実務指針", "通達", "解釈通達", "通知",
+    "ガイドライン",
+    "指針",
+    "手引",
+    "マニュアル",
+    "ベストプラクティス",
+    "モデル規程",
+    "事例集",
+    "実務指針",
+    "通達",
+    "解釈通達",
+    "通知",
 )
 
 _HREF_RE = re.compile(r'<a\s+[^>]*href="([^"#]+)"[^>]*>([^<]+)</a>', re.IGNORECASE | re.DOTALL)
@@ -213,7 +349,7 @@ def classify_doc_type(title: str) -> str:
 
 
 def compute_guideline_id(issuer_org: str, title: str) -> str:
-    key = f"{issuer_org}|{title}".encode("utf-8")
+    key = f"{issuer_org}|{title}".encode()
     return "GL2-" + hashlib.sha256(key).hexdigest()[:12]
 
 
@@ -273,9 +409,11 @@ def parse_rss(body: str, max_links: int) -> list[dict[str, str]]:
         root = ET.fromstring(body)
     except ET.ParseError:
         return out
-    ns = {"rss": "http://purl.org/rss/1.0/",
-          "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-          "dc": "http://purl.org/dc/elements/1.1/"}
+    ns = {
+        "rss": "http://purl.org/rss/1.0/",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "dc": "http://purl.org/dc/elements/1.1/",
+    }
     items = root.findall(".//rss:item", ns) or root.findall(".//item")
     for item in items:
         if len(out) >= max_links:
@@ -292,9 +430,14 @@ def parse_rss(body: str, max_links: int) -> list[dict[str, str]]:
             continue
         if not any(k in title for k in GUIDELINE_KEYWORDS):
             continue
-        out.append({"url": link.strip(), "anchor": title.strip()[:300],
-                    "issued_date": parse_iso_date(date_s) or "",
-                    "body_hint": body_s[:2000]})
+        out.append(
+            {
+                "url": link.strip(),
+                "anchor": title.strip()[:300],
+                "issued_date": parse_iso_date(date_s) or "",
+                "body_hint": body_s[:2000],
+            }
+        )
     return out
 
 
@@ -321,8 +464,11 @@ def discover_for_issuer(issuer: dict[str, Any], max_links: int) -> list[dict[str
             LOG.warning("[%s] seed %s status=%s", issuer["issuer_org"], seed_url, status)
             continue
         remaining = max_links - len(out)
-        links = (parse_rss(body, remaining) if kind == "rss"
-                 else parse_html_index(body, seed_url, remaining))
+        links = (
+            parse_rss(body, remaining)
+            if kind == "rss"
+            else parse_html_index(body, seed_url, remaining)
+        )
         for link in links:
             url = link["url"]
             if url in seen:
@@ -353,13 +499,15 @@ def upsert(conn: sqlite3.Connection, rec: dict[str, Any], dry_run: bool = False)
     doc_type = classify_doc_type(title)
     guideline_id = compute_guideline_id(rec["issuer_org"], title)
     content_hash = hashlib.sha256(
-        f"{rec['issuer_org']}|{title}|{body_text[:1000]}".encode("utf-8")
+        f"{rec['issuer_org']}|{title}|{body_text[:1000]}".encode()
     ).hexdigest()
     now = datetime.now(UTC).isoformat()
 
     if dry_run:
-        print(f"[DRY] {rec['issuer_type']:14s} {guideline_id} jsic={industry} "
-              f"compl={compliance} title={title[:60]}...")
+        print(
+            f"[DRY] {rec['issuer_type']:14s} {guideline_id} jsic={industry} "
+            f"compl={compliance} title={title[:60]}..."
+        )
         return True
 
     conn.execute(
@@ -373,17 +521,31 @@ def upsert(conn: sqlite3.Connection, rec: dict[str, Any], dry_run: bool = False)
             pdf_url, license, content_hash, ingested_at, last_verified
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '[]', ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (guideline_id, rec["issuer_type"], rec["issuer_org"],
-         rec.get("issuer_agency_id"), title[:500], title[:120],
-         body_text, body_text[:500], industry,
-         rec.get("industry_jsic_minor"), rec.get("industry_jsic_label"),
-         rec.get("target_audience"), compliance,
-         rec.get("issued_date"), rec.get("last_revised"),
-         doc_type, source_url,
-         rec.get("full_text_url") or source_url,
-         source_url if source_url.endswith(".pdf") else None,
-         rec.get("license", "gov_standard"),
-         content_hash, now, now),
+        (
+            guideline_id,
+            rec["issuer_type"],
+            rec["issuer_org"],
+            rec.get("issuer_agency_id"),
+            title[:500],
+            title[:120],
+            body_text,
+            body_text[:500],
+            industry,
+            rec.get("industry_jsic_minor"),
+            rec.get("industry_jsic_label"),
+            rec.get("target_audience"),
+            compliance,
+            rec.get("issued_date"),
+            rec.get("last_revised"),
+            doc_type,
+            source_url,
+            rec.get("full_text_url") or source_url,
+            source_url if source_url.endswith(".pdf") else None,
+            rec.get("license", "gov_standard"),
+            content_hash,
+            now,
+            now,
+        ),
     )
     return True
 
@@ -393,14 +555,19 @@ def write_log(conn, issuers_run, inserted, skipped, started, err=None):
         """INSERT INTO am_law_guideline_run_log (
             started_at, finished_at, issuers_run, rows_inserted, rows_skipped, error_text
         ) VALUES (?, ?, ?, ?, ?, ?)""",
-        (started, datetime.now(UTC).isoformat(), ",".join(issuers_run),
-         inserted, skipped, err))
+        (started, datetime.now(UTC).isoformat(), ",".join(issuers_run), inserted, skipped, err),
+    )
 
 
 def run(args: argparse.Namespace) -> int:
     started = datetime.now(UTC).isoformat()
-    LOG.info("[start] db=%s issuer_filter=%s max=%s dry_run=%s",
-             args.db_path, args.issuers, args.max_per_issuer, args.dry_run)
+    LOG.info(
+        "[start] db=%s issuer_filter=%s max=%s dry_run=%s",
+        args.db_path,
+        args.issuers,
+        args.max_per_issuer,
+        args.dry_run,
+    )
     if not args.dry_run and not args.db_path.exists():
         LOG.error("[error] db missing: %s", args.db_path)
         return 2
@@ -408,8 +575,9 @@ def run(args: argparse.Namespace) -> int:
     filter_types: list[str] | None = None
     if args.issuers and args.issuers != "all":
         filter_types = [s.strip() for s in args.issuers.split(",") if s.strip()]
-    selected = [iss for iss in ISSUERS
-                if filter_types is None or iss["issuer_type"] in filter_types]
+    selected = [
+        iss for iss in ISSUERS if filter_types is None or iss["issuer_type"] in filter_types
+    ]
     LOG.info("[plan] %d issuers", len(selected))
 
     all_records: list[dict[str, Any]] = []
@@ -440,11 +608,18 @@ def run(args: argparse.Namespace) -> int:
     if args.dry_run:
         for rec in all_records[:30]:
             upsert(None, rec, dry_run=True)  # type: ignore[arg-type]
-        print(json.dumps({
-            "ok": True, "mode": "dry-run",
-            "discovered": discovered, "would_write": len(all_records),
-            "issuers": [s["issuer_org"] for s in selected],
-        }, ensure_ascii=False))
+        print(
+            json.dumps(
+                {
+                    "ok": True,
+                    "mode": "dry-run",
+                    "discovered": discovered,
+                    "would_write": len(all_records),
+                    "issuers": [s["issuer_org"] for s in selected],
+                },
+                ensure_ascii=False,
+            )
+        )
         return 0
 
     inserted = 0
@@ -468,18 +643,25 @@ def run(args: argparse.Namespace) -> int:
                 LOG.warning("[skip] %s", exc)
                 skipped += 1
         try:
-            write_log(conn, [s["issuer_org"] for s in selected],
-                      inserted, skipped, started, err)
+            write_log(conn, [s["issuer_org"] for s in selected], inserted, skipped, started, err)
         except sqlite3.OperationalError as exc:
             LOG.debug("log err (ignored): %s", exc)
         conn.commit()
         final = conn.execute("SELECT COUNT(*) FROM am_law_guideline").fetchone()[0]
-    print(json.dumps({
-        "ok": True, "mode": "full",
-        "inserted": inserted, "skipped": skipped,
-        "discovered": discovered, "table_final": int(final),
-        "issuers": [s["issuer_org"] for s in selected],
-    }, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "ok": True,
+                "mode": "full",
+                "inserted": inserted,
+                "skipped": skipped,
+                "discovered": discovered,
+                "table_final": int(final),
+                "issuers": [s["issuer_org"] for s in selected],
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 
@@ -493,7 +675,8 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
+        format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
+    )
     return run(args)
 
 

@@ -136,16 +136,12 @@ def main() -> int:
         cur = conn.cursor()
 
         cur.execute(
-            "SELECT template_default, COUNT(*) FROM am_amount_condition "
-            "GROUP BY template_default"
+            "SELECT template_default, COUNT(*) FROM am_amount_condition GROUP BY template_default"
         )
         base = Counter({row[0]: row[1] for row in cur.fetchall()})
         print(f"baseline template_default: {dict(base)}")
 
-        cur.execute(
-            "SELECT quality_tier, COUNT(*) FROM am_amount_condition "
-            "GROUP BY quality_tier"
-        )
+        cur.execute("SELECT quality_tier, COUNT(*) FROM am_amount_condition GROUP BY quality_tier")
         base_tier = Counter({row[0]: row[1] for row in cur.fetchall()})
         print(f"baseline quality_tier   : {dict(base_tier)}")
 

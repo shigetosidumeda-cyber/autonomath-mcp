@@ -155,8 +155,7 @@ def _license_issues(
                 HfSafetyIssue(
                     export.table,
                     "blocked_license",
-                    "non-redistributable, blank, or missing license values: "
-                    + ", ".join(blocked),
+                    "non-redistributable, blank, or missing license values: " + ", ".join(blocked),
                 )
             ]
         return []

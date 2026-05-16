@@ -44,6 +44,7 @@ Usage
 
     .venv/bin/python scripts/etl/fill_fdi_80country_2x.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -57,16 +58,18 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 LOG = logging.getLogger("jpintel.etl.fill_fdi_80country")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_DB_PATH = (
-    Path(os.environ.get("AUTONOMATH_DB_PATH", "")) if os.environ.get("AUTONOMATH_DB_PATH")
+    Path(os.environ.get("AUTONOMATH_DB_PATH", ""))
+    if os.environ.get("AUTONOMATH_DB_PATH")
     else REPO_ROOT / "data" / "autonomath.db"
 )
 
@@ -202,8 +205,7 @@ def _fetch(url: str, *, timeout: int = 20) -> tuple[int, str | None]:
 def _open_db(path: Path) -> sqlite3.Connection:
     if not path.exists():
         raise SystemExit(
-            f"autonomath.db not found at {path}; run migration 266 first or set "
-            "AUTONOMATH_DB_PATH"
+            f"autonomath.db not found at {path}; run migration 266 first or set AUTONOMATH_DB_PATH"
         )
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
@@ -258,9 +260,9 @@ def _load_targets(
             CountryWork(
                 country_iso=iso,
                 seed_source_url=r["source_url"],
-                mofa_url=r["source_url"] if r["source_url"].startswith(
-                    "https://www.mofa.go.jp/"
-                ) else None,
+                mofa_url=r["source_url"]
+                if r["source_url"].startswith("https://www.mofa.go.jp/")
+                else None,
                 jetro_url=None,  # populated by harvest step below
             )
         )
@@ -389,8 +391,12 @@ def _build_argparser() -> argparse.ArgumentParser:
     p.add_argument("--db-path", type=Path, default=DEFAULT_DB_PATH)
     p.add_argument("--iso-from", type=str, default=None, help="ISO alpha-2 lower bound (inclusive)")
     p.add_argument("--iso-to", type=str, default=None, help="ISO alpha-2 upper bound (inclusive)")
-    p.add_argument("--only", type=str, default=None, help="Comma-separated ISO codes (overrides --iso-* range)")
-    p.add_argument("--pause-seconds", type=float, default=1.5, help="sleep between fetches (default 1.5s)")
+    p.add_argument(
+        "--only", type=str, default=None, help="Comma-separated ISO codes (overrides --iso-* range)"
+    )
+    p.add_argument(
+        "--pause-seconds", type=float, default=1.5, help="sleep between fetches (default 1.5s)"
+    )
     p.add_argument("--dry-run", action="store_true", help="Crawl + parse, no DB writes")
     p.add_argument("--verbose", action="store_true")
     return p
@@ -412,7 +418,10 @@ def main(argv: Iterable[str] | None = None) -> int:
     stats = Stats()
     try:
         targets = _load_targets(
-            conn, only=only, iso_from=args.iso_from, iso_to=args.iso_to,
+            conn,
+            only=only,
+            iso_from=args.iso_from,
+            iso_to=args.iso_to,
         )
         if not targets:
             LOG.warning("no target rows matched filters")

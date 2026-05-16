@@ -1760,7 +1760,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--autonomath-db",
         type=Path,
-        default=Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_DEFAULT))),
+        default=Path(
+            get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_DEFAULT))
+        ),
         help="Path to autonomath.db (source of am_industry_jsic).",
     )
     parser.add_argument(

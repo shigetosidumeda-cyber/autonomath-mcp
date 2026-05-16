@@ -93,9 +93,7 @@ _W_RISK_TOL = 20
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(
-        description="Dim H personalization recommendation ETL (nightly)"
-    )
+    p = argparse.ArgumentParser(description="Dim H personalization recommendation ETL (nightly)")
     p.add_argument("--db", default=str(DEFAULT_DB_PATH))
     p.add_argument("--dry-run", action="store_true")
     p.add_argument(
@@ -202,8 +200,7 @@ def run(args: argparse.Namespace) -> dict:
     try:
         if not _has_table(conn, "am_personalization_profile"):
             raise SystemExit(
-                "am_personalization_profile not found — "
-                "run migration 287_personalization.sql first"
+                "am_personalization_profile not found — run migration 287_personalization.sql first"
             )
         if not _has_table(conn, "am_personalization_recommendation_log"):
             raise SystemExit(
@@ -212,7 +209,7 @@ def run(args: argparse.Namespace) -> dict:
             )
 
         profiles = _load_active_profiles(conn)
-        by_type: dict[str, int] = {t: 0 for t in _REC_TYPES}
+        by_type: dict[str, int] = dict.fromkeys(_REC_TYPES, 0)
         logged = 0
         for pid, _tok, pref in profiles:
             for rec_type in _REC_TYPES:

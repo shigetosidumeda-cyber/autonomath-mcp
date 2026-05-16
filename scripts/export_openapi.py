@@ -112,11 +112,17 @@ OPENAPI_LEAK_PATTERN_REPLACEMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bmigration\s+\d+\b", re.IGNORECASE), "schema update"),
     (re.compile(r"\bmig\s+\d+\b", re.IGNORECASE), "schema update"),
     # ---- Public scope normalization ----
-    (re.compile(r"\bEvery tool response carries\b", re.IGNORECASE), "Evidence-oriented tool responses include"),
+    (
+        re.compile(r"\bEvery tool response carries\b", re.IGNORECASE),
+        "Evidence-oriented tool responses include",
+    ),
     (re.compile(r"\bevery response carries\b", re.IGNORECASE), "covered responses include"),
     (re.compile(r"\bevery response surfaces\b", re.IGNORECASE), "covered responses surface"),
     (re.compile(r"\benvelope on every response\b", re.IGNORECASE), "envelope on covered responses"),
-    (re.compile(r"\battribution baked into every response\b", re.IGNORECASE), "attribution included in covered responses"),
+    (
+        re.compile(r"\battribution baked into every response\b", re.IGNORECASE),
+        "attribution included in covered responses",
+    ),
     # ---- Operator script paths ----
     (re.compile(r"`?scripts/cron/[A-Za-z0-9_./-]+`?"), "scheduled job"),
     (re.compile(r"`?scripts/etl/[A-Za-z0-9_./-]+`?"), "background ETL"),
@@ -1211,6 +1217,9 @@ def main() -> int:
     site_out_explicit = args.site_out is not None
     site_out = args.site_out or Path("site/docs/openapi/v1.json")
     site_openapi_mirror = Path("site/openapi/v1.json")
+    should_write_site_openapi_mirror = site_out != site_openapi_mirror and (
+        not site_out_explicit or site_out == Path("site/docs/openapi/v1.json")
+    )
 
     out.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(schema, indent=2, sort_keys=True) + "\n"
@@ -1219,9 +1228,9 @@ def main() -> int:
     if site_out:
         site_out.parent.mkdir(parents=True, exist_ok=True)
         site_out.write_text(payload, encoding="utf-8")
-        if not site_out_explicit and site_out != site_openapi_mirror:
-            site_openapi_mirror.parent.mkdir(parents=True, exist_ok=True)
-            site_openapi_mirror.write_text(payload, encoding="utf-8")
+    if should_write_site_openapi_mirror:
+        site_openapi_mirror.parent.mkdir(parents=True, exist_ok=True)
+        site_openapi_mirror.write_text(payload, encoding="utf-8")
 
     preview_paths = [
         p
@@ -1234,6 +1243,8 @@ def main() -> int:
     )
     if site_out:
         print(f"wrote {site_out} ({mode})")
+    if should_write_site_openapi_mirror:
+        print(f"wrote {site_openapi_mirror} ({mode})")
     return 0
 
 

@@ -15,7 +15,7 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from jpintel_mcp.mcp.transport_metadata import (
+from jpintel_mcp.mcp.transport_metadata import (  # noqa: E402
     MCP_PRIMARY_TRANSPORT,
     mcp_transport_manifest_meta,
     mcp_transport_names,
@@ -35,6 +35,7 @@ SERVER_MANIFESTS = [
     REPO_ROOT / "server.json",
     REPO_ROOT / "site" / "server.json",
 ]
+DXT_MANIFEST = REPO_ROOT / "dxt" / "manifest.json"
 DOCS = REPO_ROOT / "docs" / "mcp-tools.md"
 LLMS_FILES = [
     REPO_ROOT / "site" / "llms.txt",
@@ -80,15 +81,22 @@ PUBLIC_DESCRIPTION_REPLACEMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
     # ---- Secret-shaped examples (api_key="am_xxxx" / Bearer am_xxxx) ----
     # Run these BEFORE the generic am_* / jpi_* rewrites so the surrounding
     # placeholder text ("<your-api-key>") survives downstream substitution.
-    (re.compile(r"Authorization:\s*Bearer\s+am_[A-Za-z0-9_]+", re.IGNORECASE),
-     "Authorization: Bearer <your-api-key>"),
+    (
+        re.compile(r"Authorization:\s*Bearer\s+am_[A-Za-z0-9_]+", re.IGNORECASE),
+        "Authorization: Bearer <your-api-key>",
+    ),
     (re.compile(r"\bapi_key=\"[^\"]+\""), 'api_key="<your-api-key>"'),
     (re.compile(r"\bapi_key='[^']+'"), "api_key='<your-api-key>'"),
     (re.compile(r"\bam_x{2,}[A-Za-z0-9_]*\b"), "<your-api-key>"),
     # ---- Internal schema prefixes ----
     (re.compile(r"`?(?<![A-Za-z0-9_])(?:am|v|jpi|jc)_[a-z0-9_]+`?"), "source-derived dataset"),
     (re.compile(r"\bam_[A-Za-z0-9_]+\b"), "source-derived dataset"),
-    (re.compile(r"\b(?:program_law_refs|funding_stack_empirical|density_score|exclusion_rules|case_studies|loan_programs|enforcement_cases)\b"), "source-derived dataset"),
+    (
+        re.compile(
+            r"\b(?:program_law_refs|funding_stack_empirical|density_score|exclusion_rules|case_studies|loan_programs|enforcement_cases)\b"
+        ),
+        "source-derived dataset",
+    ),
     (re.compile(r"\bdata/[A-Za-z0-9_./*-]+\b"), "published artifact"),
     (re.compile(r"\banalytics/[A-Za-z0-9_./*-]+\b"), "published artifact"),
     # ---- RISK → review re-framing ----
@@ -128,11 +136,17 @@ PUBLIC_DESCRIPTION_REPLACEMENTS: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"¥\s*3\s*/\s*(?:req|request|call)\b", re.IGNORECASE), "¥3/billable unit"),
     (re.compile(r"\bJPY\s*3\s*/\s*(?:req|request|call)\b", re.IGNORECASE), "JPY 3/billable unit"),
     # ---- Public scope normalization ----
-    (re.compile(r"\bEvery tool response carries\b", re.IGNORECASE), "Evidence-oriented tool responses include"),
+    (
+        re.compile(r"\bEvery tool response carries\b", re.IGNORECASE),
+        "Evidence-oriented tool responses include",
+    ),
     (re.compile(r"\bevery response carries\b", re.IGNORECASE), "covered responses include"),
     (re.compile(r"\bevery response surfaces\b", re.IGNORECASE), "covered responses surface"),
     (re.compile(r"\benvelope on every response\b", re.IGNORECASE), "envelope on covered responses"),
-    (re.compile(r"\battribution baked into every response\b", re.IGNORECASE), "attribution included in covered responses"),
+    (
+        re.compile(r"\battribution baked into every response\b", re.IGNORECASE),
+        "attribution included in covered responses",
+    ),
 )
 
 # Belt-and-suspenders post-sanitize gate.  These patterns MUST NOT remain in
@@ -191,9 +205,7 @@ def _assert_no_public_leaks(path: Path, payload: str) -> None:
             window = payload[max(0, idx - 60) : idx + 80].replace("\n", " ")
             leaks.append(f"{pattern.pattern!r} near …{window}…")
     if leaks:
-        raise SystemExit(
-            f"sanitizer would leak banned patterns into {path}: {leaks}"
-        )
+        raise SystemExit(f"sanitizer would leak banned patterns into {path}: {leaks}")
 
 
 def _write_json(path: Path, data: dict[str, Any]) -> None:
@@ -353,20 +365,22 @@ def _sync_server_manifests(count: int) -> None:
                     "after the anonymous daily trial."
                 )
         equivalents = (
-            agent_routing.get("mcp_equivalents")
-            if isinstance(agent_routing, dict)
-            else None
+            agent_routing.get("mcp_equivalents") if isinstance(agent_routing, dict) else None
         )
-        if (
-            isinstance(equivalents, dict)
-            and equivalents.get("company_baseline")
-            in {
-                "intel_houjin_full or dd_profile_am",
-                "get_houjin_360_am or dd_profile_am",
-            }
-        ):
+        if isinstance(equivalents, dict) and equivalents.get("company_baseline") in {
+            "intel_houjin_full or dd_profile_am",
+            "get_houjin_360_am or dd_profile_am",
+        }:
             equivalents["company_baseline"] = "createCompanyPublicBaseline"
         _write_json(path, data)
+
+
+def _sync_dxt_manifest(tools: list[dict[str, str]]) -> None:
+    data = _read_json(DXT_MANIFEST)
+    data["name"] = "autonomath-mcp"
+    data["tools"] = tools
+    _sync_counts_and_transport(data, len(tools))
+    _write_json(DXT_MANIFEST, data)
 
 
 def _sync_docs(count: int) -> None:
@@ -433,6 +447,7 @@ def main() -> int:
     _sync_full_manifests(tools)
     _sync_subset_manifests(tool_by_name, len(tools))
     _sync_server_manifests(len(tools))
+    _sync_dxt_manifest(tools)
     _sync_docs(len(tools))
     _sync_llms(len(tools))
     return 0

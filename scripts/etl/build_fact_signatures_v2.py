@@ -114,9 +114,7 @@ def _load_pubkey_hex() -> str:
     return pub.hex()
 
 
-def _verify_sig(
-    pubkey_hex: str, signature: bytes, payload_sha256_hex: str
-) -> bool:
+def _verify_sig(pubkey_hex: str, signature: bytes, payload_sha256_hex: str) -> bool:
     """Verify the mig 262 sig against the recorded payload_sha256.
 
     mig 262 stores ``ed25519_sig`` and ``payload_sha256`` (hex). We do
@@ -157,9 +155,7 @@ def _verify_sig(
     return False
 
 
-def _walk_pending(
-    conn: sqlite3.Connection, max_rows: int | None
-) -> list[sqlite3.Row]:
+def _walk_pending(conn: sqlite3.Connection, max_rows: int | None) -> list[sqlite3.Row]:
     """LEFT JOIN mig 262 -> mig 285 to find rows not yet bridged.
 
     Cursor-paged walk in CHUNK_SIZE batches. Indexed predicate is
@@ -260,9 +256,7 @@ def main(argv: list[str] | None = None) -> int:
     verified = 0
     if not args.skip_verify:
         for row in pending:
-            ok = _verify_sig(
-                pubkey_hex, row["ed25519_sig"], row["payload_sha256"]
-            )
+            ok = _verify_sig(pubkey_hex, row["ed25519_sig"], row["payload_sha256"])
             if not ok:
                 _log.error(
                     "Ed25519 verify FAILED for fact_id=%s — refuse bridge",

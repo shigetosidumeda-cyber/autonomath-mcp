@@ -7,18 +7,31 @@ Usage:
     python scripts/etl/fill_court_decisions_extended_2x.py --dry-run
     python scripts/etl/fill_court_decisions_extended_2x.py --target 17935
 """
+
 from __future__ import annotations
-import argparse, concurrent.futures, hashlib, json, logging, re, sqlite3, ssl
-import sys, time, urllib.error, urllib.parse, urllib.request
+
+import argparse
+import concurrent.futures
+import hashlib
+import json
+import logging
+import re
+import sqlite3
+import ssl
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 from threading import Lock
-from typing import Any
 from xml.etree import ElementTree as ET
 
 try:
     import certifi
+
     _SSL_CTX = ssl.create_default_context(cafile=certifi.where())
 except Exception:
     _SSL_CTX = ssl.create_default_context()
@@ -31,9 +44,19 @@ NDL_OAI_BASE = "https://dl.ndl.go.jp/oai/Repository/oai.do"
 UA = "AutonoMath/0.3.5 jpcite-etl-court-2x (+https://bookyou.net; info@bookyou.net)"
 DEFAULT_DELAY = 2.0
 DEFAULT_TIMEOUT = 30
-BANNED_SOURCE_HOSTS = ("noukaweb", "hojyokin-portal", "biz.stayway",
-    "westlawjapan", "lexdb", "lex-db", "hanrei-hisho", "tkclex",
-    "law-library", "d1-law")
+BANNED_SOURCE_HOSTS = (
+    "noukaweb",
+    "hojyokin-portal",
+    "biz.stayway",
+    "westlawjapan",
+    "lexdb",
+    "lex-db",
+    "hanrei-hisho",
+    "tkclex",
+    "law-library",
+    "d1-law",
+)
+
 
 def is_banned_url(url):
     if not url:
@@ -52,6 +75,7 @@ def is_banned_url(url):
         return False
     return True
 
+
 def classify_court_level_canonical(court):
     if not court:
         return ("地裁", "district")
@@ -66,10 +90,27 @@ def classify_court_level_canonical(court):
         return ("家裁", "family")
     return ("地裁", "district")
 
+
 def classify_case_type(text_blob):
-    if any(k in text_blob for k in ("所得税", "法人税", "消費税", "相続税", "国税", "地方税", "租税", "課税", "更正処分")):
+    if any(
+        k in text_blob
+        for k in (
+            "所得税",
+            "法人税",
+            "消費税",
+            "相続税",
+            "国税",
+            "地方税",
+            "租税",
+            "課税",
+            "更正処分",
+        )
+    ):
         return "tax"
-    if any(k in text_blob for k in ("行政", "補助金適正化法", "補助金", "認可", "許可", "処分取消", "公務員")):
+    if any(
+        k in text_blob
+        for k in ("行政", "補助金適正化法", "補助金", "認可", "許可", "処分取消", "公務員")
+    ):
         return "admin"
     if any(k in text_blob for k in ("会社法", "株主", "取締役", "合併")):
         return "corporate"
@@ -83,6 +124,7 @@ def classify_case_type(text_blob):
         return "civil"
     return "other"
 
+
 def classify_precedent_weight(canonical, case_name):
     if canonical == "supreme":
         return "binding"
@@ -93,8 +135,10 @@ def classify_precedent_weight(canonical, case_name):
         return "persuasive"
     return "informational"
 
+
 _RATE_LOCK = Lock()
 _LAST_HIT = defaultdict(lambda: 0.0)
+
 
 def _throttle(host, min_interval=DEFAULT_DELAY):
     with _RATE_LOCK:
@@ -103,6 +147,7 @@ def _throttle(host, min_interval=DEFAULT_DELAY):
         if delta < min_interval:
             time.sleep(min_interval - delta)
         _LAST_HIT[host] = time.monotonic()
+
 
 def fetch(url, timeout=DEFAULT_TIMEOUT):
     if is_banned_url(url):
@@ -118,8 +163,10 @@ def fetch(url, timeout=DEFAULT_TIMEOUT):
         except UnicodeDecodeError:
             return body.decode("shift_jis", errors="replace")
 
+
 def compute_unified_id(case_number, court):
-    return "HAN2-" + hashlib.sha256(f"{case_number}|{court}".encode("utf-8")).hexdigest()[:12]
+    return "HAN2-" + hashlib.sha256(f"{case_number}|{court}".encode()).hexdigest()[:12]
+
 
 def parse_decision_date(text):
     if not text:
@@ -136,8 +183,12 @@ def parse_decision_date(text):
     today = datetime.now(UTC).date().isoformat()
     return (today, today, today, datetime.now(UTC).year)
 
-COURTS_HREF_RE = re.compile(r'href=["\'](/app/hanrei_jp/detail[12]\?id=\d+[^"\']*)["\']', re.IGNORECASE)
+
+COURTS_HREF_RE = re.compile(
+    r'href=["\'](/app/hanrei_jp/detail[12]\?id=\d+[^"\']*)["\']', re.IGNORECASE
+)
 TITLE_RE = re.compile(r"<title[^>]*>([^<]+)</title>", re.IGNORECASE)
+
 
 def fetch_courts_jp_index(keyword, page=1, max_records=200):
     url = f"{COURTS_JP_BASE}/search1?text2={urllib.parse.quote(keyword)}&page={page}"
@@ -154,6 +205,7 @@ def fetch_courts_jp_index(keyword, page=1, max_records=200):
             break
     return out
 
+
 def parse_courts_detail(html, source_url):
     title_match = TITLE_RE.search(html)
     title = title_match.group(1).strip() if title_match else "(無題)"
@@ -163,7 +215,10 @@ def parse_courts_detail(html, source_url):
     full_ruling = plain[:4000]
     case_number_match = re.search(r"(平成\d+年|令和\d+年|昭和\d+年)\([^)]+\)第?\d+号", plain)
     case_number = case_number_match.group(0) if case_number_match else ""
-    court_match = re.search(r"(最高裁判所第?[一二三四五六小]法廷?|[^\s]+高等裁判所[^\s]*|[^\s]+地方裁判所[^\s]*|[^\s]+簡易裁判所[^\s]*)", plain)
+    court_match = re.search(
+        r"(最高裁判所第?[一二三四五六小]法廷?|[^\s]+高等裁判所[^\s]*|[^\s]+地方裁判所[^\s]*|[^\s]+簡易裁判所[^\s]*)",
+        plain,
+    )
     court = court_match.group(0) if court_match else "東京地方裁判所"
     decision_type = "判決"
     for kind in ("判決", "決定", "命令"):
@@ -174,12 +229,17 @@ def parse_courts_detail(html, source_url):
     return {
         "case_name": title,
         "case_number": case_number or f"AUTO-{hashlib.md5(source_url.encode()).hexdigest()[:8]}",
-        "court": court, "decision_date": decision_date,
-        "decision_date_start": ds, "decision_date_end": de,
-        "fiscal_year": fy, "decision_type": decision_type,
-        "key_ruling_excerpt": excerpt, "key_ruling_full": full_ruling,
+        "court": court,
+        "decision_date": decision_date,
+        "decision_date_start": ds,
+        "decision_date_end": de,
+        "fiscal_year": fy,
+        "decision_type": decision_type,
+        "key_ruling_excerpt": excerpt,
+        "key_ruling_full": full_ruling,
         "source_excerpt": excerpt,
     }
+
 
 def fetch_ndl_oai_records(max_records):
     out = []
@@ -192,9 +252,11 @@ def fetch_ndl_oai_records(max_records):
         root = ET.fromstring(body)
     except ET.ParseError:
         return out
-    ns = {"oai": "http://www.openarchives.org/OAI/2.0/",
-          "dc": "http://purl.org/dc/elements/1.1/",
-          "oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/"}
+    ns = {
+        "oai": "http://www.openarchives.org/OAI/2.0/",
+        "dc": "http://purl.org/dc/elements/1.1/",
+        "oai_dc": "http://www.openarchives.org/OAI/2.0/oai_dc/",
+    }
     for record in root.findall(".//oai:record", ns):
         if len(out) >= max_records:
             break
@@ -214,18 +276,25 @@ def fetch_ndl_oai_records(max_records):
         subject_els = meta.findall("dc:subject", ns)
         subjects = " ".join(s.text or "" for s in subject_els)[:200]
         decision_date, ds, de, fy = parse_decision_date(date_text)
-        out.append({
-            "case_name": title.strip(),
-            "case_number": f"NDL-{hashlib.md5((title + date_text).encode()).hexdigest()[:10]}",
-            "court": "地方裁判所", "decision_date": decision_date,
-            "decision_date_start": ds, "decision_date_end": de,
-            "fiscal_year": fy, "decision_type": "判決",
-            "key_ruling_excerpt": subjects[:200] or title[:200],
-            "key_ruling_full": subjects[:2000],
-            "source_excerpt": subjects[:200] or title[:200],
-            "source_url": ident, "source": "ndl_oai",
-        })
+        out.append(
+            {
+                "case_name": title.strip(),
+                "case_number": f"NDL-{hashlib.md5((title + date_text).encode()).hexdigest()[:10]}",
+                "court": "地方裁判所",
+                "decision_date": decision_date,
+                "decision_date_start": ds,
+                "decision_date_end": de,
+                "fiscal_year": fy,
+                "decision_type": "判決",
+                "key_ruling_excerpt": subjects[:200] or title[:200],
+                "key_ruling_full": subjects[:2000],
+                "source_excerpt": subjects[:200] or title[:200],
+                "source_url": ident,
+                "source": "ndl_oai",
+            }
+        )
     return out
+
 
 INSERT_SQL = """INSERT OR IGNORE INTO am_court_decisions_v2 (
     unified_id, case_number, court, court_level, court_level_canonical,
@@ -237,30 +306,48 @@ INSERT_SQL = """INSERT OR IGNORE INTO am_court_decisions_v2 (
     license, redistribute_ok, confidence, fetched_at
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".strip()
 
+
 def upsert_row(conn, row):
     related_law = json.dumps(row.get("related_law_ids", []), ensure_ascii=False)
     related_program = json.dumps(row.get("related_program_ids", []), ensure_ascii=False)
     excerpt = row.get("source_excerpt") or row.get("key_ruling_excerpt") or ""
     checksum = hashlib.sha256(excerpt.encode("utf-8")).hexdigest() if excerpt else None
-    conn.execute(INSERT_SQL, (
-        row["unified_id"], row.get("case_number"), row.get("court"),
-        row.get("court_level", "地裁"), row.get("court_level_canonical", "district"),
-        row.get("case_type", "other"), row.get("case_name"),
-        row.get("decision_date"), row.get("decision_date_start"),
-        row.get("decision_date_end"), row.get("fiscal_year"),
-        row.get("decision_type"), row.get("subject_area"),
-        row.get("precedent_weight", "informational"),
-        related_law, related_program,
-        row.get("key_ruling_excerpt"), row.get("key_ruling_full"),
-        row.get("parties_involved"), row.get("impact_on_business"),
-        row.get("full_text_url"), row.get("pdf_url"),
-        row["source_url"], row.get("source", "courts_jp"),
-        excerpt[:200], checksum,
-        row.get("license", "gov_standard"),
-        row.get("redistribute_ok", 1),
-        row.get("confidence", 0.85),
-        row.get("fetched_at", datetime.now(UTC).isoformat()),
-    ))
+    conn.execute(
+        INSERT_SQL,
+        (
+            row["unified_id"],
+            row.get("case_number"),
+            row.get("court"),
+            row.get("court_level", "地裁"),
+            row.get("court_level_canonical", "district"),
+            row.get("case_type", "other"),
+            row.get("case_name"),
+            row.get("decision_date"),
+            row.get("decision_date_start"),
+            row.get("decision_date_end"),
+            row.get("fiscal_year"),
+            row.get("decision_type"),
+            row.get("subject_area"),
+            row.get("precedent_weight", "informational"),
+            related_law,
+            related_program,
+            row.get("key_ruling_excerpt"),
+            row.get("key_ruling_full"),
+            row.get("parties_involved"),
+            row.get("impact_on_business"),
+            row.get("full_text_url"),
+            row.get("pdf_url"),
+            row["source_url"],
+            row.get("source", "courts_jp"),
+            excerpt[:200],
+            checksum,
+            row.get("license", "gov_standard"),
+            row.get("redistribute_ok", 1),
+            row.get("confidence", 0.85),
+            row.get("fetched_at", datetime.now(UTC).isoformat()),
+        ),
+    )
+
 
 def process_courts_jp_detail(detail_url):
     if is_banned_url(detail_url):
@@ -271,13 +358,18 @@ def process_courts_jp_detail(detail_url):
         return None
     parsed = parse_courts_detail(html, detail_url)
     display, canonical = classify_court_level_canonical(parsed["court"])
-    case_type = classify_case_type(" ".join(filter(None, [parsed["case_name"], parsed["key_ruling_excerpt"]])))
+    case_type = classify_case_type(
+        " ".join(filter(None, [parsed["case_name"], parsed["key_ruling_excerpt"]]))
+    )
     weight = classify_precedent_weight(canonical, parsed["case_name"])
     return {
         "unified_id": compute_unified_id(parsed["case_number"], parsed["court"]),
-        "case_number": parsed["case_number"], "court": parsed["court"],
-        "court_level": display, "court_level_canonical": canonical,
-        "case_type": case_type, "case_name": parsed["case_name"],
+        "case_number": parsed["case_number"],
+        "court": parsed["court"],
+        "court_level": display,
+        "court_level_canonical": canonical,
+        "case_type": case_type,
+        "case_name": parsed["case_name"],
         "decision_date": parsed["decision_date"],
         "decision_date_start": parsed["decision_date_start"],
         "decision_date_end": parsed["decision_date_end"],
@@ -285,14 +377,20 @@ def process_courts_jp_detail(detail_url):
         "decision_type": parsed["decision_type"],
         "subject_area": "租税" if case_type == "tax" else None,
         "precedent_weight": weight,
-        "related_law_ids": [], "related_program_ids": [],
+        "related_law_ids": [],
+        "related_program_ids": [],
         "key_ruling_excerpt": parsed["key_ruling_excerpt"],
         "key_ruling_full": parsed["key_ruling_full"],
-        "full_text_url": detail_url, "source_url": detail_url,
-        "source": "courts_jp", "source_excerpt": parsed["source_excerpt"],
-        "license": "gov_standard", "redistribute_ok": 1,
-        "confidence": 0.85, "fetched_at": datetime.now(UTC).isoformat(),
+        "full_text_url": detail_url,
+        "source_url": detail_url,
+        "source": "courts_jp",
+        "source_excerpt": parsed["source_excerpt"],
+        "license": "gov_standard",
+        "redistribute_ok": 1,
+        "confidence": 0.85,
+        "fetched_at": datetime.now(UTC).isoformat(),
     }
+
 
 SEED_COURTS = (
     ("最高裁判所第一小法廷", "supreme", "最高", "binding"),
@@ -320,6 +418,7 @@ SEED_COURTS = (
 )
 SEED_CASE_TYPES = ("tax", "admin", "corporate", "ip", "labor", "civil", "criminal", "other")
 
+
 def synthesize_fixture_rows(target):
     rows = []
     base_year = 2010
@@ -329,33 +428,61 @@ def synthesize_fixture_rows(target):
         case_type = SEED_CASE_TYPES[counter % len(SEED_CASE_TYPES)]
         year = base_year + (counter // 100)
         case_number = f"令和{(year - 2018) if year >= 2019 else year - 1988}年(行ヒ)第{(counter % 9999) + 1}号"
-        decision_date = datetime(year, 1 + (counter % 12), 1 + (counter % 28), tzinfo=UTC).date().isoformat()
+        decision_date = (
+            datetime(year, 1 + (counter % 12), 1 + (counter % 28), tzinfo=UTC).date().isoformat()
+        )
         title = f"dry-run fixture #{counter} ({case_type})"
         source_url = f"https://www.courts.go.jp/app/hanrei_jp/detail2?id={1000000 + counter}"
         excerpt = f"dry-run row {counter} for {court} ({case_type})"
-        rows.append({
-            "unified_id": compute_unified_id(case_number, court),
-            "case_number": case_number, "court": court,
-            "court_level": display, "court_level_canonical": canonical,
-            "case_type": case_type, "case_name": title,
-            "decision_date": decision_date, "decision_date_start": decision_date,
-            "decision_date_end": decision_date, "fiscal_year": year,
-            "decision_type": "判決",
-            "subject_area": "租税" if case_type == "tax" else None,
-            "precedent_weight": weight,
-            "related_law_ids": [], "related_program_ids": [],
-            "key_ruling_excerpt": excerpt, "key_ruling_full": excerpt,
-            "full_text_url": source_url, "source_url": source_url,
-            "source": "courts_jp", "source_excerpt": excerpt,
-            "license": "gov_standard", "redistribute_ok": 1,
-            "confidence": 0.6, "fetched_at": datetime.now(UTC).isoformat(),
-        })
+        rows.append(
+            {
+                "unified_id": compute_unified_id(case_number, court),
+                "case_number": case_number,
+                "court": court,
+                "court_level": display,
+                "court_level_canonical": canonical,
+                "case_type": case_type,
+                "case_name": title,
+                "decision_date": decision_date,
+                "decision_date_start": decision_date,
+                "decision_date_end": decision_date,
+                "fiscal_year": year,
+                "decision_type": "判決",
+                "subject_area": "租税" if case_type == "tax" else None,
+                "precedent_weight": weight,
+                "related_law_ids": [],
+                "related_program_ids": [],
+                "key_ruling_excerpt": excerpt,
+                "key_ruling_full": excerpt,
+                "full_text_url": source_url,
+                "source_url": source_url,
+                "source": "courts_jp",
+                "source_excerpt": excerpt,
+                "license": "gov_standard",
+                "redistribute_ok": 1,
+                "confidence": 0.6,
+                "fetched_at": datetime.now(UTC).isoformat(),
+            }
+        )
         if len(rows) >= target:
             break
     return rows
 
-COURTS_KEYWORDS = ("税務", "補助金", "行政", "会社法", "特許", "労働",
-                   "刑事", "民事", "損害賠償", "国税", "地方税", "更正処分")
+
+COURTS_KEYWORDS = (
+    "税務",
+    "補助金",
+    "行政",
+    "会社法",
+    "特許",
+    "労働",
+    "刑事",
+    "民事",
+    "損害賠償",
+    "国税",
+    "地方税",
+    "更正処分",
+)
 
 
 def main() -> int:
@@ -384,7 +511,9 @@ def main() -> int:
             (run_started, args.source_kind),
         ).lastrowid
         conn.commit()
-        rows_added = 0; rows_skipped = 0; errors = 0
+        rows_added = 0
+        rows_skipped = 0
+        errors = 0
         all_rows = []
         if args.dry_run:
             all_rows = synthesize_fixture_rows(args.target)
@@ -403,7 +532,7 @@ def main() -> int:
                             break
                     if len(urls) >= args.max_records:
                         break
-            urls = list(dict.fromkeys(urls))[:args.max_records]
+            urls = list(dict.fromkeys(urls))[: args.max_records]
             if urls:
                 with concurrent.futures.ThreadPoolExecutor(max_workers=args.parallel) as ex:
                     futures = [ex.submit(process_courts_jp_detail, u) for u in urls]
@@ -423,31 +552,45 @@ def main() -> int:
                     ndl_rows = fetch_ndl_oai_records(remaining)
                     for r in ndl_rows:
                         display, canonical = classify_court_level_canonical(r.get("court"))
-                        case_type = classify_case_type(r.get("case_name", "") + " " + r.get("key_ruling_excerpt", ""))
-                        all_rows.append({
-                            "unified_id": compute_unified_id(r["case_number"], r["court"]),
-                            "case_number": r["case_number"], "court": r["court"],
-                            "court_level": display, "court_level_canonical": canonical,
-                            "case_type": case_type, "case_name": r["case_name"],
-                            "decision_date": r["decision_date"],
-                            "decision_date_start": r["decision_date_start"],
-                            "decision_date_end": r["decision_date_end"],
-                            "fiscal_year": r["fiscal_year"],
-                            "decision_type": r.get("decision_type", "判決"),
-                            "subject_area": None,
-                            "precedent_weight": classify_precedent_weight(canonical, r.get("case_name")),
-                            "related_law_ids": [], "related_program_ids": [],
-                            "key_ruling_excerpt": r["key_ruling_excerpt"],
-                            "key_ruling_full": r["key_ruling_full"],
-                            "full_text_url": r["source_url"], "source_url": r["source_url"],
-                            "source": "ndl_oai", "source_excerpt": r["source_excerpt"],
-                            "license": "gov_standard", "redistribute_ok": 1,
-                            "confidence": 0.7, "fetched_at": datetime.now(UTC).isoformat(),
-                        })
+                        case_type = classify_case_type(
+                            r.get("case_name", "") + " " + r.get("key_ruling_excerpt", "")
+                        )
+                        all_rows.append(
+                            {
+                                "unified_id": compute_unified_id(r["case_number"], r["court"]),
+                                "case_number": r["case_number"],
+                                "court": r["court"],
+                                "court_level": display,
+                                "court_level_canonical": canonical,
+                                "case_type": case_type,
+                                "case_name": r["case_name"],
+                                "decision_date": r["decision_date"],
+                                "decision_date_start": r["decision_date_start"],
+                                "decision_date_end": r["decision_date_end"],
+                                "fiscal_year": r["fiscal_year"],
+                                "decision_type": r.get("decision_type", "判決"),
+                                "subject_area": None,
+                                "precedent_weight": classify_precedent_weight(
+                                    canonical, r.get("case_name")
+                                ),
+                                "related_law_ids": [],
+                                "related_program_ids": [],
+                                "key_ruling_excerpt": r["key_ruling_excerpt"],
+                                "key_ruling_full": r["key_ruling_full"],
+                                "full_text_url": r["source_url"],
+                                "source_url": r["source_url"],
+                                "source": "ndl_oai",
+                                "source_excerpt": r["source_excerpt"],
+                                "license": "gov_standard",
+                                "redistribute_ok": 1,
+                                "confidence": 0.7,
+                                "fetched_at": datetime.now(UTC).isoformat(),
+                            }
+                        )
             if not all_rows:
                 LOG.warning("0 rows ingested; falling back to fixture rows")
                 all_rows = synthesize_fixture_rows(args.target)
-        for row in all_rows[:args.target]:
+        for row in all_rows[: args.target]:
             try:
                 upsert_row(conn, row)
                 rows_added += 1
@@ -463,13 +606,28 @@ def main() -> int:
             (datetime.now(UTC).isoformat(), rows_added, rows_skipped, errors, run_id),
         )
         conn.commit()
-        LOG.info("wave43.1.10 fill: rows_added=%d skipped=%d errors=%d target=%d",
-                 rows_added, rows_skipped, errors, args.target)
-        print(json.dumps({"status": "ok", "rows_added": rows_added,
-                          "rows_skipped": rows_skipped, "errors": errors, "target": args.target}))
+        LOG.info(
+            "wave43.1.10 fill: rows_added=%d skipped=%d errors=%d target=%d",
+            rows_added,
+            rows_skipped,
+            errors,
+            args.target,
+        )
+        print(
+            json.dumps(
+                {
+                    "status": "ok",
+                    "rows_added": rows_added,
+                    "rows_skipped": rows_skipped,
+                    "errors": errors,
+                    "target": args.target,
+                }
+            )
+        )
         return 0
     finally:
         conn.close()
+
 
 if __name__ == "__main__":
     sys.exit(main())

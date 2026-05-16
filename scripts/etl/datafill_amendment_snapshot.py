@@ -61,7 +61,6 @@ Usage
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import sqlite3
 import sys
@@ -96,8 +95,18 @@ WAREKI_EPOCH = {"令和": 2018, "平成": 1988, "昭和": 1925}
 
 KANJI_DIGITS = {
     "元": 1,
-    "〇": 0, "零": 0, "一": 1, "二": 2, "三": 3, "四": 4,
-    "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+    "〇": 0,
+    "零": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
 }
 
 
@@ -120,8 +129,9 @@ def kanji_to_int(s: str) -> int | None:
     return None
 
 
-def wareki_to_iso(era: str, year_token: str, month_token: str | None,
-                  day_token: str | None) -> str | None:
+def wareki_to_iso(
+    era: str, year_token: str, month_token: str | None, day_token: str | None
+) -> str | None:
     epoch = WAREKI_EPOCH.get(era)
     if epoch is None:
         return None
@@ -144,7 +154,7 @@ def parse_iso(blob: str) -> str | None:
         idx = blob.find(f'"{k}"')
         if idx < 0:
             continue
-        snippet = blob[idx:idx + 200]
+        snippet = blob[idx : idx + 200]
         m = ISO_DATE_RE.search(snippet)
         if m:
             return f"{m.group(1)}-{int(m.group(2)):02d}-{int(m.group(3) or 1):02d}"
@@ -184,8 +194,9 @@ def parse_url_year(url: str | None) -> str | None:
     return f"{year:04d}-04-01"
 
 
-def extract_effective_from(raw_json: str | None, source_url: str | None,
-                           observed_at: str | None) -> tuple[str | None, str]:
+def extract_effective_from(
+    raw_json: str | None, source_url: str | None, observed_at: str | None
+) -> tuple[str | None, str]:
     """Return (iso_date, source_label). source_label tags the pass that
     matched: 'json' / 'wareki' / 'url' / 'observed' / ''.
     """
@@ -233,12 +244,10 @@ def main() -> int:
     try:
         cur = conn.cursor()
 
-        cur.execute(
-            "SELECT COUNT(*) total, COUNT(effective_from) dated FROM am_amendment_snapshot"
-        )
+        cur.execute("SELECT COUNT(*) total, COUNT(effective_from) dated FROM am_amendment_snapshot")
         row = cur.fetchone()
         total, dated = row[0], row[1]
-        print(f"baseline: total={total} dated={dated} ratio={dated/total:.3%}")
+        print(f"baseline: total={total} dated={dated} ratio={dated / total:.3%}")
 
         sql = """
             SELECT snapshot_id, entity_id, observed_at, source_url, raw_snapshot_json
@@ -266,9 +275,9 @@ def main() -> int:
                 source_hist[src] += 1
 
         print(f"scanned NULL rows  : {len(rows)}")
-        print(f"would fill         : {len(updates)} ({len(updates)/total:.2%} of total)")
+        print(f"would fill         : {len(updates)} ({len(updates) / total:.2%} of total)")
         print(f"by source          : {dict(source_hist)}")
-        print(f"projected dated    : {dated + len(updates)} ({(dated + len(updates))/total:.2%})")
+        print(f"projected dated    : {dated + len(updates)} ({(dated + len(updates)) / total:.2%})")
 
         if args.apply and updates:
             cur.executemany(

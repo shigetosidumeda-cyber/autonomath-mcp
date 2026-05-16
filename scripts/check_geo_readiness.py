@@ -307,7 +307,9 @@ def _failures_for_index_legacy_bridge(html: str, json_ld: list[Any]) -> list[str
                 failures.append(f"site/index.html {type_name}.alternateName missing bridge:{token}")
         same_as = _as_list(block.get("sameAs"))
         if "https://zeimu-kaikei.ai" not in same_as:
-            failures.append(f"site/index.html {type_name}.sameAs missing bridge:https://zeimu-kaikei.ai")
+            failures.append(
+                f"site/index.html {type_name}.sameAs missing bridge:https://zeimu-kaikei.ai"
+            )
 
     return failures
 

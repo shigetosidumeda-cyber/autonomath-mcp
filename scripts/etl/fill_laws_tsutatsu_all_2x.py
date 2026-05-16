@@ -10,6 +10,7 @@ License = 'gov_standard'.
 Usage:
     python scripts/etl/fill_laws_tsutatsu_all_2x.py --dry-run
 """
+
 from __future__ import annotations
 
 import argparse
@@ -36,6 +37,7 @@ except ImportError:
 
 try:
     import certifi
+
     _SSL_CTX = ssl.create_default_context(cafile=certifi.where())
 except Exception:
     _SSL_CTX = ssl.create_default_context()
@@ -50,79 +52,145 @@ DEFAULT_DELAY = 2.0
 DEFAULT_TIMEOUT = 30
 
 BANNED_SOURCE_HOSTS = (
-    "noukaweb", "hojyokin-portal", "biz.stayway",
-    "hojo-navi", "mirai-joho", "subsidy-portal",
+    "noukaweb",
+    "hojyokin-portal",
+    "biz.stayway",
+    "hojo-navi",
+    "mirai-joho",
+    "subsidy-portal",
 )
 
 AGENCY_SEEDS: dict[str, dict[str, Any]] = {
-    "nta": {"name": "国税庁", "default_jsic": "K", "seeds": [
-        ("html_index", "https://www.nta.go.jp/law/tsutatsu/index.htm"),
-        ("html_index", "https://www.nta.go.jp/law/tsutatsu/kobetsu/hojin/index.htm"),
-        ("html_index", "https://www.nta.go.jp/law/tsutatsu/kobetsu/shotoku/index.htm"),
-        ("html_index", "https://www.nta.go.jp/law/tsutatsu/kobetsu/shohi/index.htm"),
-        ("html_index", "https://www.nta.go.jp/law/tsutatsu/kobetsu/sozoku/index.htm"),
-    ]},
-    "meti": {"name": "経済産業省", "default_jsic": "E", "seeds": [
-        ("rss", "https://www.meti.go.jp/rss/topics.rdf"),
-        ("html_index", "https://www.meti.go.jp/policy/economy/koukai/index.html"),
-        ("html_index", "https://www.meti.go.jp/feedback/data/g05r-att/g05r-att-tsutatsu.html"),
-    ]},
-    "mhlw": {"name": "厚生労働省", "default_jsic": "P", "seeds": [
-        ("rss", "https://www.mhlw.go.jp/stf/news.rdf"),
-        ("html_index", "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/index.html"),
-        ("html_index", "https://www.mhlw.go.jp/web/t_doc"),
-    ]},
-    "env": {"name": "環境省", "default_jsic": "E", "seeds": [
-        ("rss", "https://www.env.go.jp/rss/all.rdf"),
-        ("html_index", "https://www.env.go.jp/hourei/index.html"),
-    ]},
-    "maff": {"name": "農林水産省", "default_jsic": "A", "seeds": [
-        ("rss", "https://www.maff.go.jp/index.rdf"),
-        ("html_index", "https://www.maff.go.jp/j/law/notice/"),
-    ]},
-    "mlit": {"name": "国土交通省", "default_jsic": "F", "seeds": [
-        ("rss", "https://www.mlit.go.jp/index.rdf"),
-        ("html_index", "https://www.mlit.go.jp/policy/file000010.html"),
-    ]},
-    "fsa": {"name": "金融庁", "default_jsic": "J", "seeds": [
-        ("html_index", "https://www.fsa.go.jp/common/law/index.html"),
-        ("html_index", "https://www.fsa.go.jp/news/index.html"),
-    ]},
-    "jftc": {"name": "公正取引委員会", "default_jsic": "R", "seeds": [
-        ("html_index", "https://www.jftc.go.jp/houdou/index.html"),
-        ("html_index", "https://www.jftc.go.jp/dk/guideline/unyoukijun/index.html"),
-    ]},
-    "npa": {"name": "警察庁", "default_jsic": "R", "seeds": [
-        ("html_index", "https://www.npa.go.jp/laws/index.html"),
-        ("html_index", "https://www.npa.go.jp/news/release/index.html"),
-    ]},
-    "soumu": {"name": "総務省", "default_jsic": "H", "seeds": [
-        ("rss", "https://www.soumu.go.jp/news.rdf"),
-        ("html_index", "https://www.soumu.go.jp/menu_hourei/index.html"),
-    ]},
-    "mext": {"name": "文部科学省", "default_jsic": "O", "seeds": [
-        ("rss", "https://www.mext.go.jp/rss/index.xml"),
-        ("html_index", "https://www.mext.go.jp/b_menu/hakusho/index.htm"),
-    ]},
-    "cao": {"name": "内閣府", "default_jsic": "R", "seeds": [
-        ("html_index", "https://www.cao.go.jp/notice/index.html"),
-        ("rss", "https://www.cao.go.jp/index.rdf"),
-    ]},
-    "mod": {"name": "防衛省", "default_jsic": "R", "seeds": [
-        ("html_index", "https://www.mod.go.jp/j/press/index.html"),
-    ]},
-    "mof": {"name": "財務省", "default_jsic": "K", "seeds": [
-        ("rss", "https://www.mof.go.jp/index.rdf"),
-        ("html_index", "https://www.mof.go.jp/policy/index.html"),
-    ]},
-    "moj": {"name": "法務省", "default_jsic": "R", "seeds": [
-        ("html_index", "https://www.moj.go.jp/houan1/houan_index.html"),
-        ("html_index", "https://www.moj.go.jp/MINJI/index.html"),
-    ]},
+    "nta": {
+        "name": "国税庁",
+        "default_jsic": "K",
+        "seeds": [
+            ("html_index", "https://www.nta.go.jp/law/tsutatsu/index.htm"),
+            ("html_index", "https://www.nta.go.jp/law/tsutatsu/kobetsu/hojin/index.htm"),
+            ("html_index", "https://www.nta.go.jp/law/tsutatsu/kobetsu/shotoku/index.htm"),
+            ("html_index", "https://www.nta.go.jp/law/tsutatsu/kobetsu/shohi/index.htm"),
+            ("html_index", "https://www.nta.go.jp/law/tsutatsu/kobetsu/sozoku/index.htm"),
+        ],
+    },
+    "meti": {
+        "name": "経済産業省",
+        "default_jsic": "E",
+        "seeds": [
+            ("rss", "https://www.meti.go.jp/rss/topics.rdf"),
+            ("html_index", "https://www.meti.go.jp/policy/economy/koukai/index.html"),
+            ("html_index", "https://www.meti.go.jp/feedback/data/g05r-att/g05r-att-tsutatsu.html"),
+        ],
+    },
+    "mhlw": {
+        "name": "厚生労働省",
+        "default_jsic": "P",
+        "seeds": [
+            ("rss", "https://www.mhlw.go.jp/stf/news.rdf"),
+            ("html_index", "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/index.html"),
+            ("html_index", "https://www.mhlw.go.jp/web/t_doc"),
+        ],
+    },
+    "env": {
+        "name": "環境省",
+        "default_jsic": "E",
+        "seeds": [
+            ("rss", "https://www.env.go.jp/rss/all.rdf"),
+            ("html_index", "https://www.env.go.jp/hourei/index.html"),
+        ],
+    },
+    "maff": {
+        "name": "農林水産省",
+        "default_jsic": "A",
+        "seeds": [
+            ("rss", "https://www.maff.go.jp/index.rdf"),
+            ("html_index", "https://www.maff.go.jp/j/law/notice/"),
+        ],
+    },
+    "mlit": {
+        "name": "国土交通省",
+        "default_jsic": "F",
+        "seeds": [
+            ("rss", "https://www.mlit.go.jp/index.rdf"),
+            ("html_index", "https://www.mlit.go.jp/policy/file000010.html"),
+        ],
+    },
+    "fsa": {
+        "name": "金融庁",
+        "default_jsic": "J",
+        "seeds": [
+            ("html_index", "https://www.fsa.go.jp/common/law/index.html"),
+            ("html_index", "https://www.fsa.go.jp/news/index.html"),
+        ],
+    },
+    "jftc": {
+        "name": "公正取引委員会",
+        "default_jsic": "R",
+        "seeds": [
+            ("html_index", "https://www.jftc.go.jp/houdou/index.html"),
+            ("html_index", "https://www.jftc.go.jp/dk/guideline/unyoukijun/index.html"),
+        ],
+    },
+    "npa": {
+        "name": "警察庁",
+        "default_jsic": "R",
+        "seeds": [
+            ("html_index", "https://www.npa.go.jp/laws/index.html"),
+            ("html_index", "https://www.npa.go.jp/news/release/index.html"),
+        ],
+    },
+    "soumu": {
+        "name": "総務省",
+        "default_jsic": "H",
+        "seeds": [
+            ("rss", "https://www.soumu.go.jp/news.rdf"),
+            ("html_index", "https://www.soumu.go.jp/menu_hourei/index.html"),
+        ],
+    },
+    "mext": {
+        "name": "文部科学省",
+        "default_jsic": "O",
+        "seeds": [
+            ("rss", "https://www.mext.go.jp/rss/index.xml"),
+            ("html_index", "https://www.mext.go.jp/b_menu/hakusho/index.htm"),
+        ],
+    },
+    "cao": {
+        "name": "内閣府",
+        "default_jsic": "R",
+        "seeds": [
+            ("html_index", "https://www.cao.go.jp/notice/index.html"),
+            ("rss", "https://www.cao.go.jp/index.rdf"),
+        ],
+    },
+    "mod": {
+        "name": "防衛省",
+        "default_jsic": "R",
+        "seeds": [
+            ("html_index", "https://www.mod.go.jp/j/press/index.html"),
+        ],
+    },
+    "mof": {
+        "name": "財務省",
+        "default_jsic": "K",
+        "seeds": [
+            ("rss", "https://www.mof.go.jp/index.rdf"),
+            ("html_index", "https://www.mof.go.jp/policy/index.html"),
+        ],
+    },
+    "moj": {
+        "name": "法務省",
+        "default_jsic": "R",
+        "seeds": [
+            ("html_index", "https://www.moj.go.jp/houan1/houan_index.html"),
+            ("html_index", "https://www.moj.go.jp/MINJI/index.html"),
+        ],
+    },
 }
 
 TSUTATSU_NUMBER_PATTERNS = [
-    re.compile(r"(令和|平成|昭和)\s*(\d+)年(\d+)月(\d+)日[\s　]*([課発基資総事審改]+\d+[-‐－]?\d+)"),
+    re.compile(
+        r"(令和|平成|昭和)\s*(\d+)年(\d+)月(\d+)日[\s　]*([課発基資総事審改]+\d+[-‐－]?\d+)"
+    ),
     re.compile(r"([基労医職保健]\w?発)\s*(\d{2,4})[\s　]*第?\s*(\d+)\s*号"),
     re.compile(r"(\d{4})年(\d+)月(\d+)日[\s　]*([商情経産製造]+第\d+号)"),
     re.compile(r"(国\w{1,3}第\d+号)"),
@@ -136,13 +204,31 @@ _ISO_DATE_RE = re.compile(r"(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})")
 _REIWA_DATE_RE = re.compile(r"(令和|平成|昭和)\s*(\d+)\s*年\s*(\d+)\s*月\s*(\d+)\s*日")
 
 JSIC_KEYWORD_MAP: list[tuple[str, str]] = [
-    ("建設", "F"), ("製造", "E"), ("農業", "A"), ("林業", "A"),
-    ("水産", "B"), ("漁業", "B"), ("医療", "P"), ("介護", "P"),
-    ("教育", "O"), ("運輸", "H"), ("郵便", "H"),
-    ("情報通信", "G"), ("IT", "G"), ("不動産", "K"),
-    ("飲食", "M"), ("宿泊", "M"), ("小売", "I"), ("卸売", "I"),
-    ("金融", "J"), ("保険", "J"), ("電気", "F"), ("ガス", "F"),
-    ("税", "K"), ("廃棄物", "R"), ("環境", "R"),
+    ("建設", "F"),
+    ("製造", "E"),
+    ("農業", "A"),
+    ("林業", "A"),
+    ("水産", "B"),
+    ("漁業", "B"),
+    ("医療", "P"),
+    ("介護", "P"),
+    ("教育", "O"),
+    ("運輸", "H"),
+    ("郵便", "H"),
+    ("情報通信", "G"),
+    ("IT", "G"),
+    ("不動産", "K"),
+    ("飲食", "M"),
+    ("宿泊", "M"),
+    ("小売", "I"),
+    ("卸売", "I"),
+    ("金融", "J"),
+    ("保険", "J"),
+    ("電気", "F"),
+    ("ガス", "F"),
+    ("税", "K"),
+    ("廃棄物", "R"),
+    ("環境", "R"),
 ]
 
 
@@ -208,7 +294,7 @@ def classify_jsic(title: str, default_major: str) -> str:
 
 
 def compute_tsutatsu_id(agency_id: str, tsutatsu_number: str | None, title: str) -> str:
-    key = f"{agency_id}|{tsutatsu_number or ''}|{title}".encode("utf-8")
+    key = f"{agency_id}|{tsutatsu_number or ''}|{title}".encode()
     return "TSU-" + hashlib.sha256(key).hexdigest()[:12]
 
 
@@ -256,10 +342,21 @@ def parse_html_index(body: str, base_url: str, max_links: int) -> list[dict[str,
         if is_banned_url(href) or href in seen:
             continue
         joined = f"{anchor_text} {href.lower()}"
-        if not any(k in joined for k in (
-            "tsutatsu", "tuutatu", "tsuutatsu", "notice", "kokuji",
-            "通達", "通知", "告示", "事務連絡", "事務処理基準",
-        )):
+        if not any(
+            k in joined
+            for k in (
+                "tsutatsu",
+                "tuutatu",
+                "tsuutatsu",
+                "notice",
+                "kokuji",
+                "通達",
+                "通知",
+                "告示",
+                "事務連絡",
+                "事務処理基準",
+            )
+        ):
             continue
         seen.add(href)
         out.append({"url": href, "anchor": anchor_text[:300]})
@@ -274,9 +371,11 @@ def parse_rss(body: str, base_url: str, max_links: int) -> list[dict[str, str]]:
         root = ET.fromstring(body)
     except ET.ParseError:
         return out
-    ns = {"rss": "http://purl.org/rss/1.0/",
-          "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-          "dc": "http://purl.org/dc/elements/1.1/"}
+    ns = {
+        "rss": "http://purl.org/rss/1.0/",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "dc": "http://purl.org/dc/elements/1.1/",
+    }
     items = root.findall(".//rss:item", ns) or root.findall(".//item")
     for item in items:
         if len(out) >= max_links:
@@ -291,16 +390,29 @@ def parse_rss(body: str, base_url: str, max_links: int) -> list[dict[str, str]]:
         body_s = (desc_el.text if desc_el is not None else "") or ""
         if not title or not link or is_banned_url(link):
             continue
-        if not any(k in title for k in (
-            "通達", "通知", "告示", "事務連絡", "事務処理基準",
-            "事務取扱", "改正", "施行", "発出",
-        )):
+        if not any(
+            k in title
+            for k in (
+                "通達",
+                "通知",
+                "告示",
+                "事務連絡",
+                "事務処理基準",
+                "事務取扱",
+                "改正",
+                "施行",
+                "発出",
+            )
+        ):
             continue
-        out.append({
-            "url": link.strip(), "anchor": title.strip()[:300],
-            "issued_date": parse_iso_date(date_s) or "",
-            "body_hint": body_s[:2000],
-        })
+        out.append(
+            {
+                "url": link.strip(),
+                "anchor": title.strip()[:300],
+                "issued_date": parse_iso_date(date_s) or "",
+                "body_hint": body_s[:2000],
+            }
+        )
     return out
 
 
@@ -330,8 +442,11 @@ def discover_for_agency(agency_id: str, max_per_agency: int) -> list[dict[str, A
             LOG.warning("[%s] seed %s status=%s", agency_id, seed_url, status)
             continue
         remaining = max_per_agency - len(candidates)
-        links = (parse_rss(body, seed_url, remaining) if kind == "rss"
-                 else parse_html_index(body, seed_url, remaining))
+        links = (
+            parse_rss(body, seed_url, remaining)
+            if kind == "rss"
+            else parse_html_index(body, seed_url, remaining)
+        )
         for link in links:
             url = link["url"]
             if url in seen or not is_primary(agency_id, url):
@@ -359,15 +474,17 @@ def upsert(conn: sqlite3.Connection, rec: dict[str, Any], dry_run: bool = False)
     )
     body_text = (rec.get("body_text") or rec.get("body_hint") or "")[:20000]
     content_hash = hashlib.sha256(
-        f"{rec.get('agency_id')}|{tsutatsu_number or title}|{body_text[:1000]}".encode("utf-8")
+        f"{rec.get('agency_id')}|{tsutatsu_number or title}|{body_text[:1000]}".encode()
     ).hexdigest()
     tsutatsu_id = compute_tsutatsu_id(rec["agency_id"], tsutatsu_number, title)
     industry = classify_jsic(title, rec.get("default_jsic", "R"))
     now = datetime.now(UTC).isoformat()
 
     if dry_run:
-        print(f"[DRY] {rec['agency_id']:6s} {tsutatsu_id} num={tsutatsu_number or '-':24s} "
-              f"title={title[:60]}...")
+        print(
+            f"[DRY] {rec['agency_id']:6s} {tsutatsu_id} num={tsutatsu_number or '-':24s} "
+            f"title={title[:60]}..."
+        )
         return True
 
     conn.execute(
@@ -380,13 +497,26 @@ def upsert(conn: sqlite3.Connection, rec: dict[str, Any], dry_run: bool = False)
             ingested_at, last_verified
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'gov_standard', ?, ?, ?)
         """,
-        (tsutatsu_id, rec["agency_id"], rec.get("agency_name", ""),
-         tsutatsu_number, title[:500], body_text, body_text[:500],
-         rec.get("issued_date"), rec.get("last_revised"), industry,
-         rec.get("applicable_law_id"), rec.get("document_type", "tsutatsu"),
-         source_url, rec.get("full_text_url") or source_url,
-         source_url if source_url.endswith(".pdf") else None,
-         content_hash, now, now),
+        (
+            tsutatsu_id,
+            rec["agency_id"],
+            rec.get("agency_name", ""),
+            tsutatsu_number,
+            title[:500],
+            body_text,
+            body_text[:500],
+            rec.get("issued_date"),
+            rec.get("last_revised"),
+            industry,
+            rec.get("applicable_law_id"),
+            rec.get("document_type", "tsutatsu"),
+            source_url,
+            rec.get("full_text_url") or source_url,
+            source_url if source_url.endswith(".pdf") else None,
+            content_hash,
+            now,
+            now,
+        ),
     )
     return True
 
@@ -396,15 +526,19 @@ def write_log(conn, agencies_run, inserted, skipped, started, error=None):
         """INSERT INTO am_law_tsutatsu_all_run_log (
             started_at, finished_at, agencies_run, rows_inserted, rows_skipped, error_text
         ) VALUES (?, ?, ?, ?, ?, ?)""",
-        (started, datetime.now(UTC).isoformat(), ",".join(agencies_run),
-         inserted, skipped, error),
+        (started, datetime.now(UTC).isoformat(), ",".join(agencies_run), inserted, skipped, error),
     )
 
 
 def run(args: argparse.Namespace) -> int:
     started = datetime.now(UTC).isoformat()
-    LOG.info("[start] db=%s agencies=%s max=%s dry_run=%s",
-             args.db_path, args.agencies, args.max_per_agency, args.dry_run)
+    LOG.info(
+        "[start] db=%s agencies=%s max=%s dry_run=%s",
+        args.db_path,
+        args.agencies,
+        args.max_per_agency,
+        args.dry_run,
+    )
     if not args.dry_run and not args.db_path.exists():
         LOG.error("[error] db missing: %s", args.db_path)
         return 2
@@ -437,17 +571,28 @@ def run(args: argparse.Namespace) -> int:
             all_records.append(rec)
             time.sleep(DEFAULT_DELAY * 0.5)
 
-    LOG.info("[fetch] total %d records from %d agencies (%d discovered)",
-             len(all_records), len(selected), total_discovered)
+    LOG.info(
+        "[fetch] total %d records from %d agencies (%d discovered)",
+        len(all_records),
+        len(selected),
+        total_discovered,
+    )
 
     if args.dry_run:
         for rec in all_records[:30]:
             upsert(None, rec, dry_run=True)  # type: ignore[arg-type]
-        print(json.dumps({
-            "ok": True, "mode": "dry-run",
-            "discovered": total_discovered, "would_write": len(all_records),
-            "agencies": selected,
-        }, ensure_ascii=False))
+        print(
+            json.dumps(
+                {
+                    "ok": True,
+                    "mode": "dry-run",
+                    "discovered": total_discovered,
+                    "would_write": len(all_records),
+                    "agencies": selected,
+                },
+                ensure_ascii=False,
+            )
+        )
         return 0
 
     inserted = 0
@@ -476,12 +621,20 @@ def run(args: argparse.Namespace) -> int:
             LOG.debug("log write err (ignored): %s", exc)
         conn.commit()
         final = conn.execute("SELECT COUNT(*) FROM am_law_tsutatsu_all").fetchone()[0]
-    print(json.dumps({
-        "ok": True, "mode": "full",
-        "inserted": inserted, "skipped": skipped,
-        "discovered": total_discovered, "table_final": int(final),
-        "agencies": selected,
-    }, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "ok": True,
+                "mode": "full",
+                "inserted": inserted,
+                "skipped": skipped,
+                "discovered": total_discovered,
+                "table_final": int(final),
+                "agencies": selected,
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 
@@ -495,7 +648,8 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
-        format="%(asctime)s [%(name)s] %(levelname)s %(message)s")
+        format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
+    )
     return run(args)
 
 

@@ -107,41 +107,177 @@ _COUNTRIES: tuple[tuple[str, str], ...] = (
 # program_type with a 一次資料 URL prefix; ETL appends a country slug to
 # build the program_id deterministically.
 _PROGRAM_TEMPLATES: tuple[dict[str, str], ...] = (
-    {"type": "JETRO海外進出支援", "name": "JETRO 進出ハンズオン支援", "url": "https://www.jetro.go.jp/services/overseas_support/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO 中堅・中小企業海外展開現地支援", "url": "https://www.jetro.go.jp/services/genchi/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO 新興国進出個別支援", "url": "https://www.jetro.go.jp/services/emerging_support/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO 海外ビジネスパートナー紹介", "url": "https://www.jetro.go.jp/services/ttppoah/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO 海外コーディネーター活用", "url": "https://www.jetro.go.jp/services/coordinator/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO 海外見本市出展支援", "url": "https://www.jetro.go.jp/events/exhibitions/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO サービス産業海外展開", "url": "https://www.jetro.go.jp/services/service_overseas/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO 食品輸出商談会", "url": "https://www.jetro.go.jp/services/food_export/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO スタートアップ海外展開", "url": "https://www.jetro.go.jp/services/startup_overseas/"},
-    {"type": "JETRO海外進出支援", "name": "JETRO 中堅企業現地戦略支援", "url": "https://www.jetro.go.jp/services/midcap_strategy/"},
-    {"type": "JETRO対日投資", "name": "JETRO 対日直接投資促進", "url": "https://www.jetro.go.jp/invest/"},
-    {"type": "JETRO対日投資", "name": "JETRO Invest Japan ハンズオン", "url": "https://www.jetro.go.jp/invest/handson/"},
-    {"type": "JETRO対日投資", "name": "JETRO 地方創生対日直投", "url": "https://www.jetro.go.jp/invest/regions/"},
-    {"type": "METI", "name": "METI 海外投資環境整備", "url": "https://www.meti.go.jp/policy/external_economy/overseas/"},
-    {"type": "METI", "name": "METI 経済連携協定活用", "url": "https://www.meti.go.jp/policy/external_economy/epa/"},
-    {"type": "METI", "name": "METI 対日直接投資促進制度", "url": "https://www.meti.go.jp/policy/external_economy/fdi/"},
-    {"type": "METI", "name": "METI 海外展開人材育成", "url": "https://www.meti.go.jp/policy/external_economy/hr_overseas/"},
-    {"type": "METI", "name": "METI 国際標準化支援", "url": "https://www.meti.go.jp/policy/external_economy/standards/"},
-    {"type": "METI", "name": "METI 知的財産海外保護", "url": "https://www.meti.go.jp/policy/external_economy/ip_overseas/"},
-    {"type": "METI", "name": "METI 海外サプライチェーン強靭化", "url": "https://www.meti.go.jp/policy/external_economy/supply_chain/"},
-    {"type": "JBIC", "name": "JBIC 海外投資金融", "url": "https://www.jbic.go.jp/ja/finance/overseas_investment/"},
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO 進出ハンズオン支援",
+        "url": "https://www.jetro.go.jp/services/overseas_support/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO 中堅・中小企業海外展開現地支援",
+        "url": "https://www.jetro.go.jp/services/genchi/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO 新興国進出個別支援",
+        "url": "https://www.jetro.go.jp/services/emerging_support/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO 海外ビジネスパートナー紹介",
+        "url": "https://www.jetro.go.jp/services/ttppoah/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO 海外コーディネーター活用",
+        "url": "https://www.jetro.go.jp/services/coordinator/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO 海外見本市出展支援",
+        "url": "https://www.jetro.go.jp/events/exhibitions/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO サービス産業海外展開",
+        "url": "https://www.jetro.go.jp/services/service_overseas/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO 食品輸出商談会",
+        "url": "https://www.jetro.go.jp/services/food_export/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO スタートアップ海外展開",
+        "url": "https://www.jetro.go.jp/services/startup_overseas/",
+    },
+    {
+        "type": "JETRO海外進出支援",
+        "name": "JETRO 中堅企業現地戦略支援",
+        "url": "https://www.jetro.go.jp/services/midcap_strategy/",
+    },
+    {
+        "type": "JETRO対日投資",
+        "name": "JETRO 対日直接投資促進",
+        "url": "https://www.jetro.go.jp/invest/",
+    },
+    {
+        "type": "JETRO対日投資",
+        "name": "JETRO Invest Japan ハンズオン",
+        "url": "https://www.jetro.go.jp/invest/handson/",
+    },
+    {
+        "type": "JETRO対日投資",
+        "name": "JETRO 地方創生対日直投",
+        "url": "https://www.jetro.go.jp/invest/regions/",
+    },
+    {
+        "type": "METI",
+        "name": "METI 海外投資環境整備",
+        "url": "https://www.meti.go.jp/policy/external_economy/overseas/",
+    },
+    {
+        "type": "METI",
+        "name": "METI 経済連携協定活用",
+        "url": "https://www.meti.go.jp/policy/external_economy/epa/",
+    },
+    {
+        "type": "METI",
+        "name": "METI 対日直接投資促進制度",
+        "url": "https://www.meti.go.jp/policy/external_economy/fdi/",
+    },
+    {
+        "type": "METI",
+        "name": "METI 海外展開人材育成",
+        "url": "https://www.meti.go.jp/policy/external_economy/hr_overseas/",
+    },
+    {
+        "type": "METI",
+        "name": "METI 国際標準化支援",
+        "url": "https://www.meti.go.jp/policy/external_economy/standards/",
+    },
+    {
+        "type": "METI",
+        "name": "METI 知的財産海外保護",
+        "url": "https://www.meti.go.jp/policy/external_economy/ip_overseas/",
+    },
+    {
+        "type": "METI",
+        "name": "METI 海外サプライチェーン強靭化",
+        "url": "https://www.meti.go.jp/policy/external_economy/supply_chain/",
+    },
+    {
+        "type": "JBIC",
+        "name": "JBIC 海外投資金融",
+        "url": "https://www.jbic.go.jp/ja/finance/overseas_investment/",
+    },
     {"type": "JBIC", "name": "JBIC 輸出金融", "url": "https://www.jbic.go.jp/ja/finance/export/"},
-    {"type": "JBIC", "name": "JBIC アンタイドローン", "url": "https://www.jbic.go.jp/ja/finance/untied/"},
-    {"type": "JBIC", "name": "JBIC 事業開発等金融", "url": "https://www.jbic.go.jp/ja/finance/business_dev/"},
-    {"type": "JBIC", "name": "JBIC 出資保証", "url": "https://www.jbic.go.jp/ja/finance/equity_guarantee/"},
-    {"type": "JBIC", "name": "JBIC 環境投資支援", "url": "https://www.jbic.go.jp/ja/finance/green/"},
-    {"type": "JBIC", "name": "JBIC 中堅・中小企業海外進出支援", "url": "https://www.jbic.go.jp/ja/finance/sme_overseas/"},
-    {"type": "NEXI", "name": "NEXI 貿易一般保険", "url": "https://www.nexi.go.jp/insurance/general/"},
-    {"type": "NEXI", "name": "NEXI 海外投資保険", "url": "https://www.nexi.go.jp/insurance/overseas_investment/"},
-    {"type": "NEXI", "name": "NEXI 海外事業資金貸付保険", "url": "https://www.nexi.go.jp/insurance/overseas_loan/"},
-    {"type": "NEXI", "name": "NEXI 中小企業輸出代金保険", "url": "https://www.nexi.go.jp/insurance/sme_export/"},
-    {"type": "NEXI", "name": "NEXI 知的財産権等ライセンス保険", "url": "https://www.nexi.go.jp/insurance/ip_license/"},
-    {"type": "NEXI", "name": "NEXI 海外短期商取引保険", "url": "https://www.nexi.go.jp/insurance/short_term/"},
-    {"type": "NEXI", "name": "NEXI 海外建設工事保険", "url": "https://www.nexi.go.jp/insurance/construction/"},
-    {"type": "NEXI", "name": "NEXI カントリーリスク保険", "url": "https://www.nexi.go.jp/insurance/country_risk/"},
+    {
+        "type": "JBIC",
+        "name": "JBIC アンタイドローン",
+        "url": "https://www.jbic.go.jp/ja/finance/untied/",
+    },
+    {
+        "type": "JBIC",
+        "name": "JBIC 事業開発等金融",
+        "url": "https://www.jbic.go.jp/ja/finance/business_dev/",
+    },
+    {
+        "type": "JBIC",
+        "name": "JBIC 出資保証",
+        "url": "https://www.jbic.go.jp/ja/finance/equity_guarantee/",
+    },
+    {
+        "type": "JBIC",
+        "name": "JBIC 環境投資支援",
+        "url": "https://www.jbic.go.jp/ja/finance/green/",
+    },
+    {
+        "type": "JBIC",
+        "name": "JBIC 中堅・中小企業海外進出支援",
+        "url": "https://www.jbic.go.jp/ja/finance/sme_overseas/",
+    },
+    {
+        "type": "NEXI",
+        "name": "NEXI 貿易一般保険",
+        "url": "https://www.nexi.go.jp/insurance/general/",
+    },
+    {
+        "type": "NEXI",
+        "name": "NEXI 海外投資保険",
+        "url": "https://www.nexi.go.jp/insurance/overseas_investment/",
+    },
+    {
+        "type": "NEXI",
+        "name": "NEXI 海外事業資金貸付保険",
+        "url": "https://www.nexi.go.jp/insurance/overseas_loan/",
+    },
+    {
+        "type": "NEXI",
+        "name": "NEXI 中小企業輸出代金保険",
+        "url": "https://www.nexi.go.jp/insurance/sme_export/",
+    },
+    {
+        "type": "NEXI",
+        "name": "NEXI 知的財産権等ライセンス保険",
+        "url": "https://www.nexi.go.jp/insurance/ip_license/",
+    },
+    {
+        "type": "NEXI",
+        "name": "NEXI 海外短期商取引保険",
+        "url": "https://www.nexi.go.jp/insurance/short_term/",
+    },
+    {
+        "type": "NEXI",
+        "name": "NEXI 海外建設工事保険",
+        "url": "https://www.nexi.go.jp/insurance/construction/",
+    },
+    {
+        "type": "NEXI",
+        "name": "NEXI カントリーリスク保険",
+        "url": "https://www.nexi.go.jp/insurance/country_risk/",
+    },
 )
 
 
@@ -186,7 +322,7 @@ def _build_offline_rows(max_rows: int) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for cc, _ in _COUNTRIES:
         for tpl in _PROGRAM_TEMPLATES:
-            program_id = f"OVERSEAS-{tpl['type'].replace('海外進出支援','').replace('対日投資','INV')[:8]}-{cc}-{abs(hash(tpl['name'])) % 9999:04d}"
+            program_id = f"OVERSEAS-{tpl['type'].replace('海外進出支援', '').replace('対日投資', 'INV')[:8]}-{cc}-{abs(hash(tpl['name'])) % 9999:04d}"
             rows.append(
                 {
                     "program_id": program_id,

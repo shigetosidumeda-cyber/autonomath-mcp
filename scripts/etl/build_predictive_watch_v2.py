@@ -267,7 +267,7 @@ def main(argv: list[str] | None = None) -> int:
                         "db": str(db_path),
                         "queued": 0,
                         "expired": 0,
-                        "by_type": {wt: 0 for wt in _WATCH_TYPES},
+                        "by_type": dict.fromkeys(_WATCH_TYPES, 0),
                     },
                     ensure_ascii=False,
                 )

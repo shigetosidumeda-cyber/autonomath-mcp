@@ -62,20 +62,21 @@ SCREENSHOT_DIR = Path("/tmp/jpcite_amendment_pw")
 FETCH_TIMEOUT_S = 12.0
 
 ISO_DATE_KEYS = (
-    "expected_start", "start_date", "effective_from", "effective_date",
-    "start_at", "施行日", "適用日",
+    "expected_start",
+    "start_date",
+    "effective_from",
+    "effective_date",
+    "start_at",
+    "施行日",
+    "適用日",
 )
-ISO_DATE_RE = re.compile(
-    r"\b(20[2-3]\d)[-/.](0?[1-9]|1[0-2])(?:[-/.](0?[1-9]|[12]\d|3[01]))?\b"
-)
+ISO_DATE_RE = re.compile(r"\b(20[2-3]\d)[-/.](0?[1-9]|1[0-2])(?:[-/.](0?[1-9]|[12]\d|3[01]))?\b")
 WAREKI_DATE_RE = re.compile(
     r"(令和|平成)\s*(元|[0-9一二三四五六七八九十]{1,3})\s*年(?:度)?"
     r"(?:\s*([0-9一二三四五六七八九十]{1,2})\s*月"
     r"(?:\s*([0-9一二三四五六七八九十]{1,2})\s*日?)?)?"
 )
-URL_YEAR_RE = re.compile(
-    r"(?:fy|/R|/r|/2026|/2025|/2027|/2028|year=)(20[2-3]\d|[1-9])"
-)
+URL_YEAR_RE = re.compile(r"(?:fy|/R|/r|/2026|/2025|/2027|/2028|year=)(20[2-3]\d|[1-9])")
 EFFECTIVE_LABEL_RE = re.compile(
     r"(?:施行日|施行|適用日|適用|発効日|発効|有効期間開始日|有効日)\s*[:：]?\s*"
     r"((?:令和|平成|昭和)\s*(?:元|[0-9一二三四五六七八九十]{1,3})\s*年"
@@ -87,8 +88,19 @@ EFFECTIVE_LABEL_RE = re.compile(
 
 WAREKI_EPOCH = {"令和": 2018, "平成": 1988, "昭和": 1925}
 KANJI_DIGITS = {
-    "元": 1, "〇": 0, "零": 0, "一": 1, "二": 2, "三": 3, "四": 4,
-    "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10,
+    "元": 1,
+    "〇": 0,
+    "零": 0,
+    "一": 1,
+    "二": 2,
+    "三": 3,
+    "四": 4,
+    "五": 5,
+    "六": 6,
+    "七": 7,
+    "八": 8,
+    "九": 9,
+    "十": 10,
 }
 
 logger = logging.getLogger("datafill_amendment_snapshot_v2")
@@ -257,12 +269,17 @@ def main() -> int:
     p.add_argument("--apply", action="store_true")
     p.add_argument("--limit", type=int, default=0)
     p.add_argument("--include-observed", action="store_true")
-    p.add_argument("--body-fetch", action="store_true",
-                   help="enable v2 pass 5 (body fetch + regex)")
+    p.add_argument(
+        "--body-fetch", action="store_true", help="enable v2 pass 5 (body fetch + regex)"
+    )
     p.add_argument("--use-playwright", action="store_true")
     p.add_argument("--max-fetch", type=int, default=200)
-    p.add_argument("--target-dated", type=int, default=13_866,
-                   help="early-exit once N updates queued (default 95%% × 14,596)")
+    p.add_argument(
+        "--target-dated",
+        type=int,
+        default=13_866,
+        help="early-exit once N updates queued (default 95%% × 14,596)",
+    )
     args = p.parse_args()
 
     if not args.dry_run and not args.apply:
@@ -280,9 +297,7 @@ def main() -> int:
     conn.row_factory = sqlite3.Row
     try:
         cur = conn.cursor()
-        cur.execute(
-            "SELECT COUNT(*) total, COUNT(effective_from) dated FROM am_amendment_snapshot"
-        )
+        cur.execute("SELECT COUNT(*) total, COUNT(effective_from) dated FROM am_amendment_snapshot")
         row = cur.fetchone()
         total, dated = row[0], row[1]
         ratio = (dated / total) if total else 0

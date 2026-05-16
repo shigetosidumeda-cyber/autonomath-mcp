@@ -94,9 +94,7 @@ _META_DATE_RE = re.compile(
     r"([^\"']+)[\"']",
     re.IGNORECASE,
 )
-_TIME_TAG_RE = re.compile(
-    r"<time[^>]*?\bdatetime\s*=\s*[\"']([^\"']+)[\"']", re.IGNORECASE
-)
+_TIME_TAG_RE = re.compile(r"<time[^>]*?\bdatetime\s*=\s*[\"']([^\"']+)[\"']", re.IGNORECASE)
 
 # --- Pass 6: aggressive 和暦 -----------------------------------------------
 # Bare "R8.4.1" / "R8/4/1" / "R8-4" / "令和8" / "令和8年" without label.
@@ -109,7 +107,9 @@ _BARE_REIWA_YEAR_ONLY = re.compile(
 )
 
 # --- Pass 7: filename / slug ------------------------------------------------
-_SLUG_DATE_8DIGIT = re.compile(r"(?<![0-9])(20[2-3][0-9])(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(?![0-9])")
+_SLUG_DATE_8DIGIT = re.compile(
+    r"(?<![0-9])(20[2-3][0-9])(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])(?![0-9])"
+)
 _SLUG_REIWA = re.compile(
     r"(?:reiwa|R)[_\-]?([0-9]{1,2})[_\-]?([0-9]{1,2})(?:[_\-]?([0-9]{1,2}))?",
     re.IGNORECASE,
@@ -141,9 +141,7 @@ def parse_bare_reiwa(text: str) -> str | None:
         return full
     m = _BARE_REIWA_RE.search(text)
     if m:
-        return _v2_wareki_to_iso(
-            "令和", m.group(1), m.group(2), m.group(3) if m.group(3) else None
-        )
+        return _v2_wareki_to_iso("令和", m.group(1), m.group(2), m.group(3) if m.group(3) else None)
     yo = _BARE_REIWA_YEAR_ONLY.search(text)
     if yo:
         return _v2_wareki_to_iso("令和", yo.group(1), "4", "1")
@@ -160,9 +158,7 @@ def parse_slug_filename(url: str | None) -> str | None:
         return f"{m.group(1)}-{m.group(2)}-{m.group(3)}"
     rm = _SLUG_REIWA.search(tail)
     if rm:
-        return _v2_wareki_to_iso(
-            "令和", rm.group(1), rm.group(2) or "4", rm.group(3)
-        )
+        return _v2_wareki_to_iso("令和", rm.group(1), rm.group(2) or "4", rm.group(3))
     return None
 
 
@@ -206,7 +202,7 @@ def main() -> int:
         "--observed-as-effective",
         action="store_true",
         help="Pass 8 backstop. Treats observed_at as a coarse effective_from "
-             "with source='observed_coarse' (downstream MUST downgrade trust).",
+        "with source='observed_coarse' (downstream MUST downgrade trust).",
     )
     p.add_argument("--target-dated", type=int, default=13_866)
     args = p.parse_args()
@@ -224,9 +220,7 @@ def main() -> int:
     conn.row_factory = sqlite3.Row
     try:
         cur = conn.cursor()
-        cur.execute(
-            "SELECT COUNT(*) total, COUNT(effective_from) dated FROM am_amendment_snapshot"
-        )
+        cur.execute("SELECT COUNT(*) total, COUNT(effective_from) dated FROM am_amendment_snapshot")
         row = cur.fetchone()
         total, dated = row[0], row[1]
         baseline_ratio = (dated / total) if total else 0
@@ -255,7 +249,10 @@ def main() -> int:
             body: str = ""
 
             iso, src = extract_effective_v3(
-                r["raw_snapshot_json"], url, r["observed_at"], body=None,
+                r["raw_snapshot_json"],
+                url,
+                r["observed_at"],
+                body=None,
                 allow_observed=False,
             )
             if iso is None and args.body_fetch and fetch_count < args.max_fetch and url:
@@ -266,7 +263,10 @@ def main() -> int:
                     body = _v2_fetch_body(url, args.use_playwright) or ""
                     body_cache[url] = body
                 iso, src = extract_effective_v3(
-                    r["raw_snapshot_json"], url, r["observed_at"], body=body,
+                    r["raw_snapshot_json"],
+                    url,
+                    r["observed_at"],
+                    body=body,
                     allow_observed=False,
                 )
             if iso is None and args.observed_as_effective and r["observed_at"]:

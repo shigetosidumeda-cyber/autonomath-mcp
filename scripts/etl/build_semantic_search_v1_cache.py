@@ -42,12 +42,14 @@ if str(_REPO) not in sys.path:
 try:
     from jpintel_mcp._jpcite_env_bridge import get_flag  # type: ignore
 except Exception:  # pragma: no cover - tolerated in test bench
+
     def get_flag(*names: str, default: str | None = None) -> str | None:
         for n in names:
             v = os.environ.get(n)
             if v is not None:
                 return v
         return default
+
 
 LOG = logging.getLogger("build_semantic_search_v1_cache")
 
