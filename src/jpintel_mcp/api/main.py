@@ -1695,7 +1695,7 @@ def create_app() -> FastAPI:
             "## About\n\n"
             "Canonical site: https://jpcite.com. "
             "MCP package: `pip install autonomath-mcp` (PyPI). "
-            "MCP exposes 155 tools in the standard configuration.\n\n"
+            "MCP exposes 169 tools in the standard configuration.\n\n"
             "---\n\n"
             "## 日本語要約 (JP summary)\n\n"
             "jpcite は **11,601 件の検索可能な補助金 / 融資 / 税制 / 認定** "
