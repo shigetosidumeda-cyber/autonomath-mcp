@@ -34,7 +34,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-import boto3
+from scripts.aws_credit_ops._aws import get_session
 
 DATABASE = "jpcite_credit_2026_05"
 WORKGROUP = "jpcite-credit-2026-05"
@@ -46,18 +46,24 @@ MAX_POLL_SEC = 1800
 
 PROFILE = os.environ.get("AWS_PROFILE", "bookyou-recovery")
 REGION = os.environ.get("AWS_REGION", "ap-northeast-1")
-BIG_Q_DIR = Path(__file__).resolve().parent.parent.parent / "infra" / "aws" / "athena" / "big_queries"
+BIG_Q_DIR = (
+    Path(__file__).resolve().parent.parent.parent / "infra" / "aws" / "athena" / "big_queries"
+)
 
 QUERIES = [
     # (label, file_name, kind)
-    ("houjin_360_full_crossjoin",        "houjin_360_full_crossjoin.sql",        "legacy"),
-    ("program_lineage_full_trace",       "program_lineage_full_trace.sql",       "legacy"),
-    ("acceptance_probability_cohort_groupby", "acceptance_probability_cohort_groupby.sql", "legacy"),
-    ("enforcement_industry_heatmap",     "enforcement_industry_heatmap.sql",     "legacy"),
+    ("houjin_360_full_crossjoin", "houjin_360_full_crossjoin.sql", "legacy"),
+    ("program_lineage_full_trace", "program_lineage_full_trace.sql", "legacy"),
+    (
+        "acceptance_probability_cohort_groupby",
+        "acceptance_probability_cohort_groupby.sql",
+        "legacy",
+    ),
+    ("enforcement_industry_heatmap", "enforcement_industry_heatmap.sql", "legacy"),
     ("cross_source_identity_resolution", "cross_source_identity_resolution.sql", "legacy"),
-    ("cross_packet_correlation",         "cross_packet_correlation.sql",         "new"),
-    ("time_series_burn_pattern",         "time_series_burn_pattern.sql",         "new"),
-    ("entity_resolution_full",           "entity_resolution_full.sql",           "new"),
+    ("cross_packet_correlation", "cross_packet_correlation.sql", "new"),
+    ("time_series_burn_pattern", "time_series_burn_pattern.sql", "new"),
+    ("entity_resolution_full", "entity_resolution_full.sql", "new"),
 ]
 
 
@@ -83,7 +89,9 @@ def poll_until_done(athena: Any, exec_id: str) -> dict[str, Any]:
     """Block until query reaches a terminal state. Returns the QueryExecution dict."""
     waited = 0
     while waited <= MAX_POLL_SEC:
-        info: dict[str, Any] = athena.get_query_execution(QueryExecutionId=exec_id)["QueryExecution"]
+        info: dict[str, Any] = athena.get_query_execution(QueryExecutionId=exec_id)[
+            "QueryExecution"
+        ]
         state = info["Status"]["State"]
         if state in {"SUCCEEDED", "FAILED", "CANCELLED"}:
             return info
@@ -119,7 +127,7 @@ def summarize_run(label: str, kind: str, info: dict[str, Any]) -> dict[str, Any]
 
 
 def main() -> int:
-    session = boto3.Session(profile_name=PROFILE, region_name=REGION)
+    session = get_session(region_name=REGION, profile_name=PROFILE)
     athena = session.client("athena")
 
     rows: list[dict[str, Any]] = []
@@ -140,7 +148,7 @@ def main() -> int:
         rows.append(row)
         print(
             f"[done] {label:42s} state={row.get('state'):10s} "
-            f"bytes_mb={row.get('bytes_mb','n/a'):>10}  cost_usd={row.get('cost_usd','n/a')}  ms={row.get('total_ms','n/a')}",
+            f"bytes_mb={row.get('bytes_mb', 'n/a'):>10}  cost_usd={row.get('cost_usd', 'n/a')}  ms={row.get('total_ms', 'n/a')}",
             flush=True,
         )
 
@@ -161,7 +169,10 @@ def main() -> int:
     out_path = Path("out/athena_real_burn_2026_05_16.json")
     out_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\n[summary] wrote {out_path}", flush=True)
-    print(f"[summary] total bytes scanned: {total_bytes} ({summary['total_bytes_gb']} GiB)", flush=True)
+    print(
+        f"[summary] total bytes scanned: {total_bytes} ({summary['total_bytes_gb']} GiB)",
+        flush=True,
+    )
     print(f"[summary] total burn (USD):    ${total_cost}", flush=True)
     return 0
 
