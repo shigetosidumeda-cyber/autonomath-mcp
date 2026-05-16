@@ -1,9 +1,22 @@
-# AWS Canary Smoke PASS Closeout (2026-05-16 12:42 JST)
+# AWS Canary Run Closeout (2026-05-16 PM)
 
-> **Status: Phase 3 smoke DONE — all 7 J0X jobs SUCCEEDED.**
-> Pipeline e2e (CodeBuild → ECR → Batch Fargate → crawler → S3) validated
-> with 82 artifacts (4.3 MB) and **$0 actual cost** (Fargate Spot tiny job
-> below billing threshold).
+> **Status: Phase 3 smoke DONE / Phase 4 deep+ultradeep IN_PROGRESS / Phase 5 smart analysis PLANNED.**
+> Phase 3 smoke: 7/7 J0X SUCCEEDED, 82 artifacts (4.3 MB), **$0 actual cost**
+> (Fargate Spot tiny job below billing threshold).
+> Phase 4: 7 deep J0X (2,726 URL) → interim **8 SUCCEEDED / 28 FAILED** (investigating),
+> 7 ultradeep J0X submitted (**19,792 URL / $17K budget**), EventBridge schedule
+> LIVE `rate(10 minutes)`, SNS apne1 cross-region fix applied, SF Catch → CloudWatch
+> metric (no email dependency), SageMaker GPU smoke on `ml.g4dn.xlarge` IN_PROGRESS,
+> EC2 Spot CE active via `jpcite-crawl-ec2-cpu` job def (J06 EC2 RUNNING).
+> Phase 5: J08 官報 / J09 裁判所 / J10 法務局公告 / J11 e-Stat manifests planned,
+> 4 cross-analysis pipelines (法人360 166K / 制度lineage 11,601 / 採択確率 cohort 225K /
+> full-corpus SageMaker embedding 5 tables ~750M tokens), 5 big Athena cross-join
+> queries ($50-500 each), outcome catalog expanded 14 → 30.
+
+> Doc renamed from `AWS_CANARY_SMOKE_PASS_2026_05_16.md` on 2026-05-16 PM to
+> reflect Phase 4+5 scope expansion. Phase 3 smoke pass record (§1-§5) remains
+> the historical anchor; new §8 / §9 capture Phase 4 deep+ultradeep progression
+> and Phase 5 smart analysis layer.
 
 last_updated: 2026-05-16
 
@@ -13,7 +26,10 @@ companion quickstart: `docs/_internal/AWS_CANARY_OPERATOR_QUICKSTART.md`
 infra closeout: `docs/_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md` (Phase 1+2)
 attestation template: `docs/_internal/AWS_CANARY_ATTESTATION_TEMPLATE.md`
 memory back-link: `project_jpcite_aws_canary_infra_live_2026_05_16` (SOT) /
+`project_jpcite_smart_analysis_pipeline_2026_05_16` (Phase 5 detail) /
+`feedback_aws_canary_burn_ramp_pattern` (canonical 4-stage ramp) /
 `feedback_docker_build_3iter_fix_saga` (3-iter lesson) /
+`feedback_aws_cross_region_sns_publish` (SNS apne1 fix) /
 `feedback_loop_promote_concern_separation` (Stream W lesson)
 
 ---
@@ -149,17 +165,18 @@ Four parallel axes to consume USD 19,500 in 3-5 days:
 
 ---
 
-## 6. Phase status table (post-Phase-3, updated 13:30 JST)
+## 6. Phase status table (post-Phase-3, updated PM after Phase 4+5 expansion)
 
 | phase | scope | status |
 | --- | --- | --- |
 | 1 | guardrail | **DONE** |
 | 2 | infrastructure | **DONE** |
 | 3 | smoke J01-J07 (7/7 SUCCEEDED, 82 artifacts, $0) | **DONE** (2026-05-16 12:42 JST) |
-| 4 | deep ramp (7 deep J0X submitted, 2,726 URLs, $9,200 budget, SNS apne1 fix + EventBridge rate(10m) LIVE) | **IN_PROGRESS** (2026-05-16 13:30 JST) |
-| 5 | drain + aggregate_run_ledger + Athena refresh | pending |
-| 6 | teardown_credit_run + verify_zero_aws | pending |
-| 7 | attestation emit + `aws_budget_canary_attestation` bind | pending |
+| 4 | deep + ultradeep ramp (7 deep 2,726 URL → **8 SUCCEEDED / 28 FAILED 調査中**, 7 ultradeep **19,792 URL / $17K budget**, SageMaker GPU smoke `g4dn.xlarge`, EC2 Spot CE `jpcite-crawl-ec2-cpu` job def, J06 EC2 RUNNING, SNS apne1 fix, EventBridge `rate(10 minutes)` LIVE, SF Catch → CW metric) | **IN_PROGRESS** (2026-05-16 PM) |
+| 5 | **smart analysis layer** (J08 官報 / J09 裁判所 / J10 法務局公告 / J11 e-Stat manifests + 4 cross-analysis pipeline = 法人360 166K / 制度lineage 11,601 / 採択確率cohort 225K / full-corpus SageMaker embedding 5 tables ~750M tokens + Athena 5 cross-join + outcome catalog 14→30) | **PLANNED** (Phase 4 後段で並走着地) |
+| 6 | drain + aggregate_run_ledger + Athena refresh | pending |
+| 7 | teardown_credit_run + verify_zero_aws | pending |
+| 8 | attestation emit + `aws_budget_canary_attestation` bind | pending |
 
 ---
 
@@ -188,5 +205,166 @@ Phase 3 smoke 終了 ~48 min 後の 13:30 JST に Phase 4 deep ramp を **LIVE s
 - DRY_RUN default remains the canonical safety net for teardown
   scripts; `--commit` required for live destructive operations.
 - artifact-only / no permanent runtime — full teardown after drain.
+
+---
+
+## 8. Phase 4 deep + ultradeep progression (2026-05-16 PM)
+
+### 8.1 Deep J0X interim — 8 SUCCEEDED / 28 FAILED 調査中
+
+7 deep J0X (`jpcite-crawl-heavy` 16 vCPU / 32 GB Fargate max, 2,726 URL,
+$9,200 budget) は interim **8 SUCCEEDED / 28 FAILED**。failure root cause
+は CloudWatch log + Batch describe-jobs で調査中。想定原因:
+
+- **OOM** (32 GB Fargate 上限 hit, heavy PDF Textract セッション)
+- **Textract throttle** (per-second `DetectDocumentText` cap, J06 ministry PDF 集中)
+- **upstream 429** (一部 source の同時並列 fetch 規制)
+- **IAM permission gap** (Phase 4 で初出の service combination)
+
+Failure 群は **CodeBuild round-trip 不要** な validate fix で個別 retry 予定。
+`feedback_docker_build_3iter_fix_saga` の **1-fix-at-a-time** 原則を踏襲、
+複数 fix を bundle しない。
+
+### 8.2 Ultradeep J0X submitted — 19,792 URL / $17K budget
+
+7 ultradeep J0X manifests を `data/aws_credit_jobs/ultradeep/` 配下に
+着地済、Batch submit 完了:
+
+- **累計 19,792 URL** (deep 2,726 → ultradeep 19,792、**7.3x scale-up**)
+- **累計 budget USD 17,000** (Phase 4 のメイン burn 軸、残 $19,500 をほぼ吸い切る規模)
+- SageMaker GPU embedding + Athena cross-join のための raw corpus を準備
+  する位置付け (Phase 5 への bridge)
+
+### 8.3 SF Catch → CloudWatch metric (no email dependency)
+
+SNS apne1 fix (`feedback_aws_cross_region_sns_publish`) の上に **email
+confirm に依存しない CloudWatch metric を Catch handler に挿入**:
+
+- Step Functions の Catch path が発火した時点で CW metric を put
+- metric filter + CW alarm で operator に届く形に切替
+- SNS email subscription pending の状態でも alarm pipeline が機能
+- launch readiness の blocker を 1 軸解消
+
+### 8.4 SageMaker GPU smoke (`ml.g4dn.xlarge`) IN_PROGRESS
+
+`ml.g4dn.xlarge` (~USD 0.74/hr) で SageMaker batch transform の smoke を起動。
+目的: J04 corp registry 系の embedding 軸を実 GPU で round-trip させ、
+Phase 5 full-corpus embedding (5 table / ~750M tokens) への scale-up
+信号を取得 (1 GPU smoke → 4 GPU `ml.g4dn.12xlarge` full batch transform)。
+
+### 8.5 EC2 Spot CE active — `jpcite-crawl-ec2-cpu` job def, J06 EC2 RUNNING
+
+EC2 Spot CE が VALID + active、`jpcite-crawl-ec2-cpu` job def 経由で
+**J06 EC2 RUNNING**:
+
+- Fargate Spot だけだと vCPU/memory に天井 (16 vCPU / 32 GB) があるため、
+  長時間 / 大量 memory 系 (ministry PDF Textract full sweep / J04 corp
+  registry quarterly walk) を EC2 Spot 側に逃がす二系統設計。
+- failure mode 切り分け (Fargate Spot 側の vCPU 上限 hit か / 単純な
+  upstream 429 か) を 2 CE で観測可能化。
+
+---
+
+## 9. Phase 5 smart analysis layer (PLANNED, 2026-05-16 PM 追加要請)
+
+Phase 4 で得た raw artifact (smoke 82 + deep 数百 + ultradeep 数千) を
+**smart analysis layer** に lift する Phase 5。設計詳細は
+memory `project_jpcite_smart_analysis_pipeline_2026_05_16` に集約、
+本 doc では index のみ。
+
+### 9.1 新 J0X manifests (J08-J11)
+
+- **J08 官報** — `data/aws_credit_jobs/J08_kanpou_gazette.json` 着地済、
+  官報 PDF / HTML を Textract で structured 抽出 (税制改正告示 /
+  行政処分公告 / 入札告示 の 3 軸)。
+- **J09 裁判所** — 裁判所判例 / 判決文 full-text walk、`court_decisions`
+  (2,065 行) を 5,000+ に拡張、`am_law_article` への bridge。
+- **J10 法務局公告** — `data/aws_credit_jobs/ultradeep/J08_ultradeep_kanpou_matrix.json`
+  着地済、商業登記 / 不動産登記 / 各種公告系 cross-matrix、法人 360°
+  pipeline の input 拡張。
+- **J11 e-Stat** — 統計表 + メタデータ周回、Dim N anonymized query (k=5) /
+  Dim O explainable fact (Ed25519 sign) の network-effect raw 化。
+
+### 9.2 4 cross-analysis pipeline
+
+1. **法人360° packet pipeline (166K corporates)** —
+   `houjin_master` × `invoice_registrants` × `enforcement_cases` ×
+   `am_amendment_snapshot` × `case_studies` を 1 packet/法人 で pre-compute,
+   Stripe metered ¥3/req per call、`estimated_price_jpy` ¥900-¥1,500。
+   est. cost **~$300-500**。
+2. **制度 lineage packet pipeline (11,601 programs)** —
+   `programs` × `am_amendment_diff` × `am_amendment_snapshot` ×
+   `program_law_refs` × `am_law_article` で各制度 5 年系譜を 1 packet 化,
+   time-machine (Dim Q) `as_of` param と connect。est. cost **~$140-330**。
+3. **採択確率 cohort model (225K cohorts)** —
+   `case_studies` × `am_industry_jsic` × `am_target_profile` ×
+   `am_region` × `programs` で cohort 別 base rate 統計推定、Dim N の
+   k=5 anonymity + 信頼区間付き。est. cost **~$55-165**。
+4. **Full-corpus SageMaker embedding (5 tables, ~750M tokens)** —
+   `programs` / `laws` + `am_law_article` / `court_decisions` /
+   `am_entity_facts` / `case_studies` を GPU batch transform で vector 化,
+   `bge-m3` or `e5-mistral` (multilingual, 1024 dim) on
+   `ml.g4dn.12xlarge` (4 GPU, $7.45/hr) × ~70 hr。est. cost **~$520-750**。
+
+### 9.3 Big Athena cross-join queries (5 queries, $50-500 each)
+
+| # | join surface | scan size 概算 | est. cost |
+| --- | --- | --- | --- |
+| 1 | programs × law_articles × amendment_diff | 30-60 GB | $150-300 |
+| 2 | houjin × invoice × enforcement | 80-150 GB (zenken bulk) | $400-750 |
+| 3 | cases × programs × industry_jsic | 5-15 GB | $25-75 |
+| 4 | programs × tax_rulesets × law_articles | 10-25 GB | $50-125 |
+| 5 | bids × programs × houjin | 8-20 GB | $40-100 |
+
+合計 **$665-1,350 budget**、ultradeep budget $17K の中で吸収可能。
+
+### 9.4 Outcome catalog expand 14 → 30
+
+既存 14 outcome contract (`agent_runtime/contracts.py` 19 Pydantic + 14
+OutcomeContract) を **30 へ拡張**。追加 16 outcome は Phase 5 smart
+analysis 軸 (法人360 / 制度lineage / 採択確率 / cross-join 系) に紐付く
+高付加価値 packet、`estimated_price_jpy` も ¥900-¥1,500 band で見直し。
+詳細 catalog は `project_jpcite_smart_analysis_pipeline_2026_05_16` §
+"Outcome catalog expand 14 → 30"。
+
+### 9.5 JPCIR packet contract reuse
+
+新規 contract は立てない。Wave 50 RC1 で確立した
+`agent_runtime/contracts.py` の Pydantic envelope (`Evidence` /
+`Citation` / `OutcomeContract` / `Disclaimer` / `BillingHint` /
+`RateLimitHint` 等) を smart analysis output の正典 schema として再利用。
+`scripts/check_schema_contract_parity.py` の双方向 round-trip 0 drift を
+Phase 5 packet にも適用、`schemas/jpcir/` 20 schema + 4 新規 gate
+artifact との整合を gate 化。
+
+### 9.6 Phase 5 estimated cost per layer
+
+| layer | cost band |
+| --- | --- |
+| J08-J11 4 manifest | **$500-1.5K** |
+| 法人360 (166K corp packets) | **$300-500** |
+| 制度lineage (11,601 program packets) | **$140-330** |
+| 採択確率 cohort (225K packets) | **$55-165** |
+| Full-corpus embedding (5 tables, 750M tokens) | **$520-750** |
+| Athena 5 cross-join | **$665-1.35K** |
+| Outcome 30 contracts (schema + sample gen) | **$50-150** |
+| **Phase 5 合計** | **~$1.7K-3.2K** |
+
+Phase 3+4+5 累計 **~$5.6K-10.5K**、effective cap $18.3K の **30-57%** を
+smart analysis で消化、残 $7.8K-12.7K は Phase 4 ultradeep の long-tail +
+Phase 6/7 drain + teardown attestation 予備に。
+
+### 9.7 Canonical burn ramp (smoke → deep → ultradeep → smart)
+
+各段 ~10x scale-up + per-phase validate gate (artifact / failure rate /
+cost band / `--unlock-live-aws-commands` opt-in) で次段 unlock。詳細は
+memory `feedback_aws_canary_burn_ramp_pattern`:
+
+| 段 | scope | URL | est. cost |
+| --- | --- | --- | --- |
+| smoke | 7 J0X tiny | 106 | **$0** |
+| deep | 7 J0X heavy | 2,726 | $300-800 |
+| ultradeep | 7 J0X ultradeep | 19,792 | $3K-5K |
+| smart | 4 pipeline + 5 Athena + outcome 30 | 750M token embedding / 225K cohort / 166K corp / 11,601 program | $1.7K-3.2K |
 
 last_updated: 2026-05-16
