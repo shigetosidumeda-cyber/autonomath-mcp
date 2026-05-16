@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
   "generated_at": "2026-05-16T19:35:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 212,
+  "total_outcomes": 192,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -4558,6 +4558,216 @@
       "estimated_tokens_saved": 9100,
       "public_source_family_ids": [],
       "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_360_summary_packet",
+      "display_name": "法人 360 summary packet (1-call all-registries baseline)",
+      "description": "法人 × 全公開レジストリの 1-call cross-source baseline rollup",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_compliance_360_packet",
+      "display_name": "法人 compliance 360 packet (行政処分 + 補助金不正使用 rollup)",
+      "description": "法人 × 行政処分 + 補助金等不正使用事案の 1-call compliance brief",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_subsidy_360_packet",
+      "display_name": "法人 subsidy 360 packet (採択履歴 cross-ministry rollup)",
+      "description": "法人 × 補助金採択履歴の 1-call grant rollup",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_court_360_packet",
+      "display_name": "法人 court 360 packet (判例 cross-court rollup)",
+      "description": "法人 × normalized_name 名寄せ 判例 1-call rollup",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_invoice_360_packet",
+      "display_name": "法人 invoice 360 packet (NTA invoice + 名寄せ cross-source rollup)",
+      "description": "法人 × NTA 適格請求書発行事業者 + houjin_master 名前合意 cross-source check",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_certification_360_packet",
+      "display_name": "法人 certification 360 packet (認定・許認可 relation rollup)",
+      "description": "法人 × 認定制度・許認可・前提条件 relation の 1-call descriptive rollup",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_succession_360_packet",
+      "display_name": "法人 succession 360 packet (M&A・事業承継 event rollup)",
+      "description": "法人 × successor_of / replaces / close_date 等の event rollup",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_partner_360_packet",
+      "display_name": "法人 partner 360 packet (取引相手 vendor / procurer rollup)",
+      "description": "法人 × 入札取引相手 双方向 (vendor / procurer) rollup",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_temporal_pulse_packet",
+      "display_name": "法人 temporal pulse packet (年次 event count proxy)",
+      "description": "法人 × 全 axis 年次 event count による activity proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "entity_risk_360_packet",
+      "display_name": "法人 risk 360 packet (HHI + grant intensity + violation count)",
+      "description": "法人 × HHI / grant intensity / violation count の descriptive risk rollup",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "houjin",
+      "subject_id_hint": "houjin_bangou",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
     }
   ],
   "filters": {
@@ -4676,7 +4886,17 @@
         "commodity_price_exposure_packet",
         "secondary_supplier_resilience_packet",
         "trade_credit_terms_packet",
-        "contract_manufacturing_intensity_packet"
+        "contract_manufacturing_intensity_packet",
+        "entity_360_summary_packet",
+        "entity_compliance_360_packet",
+        "entity_subsidy_360_packet",
+        "entity_court_360_packet",
+        "entity_invoice_360_packet",
+        "entity_certification_360_packet",
+        "entity_succession_360_packet",
+        "entity_partner_360_packet",
+        "entity_temporal_pulse_packet",
+        "entity_risk_360_packet"
       ],
       "heavy": [
         "application_strategy",

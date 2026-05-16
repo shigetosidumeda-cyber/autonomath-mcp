@@ -2409,5 +2409,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 360 summary packet (1-call all-registries baseline)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_360_summary_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 compliance 360 packet (行政処分 + 補助金不正使用 rollup)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_compliance_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 subsidy 360 packet (採択履歴 cross-ministry rollup)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_subsidy_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 court 360 packet (判例 cross-court rollup)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_court_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 invoice 360 packet (NTA invoice + 名寄せ cross-source rollup)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_invoice_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 certification 360 packet (認定・許認可 relation rollup)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_certification_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 succession 360 packet (M&A・事業承継 event rollup)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_succession_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 partner 360 packet (取引相手 vendor / procurer rollup)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_partner_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 temporal pulse packet (年次 event count proxy)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_temporal_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法人 risk 360 packet (HHI + grant intensity + violation count)",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "entity_risk_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

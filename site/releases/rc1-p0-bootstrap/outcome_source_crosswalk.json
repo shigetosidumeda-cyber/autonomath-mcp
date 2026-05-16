@@ -99,7 +99,17 @@
     "city_industry_diversification_packet",
     "prefecture_industry_inbound_packet",
     "regional_industry_export_intensity_packet",
-    "municipality_industry_cluster_packet"
+    "municipality_industry_cluster_packet",
+    "entity_360_summary_packet",
+    "entity_compliance_360_packet",
+    "entity_subsidy_360_packet",
+    "entity_court_360_packet",
+    "entity_invoice_360_packet",
+    "entity_certification_360_packet",
+    "entity_succession_360_packet",
+    "entity_partner_360_packet",
+    "entity_temporal_pulse_packet",
+    "entity_risk_360_packet"
   ],
   "crosswalk": [
     {
