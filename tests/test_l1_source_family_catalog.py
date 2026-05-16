@@ -32,10 +32,13 @@ from jpintel_mcp.l1_source_family import (
 # ---------------------------------------------------------------------------
 
 
-def test_registry_has_exactly_32_families() -> None:
-    """WAVE51_L1_SOURCE_FAMILY_CATALOG.md § 1 mandates 32 families."""
-    assert len(SOURCE_FAMILY_REGISTRY) == 32
-    assert len(list_source_families()) == 32
+def test_registry_has_exactly_36_families() -> None:
+    """WAVE51_L1_SOURCE_FAMILY_CATALOG.md § 1 mandates 36 families
+    (32 original + 4 J12-J15 extensions landed 2026-05-16:
+    kokkai_diet_minutes / edinet_xbrl_full / jpo_patent_gazette_full /
+    env_ministry_data)."""
+    assert len(SOURCE_FAMILY_REGISTRY) == 36
+    assert len(list_source_families()) == 36
 
 
 def test_registry_family_ids_are_unique() -> None:
@@ -67,9 +70,11 @@ def test_priority_distribution_matches_spec() -> None:
     pr = list_source_families_by_priority("P2_restricted")
     assert len(p0) == 6
     assert len(p1) == 17
-    assert len(p2) == 8
+    # P2 extended from 8 → 12 on 2026-05-16 with J12-J15 (kokkai_diet_minutes,
+    # edinet_xbrl_full, jpo_patent_gazette_full, env_ministry_data).
+    assert len(p2) == 12
     assert len(pr) == 1
-    assert len(p0) + len(p1) + len(p2) + len(pr) == 32
+    assert len(p0) + len(p1) + len(p2) + len(pr) == 36
 
 
 def test_p0_family_ids_match_spec() -> None:

@@ -80,9 +80,11 @@ for arg in "$@"; do
   esac
 done
 
-# Validate job_id pattern (J01..J07 or J0X-deep variants)
-if ! [[ "$JOB_ID" =~ ^J0[1-7](-deep)?$ ]]; then
-  echo "[submit_job] invalid job_id: $JOB_ID (expected J01..J07 or J0X-deep)" >&2
+# Validate job_id pattern (J01..J15 or J0X-deep variants)
+# J01-J07 (Wave 50 baseline) / J08-J11 (kanpou/courts/houmu/estat) /
+# J12-J15 (kokkai/edinet/jpo/env, added 2026-05-16)
+if ! [[ "$JOB_ID" =~ ^J(0[1-9]|1[0-5])(-deep)?$ ]]; then
+  echo "[submit_job] invalid job_id: $JOB_ID (expected J01..J15 or J0X-deep / J1X-deep)" >&2
   exit 64
 fi
 

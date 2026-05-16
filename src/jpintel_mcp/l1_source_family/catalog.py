@@ -1,7 +1,8 @@
 """Wave 51 L1 source family catalog — static registry (no I/O, no LLM).
 
-This module is the canonical Python representation of the 32 public-program
-source families listed in ``docs/_internal/WAVE51_L1_SOURCE_FAMILY_CATALOG.md``.
+This module is the canonical Python representation of the 36 public-program
+source families listed in ``docs/_internal/WAVE51_L1_SOURCE_FAMILY_CATALOG.md``
+(32 original + 4 J12-J15 extensions landed 2026-05-16).
 It exposes a Pydantic model (:class:`SourceFamily`) plus an immutable
 ``SOURCE_FAMILY_REGISTRY`` keyed by ``family_id``.
 
@@ -58,6 +59,8 @@ Ministry = Literal[
     "jisc",
     "jpo",
     "njss_plus_local",
+    "ndl",
+    "diet",
 ]
 
 Category = Literal[
@@ -92,6 +95,10 @@ Category = Literal[
     "statistics",
     "bids",
     "tax_personal",
+    "legislative_minutes",
+    "edinet_xbrl_disclosure",
+    "patent_gazette_full",
+    "environment_data_full",
 ]
 
 LicenseTag = Literal[
@@ -191,7 +198,7 @@ class SourceFamily(BaseModel):
 
 # ---------------------------------------------------------------------------
 # Catalog rows — must match docs/_internal/WAVE51_L1_SOURCE_FAMILY_CATALOG.md.
-# 32 families total: P0=6, P1=17, P2=8, P2_restricted=1.
+# 36 families total: P0=6, P1=17, P2=12 (8 original + 4 J12-J15), P2_restricted=1.
 # ---------------------------------------------------------------------------
 
 _RAW_CATALOG: tuple[SourceFamily, ...] = (
@@ -512,6 +519,47 @@ _RAW_CATALOG: tuple[SourceFamily, ...] = (
         priority="P2",
         notes="NJSS + 各自治体 入札公示 (中央+地方)",
     ),
+    # --- P2 (4 added 2026-05-16 J12-J15) ---
+    SourceFamily(
+        family_id="kokkai_diet_minutes",
+        ministry="ndl",
+        category="legislative_minutes",
+        license_tag="ogl_2_0",
+        access_mode="api_plus_website",
+        refresh_frequency="daily",
+        priority="P2",
+        notes="国会会議録 (NDL) + 衆参両院 + 47 都道府県議会 + 20 政令市議会 議事録 (J12)",
+    ),
+    SourceFamily(
+        family_id="edinet_xbrl_full",
+        ministry="fsa",
+        category="edinet_xbrl_disclosure",
+        license_tag="tos_only",
+        access_mode="api_plus_bulk",
+        refresh_frequency="daily",
+        priority="P2",
+        notes="EDINET XBRL 有価証券報告書 + 適時開示 (TDnet) full crawl (J13)",
+    ),
+    SourceFamily(
+        family_id="jpo_patent_gazette_full",
+        ministry="jpo",
+        category="patent_gazette_full",
+        license_tag="tos_only",
+        access_mode="website_plus_pdf",
+        refresh_frequency="weekly",
+        priority="P2",
+        notes="特許庁 公報 (特許/商標/意匠/実用新案) + J-PlatPat + 審判決定 + PCT/Madrid/Hague (J14)",
+    ),
+    SourceFamily(
+        family_id="env_ministry_data",
+        ministry="env",
+        category="environment_data_full",
+        license_tag="ogl_2_0",
+        access_mode="website_plus_api",
+        refresh_frequency="weekly",
+        priority="P2",
+        notes="環境省 環境情報 (大気・水質・土壌・廃棄物 + GHG + EIA + PRTR) (J15)",
+    ),
     # --- P2_restricted (1) ---
     SourceFamily(
         family_id="nta_pdb_personal",
@@ -539,7 +587,7 @@ def _build_registry(rows: tuple[SourceFamily, ...]) -> Mapping[str, SourceFamily
 
 
 SOURCE_FAMILY_REGISTRY: Mapping[str, SourceFamily] = _build_registry(_RAW_CATALOG)
-"""Immutable registry of all 32 Wave 51 L1 source families, keyed by family_id."""
+"""Immutable registry of all 36 Wave 51 L1 source families, keyed by family_id (32 original + 4 J12-J15 extensions)."""
 
 
 def list_source_families() -> tuple[SourceFamily, ...]:

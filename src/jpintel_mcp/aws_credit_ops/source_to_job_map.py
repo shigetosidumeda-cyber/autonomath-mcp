@@ -1,9 +1,11 @@
 """Canonical L1 source-family → AWS-credit job-id map.
 
 This module bridges the Wave 51 L1 source family catalog
-(:mod:`jpintel_mcp.l1_source_family.catalog` — 32 families) with the 9
-AWS credit consumption jobs (J01..J10, J09 covered by court_decisions
-in J01 sweep at present) declared in ``data/aws_credit_jobs/J*.json``.
+(:mod:`jpintel_mcp.l1_source_family.catalog` — 36 families post 2026-05-16
+J12-J15 extensions: 32 original + 4 new P2 families
+kokkai_diet_minutes / edinet_xbrl_full / jpo_patent_gazette_full /
+env_ministry_data) with the 15 AWS credit consumption jobs (J01..J15)
+declared in ``data/aws_credit_jobs/J*.json``.
 The mapping is consumed by the crawler container and by the Step
 Functions orchestrator so each fetched URL can be tagged with the
 originating L1 family and the per-source contract metadata
@@ -71,14 +73,19 @@ from jpintel_mcp.l1_source_family.catalog import (
 #: discovery) pin against this string.
 MAP_VERSION: Final[str] = "jpcite.aws_credit_ops.source_to_job_map.v1"
 
-#: Canonical job_id enumeration. Mirrors the eleven JSON files under
-#: ``data/aws_credit_jobs/`` (J01..J11). J09 is the dedicated
+#: Canonical job_id enumeration. Mirrors the fifteen JSON files under
+#: ``data/aws_credit_jobs/`` (J01..J15). J09 is the dedicated
 #: courts / judiciary / tribunal-decision fetcher (最高裁判決 last 5y +
 #: 国税不服審判所 公表裁決 + 公取委 排除/課徴金 + 中労委 命令検索 +
 #: 行政不服審査会答申 + 人事院 + 公害等調整委員会 + 知財高裁).
 #: J11 (added 2026-05-16) is the dedicated e-Stat 政府統計 + 47 都道府県
 #: + 20 政令市 + 中央省庁統計 + 国土地理院 ksj fetcher; rebinds the
 #: previously-J01-swept ``estat_statistics`` family.
+#: J12..J15 (added 2026-05-16 next session) extend the credit-run to:
+#: J12 = 国会会議録 (NDL) + 衆参両院 + 47 都道府県議会 + 20 政令市議会 議事録;
+#: J13 = EDINET XBRL 有価証券報告書 + 適時開示 (TDnet);
+#: J14 = 特許庁 公報 (特許/商標/意匠/実用新案) + J-PlatPat + 審判決定;
+#: J15 = 環境省 環境情報 (大気・水質・土壌・廃棄物 + GHG + EIA + PRTR).
 JobId = Literal[
     "J01_source_profile_sweep",
     "J02_nta_houjin_master_mirror",
@@ -91,10 +98,14 @@ JobId = Literal[
     "J09_courts_judiciary",
     "J10_houmu_registry_public",
     "J11_estat_statistics",
+    "J12_kokkai_minutes",
+    "J13_edinet_xbrl_full",
+    "J14_jpo_patent_gazette",
+    "J15_env_ministry_data",
 ]
 
-#: All eleven job_ids in declaration order. Tests gate on
-#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J11}``
+#: All fifteen job_ids in declaration order. Tests gate on
+#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J15}``
 #: so missing entries are caught structurally.
 ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J01_source_profile_sweep",
@@ -108,6 +119,10 @@ ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J09_courts_judiciary",
     "J10_houmu_registry_public",
     "J11_estat_statistics",
+    "J12_kokkai_minutes",
+    "J13_edinet_xbrl_full",
+    "J14_jpo_patent_gazette",
+    "J15_env_ministry_data",
 )
 
 
@@ -208,6 +223,34 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
     # 統計 CC-BY 4.0 compatible.
     "estat_statistics": "J11_estat_statistics",
     "njss_bids_aggregated": "J01_source_profile_sweep",
+    # --- J12: 国会会議録 (NDL) + 47 都道府県議会 + 20 政令市議会 ---
+    # ``kokkai_diet_minutes`` is a NEW P2 family added 2026-05-16
+    # alongside J12. It owns 国会会議録検索システム (kokkai.ndl.go.jp)
+    # + 衆参両院 議事録索引 + 47 都道府県議会 + 20 政令市議会 + 主要中核市
+    # 議事録 index の 1 元目の取得経路。 License = NDL OGL 2.0 +
+    # 各議会 per-condition.
+    "kokkai_diet_minutes": "J12_kokkai_minutes",
+    # --- J13: EDINET XBRL 有価証券報告書 + 適時開示 (TDnet) ---
+    # ``edinet_xbrl_full`` is a NEW P2 family added 2026-05-16 alongside
+    # J13. It owns disclosure.edinet-fsa.go.jp / TDnet 適時開示 daily
+    # index の 1 元目の取得経路。``edinet_disclosure`` (元 P0) は引き続き
+    # J01 sweep に残し、J13 は full bulk + XBRL parse の責務を担う。
+    "edinet_xbrl_full": "J13_edinet_xbrl_full",
+    # --- J14: 特許庁 公報 (特許 + 商標 + 意匠 + 実用新案) + J-PlatPat ---
+    # ``jpo_patent_gazette_full`` is a NEW P2 family added 2026-05-16
+    # alongside J14. It owns publication.jpo.go.jp + j-platpat.inpit.go.jp
+    # の週次公報 index 取得経路。``tokkyo_jpo`` (元 P2) は引き続き J01
+    # sweep に残し、J14 は full 公報 + 審判 + PCT/Madrid/Hague 国際出願
+    # の責務を担う。
+    "jpo_patent_gazette_full": "J14_jpo_patent_gazette",
+    # --- J15: 環境省 環境情報 (大気・水質・土壌・廃棄物 + GHG + EIA + PRTR) ---
+    # ``env_ministry_data`` is a NEW P2 family added 2026-05-16 alongside
+    # J15. It owns env.go.jp + soramame.env.go.jp + ghg-santeikohyo.env.go.jp
+    # の取得経路。``env_regulations`` (元 P1) は J06 で省庁 PDF として継続
+    # 取得、``mafg_climate`` (元 P2) は J01 sweep に残る。J15 は環境省
+    # 全局 (大気 / 水 / 土 / 廃棄物 / 地球 / 化学物質 / 自然 / アセス) の
+    # 規制業種 DD 軸を担う。
+    "env_ministry_data": "J15_env_ministry_data",
     # ``nta_pdb_personal`` (P2_restricted, license_tag=restricted) is
     # explicitly excluded — restricted data does not flow through the
     # AWS-credit window. verify_coverage asserts this row is unmapped.
@@ -217,7 +260,7 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
 #: Immutable view of the source → job map. Keyed by L1 ``family_id``,
 #: value is the canonical ``JobId`` that fetches the family.
 SOURCE_TO_JOB_MAP: Mapping[str, JobId] = MappingProxyType(_SOURCE_TO_JOB)
-"""Read-only ``family_id → JobId`` mapping for the eleven AWS-credit jobs."""
+"""Read-only ``family_id → JobId`` mapping for the fifteen AWS-credit jobs."""
 
 
 # ---------------------------------------------------------------------------
@@ -230,7 +273,7 @@ class CoverageReport(BaseModel):
 
     Emitted by :func:`verify_coverage`. The five counters are:
 
-    - ``total_families`` — size of ``SOURCE_FAMILY_REGISTRY`` (32 today).
+    - ``total_families`` — size of ``SOURCE_FAMILY_REGISTRY`` (36 today, post J12-J15).
     - ``mapped_families`` — how many catalog rows have a job binding.
     - ``unmapped_families`` — catalog rows with no job binding
       (``nta_pdb_personal`` only, since restricted data does not flow
@@ -270,7 +313,7 @@ def get_job_for_source(source_family_id: str) -> JobId | None:
     if source_family_id not in SOURCE_FAMILY_REGISTRY:
         raise KeyError(
             f"unknown L1 source family_id={source_family_id!r}; "
-            f"see jpintel_mcp.l1_source_family.catalog for the 32 valid ids"
+            f"see jpintel_mcp.l1_source_family.catalog for the 36 valid ids"
         )
     return _SOURCE_TO_JOB.get(source_family_id)
 
@@ -278,7 +321,7 @@ def get_job_for_source(source_family_id: str) -> JobId | None:
 def get_sources_for_job(job_id: str) -> list[str]:
     """Return all L1 family_ids fetched by ``job_id`` in catalog order.
 
-    Raises ``KeyError`` if ``job_id`` is not one of the eleven canonical
+    Raises ``KeyError`` if ``job_id`` is not one of the fifteen canonical
     jobs. The return order matches the L1 catalog declaration order so
     downstream Athena partition generation is deterministic.
     """
