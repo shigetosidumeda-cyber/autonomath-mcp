@@ -1102,6 +1102,173 @@ for _name, _prefix in _WAVE_64_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 60 — cross-industry macro packets (catalog 92 → 102). All 10 share
+# the jsic_major industry cohort with topic-specific macro proxy
+# aggregations (lifecycle stage / carbon reporting / competitor uptake /
+# DX subsidy chain / export program match / green investment eligibility /
+# industry compliance index / KPI funding correlation / patent subsidy
+# intersection / subsidy ROI estimate). Reuse the shared super-set columns;
+# topic-specific arrays land in raw_json.
+_WAVE_60_TABLES: list[tuple[str, str]] = [
+    ("packet_business_lifecycle_stage_v1", "business_lifecycle_stage_v1/"),
+    ("packet_carbon_reporting_compliance_v1", "carbon_reporting_compliance_v1/"),
+    ("packet_competitor_subsidy_uptake_v1", "competitor_subsidy_uptake_v1/"),
+    (
+        "packet_digital_transformation_subsidy_chain_v1",
+        "digital_transformation_subsidy_chain_v1/",
+    ),
+    ("packet_export_program_match_v1", "export_program_match_v1/"),
+    ("packet_green_investment_eligibility_v1", "green_investment_eligibility_v1/"),
+    ("packet_industry_compliance_index_v1", "industry_compliance_index_v1/"),
+    ("packet_kpi_funding_correlation_v1", "kpi_funding_correlation_v1/"),
+    ("packet_patent_subsidy_intersection_v1", "patent_subsidy_intersection_v1/"),
+    ("packet_subsidy_roi_estimate_v1", "subsidy_roi_estimate_v1/"),
+]
+
+for _name, _prefix in _WAVE_60_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 61 — financial / monetary cross packets (catalog 102 → 112). All 10
+# share the jsic_major industry cohort with financing-topic proxy
+# aggregations (angel tax uptake / cash runway estimate / cross-border
+# remittance / debt subsidy stack / funding-to-revenue ratio / invoice
+# payment velocity / M&A event signals / payroll subsidy intensity /
+# revenue volatility subsidy offset / trade finance eligibility).
+_WAVE_61_TABLES: list[tuple[str, str]] = [
+    ("packet_angel_tax_uptake_v1", "angel_tax_uptake_v1/"),
+    ("packet_cash_runway_estimate_v1", "cash_runway_estimate_v1/"),
+    ("packet_cross_border_remittance_v1", "cross_border_remittance_v1/"),
+    ("packet_debt_subsidy_stack_v1", "debt_subsidy_stack_v1/"),
+    ("packet_funding_to_revenue_ratio_v1", "funding_to_revenue_ratio_v1/"),
+    ("packet_invoice_payment_velocity_v1", "invoice_payment_velocity_v1/"),
+    ("packet_m_a_event_signals_v1", "m_a_event_signals_v1/"),
+    ("packet_payroll_subsidy_intensity_v1", "payroll_subsidy_intensity_v1/"),
+    (
+        "packet_revenue_volatility_subsidy_offset_v1",
+        "revenue_volatility_subsidy_offset_v1/",
+    ),
+    ("packet_trade_finance_eligibility_v1", "trade_finance_eligibility_v1/"),
+]
+
+for _name, _prefix in _WAVE_61_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 68 — supply chain cross packets (catalog 152 → 162). All 10 share the
+# jsic_major industry cohort with descriptive adoption_n + optional
+# amount_total_yen proxy covering vendor concentration / logistics partner /
+# inventory turnover / supplier credit rating / import dependency / JIT /
+# commodity exposure / secondary supplier resilience / trade credit terms /
+# contract manufacturing intensity. Reuse the shared super-set columns;
+# topic-specific fields land in raw_json.
+_WAVE_68_TABLES: list[tuple[str, str]] = [
+    ("packet_vendor_concentration_risk_v1", "vendor_concentration_risk_v1/"),
+    ("packet_logistics_partner_360_v1", "logistics_partner_360_v1/"),
+    ("packet_inventory_turnover_pattern_v1", "inventory_turnover_pattern_v1/"),
+    (
+        "packet_supplier_credit_rating_match_v1",
+        "supplier_credit_rating_match_v1/",
+    ),
+    ("packet_import_dependency_country_v1", "import_dependency_country_v1/"),
+    ("packet_just_in_time_intensity_v1", "just_in_time_intensity_v1/"),
+    ("packet_commodity_price_exposure_v1", "commodity_price_exposure_v1/"),
+    (
+        "packet_secondary_supplier_resilience_v1",
+        "secondary_supplier_resilience_v1/",
+    ),
+    ("packet_trade_credit_terms_v1", "trade_credit_terms_v1/"),
+    (
+        "packet_contract_manufacturing_intensity_v1",
+        "contract_manufacturing_intensity_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_68_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 66 — personal data / PII compliance cross packets (catalog 152 → 162).
+# All 10 share the jsic_major industry cohort with adoption_n proxy + topic-
+# specific 個情法 disclaimer + 2 PPC / e-Gov sources. Reuse the shared super-
+# set columns; subject_kind = jsic_major.
+_WAVE_66_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_pii_classification_compliance_v1",
+        "pii_classification_compliance_v1/",
+    ),
+    ("packet_data_breach_event_history_v1", "data_breach_event_history_v1/"),
+    (
+        "packet_opt_out_mechanism_disclosure_v1",
+        "opt_out_mechanism_disclosure_v1/",
+    ),
+    ("packet_third_party_data_transfer_v1", "third_party_data_transfer_v1/"),
+    (
+        "packet_anonymization_method_disclosure_v1",
+        "anonymization_method_disclosure_v1/",
+    ),
+    (
+        "packet_mandatory_breach_notice_sla_v1",
+        "mandatory_breach_notice_sla_v1/",
+    ),
+    ("packet_consent_collection_record_v1", "consent_collection_record_v1/"),
+    ("packet_data_retention_policy_v1", "data_retention_policy_v1/"),
+    ("packet_cross_border_pii_transfer_v1", "cross_border_pii_transfer_v1/"),
+    ("packet_sensitive_data_handling_v1", "sensitive_data_handling_v1/"),
+]
+
+for _name, _prefix in _WAVE_66_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 67 — technical infrastructure cross packets (catalog 162 → 172). All 10
+# share the jsic_major industry cohort with descriptive adoption_n covering
+# system outage incident log / cybersecurity certification / cloud dependency
+# disclosure / OSS license compliance / API uptime SLA / data center location
+# / DR capability / third-party audit / DevOps maturity / automation
+# intensity. Reuse the shared super-set columns; topic-specific fields land
+# in raw_json.
+_WAVE_67_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_system_outage_incident_log_v1",
+        "system_outage_incident_log_v1/",
+    ),
+    (
+        "packet_cybersecurity_certification_v1",
+        "cybersecurity_certification_v1/",
+    ),
+    (
+        "packet_cloud_dependency_disclosure_v1",
+        "cloud_dependency_disclosure_v1/",
+    ),
+    (
+        "packet_open_source_license_compliance_v1",
+        "open_source_license_compliance_v1/",
+    ),
+    (
+        "packet_api_uptime_sla_obligation_v1",
+        "api_uptime_sla_obligation_v1/",
+    ),
+    ("packet_data_center_location_v1", "data_center_location_v1/"),
+    (
+        "packet_disaster_recovery_capability_v1",
+        "disaster_recovery_capability_v1/",
+    ),
+    (
+        "packet_third_party_audit_certification_v1",
+        "third_party_audit_certification_v1/",
+    ),
+    ("packet_devops_maturity_signal_v1", "devops_maturity_signal_v1/"),
+    (
+        "packet_automation_intensity_index_v1",
+        "automation_intensity_index_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_67_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
