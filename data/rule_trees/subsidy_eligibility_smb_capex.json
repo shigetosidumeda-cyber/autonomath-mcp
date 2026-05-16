@@ -1,0 +1,76 @@
+{
+    "tree_id": "subsidy_eligibility_smb_capex",
+    "name": "中小企業設備投資補助金 適格性判定 (3-step chain)",
+    "description": "中小企業 ∧ 業種ガイドライン適合 ∧ 過去 3 年未受給 ∧ 設備投資 ¥XX 万以上 の連鎖判定を 1 call で評価。条件分岐ある eligibility 検証を agent 側 4-6 call から 1 call へ圧縮 (¥3/req × 6 → ¥3 で 6 倍経済化)。",
+    "version": "1.0.0",
+    "source_doc_id": "smb_capex_subsidy_v1",
+    "root": {
+        "node_id": "n_is_smb",
+        "condition_expr": "is_smb == true",
+        "rationale": "中小企業基本法 §2 の中小企業定義に該当するか (資本金 / 従業員数)",
+        "source_doc_id": "law:smb_basic_act_s2",
+        "true_branch": {
+            "node_id": "n_industry_eligible",
+            "condition_expr": "industry_code in ('manufacturing', 'wholesale', 'retail', 'services')",
+            "rationale": "業種ガイドライン (経産省 設備投資補助金 公募要領 §3) 適合業種であるか",
+            "source_doc_id": "meti:capex_subsidy_guideline_s3",
+            "true_branch": {
+                "node_id": "n_no_prior_award_3y",
+                "condition_expr": "years_since_last_award > 3",
+                "rationale": "公募要領 §5 過去 3 年以内の同種補助金未受給要件",
+                "source_doc_id": "meti:capex_subsidy_guideline_s5",
+                "true_branch": {
+                    "node_id": "n_capex_threshold",
+                    "condition_expr": "capex_jpy_man >= 100",
+                    "rationale": "公募要領 §7 設備投資 100 万円以上要件",
+                    "source_doc_id": "meti:capex_subsidy_guideline_s7",
+                    "true_branch": {
+                        "node_id": "n_eligible",
+                        "action": {
+                            "verdict": "eligible",
+                            "next_step": "公募要領 §10 申請書一式を準備",
+                            "estimated_amount_jpy_man_band": [50, 1000]
+                        },
+                        "rationale": "4 軸全て充足 — 申請可"
+                    },
+                    "false_branch": {
+                        "node_id": "n_capex_too_small",
+                        "action": {
+                            "verdict": "ineligible",
+                            "reason": "capex_below_threshold",
+                            "next_step": "100 万円未満の設備投資は対象外。小規模事業者持続化補助金を検討"
+                        },
+                        "rationale": "設備投資額が 100 万円未満"
+                    }
+                },
+                "false_branch": {
+                    "node_id": "n_recent_award_block",
+                    "action": {
+                        "verdict": "ineligible",
+                        "reason": "recent_award_within_3y",
+                        "next_step": "受給後 3 年経過まで待機、または別補助金 (例: ものづくり補助金) を検討"
+                    },
+                    "rationale": "過去 3 年以内に同種補助金受給歴あり"
+                }
+            },
+            "false_branch": {
+                "node_id": "n_industry_excluded",
+                "action": {
+                    "verdict": "ineligible",
+                    "reason": "industry_not_listed",
+                    "next_step": "対象外業種。業種別補助金 (農林水産業: MAFF / IT: IPA) を検討"
+                },
+                "rationale": "対象 4 業種に該当しない"
+            }
+        },
+        "false_branch": {
+            "node_id": "n_not_smb",
+            "action": {
+                "verdict": "ineligible",
+                "reason": "not_smb",
+                "next_step": "大企業向け補助金 (経産省 GX 等) を別途検討"
+            },
+            "rationale": "中小企業に該当しない"
+        }
+    }
+}
