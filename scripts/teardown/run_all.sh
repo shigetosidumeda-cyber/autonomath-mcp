@@ -41,6 +41,16 @@ STEPS=(
   "05_teardown_attestation.sh"
 )
 
+# Optional Wave 50 post-launch step: ECR attacker-repo cleanup. Only fires
+# when JPCITE_INCLUDE_ECR_CLEANUP=true (operator opts in after Awano-san
+# confirmation on the BookYou account-compromise ticket). Kept out of the
+# default flow so the planned-teardown sequence doesn't drag a compromise
+# remediation step every time it runs.
+if [[ "${JPCITE_INCLUDE_ECR_CLEANUP:-false}" == "true" ]]; then
+  log "JPCITE_INCLUDE_ECR_CLEANUP=true; appending 08_ecr_attacker_cleanup.sh"
+  STEPS+=("08_ecr_attacker_cleanup.sh")
+fi
+
 declare -a EXIT_CODES=()
 for s in "${STEPS[@]}"; do
   log "BEGIN ${s}"
@@ -60,15 +70,30 @@ for s in "${STEPS[@]}"; do
   fi
 done
 
+# Render the steps + exit_codes arrays dynamically so the optional ECR
+# cleanup step (08) is reflected in the rollup attestation when included.
+STEPS_JSON=""
+for s in "${STEPS[@]}"; do
+  STEPS_JSON+="\"${s}\","
+done
+STEPS_JSON="[${STEPS_JSON%,}]"
+
+EXIT_CODES_JSON=""
+for rc in "${EXIT_CODES[@]}"; do
+  EXIT_CODES_JSON+="${rc},"
+done
+EXIT_CODES_JSON="[${EXIT_CODES_JSON%,}]"
+
 cat > "${ROLLUP_JSON}" <<EOF
 {
   "orchestrator": "run_all",
   "run_id": "${RUN_ID}",
   "dry_run": ${DRY_RUN},
-  "steps": ["${STEPS[0]}", "${STEPS[1]}", "${STEPS[2]}", "${STEPS[3]}", "${STEPS[4]}"],
-  "exit_codes": [${EXIT_CODES[0]}, ${EXIT_CODES[1]}, ${EXIT_CODES[2]}, ${EXIT_CODES[3]}, ${EXIT_CODES[4]}],
+  "steps": ${STEPS_JSON},
+  "exit_codes": ${EXIT_CODES_JSON},
   "completed_at": "${TS}",
-  "attestation_dir": "${ATTESTATION_DIR}"
+  "attestation_dir": "${ATTESTATION_DIR}",
+  "ecr_cleanup_included": ${JPCITE_INCLUDE_ECR_CLEANUP:-false}
 }
 EOF
 

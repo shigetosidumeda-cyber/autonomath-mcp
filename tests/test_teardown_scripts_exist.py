@@ -38,6 +38,12 @@ EXPECTED_SCRIPTS: tuple[str, ...] = (
     "03_batch_playwright_drain.sh",
     "04_bedrock_ocr_stop.sh",
     "05_teardown_attestation.sh",
+    # Wave 50 post-launch addition: ECR attacker-repo cleanup (dual-region —
+    # satyr-model in us-east-1 + z-image-inference in ap-southeast-1) per the
+    # 2026-05-16 BookYou account compromise damage inventory. Sits AFTER the
+    # 01..05 sequence because it triggers only when JPCITE_INCLUDE_ECR_CLEANUP
+    # is set; not part of the default planned-teardown flow.
+    "08_ecr_attacker_cleanup.sh",
     "run_all.sh",
     "verify_zero_aws.sh",
 )

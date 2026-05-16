@@ -32,7 +32,7 @@ P0_K = p0 or facade or outcome_routing or csv_intake or release_capsule or agent
 
 .DEFAULT_GOAL := help
 
-.PHONY: help test test-p0 lint format typecheck site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop
+.PHONY: help test test-p0 lint format typecheck site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown
 
 help:
 	@echo "jpcite Makefile targets:"
@@ -54,6 +54,11 @@ help:
 	@echo "                    PANIC BUTTON. Stream I/E kill switch (AWS + CF rollback)."
 	@echo "                    DRY_RUN=true default. Live: DRY_RUN=false + JPCITE_EMERGENCY_TOKEN"
 	@echo "                    Usage: make emergency-stop MODE=aws|cf|both [PREV_CAPSULE_ID=...]"
+	@echo "  make teardown     Stream E planned-teardown 01..05 sequence."
+	@echo "                    DRY_RUN=true default. Live: DRY_RUN=false + JPCITE_TEARDOWN_LIVE_TOKEN"
+	@echo "                    Optional step 08 (ECR attacker-repo cleanup, dual-region):"
+	@echo "                    JPCITE_INCLUDE_ECR_CLEANUP=true to append 08_ecr_attacker_cleanup.sh"
+	@echo "                    (requires Awano-san confirmation on the compromise ticket)."
 	@echo "  make help         Show this list"
 
 test:
@@ -110,3 +115,15 @@ PREV_CAPSULE_ID ?=
 emergency-stop:
 	@echo "[emergency-stop] DRY_RUN=$${DRY_RUN:-true} MODE=$(MODE) PREV_CAPSULE_ID=$(PREV_CAPSULE_ID)"
 	bash scripts/ops/emergency_kill_switch.sh $(MODE) $(PREV_CAPSULE_ID)
+
+# Stream E planned-teardown orchestrator. Runs scripts/teardown/run_all.sh
+# which sequences 01_identity_budget_inventory.sh through 05_teardown_attestation.sh.
+# Defaults to DRY_RUN=true; live execution requires DRY_RUN=false +
+# JPCITE_TEARDOWN_LIVE_TOKEN.
+#
+# Optional Wave 50 post-launch step 08 (ECR attacker-repo cleanup) is appended
+# when JPCITE_INCLUDE_ECR_CLEANUP=true is set — only after Awano-san (AWS Japan)
+# confirms the BookYou account-compromise ticket can be closed.
+teardown:
+	@echo "[teardown] DRY_RUN=$${DRY_RUN:-true} JPCITE_INCLUDE_ECR_CLEANUP=$${JPCITE_INCLUDE_ECR_CLEANUP:-false}"
+	bash scripts/teardown/run_all.sh
