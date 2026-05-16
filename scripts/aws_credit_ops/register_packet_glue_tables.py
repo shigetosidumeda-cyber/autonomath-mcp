@@ -1075,6 +1075,33 @@ for _name, _prefix in _WAVE_63_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 64 — international / cross-border packets (catalog 142 → 152). Mix of
+# country (am_tax_treaty / jurisdiction) and jsic_major industry cohorts:
+# 5 country (FDI / DTT impact / bilateral trade / FDI security review /
+# international arbitration venue) + 5 industry (import/export license /
+# WTO subsidy compliance / EU GDPR overlap / US export control overlap /
+# cross-border data transfer). Reuse the shared super-set columns;
+# topic-specific arrays land in raw_json.
+_WAVE_64_TABLES: list[tuple[str, str]] = [
+    ("packet_foreign_direct_investment_v1", "foreign_direct_investment_v1/"),
+    ("packet_double_tax_treaty_impact_v1", "double_tax_treaty_impact_v1/"),
+    ("packet_import_export_license_v1", "import_export_license_v1/"),
+    ("packet_wto_subsidy_compliance_v1", "wto_subsidy_compliance_v1/"),
+    ("packet_eu_gdpr_overlap_v1", "eu_gdpr_overlap_v1/"),
+    ("packet_us_export_control_overlap_v1", "us_export_control_overlap_v1/"),
+    ("packet_bilateral_trade_program_v1", "bilateral_trade_program_v1/"),
+    ("packet_fdi_security_review_v1", "fdi_security_review_v1/"),
+    ("packet_cross_border_data_transfer_v1", "cross_border_data_transfer_v1/"),
+    (
+        "packet_international_arbitration_venue_v1",
+        "international_arbitration_venue_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_64_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
