@@ -77,12 +77,16 @@ env:
     scripts/ops/repo_hygiene_inventory.py
     scripts/ops/repo_value_asset_report.py
     scripts/ops/rum_aggregator.py
+    scripts/ops/run_preflight_simulations.py
     scripts/ops/self_improve_runner.py
     scripts/ops/seo_chunk_push.py
     scripts/ops/six_axis_sanity_check.py
     scripts/ops/status_probe.py
+    scripts/ops/sync_mcp_counts.py
+    scripts/ops/sync_release_manifest_sha.py
     scripts/ops/sync_workflow_targets.py
     scripts/ops/sync_workflow_targets_verify.py
+    scripts/ops/validate_release_capsule.py
     scripts/ops/verify_migration_targets.py
     scripts/ops/warmup_semantic_reranker.py
     scripts/ops/wave20_md_chunk_push.py
