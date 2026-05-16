@@ -44,9 +44,9 @@ def test_map_version_is_stable_constant() -> None:
     assert MAP_VERSION == "jpcite.aws_credit_ops.source_to_job_map.v1"
 
 
-def test_all_job_ids_has_seven_entries() -> None:
-    """The seven AWS-credit jobs J01..J07 must all appear in ALL_JOB_IDS."""
-    assert len(ALL_JOB_IDS) == 7
+def test_all_job_ids_has_eight_entries() -> None:
+    """The eight AWS-credit jobs J01..J08 must all appear in ALL_JOB_IDS."""
+    assert len(ALL_JOB_IDS) == 8
     assert set(ALL_JOB_IDS) == {
         "J01_source_profile_sweep",
         "J02_nta_houjin_master_mirror",
@@ -55,6 +55,7 @@ def test_all_job_ids_has_seven_entries() -> None:
         "J05_jgrants_public_program_acquisition",
         "J06_ministry_municipality_pdf_extraction",
         "J07_gbizinfo_public_business_signals",
+        "J08_kanpou_gazette",
     }
 
 
@@ -102,6 +103,19 @@ def test_every_job_has_at_least_one_mapped_source() -> None:
     for job_id in ALL_JOB_IDS:
         sources = get_sources_for_job(job_id)
         assert len(sources) >= 1, f"job {job_id!r} has zero mapped sources"
+
+
+def test_j08_kanpou_gazette_is_bound_to_gazette_official() -> None:
+    """J08 (官報) crawler must own the ``gazette_official`` L1 family.
+
+    Before J08 landed this row was pinned to the J01 sweep because no
+    per-source fetcher existed. J08 now owns the kanpou.npb.go.jp
+    surface end-to-end (daily index walk + per-notice receipt + PDL
+    v1.0 attribution).
+    """
+    assert get_job_for_source("gazette_official") == "J08_kanpou_gazette"
+    sources = set(get_sources_for_job("J08_kanpou_gazette"))
+    assert sources == {"gazette_official"}
 
 
 def test_only_nta_pdb_personal_is_unmapped() -> None:
@@ -232,7 +246,7 @@ def test_verify_coverage_counts_match_catalog_and_map() -> None:
     assert report.total_families == 32
     assert report.mapped_families == 31
     assert report.unmapped_families == ("nta_pdb_personal",)
-    # All seven jobs must appear in sources_per_job with ≥ 1 count.
+    # All eight jobs must appear in sources_per_job with ≥ 1 count.
     assert set(report.sources_per_job.keys()) == set(ALL_JOB_IDS)
     for job_id, count in report.sources_per_job.items():
         assert count >= 1, f"{job_id!r} has zero mapped families"

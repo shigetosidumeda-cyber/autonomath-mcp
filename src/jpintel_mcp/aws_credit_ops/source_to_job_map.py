@@ -1,9 +1,9 @@
 """Canonical L1 source-family → AWS-credit job-id map.
 
 This module bridges the Wave 51 L1 source family catalog
-(:mod:`jpintel_mcp.l1_source_family.catalog` — 32 families) with the 7
-AWS credit consumption jobs (J01..J07) declared in
-``data/aws_credit_jobs/J0{1..7}*.json``. The mapping is consumed by the
+(:mod:`jpintel_mcp.l1_source_family.catalog` — 32 families) with the 8
+AWS credit consumption jobs (J01..J08) declared in
+``data/aws_credit_jobs/J0{1..8}*.json``. The mapping is consumed by the
 crawler container and by the Step Functions orchestrator so each fetched
 URL can be tagged with the originating L1 family and the per-source
 contract metadata (``license_boundary``, ``robots_respect``,
@@ -15,7 +15,7 @@ Design constraints (mirrored from ``catalog.py``):
 - **Static only**: literal table at import time; no I/O, no DB, no LLM.
 - **No live HTTP**: this module imports neither ``httpx`` nor any
   scraping library.
-- **Authoritative job manifests**: ``data/aws_credit_jobs/J0{1..7}*.json``
+- **Authoritative job manifests**: ``data/aws_credit_jobs/J0{1..8}*.json``
   are the source of truth for the URLs each job sweeps. This map
   declares the *family-id ↔ job-id* relationship that the manifests
   reference at the ``source_family`` / ``publisher`` level.
@@ -34,10 +34,13 @@ Per ``docs/_internal/aws_credit_data_acquisition_jobs_agent.md``:
   subsidy general + local subsidy axis.
 - **J07** (gBizINFO public business signals) — business registry signal
   axis.
+- **J08** (官報 / kanpou gazette notice crawler) — official_gazette axis;
+  daily indexes from 国立印刷局 (kanpou.npb.go.jp) for 法人設立/解散/合併/
+  行政処分/告示/公告. PDL v1.0 attribution required.
 
 Use :func:`get_job_for_source` to look up the job_id for an L1 family,
 :func:`get_sources_for_job` to enumerate the families a job sweeps, and
-:func:`verify_coverage` to assert all seven jobs have at least one
+:func:`verify_coverage` to assert all eight jobs have at least one
 mapped source (a CI-gated invariant).
 """
 
@@ -60,7 +63,7 @@ from jpintel_mcp.l1_source_family.catalog import (
 #: discovery) pin against this string.
 MAP_VERSION: Final[str] = "jpcite.aws_credit_ops.source_to_job_map.v1"
 
-#: Canonical job_id enumeration. Mirrors the seven JSON files under
+#: Canonical job_id enumeration. Mirrors the eight JSON files under
 #: ``data/aws_credit_jobs/``.
 JobId = Literal[
     "J01_source_profile_sweep",
@@ -70,10 +73,11 @@ JobId = Literal[
     "J05_jgrants_public_program_acquisition",
     "J06_ministry_municipality_pdf_extraction",
     "J07_gbizinfo_public_business_signals",
+    "J08_kanpou_gazette",
 ]
 
-#: All seven job_ids in declaration order. Tests gate on
-#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J07}``
+#: All eight job_ids in declaration order. Tests gate on
+#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J08}``
 #: so missing entries are caught structurally.
 ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J01_source_profile_sweep",
@@ -83,6 +87,7 @@ ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J05_jgrants_public_program_acquisition",
     "J06_ministry_municipality_pdf_extraction",
     "J07_gbizinfo_public_business_signals",
+    "J08_kanpou_gazette",
 )
 
 
@@ -141,6 +146,13 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
     # houjin_meisho surface. Without this bind, J02 would have zero
     # mapped families.
     "sangyo_houjin_registry": "J02_nta_houjin_master_mirror",
+    # --- J08: 官報 (kanpou) gazette notice crawler ---
+    # gazette_official binds to J08, the dedicated gazette daily-index
+    # walker. Before J08 landed this row pointed at J01 (sweep-only)
+    # because no per-source fetcher existed; J08 now owns the
+    # kanpou.npb.go.jp surface end-to-end (daily index + per-notice
+    # receipt + PDL v1.0 attribution).
+    "gazette_official": "J08_kanpou_gazette",
     # Remaining P1/P2 families are profiled by J01 (their bulk fetch is
     # not in scope for the AWS-credit window).
     "soumu_local_gov": "J01_source_profile_sweep",
@@ -148,7 +160,6 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
     "unic_pmda": "J01_source_profile_sweep",
     "court_decisions": "J01_source_profile_sweep",
     "enforcement_actions": "J01_source_profile_sweep",
-    "gazette_official": "J01_source_profile_sweep",
     "jetro_invest": "J01_source_profile_sweep",
     "jisc_standards": "J01_source_profile_sweep",
     "tokkyo_jpo": "J01_source_profile_sweep",
