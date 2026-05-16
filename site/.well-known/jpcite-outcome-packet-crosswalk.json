@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 282,
+  "total_outcomes": 312,
   "wired_count": 119,
-  "pending_count": 163,
+  "pending_count": 193,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -4907,6 +4907,186 @@
       "status": "PENDING"
     },
     {
+      "outcome_id": "single_source_dependency_signal_packet",
+      "display_name": "業種別 single source dependency signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_single_source_dependency_signal_packets.py",
+      "glue_table": "packet_single_source_dependency_signal_v1"
+    },
+    {
+      "outcome_id": "commodity_concentration_risk_packet",
+      "display_name": "業種別 commodity concentration risk packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_commodity_concentration_risk_packets.py",
+      "glue_table": "packet_commodity_concentration_risk_v1"
+    },
+    {
+      "outcome_id": "geographic_supplier_concentration_packet",
+      "display_name": "業種別 geographic supplier concentration packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_geographic_supplier_concentration_packets.py",
+      "glue_table": "packet_geographic_supplier_concentration_v1"
+    },
+    {
+      "outcome_id": "supplier_subsidy_inheritance_packet",
+      "display_name": "業種別 supplier subsidy inheritance packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_supplier_subsidy_inheritance_packets.py",
+      "glue_table": "packet_supplier_subsidy_inheritance_v1"
+    },
+    {
+      "outcome_id": "logistics_disruption_resilience_packet",
+      "display_name": "業種別 logistics disruption resilience packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_logistics_disruption_resilience_packets.py",
+      "glue_table": "packet_logistics_disruption_resilience_v1"
+    },
+    {
+      "outcome_id": "supplier_certification_overlap_packet",
+      "display_name": "業種別 supplier certification overlap packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_supplier_certification_overlap_packets.py",
+      "glue_table": "packet_supplier_certification_overlap_v1"
+    },
+    {
+      "outcome_id": "supplier_lifecycle_risk_packet",
+      "display_name": "業種別 supplier lifecycle risk packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_supplier_lifecycle_risk_packets.py",
+      "glue_table": "packet_supplier_lifecycle_risk_v1"
+    },
+    {
+      "outcome_id": "payment_term_volatility_packet",
+      "display_name": "業種別 payment term volatility packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_payment_term_volatility_packets.py",
+      "glue_table": "packet_payment_term_volatility_v1"
+    },
+    {
+      "outcome_id": "upstream_violation_proxy_packet",
+      "display_name": "業種別 upstream violation proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_upstream_violation_proxy_packets.py",
+      "glue_table": "packet_upstream_violation_proxy_v1"
+    },
+    {
+      "outcome_id": "just_in_time_failure_proxy_packet",
+      "display_name": "業種別 just in time failure proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "package_kind": "evidence_packet",
+      "subject_kind": "jsic_major",
+      "wave": 80,
+      "wired_status": "pending",
+      "packet_generator": "scripts/aws_credit_ops/generate_just_in_time_failure_proxy_packets.py",
+      "glue_table": "packet_just_in_time_failure_proxy_v1"
+    },
+    {
       "outcome_id": "construction_license_overlay_packet",
       "display_name": "業種別 construction license overlay packet",
       "billable": true,
@@ -5505,6 +5685,206 @@
       "estimated_rows": 75301,
       "athena_query_template": "SELECT * FROM \"jpcite_credit_2026_05\".\"packet_regional_industry_violation_density_v1\" WHERE subject_id_hint = ? LIMIT 100",
       "status": "WIRED"
+    },
+    {
+      "outcome_id": "patent_filing_velocity_packet",
+      "display_name": "業種別 patent filing velocity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_patent_filing_velocity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "trademark_registration_intensity_packet",
+      "display_name": "業種別 trademark registration intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_trademark_registration_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "rd_subsidy_chain_packet",
+      "display_name": "業種別 R&D subsidy chain packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_rd_subsidy_chain_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "inventor_overlap_network_packet",
+      "display_name": "業種別 inventor overlap network packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_inventor_overlap_network_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "patent_litigation_history_packet",
+      "display_name": "業種別 patent litigation history packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_patent_litigation_history_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "standard_essential_patent_packet",
+      "display_name": "業種別 standard essential patent packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_standard_essential_patent_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "open_innovation_signal_packet",
+      "display_name": "業種別 open innovation signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_open_innovation_signal_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "academic_collaboration_intensity_packet",
+      "display_name": "業種別 academic collaboration intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_academic_collaboration_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "ip_monetization_pattern_packet",
+      "display_name": "業種別 IP monetization pattern packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_ip_monetization_pattern_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "ip_portfolio_quality_packet",
+      "display_name": "業種別 IP portfolio quality packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_ip_portfolio_quality_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
     }
   ],
   "gap_classification": {
@@ -5818,6 +6198,96 @@
       "subject_kind": "houjin",
       "wired_status": "pending",
       "wave": 69
+    },
+    {
+      "outcome_contract_id": "single_source_dependency_signal_packet",
+      "package_kind": "single_source_dependency_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_single_source_dependency_signal_packets.py",
+      "glue_table": "packet_single_source_dependency_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "commodity_concentration_risk_packet",
+      "package_kind": "commodity_concentration_risk_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_commodity_concentration_risk_packets.py",
+      "glue_table": "packet_commodity_concentration_risk_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "geographic_supplier_concentration_packet",
+      "package_kind": "geographic_supplier_concentration_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_geographic_supplier_concentration_packets.py",
+      "glue_table": "packet_geographic_supplier_concentration_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "supplier_subsidy_inheritance_packet",
+      "package_kind": "supplier_subsidy_inheritance_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_supplier_subsidy_inheritance_packets.py",
+      "glue_table": "packet_supplier_subsidy_inheritance_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "logistics_disruption_resilience_packet",
+      "package_kind": "logistics_disruption_resilience_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_logistics_disruption_resilience_packets.py",
+      "glue_table": "packet_logistics_disruption_resilience_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "supplier_certification_overlap_packet",
+      "package_kind": "supplier_certification_overlap_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_supplier_certification_overlap_packets.py",
+      "glue_table": "packet_supplier_certification_overlap_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "supplier_lifecycle_risk_packet",
+      "package_kind": "supplier_lifecycle_risk_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_supplier_lifecycle_risk_packets.py",
+      "glue_table": "packet_supplier_lifecycle_risk_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "payment_term_volatility_packet",
+      "package_kind": "payment_term_volatility_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_payment_term_volatility_packets.py",
+      "glue_table": "packet_payment_term_volatility_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "upstream_violation_proxy_packet",
+      "package_kind": "upstream_violation_proxy_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_upstream_violation_proxy_packets.py",
+      "glue_table": "packet_upstream_violation_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
+    },
+    {
+      "outcome_contract_id": "just_in_time_failure_proxy_packet",
+      "package_kind": "just_in_time_failure_proxy_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_just_in_time_failure_proxy_packets.py",
+      "glue_table": "packet_just_in_time_failure_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 80
     }
   ],
   "packet_generator_exists_but_glue_table_pending": [

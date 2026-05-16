@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
   "generated_at": "2026-05-16T20:30:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 282,
+  "total_outcomes": 312,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -5800,6 +5800,196 @@
       "estimated_token_size": 2000
     },
     {
+      "outcome_contract_id": "single_source_dependency_signal_packet",
+      "display_name": "業種別 single source dependency signal packet",
+      "description": "業種別 単一仕入先依存 (sole sourcing / key supplier exposure) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "commodity_concentration_risk_packet",
+      "display_name": "業種別 commodity concentration risk packet",
+      "description": "業種別 コモディティ集中 (raw material exposure / 原材料依存) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "geographic_supplier_concentration_packet",
+      "display_name": "業種別 geographic supplier concentration packet",
+      "description": "業種別 地域偏重 supplier 集中 (regional sourcing imbalance / 単一地域依存) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "supplier_subsidy_inheritance_packet",
+      "display_name": "業種別 supplier subsidy inheritance packet",
+      "description": "業種別 取引先補助金継承効果 (spill-over / 上流補助金の波及) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "logistics_disruption_resilience_packet",
+      "display_name": "業種別 logistics disruption resilience packet",
+      "description": "業種別 物流障害耐性 (海運ボトルネック / モーダルシフト準備度) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "supplier_certification_overlap_packet",
+      "display_name": "業種別 supplier certification overlap packet",
+      "description": "業種別 取引先認証 overlap (ISO/JIS/MSA 認証被覆度 / 取引先品質ベース) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "supplier_lifecycle_risk_packet",
+      "display_name": "業種別 supplier lifecycle risk packet",
+      "description": "業種別 取引先 lifecycle 倒産 risk (信用力 vintage / 倒産確率) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "payment_term_volatility_packet",
+      "display_name": "業種別 payment term volatility packet",
+      "description": "業種別 支払サイト volatility (DSO/DPO の振れ / 取引条件の不安定さ) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "upstream_violation_proxy_packet",
+      "display_name": "業種別 upstream violation proxy packet",
+      "description": "業種別 上流 violation 波及 (取引先コンプライアンス違反 contagion / supplier non-compliance) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "just_in_time_failure_proxy_packet",
+      "display_name": "業種別 just-in-time failure proxy packet",
+      "description": "業種別 JIT 障害 proxy (かんばん方式 失敗確率 / 在庫レス operation 脆弱性) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
       "outcome_contract_id": "construction_license_overlay_packet",
       "display_name": "業種別 construction license overlay packet",
       "description": "業種別 建設業許可 overlay 兆候 (採択密度 proxy) descriptive overlay",
@@ -6184,6 +6374,196 @@
       "outcome_contract_id": "conflict_mineral_disclosure_packet",
       "display_name": "業種別 conflict mineral disclosure packet",
       "description": "業種別 紛争鉱物 (3TG + Cobalt / Dodd-Frank §1502 / EU CMR / OECD DD / RMI CMRT) descriptive proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "patent_filing_velocity_packet",
+      "display_name": "業種別 patent filing velocity packet",
+      "description": "業種別 特許出願 velocity / 件数 / 増減 trend (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "trademark_registration_intensity_packet",
+      "display_name": "業種別 trademark registration intensity packet",
+      "description": "業種別 商標登録件数 / 区分指定 / 更新率 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "rd_subsidy_chain_packet",
+      "display_name": "業種別 R&D subsidy chain packet",
+      "description": "業種別 NEDO / JST / AMED / 経産省 GX / ものづくり R&D 多段獲得 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "inventor_overlap_network_packet",
+      "display_name": "業種別 inventor overlap network packet",
+      "description": "業種別 発明者共起 / 共同発明者 network / 移籍 chain (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "patent_litigation_history_packet",
+      "display_name": "業種別 patent litigation history packet",
+      "description": "業種別 特許侵害訴訟 / 無効審判 / 差止 / 損害賠償 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "standard_essential_patent_packet",
+      "display_name": "業種別 standard essential patent packet",
+      "description": "業種別 SEP / FRAND / ETSI / IEEE / ITU declaration 関与 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "open_innovation_signal_packet",
+      "display_name": "業種別 open innovation signal packet",
+      "description": "業種別 CVC 投資 / オープンイノベーション補助金 / アクセラレータ / ハッカソン / OSS (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "academic_collaboration_intensity_packet",
+      "display_name": "業種別 academic collaboration intensity packet",
+      "description": "業種別 産学連携 / 共同研究 / 受託研究 / JST 戦略創造 / KAKENHI 共同 / 産学官 cluster (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "ip_monetization_pattern_packet",
+      "display_name": "業種別 IP monetization pattern packet",
+      "description": "業種別 ライセンス / IP 売却 / IP 担保融資 / 特許プール / IP セキュリタイゼーション (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "ip_portfolio_quality_packet",
+      "display_name": "業種別 IP portfolio quality packet",
+      "description": "業種別 IP 維持率 / forward citation / Patent Strength Index / Family Size / 存続期間残余 (採択密度 proxy) descriptive overlay",
       "billable": true,
       "packet_ids": [
         "summary",

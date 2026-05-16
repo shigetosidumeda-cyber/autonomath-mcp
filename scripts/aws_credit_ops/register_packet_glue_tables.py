@@ -1636,6 +1636,52 @@ for _name, _prefix in _WAVE_79_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 80 supply chain risk cross packet tables (10 generators, 2026-05-16). All
+# share the jsic_major industry cohort with descriptive adoption_n proxy
+# covering single-source dependency signal / commodity concentration risk /
+# geographic supplier concentration / supplier subsidy inheritance / logistics
+# disruption resilience / supplier certification overlap / supplier lifecycle
+# risk / payment term volatility / upstream violation proxy / just-in-time
+# failure proxy. Reuse the shared super-set columns; topic-specific fields land
+# in raw_json.
+_WAVE_80_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_single_source_dependency_signal_v1",
+        "single_source_dependency_signal_v1/",
+    ),
+    (
+        "packet_commodity_concentration_risk_v1",
+        "commodity_concentration_risk_v1/",
+    ),
+    (
+        "packet_geographic_supplier_concentration_v1",
+        "geographic_supplier_concentration_v1/",
+    ),
+    (
+        "packet_supplier_subsidy_inheritance_v1",
+        "supplier_subsidy_inheritance_v1/",
+    ),
+    (
+        "packet_logistics_disruption_resilience_v1",
+        "logistics_disruption_resilience_v1/",
+    ),
+    (
+        "packet_supplier_certification_overlap_v1",
+        "supplier_certification_overlap_v1/",
+    ),
+    ("packet_supplier_lifecycle_risk_v1", "supplier_lifecycle_risk_v1/"),
+    ("packet_payment_term_volatility_v1", "payment_term_volatility_v1/"),
+    ("packet_upstream_violation_proxy_v1", "upstream_violation_proxy_v1/"),
+    (
+        "packet_just_in_time_failure_proxy_v1",
+        "just_in_time_failure_proxy_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_80_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 81 ESG materiality cross packet tables (10 generators, 2026-05-16). All
 # share the jsic_major industry cohort with descriptive adoption_n proxy covering
 # Scope 1+2 disclosure completeness (環境省 / 経産省 GHG 報告) / biodiversity
@@ -1672,6 +1718,38 @@ _WAVE_81_TABLES: list[tuple[str, str]] = [
 ]
 
 for _name, _prefix in _WAVE_81_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 82 IP / innovation cross packet tables (10 generators, 2026-05-16). All
+# share the jsic_major industry cohort with descriptive adoption_n proxy
+# covering 特許出願 velocity / 商標登録 intensity / R&D 補助金 chain (NEDO /
+# JST / AMED / 経産省 GX / ものづくり) / 発明者 overlap network / 特許訴訟
+# history / Standard Essential Patent (SEP / FRAND) / Open Innovation signal
+# (CVC / OSS) / 産学連携 intensity / IP 収益化 pattern (ライセンス / 担保 /
+# 特許プール) / IP ポートフォリオ品質 (維持率 / forward citation / Patent
+# Strength Index)。Reuse the shared super-set columns; topic-specific fields
+# land in raw_json.
+_WAVE_82_TABLES: list[tuple[str, str]] = [
+    ("packet_patent_filing_velocity_v1", "patent_filing_velocity_v1/"),
+    (
+        "packet_trademark_registration_intensity_v1",
+        "trademark_registration_intensity_v1/",
+    ),
+    ("packet_rd_subsidy_chain_v1", "rd_subsidy_chain_v1/"),
+    ("packet_inventor_overlap_network_v1", "inventor_overlap_network_v1/"),
+    ("packet_patent_litigation_history_v1", "patent_litigation_history_v1/"),
+    ("packet_standard_essential_patent_v1", "standard_essential_patent_v1/"),
+    ("packet_open_innovation_signal_v1", "open_innovation_signal_v1/"),
+    (
+        "packet_academic_collaboration_intensity_v1",
+        "academic_collaboration_intensity_v1/",
+    ),
+    ("packet_ip_monetization_pattern_v1", "ip_monetization_pattern_v1/"),
+    ("packet_ip_portfolio_quality_v1", "ip_portfolio_quality_v1/"),
+]
+
+for _name, _prefix in _WAVE_82_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
