@@ -1,0 +1,104 @@
+{
+  "schema_version": "jpcite.execution_state.v1",
+  "run_id": "rc1-p0-bootstrap-2026-05-15",
+  "updated_at": "2026-05-15T00:00:00+09:00",
+  "owner_scope": "resumable_execution_ledger_runbook_only",
+  "current_phase": "local_preflight_contracts",
+  "status": "blocked_before_aws_preflight",
+  "summary": "Local contracts and release-capsule artifacts may be resumed. Live AWS commands stay disabled until the preflight scorecard is explicitly moved to AWS_CANARY_READY and local checks pass.",
+  "preflight": {
+    "scorecard_path": "site/releases/rc1-p0-bootstrap/preflight_scorecard.json",
+    "required_state_for_live_aws": "AWS_CANARY_READY",
+    "status": "blocked",
+    "live_aws_commands_allowed": false,
+    "cash_bill_guard_required": true,
+    "last_required_checker_command": ".venv/bin/python scripts/ops/check_execution_resume_state.py"
+  },
+  "live_aws": {
+    "enabled": false,
+    "mutating_commands_allowed": false,
+    "identity_or_budget_canary_allowed": false,
+    "blocked_command_families": [
+      "aws batch submit-job",
+      "aws bedrock-runtime invoke-model",
+      "aws cloudformation deploy",
+      "aws ecs run-task",
+      "aws ecr create-repository",
+      "aws opensearch create-domain",
+      "aws s3api create-bucket",
+      "aws textract start-document-text-detection"
+    ]
+  },
+  "safety_gates": [
+    {
+      "gate": "preflight_scorecard_state",
+      "required": "state == AWS_CANARY_READY before any live AWS enablement",
+      "current": "AWS_BLOCKED_PRE_FLIGHT",
+      "pass": false
+    },
+    {
+      "gate": "cash_bill_guard_enabled",
+      "required": "cash_bill_guard_enabled == true",
+      "current": true,
+      "pass": true
+    },
+    {
+      "gate": "no_mutating_aws_commands",
+      "required": "all resume commands are local-only until preflight passes",
+      "current": true,
+      "pass": true
+    },
+    {
+      "gate": "spend_simulation_pass_state",
+      "required": "spend_simulation.json pass_state == true before live AWS canary",
+      "current": false,
+      "pass": false
+    },
+    {
+      "gate": "teardown_simulation_pass_state",
+      "required": "teardown_simulation.json pass_state == true before resource creation",
+      "current": false,
+      "pass": false
+    }
+  ],
+  "next_commands": [
+    {
+      "command": ".venv/bin/python scripts/ops/check_execution_resume_state.py",
+      "purpose": "Validate the resume ledger and fail if live AWS is enabled before preflight.",
+      "preflight_required": false,
+      "live_aws": false,
+      "mutating_aws": false,
+      "expected_result": "execution resume state: ok"
+    },
+    {
+      "command": ".venv/bin/python scripts/ops/aws_credit_local_preflight.py --warn-only",
+      "purpose": "Print the deterministic local preflight simulation without changing gate state.",
+      "preflight_required": false,
+      "live_aws": false,
+      "mutating_aws": false,
+      "expected_result": "JSON report with gate_state AWS_BLOCKED_PRE_FLIGHT"
+    },
+    {
+      "command": ".venv/bin/pytest -q tests/test_execution_resume_state.py tests/test_aws_credit_local_preflight.py",
+      "purpose": "Run focused offline tests for the resume ledger and AWS preflight guard.",
+      "preflight_required": false,
+      "live_aws": false,
+      "mutating_aws": false,
+      "expected_result": "all tests pass"
+    },
+    {
+      "command": "jq '.state, .live_aws_commands_allowed, .blocking_gates' site/releases/rc1-p0-bootstrap/preflight_scorecard.json",
+      "purpose": "Inspect the local scorecard before any later session considers AWS canary work.",
+      "preflight_required": false,
+      "live_aws": false,
+      "mutating_aws": false,
+      "expected_result": "AWS_BLOCKED_PRE_FLIGHT, false, and blocking gates listed"
+    }
+  ],
+  "resume_notes": [
+    "Do not touch AWS credentials.",
+    "Do not run mutating AWS commands.",
+    "Continue only local docs, scripts, schemas, fixtures, tests, and release-capsule checks while this state is blocked.",
+    "If another session changes preflight state, rerun the checker before any command that starts with aws."
+  ]
+}

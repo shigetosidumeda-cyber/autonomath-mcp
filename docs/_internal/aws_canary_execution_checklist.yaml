@@ -1,0 +1,447 @@
+# AWS Canary 実行 checklist (機械可読 companion to AWS_CANARY_EXECUTION_RUNBOOK.md)
+#
+# 本 YAML は ai agent が runbook 進行を機械的に gate するための SOT。
+# 各 step は default `status: pending` で、preflight が AWS_CANARY_READY に
+# flip し、operator が step ごとに明示承認するまで進行禁止。
+#
+# 2026-05-16 時点: preflight_scorecard.state == AWS_BLOCKED_PRE_FLIGHT のため
+# **全 step が blocked**。実行不可。
+
+schema_version: jpcite.aws_canary_execution_checklist.v1
+last_updated: 2026-05-16
+run_id: rc1-p0-bootstrap
+companion_runbook: docs/_internal/AWS_CANARY_EXECUTION_RUNBOOK.md
+target_credit_conversion_usd: 19490
+canary_phase_state: AWS_BLOCKED_PRE_FLIGHT
+live_aws_commands_allowed: false_until_W_unlock
+cash_bill_guard_enabled: true
+
+# Stream W (Wave 50 tick 8-A) で scorecard promote と live_aws_commands_allowed
+# の flip を分離。promote は 5/5 preflight PASS で自動進行するが、unlock は
+# operator authority 明示 token 必須。詳細: companion_runbook §1.5 / §1.6 / §1.7
+unlock_separation:
+  scorecard_promote_authority: preflight_runner
+  live_aws_unlock_authority: operator
+  unlock_runner_flag: "--unlock-live-aws-commands"
+  unlock_env_var: JPCITE_LIVE_AWS_UNLOCK_TOKEN
+
+preflight:
+  required_state: AWS_CANARY_READY
+  current_state: AWS_BLOCKED_PRE_FLIGHT
+  gates:
+    - id: P-1
+      name: preflight_scorecard_aws_canary_ready
+      verify: cat site/releases/rc1-p0-bootstrap/preflight_scorecard.json | jq -r .state
+      expected: AWS_CANARY_READY
+      blocking: true
+    - id: P-2
+      name: live_aws_commands_allowed_false_before_W_unlock_true_after
+      verify: cat site/releases/rc1-p0-bootstrap/preflight_scorecard.json | jq -r .live_aws_commands_allowed
+      expected: false_until_W_unlock
+      expected_before_W: "false"
+      expected_after_W: "true"
+      blocking: true
+      note: |
+        Stream W (Wave 50 tick 8-A) で scorecard promote と live_aws_commands_allowed
+        flip を分離。promote 直後は false のまま、unlock_step (本 yaml 別節) で
+        --unlock-live-aws-commands 実行後に true に切り替わる。
+    - id: P-3
+      name: cash_bill_guard_enabled
+      verify: cat site/releases/rc1-p0-bootstrap/preflight_scorecard.json | jq -r .cash_bill_guard_enabled
+      expected: "true"
+      blocking: true
+    - id: P-4
+      name: budget_4_guards_live
+      verify: aws budgets describe-budgets --account-id $ACCT --query 'length(Budgets)'
+      expected_min: 4
+      blocking: true
+      note: "本 verify は AWS API call、本書では実行しない (operator が手動で確認)"
+    - id: P-5
+      name: teardown_tests_30_30
+      verify: pytest tests/test_teardown_*.py -q
+      expected: "30 passed"
+      blocking: true
+    - id: P-6
+      name: cf_pages_rollback_tests_11_11
+      verify: pytest tests/test_cf_pages_rollback*.py -q
+      expected: "11 passed"
+      blocking: true
+    - id: P-7
+      name: production_gate_7_7
+      verify: jq -r .production_gate_status site/releases/rc1-p0-bootstrap/execution_state.json
+      expected: "7/7"
+      blocking: true
+    - id: P-8
+      name: teardown_live_token_unset_before_step3
+      verify: "test -z \"${JPCITE_TEARDOWN_LIVE_TOKEN:-}\""
+      expected: empty
+      blocking: true
+    - id: P-9
+      name: emergency_token_unset
+      verify: "test -z \"${JPCITE_EMERGENCY_TOKEN:-}\""
+      expected: empty
+      blocking: true
+    - id: P-10
+      name: budget_canary_attestation_schema_exists
+      verify: test -f schemas/jpcir/aws_budget_canary_attestation.schema.json
+      expected: exists
+      blocking: true
+    - id: P-11
+      name: operator_unlock_pubkey_present
+      verify: test -f keys/operator_unlock_pubkey.pem
+      expected: exists
+      blocking: true
+      note: "公開鍵 path は想定 (現リポに未配置の場合は P-11 で blocked)"
+    - id: P-12
+      name: run_id_locked
+      verify: "test \"$RUN_ID\" = \"rc1-p0-bootstrap\""
+      expected: rc1-p0-bootstrap
+      blocking: true
+
+unlock_step:
+  # Stream W (Wave 50 tick 8-A) で追加。scorecard promote と live AWS 実行
+  # 解錠を分離するための独立 step。step 1 (aws budget 4 guard live create)
+  # の **直前** に挟む。
+  step: W
+  name: unlock_live_aws_commands_via_stream_w
+  status: pending
+  requires_preflight: true
+  requires_operator_ack: true
+  requires_operator_signed_unlock: true
+  description: |
+    scripts/ops/run_preflight_simulations.py を --unlock-live-aws-commands で
+    実行し、preflight_scorecard.live_aws_commands_allowed を false→true へ
+    flip。本 step は scorecard.state が既に AWS_CANARY_READY に flip 済の
+    場合のみ進行可。
+  commands_template:
+    - "export JPCITE_LIVE_AWS_UNLOCK_TOKEN=\"$(uuidgen)\""
+    - ".venv/bin/python3.12 scripts/ops/run_preflight_simulations.py --unlock-live-aws-commands"
+  precondition:
+    - "scorecard.state == AWS_CANARY_READY"
+    - "5/5 preflight gates PASS"
+    - "operator_signed_unlock 提示 (intent=live_aws_unlock)"
+    - "JPCITE_LIVE_AWS_UNLOCK_TOKEN env set"
+  effect:
+    - "preflight_scorecard.live_aws_commands_allowed: false → true"
+    - "preflight_scorecard.live_aws_commands_unlock_authority: operator 追記"
+    - "preflight_scorecard.live_aws_commands_unlocked_at: ISO8601 timestamp 追記"
+  verify_gate:
+    - "cat site/releases/rc1-p0-bootstrap/preflight_scorecard.json | jq -r .live_aws_commands_allowed == 'true'"
+    - "live_aws_commands_unlock_authority field == 'operator'"
+    - "live_aws_commands_unlocked_at field is ISO8601 timestamp"
+  abort_conditions:
+    - "scorecard.state != AWS_CANARY_READY"
+    - "operator_signed_unlock 検証 NG"
+    - "JPCITE_LIVE_AWS_UNLOCK_TOKEN env unset"
+  rollback:
+    - "operator が preflight_scorecard.live_aws_commands_allowed を false に手動書き戻し"
+    - "teardown 完了後の attestation で zero 化"
+
+aws_canary_smoke_design:
+  # Stream W unlock 後の AWS canary smoke 5 step (実行台本、AI agent は触らない)
+  # 詳細: companion_runbook §1.6
+  step_1_status_check:
+    - "cat preflight_scorecard.json | jq -r .live_aws_commands_allowed == 'true'"
+    - "test -n $JPCITE_LIVE_AWS_UNLOCK_TOKEN"
+    - "test -n $JPCITE_TEARDOWN_LIVE_TOKEN"
+    - "aws sts get-caller-identity --profile jpcite-canary PASS"
+  step_2_inventory:
+    cmd: "DRY_RUN=false JPCITE_TEARDOWN_LIVE_TOKEN=<token> bash scripts/teardown/01_identity_budget_inventory.sh"
+    side_effect: "read-only inventory + attestation 生成のみ"
+  step_3_submit_small_batch_job:
+    job_definition: jpcite-canary-1m
+    job_queue: jpcite-canary-q
+    expected_spend_usd_max: 1
+  step_4_observe_1_hour:
+    duration_minutes: 60
+    expected:
+      - "credit consumption < $5"
+      - "non-credit exposure == $0"
+      - "cash_bill_guard 偽発火なし"
+  step_5_terminate_and_cleanup:
+    - "aws batch list-jobs RUNNING count == 0"
+    - "DRY_RUN=false bash scripts/teardown/run_all.sh"
+    - "bash scripts/teardown/verify_zero_aws.sh PASS"
+
+canary_abort_triggers:
+  # Stream W unlock 後の smoke 段で発火 → 即 step 進行停止
+  # 詳細: companion_runbook §1.7
+  - id: A-1
+    name: live_aws_commands_allowed_false_unlock_not_done
+    observe_at: smoke_step_1_entry
+    branch_to: return_to_stream_w_operation
+  - id: A-2
+    name: jpcite_live_aws_unlock_token_unset
+    observe_at: smoke_step_1_entry
+    branch_to: operator_re_export_token
+  - id: A-3
+    name: jpcite_teardown_live_token_unset
+    observe_at: smoke_step_2_entry
+    branch_to: return_to_runbook_step_3
+  - id: A-4
+    name: aws_cli_or_profile_missing
+    observe_at: smoke_step_1_entry
+    branch_to: operator_fix_aws_credentials
+  - id: A-5
+    name: cash_bill_guard_disabled
+    observe_at: smoke_step_1_entry
+    branch_to: return_to_preflight_P3
+
+steps:
+  - step: 1
+    name: aws_budget_4_guard_live_create
+    status: pending
+    requires_preflight: true
+    requires_operator_ack: true
+    description: |
+      4 段階 budget (watch 17K / slowdown 18.3K / no-new-work 18.9K /
+      absolute 19.3K) を aws budgets create-budget で live 投入。
+    commands_template:
+      - "aws budgets create-budget --account-id $ACCT --budget file://budgets/watch_17000.json"
+      - "aws budgets create-budget --account-id $ACCT --budget file://budgets/slowdown_18300.json"
+      - "aws budgets create-budget --account-id $ACCT --budget file://budgets/no_new_work_18900.json"
+      - "aws budgets create-budget --account-id $ACCT --budget file://budgets/absolute_19300.json"
+    verify_gate:
+      - "describe-budgets returns 4 budgets"
+      - "Notifications bound to cash_bill_guard SNS topic"
+      - "attestation appended to site/releases/rc1-p0-bootstrap/aws_budget_canary_attestation.json"
+    abort_conditions:
+      - describe-budgets shows < 4 budgets
+      - any Notification DISABLED
+    rollback:
+      - "aws budgets delete-budget reverse order"
+
+  - step: 2
+    name: operator_signed_unlock_generate
+    status: pending
+    requires_step: 1
+    requires_operator_ack: true
+    description: |
+      Ed25519 で {run_id, intent, expires_at} を署名し、live AWS 実行を
+      1 回だけ許可する unlock token を生成。秘密鍵は operator 手元のみ。
+    payload_template:
+      run_id: rc1-p0-bootstrap
+      intent: canary_smoke
+      expires_at_max_offset_hours: 4
+    verify_gate:
+      - "公開鍵 keys/operator_unlock_pubkey.pem で署名検証 PASS"
+      - "expires_at <= now + 4h"
+      - "intent in [canary_smoke, teardown]"
+    abort_conditions:
+      - 署名検証 NG
+      - expires_at expired
+    rollback:
+      - "token 破棄 + 再発行"
+
+  - step: 3
+    name: teardown_live_token_arm
+    status: pending
+    requires_step: 2
+    requires_operator_ack: true
+    description: |
+      JPCITE_TEARDOWN_LIVE_TOKEN を同シェル内で export。
+      JPCITE_EMERGENCY_TOKEN は未設定のまま。
+    commands_template:
+      - "export JPCITE_TEARDOWN_LIVE_TOKEN=\"$(uuidgen)\""
+    verify_gate:
+      - "env | grep JPCITE_TEARDOWN_LIVE_TOKEN hits 1 line"
+      - "env | grep JPCITE_EMERGENCY_TOKEN empty"
+    abort_conditions:
+      - 両 token が同シェルに同居
+    rollback:
+      - "unset JPCITE_TEARDOWN_LIVE_TOKEN"
+
+  - step: 4
+    name: canary_smoke_batch_job_1
+    status: pending
+    requires_step: 3
+    requires_operator_ack: true
+    description: |
+      AWS Batch に 1 job のみ submit、SUCCEEDED 後 terminate 確認。
+      推定 spend < $1。
+    job_definition: jpcite-canary-1m
+    job_queue: jpcite-canary-q
+    timeout_minutes: 10
+    expected_spend_usd_max: 1
+    verify_gate:
+      - "Batch job SUCCEEDED"
+      - "S3 artifact lands at s3://jpcite-canary/${RUN_ID}/..."
+      - "推定 spend < $1"
+    abort_conditions:
+      - job FAILED
+      - job TIMEOUT
+      - spend > $5
+    rollback:
+      - "scripts/teardown/00_emergency_stop.sh (JPCITE_EMERGENCY_TOKEN arm)"
+      - "scripts/ops/cf_pages_emergency_rollback.sh"
+
+  - step: 5
+    name: observe_1_hour_cash_guard_trigger
+    status: pending
+    requires_step: 4
+    requires_operator_ack: true
+    description: |
+      1 時間経過後、cash_bill_guard SNS subscriber が偽発火していないこと、
+      non-credit exposure = $0 を確認。
+    observe_duration_minutes: 60
+    verify_gate:
+      - "non-credit exposure == $0"
+      - "credit consumption < $5"
+      - "cash_bill_guard 偽発火 0 件"
+    abort_conditions:
+      - non-credit exposure > $0
+      - cash_bill_guard 偽発火
+    rollback:
+      - "scripts/teardown/00_emergency_stop.sh"
+      - "scripts/ops/cf_pages_emergency_rollback.sh"
+
+  - step: 6
+    name: threshold_behavior_verify
+    status: pending
+    requires_step: 5
+    requires_operator_ack: true
+    description: |
+      4 threshold (17K / 18.3K / 18.9K / 19.3K) の Notification ENABLED と
+      auto-action 仕様を確認 (実 spend は進めない、観測のみ)。
+    thresholds_usd:
+      watch: 17000
+      slowdown: 18300
+      no_new_work: 18900
+      absolute_stop: 19300
+    verify_gate:
+      - "4 Notification ENABLED"
+      - "auto-action target = jpcite-control-plane SNS topic"
+      - "残額 = 19490 - step4_smoke_spend"
+    abort_conditions:
+      - Notification DISABLED
+      - SNS bind 別 topic 化
+    rollback:
+      - "aws budgets update-notification で正常状態に戻す"
+
+  - step: 7
+    name: planned_teardown_run_all
+    status: pending
+    requires_step: 6
+    requires_operator_ack: true
+    description: |
+      scripts/teardown/run_all.sh DRY_RUN=false を実行、01..05 順序で
+      attestation を取る。最後に verify_zero_aws.sh で残存 0 件確認。
+    commands_template:
+      - "DRY_RUN=false RUN_ID=rc1-p0-bootstrap bash scripts/teardown/run_all.sh"
+      - "bash scripts/teardown/verify_zero_aws.sh"
+    verify_gate:
+      - "run_all.sh exit 0"
+      - "verify_zero_aws.sh 全 service 残存 0 件"
+      - "run_all.json 全 step exit 0"
+    abort_conditions:
+      - run_all.sh exit != 0
+      - verify_zero_aws.sh 残存 >= 1
+    rollback:
+      - "teardown 再実行 (冪等、3 回失敗で emergency stop)"
+
+abort_triggers:
+  - id: T-1
+    name: preflight_state_not_canary_ready
+    branch_to: rollback_step_1
+  - id: T-2
+    name: live_aws_commands_allowed_flipped_true_unintended
+    branch_to: emergency_stop
+  - id: T-3
+    name: canary_smoke_failed_or_timeout
+    branch_to: rollback_step_4
+  - id: T-4
+    name: canary_spend_over_5usd
+    branch_to: emergency_stop
+  - id: T-5
+    name: non_credit_exposure_over_0usd
+    branch_to: emergency_stop
+  - id: T-6
+    name: budget_notification_less_than_4_or_disabled
+    branch_to: rollback_step_1
+  - id: T-7
+    name: cash_bill_guard_false_positive
+    branch_to: emergency_stop
+  - id: T-8
+    name: operator_signed_unlock_expired
+    branch_to: rollback_step_2
+  - id: T-9
+    name: verify_zero_aws_residual_ge_1
+    branch_to: retry_step_7_idempotent_3x
+  - id: T-10
+    name: schema_parity_check_failed
+    branch_to: revert_attestation_regenerate
+
+rollback_chain:
+  rollback_step_1:
+    - aws budgets delete-budget reverse order
+  rollback_step_2:
+    - "token 破棄 + 再発行"
+  rollback_step_4:
+    - scripts/teardown/00_emergency_stop.sh
+    - scripts/ops/cf_pages_emergency_rollback.sh
+  emergency_stop:
+    - JPCITE_EMERGENCY_TOKEN arm
+    - scripts/teardown/00_emergency_stop.sh
+    - scripts/ops/cf_pages_emergency_rollback.sh
+    - "60s post-rollback propagation sleep (CF + Fly + DNS 3-layer cache)"
+    - "healthz probe on https://jpcite.com/healthz"
+  retry_step_7_idempotent_3x:
+    - "bash scripts/teardown/run_all.sh 再実行 (最大 3 回)"
+    - "3 回失敗で emergency_stop に escalate"
+  revert_attestation_regenerate:
+    - "git revert local attestation commit"
+    - "scripts/check_schema_contract_parity.py PASS まで再生成"
+
+kill_switch:
+  arm_conditions:
+    - "export JPCITE_EMERGENCY_TOKEN=$(uuidgen)"
+    - "DRY_RUN=false"
+  fire_commands:
+    - "JPCITE_EMERGENCY_TOKEN=$(uuidgen) DRY_RUN=false bash scripts/teardown/00_emergency_stop.sh"
+    - "JPCITE_EMERGENCY_TOKEN=$(uuidgen) DRY_RUN=false bash scripts/ops/cf_pages_emergency_rollback.sh <prev_capsule_id>"
+  side_effects:
+    aws:
+      - "Batch terminate all jobs"
+      - "ECS scale-to-0 + force-delete"
+      - "Bedrock provisioned-throughput delete"
+      - "OpenSearch domain delete"
+      - "S3 freeze (DenyAll, object 削除はしない)"
+      - "EC2 terminate"
+    cf:
+      - "runtime_pointer.json rewrite to prev capsule"
+      - "edge cache purge"
+      - "60s propagation sleep"
+      - "healthz probe"
+  token_separation:
+    JPCITE_EMERGENCY_TOKEN: "kill switch only"
+    JPCITE_TEARDOWN_LIVE_TOKEN: "planned 01..05 teardown only"
+    rationale: "leak した片方が他方を arm できないように 2-stage"
+
+post_canary_attestation:
+  steps:
+    - "site/releases/rc1-p0-bootstrap/teardown_attestation/ を local pull"
+    - "scripts/check_schema_contract_parity.py で aws_budget_canary_attestation.json 整合確認"
+    - "SHA256 計算、release_capsule_manifest.json.attestations.aws_budget_canary に追記"
+    - "git commit -s (operator 署名)"
+    - "site/releases/current/runtime_pointer.json に attestation_sha256 埋め込み + edge publish"
+    - "curl https://jpcite.com/.well-known/aws-budget-canary-attestation.json で edge 値 vs local 値 SHA256 一致確認"
+  verify_gate:
+    - schema parity PASS
+    - SHA256 match (local vs edge)
+    - operator-signed commit landed in main
+
+execution_policy:
+  ai_agent_allowed_actions:
+    - "本 yaml + runbook の閲覧"
+    - "preflight gate verify (read-only)"
+    - "本書の改訂提案 (PR)"
+  ai_agent_forbidden_actions:
+    - "aws budgets create-budget / delete-budget"
+    - "aws batch submit-job / terminate-job"
+    - "scripts/teardown/*.sh の DRY_RUN=false 実行"
+    - "scripts/ops/cf_pages_emergency_rollback.sh の DRY_RUN=false 実行"
+    - "operator_signed_unlock の生成 (秘密鍵を触る)"
+  operator_only_actions:
+    - "step 1-7 の DRY_RUN=false 実行"
+    - "JPCITE_TEARDOWN_LIVE_TOKEN / JPCITE_EMERGENCY_TOKEN の export"
+    - "preflight_scorecard.state の flip (AWS_BLOCKED_PRE_FLIGHT → AWS_CANARY_READY)"
