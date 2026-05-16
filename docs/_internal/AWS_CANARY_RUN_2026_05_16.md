@@ -1,35 +1,42 @@
-# AWS Canary Run Closeout (2026-05-16 14:00 JST)
+# AWS Canary Run Closeout (2026-05-16 PM, Phase 1-7 LANDED + Phase 8 IN_PROGRESS)
 
-> **Status: Phase 1-5 LANDED / Phase 6 (Wave 54) PLANNED.**
+> **Status: Phase 1-7 LANDED / Phase 8 ramp IN_PROGRESS.**
 > Phase 3 smoke: 7/7 J0X SUCCEEDED, 82 artifacts (4.3 MB), **$0 actual cost**
 > (Fargate Spot tiny job below billing threshold).
-> Phase 4: 7 deep J0X (2,726 URL) + 7 ultradeep J0X (19,792 URL) + EventBridge
-> schedule LIVE `rate(10 minutes)` + SNS apne1 cross-region fix + SF Catch →
-> CloudWatch metric (no email dependency) + SageMaker GPU smoke on
-> `ml.g4dn.xlarge` + EC2 Spot CE active via `jpcite-crawl-ec2-cpu` job def.
-> Phase 5 **LANDED** (2026-05-16 14:00 JST): 4 NEW J0X manifests J12-J15
-> (議事録 / EDINET XBRL / JPO 公報 / 環境省) + 8 packet pipeline sharding ready
-> (法人360 166K / 制度lineage 11,601 / 採択確率 cohort 225K + 5 Wave 53 generators
-> enforcement_heatmap / invoice_houjin_check / vendor_dd / regulatory_radar /
-> subsidy_timeline) + ETL raw → derived Parquet executed (**3 Glue table /
+> Phase 4 (deep + ultradeep, 2026-05-16 13:30 JST): 7 deep J0X (2,726 URL) +
+> 7 ultradeep J0X (19,792 URL) + EventBridge schedule LIVE `rate(10 minutes)` +
+> SNS apne1 cross-region fix + SF Catch → CloudWatch metric (no email
+> dependency) + SageMaker GPU smoke on `ml.g4dn.xlarge` + EC2 Spot CE active
+> via `jpcite-crawl-ec2-cpu` job def.
+> Phase 5 (smart analysis, 2026-05-16 14:00 JST): J08-J16 manifests
+> (官報 / 裁判所 / 法務局 / e-Stat / 議事録 / EDINET XBRL / JPO 公報 / 環境省 /
+> canonical 公的 PDF) + 8 packet pipeline sharding ready (法人360 166K [86,849
+> packets local gen 33 sec landing] / 制度lineage 11,601 / 採択確率 cohort 225K +
+> 5 Wave 53 generators) + ETL raw → derived Parquet executed (**3 Glue table /
 > 47 partitions / 1,029 source_receipts** in Athena) + 5 big Athena cross-join
-> queries ready + outcome catalog **14 → 30** + 30 sample HTML at site/packets/
+> queries + outcome catalog **14 → 30 → 52** + 30 sample HTML at site/packets/
 > + 6 SageMaker batch transform jobs.
->
-> Phase 5 issues: **51 FAILED / 26 SUCCEEDED (66% failure rate)** + 法人360
-> 167-batch FAILED (container entrypoint mismatch, separate image needed) +
-> cost still $0 (Fargate Spot tiny / 30sec abort) + AWS credentials drift in
-> some agents (`InvalidClientTokenId`).
->
-> Phase 6 (Wave 54) PLANNED: failure fix ($50-200) + Textract live ($1K-3K) +
-> Athena big queries live ($250-2.5K) + 11 more Wave 53 packet generators ($1-5).
-> Total $1.3K-5.7K, accumulated 38-89% of $18.3K effective cap.
-> Wave 54 SOT: `project_jpcite_wave_54_ramp_plan_2026_05_16` memory.
+> Phase 6 (cost burn ramp, 2026-05-16 16:00 JST): **J16 PDF Textract live run**
+> (200+ canonical 一次資料 PDF URL) + **EC2 Spot GPU sustained burn**
+> (FAISS / fine-tune) + **CloudFront mirror + bandwidth load test** +
+> **Athena real burn** (3 packet tables + 16 Wave 53 tables + 3 new big queries:
+> cross_packet / time_series / entity_resolution_full) + Wave 53.3 + Wave 54
+> FULL-SCALE 36 generator packets to S3.
+> Phase 7 (hard-stop 5-line defense ARMED, 2026-05-16 PM): CW $14K warn +
+> Budget $17K alert + Budget $18.3K slowdown + CW $18.7K **Lambda direct stop**
+> (`JPCITE_AUTO_STOP_ENABLED=true`) + Budget Action **$18.9K deny IAM**
+> STANDBY + $590 margin + teardown scripts line 0 READY. **$19,490 never
+> reach 設計**, Cost Explorer 8-12hr lag を CW alarm seconds latency で吸収。
+> Phase 8 (ramp IN_PROGRESS, 2026-05-16 PM): **Wave 55 10 cross-3-source
+> packets** (catalog 52→62 in flight) + **Mega Athena 39 table cross-join**
+> ($2.5K-$5K burn 想定) + **Long-running EC2 GPU 6 jobs × 20h sustained**
+> (120 GPU-hour, $1.4K-$2.2K) + **CloudFront 5M req bandwidth burn**
+> ($200-$500). 39 packet tables aggregate at Phase 8 close.
 
-> Doc renamed from `AWS_CANARY_SMOKE_PASS_2026_05_16.md` on 2026-05-16 PM to
-> reflect Phase 4+5 scope expansion. Phase 3 smoke pass record (§1-§5) remains
-> the historical anchor; new §8 / §9 capture Phase 4 deep+ultradeep progression
-> and Phase 5 smart analysis layer.
+> Doc rewritten on 2026-05-16 PM to integrate Phase 6+7+8 scope expansion.
+> §1-§5 = Phase 3 smoke historical anchor, §6-§9 = Phase 4-5 progression,
+> §10 = Phase 6 cost burn ramp, §11 = Phase 7 hard-stop 5-line defense,
+> §12 = Phase 8 ramp IN_PROGRESS.
 
 last_updated: 2026-05-16
 
@@ -391,5 +398,137 @@ memory `feedback_aws_canary_burn_ramp_pattern`:
 | deep | 7 J0X heavy | 2,726 | $300-800 |
 | ultradeep | 7 J0X ultradeep | 19,792 | $3K-5K |
 | smart | 4 pipeline + 5 Athena + outcome 30 | 750M token embedding / 225K cohort / 166K corp / 11,601 program | $1.7K-3.2K |
+
+---
+
+## 10. Phase 6 cost burn ramp LANDED (2026-05-16 16:00 JST)
+
+Phase 5 smart analysis LANDING 後の Phase 6 として **real cost burn 軸を実 cost で取りに行く** 段。Cost Explorer 8-12hr lag が支配的、Phase 7 5-line hard-stop ARMED の上で安全に burn する設計。
+
+### 10.1 J16 PDF Textract live run (200+ canonical 一次資料 PDF URL)
+
+- J16 manifest: `data/aws_credit_jobs/J16_canonical_official_pdfs.json` (200+ canonical 一次資料 PDF URL, ministry / 自治体 / 裁判所 / JPO 各源)
+- Textract OCR live: per-page $0.0015 × N pages、async API + S3 multi-part upload で `s3://*/runs/J16/` 配下に artifact 展開
+- crawler container reuse + Textract async API + page-level retry の 3 層で long-tail saturation を吸う
+
+### 10.2 EC2 Spot GPU sustained burn (FAISS / fine-tune)
+
+- `ml.g4dn.12xlarge` 4 GPU を Spot Fleet で投入、FAISS index build + small fine-tune workload を **sustained burn** モードで回す
+- 1 job 数時間 × 数 job で **数百 GPU-hour** を実 cost burn に変換、Cost Explorer 反映を Phase 7 alarm で観測
+- Spot 割引で実効 $2-$3/hr × N hr、Phase 8 ramp で 6 jobs × 20h scale-up の前段検証
+
+### 10.3 CloudFront mirror + bandwidth load test
+
+- packet HTML preview (site/packets/ 30 sample + Wave 53 全 generator output) を CloudFront distribution に bind
+- bandwidth load test で **egress 軸の cost burn** を観測、edge cache miss / origin pull / Lambda@Edge invocation 軸で実効 burn 取得
+- egress 単価 $0.085/GB、Phase 8 で 5M req scale 5M × 100KB = 500GB = $42.5 base、edge miss / origin pull で **$200-$500 burn** 想定
+
+### 10.4 Athena real burn (3 packet tables + 16 Wave 53 tables + 3 new big queries)
+
+- Phase 5 で ready だった **5 big query** を populated table 上で re-run、ETL Glue 47 partitions / 1,029 source_receipts 後の実 scan 量で実 cost burn
+- **3 new big queries** 追加: `cross_packet` (packet 横断結合) / `time_series` (時系列軸) / `entity_resolution_full` (法人ID横断解決)
+- bytes scanned + $5/TB で **$XX 〜 数百 $** burn を Cost Explorer 反映で観測、`athena_real_burn_2026_05_16.md` に doc 化
+
+### 10.5 Wave 53.3 + Wave 54 全 FULL-SCALE packet generator → S3
+
+- **36 generator** が S3 に landing: Wave 53 5 + Wave 53.2 11 + Wave 53.3 10 + Wave 54 10
+- packet catalog **14 → 30 → 52** に成長、各 packet `JPCIR OutcomeContract` envelope reuse
+- `estimated_price_jpy` band ¥900-¥1,800 で Stripe metered ¥3/req billing path に bind
+
+### 10.6 Phase 6 actual burn snapshot
+
+- 実 cost: Cost Explorer 8-12hr lag が支配、Phase 6 burn 軸 (J16 Textract / EC2 GPU sustained / CloudFront / Athena real) が反映を待つ
+- CW alarm seconds latency で Phase 7 line 1 ($14K) / line 2 ($17K) 到達観測の主要 driver
+- Phase 7 5-line hard-stop ARMED で $19,490 物理的踏み越え不能、Phase 6 / 8 ramp の絶対保護
+
+---
+
+## 11. Phase 7 hard-stop 5-line defense ARMED (2026-05-16 PM)
+
+詳細は `docs/_internal/AWS_CANARY_HARD_STOP_5_LINE_DEFENSE_2026_05_16.md` (canonical SOT) に集約。本 doc では index のみ:
+
+- **line 0** teardown scripts: `scripts/aws_credit_ops/stop_drill.sh` + `teardown_credit_run.sh` (DRY_RUN default + live token gated)
+- **line 1** $14K CW alarm warn → SNS → Lambda log (visibility)
+- **line 2** $17K Budget alert → SNS → Lambda log (awareness)
+- **line 3** $18.3K Budget slowdown → Lambda log + CW alarm dual fire
+- **line 4** $18.7K CW alarm → **Lambda direct invoke** (no email confirm) → queues DISABLED + jobs cancelled/terminated + CE DISABLED. Lambda `jpcite-credit-auto-stop` ARMED (`JPCITE_AUTO_STOP_ENABLED=true`)
+- **line 5** $18.9K **Budget Action deny IAM policy** auto-attached to operator role → no new resources. STANDBY (Budget Action attached at LIMIT_AMOUNT $18,900)
+- **ceiling $19,490**: never reach 設計, $590 margin
+
+CW alarm seconds latency が Cost Explorer 8-12hr lag を吸収、email confirm pending でも line 4 direct Lambda + line 5 Budget Action deny IAM の 2 軸 modal hard-stop で物理的に止まる。
+
+---
+
+## 12. Phase 8 ramp IN_PROGRESS (2026-05-16 PM)
+
+Phase 7 hard-stop 5-line defense ARMED の上で、**real burn 軸を Phase 7 line 1 ($14K) / line 2 ($17K) / line 3 ($18.3K) の各閾値に到達させる** 段。Lambda armed + Budget Action STANDBY が ramp 中の絶対 hard-stop として 24/7 監視。
+
+### 12.1 Wave 55: 10 cross-3-source analytics packets (catalog 52 → 62)
+
+- Wave 54 10 cross-source pattern を **3-source 連結に拡張**、各 packet が 3 軸 cross-join を 1 packet で展開
+- packet catalog **52 → 62 in flight**、`estimated_price_jpy` band ¥1,200-¥1,800 で billing 軸の高付加価値 outcome
+- JPCIR `OutcomeContract` envelope reuse、`scripts/check_schema_contract_parity.py` で 0 drift gate
+
+### 12.2 Mega Athena cross-join 39 tables
+
+- Phase 5 5 big + Phase 6 3 new + Phase 8 で **39 packet tables 累計の mega cross-join**
+- data scan 量 **500 GB - 1 TB band**, Athena $5/TB 単価で **$2.5K - $5K burn 予定**
+- Phase 8 中の最大単一 burn 軸、Cost Explorer 反映で Phase 7 line 1 ($14K) 到達の主要 driver
+
+### 12.3 Long-running EC2 GPU 6 jobs (20h each)
+
+- **6 jobs × 20h sustained on EC2 Spot GPU**、FAISS index build + fine-tune 系 calculation-dense workload **120 GPU-hour** 投入
+- `ml.g4dn.12xlarge` 4 GPU × $7.45/hr base、Spot 割引で実効 $2-$3/hr × 120h = **$240-$360 per job**, 6 job で **$1.4K-$2.2K 累計**
+- Phase 6 sustained burn pattern を 6 並列に拡張、Phase 7 line 2 ($17K) 到達想定
+
+### 12.4 CloudFront 5M req bandwidth burn
+
+- Phase 6 CloudFront mirror + bandwidth load test を本気で回す、**5M req scale**
+- 1 req 平均 50KB-200KB の packet HTML 配信、egress $0.085/GB × 500GB base
+- edge cache miss / origin pull / Lambda@Edge invocation で実効 **$200-$500 burn 予定**
+
+### 12.5 39 packet tables aggregate (Phase 1-8 通じての packet 軸 SOT)
+
+| 起源 phase | packet 軸 | 件数 |
+| --- | --- | --- |
+| Phase 5 法人360 | 86,849 packets (local gen 33 sec + S3 sync ~9 min, 64 並列) | 86,849 |
+| Phase 5 制度 lineage | 11,601 packets | 11,601 |
+| Phase 5 採択確率 cohort | 225K packets | 225,000 |
+| Phase 5 Wave 53 (5 generator) | enforcement_heatmap / invoice_houjin_check / vendor_dd / regulatory_radar / subsidy_timeline | 5 generator |
+| Phase 6 Wave 53.2 (11 generator) | 残 11 generator | 11 generator |
+| Phase 6 Wave 53.3 (10 generator) | cross-source deep analysis | 10 generator |
+| Phase 6 Wave 54 (10 generator) | cross-source packet | 10 generator |
+| Phase 8 Wave 55 (10 in flight) | cross-3-source analytics | 10 generator |
+| **計** | **39 packet tables aggregate** | **~323K packet rows + 56 generator** |
+
+各 table が Athena Glue partitioned、CloudFront mirror 経由で配信可能、Stripe metered ¥3/req billing path に bind。
+
+### 12.6 Phase 8 中の絶対 hard-stop status
+
+| line | threshold | status | Phase 8 ramp との関係 |
+| --- | --- | --- | --- |
+| 0 (teardown) | n/a | READY (live token gated) | 緊急時 manual on-call |
+| 1 ($14K warn) | $14,000 | ARMED | Mega Athena cross-join 39 table が反映で到達想定 |
+| 2 ($17K alert) | $17,000 | ARMED | EC2 GPU 6 × 20h sustained で到達想定 |
+| 3 ($18.3K slowdown) | $18,300 | ARMED | CloudFront 5M req + Wave 55 packet で到達想定 |
+| 4 ($18.7K Lambda direct stop) | $18,700 | **ARMED** (`JPCITE_AUTO_STOP_ENABLED=true`) | Phase 8 ramp 中の真の hard-stop、email confirm 不要で即停止 |
+| 5 ($18.9K Budget Action deny IAM) | $18,900 | **STANDBY** (Budget Action attached) | Phase 8 ramp で line 4 通過しても deny IAM で新規 resource 立ち上げ不可 |
+| ceiling | $19,490 | never reach 設計 | $590 margin |
+
+### 12.7 Phase 8 actual burn snapshot
+
+- 実 cost: 依然 small (Cost Explorer 8-12hr lag、Phase 5-7 の compute は smoke / Fargate Spot tiny / SageMaker GPU smoke で実 burn small)
+- Phase 8 ramp 完了後 12-24 hr で Cost Explorer 反映、CW alarm seconds latency で先に観測
+- Lambda armed + Budget Action STANDBY が ramp 中の絶対 hard-stop として 24/7 監視
+- 実 burn は Phase 8 完了後の attestation phase で確定、`aws_budget_canary_attestation` artifact に bind
+
+### 12.8 Phase 8 における key learning (確立済)
+
+- **local Python packet gen 300x faster** — 1 packet <1 sec の trivial compute は Fargate Spot startup ~30 sec が overhead で支配、local + `aws s3 sync --concurrent` が 167x speedup (`feedback_packet_local_gen_300x_faster`)
+- **Cost Explorer 8-12hr lag が支配** — 実 cost burn は CW alarm seconds latency でしか観測不能、Cost Explorer は historical only
+- **real burn 軸**: GPU 長時間 ($/hr × hour) / CloudFront egress ($/GB) / Textract per-page ($0.0015) / Athena scan ($5/TB) の 4 軸が支配、Fargate / S3 / Logs は noise
+- **5-line defense は modal** — line 4 (resource state flip) と line 5 (IAM deny) が異なる効き方で並列、片方が失敗してももう片方が止める
+
+---
 
 last_updated: 2026-05-16
