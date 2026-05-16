@@ -1906,6 +1906,66 @@ for _name, _prefix in _WAVE_86_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 87 procurement / public contracting cross packet tables (10 generators,
+# 2026-05-17). All share the jsic_major industry cohort with descriptive
+# adoption_n proxy covering 公共入札 winning share (落札率 / 平均落札価格 /
+# 入札参加業者数 / 競争・指名・随意 / WTO 政府調達協定) / 政府契約 集中
+# (発注者上位集中度 / 売上に占める公契約比率 / 1 社 1 案件最大金額率 /
+# リピート率) / 都道府県 procurement match (47 都道府県別 調達カテゴリ /
+# 入札資格 等級 / 物品・役務・工事 区分 / 地元中小企業優先 / 経審) / 随意
+# 契約 signal (会計法 §29条の3 第4項・第5項 / 1 者応札 連続 / 落札率 100%
+# 案件 / 独立行政法人 系 受注) / 最低価格 違反履歴 (低入札価格調査 / ダン
+# ピング受注 / 公契約条例 賃金下限 / 不当廉売 / 履行能力不足) / 経審 status
+# (建設業 経営事項審査 P / X1 / X2 / Y / Z / W / ISO 9001 / ISO 14001) /
+# 下請 chain depth (1 次 → 2 次 → 3 次 / 下請代金支払遅延 / 不当減額 / 中
+# 間搾取 / 一括下請負 丸投げ) / 紛争 history (入札異議申立 / 行政不服審査 /
+# 行政訴訟 / WTO 政府調達 紛争 / CHANS / 工事請負契約紛争審査会) /
+# procurement diversity (中小企業優先発注比率 / 女性活躍推進法 認定 / 障害
+# 者雇用 / 若者活躍推進法 / グリーン購入法 / NPO / 社会的企業 発注) / 公金
+# 支払 velocity (請求から入金まで日数 / 公金支払遅延防止法 §8 利息 / 前金
+# 払・部分払 活用率 / 標準処理期間 / 30 日以内 政府支払 ルール)。Reuse
+# the shared super-set columns; topic-specific fields land in raw_json.
+_WAVE_87_TABLES: list[tuple[str, str]] = [
+    ("packet_public_bid_win_share_v1", "public_bid_win_share_v1/"),
+    (
+        "packet_government_contract_concentration_v1",
+        "government_contract_concentration_v1/",
+    ),
+    (
+        "packet_prefecture_procurement_match_v1",
+        "prefecture_procurement_match_v1/",
+    ),
+    (
+        "packet_single_tender_award_signal_v1",
+        "single_tender_award_signal_v1/",
+    ),
+    (
+        "packet_min_price_violation_history_v1",
+        "min_price_violation_history_v1/",
+    ),
+    ("packet_prequalification_status_v1", "prequalification_status_v1/"),
+    (
+        "packet_subcontracting_chain_depth_v1",
+        "subcontracting_chain_depth_v1/",
+    ),
+    (
+        "packet_dispute_resolution_history_v1",
+        "dispute_resolution_history_v1/",
+    ),
+    (
+        "packet_procurement_diversity_index_v1",
+        "procurement_diversity_index_v1/",
+    ),
+    (
+        "packet_government_payment_velocity_v1",
+        "government_payment_velocity_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_87_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 88 corporate activism / political donation cross packet tables (10
 # generators, 2026-05-17). All share the jsic_major industry cohort with
 # descriptive adoption_n proxy covering 政治献金 record (政治資金規正法 報告

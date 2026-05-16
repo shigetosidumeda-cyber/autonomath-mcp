@@ -1,9 +1,9 @@
 {
   "schema_version": "jpcite.outcome_catalog.public.v1",
-  "catalog_id": "jpcite-outcome-catalog-2026-05-16",
-  "generated_at": "2026-05-17T00:01:00+09:00",
+  "catalog_id": "jpcite-outcome-catalog-2026-05-17",
+  "generated_at": "2026-05-17T00:30:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 362,
+  "total_outcomes": 372,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -7514,6 +7514,196 @@
       "outcome_contract_id": "community_forum_engagement_packet",
       "display_name": "業種別 community forum engagement packet",
       "description": "業種別 公式 community / Slack / Discord / Qiita / Zenn / GitHub Discussions / OSS 関与 / ユーザー会 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "public_bid_win_share_packet",
+      "display_name": "業種別 public bid win share packet",
+      "description": "業種別 公共入札 winning share / 落札率 / 平均落札価格 / 入札参加業者数 / 競争入札・指名競争・随意契約 区分 / WTO 政府調達協定 対象 / 発注金額帯 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "government_contract_concentration_packet",
+      "display_name": "業種別 government contract concentration packet",
+      "description": "業種別 政府契約 集中 / 発注者上位集中度 / 売上に占める公契約比率 / 各府省別 シェア / 自治体別 シェア / 1 社 1 案件最大金額率 / リピート率 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "prefecture_procurement_match_packet",
+      "display_name": "業種別 prefecture procurement match packet",
+      "description": "業種別 47 都道府県別 調達カテゴリ / 入札資格 等級 (A/B/C/D) / 物品・役務・工事 区分 / 地元中小企業優先 / 入札参加資格審査 (経審含む) / 共同企業体 JV 参加 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "single_tender_award_signal_packet",
+      "display_name": "業種別 single tender award signal packet",
+      "description": "業種別 随意契約 award signal / 会計法 §29条の3 第4項・第5項 / 予決令 §99 各号 / 1 者応札 連続 / 落札率 100% 案件 / 公益法人 / 独立行政法人 系 受注 / 一者見積 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "min_price_violation_history_packet",
+      "display_name": "業種別 min price violation history packet",
+      "description": "業種別 最低価格 違反履歴 / 低入札価格調査基準 / 失格判定基準 / ダンピング受注 / 公契約条例 (賃金下限) 違反 / 不当廉売 / 履行能力不足 / 下請単価 法定最低賃金割れ (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "prequalification_status_packet",
+      "display_name": "業種別 prequalification status packet",
+      "description": "業種別 経審 (建設業 経営事項審査) status / P / X1 完成工事高 / X2 自己資本額 / 経営状況分析 Y / 技術職員数 Z / 元請完成工事高 / 社会性等 W / ISO 9001 / ISO 14001 / 加点・減点 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "subcontracting_chain_depth_packet",
+      "display_name": "業種別 subcontracting chain depth packet",
+      "description": "業種別 下請 chain depth / 元請 → 1 次 → 2 次 → 3 次 下請 / 下請代金支払遅延 / 下請代金 不当減額 / 下請取引適正化 (下請法 §4 各号) / 中間搾取 / 一括下請負 丸投げ (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "dispute_resolution_history_packet",
+      "display_name": "業種別 dispute resolution history packet",
+      "description": "業種別 紛争 history / 入札異議申立 / 入札監視委員会 審議 / 行政不服審査法 審査請求 / 行政訴訟 / 公正取引委員会 申告 / WTO 政府調達協定 紛争 / CHANS / 工事請負契約紛争審査会 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "procurement_diversity_index_packet",
+      "display_name": "業種別 procurement diversity index packet",
+      "description": "業種別 procurement diversity index / 中小企業優先発注比率 / 女性活躍推進法 認定事業者優遇 / 障害者雇用 推進事業者 / 若者活躍推進法 認定 / 環境配慮型調達 (グリーン購入法) / NPO / 社会的企業 発注 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "government_payment_velocity_packet",
+      "display_name": "業種別 government payment velocity packet",
+      "description": "業種別 公金支払 velocity / 請求から入金まで日数 / 公金支払遅延防止法 §8 利息発生 / 前金払・部分払 活用率 / 中間前払 制度 / 標準処理期間 / 出来高部分払 / 30 日以内 政府支払 ルール (採択密度 proxy) descriptive overlay",
       "billable": true,
       "packet_ids": [
         "summary",

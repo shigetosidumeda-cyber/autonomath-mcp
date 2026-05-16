@@ -4359,5 +4359,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 public bid win share packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "public_bid_win_share_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 government contract concentration packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "government_contract_concentration_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 prefecture procurement match packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "prefecture_procurement_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 single tender award signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "single_tender_award_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 min price violation history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "min_price_violation_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 prequalification status packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "prequalification_status_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 subcontracting chain depth packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "subcontracting_chain_depth_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 dispute resolution history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "dispute_resolution_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 procurement diversity index packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "procurement_diversity_index_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 government payment velocity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "government_payment_velocity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
