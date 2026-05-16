@@ -4749,5 +4749,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 commercial real estate footprint packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "commercial_real_estate_footprint_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 headquarters lease signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "headquarters_lease_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 property tax signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "property_tax_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 office relocation event packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "office_relocation_event_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 manufacturing facility inventory packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "manufacturing_facility_inventory_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 warehouse logistics node packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "warehouse_logistics_node_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 retail store footprint packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "retail_store_footprint_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 real estate investment signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "real_estate_investment_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 J-REIT holding proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "j_reit_holding_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 lease obligation disclosure (IFRS 16) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "lease_obligation_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

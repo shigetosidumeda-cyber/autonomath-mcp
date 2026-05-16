@@ -1,9 +1,9 @@
 {
   "schema_version": "jpcite.outcome_catalog.public.v1",
   "catalog_id": "jpcite-outcome-catalog-2026-05-17",
-  "generated_at": "2026-05-17T00:30:00+09:00",
+  "generated_at": "2026-05-17T01:00:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 392,
+  "total_outcomes": 412,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -8098,6 +8098,386 @@
       "subject_id_hint": "jsic_major",
       "source_count": 2,
       "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "product_recall_history_packet",
+      "display_name": "業種別 product recall history packet",
+      "description": "業種別 製品リコール history / 自主回収 / 改善対策 / PL 訴訟 / クレーム件数 / 重大製品事故 報告 (消安法 §35-§36, PL法 §3, 食衛法 §54-§59, 薬機法 §68-9-3, 道路運送車両法 §63-2, 電安法 §27) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "safety_certification_intensity_packet",
+      "display_name": "業種別 safety certification intensity packet",
+      "description": "業種別 安全認証 取得 intensity / JIS / PSE (電安法 §27) / PSC (消安法 §3) / SG (製品安全協会) / STマーク (玩具) / HACCP 等 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "food_label_compliance_packet",
+      "display_name": "業種別 food label compliance packet",
+      "description": "業種別 食品表示法 compliance / アレルゲン / 原産地表示 / 栄養成分表示 / 機能性表示食品 / 特定保健用食品 (トクホ) / 添加物表示 / 期限表示 (食品表示法 §4-§5, 健康増進法 §65-§66, 景表法 §5) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "drug_pharmaceutical_audit_packet",
+      "display_name": "業種別 drug pharmaceutical audit packet",
+      "description": "業種別 薬機法 audit / 医薬品 製造販売業 §12 / GMP / GVP / GQP / 副作用報告 §68-10 / 添付文書 §49 / 再審査 再評価 / 治験 §80-2 (薬機法, ICH-GCP) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "medical_device_compliance_packet",
+      "display_name": "業種別 medical device compliance packet",
+      "description": "業種別 医療機器 compliance / クラス I-IV / QMS 省令 / ISO 13485 / 製造販売届出 §23-2 / 認証 §23-2-23 / 承認 §23-2-3 / SaMD プログラム医療機器 / IEC 62366 / JIS T 14971 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "cosmetic_safety_signal_packet",
+      "display_name": "業種別 cosmetic safety signal packet",
+      "description": "業種別 化粧品 / 医薬部外品 安全 signal / 製造販売業 / 自主回収 / 全成分表示 §61 / ネガティブ ポジティブリスト / 薬用化粧品 / 化粧品基準 (薬機法 §12 §14 §61 §62, 景表法) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "toy_safety_certification_packet",
+      "display_name": "業種別 toy safety certification packet",
+      "description": "業種別 玩具 安全認証 / STマーク (日本玩具協会 ST 2016) / EN 71 / ASTM F963 / CPSIA / 機械物理特性 / 可燃 / 化学的安全性 3軸 (消安法, 食衛法 §51) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "chemical_substance_disclosure_packet",
+      "display_name": "業種別 chemical substance disclosure packet",
+      "description": "業種別 化学物質 disclosure / 化審法 §3 §4 §5 §10 / PRTR §5 / SDS / GHS 分類 (JIS Z 7252-7253) / 一般 / 優先評価 / 監視 / 第一種 第二種 特定 / 新規届出 (化審法, 化管法, 安衛法 §57) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "electrical_safety_audit_packet",
+      "display_name": "業種別 electrical safety audit packet",
+      "description": "業種別 電気安全 audit / 電安法 §10 §27 §28 / PSE マーク (菱形 特定電気用品 / 丸形 特定以外) / 自主検査 / 技術基準適合 / 工場検査 / リチウムイオン PSE (電安法, 電気事業法 §39 §43, JIS C 9335-1) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "consumer_complaint_pulse_packet",
+      "display_name": "業種別 consumer complaint pulse packet",
+      "description": "業種別 消費者苦情 pulse / PIO-NET 受付件数 / 国民生活センター 苦情 / 消費生活相談 / トラブル類型 / あっせん解決 / 重要消費者紛争 ADR (消費者基本法, 消費者契約法 §4 §8-§10, 特商法 §3-2 §9, 消安法 §11 §12 §40-§47, 国セ法 §10) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "commercial_real_estate_footprint_packet",
+      "display_name": "業種別 commercial real estate footprint packet",
+      "description": "業種別 商業不動産 footprint / 法人土地・建物基本調査 / EDINET 「設備の状況」 / 法務局 不動産登記 / 含み損益 / IFRS 16 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "headquarters_lease_signal_packet",
+      "display_name": "業種別 headquarters lease signal packet",
+      "description": "業種別 本社 lease / 普通借家 vs 定期借家 / 賃料改定 / 中途解約 / 更新料 / 敷金保証金 (借地借家法 §38, 民法 §601-§622) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "property_tax_signal_packet",
+      "display_name": "業種別 property tax signal packet",
+      "description": "業種別 固定資産税 / 都市計画税 / 償却資産税 / 標準税率1.4% / 課税標準特例 / 不動産取得税 / 登録免許税 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "office_relocation_event_packet",
+      "display_name": "業種別 office relocation event packet",
+      "description": "業種別 事務所移転 / 本店所在地変更登記 / 地方拠点強化税制 (措置法 §10-4 §42-11-3) / 地方創生推進交付金 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "manufacturing_facility_inventory_packet",
+      "display_name": "業種別 manufacturing facility inventory packet",
+      "description": "業種別 製造拠点 / 工業統計 / 工場立地法届出 / 工場立地動向 / 製造品出荷額 / 稼働率 / 環境影響評価 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "warehouse_logistics_node_packet",
+      "display_name": "業種別 warehouse logistics node packet",
+      "description": "業種別 倉庫業登録 / 普通倉庫 / 冷蔵倉庫 / 危険物倉庫 / 物流総合効率化法認定 / 自動化倉庫 (AS/RS) / WMS / TMS (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "retail_store_footprint_packet",
+      "display_name": "業種別 retail store footprint packet",
+      "description": "業種別 店舗 / 大規模小売店舗立地法届出 / 直営 vs FC / 路面店 vs インショップ / 商店街 / ロードサイド / 出退店 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "real_estate_investment_signal_packet",
+      "display_name": "業種別 real estate investment signal packet",
+      "description": "業種別 投資不動産 / NOI / cap rate / IRR / LTV / DSCR / 不動産特定共同事業 / 不動産信託受益権 / TMK / GK-TK スキーム (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "j_reit_holding_proxy_packet",
+      "display_name": "業種別 J-REIT holding proxy packet",
+      "description": "業種別 J-REIT 保有 / オフィス特化 / 住居 / 物流 / 商業 / ホテル / ヘルスケア / 総合型 / 投資口価格 / 分配金利回り / NAV / LTV (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "lease_obligation_disclosure_packet",
+      "display_name": "業種別 lease obligation disclosure (IFRS 16) packet",
+      "description": "業種別 リース義務 開示 / 使用権資産 / リース負債 / IFRS 16 / ASBJ 企業会計基準13号 / オペレーティング vs ファイナンス / KAM (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
     }
   ],
   "filters": {
@@ -8246,7 +8626,27 @@
         "customer_concentration_risk_packet",
         "brand_sentiment_proxy_packet",
         "product_lifecycle_pulse_packet",
-        "omnichannel_maturity_packet"
+        "omnichannel_maturity_packet",
+        "product_recall_history_packet",
+        "safety_certification_intensity_packet",
+        "food_label_compliance_packet",
+        "drug_pharmaceutical_audit_packet",
+        "medical_device_compliance_packet",
+        "cosmetic_safety_signal_packet",
+        "toy_safety_certification_packet",
+        "chemical_substance_disclosure_packet",
+        "electrical_safety_audit_packet",
+        "consumer_complaint_pulse_packet",
+        "commercial_real_estate_footprint_packet",
+        "headquarters_lease_signal_packet",
+        "property_tax_signal_packet",
+        "office_relocation_event_packet",
+        "manufacturing_facility_inventory_packet",
+        "warehouse_logistics_node_packet",
+        "retail_store_footprint_packet",
+        "real_estate_investment_signal_packet",
+        "j_reit_holding_proxy_packet",
+        "lease_obligation_disclosure_packet"
       ],
       "heavy": [
         "application_strategy",

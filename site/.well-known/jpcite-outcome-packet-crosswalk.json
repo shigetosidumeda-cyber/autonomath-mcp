@@ -1,7 +1,7 @@
 {
   "schema_version": "jpcite.outcome_packet_athena_crosswalk.v1",
-  "catalog_id": "jpcite-outcome-packet-athena-crosswalk-2026-05-17",
-  "generated_at": "2026-05-16T15:41:15Z",
+  "catalog_id": "jpcite-outcome-packet-crosswalk-2026-05-17",
+  "generated_at": "2026-05-17T01:00:00+09:00",
   "source_documents": {
     "outcome_catalog": "site/.well-known/jpcite-outcome-catalog.json",
     "outcome_contract_catalog": "site/releases/rc1-p0-bootstrap/outcome_contract_catalog.json",
@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 382,
+  "total_outcomes": 392,
   "wired_count": 239,
-  "pending_count": 143,
+  "pending_count": 153,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -7605,6 +7605,206 @@
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_hostile_takeover_proxy_v1 LIMIT 100",
       "status": "WIRED"
+    },
+    {
+      "outcome_id": "commercial_real_estate_footprint_packet",
+      "display_name": "業種別 commercial real estate footprint packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_commercial_real_estate_footprint_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_commercial_real_estate_footprint_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "headquarters_lease_signal_packet",
+      "display_name": "業種別 headquarters lease signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_headquarters_lease_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_headquarters_lease_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "property_tax_signal_packet",
+      "display_name": "業種別 property tax signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_property_tax_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_property_tax_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "office_relocation_event_packet",
+      "display_name": "業種別 office relocation event packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_office_relocation_event_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_office_relocation_event_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "manufacturing_facility_inventory_packet",
+      "display_name": "業種別 manufacturing facility inventory packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_manufacturing_facility_inventory_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_manufacturing_facility_inventory_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "warehouse_logistics_node_packet",
+      "display_name": "業種別 warehouse logistics node packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_warehouse_logistics_node_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_warehouse_logistics_node_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "retail_store_footprint_packet",
+      "display_name": "業種別 retail store footprint packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_retail_store_footprint_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_retail_store_footprint_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "real_estate_investment_signal_packet",
+      "display_name": "業種別 real estate investment signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_real_estate_investment_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_real_estate_investment_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "j_reit_holding_proxy_packet",
+      "display_name": "業種別 J-REIT holding proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_j_reit_holding_proxy_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_j_reit_holding_proxy_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "lease_obligation_disclosure_packet",
+      "display_name": "業種別 lease obligation disclosure (IFRS 16) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_lease_obligation_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_lease_obligation_disclosure_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": null,
+      "status": "PENDING"
     }
   ],
   "gap_classification": {
@@ -8548,6 +8748,96 @@
       "subject_kind": "jsic_major",
       "wired_status": "pending",
       "wave": 90
+    },
+    {
+      "outcome_contract_id": "commercial_real_estate_footprint_packet",
+      "package_kind": "commercial_real_estate_footprint_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_commercial_real_estate_footprint_packets.py",
+      "glue_table": "packet_commercial_real_estate_footprint_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "headquarters_lease_signal_packet",
+      "package_kind": "headquarters_lease_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_headquarters_lease_signal_packets.py",
+      "glue_table": "packet_headquarters_lease_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "property_tax_signal_packet",
+      "package_kind": "property_tax_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_property_tax_signal_packets.py",
+      "glue_table": "packet_property_tax_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "office_relocation_event_packet",
+      "package_kind": "office_relocation_event_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_office_relocation_event_packets.py",
+      "glue_table": "packet_office_relocation_event_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "manufacturing_facility_inventory_packet",
+      "package_kind": "manufacturing_facility_inventory_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_manufacturing_facility_inventory_packets.py",
+      "glue_table": "packet_manufacturing_facility_inventory_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "warehouse_logistics_node_packet",
+      "package_kind": "warehouse_logistics_node_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_warehouse_logistics_node_packets.py",
+      "glue_table": "packet_warehouse_logistics_node_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "retail_store_footprint_packet",
+      "package_kind": "retail_store_footprint_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_retail_store_footprint_packets.py",
+      "glue_table": "packet_retail_store_footprint_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "real_estate_investment_signal_packet",
+      "package_kind": "real_estate_investment_signal_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_real_estate_investment_signal_packets.py",
+      "glue_table": "packet_real_estate_investment_signal_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "j_reit_holding_proxy_packet",
+      "package_kind": "j_reit_holding_proxy_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_j_reit_holding_proxy_packets.py",
+      "glue_table": "packet_j_reit_holding_proxy_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
+    },
+    {
+      "outcome_contract_id": "lease_obligation_disclosure_packet",
+      "package_kind": "lease_obligation_disclosure_v1",
+      "generator_script": "scripts/aws_credit_ops/generate_lease_obligation_disclosure_packets.py",
+      "glue_table": "packet_lease_obligation_disclosure_v1",
+      "subject_kind": "jsic_major",
+      "wired_status": "pending",
+      "wave": 93
     }
   ],
   "packet_generator_exists_but_glue_table_pending": [

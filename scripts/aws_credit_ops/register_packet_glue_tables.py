@@ -2096,6 +2096,50 @@ for _name, _prefix in _WAVE_91_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 93 (real estate / asset / property cross packets) — 10 generators wrap
+# the real estate + property surface across 業種 (JSIC major) cohorts:
+# Commercial real estate footprint (法人土地・建物基本調査 / EDINET 設備の
+# 状況 / 法務局 不動産登記 / IFRS 16 投資不動産), Headquarters lease signal
+# (借地借家法 §38 定期借家 / 賃料改定 / 中途解約条項 / 更新料 / 敷金保証金),
+# Property tax signal (固定資産税 1.4% / 都市計画税 / 償却資産税 / 課税標準
+# 特例 / 不動産取得税 / 登録免許税 / 印紙税), Office relocation event
+# (本店所在地変更登記 / 商業登記 / 地方拠点強化税制 / 地方創生推進交付金),
+# Manufacturing facility inventory (工業統計 / 工場立地法届出 / 製造品出荷
+# 額 / 稼働率 / 環境影響評価), Warehouse logistics node (倉庫業登録 / 普通
+# 倉庫 / 冷蔵 / 危険物 / 物流総合効率化法 / 自動化倉庫 AS/RS), Retail store
+# footprint (大規模小売店舗立地法 / 直営 vs FC / 路面店 vs インショップ /
+# 商店街 / ロードサイド), Real estate investment signal (NOI / cap rate /
+# IRR / LTV / DSCR / 不動産特定共同事業 / TMK / GK-TK), J-REIT holding
+# proxy (オフィス / 住居 / 物流 / 商業 / ホテル / ヘルスケア 特化 / NAV /
+# LTV / 投信法), Lease obligation disclosure (IFRS 16 使用権資産 / リース
+# 負債 / ASBJ 企業会計基準13号 / KAM). Reuse the shared super-set columns;
+# topic-specific fields land in raw_json.
+_WAVE_93_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_commercial_real_estate_footprint_v1",
+        "commercial_real_estate_footprint_v1/",
+    ),
+    ("packet_headquarters_lease_signal_v1", "headquarters_lease_signal_v1/"),
+    ("packet_property_tax_signal_v1", "property_tax_signal_v1/"),
+    ("packet_office_relocation_event_v1", "office_relocation_event_v1/"),
+    (
+        "packet_manufacturing_facility_inventory_v1",
+        "manufacturing_facility_inventory_v1/",
+    ),
+    ("packet_warehouse_logistics_node_v1", "warehouse_logistics_node_v1/"),
+    ("packet_retail_store_footprint_v1", "retail_store_footprint_v1/"),
+    (
+        "packet_real_estate_investment_signal_v1",
+        "real_estate_investment_signal_v1/",
+    ),
+    ("packet_j_reit_holding_proxy_v1", "j_reit_holding_proxy_v1/"),
+    ("packet_lease_obligation_disclosure_v1", "lease_obligation_disclosure_v1/"),
+]
+
+for _name, _prefix in _WAVE_93_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
