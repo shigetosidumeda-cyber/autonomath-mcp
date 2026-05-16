@@ -1269,6 +1269,46 @@ for _name, _prefix in _WAVE_67_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 73 — climate finance cross packets (catalog 212 → 222). All 10 share
+# the jsic_major industry cohort with descriptive adoption_n + optional
+# amount_total_yen proxy covering climate transition plan / Scope 3 emissions
+# disclosure / transition finance eligibility / green bond issuance / climate
+# alignment target / sustainability-linked loan / carbon credit inventory /
+# TCFD disclosure completeness / just transition program / physical climate
+# risk geography. Reuse the shared super-set columns; topic-specific fields
+# land in raw_json.
+_WAVE_73_TABLES: list[tuple[str, str]] = [
+    ("packet_climate_transition_plan_v1", "climate_transition_plan_v1/"),
+    (
+        "packet_scope3_emissions_disclosure_v1",
+        "scope3_emissions_disclosure_v1/",
+    ),
+    (
+        "packet_transition_finance_eligibility_v1",
+        "transition_finance_eligibility_v1/",
+    ),
+    ("packet_green_bond_issuance_v1", "green_bond_issuance_v1/"),
+    ("packet_climate_alignment_target_v1", "climate_alignment_target_v1/"),
+    (
+        "packet_sustainability_linked_loan_v1",
+        "sustainability_linked_loan_v1/",
+    ),
+    ("packet_carbon_credit_inventory_v1", "carbon_credit_inventory_v1/"),
+    (
+        "packet_tcfd_disclosure_completeness_v1",
+        "tcfd_disclosure_completeness_v1/",
+    ),
+    ("packet_just_transition_program_v1", "just_transition_program_v1/"),
+    (
+        "packet_physical_climate_risk_geo_v1",
+        "physical_climate_risk_geo_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_73_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)

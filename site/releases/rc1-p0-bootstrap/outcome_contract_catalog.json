@@ -2019,5 +2019,395 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 climate transition plan packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "climate_transition_plan_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 Scope 3 emissions disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "scope3_emissions_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 transition finance eligibility packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "transition_finance_eligibility_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 green bond issuance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "green_bond_issuance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 climate alignment target packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "climate_alignment_target_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 sustainability-linked loan packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "sustainability_linked_loan_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 carbon credit inventory packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "carbon_credit_inventory_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 TCFD disclosure completeness packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "tcfd_disclosure_completeness_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 just transition program packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "just_transition_program_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 physical climate risk geography packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "physical_climate_risk_geo_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 AI governance 開示 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "ai_governance_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 アルゴリズム決定 透明性 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "algorithmic_decision_transparency_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 バイアス監査 disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "bias_audit_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 AI model lineage packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "ai_model_lineage_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 学習データ provenance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "training_data_provenance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 自動決定 異議申立率 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "automated_decision_dispute_rate_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 説明可能性 compliance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "explainability_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 Deepfake 開示義務 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "deepfake_disclosure_obligation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 AI 安全認証 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "ai_safety_certification_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 AI 規制 horizon scan packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "ai_regulatory_horizon_scan_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種 × 都道府県 × 法人 universal key packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "industry_x_prefecture_houjin_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "都道府県 × 業種 density packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "prefecture_x_industry_density_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "地域 × 業種 × 補助金受給 houjin packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regional_industry_subsidy_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "政令市 × 業種 × houjin directory packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "municipality_industry_directory_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "都道府県 × 業種 × 判例 overlay packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "prefecture_industry_court_overlay_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "地域 × 業種 × 違反密度 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regional_industry_violation_density_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "市町村 × 業種 多様性 + houjin sample packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "city_industry_diversification_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "都道府県 × 業種 × インバウンド packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "prefecture_industry_inbound_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "地域 × 業種 × 輸出 intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regional_industry_export_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "政令市 × 業種 cluster + houjin packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "municipality_industry_cluster_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
