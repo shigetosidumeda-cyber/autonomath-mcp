@@ -24,6 +24,7 @@ operator can flip them off without redeploy.
 from __future__ import annotations
 
 import contextlib
+import functools
 import logging
 import sqlite3
 from typing import Annotated, Any
@@ -31,20 +32,34 @@ from typing import Annotated, Any
 from pydantic import Field
 
 from jpintel_mcp._jpcite_env_bridge import get_flag
-from jpintel_mcp.api.eligibility_check import (
-    _DEFAULT_HISTORY_YEARS,
-    _MAX_HISTORY_YEARS,
-    _cutoff_iso,
-    _fetch_blocking_rules,
-    _fetch_candidate_programs,
-    _fetch_enforcement_hits,
-    _normalize_houjin_bangou,
-    _open_autonomath_ro,
-    _walk_eligibility,
-)
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.autonomath_tools.error_envelope import make_error
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
+
+# PERF-6: ``jpintel_mcp.api.eligibility_check`` drags in ``fastapi`` (cum
+# ~98 ms at cold start). MCP cold-start never needs FastAPI routing — the
+# REST router is mounted at API boot time, not MCP boot time. We defer the
+# import to first tool call via a cached accessor, and inline the two int
+# constants that ``Field(le=..., ge=...)`` signatures need at decoration
+# time. The inlined values must stay in sync with the api module — the
+# parity test in ``tests/test_mcp_cold_start.py`` enforces this.
+_DEFAULT_HISTORY_YEARS = 5  # mirrors jpintel_mcp.api.eligibility_check._DEFAULT_HISTORY_YEARS
+_MAX_HISTORY_YEARS = 20  # mirrors jpintel_mcp.api.eligibility_check._MAX_HISTORY_YEARS
+
+
+@functools.cache
+def _api() -> Any:
+    """Lazy-import ``jpintel_mcp.api.eligibility_check`` on first MCP call.
+
+    Return type is ``Any`` because mypy strict rejects ``ModuleType`` as a
+    valid type and refuses to attribute-check on it. The PERF-6 contract
+    is enforced by the runtime parity test in
+    ``tests/test_mcp_cold_start.py::test_eligibility_constant_parity``.
+    """
+    from jpintel_mcp.api import eligibility_check  # noqa: PLC0415
+
+    return eligibility_check
+
 
 logger = logging.getLogger("jpintel.mcp.autonomath.eligibility_check")
 
@@ -109,7 +124,8 @@ def _dynamic_check_impl(
     exclude_history_years: int,
     program_id_hint: list[str] | None,
 ) -> dict[str, Any]:
-    houjin = _normalize_houjin_bangou(houjin_bangou)
+    api = _api()
+    houjin = api._normalize_houjin_bangou(houjin_bangou)
     if houjin is None:
         return make_error(
             code="out_of_range",
@@ -127,8 +143,8 @@ def _dynamic_check_impl(
             field="exclude_history_years",
         )
 
-    cutoff = _cutoff_iso(exclude_history_years)
-    am_conn = _open_autonomath_ro()
+    cutoff = api._cutoff_iso(exclude_history_years)
+    am_conn = api._open_autonomath_ro()
     if am_conn is None:
         return make_error(
             code="db_unavailable",
@@ -136,7 +152,7 @@ def _dynamic_check_impl(
             hint="Check AUTONOMATH_DB_PATH and that the volume is mounted.",
         )
     try:
-        hits = _fetch_enforcement_hits(
+        hits = api._fetch_enforcement_hits(
             am_conn,
             houjin_bangou=houjin,
             cutoff_iso=cutoff,
@@ -153,17 +169,17 @@ def _dynamic_check_impl(
             hint="Check JPINTEL_DB_PATH and that the volume is mounted.",
         )
     try:
-        candidates = _fetch_candidate_programs(
+        candidates = api._fetch_candidate_programs(
             jp_conn,
             industry_jsic=industry_jsic,
             program_id_hint=program_id_hint,
         )
-        rules = _fetch_blocking_rules(jp_conn)
+        rules = api._fetch_blocking_rules(jp_conn)
     finally:
         with contextlib.suppress(Exception):
             jp_conn.close()
 
-    blocked, borderline, eligible = _walk_eligibility(
+    blocked, borderline, eligible = api._walk_eligibility(
         candidates=candidates,
         rules=rules,
         enforcement_hits=hits,
@@ -189,7 +205,8 @@ def _single_program_impl(
     houjin_bangou: str,
     exclude_history_years: int,
 ) -> dict[str, Any]:
-    houjin = _normalize_houjin_bangou(houjin_bangou)
+    api = _api()
+    houjin = api._normalize_houjin_bangou(houjin_bangou)
     if houjin is None:
         return make_error(
             code="out_of_range",
@@ -224,20 +241,20 @@ def _single_program_impl(
                 hint="Verify program_id via search_programs / list_open_programs.",
                 field="program_id",
             )
-        rules = _fetch_blocking_rules(jp_conn)
+        rules = api._fetch_blocking_rules(jp_conn)
     finally:
         with contextlib.suppress(Exception):
             jp_conn.close()
 
-    cutoff = _cutoff_iso(exclude_history_years)
-    am_conn = _open_autonomath_ro()
+    cutoff = api._cutoff_iso(exclude_history_years)
+    am_conn = api._open_autonomath_ro()
     if am_conn is None:
         return make_error(
             code="db_unavailable",
             message="am_enforcement_detail unavailable on this volume.",
         )
     try:
-        hits = _fetch_enforcement_hits(
+        hits = api._fetch_enforcement_hits(
             am_conn,
             houjin_bangou=houjin,
             cutoff_iso=cutoff,
@@ -246,7 +263,7 @@ def _single_program_impl(
         with contextlib.suppress(Exception):
             am_conn.close()
 
-    blocked, borderline, eligible = _walk_eligibility(
+    blocked, borderline, eligible = api._walk_eligibility(
         candidates=[(prog_row["unified_id"], prog_row["primary_name"])],
         rules=rules,
         enforcement_hits=hits,

@@ -22,6 +22,7 @@ surfaces; §1 only on upcoming-rounds (pure schedule data).
 
 from __future__ import annotations
 
+import functools
 import logging
 import sqlite3
 from typing import Annotated, Any
@@ -29,16 +30,26 @@ from typing import Annotated, Any
 from pydantic import Field
 
 from jpintel_mcp._jpcite_env_bridge import get_flag
-from jpintel_mcp.api.timeline_trend import (
-    _build_cases_trend,
-    _build_program_timeline,
-    _build_upcoming_rounds_for_profile,
-)
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .error_envelope import make_error
 from .snapshot_helper import attach_corpus_snapshot
+
+# PERF-6: ``jpintel_mcp.api.timeline_trend`` drags ``fastapi`` at module
+# load. MCP cold-start does not need the REST router. Defer to first call.
+
+
+@functools.cache
+def _api() -> Any:
+    """Lazy-import ``jpintel_mcp.api.timeline_trend`` on first MCP call.
+
+    Return type is ``Any`` so mypy strict accepts attribute access.
+    """
+    from jpintel_mcp.api import timeline_trend  # noqa: PLC0415
+
+    return timeline_trend
+
 
 logger = logging.getLogger("jpintel.mcp.autonomath.timeline_trend")
 
@@ -87,7 +98,7 @@ def program_timeline_impl(program_id: str, years: int = 5) -> dict[str, Any]:
         return conn_or_err
     conn = conn_or_err
     try:
-        body = _build_program_timeline(conn, program_id=pid, years=years)
+        body = _api()._build_program_timeline(conn, program_id=pid, years=years)
     finally:
         conn.close()
     body = attach_corpus_snapshot(body)
@@ -106,7 +117,7 @@ def cases_timeline_trend_impl(
             message=f"years must be in [1, 20], got {years}.",
             field="years",
         )
-    body = _build_cases_trend(
+    body = _api()._build_cases_trend(
         industry=industry,
         prefecture=prefecture,
         years=years,
@@ -160,7 +171,7 @@ def upcoming_rounds_for_my_profile_impl(
         return conn_or_err
     conn = conn_or_err
     try:
-        body = _build_upcoming_rounds_for_profile(
+        body = _api()._build_upcoming_rounds_for_profile(
             conn,
             key_hash=api_key_hash,
             horizon_days=horizon_days,

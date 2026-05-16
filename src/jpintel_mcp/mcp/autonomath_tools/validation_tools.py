@@ -37,11 +37,14 @@ from typing import Annotated, Any, cast
 
 from pydantic import Field
 
-from jpintel_mcp.api._validation_predicates import resolve_predicate
 from jpintel_mcp.mcp.server import _READ_ONLY, _with_mcp_telemetry, mcp
 
 from .db import AUTONOMATH_DB_PATH, connect_autonomath
 from .error_envelope import make_error
+
+# PERF-6: ``jpintel_mcp.api._validation_predicates`` is the only consumer
+# of fastapi-adjacent api/_envelope etc. Defer to first tool call so MCP
+# cold-start skips the import chain.
 
 logger = logging.getLogger("jpintel.mcp.validation")
 
@@ -147,6 +150,8 @@ def _evaluate_one(
     rule_msg = rule["message_ja"]
 
     if kind == "python_dispatch":
+        from jpintel_mcp.api._validation_predicates import resolve_predicate  # noqa: PLC0415
+
         fn = resolve_predicate(ref)
         if fn is None:
             return None, _DEFERRED_MESSAGE_JA

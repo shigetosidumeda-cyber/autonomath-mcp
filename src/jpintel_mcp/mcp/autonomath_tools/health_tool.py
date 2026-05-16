@@ -8,11 +8,13 @@ from __future__ import annotations
 
 import logging
 
-from jpintel_mcp.api._health_deep import get_deep_health
 from jpintel_mcp.mcp._error_helpers import safe_internal_message
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .error_envelope import make_error
+
+# PERF-6: ``jpintel_mcp.api._health_deep`` drags ``fastapi``. MCP cold-start
+# does not need the REST router. Defer the import to first tool call.
 
 logger = logging.getLogger("jpintel.mcp.am.health")
 
@@ -37,6 +39,8 @@ def deep_health_am() -> dict[str, object]:
         - On every user request — heartbeat is for monitoring, not per-call gating.
     """
     try:
+        from jpintel_mcp.api._health_deep import get_deep_health  # noqa: PLC0415
+
         return get_deep_health()
     except Exception as exc:
         msg, _ = safe_internal_message(exc, logger=logger, tool_name="deep_health_am")

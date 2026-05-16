@@ -12,17 +12,32 @@ becomes a single-call test failure rather than a silent divergence.
 
 from __future__ import annotations
 
+import functools
 import logging
 import sqlite3
 from typing import Annotated, Any
 
 from pydantic import Field
 
-from jpintel_mcp.api.source_manifest import _build_manifest, _resolve_program
 from jpintel_mcp.mcp.server import _READ_ONLY, _with_mcp_telemetry, mcp
 
 from .db import connect_autonomath
 from .error_envelope import make_error
+
+# PERF-6: ``jpintel_mcp.api.source_manifest`` drags ``fastapi`` at module
+# load. MCP cold-start does not need the REST router. Defer to first call.
+
+
+@functools.cache
+def _api() -> Any:
+    """Lazy-import ``jpintel_mcp.api.source_manifest`` on first MCP call.
+
+    Return type is ``Any`` so mypy strict accepts attribute access.
+    """
+    from jpintel_mcp.api import source_manifest  # noqa: PLC0415
+
+    return source_manifest
+
 
 logger = logging.getLogger("jpintel.mcp.am.source_manifest")
 
@@ -89,8 +104,9 @@ def get_source_manifest(
             hint="autonomath.db unreachable; retry later.",
         )
 
+    api = _api()
     try:
-        resolved = _resolve_program(conn, pid)
+        resolved = api._resolve_program(conn, pid)
     except sqlite3.OperationalError as exc:
         logger.exception("get_source_manifest: resolve failed")
         return make_error(
@@ -112,7 +128,7 @@ def get_source_manifest(
 
     canonical_id, base = resolved
     try:
-        body = _build_manifest(conn, canonical_id, base)
+        body: dict[str, Any] = api._build_manifest(conn, canonical_id, base)
     except sqlite3.OperationalError as exc:
         logger.exception("get_source_manifest: build failed")
         return make_error(

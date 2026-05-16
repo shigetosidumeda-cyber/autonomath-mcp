@@ -16,6 +16,7 @@ Cohort context: 後継者問題 / M&A consider する 中小企業. Pairs with
 
 from __future__ import annotations
 
+import functools
 import logging
 import sqlite3
 from typing import Annotated, Any
@@ -23,24 +24,28 @@ from typing import Annotated, Any
 from pydantic import Field
 
 from jpintel_mcp._jpcite_env_bridge import get_flag
-from jpintel_mcp.api.succession import (
-    _CLIFF_DATES,
-    _DISCLAIMER,
-    _MAX_PROGRAMS,
-    _OWNER_AGE_HIGH_RISK,
-    _PLAYBOOK_PRIMARY_SOURCES,
-    _PLAYBOOK_STEPS,
-    _SCENARIOS,
-    _TAX_LEVERS_BY_SCENARIO,
-    _build_next_steps,
-    _classify_chusho,
-    _query_related_laws,
-    _query_succession_programs,
-)
 from jpintel_mcp.config import settings
 from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 from .error_envelope import make_error
+
+# PERF-6: ``jpintel_mcp.api.succession`` drags ``fastapi`` at module load
+# (~8 ms self / cum). MCP cold-start does not need the REST router. Defer
+# to first tool call. All consumed constants + helpers are accessed via
+# ``_api()``; nothing here is used at @mcp.tool decoration time.
+
+
+@functools.cache
+def _api() -> Any:
+    """Lazy-import ``jpintel_mcp.api.succession`` on first MCP call.
+
+    Return type is ``Any`` because mypy strict rejects ``ModuleType`` as a
+    valid type and refuses attribute-check on it.
+    """
+    from jpintel_mcp.api import succession  # noqa: PLC0415
+
+    return succession
+
 
 logger = logging.getLogger("jpintel.mcp.autonomath.succession")
 
@@ -79,11 +84,12 @@ def _match_succession_impl(
     @mcp.tool wrapper.
     """
 
-    if scenario not in _SCENARIOS:
+    api = _api()
+    if scenario not in api._SCENARIOS:
         return make_error(
             code="invalid_enum",
             message=(
-                f"scenario must be one of: {', '.join(sorted(_SCENARIOS))}; got {scenario!r}."
+                f"scenario must be one of: {', '.join(sorted(api._SCENARIOS))}; got {scenario!r}."
             ),
             field="scenario",
         )
@@ -112,17 +118,19 @@ def _match_succession_impl(
         return conn
 
     try:
-        spec = _SCENARIOS[scenario]
-        is_chusho = _classify_chusho(current_revenue, employee_count)
-        early_advised = owner_age >= _OWNER_AGE_HIGH_RISK
+        spec = api._SCENARIOS[scenario]
+        is_chusho = api._classify_chusho(current_revenue, employee_count)
+        early_advised = owner_age >= api._OWNER_AGE_HIGH_RISK
 
-        programs = _query_succession_programs(conn, list(spec["key_keywords"]), _MAX_PROGRAMS)
-        laws = _query_related_laws(conn)
+        programs = api._query_succession_programs(
+            conn, list(spec["key_keywords"]), api._MAX_PROGRAMS
+        )
+        laws = api._query_related_laws(conn)
     finally:
         conn.close()
 
-    tax_levers = _TAX_LEVERS_BY_SCENARIO.get(scenario, [])
-    next_steps = _build_next_steps(
+    tax_levers = api._TAX_LEVERS_BY_SCENARIO.get(scenario, [])
+    next_steps = api._build_next_steps(
         scenario=scenario,
         is_chusho=is_chusho,
         early_advised=early_advised,
@@ -151,12 +159,13 @@ def _match_succession_impl(
             "tax_lever_count": len(tax_levers),
             "primary_source_root": "https://www.chusho.meti.go.jp/zaimu/shoukei/",
         },
-        "_disclaimer": _DISCLAIMER,
+        "_disclaimer": api._DISCLAIMER,
     }
 
 
 def _succession_playbook_impl() -> dict[str, Any]:
     """Pure-Python playbook accessor."""
+    api = _api()
     return {
         "overview_ja": (
             "中小企業の事業承継は (1) 現状把握 → (2) 承継方針決定 → "
@@ -172,10 +181,10 @@ def _succession_playbook_impl() -> dict[str, Any]:
             "登録 M&A支援機関 (該当時)",
             "都道府県 事業承継・引継ぎ支援センター",
         ],
-        "steps": list(_PLAYBOOK_STEPS),
-        "cliff_dates": list(_CLIFF_DATES),
-        "primary_sources": list(_PLAYBOOK_PRIMARY_SOURCES),
-        "_disclaimer": _DISCLAIMER,
+        "steps": list(api._PLAYBOOK_STEPS),
+        "cliff_dates": list(api._CLIFF_DATES),
+        "primary_sources": list(api._PLAYBOOK_PRIMARY_SOURCES),
+        "_disclaimer": api._DISCLAIMER,
     }
 
 
