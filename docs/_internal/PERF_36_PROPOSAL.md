@@ -77,6 +77,58 @@ already does `for mod in list(sys.modules): if mod.startswith("jpintel_mcp"): de
 (lines 83–85) to forcibly drop the cache, so a `tests/__init__.py`
 shim must NOT re-import after that purge runs.
 
+#### Win A — empirical regression report (2026-05-17, rolled back)
+
+Win A was implemented as a `tests/__init__.py` module-level shim and
+benchmarked. **It does not deliver the predicted savings on this
+codebase and was rolled back.** Details:
+
+| run | shim ENABLED | shim DISABLED |
+|-----|---|---|
+| 1 | 7.52s | 5.86s |
+| 2 | 6.18s | 6.08s |
+| 3 | 6.11s | 6.17s |
+| **avg** | **6.60s** | **6.04s** |
+
+(3 back-to-back runs each, after one warm-up run to wash out cold OS
+page-cache effects, on 11,268 collected tests.)
+
+The shim was implemented as a "safe subset" form — it pre-imported
+`fastapi`, `fastapi.testclient`, `pydantic`, `starlette.middleware`,
+`starlette.responses` only (deliberately excluding `jpintel_mcp.api.main`
+because the conftest purge defeats that). Two reasons the shim is
+neutral-to-negative:
+
+1. **macOS multiprocessing default = spawn, not fork.** Verified via
+   `multiprocessing.get_start_method()` → `'spawn'`. The proposal's
+   savings claim ("worker fork inherits the parent's import cache")
+   does not apply — every xdist worker is a fresh Python process and
+   re-runs `tests/__init__.py` from scratch.
+2. **conftest.py already imports the warmed deps.** Lines 87-93 of
+   `tests/conftest.py` do `import json`, `import sqlite3`, `from
+   fastapi.testclient import TestClient` (which transitively pulls in
+   fastapi + starlette + pydantic + their plugin registries). The shim
+   therefore duplicates work that conftest does ~immediately after,
+   adding fixed import overhead with no amortization benefit.
+
+The full `jpintel_mcp.api.main` pre-import (the variant the proposal
+originally sketched) is even worse: the conftest purge at lines 83-85
+explicitly deletes `jpintel_mcp.*` from `sys.modules` to let Settings
+re-read the test env vars set in the preamble. Any pre-import is
+wiped before the first test file's collection runs, so the 425 test
+files still each pay full import cost.
+
+**Rollback**: `tests/__init__.py` returned to 0 bytes. Sample test
+(`tests/test_api_artifacts_pure.py`) post-rollback: 37 passed in 0.78s.
+
+**Implication for Win C**: the conftest purge is the real bottleneck.
+The right next move is NOT another shim; it is to refactor the purge
+so it runs only for the small subset of tests that mutate env between
+import sites (likely: `tests/test_config_*`, `tests/test_settings_*`).
+That refactor belongs in Win C scope, gated on a dedicated stream
+review. See "Recommended landing order" below — Win A should be
+**skipped**, not deferred.
+
 ### Win B — `--noconftest` selective sub-suite alias (zero-risk, only affects opt-in)
 
 Add a Makefile target `test-fast-co` that times collection with the
