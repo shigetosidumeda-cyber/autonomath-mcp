@@ -1753,6 +1753,33 @@ for _name, _prefix in _WAVE_82_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 83 climate physical risk cross packet tables (10 generators, 2026-05-16).
+# All share the jsic_major industry cohort with descriptive adoption_n proxy
+# covering 浸水想定区域 exposure (国交省 水管理・国土保全局 / 重ねるハザード
+# マップ) / 地震 hazard overlay (NIED J-SHIS + 地震本部) / 台風経路 frequency
+# (気象庁 台風 + 気候適応) / 熱ストレス 経済影響 (環境省 WBGT + 厚労省 熱中症
+# + JWA) / 渇水 水供給 risk (水資源機構 + 国交省 水管理) / 沿岸 内水 inundation
+# signal (港湾局 + 国交省 海岸) / 土砂 災害 (砂防部 + 産総研 地質調査総合) /
+# 火山 zone overlay (気象庁 火山 + 内閣府防災) / 津波 zone exposure (気象庁
+# 津波 + 内閣府防災) / 林野 火災 risk proxy (林野庁 + 消防庁 + A-PLAT 気候適応)。
+# Reuse the shared super-set columns; topic-specific fields land in raw_json.
+_WAVE_83_TABLES: list[tuple[str, str]] = [
+    ("packet_flood_zone_exposure_v1", "flood_zone_exposure_v1/"),
+    ("packet_earthquake_hazard_overlay_v1", "earthquake_hazard_overlay_v1/"),
+    ("packet_typhoon_path_frequency_v1", "typhoon_path_frequency_v1/"),
+    ("packet_heat_stress_economic_impact_v1", "heat_stress_economic_impact_v1/"),
+    ("packet_drought_water_supply_risk_v1", "drought_water_supply_risk_v1/"),
+    ("packet_coastal_inundation_signal_v1", "coastal_inundation_signal_v1/"),
+    ("packet_landslide_geotechnical_risk_v1", "landslide_geotechnical_risk_v1/"),
+    ("packet_volcanic_zone_overlay_v1", "volcanic_zone_overlay_v1/"),
+    ("packet_tsunami_zone_exposure_v1", "tsunami_zone_exposure_v1/"),
+    ("packet_wildfire_risk_proxy_v1", "wildfire_risk_proxy_v1/"),
+]
+
+for _name, _prefix in _WAVE_83_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 84 demographics / population cross packet tables (10 generators,
 # 2026-05-16). All share the jsic_major industry cohort with descriptive
 # adoption_n proxy covering 人口減少地域 × 事業所立地 / 高齢化進行 proxy
