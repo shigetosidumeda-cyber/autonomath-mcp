@@ -188,6 +188,10 @@ def test_bootstrap_static_outcome_contract_catalog_is_expanded(tmp_path: Path) -
         contract.outcome_contract_id for contract in build_outcome_contract_catalog()
     ]
 
+    # The build_artifact_map() output mirrors the Python builder exactly.
+    # The on-disk JSON at site/releases/rc1-p0-bootstrap/outcome_contract_catalog.json
+    # may be a superset (cross-analysis derived expansion). The disk superset
+    # contract is enforced in tests/test_outcome_catalog_expand.py.
     assert static_contract_ids == expected_contract_ids
     assert "cashbook_csv_subsidy_fit_screen" in static_contract_ids
     assert "healthcare_regulatory_public_check" in static_contract_ids

@@ -330,6 +330,326 @@
       "estimated_tokens_saved": 13700,
       "source_count": 7,
       "known_gaps": []
+    },
+    {
+      "outcome_contract_id": "houjin_360_full_packet",
+      "display_name": "Houjin 360 full packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": true,
+      "cap_per_day": 200,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 23800,
+      "source_count": 11,
+      "known_gaps": ["coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "program_lineage_packet",
+      "display_name": "Program lineage packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "program",
+        "id_hint": "program_id"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 10400,
+      "source_count": 5,
+      "known_gaps": ["schema_drift_possible"]
+    },
+    {
+      "outcome_contract_id": "acceptance_probability_cohort_packet",
+      "display_name": "Acceptance probability cohort packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "cohort_profile"
+      },
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": true,
+      "cap_per_day": 200,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 20100,
+      "source_count": 9,
+      "known_gaps": ["coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "enforcement_industry_heatmap_packet",
+      "display_name": "Enforcement industry heatmap packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "industry_region_pair"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 11600,
+      "source_count": 4,
+      "known_gaps": ["coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "invoice_houjin_cross_check_packet",
+      "display_name": "Invoice and houjin cross-check packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou_or_T13"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 5000,
+      "idempotency_window_seconds": 3600,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 5800,
+      "source_count": 3,
+      "known_gaps": ["source_freshness_unconfirmed"]
+    },
+    {
+      "outcome_contract_id": "program_law_amendment_impact_packet",
+      "display_name": "Program and law amendment impact packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "rule_change",
+        "id_hint": "amendment_id"
+      },
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": true,
+      "cap_per_day": 150,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 22400,
+      "source_count": 10,
+      "known_gaps": ["schema_drift_possible"]
+    },
+    {
+      "outcome_contract_id": "cohort_program_recommendation_packet",
+      "display_name": "Cohort program recommendation packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "cohort_profile"
+      },
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": true,
+      "cap_per_day": 200,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 21000,
+      "source_count": 10,
+      "known_gaps": ["coverage_thin", "approval_token_semantics_pending"]
+    },
+    {
+      "outcome_contract_id": "vendor_due_diligence_packet",
+      "display_name": "Vendor due diligence packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "counterparty_houjin_bangou"
+      },
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": true,
+      "cap_per_day": 300,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 24300,
+      "source_count": 13,
+      "known_gaps": ["coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "succession_program_matching_packet",
+      "display_name": "Succession program matching packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "succession_profile"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 400,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 12800,
+      "source_count": 6,
+      "known_gaps": ["coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "regulatory_change_radar_packet",
+      "display_name": "Regulatory change radar packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "industry_jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 11200,
+      "source_count": 5,
+      "known_gaps": ["source_freshness_unconfirmed", "schema_drift_possible"]
+    },
+    {
+      "outcome_contract_id": "tax_treaty_japan_inbound_packet",
+      "display_name": "Tax treaty Japan inbound packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "country_iso2"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 400,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 13200,
+      "source_count": 4,
+      "known_gaps": ["coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "subsidy_application_timeline_packet",
+      "display_name": "Subsidy application timeline packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "industry_jsic_major"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 6200,
+      "source_count": 3,
+      "known_gaps": ["source_freshness_unconfirmed"]
+    },
+    {
+      "outcome_contract_id": "bid_opportunity_matching_packet",
+      "display_name": "Bid opportunity matching packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "vendor_profile"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 11800,
+      "source_count": 4,
+      "known_gaps": ["coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "permit_renewal_calendar_packet",
+      "display_name": "Permit renewal calendar packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 2000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 5600,
+      "source_count": 3,
+      "known_gaps": ["coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "local_government_subsidy_aggregator_packet",
+      "display_name": "Local government subsidy aggregator packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "prefecture_or_city_code"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": null,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 12400,
+      "source_count": 5,
+      "known_gaps": ["pricing_or_cap_unconfirmed", "coverage_thin"]
+    },
+    {
+      "outcome_contract_id": "kanpou_gazette_watch_packet",
+      "display_name": "Kanpou gazette watch packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "watchlist",
+        "id_hint": "kanpou_watchlist_id"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 5200,
+      "source_count": 2,
+      "known_gaps": ["source_freshness_unconfirmed"]
     }
   ]
 }

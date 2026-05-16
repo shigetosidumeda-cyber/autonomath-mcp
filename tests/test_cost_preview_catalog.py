@@ -9,7 +9,7 @@ The tests verify:
 
   - Both cost preview catalogs (release-pinned + .well-known root) are
     well-formed and identical in content.
-  - Every 14 paid outcome_contract_id from outcome_contract_catalog.json
+  - Every paid outcome_contract_id from outcome_contract_catalog.json
     plus the 2 free controls (agent_routing_decision + cost_preview) are
     covered exactly once.
   - All prices live in the {0, 300, 600, 900} canonical band set.

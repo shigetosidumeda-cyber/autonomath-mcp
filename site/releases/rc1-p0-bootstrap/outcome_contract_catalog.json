@@ -213,5 +213,251 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Houjin 360 full packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "houjin_360_full_packet",
+    "packet_ids": [
+      "houjin_profile",
+      "registry_facts",
+      "adoption_history",
+      "enforcement_history",
+      "invoice_status",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Program lineage packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "program_lineage_packet",
+    "packet_ids": [
+      "program_lineage",
+      "amendment_chain",
+      "predecessor_links",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Acceptance probability cohort packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "acceptance_probability_cohort_packet",
+    "packet_ids": [
+      "cohort_definition",
+      "historical_acceptance_rate",
+      "fit_signals",
+      "comparable_cases",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Enforcement industry heatmap packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "enforcement_industry_heatmap_packet",
+    "packet_ids": [
+      "industry_region_heatmap",
+      "enforcement_density",
+      "trend_signals",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Invoice and houjin cross-check packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "invoice_houjin_cross_check_packet",
+    "packet_ids": [
+      "invoice_status",
+      "houjin_facts",
+      "consistency_findings",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Program and law amendment impact packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "program_law_amendment_impact_packet",
+    "packet_ids": [
+      "amendment_diff",
+      "affected_programs",
+      "impact_signals",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Cohort program recommendation packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cohort_program_recommendation_packet",
+    "packet_ids": [
+      "cohort_definition",
+      "ranked_programs",
+      "fit_signals",
+      "questions_for_professional",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Vendor due diligence packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vendor_due_diligence_packet",
+    "packet_ids": [
+      "counterparty_profile",
+      "registry_facts",
+      "enforcement_findings",
+      "invoice_status",
+      "court_citations",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Succession program matching packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "succession_program_matching_packet",
+    "packet_ids": [
+      "succession_profile",
+      "matched_programs",
+      "fit_signals",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Regulatory change radar packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regulatory_change_radar_packet",
+    "packet_ids": [
+      "industry_filter",
+      "change_signals",
+      "affected_workflows",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Tax treaty Japan inbound packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "tax_treaty_japan_inbound_packet",
+    "packet_ids": [
+      "country_pair",
+      "treaty_articles",
+      "withholding_summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Subsidy application timeline packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "subsidy_application_timeline_packet",
+    "packet_ids": [
+      "industry_filter",
+      "calendar_entries",
+      "deadline_risks",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Bid opportunity matching packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "bid_opportunity_matching_packet",
+    "packet_ids": [
+      "vendor_profile",
+      "matched_bids",
+      "fit_signals",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Permit renewal calendar packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "permit_renewal_calendar_packet",
+    "packet_ids": [
+      "permit_inventory",
+      "renewal_schedule",
+      "deadline_risks",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Local government subsidy aggregator packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "local_government_subsidy_aggregator_packet",
+    "packet_ids": [
+      "jurisdiction_filter",
+      "aggregated_subsidies",
+      "fit_signals",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Kanpou gazette watch packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "kanpou_gazette_watch_packet",
+    "packet_ids": [
+      "watchlist_id",
+      "kanpou_notices",
+      "change_signals",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
