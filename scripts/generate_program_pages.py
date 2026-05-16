@@ -42,6 +42,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import multiprocessing as _mp
 import os
 import re
 import sqlite3
@@ -2097,6 +2098,134 @@ def _write_jsonld_doc(out_path: Path, doc: dict[str, Any]) -> bool:
     return _write_if_changed(out_path, body)
 
 
+# ---------------------------------------------------------------------------
+# Parallel worker (PERF-29, 2026-05-17)
+# ---------------------------------------------------------------------------
+#
+# Per-row render+write is embarrassingly parallel: each row needs (a) a small
+# set of `_related_programs` lookups against jpintel.db, (b) a Jinja2 render,
+# (c) idempotent write to disk. Workers each own a private sqlite3 connection
+# (sqlite3.Connection is not fork-safe -- we open it in the pool initializer,
+# not in the parent) and a private Jinja Environment. The read-only acceptance
+# map, publishable slugs, domain, and output paths are sent once via initargs.
+#
+# Workers do their own file writes. The pool returns sitemap entries to the
+# parent so the existing sitemap / pruning contract is preserved unchanged.
+
+# Module-level worker state, set by `_worker_init`. The parent process never
+# touches this dict; the parent path uses the conn passed into generate().
+_WORKER_STATE: dict[str, Any] = {}
+
+
+def _worker_init(
+    db_path: str,
+    template_dir: str,
+    domain: str,
+    out_dir: str,
+    structured_dir: str | None,
+    site_root: str,
+    acceptance_map: dict[str, dict[str, Any]],
+    publishable_slugs: set[str],
+) -> None:
+    """Pool initializer -- one call per worker process."""
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    env = _build_env(Path(template_dir))
+    _WORKER_STATE.update(
+        {
+            "conn": conn,
+            "ctx": RenderContext(env=env),
+            "domain": domain,
+            "out_dir": Path(out_dir),
+            "structured_dir": Path(structured_dir) if structured_dir else None,
+            "site_root": Path(site_root),
+            "acceptance_map": acceptance_map,
+            "publishable_slugs": publishable_slugs,
+        }
+    )
+
+
+def _worker_render_row(row: dict[str, Any]) -> dict[str, Any]:
+    """Render + write one row in a worker process.
+
+    Returns a small dict (status, unified_id, slug, lastmod, tier,
+    html_path, jsonld_path, optional error) -- the parent uses it to
+    assemble the sitemap and prune-expected sets.
+    """
+    uid = row.get("unified_id") or ""
+    try:
+        if not _is_public_title_quality_ok(row.get("primary_name")):
+            return {
+                "status": "low_quality",
+                "unified_id": uid,
+                "slug": None,
+                "lastmod": None,
+                "tier": None,
+                "html_path": None,
+                "jsonld_path": None,
+            }
+        conn: sqlite3.Connection = _WORKER_STATE["conn"]
+        ctx: RenderContext = _WORKER_STATE["ctx"]
+        domain: str = _WORKER_STATE["domain"]
+        out_dir: Path = _WORKER_STATE["out_dir"]
+        structured_dir: Path | None = _WORKER_STATE["structured_dir"]
+        site_root: Path = _WORKER_STATE["site_root"]
+        acceptance_map: dict[str, dict[str, Any]] = _WORKER_STATE["acceptance_map"]
+        publishable_slugs: set[str] = _WORKER_STATE["publishable_slugs"]
+
+        tts = _parse_json_list(row.get("target_types_json"))
+        related = _related_programs(conn, row, tts, limit=8, publishable_slugs=publishable_slugs)
+        slug, html, standalone = render_row(
+            row,
+            ctx,
+            domain,
+            related,
+            acceptance_stats=acceptance_map.get(uid),
+            site_root=site_root,
+        )
+        html_path = out_dir / f"{slug}.html"
+        changed = _write_if_changed(html_path, html)
+        jsonld_path: Path | None = None
+        if structured_dir is not None:
+            jsonld_path = structured_dir / f"{uid}.jsonld"
+            _write_jsonld_doc(jsonld_path, standalone)
+        lastmod = (
+            _normalize_iso_date(row.get("source_fetched_at"))
+            or _normalize_iso_date(row.get("updated_at"))
+            or _today_jst_iso()
+        )
+        tier = (row.get("tier") or "C").upper()
+        return {
+            "status": "written" if changed else "skipped",
+            "unified_id": uid,
+            "slug": slug,
+            "lastmod": lastmod,
+            "tier": tier,
+            "html_path": str(html_path),
+            "jsonld_path": str(jsonld_path) if jsonld_path else None,
+        }
+    except Exception as exc:  # noqa: BLE001
+        return {
+            "status": "error",
+            "unified_id": uid,
+            "slug": None,
+            "lastmod": None,
+            "tier": None,
+            "html_path": None,
+            "jsonld_path": None,
+            "error": f"{type(exc).__name__}: {exc}",
+        }
+
+
+def _resolve_worker_count(requested: int | None) -> int:
+    """0/1 -> sequential. None -> cpu_count(). Else clamp >=1."""
+    if requested is None:
+        return max(1, os.cpu_count() or 1)
+    if requested <= 1:
+        return 1
+    return requested
+
+
 def generate(
     db_path: Path,
     out_dir: Path,
@@ -2110,6 +2239,7 @@ def generate(
     sitemap_structured_path: Path | None = None,
     autonomath_db_path: Path | None = None,
     tiers: tuple[str, ...] = ("S", "A", "B", "C"),
+    workers: int | None = None,
 ) -> tuple[int, int, int]:
     """Returns (written, skipped, errors).
 
@@ -2147,6 +2277,12 @@ def generate(
     errors = 0
     sitemap_entries: list[tuple[str, str, str]] = []
     structured_entries: list[tuple[str, str, str]] = []
+    # PERF-29: track the source unified_id alongside each sitemap entry so we
+    # can restore the DB ORDER BY (tier rank, unified_id) after parallel
+    # imap_unordered. The 4th element is stripped before writing the sitemap;
+    # the file format on disk remains the legacy 3-tuple.
+    _sitemap_uids: list[str] = []
+    _structured_uids: list[str] = []
     expected_html: set[Path] = set()
     expected_jsonld: set[Path] = set()
     jsonld_count = 0
@@ -2196,57 +2332,115 @@ def generate(
     # --- bulk mode
     rows = list(_iter_rows(conn, limit, tiers=tiers, bad_urls=bad_urls))
     publishable_slugs = _publishable_program_slugs(rows)
-    for row in rows:
-        try:
-            if not _is_public_title_quality_ok(row.get("primary_name")):
-                LOG.info(
-                    "skip low-quality public title uid=%s name=%r",
-                    row.get("unified_id"),
-                    row.get("primary_name"),
-                )
-                continue
-            tts = _parse_json_list(row.get("target_types_json"))
-            related = _related_programs(
-                conn, row, tts, limit=8, publishable_slugs=publishable_slugs
+
+    # PERF-29 (2026-05-17): per-row render+write is embarrassingly parallel.
+    # Workers each open a private sqlite3 connection + private Jinja env in
+    # the pool initializer, then render rows independently. Results carry
+    # only metadata back to the parent, which assembles the sitemap and the
+    # prune-expected sets exactly as the sequential path did.
+    worker_count = _resolve_worker_count(workers)
+    LOG.info("bulk mode: rows=%d workers=%d", len(rows), worker_count)
+
+    def _consume_result(res: dict[str, Any]) -> None:
+        nonlocal written, skipped, errors, jsonld_count
+        status = res.get("status")
+        if status == "low_quality":
+            LOG.info(
+                "skip low-quality public title uid=%s",
+                res.get("unified_id"),
             )
-            slug, html, standalone = render_row(
-                row,
-                ctx,
-                domain,
-                related,
-                acceptance_stats=acceptance_map.get(row.get("unified_id") or ""),
+            return
+        if status == "error":
+            LOG.error(
+                "render failed for %s: %s",
+                res.get("unified_id"),
+                res.get("error"),
             )
-            path = out_dir / f"{slug}.html"
-            expected_html.add(path)
-            changed = _write_if_changed(path, html)
-            if changed:
-                written += 1
-            else:
-                skipped += 1
-            # Sitemap <lastmod> is the day we last *fetched* the primary
-            # source — `source_fetched_at`. This is the SEO-honest signal
-            # crawlers expect (when did the underlying content last change
-            # from our perspective). Fall back to `updated_at` (DB row touch)
-            # then today's JST date as a last-resort sentinel.
-            # CLAUDE.md gotcha: many `source_fetched_at` values are a uniform
-            # bulk-rewrite sentinel — that's the actual day we last pulled the
-            # source for that row, which is what we want here.
-            lastmod = (
-                _normalize_iso_date(row.get("source_fetched_at"))
-                or _normalize_iso_date(row.get("updated_at"))
-                or _today_jst_iso()
-            )
-            tier = (row.get("tier") or "C").upper()
-            sitemap_entries.append((slug, lastmod, tier))
-            if structured_dir:
-                jsonld_path = structured_dir / f"{row['unified_id']}.jsonld"
-                expected_jsonld.add(jsonld_path)
-                _write_jsonld_doc(jsonld_path, standalone)
-                jsonld_count += 1
-                structured_entries.append((row["unified_id"], lastmod, tier))
-        except Exception as exc:  # noqa: BLE001
-            LOG.exception("render failed for %s: %s", row.get("unified_id"), exc)
             errors += 1
+            return
+        html_path = res.get("html_path")
+        if html_path:
+            expected_html.add(Path(html_path))
+        if status == "written":
+            written += 1
+        elif status == "skipped":
+            skipped += 1
+        slug_v = res.get("slug")
+        lastmod_v = res.get("lastmod")
+        tier = str(res.get("tier") or "C")
+        uid = str(res.get("unified_id") or "")
+        if isinstance(slug_v, str) and isinstance(lastmod_v, str):
+            sitemap_entries.append((slug_v, lastmod_v, tier))
+            _sitemap_uids.append(uid)
+            if structured_dir and res.get("jsonld_path"):
+                jp = Path(str(res["jsonld_path"]))
+                expected_jsonld.add(jp)
+                jsonld_count += 1
+                structured_entries.append((uid, lastmod_v, tier))
+                _structured_uids.append(uid)
+
+    if worker_count <= 1:
+        # Sequential path -- preserves single-process behavior for callers
+        # that pass workers=1 (or 0) explicitly (e.g. CI minimal-resource
+        # smoke runs). Drives the same _worker_render_row machinery via a
+        # local init so the result contract is bit-identical.
+        _worker_init(
+            db_path=str(db_path),
+            template_dir=str(template_dir),
+            domain=domain,
+            out_dir=str(out_dir),
+            structured_dir=str(structured_dir) if structured_dir else None,
+            site_root=str(REPO_ROOT / "site"),
+            acceptance_map=acceptance_map,
+            publishable_slugs=publishable_slugs,
+        )
+        for row in rows:
+            _consume_result(_worker_render_row(row))
+    else:
+        # multiprocessing.Pool with a 'spawn' context. macOS already defaults
+        # to spawn under Python 3.12; explicitly pinning it keeps the parent's
+        # sqlite3 connection from leaking into child fds on Linux too.
+        mp_ctx = _mp.get_context("spawn")
+        initargs = (
+            str(db_path),
+            str(template_dir),
+            domain,
+            str(out_dir),
+            str(structured_dir) if structured_dir else None,
+            str(REPO_ROOT / "site"),
+            acceptance_map,
+            publishable_slugs,
+        )
+        # Chunk size keeps task overhead < 1% even for tiny rows -- each
+        # task does at least 2 sqlite queries + 1 Jinja render + 1 file
+        # write, so 64 is a comfortable amortization window.
+        chunksize = max(1, min(64, (len(rows) // (worker_count * 4)) or 1))
+        with mp_ctx.Pool(
+            processes=worker_count,
+            initializer=_worker_init,
+            initargs=initargs,
+        ) as pool:
+            for res in pool.imap_unordered(_worker_render_row, rows, chunksize=chunksize):
+                _consume_result(res)
+
+    # PERF-29: imap_unordered returns results in completion order, but the
+    # sequential path preserved the DB's ORDER BY (tier rank, unified_id).
+    # Re-derive that exact order from `rows` (which is still in DB order) so
+    # the sitemap is byte-stable against the legacy path; this lets
+    # `_write_if_changed` no-op short-circuit on incremental reruns.
+    _row_order: dict[str, int] = {
+        r["unified_id"]: i for i, r in enumerate(rows) if r.get("unified_id")
+    }
+    sitemap_by_uid = dict(zip(_sitemap_uids, sitemap_entries, strict=True))
+    structured_by_uid = dict(zip(_structured_uids, structured_entries, strict=True))
+    sitemap_entries = [
+        sitemap_by_uid[uid]
+        for uid in sorted(sitemap_by_uid, key=lambda u: _row_order.get(u, 1 << 30))
+    ]
+    structured_entries = [
+        structured_by_uid[uid]
+        for uid in sorted(structured_by_uid, key=lambda u: _row_order.get(u, 1 << 30))
+    ]
 
     if sitemap_path is not None and sitemap_entries:
         write_sitemap(sitemap_entries, sitemap_path, domain)
@@ -2338,6 +2532,15 @@ def _parse_args() -> argparse.Namespace:
             " no longer emitted. Retained as a no-op for callers that still pass it."
         ),
     )
+    p.add_argument(
+        "--workers",
+        type=int,
+        default=None,
+        help=(
+            "PERF-29 (2026-05-17): bulk-mode parallelism. Default = os.cpu_count(); "
+            "pass 0 or 1 to force the legacy sequential path."
+        ),
+    )
     p.add_argument("--verbose", "-v", action="store_true")
     return p.parse_args()
 
@@ -2391,6 +2594,7 @@ def main() -> int:
         sitemap_structured_path=sitemap_structured_path,
         autonomath_db_path=autonomath_db,
         tiers=tiers_tuple,
+        workers=args.workers,
     )
     LOG.info("written=%d skipped=%d errors=%d", written, skipped, errors)
     return 0

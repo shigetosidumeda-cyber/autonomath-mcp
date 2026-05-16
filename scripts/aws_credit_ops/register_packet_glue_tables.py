@@ -2028,6 +2028,54 @@ for _name, _prefix in _WAVE_89_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 90 (talent retention / HR analytics cross packets) — 10 generators wrap
+# the talent + HR analytics surface across 業種 (JSIC major) cohorts: Employee
+# turnover proxy (有価証券報告書 平均勤続年数 / 雇用動向調査 / EDINET 従業員
+# の状況), Executive tenure distribution (取締役 監査役 在任年数 / 社外取締役
+# 比率 / CG コード 原則4-11), Employee stock option signal (新株予約権 / 税制
+# 適格 SO / RS / RSU / 持株会), Wellness program intensity (健康経営優良法人 /
+# ストレスチェック / メンタルヘルス研修 / EAP / 産業医), Remote work adoption
+# signal (テレワーク / フルリモート / ハイブリッド / フレックスタイム /
+# 副業可否), Performance review cadence (360度評価 / 1on1 / ピアレビュー /
+# OKR vs MBO / フィードバック制度), Succession planning maturity (後継者育成 /
+# タレントレビュー / 9-box / 経営塾 / 事業承継税制 / 親族内承継), Leadership
+# gender balance (女性管理職比率 / えるぼし / プラチナえるぼし / くるみん /
+# 男性育休), Employee training intensity (人材開発支援助成金 / リスキリング /
+# e-learning / 資格取得支援), Work-life balance disclosure (有給取得率 /
+# 平均残業時間 / 月60時間超 / 育介休 / 36協定). Reuse the shared super-set
+# columns; topic-specific fields land in raw_json.
+_WAVE_90_TABLES: list[tuple[str, str]] = [
+    ("packet_employee_turnover_proxy_v1", "employee_turnover_proxy_v1/"),
+    (
+        "packet_executive_tenure_distribution_v1",
+        "executive_tenure_distribution_v1/",
+    ),
+    (
+        "packet_employee_stock_option_signal_v1",
+        "employee_stock_option_signal_v1/",
+    ),
+    ("packet_wellness_program_intensity_v1", "wellness_program_intensity_v1/"),
+    (
+        "packet_remote_work_adoption_signal_v1",
+        "remote_work_adoption_signal_v1/",
+    ),
+    ("packet_performance_review_cadence_v1", "performance_review_cadence_v1/"),
+    (
+        "packet_succession_planning_maturity_v1",
+        "succession_planning_maturity_v1/",
+    ),
+    ("packet_leadership_gender_balance_v1", "leadership_gender_balance_v1/"),
+    ("packet_employee_training_intensity_v1", "employee_training_intensity_v1/"),
+    (
+        "packet_work_life_balance_disclosure_v1",
+        "work_life_balance_disclosure_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_90_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 _WAVE_91_TABLES: list[tuple[str, str]] = [
     ("packet_brand_recognition_proxy_v1", "brand_recognition_proxy_v1/"),
     ("packet_customer_satisfaction_proxy_v1", "customer_satisfaction_proxy_v1/"),
