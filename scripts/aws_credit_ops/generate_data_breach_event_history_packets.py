@@ -60,8 +60,7 @@ def _aggregate(
         adoption_n = 0
         with contextlib.suppress(Exception):
             row = primary_conn.execute(
-                "SELECT COUNT(*) AS n FROM jpi_adoption_records "
-                " WHERE industry_jsic_medium = ?",
+                "SELECT COUNT(*) AS n FROM jpi_adoption_records  WHERE industry_jsic_medium = ?",
                 (jsic_code,),
             ).fetchone()
             if row:
