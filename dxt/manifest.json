@@ -4,7 +4,7 @@
   "display_name": "jpcite — 日本の制度 API",
   "version": "0.4.0",
   "icon": "icon.png",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者 + 166K corporate entities. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 165 tools.",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者 + 166K corporate entities. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 169 tools (165 dim K-S + 4 Wave 51 chains).",
   "long_description": "jpciteは、日本の公的制度・法令・判例・税務・入札・行政処分などの公開情報を、LLM入力用の短い根拠パケットとして取得するためのMCP拡張です。長いPDF、府省庁ページ、検索結果をそのままモデルに渡す前に、source_url、fetched_at、provenance、known_gaps、併用ルールをまとめて取得できます。入力文脈の圧縮見積もりを添え、source_url/fetched_at/known_gapsをAI回答へ載せやすい形で返すことで、一次資料にたどれる短い回答づくりを支援します。料金は課金対象単位ごとに税別3円（税込3.30円）の従量課金です。匿名利用は登録不要で1 IPあたり1日3回まで無料、翌日JSTにリセットされます。法務・税務・行政書士業務の助言ではありません。重要な判断の前には必ず一次資料を確認してください。",
   "author": {
     "name": "Bookyou株式会社",
@@ -721,6 +721,22 @@
     {
       "name": "recommend_partner_for_gap",
       "description": "Wave 51 dim R — deterministic substring + alias matcher over the curated 6-partner federation (freee/mf/notion/slack/github/linear). Returns up to max_results partners with partner_id + name + official_url + mcp_endpoint_status + capabilities. Score-tied partners ordered by canonical partner_id ASC. NEVER self-references. NO LLM, no HTTP, single ¥3 unit. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "evidence_with_provenance_chain",
+      "description": "Wave 51 chain (dim P + Q + O + N) — signed audit-grade evidence. Locks a fact to a monthly snapshot (time_machine.query_as_of), builds an Ed25519-signable canonical payload (explainable_fact.canonical_payload), gates the response behind a k=5 cohort floor (anonymized_query.check_k_anonymity). Returns ComposedEnvelope with composed_steps + compression_ratio + Ed25519 sign payload bytes for HSM hand-off. Heavy compound tier — 3 ¥3 units (税込 ¥9.90). NO LLM. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "session_aware_eligibility_check_chain",
+      "description": "Wave 51 chain (dim L + M + K) — session-aware eligibility + predictive notify. Opens a 24h session_context, evaluates a rule_tree over merged subject_context + eval_context, enqueues a predictive_service event so the subject is notified the next time the underlying ruleset changes, then closes the session. Returns ComposedEnvelope with session_token_id + verdict + predictive_event_id. Heavy compound tier — 3 ¥3 units. NO LLM. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "federated_handoff_with_audit_chain",
+      "description": "Wave 51 chain (dim P + R + N) — federated handoff + APPI-grade audit row. When jpcite cannot answer, asks the curated 6-partner federation (freee/mf/notion/slack/github/linear) for a handoff recommendation, then writes one append-only JSONL audit row (cohort hash + redact policy + outcome reason). Returns ComposedEnvelope with recommendations[] + audit_entry. Heavy compound tier — 3 ¥3 units. NO LLM, no HTTP proxying. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "temporal_compliance_audit_chain",
+      "description": "Wave 51 chain (dim Q + M + O) — counterfactual diff + signed verdict. Resolves two monthly snapshots (time_machine.query_as_of × 2), runs counterfactual_diff (added/removed/changed/unchanged + content_hash_changed), evaluates a rule_tree over the diff, then builds an Ed25519-signable canonical payload for the verdict. The 'monthly closing compliance regression' surface. Heavy compound tier — 3 ¥3 units. NO LLM. §52/§47条の2/§72/§1 envelope."
     }
   ],
   "resources": [
@@ -995,7 +1011,7 @@
   ],
   "_meta": {
     "io.modelcontextprotocol.registry/publisher-provided": {
-      "tool_count": 165,
+      "tool_count": 169,
       "transports": [
         "stdio",
         "sse",
@@ -1025,7 +1041,7 @@
         }
       }
     },
-    "tool_count": 165,
+    "tool_count": 169,
     "transports": [
       "stdio",
       "sse",

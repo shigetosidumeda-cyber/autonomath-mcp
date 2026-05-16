@@ -1,6 +1,6 @@
 """Generate `site/releases/rc1-p0-bootstrap/capability_matrix.json`.
 
-Generator is the source of truth for the 165-tool agent-discovery matrix.
+Generator is the source of truth for the 169-tool agent-discovery matrix.
 Reads the canonical mcp-server.json + outcome contract catalog + cost preview
 catalog and emits the merged matrix.
 

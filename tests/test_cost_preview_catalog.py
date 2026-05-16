@@ -3,7 +3,7 @@
 These artifacts are static JSON files under ``site/.well-known/`` and
 ``site/releases/rc1-p0-bootstrap/``. They power agent discovery of jpcite's
 pricing, free preview availability, daily caps, idempotency windows, and
-the 165 MCP tools' free-vs-paid breakdown.
+the 169 MCP tools' free-vs-paid breakdown.
 
 The tests verify:
 
@@ -18,8 +18,8 @@ The tests verify:
   - ``pricing_or_cap_unconfirmed`` is the only allowed gap marker used
     when daily cap is null.
   - Each entry references ``jpcite_cost_jpy == 3``.
-  - Capability matrix lists exactly 165 tools and reports a free + paid
-    breakdown that sums to 165.
+  - Capability matrix lists exactly 169 tools and reports a free + paid
+    breakdown that sums to 169.
   - The cost preview path is published in
     ``site/.well-known/openapi-discovery.json`` for agent discovery.
 """
@@ -192,18 +192,18 @@ def test_idempotency_window_non_negative() -> None:
         assert entry["idempotency_window_seconds"] >= 0, entry["outcome_contract_id"]
 
 
-def test_capability_matrix_has_exactly_165_tools() -> None:
+def test_capability_matrix_has_exactly_169_tools() -> None:
     matrix = _load(CAPABILITY_MATRIX)
-    assert matrix["tool_count"] == 165
-    assert len(matrix["tools"]) == 165
+    assert matrix["tool_count"] == 169
+    assert len(matrix["tools"]) == 169
 
 
-def test_capability_matrix_free_paid_breakdown_sums_to_165() -> None:
+def test_capability_matrix_free_paid_breakdown_sums_to_169() -> None:
     matrix = _load(CAPABILITY_MATRIX)
     breakdown = matrix["free_paid_breakdown"]
-    assert breakdown["free"] + breakdown["paid"] == 165
+    assert breakdown["free"] + breakdown["paid"] == 169
     by_band = breakdown["by_band"]
-    assert sum(by_band.values()) == 165
+    assert sum(by_band.values()) == 169
     assert by_band["free"] == breakdown["free"]
 
 

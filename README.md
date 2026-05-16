@@ -178,7 +178,7 @@ keys, usage, and billing at <https://jpcite.com/dashboard>.
 
 ## MCP tools
 
-165 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
+169 tools at default gates (165 dim K-S baseline + 4 Wave 51 chains), MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
 
 | Group | Coverage |
 |-------|----------|
@@ -251,7 +251,7 @@ Tool quality is publicly verifiable: see [`evals/`](./evals/) for a 79-query gol
 
 ## Optional disabled domains
 
-The standard distribution exposes 165 tools for Japanese public-program
+The standard distribution exposes 169 tools for Japanese public-program
 search, evidence, provenance, tax rulesets, laws, court decisions, bids,
 invoice registrants, and related entity facts. Additional domain-specific
 surfaces are intentionally disabled unless enabled through support-managed
@@ -352,6 +352,6 @@ Additive to the 2026-05-07 hardening / 2026-05-12 v0.4.0 LIVE / above Wave 50 st
 
 ### What's new — 2026-05-16
 
-Wave 50 RC1 contract layer landed in production-ready shape today: 20 commits across Stream G's 6 PR + cleanup PR7 + Wave 49 G2 paste-ready registry packages + 73-tick monitoring-stamp revert + the Wave 51 tick 0 foundational substrate (L1 source-family registry + L2 math-engine sweep + 9 dim K-S modules covering predictive_service / session_context / rule_tree / anonymized_query / explainable_fact / composable_tools / time_machine / federated_mcp / copilot_scaffold) closed the same session, with the 11 new modules wrapped as 10 MCP tools bumping the public default-gate surface from 155 to **165 tools** (416 module-level tests PASS, mypy --strict 0 across the 41 new source files, no LLM SDK imports in any new runtime path). Separately the AWS canary infrastructure stepped from "ready" to **Phase 1+2 LIVE**: 3 AWS Budgets (USD 17K / 18.3K / 18.9K) + 3 S3 buckets + IAM (SLR + 3 roles) + ECR repo + image + 2 Batch compute environments + 2 queues + Glue Data Catalog + Athena workgroup + Step Functions orchestrator + auto-stop Lambda are all provisioned, with `live_aws_commands_allowed=true` flipped for the first time today via the Stream W `--unlock-live-aws-commands` concern-separation flag — infrastructure ready, awaiting first-run smoke validation (Phase 3 J01 smoke job in progress, J02-J07 fan-out pending). See `docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md`, `docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md`, `docs/_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md`, and `docs/_internal/WAVE52_HINT_2026_05_16.md` for full closeout detail.
+Wave 50 RC1 contract layer landed in production-ready shape today: 20 commits across Stream G's 6 PR + cleanup PR7 + Wave 49 G2 paste-ready registry packages + 73-tick monitoring-stamp revert + the Wave 51 tick 0 foundational substrate (L1 source-family registry + L2 math-engine sweep + 9 dim K-S modules covering predictive_service / session_context / rule_tree / anonymized_query / explainable_fact / composable_tools / time_machine / federated_mcp / copilot_scaffold) closed the same session, with the 11 new modules wrapped as 10 MCP tool wrappers bumping the public default-gate surface from 155 → 165 (dim K-S), then + 4 Wave 51 chain wrappers landed same session → **169 tools** total (416 module-level tests PASS, mypy --strict 0 across the 41 new source files, no LLM SDK imports in any new runtime path). Separately the AWS canary infrastructure stepped from "ready" to **Phase 1+2 LIVE**: 3 AWS Budgets (USD 17K / 18.3K / 18.9K) + 3 S3 buckets + IAM (SLR + 3 roles) + ECR repo + image + 2 Batch compute environments + 2 queues + Glue Data Catalog + Athena workgroup + Step Functions orchestrator + auto-stop Lambda are all provisioned, with `live_aws_commands_allowed=true` flipped for the first time today via the Stream W `--unlock-live-aws-commands` concern-separation flag — infrastructure ready, awaiting first-run smoke validation (Phase 3 J01 smoke job in progress, J02-J07 fan-out pending). See `docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md`, `docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md`, `docs/_internal/AWS_CANARY_INFRA_LIVE_2026_05_16.md`, and `docs/_internal/WAVE52_HINT_2026_05_16.md` for full closeout detail.
 
 last_updated: 2026-05-16

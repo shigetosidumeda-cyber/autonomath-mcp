@@ -2,7 +2,7 @@
 
 Brand identity: current primary brand is jpcite. Canonical domain: https://jpcite.com.
 Brand history: formerly discovered as 税務会計AI / AutonoMath / zeimu-kaikei.ai; current primary brand is jpcite.
-MCP package: autonomath-mcp. Public MCP tools: 165. Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included); anonymous usage is 3 requests/day/IP.
+MCP package: autonomath-mcp. Public MCP tools: 169. Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included); anonymous usage is 3 requests/day/IP.
 Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included). Ordinary successful search/detail lookup requests are usually 1 billable unit; anonymous evaluation is 3 requests/day/IP.
 Agent keywords: Evidence prefetch, compact Evidence Packet, token-cost control, company_public_baseline, source_url, source_fetched_at, known_gaps, Source Receipt, Review Handoff Packet, ¥3.30, 匿名 3 回/日, 外部LLM charges are separate, openapi.agent.json, mcp-server.json.
 

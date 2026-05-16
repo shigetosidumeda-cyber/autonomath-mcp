@@ -1,4 +1,4 @@
-"""Smoke tests for the 10 Wave 51 MCP tool wrappers (155 → 165).
+"""Smoke tests for the 10 Wave 51 dim K-S MCP tool wrappers (155 → 165 → 169).
 
 Asserts:
 
@@ -9,7 +9,8 @@ Asserts:
   keys (``tool_name`` / ``schema_version`` / ``_billing_unit=1`` /
   ``_disclaimer``).
 * Validation errors emit a ``make_error`` envelope rather than raising.
-* The 10 tools appear in the live FastMCP tool list, total == 165.
+* The 10 tools appear in the live FastMCP tool list, total == 169
+  (165 dim K-S baseline + 4 Wave 51 chain wrappers landed 2026-05-16).
 
 No LLM. No HTTP. No DB writes (audit log path overridden to /tmp).
 """
@@ -280,8 +281,15 @@ def test_dim_r_recommend_partner_empty_query_returns_error() -> None:
     assert out["error"]["code"] == "missing_required_arg"
 
 
-def test_mcp_tool_count_is_165() -> None:
-    """End-to-end: every Wave 51 dim K-S MCP tool registers."""
+def test_mcp_tool_count_is_169() -> None:
+    """End-to-end: every Wave 51 dim K-S MCP tool registers + 4 chain wrappers.
+
+    Tool-count tracking:
+
+    * 155 baseline (pre-Wave-51).
+    * +10 dim K-S wrappers (Wave 51 tick 0, 2026-05-16) → 165.
+    * +4 chain wrappers (Wave 51 chains, 2026-05-16) → 169.
+    """
     import jpintel_mcp.mcp.autonomath_tools  # noqa: F401  — triggers @mcp.tool side effects
     from jpintel_mcp.mcp.server import mcp
 
@@ -298,10 +306,15 @@ def test_mcp_tool_count_is_165() -> None:
         "query_snapshot_as_of_v2",
         "counterfactual_diff_v2",
         "recommend_partner_for_gap",
+        # Wave 51 chain wrappers (4 cross-dim service composition chains).
+        "evidence_with_provenance_chain",
+        "session_aware_eligibility_check_chain",
+        "federated_handoff_with_audit_chain",
+        "temporal_compliance_audit_chain",
     }
     missing = expected_new - names
     assert not missing, f"Wave 51 tools not registered: {sorted(missing)}"
-    assert len(tools) == 165, f"Expected 165 tools, got {len(tools)}"
+    assert len(tools) == 169, f"Expected 169 tools, got {len(tools)}"
 
 
 if __name__ == "__main__":  # pragma: no cover

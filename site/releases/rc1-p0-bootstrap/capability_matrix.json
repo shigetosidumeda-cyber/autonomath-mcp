@@ -42,13 +42,13 @@
       "recommendable": true
     }
   ],
-  "tool_count": 165,
+  "tool_count": 169,
   "free_paid_breakdown": {
     "free": 15,
-    "paid": 150,
+    "paid": 154,
     "by_band": {
       "free": 15,
-      "light": 133,
+      "light": 137,
       "mid": 10,
       "heavy": 7
     }
@@ -1703,6 +1703,46 @@
       "cost_band": "free",
       "estimated_price_jpy": 0,
       "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "evidence_with_provenance_chain",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "session_aware_eligibility_check_chain",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "federated_handoff_with_audit_chain",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "temporal_compliance_audit_chain",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
     }
   ]
 }
