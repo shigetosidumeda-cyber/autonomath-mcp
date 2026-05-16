@@ -6958,6 +6958,196 @@
       "subject_id_hint": "jsic_major",
       "source_count": 2,
       "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "data_breach_event_log_packet",
+      "display_name": "業種別 data breach event log packet",
+      "description": "業種別 個人情報漏えい / 個情委 報告 / 本人通知 / 行政処分 / 漏えい等の対応 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "ransomware_incident_signal_packet",
+      "display_name": "業種別 ransomware incident signal packet",
+      "description": "業種別 ランサムウェア感染 / BCP 復旧 / 身代金支払方針 / JPCERT 連携 / 警察庁 サイバー (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "supply_chain_attack_vector_packet",
+      "display_name": "業種別 supply chain attack vector packet",
+      "description": "業種別 vendor compromise / SBOM 検証 / 上流ライブラリ侵害 / signed-build 検証 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "insider_threat_proxy_packet",
+      "display_name": "業種別 insider threat proxy packet",
+      "description": "業種別 不正持出し / 退職者アクセス / 特権 ID 濫用 / 業務委託 オフボーディング / 営業秘密 漏えい (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "zero_day_exposure_signal_packet",
+      "display_name": "業種別 zero-day exposure signal packet",
+      "description": "業種別 patch lag / CVE 影響評価 / EoL ソフトウェア / vendor 緊急通知 / KEV 対応 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "phishing_campaign_intensity_packet",
+      "display_name": "業種別 phishing campaign intensity packet",
+      "description": "業種別 brand impersonation / BEC / 取引先なりすまし / DMARC・SPF・DKIM / フィッシング訓練 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "cloud_misconfig_incident_packet",
+      "display_name": "業種別 cloud misconfig incident packet",
+      "description": "業種別 S3 公開 bucket / IAM 過剰権限 / SG 0.0.0.0/0 / KMS 鍵管理 / CSPM 検知 / ISMAP (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "third_party_breach_propagation_packet",
+      "display_name": "業種別 third-party breach propagation packet",
+      "description": "業種別 委託先漏えい / SaaS vendor 侵害 / 共通基盤 incident contagion / 監査権 行使 / 二次通知 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "sec_certification_intensity_packet",
+      "display_name": "業種別 security certification intensity packet",
+      "description": "業種別 ISMS / ISO 27001 / SOC 2 / PCI DSS / FISC 安全対策基準 / プライバシーマーク / ISMAP (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "incident_response_maturity_packet",
+      "display_name": "業種別 incident response maturity packet",
+      "description": "業種別 CSIRT 編成 / プレイブック / tabletop 演習 / MTTD・MTTR / 法執行 通報 / フォレンジック保全 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
     }
   ],
   "filters": {

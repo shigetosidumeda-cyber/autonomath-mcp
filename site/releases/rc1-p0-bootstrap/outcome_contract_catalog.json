@@ -3969,5 +3969,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 data breach event log packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_breach_event_log_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 ransomware incident signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "ransomware_incident_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 supply chain attack vector packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "supply_chain_attack_vector_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 insider threat proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "insider_threat_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 zero-day exposure signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "zero_day_exposure_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 phishing campaign intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "phishing_campaign_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 cloud misconfig incident packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cloud_misconfig_incident_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 third-party breach propagation packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "third_party_breach_propagation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 security certification intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "sec_certification_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 incident response maturity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "incident_response_maturity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

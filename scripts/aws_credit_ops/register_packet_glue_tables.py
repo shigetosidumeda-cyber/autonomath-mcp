@@ -1787,6 +1787,52 @@ for _name, _prefix in _WAVE_84_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 85 cybersecurity event cross packet tables (10 generators, 2026-05-16).
+# All share the jsic_major industry cohort with descriptive adoption_n proxy
+# covering データ漏洩 event log (個情委 報告 / 本人通知 / 行政処分) /
+# ランサムウェア incident signal (BCP 復旧 / 身代金支払方針 / JPCERT 連携) /
+# サプライチェーン攻撃 vector (vendor compromise / SBOM / signed-build) /
+# 内部脅威 proxy (不正持出し / 退職者アクセス / 特権 ID 濫用 / 営業秘密) /
+# ゼロデイ脆弱性 signal (patch lag / CVE / EoL / KEV) / フィッシング 標的化
+# (BEC / brand impersonation / DMARC・SPF・DKIM) / クラウド設定ミス incident
+# (S3 公開 bucket / IAM 過剰権限 / SG 0.0.0.0/0 / KMS / CSPM / ISMAP) /
+# 第三者経由 propagation (委託先漏えい / SaaS vendor 侵害 / 監査権) /
+# セキュリティ認証 intensity (ISMS / ISO 27001 / SOC 2 / PCI DSS / FISC /
+# プライバシーマーク / ISMAP) / インシデント対応 maturity (CSIRT / playbook
+# / tabletop 演習 / MTTD・MTTR / フォレンジック)。Reuse the shared super-set
+# columns; topic-specific fields land in raw_json.
+_WAVE_85_TABLES: list[tuple[str, str]] = [
+    ("packet_data_breach_event_log_v1", "data_breach_event_log_v1/"),
+    (
+        "packet_ransomware_incident_signal_v1",
+        "ransomware_incident_signal_v1/",
+    ),
+    (
+        "packet_supply_chain_attack_vector_v1",
+        "supply_chain_attack_vector_v1/",
+    ),
+    ("packet_insider_threat_proxy_v1", "insider_threat_proxy_v1/"),
+    ("packet_zero_day_exposure_signal_v1", "zero_day_exposure_signal_v1/"),
+    (
+        "packet_phishing_campaign_intensity_v1",
+        "phishing_campaign_intensity_v1/",
+    ),
+    ("packet_cloud_misconfig_incident_v1", "cloud_misconfig_incident_v1/"),
+    (
+        "packet_third_party_breach_propagation_v1",
+        "third_party_breach_propagation_v1/",
+    ),
+    (
+        "packet_sec_certification_intensity_v1",
+        "sec_certification_intensity_v1/",
+    ),
+    ("packet_incident_response_maturity_v1", "incident_response_maturity_v1/"),
+]
+
+for _name, _prefix in _WAVE_85_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
