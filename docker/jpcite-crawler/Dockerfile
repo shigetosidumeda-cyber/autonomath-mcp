@@ -21,7 +21,7 @@
 #   * Layer order: system deps -> python deps -> source code so
 #     code-only churn rebuilds only the final layer.
 # ------------------------------------------------------------------
-FROM --platform=linux/amd64 python:3.12-slim-bookworm
+FROM --platform=linux/amd64 public.ecr.aws/docker/library/python:3.12-slim-bookworm
 
 LABEL org.opencontainers.image.title="jpcite-crawler"
 LABEL org.opencontainers.image.vendor="Bookyou株式会社"
