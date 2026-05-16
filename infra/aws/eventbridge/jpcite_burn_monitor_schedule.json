@@ -1,0 +1,69 @@
+{
+  "rule": {
+    "name": "jpcite-burn-monitor-schedule",
+    "description": "Fires scripts/aws_credit_ops/continuous_burn_monitor.sh once an hour for sustained credit burn auto-resubmit. DISABLED by default; enable explicitly after one dry-run validation tick. The monitor honors a $18,900 hard-stop sentinel and $16,065 slowdown line; the AWS Budget Action attached to jpcite-credit-run-stop-18900 is the structural backstop.",
+    "region": "ap-northeast-1",
+    "account_id": "993693061769",
+    "schedule_expression": "rate(1 hour)",
+    "state": "DISABLED",
+    "event_bus_name": "default",
+    "tags": [
+      {"Key": "Project", "Value": "jpcite"},
+      {"Key": "CreditRun", "Value": "2026-05"},
+      {"Key": "AutoStop", "Value": "2026-05-29"},
+      {"Key": "Workload", "Value": "burn_monitor"}
+    ]
+  },
+  "target": {
+    "id": "jpcite-burn-monitor-target",
+    "arn": "arn:aws:lambda:ap-northeast-1:993693061769:function:jpcite-burn-monitor",
+    "role_arn": "arn:aws:iam::993693061769:role/jpcite-burn-monitor-schedule-role",
+    "input": "{\"trigger\":\"eventbridge-schedule\",\"source\":\"jpcite-burn-monitor-schedule\",\"commit_mode\":true}"
+  },
+  "lambda_runner": {
+    "name": "jpcite-burn-monitor",
+    "description": "Lambda wrapper that invokes continuous_burn_monitor.sh logic (rewritten in python for Lambda runtime). The shell version under scripts/aws_credit_ops/continuous_burn_monitor.sh is the operator-driven canonical; the Lambda is the cadence executor.",
+    "handler": "jpcite_burn_monitor.handler",
+    "runtime": "python3.12",
+    "timeout_seconds": 120,
+    "memory_mb": 512,
+    "tags": [
+      {"Key": "Project", "Value": "jpcite"},
+      {"Key": "CreditRun", "Value": "2026-05"},
+      {"Key": "AutoStop", "Value": "2026-05-29"}
+    ],
+    "env": {
+      "AWS_REGION": "ap-northeast-1",
+      "JPCITE_BURN_HARD_STOP_USD": "18900",
+      "JPCITE_BURN_SLOWDOWN_USD": "16065",
+      "JPCITE_SM_CPU_QUOTA": "8",
+      "JPCITE_GPU_BATCH_QUOTA": "4",
+      "JPCITE_SM_COOLDOWN_SEC": "1800",
+      "JPCITE_GPU_COOLDOWN_SEC": "3600"
+    }
+  },
+  "iam_role": {
+    "name": "jpcite-burn-monitor-schedule-role",
+    "policy_name": "jpcite-burn-monitor-schedule-policy",
+    "description": "Role assumed by events.amazonaws.com to invoke the burn-monitor Lambda. Lambda execution role separately grants sagemaker:CreateTransformJob, batch:SubmitJob, ce:GetCostAndUsage, sagemaker:ListTransformJobs, batch:ListJobs."
+  },
+  "cadence_economics": {
+    "default_rate_minutes": 60,
+    "executions_per_day_at_60min": 24,
+    "burn_window_days": 14,
+    "burn_window_start": "2026-05-16",
+    "burn_window_stop": "2026-05-29",
+    "iterations_over_window": 336,
+    "per_execution_cost_usd_estimate": "0.001",
+    "total_cadence_burn_usd_estimate": "0.3",
+    "notes": "The monitor itself is cheap (a few API calls + sentinel write). Cost burn comes from the SageMaker / Batch submissions it triggers when quota slots free. Cooldown gates (SM=30min, GPU=60min) prevent stacking."
+  },
+  "operator_notes": {
+    "enable_command": "aws scheduler update-schedule --name jpcite-burn-monitor-schedule --state ENABLED ...",
+    "disable_command": "aws scheduler update-schedule --name jpcite-burn-monitor-schedule --state DISABLED ...",
+    "manual_tick_command": "bash scripts/aws_credit_ops/continuous_burn_monitor.sh --dry-run",
+    "halt_sentinel_path": "/tmp/jpcite_burn_state/HALTED",
+    "ledger_path": "/tmp/jpcite_burn_state/tick_ledger.jsonl",
+    "default_mode": "DRY_RUN (the shell script defaults to dry-run; commit_mode in the EventBridge input flips it on)"
+  }
+}
