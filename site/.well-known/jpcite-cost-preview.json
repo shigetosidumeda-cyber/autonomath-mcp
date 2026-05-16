@@ -149,7 +149,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 9800,
       "source_count": 5,
-      "known_gaps": ["pricing_or_cap_unconfirmed"]
+      "known_gaps": [
+        "pricing_or_cap_unconfirmed"
+      ]
     },
     {
       "outcome_contract_id": "court_enforcement_citation_pack",
@@ -189,7 +191,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 5300,
       "source_count": 3,
-      "known_gaps": ["pricing_or_cap_unconfirmed"]
+      "known_gaps": [
+        "pricing_or_cap_unconfirmed"
+      ]
     },
     {
       "outcome_contract_id": "client_monthly_review",
@@ -349,7 +353,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 23800,
       "source_count": 11,
-      "known_gaps": ["coverage_thin"]
+      "known_gaps": [
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "program_lineage_packet",
@@ -369,7 +375,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 10400,
       "source_count": 5,
-      "known_gaps": ["schema_drift_possible"]
+      "known_gaps": [
+        "schema_drift_possible"
+      ]
     },
     {
       "outcome_contract_id": "acceptance_probability_cohort_packet",
@@ -389,7 +397,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 20100,
       "source_count": 9,
-      "known_gaps": ["coverage_thin"]
+      "known_gaps": [
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "enforcement_industry_heatmap_packet",
@@ -409,7 +419,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 11600,
       "source_count": 4,
-      "known_gaps": ["coverage_thin"]
+      "known_gaps": [
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "invoice_houjin_cross_check_packet",
@@ -429,7 +441,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 5800,
       "source_count": 3,
-      "known_gaps": ["source_freshness_unconfirmed"]
+      "known_gaps": [
+        "source_freshness_unconfirmed"
+      ]
     },
     {
       "outcome_contract_id": "program_law_amendment_impact_packet",
@@ -449,7 +463,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 22400,
       "source_count": 10,
-      "known_gaps": ["schema_drift_possible"]
+      "known_gaps": [
+        "schema_drift_possible"
+      ]
     },
     {
       "outcome_contract_id": "cohort_program_recommendation_packet",
@@ -469,7 +485,10 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 21000,
       "source_count": 10,
-      "known_gaps": ["coverage_thin", "approval_token_semantics_pending"]
+      "known_gaps": [
+        "coverage_thin",
+        "approval_token_semantics_pending"
+      ]
     },
     {
       "outcome_contract_id": "vendor_due_diligence_packet",
@@ -489,7 +508,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 24300,
       "source_count": 13,
-      "known_gaps": ["coverage_thin"]
+      "known_gaps": [
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "succession_program_matching_packet",
@@ -509,7 +530,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 12800,
       "source_count": 6,
-      "known_gaps": ["coverage_thin"]
+      "known_gaps": [
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "regulatory_change_radar_packet",
@@ -529,7 +552,10 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 11200,
       "source_count": 5,
-      "known_gaps": ["source_freshness_unconfirmed", "schema_drift_possible"]
+      "known_gaps": [
+        "source_freshness_unconfirmed",
+        "schema_drift_possible"
+      ]
     },
     {
       "outcome_contract_id": "tax_treaty_japan_inbound_packet",
@@ -549,7 +575,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 13200,
       "source_count": 4,
-      "known_gaps": ["coverage_thin"]
+      "known_gaps": [
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "subsidy_application_timeline_packet",
@@ -569,7 +597,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 6200,
       "source_count": 3,
-      "known_gaps": ["source_freshness_unconfirmed"]
+      "known_gaps": [
+        "source_freshness_unconfirmed"
+      ]
     },
     {
       "outcome_contract_id": "bid_opportunity_matching_packet",
@@ -589,7 +619,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 11800,
       "source_count": 4,
-      "known_gaps": ["coverage_thin"]
+      "known_gaps": [
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "permit_renewal_calendar_packet",
@@ -609,7 +641,9 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 5600,
       "source_count": 3,
-      "known_gaps": ["coverage_thin"]
+      "known_gaps": [
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "local_government_subsidy_aggregator_packet",
@@ -629,7 +663,10 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 12400,
       "source_count": 5,
-      "known_gaps": ["pricing_or_cap_unconfirmed", "coverage_thin"]
+      "known_gaps": [
+        "pricing_or_cap_unconfirmed",
+        "coverage_thin"
+      ]
     },
     {
       "outcome_contract_id": "kanpou_gazette_watch_packet",
@@ -649,7 +686,229 @@
       "jpcite_cost_jpy": 3,
       "estimated_tokens_saved": 5200,
       "source_count": 2,
-      "known_gaps": ["source_freshness_unconfirmed"]
+      "known_gaps": [
+        "source_freshness_unconfirmed"
+      ]
+    },
+    {
+      "outcome_contract_id": "patent_corp_360_packet",
+      "display_name": "Patent corporate 360 packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 5400,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "environmental_compliance_radar_packet",
+      "display_name": "Environmental compliance radar packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8400,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "statistical_cohort_proxy_packet",
+      "display_name": "Statistical cohort proxy packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major.prefecture"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 2000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 4200,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "diet_question_program_link_packet",
+      "display_name": "Diet question program lineage packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "program",
+        "id_hint": "program_entity_id"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 7800,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "edinet_finance_program_match_packet",
+      "display_name": "EDINET finance × program match packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9200,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "trademark_brand_protection_packet",
+      "display_name": "Trademark brand protection 360 packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 5100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "statistics_market_size_packet",
+      "display_name": "Statistics market size packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major.prefecture"
+      },
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 2000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 4800,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "cross_administrative_timeline_packet",
+      "display_name": "Cross-administrative timeline packet",
+      "package_kind": "artifact_pack",
+      "subject": {
+        "kind": "houjin",
+        "id_hint": "houjin_bangou"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8800,
+      "source_count": 1,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "public_procurement_trend_packet",
+      "display_name": "Public procurement trend packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major.ministry"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 7200,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "regulation_impact_simulator_packet",
+      "display_name": "Regulation impact simulator packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "rule_change",
+        "id_hint": "diff_id"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9400,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
     }
   ]
 }

@@ -459,5 +459,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Patent corp 360 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "patent_corp_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Environmental compliance radar packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "environmental_compliance_radar_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Statistical cohort proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "statistical_cohort_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Diet question program lineage packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "diet_question_program_link_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "EDINET finance program match packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "edinet_finance_program_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Trademark brand protection 360 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "trademark_brand_protection_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Statistics market size packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "statistics_market_size_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Cross administrative timeline packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cross_administrative_timeline_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Public procurement trend packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "public_procurement_trend_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Regulation impact simulator packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regulation_impact_simulator_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
