@@ -1,0 +1,273 @@
+"""Tests for the canonical L1 source-family → AWS-credit job-id map.
+
+Asserts structural integrity of ``SOURCE_TO_JOB_MAP``:
+
+- every entry references a known L1 family_id (no orphan keys);
+- every value is one of the seven canonical job_ids;
+- every P0 family is mapped to some job (launch-critical surface);
+- every job has at least one mapped source (no empty jobs);
+- the only intentionally-unmapped family is ``nta_pdb_personal``
+  (P2_restricted, license_tag=restricted — out of AWS-credit scope).
+
+These tests are pure metadata — no I/O, no DB, no LLM.
+"""
+
+from __future__ import annotations
+
+import importlib
+from typing import get_args
+
+import pytest
+from pydantic import ValidationError
+
+from jpintel_mcp.aws_credit_ops import (
+    ALL_JOB_IDS,
+    MAP_VERSION,
+    SOURCE_TO_JOB_MAP,
+    CoverageReport,
+    JobId,
+    get_job_for_source,
+    get_sources_for_job,
+    verify_coverage,
+)
+from jpintel_mcp.l1_source_family import (
+    SOURCE_FAMILY_REGISTRY,
+    list_source_families_by_priority,
+)
+
+# ---------------------------------------------------------------------------
+# Mapping integrity — keys + values
+# ---------------------------------------------------------------------------
+
+
+def test_map_version_is_stable_constant() -> None:
+    assert MAP_VERSION == "jpcite.aws_credit_ops.source_to_job_map.v1"
+
+
+def test_all_job_ids_has_seven_entries() -> None:
+    """The seven AWS-credit jobs J01..J07 must all appear in ALL_JOB_IDS."""
+    assert len(ALL_JOB_IDS) == 7
+    assert set(ALL_JOB_IDS) == {
+        "J01_source_profile_sweep",
+        "J02_nta_houjin_master_mirror",
+        "J03_nta_invoice_registrants_mirror",
+        "J04_egov_law_snapshot",
+        "J05_jgrants_public_program_acquisition",
+        "J06_ministry_municipality_pdf_extraction",
+        "J07_gbizinfo_public_business_signals",
+    }
+
+
+def test_every_map_key_is_a_known_l1_family() -> None:
+    """No orphan keys — every key must exist in SOURCE_FAMILY_REGISTRY."""
+    catalog_ids = set(SOURCE_FAMILY_REGISTRY)
+    for family_id in SOURCE_TO_JOB_MAP:
+        assert family_id in catalog_ids, (
+            f"orphan key {family_id!r} not in L1 catalog"
+        )
+
+
+def test_every_map_value_is_a_canonical_job_id() -> None:
+    """Every JobId in the map must be one of the seven canonical jobs."""
+    allowed = set(get_args(JobId))
+    for family_id, job_id in SOURCE_TO_JOB_MAP.items():
+        assert job_id in allowed, (
+            f"family {family_id!r} maps to non-canonical job {job_id!r}"
+        )
+
+
+def test_map_is_immutable_mapping_proxy() -> None:
+    """SOURCE_TO_JOB_MAP is a MappingProxyType — assignment must fail."""
+    with pytest.raises(TypeError):
+        SOURCE_TO_JOB_MAP["new_family"] = "J01_source_profile_sweep"  # type: ignore[index]
+
+
+# ---------------------------------------------------------------------------
+# Coverage — P0, all jobs ≥ 1 source, no orphan sources
+# ---------------------------------------------------------------------------
+
+
+def test_all_p0_families_have_a_job_binding() -> None:
+    """P0 families are launch-critical — every one must be mapped."""
+    p0_ids = {row.family_id for row in list_source_families_by_priority("P0")}
+    assert len(p0_ids) == 6
+    for family_id in p0_ids:
+        assert family_id in SOURCE_TO_JOB_MAP, (
+            f"P0 family {family_id!r} has no job binding"
+        )
+
+
+def test_every_job_has_at_least_one_mapped_source() -> None:
+    """No job in ALL_JOB_IDS may be empty — would break the orchestrator."""
+    for job_id in ALL_JOB_IDS:
+        sources = get_sources_for_job(job_id)
+        assert len(sources) >= 1, f"job {job_id!r} has zero mapped sources"
+
+
+def test_only_nta_pdb_personal_is_unmapped() -> None:
+    """Restricted data is the only catalog row excluded from the AWS jobs."""
+    unmapped = [
+        family_id
+        for family_id in SOURCE_FAMILY_REGISTRY
+        if family_id not in SOURCE_TO_JOB_MAP
+    ]
+    assert unmapped == ["nta_pdb_personal"]
+
+
+def test_mapped_count_equals_catalog_minus_restricted() -> None:
+    """32 catalog rows − 1 restricted = 31 mapped families."""
+    assert len(SOURCE_TO_JOB_MAP) == len(SOURCE_FAMILY_REGISTRY) - 1
+    assert len(SOURCE_TO_JOB_MAP) == 31
+
+
+# ---------------------------------------------------------------------------
+# get_job_for_source — happy + unhappy paths
+# ---------------------------------------------------------------------------
+
+
+def test_get_job_for_source_returns_canonical_job() -> None:
+    """Known happy paths from the J04 / J05 / J07 manifests."""
+    assert (
+        get_job_for_source("egov_laws_regulations") == "J04_egov_law_snapshot"
+    )
+    assert (
+        get_job_for_source("jgrants_subsidy_portal")
+        == "J05_jgrants_public_program_acquisition"
+    )
+    assert (
+        get_job_for_source("gbizinfo_houjin")
+        == "J07_gbizinfo_public_business_signals"
+    )
+    assert (
+        get_job_for_source("nta_invoice_publication")
+        == "J03_nta_invoice_registrants_mirror"
+    )
+
+
+def test_get_job_for_source_returns_none_for_restricted() -> None:
+    """``nta_pdb_personal`` is unmapped — returns None, not KeyError."""
+    assert get_job_for_source("nta_pdb_personal") is None
+
+
+def test_get_job_for_source_raises_keyerror_for_unknown_id() -> None:
+    """Unknown family_ids are programming errors — must raise."""
+    with pytest.raises(KeyError, match="unknown L1 source family_id"):
+        get_job_for_source("not_a_real_family")
+
+
+# ---------------------------------------------------------------------------
+# get_sources_for_job — happy + unhappy paths
+# ---------------------------------------------------------------------------
+
+
+def test_get_sources_for_job_returns_known_families() -> None:
+    """J04 (e-Gov) sweeps both laws + amendment diff."""
+    sources = set(get_sources_for_job("J04_egov_law_snapshot"))
+    assert sources == {"egov_laws_regulations", "egov_amendment_diff"}
+
+
+def test_get_sources_for_job_j03_invoice_covers_both_publication_and_extended() -> None:
+    """J03 NTA invoice mirror sweeps the P0 publication + P1 extended row."""
+    sources = set(
+        get_sources_for_job("J03_nta_invoice_registrants_mirror")
+    )
+    assert sources == {"nta_invoice_publication", "nta_invoice_extended"}
+
+
+def test_get_sources_for_job_j06_pdf_extraction_includes_municipal_wrappers() -> None:
+    """J06 sweeps ministry index pages + the 47/800 segmented wrappers."""
+    sources = set(
+        get_sources_for_job("J06_ministry_municipality_pdf_extraction")
+    )
+    # Must include the two segmented wrappers + at least 3 ministry rows.
+    assert "pref_47_municipal" in sources
+    assert "muni_800_segments" in sources
+    assert "meti_subsidies" in sources
+    assert "mhlw_labor" in sources
+    assert "maff_grants_extended" in sources
+
+
+def test_get_sources_for_job_raises_keyerror_for_unknown_job() -> None:
+    with pytest.raises(KeyError, match="unknown job_id"):
+        get_sources_for_job("J99_nonexistent")
+
+
+def test_get_sources_for_job_preserves_catalog_order() -> None:
+    """Return order must match L1 catalog declaration order."""
+    catalog_order = list(SOURCE_FAMILY_REGISTRY)
+    j06_sources = get_sources_for_job(
+        "J06_ministry_municipality_pdf_extraction"
+    )
+    # Each consecutive pair must respect catalog order.
+    indices = [catalog_order.index(family_id) for family_id in j06_sources]
+    assert indices == sorted(indices)
+
+
+# ---------------------------------------------------------------------------
+# verify_coverage — structural CoverageReport
+# ---------------------------------------------------------------------------
+
+
+def test_verify_coverage_returns_frozen_coverage_report() -> None:
+    report = verify_coverage()
+    assert isinstance(report, CoverageReport)
+    # Frozen — model_config sets frozen=True, so field mutation raises.
+    with pytest.raises(ValidationError):
+        report.total_families = 99  # type: ignore[misc]
+
+
+def test_verify_coverage_reports_no_empty_jobs() -> None:
+    """``jobs_with_zero_sources`` must be empty (CI gate)."""
+    report = verify_coverage()
+    assert report.jobs_with_zero_sources == ()
+
+
+def test_verify_coverage_flags_all_p0_mapped() -> None:
+    report = verify_coverage()
+    assert report.all_p0_families_mapped is True
+
+
+def test_verify_coverage_counts_match_catalog_and_map() -> None:
+    report = verify_coverage()
+    assert report.total_families == 32
+    assert report.mapped_families == 31
+    assert report.unmapped_families == ("nta_pdb_personal",)
+    # All seven jobs must appear in sources_per_job with ≥ 1 count.
+    assert set(report.sources_per_job.keys()) == set(ALL_JOB_IDS)
+    for job_id, count in report.sources_per_job.items():
+        assert count >= 1, f"{job_id!r} has zero mapped families"
+
+
+def test_verify_coverage_sources_per_job_sum_equals_mapped() -> None:
+    """Sum of per-job counts must equal total mapped families."""
+    report = verify_coverage()
+    assert sum(report.sources_per_job.values()) == report.mapped_families
+
+
+# ---------------------------------------------------------------------------
+# Anti-pattern enforcement — no live I/O, no LLM imports
+# ---------------------------------------------------------------------------
+
+
+def test_module_does_not_import_http_or_llm_clients() -> None:
+    """source_to_job_map must stay pure metadata (no httpx, no SDKs)."""
+    mod = importlib.import_module(
+        "jpintel_mcp.aws_credit_ops.source_to_job_map"
+    )
+    forbidden = {
+        "anthropic",
+        "openai",
+        "google.generativeai",
+        "claude_agent_sdk",
+        "httpx",
+        "requests",
+        "urllib3",
+        "playwright",
+        "selenium",
+        "boto3",
+    }
+    for name in forbidden:
+        top = name.split(".")[0]
+        assert top not in mod.__dict__, (
+            f"{name} must not be imported by aws_credit_ops.source_to_job_map"
+        )

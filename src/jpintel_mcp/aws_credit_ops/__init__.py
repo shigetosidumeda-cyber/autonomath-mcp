@@ -24,6 +24,16 @@ Non-negotiable invariants enforced across this subpackage:
 
 from __future__ import annotations
 
+from jpintel_mcp.aws_credit_ops.source_to_job_map import (
+    ALL_JOB_IDS,
+    MAP_VERSION,
+    SOURCE_TO_JOB_MAP,
+    CoverageReport,
+    JobId,
+    get_job_for_source,
+    get_sources_for_job,
+    verify_coverage,
+)
 from jpintel_mcp.aws_credit_ops.textract_client import (
     DEFAULT_REGION,
     SYNC_PAGE_LIMIT,
@@ -35,11 +45,19 @@ from jpintel_mcp.aws_credit_ops.textract_client import (
 )
 
 __all__ = [
+    "ALL_JOB_IDS",
     "DEFAULT_REGION",
+    "MAP_VERSION",
+    "SOURCE_TO_JOB_MAP",
     "SYNC_PAGE_LIMIT",
     "AnalyzeFeatureType",
+    "CoverageReport",
+    "JobId",
     "TextractClientError",
     "TextractRequest",
     "TextractResult",
     "analyze_document",
+    "get_job_for_source",
+    "get_sources_for_job",
+    "verify_coverage",
 ]
