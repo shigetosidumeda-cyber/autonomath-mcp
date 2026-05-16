@@ -34,6 +34,29 @@
     "agent_full": "https://jpcite.com/openapi.agent.json",
     "agent_slim_gpt30": "https://jpcite.com/openapi.agent.gpt30.json"
   },
+  "release_catalog": {
+    "jpcite_release": "https://jpcite.com/.well-known/jpcite-release.json",
+    "outcome_catalog": "https://jpcite.com/releases/rc1-p0-bootstrap/outcome_catalog.json",
+    "outcome_source_crosswalk": "https://jpcite.com/releases/rc1-p0-bootstrap/outcome_source_crosswalk.json",
+    "packet_skeletons": "https://jpcite.com/releases/rc1-p0-bootstrap/packet_skeletons.json",
+    "inline_packets": "https://jpcite.com/releases/rc1-p0-bootstrap/inline_packets.json",
+    "public_source_domains": "https://jpcite.com/releases/rc1-p0-bootstrap/public_source_domains.json",
+    "aws_spend_program": "https://jpcite.com/releases/rc1-p0-bootstrap/aws_spend_program.json",
+    "aws_execution_templates": "https://jpcite.com/releases/rc1-p0-bootstrap/aws_execution_templates.json",
+    "policy_decision_catalog": "https://jpcite.com/releases/rc1-p0-bootstrap/policy_decision_catalog.json",
+    "csv_private_overlay_contract": "https://jpcite.com/releases/rc1-p0-bootstrap/csv_private_overlay_contract.json",
+    "billing_event_ledger_schema": "https://jpcite.com/releases/rc1-p0-bootstrap/billing_event_ledger_schema.json",
+    "aws_budget_canary_attestation": "https://jpcite.com/releases/rc1-p0-bootstrap/aws_budget_canary_attestation.json",
+    "counts": {
+      "outcome_catalog_deliverables": 14,
+      "public_source_domain_families": 8,
+      "aws_spend_program_batches": 8,
+      "outcome_source_crosswalk_entries": 14,
+      "packet_skeletons": 14,
+      "inline_packets": 3,
+      "aws_execution_templates": 18
+    }
+  },
   "mcp": {
     "registry_manifest": "https://jpcite.com/server.json",
     "tool_manifest": "https://jpcite.com/mcp-server.json",
@@ -41,6 +64,55 @@
     "transport": "streamable_http",
     "auth_header": "X-API-Key",
     "package": "autonomath-mcp"
+  },
+  "tools": {
+    "recommended_first": [
+      {
+        "name": "jpcite_route",
+        "facade_tier": "P0",
+        "rest_endpoint": "/v1/jpcite/route",
+        "method": "POST",
+        "billable": false,
+        "request_time_llm_call_performed": false,
+        "purpose": "Route an agent intent to the cheapest sufficient jpcite deliverable. Free preflight."
+      },
+      {
+        "name": "jpcite_preview_cost",
+        "facade_tier": "P0",
+        "rest_endpoint": "/v1/jpcite/preview_cost",
+        "method": "POST",
+        "billable": false,
+        "request_time_llm_call_performed": false,
+        "purpose": "Free cost preview (¥0 predicted_total_jpy for free packets; estimated_price_jpy + cap_passed for paid outcomes)."
+      },
+      {
+        "name": "jpcite_execute_packet",
+        "facade_tier": "P0",
+        "rest_endpoint": "/v1/jpcite/execute_packet",
+        "method": "POST",
+        "billable": true,
+        "billing_basis": "accepted_artifact",
+        "request_time_llm_call_performed": false,
+        "headers_required": [
+          "Idempotency-Key",
+          "X-Jpcite-Scoped-Cap-Token"
+        ],
+        "purpose": "Paid execute. Charging only on accepted_artifact."
+      },
+      {
+        "name": "jpcite_get_packet",
+        "facade_tier": "P0",
+        "rest_endpoint": "/v1/jpcite/get_packet/{packet_id}",
+        "method": "GET",
+        "billable": false,
+        "request_time_llm_call_performed": false,
+        "purpose": "Retrieve inline_static_packet / capsule_contract_packet / static_packet_skeleton."
+      }
+    ],
+    "facade_schema_version": "jpcite.rest_facade.p0.v1",
+    "outcome_catalog": "https://jpcite.com/releases/rc1-p0-bootstrap/outcome_catalog.json",
+    "inline_packets": "https://jpcite.com/releases/rc1-p0-bootstrap/inline_packets.json",
+    "packet_skeletons": "https://jpcite.com/releases/rc1-p0-bootstrap/packet_skeletons.json"
   },
   "feeds": {
     "atom": "https://jpcite.com/feed.atom",
@@ -75,16 +147,16 @@
   },
   "content_hash": {
     "algorithm": "sha256",
-    "llms_txt": "01012ae98847080513ee76bc7f45c27a74d8bbead24fe433d78425c9d1e91731",
-    "llms_full_txt": "bde29ee8a9c4d9a97a340cdfcffe0f1e32288d1d4a7f00feb64de6c0e19180f3",
-    "llms_en_txt": "a50119470b65494b1983fdf2e679196aa83fd21cae25271e4c940fbd41fa7677",
-    "llms_full_en_txt": "1ab622227c99a36967f1b8c2926b5dd1e8d45c7df587adf1ea5d549cd8ea7fff"
+    "llms_txt": "78679de8be650448d11975b207aab6a701b517ac47a9b0f812aae8511020ddfa",
+    "llms_full_txt": "e6bbf9309128fce977430b62b5717488edefb7336c4289101fcd4baff7bb3ac3",
+    "llms_en_txt": "2cbdb42875b9e0008361f0c7255bf83b59c6e8fff816f2381bc1e130926ef471",
+    "llms_full_en_txt": "8287dae008b6f9b24a1ec04612da51a7019166d1222b97638d02ef00d1246327"
   },
   "content_hash_md5": {
     "algorithm": "md5",
-    "llms_txt": "f4203fee3d6af36a62659056359d1d7c",
-    "llms_full_txt": "073e4cb67a155024d0cb1bfb37a05867",
-    "llms_en_txt": "e1ee0698ba68a5f2d5ab2b5dcba9b0aa",
-    "llms_full_en_txt": "9230e6a13b3281a21d889902f12f6c26"
+    "llms_txt": "166c1a2498b9749c576712626bc9ee0a",
+    "llms_full_txt": "f783ba98c555b6d45649fe41c5cbe902",
+    "llms_en_txt": "ec11dd5e12cf880410b47ad95a46ddcc",
+    "llms_full_en_txt": "d9b39f0215d9eab9e2637be39b6df35c"
   }
 }

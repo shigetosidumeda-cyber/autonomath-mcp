@@ -83,7 +83,7 @@
   },
   "schema_examples_inline": true,
   "schema_version": "openapi-discovery/v1.0",
-  "snapshot_at": "2026-05-13",
+  "snapshot_at": "2026-05-15",
   "support_url": "https://jpcite.com/support.html",
   "tiers": [
     {
@@ -96,11 +96,11 @@
       "auth_required_for_admin": true,
       "description": "Complete public REST surface for SDK generators and API explorers. Sensitive account mutation, billing modification, webhook receiver, and operational endpoints are excluded from the AI-agent profiles.",
       "mirror_url": "https://jpcite.com/openapi/v1.json",
-      "path_count": 302,
+      "path_count": 307,
       "ratelimit_anonymous": "3 req/day per IP",
       "ratelimit_authenticated": "metered ¥3/billable unit (税込 ¥3.30)",
-      "sha256_prefix": "3d0ccd9e44d294f1",
-      "size_bytes": 1535050,
+      "sha256_prefix": "989dfb28165f0deb",
+      "size_bytes": 1545691,
       "tier": "full",
       "url": "https://api.jpcite.com/v1/openapi.json"
     },

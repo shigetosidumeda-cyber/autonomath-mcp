@@ -10,6 +10,29 @@
   "agent_openapi": "https://jpcite.com/openapi.agent.json",
   "agent_openapi_slim_gpt30": "https://jpcite.com/openapi.agent.gpt30.json",
   "openapi_discovery": "https://jpcite.com/.well-known/openapi-discovery.json",
+  "release_catalog": {
+    "jpcite_release": "https://jpcite.com/.well-known/jpcite-release.json",
+    "outcome_catalog": "https://jpcite.com/releases/rc1-p0-bootstrap/outcome_catalog.json",
+    "outcome_source_crosswalk": "https://jpcite.com/releases/rc1-p0-bootstrap/outcome_source_crosswalk.json",
+    "packet_skeletons": "https://jpcite.com/releases/rc1-p0-bootstrap/packet_skeletons.json",
+    "inline_packets": "https://jpcite.com/releases/rc1-p0-bootstrap/inline_packets.json",
+    "public_source_domains": "https://jpcite.com/releases/rc1-p0-bootstrap/public_source_domains.json",
+    "aws_spend_program": "https://jpcite.com/releases/rc1-p0-bootstrap/aws_spend_program.json",
+    "aws_execution_templates": "https://jpcite.com/releases/rc1-p0-bootstrap/aws_execution_templates.json",
+    "policy_decision_catalog": "https://jpcite.com/releases/rc1-p0-bootstrap/policy_decision_catalog.json",
+    "csv_private_overlay_contract": "https://jpcite.com/releases/rc1-p0-bootstrap/csv_private_overlay_contract.json",
+    "billing_event_ledger_schema": "https://jpcite.com/releases/rc1-p0-bootstrap/billing_event_ledger_schema.json",
+    "aws_budget_canary_attestation": "https://jpcite.com/releases/rc1-p0-bootstrap/aws_budget_canary_attestation.json",
+    "counts": {
+      "outcome_catalog_deliverables": 14,
+      "public_source_domain_families": 8,
+      "aws_spend_program_batches": 8,
+      "outcome_source_crosswalk_entries": 14,
+      "packet_skeletons": 14,
+      "inline_packets": 3,
+      "aws_execution_templates": 18
+    }
+  },
   "llms_txt": "https://jpcite.com/llms.txt",
   "llms_full_txt": "https://jpcite.com/llms-full.txt",
   "companion_md_sitemap": "https://jpcite.com/sitemap-companion-md.xml",
@@ -17,9 +40,58 @@
   "policy_url": "https://jpcite.com/tos.html",
   "privacy_url": "https://jpcite.com/privacy.html",
   "tools_count": {
-    "public_default": 151,
-    "runtime_verified": 151,
-    "note": "Public MCP manifests advertise 151 tools."
+    "public_default": 155,
+    "runtime_verified": 155,
+    "note": "Public MCP manifests advertise 155 tools."
+  },
+  "tools": {
+    "recommended_first": [
+      {
+        "name": "jpcite_route",
+        "facade_tier": "P0",
+        "rest_endpoint": "/v1/jpcite/route",
+        "method": "POST",
+        "billable": false,
+        "request_time_llm_call_performed": false,
+        "purpose": "Route an agent intent to the cheapest sufficient jpcite deliverable across the outcome catalog. Free preflight before paid execute."
+      },
+      {
+        "name": "jpcite_preview_cost",
+        "facade_tier": "P0",
+        "rest_endpoint": "/v1/jpcite/preview_cost",
+        "method": "POST",
+        "billable": false,
+        "request_time_llm_call_performed": false,
+        "purpose": "Free preflight cost estimate (predicted_total_jpy = ¥0 for free packets; estimated_price_jpy + cap_passed for paid outcomes)."
+      },
+      {
+        "name": "jpcite_execute_packet",
+        "facade_tier": "P0",
+        "rest_endpoint": "/v1/jpcite/execute_packet",
+        "method": "POST",
+        "billable": true,
+        "billing_basis": "accepted_artifact",
+        "request_time_llm_call_performed": false,
+        "headers_required": [
+          "Idempotency-Key",
+          "X-Jpcite-Scoped-Cap-Token"
+        ],
+        "purpose": "Paid execute. Charging only on accepted_artifact. Validates scoped cap token + Idempotency-Key bound to (execute_input_hash, outcome_contract_id, max_price_jpy)."
+      },
+      {
+        "name": "jpcite_get_packet",
+        "facade_tier": "P0",
+        "rest_endpoint": "/v1/jpcite/get_packet/{packet_id}",
+        "method": "GET",
+        "billable": false,
+        "request_time_llm_call_performed": false,
+        "purpose": "Retrieve inline_static_packet / capsule_contract_packet / static_packet_skeleton by packet_id."
+      }
+    ],
+    "facade_schema_version": "jpcite.rest_facade.p0.v1",
+    "outcome_catalog": "https://jpcite.com/releases/rc1-p0-bootstrap/outcome_catalog.json",
+    "inline_packets": "https://jpcite.com/releases/rc1-p0-bootstrap/inline_packets.json",
+    "packet_skeletons": "https://jpcite.com/releases/rc1-p0-bootstrap/packet_skeletons.json"
   },
   "corpus_scale": {
     "entities": 503930,
@@ -33,10 +105,23 @@
     "invoice_registrants_delta": 13801,
     "snapshot_at": "2026-05-07"
   },
-  "rate_limit": {"free_per_day_per_ip": 3, "paid_per_second": 10, "paid_burst": 20},
-  "pricing": {"unit_price_jpy_ex_tax": 3, "unit_price_jpy_inc_tax": 3.30, "currency": "JPY", "tier": "completely_metered"},
+  "rate_limit": {
+    "free_per_day_per_ip": 3,
+    "paid_per_second": 10,
+    "paid_burst": 20
+  },
+  "pricing": {
+    "unit_price_jpy_ex_tax": 3,
+    "unit_price_jpy_inc_tax": 3.3,
+    "currency": "JPY",
+    "tier": "completely_metered"
+  },
   "contact_email": "info@bookyou.net",
   "support_sla_hours": 24,
   "geo_eligibility": "Japan-only (Stripe customer billing_address_country=JP required)",
-  "data_licenses": ["PDL_v1.0", "CC-BY-4.0", "政府標準利用規約v2.0"]
+  "data_licenses": [
+    "PDL_v1.0",
+    "CC-BY-4.0",
+    "政府標準利用規約v2.0"
+  ]
 }

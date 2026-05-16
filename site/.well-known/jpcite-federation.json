@@ -2,7 +2,7 @@
   "schema_version": "mcp-federation-discovery/v1",
   "server_id": "jpcite.mcp.bookyou",
   "canonical_site": "https://jpcite.com",
-  "operator": "Bookyou\u682a\u5f0f\u4f1a\u793e",
+  "operator": "Bookyou株式会社",
   "operator_corporate_number": "8010001213708",
   "capabilities": {
     "protocol": "mcp/2025-06-18",
@@ -14,8 +14,8 @@
     "sampling": true,
     "resources": true,
     "prompts": true,
-    "tool_count_runtime": 151,
-    "tool_count_manifest": 151
+    "tool_count_runtime": 155,
+    "tool_count_manifest": 155
   },
   "jpcite_compatible_tools": [
     {
@@ -35,7 +35,7 @@
       "idempotent": true,
       "auth": "X-API-Key required",
       "billable_per_call": true,
-      "disclaimer": "\u00a752",
+      "disclaimer": "§52",
       "schema_fingerprint": "a29a5849241a2a1a"
     },
     {
@@ -45,7 +45,7 @@
       "idempotent": true,
       "auth": "X-API-Key required",
       "billable_per_call": true,
-      "disclaimer": "\u00a71 (\u884c\u653f\u66f8\u58eb\u6cd5)",
+      "disclaimer": "§1 (行政書士法)",
       "schema_fingerprint": "ec20ebbc591b0603"
     },
     {
@@ -55,7 +55,7 @@
       "idempotent": true,
       "auth": "X-API-Key required",
       "billable_per_call": true,
-      "disclaimer": "\u00a752/\u00a772",
+      "disclaimer": "§52/§72",
       "schema_fingerprint": "0cd5a7837773e663"
     },
     {
@@ -84,13 +84,13 @@
       "server_id": "weather.example.mcp",
       "role": "input_preconditioner",
       "trust": "advisory",
-      "notes": "Disaster-period \u707d\u5bb3\u5fa9\u8208 cohort gating. Output feeds program-search."
+      "notes": "Disaster-period 災害復興 cohort gating. Output feeds program-search."
     },
     {
       "server_id": "tax-rates.example.mcp",
       "role": "output_enricher",
       "trust": "advisory",
-      "notes": "Adds \u6cd5\u5b9a\u5b9f\u52b9\u7a0e\u7387 numeric to programs after our tool returns."
+      "notes": "Adds 法定実効税率 numeric to programs after our tool returns."
     },
     {
       "server_id": "houjin-watch.example.mcp",
@@ -102,7 +102,7 @@
   "handoff_patterns": [
     {
       "id": "disaster_recovery_program_match",
-      "description": "Disaster event \u2192 programs eligible for \u707d\u5bb3\u5fa9\u8208 special measures \u2192 application kit.",
+      "description": "Disaster event → programs eligible for 災害復興 special measures → application kit.",
       "chain": [
         {
           "server": "weather.example.mcp",
@@ -119,11 +119,11 @@
         }
       ],
       "sensitive": true,
-      "disclaimer_required": "\u00a752"
+      "disclaimer_required": "§52"
     },
     {
       "id": "houjin_baseline_dd",
-      "description": "\u6cd5\u4eba\u756a\u53f7 \u2192 \u5168\u9805\u76ee baseline \u2192 DD checklist \u2192 audit pack.",
+      "description": "法人番号 → 全項目 baseline → DD checklist → audit pack.",
       "chain": [
         {
           "server": "jpcite.mcp.bookyou",
@@ -139,11 +139,11 @@
         }
       ],
       "sensitive": true,
-      "disclaimer_required": "\u00a752/\u00a772"
+      "disclaimer_required": "§52/§72"
     },
     {
       "id": "amendment_alert_fanout",
-      "description": "Our amendment-alert webhook \u2192 partner-side downstream consumer chain.",
+      "description": "Our amendment-alert webhook → partner-side downstream consumer chain.",
       "chain": [
         {
           "server": "jpcite.mcp.bookyou",
