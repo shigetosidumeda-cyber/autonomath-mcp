@@ -1,0 +1,73 @@
+{
+  "job_id": "J02_nta_houjin_master_mirror",
+  "job_title": "NTA法人番号 master mirror and diff",
+  "plan_ref": "docs/_internal/aws_credit_data_acquisition_jobs_agent.md#J02",
+  "source_family": "corporation",
+  "source_id": "nta_houjin",
+  "publisher": "国税庁",
+  "purpose": "法人番号の名称、所在地、変更履歴を取得し、company identityの正規化基盤を作る",
+  "target_urls": [
+    "https://www.houjin-bangou.nta.go.jp/download/",
+    "https://api.houjin-bangou.nta.go.jp/4/diff",
+    "https://api.houjin-bangou.nta.go.jp/4/num",
+    "https://api.houjin-bangou.nta.go.jp/4/name",
+    "https://www.houjin-bangou.nta.go.jp/webapi/",
+    "https://www.houjin-bangou.nta.go.jp/webapi/riyokiyaku.html",
+    "https://www.houjin-bangou.nta.go.jp/riyokiyaku/index.html"
+  ],
+  "target_url_count": 7,
+  "fetch_strategy": "official_bulk_csv_zip_plus_webapi_diff",
+  "rate_limit_rps": 1.0,
+  "max_pages": 0,
+  "max_records": 6000000,
+  "max_runtime_seconds": 7200,
+  "output_prefix": "s3://jpcite-credit-993693061769-202605-raw/J02_nta_houjin/",
+  "output_artifacts": [
+    "houjin_master.parquet",
+    "houjin_change_events.parquet",
+    "identity_claim_refs.jsonl",
+    "source_receipts.jsonl",
+    "no_hit_checks.jsonl",
+    "quarantine.jsonl",
+    "run_manifest.json",
+    "job_report.md"
+  ],
+  "parser": "nta_houjin_bulk_csv_normalizer",
+  "robots_respect": true,
+  "user_agent": "jpcite-houjin-sync-bot/0.1 (+info@bookyou.net; Bookyou株式会社; T8010001213708)",
+  "budget_usd": 1100,
+  "budget_band": "900-1300",
+  "compute": "AWS Batch on EC2 Spot CPU",
+  "storage": "S3 + Glue + Athena",
+  "terms_status": "confirmed_or_unknown_safe",
+  "terms_url": "https://www.houjin-bangou.nta.go.jp/webapi/riyokiyaku.html",
+  "license_boundary": "attribution_open",
+  "license_family": "PDL1.0_compatible",
+  "attribution_required": true,
+  "required_notice": "出典: 国税庁 法人番号公表サイト。国税庁はこのサービスを保証しません。",
+  "redistribution_scope": "derived_fields",
+  "personal_data_flag": "none",
+  "known_gaps_default": [
+    "identity_ambiguity_unresolved",
+    "freshness_stale_or_unknown",
+    "source_receipt_incomplete"
+  ],
+  "no_hit_policy": "no_hit_not_absence",
+  "no_hit_safe_copy": "この検索条件では、取得時点の法人番号公表サイト/APIスナップショット内に一致レコードを確認できませんでした。",
+  "no_hit_forbidden_copy": [
+    "この法人は存在しません",
+    "実在しない会社です",
+    "反社・不正ではありません"
+  ],
+  "private_data_policy": "no_private_data_no_aggregator_sources_only_official_jp_public_anchors",
+  "join_keys": [
+    "houjin_bangou"
+  ],
+  "success_criteria": "法人番号単位のidentity claimにdirect receiptが付き、重複/変更履歴/同名衝突レポートが出る",
+  "stop_conditions": [
+    "rate_limit_429_or_403_increase",
+    "budget_usd_consumed_ge_1300",
+    "schema_drift_on_bulk_csv"
+  ],
+  "lane": "solo"
+}

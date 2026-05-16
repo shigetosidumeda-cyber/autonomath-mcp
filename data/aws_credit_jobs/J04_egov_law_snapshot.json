@@ -1,0 +1,78 @@
+{
+  "job_id": "J04_egov_law_snapshot",
+  "job_title": "e-Gov law / legal basis snapshot",
+  "plan_ref": "docs/_internal/aws_credit_data_acquisition_jobs_agent.md#J04",
+  "source_family": "law",
+  "source_id": "egov_law",
+  "publisher": "デジタル庁 / 総務省 行政管理局 (e-Gov)",
+  "purpose": "制度、申請、規制、根拠条文に使うe-Gov法令sourceをsnapshot化する",
+  "target_urls": [
+    "https://laws.e-gov.go.jp/api/2/law_data",
+    "https://laws.e-gov.go.jp/api/2/law_lists/1",
+    "https://laws.e-gov.go.jp/api/2/law_lists/2",
+    "https://laws.e-gov.go.jp/api/2/law_lists/3",
+    "https://laws.e-gov.go.jp/api/2/law_lists/4",
+    "https://laws.e-gov.go.jp/api/2/articles",
+    "https://laws.e-gov.go.jp/bulkdownload/",
+    "https://laws.e-gov.go.jp/",
+    "https://api-catalog.e-gov.go.jp/info/ja/apicatalog/view/44",
+    "https://developer.e-gov.go.jp/contents/terms",
+    "https://api-catalog.e-gov.go.jp/info/terms"
+  ],
+  "target_url_count": 11,
+  "fetch_strategy": "egov_law_api_v2_plus_bulk_xml_download",
+  "rate_limit_rps": 1.0,
+  "max_pages": 0,
+  "max_records": 12000,
+  "max_runtime_seconds": 5400,
+  "output_prefix": "s3://jpcite-credit-993693061769-202605-raw/J04_egov_law/",
+  "output_artifacts": [
+    "law_snapshot.parquet",
+    "law_article_claim_refs.jsonl",
+    "source_receipts.jsonl",
+    "stale_law_report.md",
+    "quarantine.jsonl",
+    "run_manifest.json",
+    "job_report.md"
+  ],
+  "parser": "egov_law_xml_v2_to_article_normalizer",
+  "robots_respect": true,
+  "user_agent": "jpcite-egov-law-bot/0.1 (+info@bookyou.net; Bookyou株式会社; T8010001213708)",
+  "budget_usd": 1000,
+  "budget_band": "800-1200",
+  "compute": "AWS Batch on Fargate Spot",
+  "storage": "S3 + Glue + Athena",
+  "terms_status": "confirmed_or_unknown_safe",
+  "terms_url": "https://developer.e-gov.go.jp/contents/terms",
+  "license_boundary": "attribution_open",
+  "license_family": "PDL1.0_or_site_terms",
+  "attribution_required": true,
+  "required_notice": "出典: e-Gov法令検索 (デジタル庁・総務省 行政管理局)。jpciteが加工した結果であり、政府は本分析を保証しません。",
+  "redistribution_scope": "derived_fields",
+  "personal_data_flag": "none",
+  "known_gaps_default": [
+    "freshness_stale_or_unknown",
+    "professional_review_required",
+    "source_receipt_incomplete"
+  ],
+  "no_hit_policy": "no_hit_not_absence",
+  "no_hit_safe_copy": "このAPI/スナップショットでは、指定条件に一致する法令メタデータまたは条文を確認できませんでした。",
+  "no_hit_forbidden_copy": [
+    "法的義務はありません",
+    "この手続きは不要です",
+    "違法ではありません"
+  ],
+  "private_data_policy": "no_private_data_no_aggregator_sources_only_official_jp_public_anchors",
+  "join_keys": [
+    "law_id",
+    "law_number",
+    "article_number"
+  ],
+  "success_criteria": "P0 packetで参照される法令claimの80%以上にsource receiptと取得時点が付く",
+  "stop_conditions": [
+    "rate_limit_429_or_403_increase",
+    "budget_usd_consumed_ge_1200",
+    "egov_api_v2_schema_drift"
+  ],
+  "lane": "solo"
+}

@@ -1,0 +1,81 @@
+{
+  "job_id": "J05_jgrants_public_program_acquisition",
+  "job_title": "J-Grants / public program acquisition",
+  "plan_ref": "docs/_internal/aws_credit_data_acquisition_jobs_agent.md#J05",
+  "source_family": "program",
+  "source_id": "jgrants_public_api",
+  "publisher": "デジタル庁 (J-Grants)",
+  "purpose": "補助金/支援制度の対象、期間、金額、申請窓口、必要書類候補をreceipt化する",
+  "target_urls": [
+    "https://api.jgrants-portal.go.jp/exp/v1/public/subsidies",
+    "https://api.jgrants-portal.go.jp/exp/v1/public/subsidies/id/{subsidy_id}",
+    "https://api.jgrants-portal.go.jp/exp/v1/public/notices",
+    "https://www.jgrants-portal.go.jp/",
+    "https://developers.digital.go.jp/documents/jgrants/api/",
+    "https://fs2.jgrants-portal.go.jp/API%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84.pdf",
+    "https://fs2.jgrants-portal.go.jp/API%E5%88%A9%E7%94%A8%E6%A6%82%E8%A6%81.pdf",
+    "https://www.meti.go.jp/policy/mono_info_service/mono/creative/manufacturing.html",
+    "https://www.chusho.meti.go.jp/koukai/yosan/index.html",
+    "https://www.smrj.go.jp/"
+  ],
+  "target_url_count": 10,
+  "fetch_strategy": "jgrants_public_rest_api_keyword_and_date_sweep",
+  "rate_limit_rps": 1.0,
+  "max_pages": 500,
+  "max_records": 25000,
+  "max_runtime_seconds": 9000,
+  "output_prefix": "s3://jpcite-credit-993693061769-202605-raw/J05_jgrants_program/",
+  "output_artifacts": [
+    "programs.parquet",
+    "program_rounds.parquet",
+    "program_requirements.parquet",
+    "program_source_receipts.jsonl",
+    "program_known_gaps.jsonl",
+    "deadline_calendar.jsonl",
+    "attachment_hash_only_ledger.jsonl",
+    "quarantine.jsonl",
+    "run_manifest.json",
+    "job_report.md"
+  ],
+  "parser": "jgrants_api_v1_json_to_program_normalizer",
+  "robots_respect": true,
+  "user_agent": "jpcite-jgrants-bot/0.1 (+info@bookyou.net; Bookyou株式会社; T8010001213708)",
+  "budget_usd": 2000,
+  "budget_band": "1600-2300",
+  "compute": "AWS Batch on EC2 Spot CPU",
+  "storage": "S3 + Glue + Athena, Textract only when 添付PDF necessary",
+  "terms_status": "confirmed_or_unknown_safe",
+  "terms_url": "https://fs2.jgrants-portal.go.jp/API%E5%88%A9%E7%94%A8%E8%A6%8F%E7%B4%84.pdf",
+  "license_boundary": "derived_fact",
+  "license_family": "jgrants_api_terms",
+  "attribution_required": true,
+  "required_notice": "出典: Jグランツ (デジタル庁)。jpciteが加工して作成。政府及び自治体は本分析を保証しません。",
+  "redistribution_scope": "derived_fields_attachments_hash_only",
+  "personal_data_flag": "none",
+  "known_gaps_default": [
+    "professional_review_required",
+    "freshness_stale_or_unknown",
+    "source_receipt_incomplete"
+  ],
+  "no_hit_policy": "no_hit_not_absence",
+  "no_hit_safe_copy": "取得時点のJ-Grants公開API/スナップショットでは、指定条件に一致する公募情報を確認できませんでした。",
+  "no_hit_forbidden_copy": [
+    "使える補助金はありません",
+    "不採択になります",
+    "申請資格がありません",
+    "利用可能な補助金はありません"
+  ],
+  "private_data_policy": "no_private_data_no_aggregator_sources_only_official_jp_public_anchors",
+  "join_keys": [
+    "subsidy_id",
+    "round_id"
+  ],
+  "success_criteria": "P0制度候補の70%以上でdeadline/target/amount/contact/source URLがreceipt付きで取得される",
+  "stop_conditions": [
+    "rate_limit_429_or_403_increase",
+    "budget_usd_consumed_ge_2300",
+    "jgrants_api_schema_drift",
+    "attachment_pdf_redistribution_risk_detected"
+  ],
+  "lane": "solo"
+}

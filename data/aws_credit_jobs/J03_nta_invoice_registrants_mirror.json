@@ -1,0 +1,76 @@
+{
+  "job_id": "J03_nta_invoice_registrants_mirror",
+  "job_title": "NTA invoice registrants mirror and no-hit checks",
+  "plan_ref": "docs/_internal/aws_credit_data_acquisition_jobs_agent.md#J03",
+  "source_family": "invoice",
+  "source_id": "nta_invoice",
+  "publisher": "国税庁",
+  "purpose": "インボイス登録状態を照会可能なreceiptへ変換し、no-hitを不存在にしない形で記録する",
+  "target_urls": [
+    "https://www.invoice-kohyo.nta.go.jp/download/index.html",
+    "https://web-api.invoice.nta.go.jp/Web_invoice_publicWebAPI/Web/index.html",
+    "https://www.invoice-kohyo.nta.go.jp/web-api/index.html",
+    "https://www.invoice-kohyo.nta.go.jp/web-api/riyou_kiyaku.html",
+    "https://www.invoice-kohyo.nta.go.jp/aboutweb/index.html",
+    "https://www.invoice-kohyo.nta.go.jp/regulation/notes-on-using-publication-system.html"
+  ],
+  "target_url_count": 6,
+  "fetch_strategy": "monthly_zenken_bulk_plus_webapi_no_hit_probe",
+  "rate_limit_rps": 0.5,
+  "max_pages": 0,
+  "max_records": 4500000,
+  "max_runtime_seconds": 7200,
+  "output_prefix": "s3://jpcite-credit-993693061769-202605-raw/J03_nta_invoice/",
+  "output_artifacts": [
+    "invoice_registrants.parquet",
+    "invoice_no_hit_checks.jsonl",
+    "source_receipts.jsonl",
+    "known_gaps.jsonl",
+    "quarantine.jsonl",
+    "privacy_gate_report.md",
+    "run_manifest.json",
+    "job_report.md"
+  ],
+  "parser": "nta_invoice_zenken_csv_normalizer",
+  "robots_respect": true,
+  "user_agent": "jpcite-invoice-sync-bot/0.1 (+info@bookyou.net; Bookyou株式会社; T8010001213708)",
+  "budget_usd": 900,
+  "budget_band": "700-1100",
+  "compute": "AWS Batch on Fargate Spot",
+  "storage": "S3 + Glue + Athena",
+  "terms_status": "confirmed_or_unknown_safe",
+  "terms_url": "https://www.invoice-kohyo.nta.go.jp/web-api/riyou_kiyaku.html",
+  "license_boundary": "derived_fact",
+  "license_family": "PDL1.0_compatible_attribution_required",
+  "attribution_required": true,
+  "required_notice": "出典: 国税庁 適格請求書発行事業者公表サイト。国税庁は本サービスの内容を保証しません。",
+  "redistribution_scope": "derived_fields",
+  "personal_data_flag": "contains_public_personal_data_for_sole_proprietors",
+  "privacy_gate": "individual_sole_proprietor_name_and_address_redacted_in_public_packet",
+  "known_gaps_default": [
+    "no_hit_not_absence",
+    "identity_ambiguity_unresolved",
+    "freshness_stale_or_unknown"
+  ],
+  "no_hit_policy": "no_hit_not_absence",
+  "no_hit_safe_copy": "取得時点のインボイス公表情報/APIスナップショットでは、この登録番号または検索条件に一致する公表レコードを確認できませんでした。",
+  "no_hit_forbidden_copy": [
+    "免税事業者です",
+    "請求書を発行できません",
+    "税務上問題があります",
+    "取引してはいけません",
+    "未登録確定"
+  ],
+  "private_data_policy": "no_private_data_no_aggregator_sources_only_official_jp_public_anchors",
+  "join_keys": [
+    "t_bangou",
+    "houjin_bangou"
+  ],
+  "success_criteria": "T番号があるclaimはpositive/no-hit receiptに分岐し、no-hitの100%に no_hit_not_absence が付く",
+  "stop_conditions": [
+    "rate_limit_429_or_403_increase",
+    "budget_usd_consumed_ge_1100",
+    "private_individual_data_leak_detected"
+  ],
+  "lane": "solo"
+}
