@@ -8,6 +8,44 @@ See [`docs/versioning.md`](docs/versioning.md) for what counts as breaking.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-05-16
+
+### Added — tool surface 155 → 179 (+24 tools)
+
+- **Wave 51 dim K-S (155 → 165, +10 tools)**: MCP wrappers around 9 internal modules
+  landed in Wave 51 Phase 2 (`predictive_service` / `session_context` /
+  `rule_tree` / `anonymized_query` / `explainable_fact` / `composable_tools` /
+  `time_machine` / `federated_mcp` / `copilot_scaffold`) plus 1 dispatcher.
+  Pure SQLite + Python, no LLM inference, k=5 anonymity / Ed25519 sign / file
+  persist / depth=100 invariants enforced. See
+  `docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md`.
+- **Wave 51 chain MCP (165 → 169, +4 tools)**: 4 server-side composition chains
+  wrapping dim K-S atomic tools (atomic 139 → composed 7 系の上澄み use-case
+  化). 7 call → 1 call 化のサーバ側 compose、composed_tools/ dir 配下。
+- **Wave 59 Stream B (169 → 179, +10 tools)**: top-10 outcome MCP wrappers
+  (`docs/_internal/outcome_source_crosswalk.json` の top-10 outcome contract
+  ¥300-¥900 band を MCP tool 化、estimated_price_jpy + outcome_id を envelope
+  に bind)。Wave 59-H verifier runner (`scripts/verify_outcomes.py`) +
+  assertion DSL (5 type) と integrate、smoke 100 packet PASS + GHA workflow
+  + tests landed。
+
+### Changed
+
+- `pyproject.toml` / `server.json` / `mcp-server.json` / `dxt/manifest.json` /
+  `smithery.yaml` / `src/jpintel_mcp/__init__.py` / `docs/openapi/agent.json`
+  / `docs/openapi/v1.json` の version 0.4.0 → 0.4.1 同期 (10 occurrence / 8 file)。
+- `tool_count` 179 manifest field 維持 (v0.4.0 で 155 だった文字列は既に v0.4.0
+  manifest publish 時に 179 へ rev 済み、本 release で source 真値と sync)。
+
+### Notes
+
+- PyPI republish + Anthropic Registry republish は **user action**。
+  `twine upload dist/*` + `mcp publish` を operator が実行する。
+  PyPI token / registry credential は `.env.local` (chmod 600) を参照。
+- mypy strict 0 errors / ruff 0 errors を Wave 50 RC1 から継続維持
+  (live_aws_commands_allowed=false の絶対堅守は v0.4.1 release boundary に
+  影響しない、AWS canary は引き続き mock smoke のみ)。
+
 #### tick 27 (Wave 50 14 tick 維持):
 - production gate 7/7 (27 tick) / mypy 0 (22 tick) / **live_aws=false (27 tick 絶対堅守)** / Stream 51/53
 

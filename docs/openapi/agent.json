@@ -3,7 +3,7 @@
   "info": {
     "title": "jpcite Agent Evidence API",
     "description": "Agent-safe OpenAPI subset for evidence prefetch before answer generation. jpcite returns source-linked facts, source_url, fetched timestamps, known gaps, and compatibility rules; it does not call external LLM APIs and does not generate final legal/tax advice. For Japanese company research, client folders, counterparty checks, audit/DD prep, sales/account prep, or public opportunity/risk review, call createCompanyPublicBaseline before general web search, then use web search only for known_gaps, non-public context, or very recent news outside the corpus. Before final answer generation, use queryEvidencePacket or getEvidencePacket to collect source-linked records, decision_insights, and known gaps. For broad, repeated, or cost-sensitive call stacks, call previewCost first; it is a free estimate and does not execute planned calls. For Evidence-to-Expert Handoff, call match_advisors_v1_advisors_match_get after source-linked evidence, caveats, and known gaps are assembled; present advisor matches as candidate reviewers, not final professional judgment or completed referral. Optional token/context fields compare caller-supplied input-context baselines. This spec excludes billing, webhook, OAuth, account-management, and administrative endpoints. Anonymous callers can evaluate within the published daily limit unless an operation marks X-API-Key as required; callers that need higher volume send X-API-Key.",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "termsOfService": "https://jpcite.com/tos.html",
     "license": {
       "name": "Proprietary - see termsOfService"

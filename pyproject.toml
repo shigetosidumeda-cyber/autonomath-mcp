@@ -1,6 +1,6 @@
 [project]
 name = "autonomath-mcp"
-version = "0.4.0"
+version = "0.4.1"
 description = "REST + MCP context-compression layer for Japanese institutional public data. jpcite turns long PDFs, official pages, and search results into compact Evidence Packets with source URLs, fetched timestamps, known gaps, and compatibility/exclusion rules before downstream AI agents draft answers. 3 yen/billable unit metered (3.30 tax-incl), anonymous 3/day per IP free."
 license = { text = "MIT" }
 authors = [
