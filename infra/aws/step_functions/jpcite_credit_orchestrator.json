@@ -501,7 +501,7 @@
       "Resource": "arn:aws:states:::sns:publish",
       "Parameters": {
         "TopicArn": "arn:aws:sns:ap-northeast-1:993693061769:jpcite-credit-cost-alerts-apne1",
-        "Subject": "jpcite credit run COMPLETE — run scripts/aws_credit_ops/aggregate_run_ledger.py for credit_run_ledger_2026_05.json",
+        "Subject": "jpcite credit run COMPLETE",
         "Message.$": "States.JsonToString($.aggregate_payload)"
       },
       "End": true
