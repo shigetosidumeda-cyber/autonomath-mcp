@@ -73,11 +73,17 @@ def test_ast_no_real_aws_or_network_imports() -> None:
 
 def test_module_loads() -> None:
     assert hasattr(cf_loadtest_runner, "project_transfer_cost")
+    assert hasattr(cf_loadtest_runner, "project_mixed_transfer_cost")
     assert hasattr(cf_loadtest_runner, "sample_keys")
+    assert hasattr(cf_loadtest_runner, "build_mixed_keys")
     assert hasattr(cf_loadtest_runner, "build_urls")
     assert hasattr(cf_loadtest_runner, "classify")
     assert hasattr(cf_loadtest_runner, "build_envelope")
-    assert cf_loadtest_runner.SCHEMA_VERSION == "jpcite.cf_loadtest_envelope.v1"
+    assert cf_loadtest_runner.SCHEMA_VERSION == "jpcite.cf_loadtest_envelope.v2"
+    assert cf_loadtest_runner.MODE_SMALL_MIX == "small_packet_mix"
+    assert cf_loadtest_runner.MODE_LARGE_STREAMING == "large_packet_streaming"
+    assert cf_loadtest_runner.LARGE_KEYS
+    assert all(k for k in cf_loadtest_runner.LARGE_KEYS)
 
 
 # Test 3 ----------------------------------------------------------------------
@@ -210,11 +216,111 @@ def test_build_envelope_schema() -> None:
     )
     proj = cf_loadtest_runner.project_transfer_cost(100, 2_000)
     env = cf_loadtest_runner.build_envelope(plan, keys_total=50, projection=proj)
-    assert env["schema_version"] == "jpcite.cf_loadtest_envelope.v1"
+    assert env["schema_version"] == "jpcite.cf_loadtest_envelope.v2"
     assert env["classification"] == "DRY_RUN"
     assert env["plan"]["requests"] == 100
+    assert env["plan"]["mode"] == "small_packet_mix"
     assert env["projection"]["total_bytes"] == 200_000
     assert env["budget_usd"] == 10.0
+
+
+# Test 14 ---------------------------------------------------------------------
+
+
+def test_project_mixed_transfer_cost_basic() -> None:
+    """large_packet_streaming projection covers both fetch buckets."""
+
+    p = cf_loadtest_runner.project_mixed_transfer_cost(
+        large_fetches=10,
+        small_fetches=2_000,
+        large_avg_bytes=1_191_952_384,
+        small_avg_bytes=2_000,
+    )
+    assert p["requests"] == 2_010.0
+    assert p["large_fetches"] == 10.0
+    assert p["small_fetches"] == 2_000.0
+    expected_bytes = 10 * 1_191_952_384 + 2_000 * 2_000
+    assert p["total_bytes"] == float(expected_bytes)
+    # 10 * 1.19 GB ≈ 11.1 GiB → $1.27 transfer; +2010 req at 1.2e-6 = 0.002412.
+    assert 1.20 < p["transfer_usd"] < 1.40
+    assert 0.001 < p["request_usd"] < 0.01
+    assert p["total_usd"] == round(p["transfer_usd"] + p["request_usd"], 6)
+
+
+# Test 15 ---------------------------------------------------------------------
+
+
+def test_project_mixed_transfer_cost_clamps_negative() -> None:
+    p = cf_loadtest_runner.project_mixed_transfer_cost(-1, -5)
+    assert p["requests"] == 0.0
+    assert p["large_fetches"] == 0.0
+    assert p["small_fetches"] == 0.0
+    assert p["total_bytes"] == 0.0
+    assert p["total_usd"] == 0.0
+
+
+# Test 16 ---------------------------------------------------------------------
+
+
+def test_build_mixed_keys_deterministic() -> None:
+    small = [f"small/{i}.json" for i in range(50)]
+    plan_a = cf_loadtest_runner.build_mixed_keys(small, 5, 20, seed=7)
+    plan_b = cf_loadtest_runner.build_mixed_keys(small, 5, 20, seed=7)
+    assert plan_a == plan_b
+    assert len(plan_a) == 25
+    large_count = sum(1 for k in plan_a if k in cf_loadtest_runner.LARGE_KEYS)
+    assert large_count == 5
+    plan_c = cf_loadtest_runner.build_mixed_keys(small, 5, 20, seed=8)
+    assert plan_a != plan_c
+
+
+# Test 17 ---------------------------------------------------------------------
+
+
+def test_build_mixed_keys_empty_small_only_large() -> None:
+    """With empty small_keys + 0 small_fetches, plan is large only."""
+
+    plan = cf_loadtest_runner.build_mixed_keys([], 4, 0, seed=0)
+    assert len(plan) == 4
+    assert all(k in cf_loadtest_runner.LARGE_KEYS for k in plan)
+
+
+# Test 18 ---------------------------------------------------------------------
+
+
+def test_main_large_streaming_dry_run(
+    capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
+    manifest = tmp_path / "keys.txt"
+    manifest.write_text("a/b.json\nc/d.json\n", encoding="utf-8")
+    rc = cf_loadtest_runner.main(
+        [
+            "--distribution-domain",
+            "d1234.cloudfront.net",
+            "--manifest-path",
+            str(manifest),
+            "--mode",
+            "large_packet_streaming",
+            "--large-fetches",
+            "3",
+            "--small-fetches",
+            "10",
+            "--concurrency",
+            "4",
+            "--budget-usd",
+            "5.0",
+        ]
+    )
+    assert rc == 0
+    captured = capsys.readouterr()
+    env = json.loads(captured.out)
+    assert env["classification"] == "DRY_RUN"
+    assert env["plan"]["mode"] == "large_packet_streaming"
+    assert env["plan"]["large_fetches"] == 3
+    assert env["plan"]["small_fetches"] == 10
+    assert env["projection"]["large_fetches"] == 3.0
+    assert env["projection"]["small_fetches"] == 10.0
+    assert env["projection"]["total_bytes"] > 3 * 1_000_000_000  # ≥3 GB
 
 
 # Test 13 ---------------------------------------------------------------------
