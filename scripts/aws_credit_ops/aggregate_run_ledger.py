@@ -1038,13 +1038,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args(argv if argv is not None else sys.argv[1:])
 
-    # Pool clients via the shared cache when running live; honour
-    # ``_import_boto3`` monkeypatches so unit tests can inject fakes
-    # without rebuilding the module-level pool. The 200-500 ms boto3
-    # cold-start tax is paid once per (service, region) tuple.
-    boto3 = _import_boto3()
-    s3 = boto3.client("s3", region_name=args.region)
-    ce = boto3.client("ce", region_name=args.cost_explorer_region)
+    # PERF-35: route through the cached pool's ``get_client`` so the
+    # 200-500 ms boto3 cold-start tax is paid once per (service,
+    # region) tuple across the run (and across other aws_credit_ops
+    # modules in the same Python interpreter). Falls back to the
+    # legacy ``_import_boto3`` shim when the pool module is
+    # unavailable so unit-test monkeypatches still inject fakes.
+    try:
+        from scripts.aws_credit_ops._aws import get_client
+    except ImportError:
+        boto3 = _import_boto3()
+        s3 = boto3.client("s3", region_name=args.region)
+        ce = boto3.client("ce", region_name=args.cost_explorer_region)
+    else:
+        s3 = get_client("s3", region_name=args.region)
+        ce = get_client("ce", region_name=args.cost_explorer_region)
 
     ledger = build_ledger(
         s3,
