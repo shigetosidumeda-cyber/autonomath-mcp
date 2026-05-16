@@ -1,0 +1,53 @@
+{
+  "computeEnvironmentName": "jpcite-credit-ec2-spot-gpu",
+  "type": "MANAGED",
+  "state": "ENABLED",
+  "computeResources": {
+    "type": "SPOT",
+    "allocationStrategy": "SPOT_CAPACITY_OPTIMIZED",
+    "minvCpus": 0,
+    "maxvCpus": 64,
+    "desiredvCpus": 0,
+    "instanceTypes": [
+      "g4dn.4xlarge",
+      "g4dn.8xlarge",
+      "g5.4xlarge",
+      "g5.8xlarge"
+    ],
+    "subnets": [
+      "subnet-ad6d8df7",
+      "subnet-9c2294d4",
+      "subnet-c4dd65ef"
+    ],
+    "securityGroupIds": [
+      "sg-26c58d66"
+    ],
+    "instanceRole": "arn:aws:iam::993693061769:instance-profile/ecsInstanceRole",
+    "tags": {
+      "Project": "jpcite",
+      "CreditRun": "2026-05",
+      "AutoStop": "2026-05-29",
+      "Workload": "gpu-faiss-finetune"
+    },
+    "ec2Configuration": [
+      {
+        "imageType": "ECS_AL2_NVIDIA"
+      }
+    ]
+  },
+  "serviceRole": "arn:aws:iam::993693061769:role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch",
+  "tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "AutoStop": "2026-05-29",
+    "Workload": "gpu-faiss-finetune"
+  },
+  "_notes": {
+    "purpose": "EC2 Spot GPU CE for sustained credit burn. Workload = FAISS index build on full jpcite corpus + sentence-transformers re-embed on T4/A10G. NO LLM API. Open-weight models only.",
+    "instance_types_rationale": "g4dn.4xlarge (16 vCPU/64 GB/1× T4 @ ~$0.48/hr) cheapest GPU spot; g5.4xlarge (16 vCPU/64 GB/1× A10G @ ~$0.77/hr) faster GPU; g4dn.8xlarge (32 vCPU/128 GB/1× T4 @ ~$0.97/hr) bigger memory; g5.8xlarge (32 vCPU/128 GB/1× A10G @ ~$0.83/hr 1c spot). SPOT_CAPACITY_OPTIMIZED picks lowest interruption risk × cost.",
+    "ami_type": "ECS_AL2_NVIDIA — Amazon Linux 2 NVIDIA-optimized ECS AMI (includes NVIDIA driver + nvidia-docker2 + CUDA runtime in container). Required for AWS Batch GPU resource requirement.",
+    "quota_check": "Spot G/VT quota = 64 vCPU (ap-northeast-1) — 128 maxvCpus exceeds it. Override: maxvCpus 64 to fit current quota. Submit quota increase request later. Effective ceiling = 64 vCPU = 4× g4dn.4xlarge or 4× g5.4xlarge or 2× g4dn.8xlarge.",
+    "budget_cap": "$1,000 for this batch (operator can re-run). Auto-stop tag 2026-05-29 honored by jpcite-aws-auto-stop Lambda. Spot rate $0.48-0.97/hr × 4 instances × 24h = $46-93/day.",
+    "register_cmd": "aws batch create-compute-environment --cli-input-json file://infra/aws/batch/jpcite_credit_ec2_spot_gpu_compute_environment.json --profile bookyou-recovery --region ap-northeast-1"
+  }
+}

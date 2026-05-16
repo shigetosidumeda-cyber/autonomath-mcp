@@ -1,0 +1,62 @@
+{
+  "jobDefinitionName": "jpcite-gpu-batch",
+  "type": "container",
+  "platformCapabilities": ["EC2"],
+  "propagateTags": true,
+  "tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "Workload": "gpu_faiss_finetune",
+    "AutoStop": "2026-05-29"
+  },
+  "containerProperties": {
+    "image": "993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:latest",
+    "command": [
+      "bash",
+      "-lc",
+      "set -euo pipefail; aws s3 cp s3://jpcite-credit-993693061769-202605-derived/gpu_workload/build_faiss_index_gpu.py /app/build_faiss_index_gpu.py; aws s3 cp s3://jpcite-credit-993693061769-202605-derived/gpu_workload/entrypoint_gpu_burn.sh /app/entrypoint_gpu_burn.sh; chmod +x /app/entrypoint_gpu_burn.sh; exec /app/entrypoint_gpu_burn.sh"
+    ],
+    "jobRoleArn": "arn:aws:iam::993693061769:role/jpcite-batch-job-role",
+    "executionRoleArn": "arn:aws:iam::993693061769:role/ecsTaskExecutionRole",
+    "resourceRequirements": [
+      {"type": "VCPU", "value": "16"},
+      {"type": "MEMORY", "value": "61440"},
+      {"type": "GPU", "value": "1"}
+    ],
+    "environment": [
+      {"name": "AWS_DEFAULT_REGION", "value": "ap-northeast-1"},
+      {"name": "CORPUS_BUCKET", "value": "jpcite-credit-993693061769-202605-derived"},
+      {"name": "CORPUS_PREFIX", "value": "corpus_export"},
+      {"name": "FAISS_PREFIX", "value": "faiss"},
+      {"name": "FAISS_MODEL", "value": "intfloat/multilingual-e5-small"},
+      {"name": "FAISS_DIM", "value": "384"},
+      {"name": "FAISS_BATCH_SIZE", "value": "256"},
+      {"name": "MIN_RUNTIME_SECONDS", "value": "14400"},
+      {"name": "FAISS_TABLES", "value": "programs,am_law_article,adoption_records"},
+      {"name": "FAISS_LIMIT", "value": "100000"},
+      {"name": "PLATFORM_CAPABILITY", "value": "EC2_GPU"}
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/batch/jpcite-credit-2026-05",
+        "awslogs-region": "ap-northeast-1",
+        "awslogs-stream-prefix": "jpcite-gpu-batch"
+      }
+    },
+    "linuxParameters": {
+      "sharedMemorySize": 4096
+    }
+  },
+  "timeout": {
+    "attemptDurationSeconds": 28800
+  },
+  "retryStrategy": {
+    "attempts": 2,
+    "evaluateOnExit": [
+      {"onReason": "Host*", "action": "RETRY"},
+      {"onReason": "Spot*", "action": "RETRY"},
+      {"onExitCode": "0", "action": "EXIT"}
+    ]
+  }
+}

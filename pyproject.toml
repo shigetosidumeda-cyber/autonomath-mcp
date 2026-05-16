@@ -303,6 +303,14 @@ module = [
     "reasoning.*",
     "query_rewrite.*",
     "jpintel_mcp.api.program_agriculture",
+    # GPU burn (jpcite-gpu-batch) heavyweight ML deps. Installed at
+    # job runtime via entrypoint_gpu_burn.sh — not present in local
+    # .venv, so mypy strict needs ignore_missing_imports to walk
+    # scripts/aws_credit_ops/build_faiss_index_gpu.py cleanly.
+    "torch.*",
+    "faiss.*",
+    "sentence_transformers.*",
+    "boto3.*",
 ]
 ignore_missing_imports = true
 
