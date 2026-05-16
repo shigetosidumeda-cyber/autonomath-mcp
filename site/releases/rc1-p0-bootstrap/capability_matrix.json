@@ -1,45 +1,1708 @@
 {
-  "capabilities": [
-    {
-      "billable": false,
-      "blocked": false,
-      "capability_id": "jpcite_route",
-      "executable": true,
-      "previewable": false,
-      "recommendable": true
-    },
-    {
-      "billable": false,
-      "blocked": false,
-      "capability_id": "jpcite_preview_cost",
-      "executable": true,
-      "previewable": true,
-      "recommendable": true
-    },
-    {
-      "billable": true,
-      "blocked": false,
-      "capability_id": "jpcite_execute_packet",
-      "executable": true,
-      "previewable": false,
-      "recommendable": true
-    },
-    {
-      "billable": false,
-      "blocked": false,
-      "capability_id": "jpcite_get_packet",
-      "executable": true,
-      "previewable": false,
-      "recommendable": true
-    }
-  ],
-  "full_catalog_default_visible": false,
-  "generated_from_capsule_id": "rc1-p0-bootstrap-2026-05-15",
   "matrix_id": "rc1-p0-bootstrap-2026-05-15:capability-matrix",
+  "generated_from_capsule_id": "rc1-p0-bootstrap-2026-05-15",
+  "full_catalog_default_visible": false,
   "p0_facade_tools": [
     "jpcite_route",
     "jpcite_preview_cost",
     "jpcite_execute_packet",
     "jpcite_get_packet"
+  ],
+  "capabilities": [
+    {
+      "capability_id": "jpcite_route",
+      "billable": false,
+      "blocked": false,
+      "executable": true,
+      "previewable": false,
+      "recommendable": true
+    },
+    {
+      "capability_id": "jpcite_preview_cost",
+      "billable": false,
+      "blocked": false,
+      "executable": true,
+      "previewable": true,
+      "recommendable": true
+    },
+    {
+      "capability_id": "jpcite_execute_packet",
+      "billable": true,
+      "blocked": false,
+      "executable": true,
+      "previewable": false,
+      "recommendable": true
+    },
+    {
+      "capability_id": "jpcite_get_packet",
+      "billable": false,
+      "blocked": false,
+      "executable": true,
+      "previewable": false,
+      "recommendable": true
+    }
+  ],
+  "tool_count": 165,
+  "free_paid_breakdown": {
+    "free": 15,
+    "paid": 150,
+    "by_band": {
+      "free": 15,
+      "light": 133,
+      "mid": 10,
+      "heavy": 7
+    }
+  },
+  "tools": [
+    {
+      "tool_id": "search_programs",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_program",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "batch_get_programs",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "list_exclusion_rules",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "check_exclusions",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_meta",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "get_usage_status",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "enum_values",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "search_enforcement_cases",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_enforcement_case",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_case_studies",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_case_study",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_loan_programs",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_loan_program",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "prescreen_programs",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "smb_starter_pack",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "upcoming_deadlines",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "deadline_calendar",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "subsidy_combo_finder",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "agent_handoff_kind": "composed_outcome"
+    },
+    {
+      "tool_id": "dd_profile_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "similar_cases",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "subsidy_roadmap_3yr",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "agent_handoff_kind": "composed_outcome"
+    },
+    {
+      "tool_id": "search_laws",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_law",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "list_law_revisions",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_court_decisions",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_court_decision",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "find_precedents_by_statute",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_bids",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_bid",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "bid_eligible_for_profile",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_tax_rules",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_tax_rule",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "evaluate_tax_applicability",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "compose_audit_workpaper",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "audit_batch_evaluate",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "resolve_citation_chain",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_invoice_registrants",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "trace_program_to_law",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "find_cases_by_law",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "combined_compliance_check",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "regulatory_prep_pack",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "list_active_disaster_programs",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "match_disaster_programs",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "disaster_catalog",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_tax_incentives",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_certifications",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "list_open_programs",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "enum_values_am",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "search_by_law",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "active_programs_at",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_acceptance_stats_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "related_programs",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_annotations",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "compose_audit_workpaper_v2",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "search_gx_programs_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_loans_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "check_enforcement_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_mutual_plans_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_law_article_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "benchmark_cohort_average_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "verify_citations",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "case_cohort_match_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "match_cohort_5d_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "program_risk_score_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "supplier_chain_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "portfolio_optimize_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "program_compatibility_pair_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "apply_eligibility_chain_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "find_complementary_programs_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "simulate_application_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "track_amendment_lineage_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "program_active_periods_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "programs_by_corporate_form_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "program_eligibility_by_form_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_houjin_360_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "list_edinet_disclosures",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_invoice_by_houjin_partial",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "program_full_context",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "law_related_programs_cross",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "cases_by_industry_size_pref",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "discover_related",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "dynamic_eligibility_check_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "program_eligibility_for_houjin_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_evidence_packet",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "fact_signature_verify_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "foreign_fdi_list_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "foreign_fdi_country_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "check_funding_stack_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "match_programs_by_funding_stage_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "graph_traverse",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "deep_health_am",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "pack_construction",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "pack_manufacturing",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "pack_real_estate",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "invoice_risk_lookup",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "invoice_risk_batch",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "houjin_invoice_status",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "jpcite_route",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "jpcite_preview_cost",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "jpcite_execute_packet",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "jpcite_get_packet",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_kokkai_utterance",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_shingikai_minutes",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "unified_lifecycle_calendar",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "program_lifecycle",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "program_abstract_structured",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_municipality_subsidies",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "find_saiketsu",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "cite_tsutatsu",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "find_shitsugi",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "find_bunsho_kaitou",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "policy_upstream_watch",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "policy_upstream_timeline",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "portfolio_optimize_precomputed_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "houjin_risk_score_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "program_forecast_30yr_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "alliance_opportunities_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "graph_vec_search_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "prerequisite_chain",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_provenance",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_provenance_for_fact",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_pubcomment_status",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "recommend_similar_program",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "recommend_similar_case",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "recommend_similar_court_decision",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "programs_by_region_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "region_coverage_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "search_regions_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "rule_engine_check",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "semantic_search_legacy_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "semantic_search_v2_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "semantic_search_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "match_due_diligence_questions",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "prepare_kessan_briefing",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "forecast_program_renewal",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "cross_check_jurisdiction",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "bundle_application_kit",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "agent_handoff_kind": "composed_outcome"
+    },
+    {
+      "tool_id": "shihoshoshi_dd_pack_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_source_manifest",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "list_static_resources_am",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "get_static_resource_am",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "list_example_profiles_am",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "get_example_profile_am",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "match_succession_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "succession_playbook_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "list_tax_sunset_alerts",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    },
+    {
+      "tool_id": "tax_rule_full_chain",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "get_am_tax_rule",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "query_at_snapshot_v2",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "query_program_evolution",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "program_timeline_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "cases_timeline_trend_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "upcoming_rounds_for_my_profile_am",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "validate",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "anonymized_aggregate_query",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "sign_fact",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "verify_fact",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "light",
+      "estimated_price_jpy": 300,
+      "agent_handoff_kind": "atomic_lookup"
+    },
+    {
+      "tool_id": "eligibility_audit_workpaper_composed",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "agent_handoff_kind": "composed_outcome"
+    },
+    {
+      "tool_id": "subsidy_eligibility_full_composed",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "agent_handoff_kind": "composed_outcome"
+    },
+    {
+      "tool_id": "ma_due_diligence_pack_composed",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "agent_handoff_kind": "composed_outcome"
+    },
+    {
+      "tool_id": "invoice_compatibility_check_composed",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "agent_handoff_kind": "composed_outcome"
+    },
+    {
+      "tool_id": "query_snapshot_as_of_v2",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "counterfactual_diff_v2",
+      "surface": "MCP",
+      "free_or_paid": "paid",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 3,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "agent_handoff_kind": "joined_outcome"
+    },
+    {
+      "tool_id": "recommend_partner_for_gap",
+      "surface": "MCP",
+      "free_or_paid": "free",
+      "billing_units": "request",
+      "billable_unit_price_jpy": 0,
+      "cost_band": "free",
+      "estimated_price_jpy": 0,
+      "agent_handoff_kind": "control"
+    }
   ]
 }

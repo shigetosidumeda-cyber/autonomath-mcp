@@ -1,0 +1,235 @@
+{
+  "$defs": {
+    "CostPreviewEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "approval_token_required": {
+          "description": "Whether the agent must obtain an explicit operator approval token before the paid invocation. Free previews never require approval.",
+          "title": "Approval Token Required",
+          "type": "boolean"
+        },
+        "cap_per_day": {
+          "description": "Maximum number of paid invocations per API key per JST day. null means no per-day cap beyond the global ¥3/req metering.",
+          "title": "Cap Per Day",
+          "type": ["integer", "null"]
+        },
+        "cost_band": {
+          "description": "Price band bucket. light = ¥300 lookups, mid = ¥600 join/cohort, heavy = ¥900 composed/multi-step.",
+          "enum": ["free", "light", "mid", "heavy"],
+          "title": "Cost Band",
+          "type": "string"
+        },
+        "display_name": {
+          "minLength": 1,
+          "title": "Display Name",
+          "type": "string"
+        },
+        "estimated_price_jpy": {
+          "description": "Estimated per-call price in JPY (¥). Must be 0 for free outcomes and in the ¥300/¥600/¥900 band for paid outcomes.",
+          "minimum": 0,
+          "title": "Estimated Price JPY",
+          "type": "integer"
+        },
+        "estimated_tokens_saved": {
+          "description": "Estimated input tokens an agent saves by using this outcome vs ingesting raw sources.",
+          "minimum": 0,
+          "title": "Estimated Tokens Saved",
+          "type": "integer"
+        },
+        "free_preview_available": {
+          "description": "Whether a free cost-preview can be obtained before invoking the paid endpoint.",
+          "title": "Free Preview Available",
+          "type": "boolean"
+        },
+        "idempotency_window_seconds": {
+          "description": "Window in seconds within which Idempotency-Key replays are deduplicated. 0 = no idempotency contract.",
+          "minimum": 0,
+          "title": "Idempotency Window Seconds",
+          "type": "integer"
+        },
+        "jpcite_cost_jpy": {
+          "const": 3,
+          "default": 3,
+          "description": "Reference per-request meter (¥3/req).",
+          "title": "Jpcite Cost JPY",
+          "type": "integer"
+        },
+        "known_gaps": {
+          "description": "Known-gap markers per master plan §7 enum. Use 'pricing_or_cap_unconfirmed' when the band or daily cap is provisional.",
+          "items": {
+            "enum": [
+              "pricing_or_cap_unconfirmed",
+              "source_freshness_unconfirmed",
+              "coverage_thin",
+              "schema_drift_possible",
+              "approval_token_semantics_pending",
+              "idempotency_window_provisional",
+              "free_preview_endpoint_pending"
+            ],
+            "type": "string"
+          },
+          "title": "Known Gaps",
+          "type": "array",
+          "uniqueItems": true
+        },
+        "outcome_contract_id": {
+          "description": "Must match an outcome_contract_id in outcome_contract_catalog.json.",
+          "minLength": 1,
+          "title": "Outcome Contract Id",
+          "type": "string"
+        },
+        "package_kind": {
+          "enum": [
+            "evidence_packet",
+            "artifact_pack",
+            "precomputed_intelligence",
+            "watch_digest",
+            "agent_routing_control",
+            "cost_control"
+          ],
+          "title": "Package Kind",
+          "type": "string"
+        },
+        "preview_endpoint": {
+          "description": "REST path or MCP tool name where a free cost preview can be obtained.",
+          "title": "Preview Endpoint",
+          "type": ["string", "null"]
+        },
+        "source_count": {
+          "description": "Typical number of distinct sources joined into one packet.",
+          "minimum": 0,
+          "title": "Source Count",
+          "type": "integer"
+        },
+        "subject": {
+          "additionalProperties": false,
+          "description": "Canonical subject taxonomy from master plan §1.",
+          "properties": {
+            "id_hint": {
+              "title": "Id Hint",
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "program",
+                "houjin",
+                "invoice",
+                "cohort",
+                "watchlist",
+                "query",
+                "rule_change",
+                "jurisdiction",
+                "court",
+                "statistic",
+                "csv",
+                "control"
+              ],
+              "title": "Kind",
+              "type": "string"
+            }
+          },
+          "required": ["kind"],
+          "title": "Subject",
+          "type": "object"
+        }
+      },
+      "required": [
+        "outcome_contract_id",
+        "display_name",
+        "package_kind",
+        "subject",
+        "cost_band",
+        "estimated_price_jpy",
+        "free_preview_available",
+        "approval_token_required",
+        "idempotency_window_seconds",
+        "jpcite_cost_jpy",
+        "estimated_tokens_saved",
+        "source_count",
+        "known_gaps"
+      ],
+      "title": "CostPreviewEntry",
+      "type": "object"
+    }
+  },
+  "$id": "https://jpcite.com/schemas/jpcir/cost_preview_catalog.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "catalog_id": {
+      "minLength": 1,
+      "title": "Catalog Id",
+      "type": "string"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/CostPreviewEntry"
+      },
+      "minItems": 1,
+      "title": "Entries",
+      "type": "array"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "generated_from_capsule_id": {
+      "minLength": 1,
+      "title": "Generated From Capsule Id",
+      "type": "string"
+    },
+    "jpcite_cost_jpy_unit": {
+      "const": 3,
+      "default": 3,
+      "description": "Per-request reference meter for jpcite (¥3/req incl. tax ¥3.30).",
+      "title": "Jpcite Cost JPY Unit",
+      "type": "integer"
+    },
+    "price_bands": {
+      "additionalProperties": false,
+      "description": "Canonical band → JPY mapping. light=¥300, mid=¥600, heavy=¥900.",
+      "properties": {
+        "free": {
+          "const": 0,
+          "title": "Free",
+          "type": "integer"
+        },
+        "heavy": {
+          "const": 900,
+          "title": "Heavy",
+          "type": "integer"
+        },
+        "light": {
+          "const": 300,
+          "title": "Light",
+          "type": "integer"
+        },
+        "mid": {
+          "const": 600,
+          "title": "Mid",
+          "type": "integer"
+        }
+      },
+      "required": ["free", "light", "mid", "heavy"],
+      "title": "Price Bands",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "jpcite.cost_preview_catalog.p0.v1",
+      "default": "jpcite.cost_preview_catalog.p0.v1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "catalog_id",
+    "schema_version",
+    "generated_from_capsule_id",
+    "jpcite_cost_jpy_unit",
+    "price_bands",
+    "entries"
+  ],
+  "title": "CostPreviewCatalog",
+  "type": "object"
+}

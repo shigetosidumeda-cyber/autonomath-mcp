@@ -33,6 +33,11 @@
       "public_id": "https://jpcite.com/schemas/jpcir/consent_envelope.schema.json"
     },
     {
+      "name": "cost_preview_catalog",
+      "path": "schemas/jpcir/cost_preview_catalog.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/cost_preview_catalog.schema.json"
+    },
+    {
       "name": "evidence",
       "path": "schemas/jpcir/evidence.schema.json",
       "public_id": "https://jpcite.com/schemas/jpcir/evidence.schema.json"
