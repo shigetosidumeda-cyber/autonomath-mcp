@@ -65,7 +65,10 @@ DEFAULT_NLIST: Final[int] = 256
 DEFAULT_NSUBQ: Final[int] = 48
 DEFAULT_NBITS: Final[int] = 8
 DEFAULT_TRAIN_SAMPLE: Final[int] = 100_000
-DEFAULT_CACHE_DIR: Final[str] = "/tmp/faiss_v2_sm_cache"
+# /tmp/ here is an operator scratch path for downloaded SageMaker outputs +
+# corpus parts; FAISS_V2_CACHE_DIR env-var overrides in production. Not a
+# security-sensitive temp file.
+DEFAULT_CACHE_DIR: Final[str] = "/tmp/faiss_v2_sm_cache"  # nosec B108
 
 # (sagemaker_job_prefix, canonical_family, corpus_family) tuples.
 # corpus_family is used to recover packet IDs from corpus_export/.
@@ -117,9 +120,7 @@ def download_to_local(s3: Any, bucket: str, key: str, local_path: str) -> None:
     _log("info", "s3_download_done", local=local_path)
 
 
-def list_s3_keys(
-    s3: Any, bucket: str, prefix: str, suffix: str
-) -> list[str]:
+def list_s3_keys(s3: Any, bucket: str, prefix: str, suffix: str) -> list[str]:
     out: list[str] = []
     paginator = s3.get_paginator("list_objects_v2")
     for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
@@ -150,11 +151,7 @@ def mean_pool_line(payload: Any, *, dim: int) -> list[float] | None:
         return None
     tokens: list[list[float]] = []
     for tv in cur:
-        if (
-            isinstance(tv, list)
-            and len(tv) == dim
-            and isinstance(tv[0], (int, float))
-        ):
+        if isinstance(tv, list) and len(tv) == dim and isinstance(tv[0], (int, float)):
             tokens.append([float(x) for x in tv])
     if not tokens:
         return None
@@ -256,12 +253,8 @@ def load_sagemaker_family(
     """Download SageMaker output + corpus parts, mean-pool to (N, dim)."""
     import numpy as np
 
-    embed_keys = list_s3_keys(
-        s3, bucket, f"{embed_prefix}/{job_prefix}/", ".jsonl.out"
-    )
-    corpus_keys = list_s3_keys(
-        s3, bucket, f"{corpus_prefix}/{corpus_family}/", ".jsonl"
-    )
+    embed_keys = list_s3_keys(s3, bucket, f"{embed_prefix}/{job_prefix}/", ".jsonl.out")
+    corpus_keys = list_s3_keys(s3, bucket, f"{corpus_prefix}/{corpus_family}/", ".jsonl")
     _log(
         "info",
         "family_listing",
@@ -286,9 +279,7 @@ def load_sagemaker_family(
         download_to_local(s3, bucket, key, local)
         local_corpus.append(local)
 
-    corpus_by_index: dict[int, str] = {
-        _part_index(p): p for p in local_corpus
-    }
+    corpus_by_index: dict[int, str] = {_part_index(p): p for p in local_corpus}
 
     vectors: list[list[float]] = []
     ids: list[str] = []
@@ -384,8 +375,12 @@ def smoke_recall_at_k(
     rng = np.random.default_rng(seed=20260516)
     sample_ids = rng.choice(n, size=min(n_queries, n), replace=False)
     queries = embeddings[sample_ids]
+    # PERF-40 (2026-05-17): nprobe=8 measured optimal across v2/v3 sweeps —
+    # recall@10 plateaus at the PQ codebook floor by nprobe=4-8 and the
+    # legacy heuristic nprobe = min(nlist, max(32, nlist // 2)) just paid
+    # latency for zero recall gain. See PERF_40_FAISS_NPROBE_PROPOSAL.md.
     with contextlib.suppress(AttributeError):
-        index.nprobe = min(index.nlist, max(32, index.nlist // 2))
+        index.nprobe = min(index.nlist, 8)
     _, top = index.search(queries, k)
     hits = 0
     per_query: list[dict[str, Any]] = []
@@ -394,9 +389,7 @@ def smoke_recall_at_k(
         hit = qid in neighbors
         if hit:
             hits += 1
-        per_query.append(
-            {"query_row": int(qid), "neighbors": neighbors[:10], "hit": hit}
-        )
+        per_query.append({"query_row": int(qid), "neighbors": neighbors[:10], "hit": hit})
     recall = hits / max(1, len(sample_ids))
     return {
         "k": k,
@@ -473,10 +466,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
     logging.basicConfig(level=logging.INFO, stream=sys.stderr)
     args = parse_args(argv)
 
-    run_id = (
-        f"v2-sm-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}"
-        f"-{uuid.uuid4().hex[:8]}"
-    )
+    run_id = f"v2-sm-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{uuid.uuid4().hex[:8]}"
     _log(
         "info",
         "boot",
@@ -498,9 +488,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
     local_v1_manifest = os.path.join(args.cache_dir, "v1_run_manifest.json")
     download_to_local(s3, args.bucket, f"{args.v1_prefix}/index.faiss", local_v1_index)
     download_to_local(s3, args.bucket, f"{args.v1_prefix}/meta.json", local_v1_meta)
-    download_to_local(
-        s3, args.bucket, f"{args.v1_prefix}/run_manifest.json", local_v1_manifest
-    )
+    download_to_local(s3, args.bucket, f"{args.v1_prefix}/run_manifest.json", local_v1_manifest)
 
     v1_vecs, v1_ntotal = reconstruct_v1_vectors(local_v1_index)
     v1_meta_rows = load_v1_meta(local_v1_meta)
@@ -543,9 +531,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
     if not any(p.shape[0] for p in pieces):
         msg = "no vectors to index (v1 empty AND new families empty)"
         raise BuildFaissError(msg)
-    combined = np.ascontiguousarray(
-        np.concatenate(pieces, axis=0).astype("float32", copy=False)
-    )
+    combined = np.ascontiguousarray(np.concatenate(pieces, axis=0).astype("float32", copy=False))
     nan_count = int(np.isnan(combined).any(axis=1).sum())
     inf_count = int(np.isinf(combined).any(axis=1).sum())
     if nan_count or inf_count:
@@ -581,9 +567,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
     )
 
     # 5. Smoke recall@k.
-    smoke = smoke_recall_at_k(
-        index, combined, k=args.smoke_k, n_queries=args.smoke_queries
-    )
+    smoke = smoke_recall_at_k(index, combined, k=args.smoke_k, n_queries=args.smoke_queries)
     _log(
         "info",
         "smoke_done",
@@ -627,8 +611,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: PLR0915 - end-to-end or
     meta_jsonl = "\n".join(meta_lines)
 
     by_family_counts: dict[str, int] = {
-        family: int(family_vecs[family].shape[0])
-        for _, family, _ in NEW_FAMILY_JOBS
+        family: int(family_vecs[family].shape[0]) for _, family, _ in NEW_FAMILY_JOBS
     }
     v1_table_breakdown: dict[str, int] = {}
     for entry in v1_meta_rows:

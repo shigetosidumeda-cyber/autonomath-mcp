@@ -150,9 +150,7 @@ def iter_corpus_ids(corpus_path: str) -> list[str]:
     return ids
 
 
-def iter_embedding_rows(
-    embed_path: str, *, dim: int
-) -> Iterator[list[float]]:
+def iter_embedding_rows(embed_path: str, *, dim: int) -> Iterator[list[float]]:
     """Stream-mean-pool every line of an embedding part file."""
     with open(embed_path, encoding="utf-8") as fh:
         for line in fh:
@@ -177,9 +175,7 @@ def l2_normalize_inplace(arr: Any) -> None:
     arr /= norms
 
 
-def download_if_needed(
-    s3: Any, bucket: str, key: str, local_path: str
-) -> None:
+def download_if_needed(s3: Any, bucket: str, key: str, local_path: str) -> None:
     if os.path.exists(local_path):
         return
     os.makedirs(os.path.dirname(local_path), exist_ok=True)
@@ -188,9 +184,7 @@ def download_if_needed(
     _log("info", "s3_download_done", local=local_path)
 
 
-def list_embedding_parts(
-    s3: Any, bucket: str, prefix: str, table: str
-) -> list[str]:
+def list_embedding_parts(s3: Any, bucket: str, prefix: str, table: str) -> list[str]:
     out: list[str] = []
     paginator = s3.get_paginator("list_objects_v2")
     key_prefix = f"{prefix}/{table}/"
@@ -202,9 +196,7 @@ def list_embedding_parts(
     return sorted(out)
 
 
-def list_corpus_parts(
-    s3: Any, bucket: str, prefix: str, table: str
-) -> list[str]:
+def list_corpus_parts(s3: Any, bucket: str, prefix: str, table: str) -> list[str]:
     out: list[str] = []
     paginator = s3.get_paginator("list_objects_v2")
     key_prefix = f"{prefix}/{table}/"
@@ -284,11 +276,13 @@ def smoke_test_recall_at_k(
     sample_ids = rng.choice(n, size=min(n_queries, n), replace=False)
     queries = embeddings[sample_ids]
 
-    # IVF+PQ recall@k tuning knob. Higher nprobe scans more inverted
-    # lists -> better recall, slower query. For a 1-shot smoke we are
-    # happy to pay the latency hit.
+    # IVF+PQ recall@k tuning knob. PERF-40 (2026-05-17) measured that
+    # recall@10 plateaus at the PQ codebook floor by nprobe=4-8 on both
+    # v2 (74k vec / nlist=256) and v3 (235k vec / nlist=1024). Raising
+    # nprobe past 8 buys zero recall but pays linear latency. Pin to 8.
+    # See docs/_internal/PERF_40_FAISS_NPROBE_PROPOSAL.md.
     with contextlib.suppress(AttributeError):
-        index.nprobe = min(index.nlist, max(32, index.nlist // 2))
+        index.nprobe = min(index.nlist, 8)
 
     _, top = index.search(queries, k)
     hits = 0
@@ -369,19 +363,29 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--nsubq", type=int, default=DEFAULT_NSUBQ)
     p.add_argument("--nbits", type=int, default=DEFAULT_NBITS)
     p.add_argument(
-        "--train-sample", type=int, default=DEFAULT_TRAIN_SAMPLE,
+        "--train-sample",
+        type=int,
+        default=DEFAULT_TRAIN_SAMPLE,
         help="Maximum number of vectors used to train the IVF quantizer.",
     )
     p.add_argument(
-        "--smoke-queries", type=int, default=5,
+        "--smoke-queries",
+        type=int,
+        default=5,
         help="Number of random query vectors for the recall smoke test.",
     )
     p.add_argument(
-        "--smoke-k", type=int, default=10,
+        "--smoke-k",
+        type=int,
+        default=10,
         help="Top-K used for the smoke test recall metric.",
     )
     p.add_argument(
-        "--cache-dir", default=os.environ.get("FAISS_CACHE_DIR", "/tmp/faiss_cache"),
+        "--cache-dir",
+        # /tmp/ is an operator-controlled scratch path for downloaded
+        # embeddings/corpus parts, not a security-sensitive temp file;
+        # the FAISS_CACHE_DIR env-var overrides it for production use.
+        default=os.environ.get("FAISS_CACHE_DIR", "/tmp/faiss_cache"),  # nosec B108
     )
     p.add_argument("--no-upload", action="store_true", help="Skip S3 upload (dry-run).")
     return p.parse_args(argv)
@@ -519,9 +523,7 @@ def main(argv: list[str] | None = None) -> int:
         train_sample=args.train_sample,
     )
 
-    smoke = smoke_test_recall_at_k(
-        index, embeddings, k=args.smoke_k, n_queries=args.smoke_queries
-    )
+    smoke = smoke_test_recall_at_k(index, embeddings, k=args.smoke_k, n_queries=args.smoke_queries)
     _log(
         "info",
         "smoke_done",
@@ -535,9 +537,7 @@ def main(argv: list[str] | None = None) -> int:
 
     meta_lines: list[str] = []
     for i, (table, packet_id) in enumerate(all_id_map):
-        meta_lines.append(
-            json.dumps({"row": i, "table": table, "packet_id": packet_id})
-        )
+        meta_lines.append(json.dumps({"row": i, "table": table, "packet_id": packet_id}))
     meta_jsonl = "\n".join(meta_lines)
 
     manifest = {

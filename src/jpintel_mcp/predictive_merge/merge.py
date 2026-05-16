@@ -62,7 +62,7 @@ Public surface
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from jpintel_mcp.predictive_merge.models import (
@@ -72,11 +72,12 @@ from jpintel_mcp.predictive_merge.models import (
     MergeEventType,
     MergePolicy,
 )
-from jpintel_mcp.predictive_service.models import PredictionEvent
 from jpintel_mcp.time_machine.registry import SnapshotRegistry, query_as_of
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
+
+    from jpintel_mcp.predictive_service.models import PredictionEvent
 
 
 def _parse_iso_utc(value: str) -> datetime:
@@ -93,9 +94,7 @@ def _parse_iso_utc(value: str) -> datetime:
     except ValueError as exc:
         raise ValueError(f"could not parse ISO 8601 timestamp: {value!r}") from exc
     if parsed.tzinfo is None:
-        raise ValueError(
-            f"ISO 8601 timestamp must be timezone-aware (got naive {value!r})"
-        )
+        raise ValueError(f"ISO 8601 timestamp must be timezone-aware (got naive {value!r})")
     return parsed.astimezone(UTC)
 
 
@@ -237,9 +236,7 @@ def _aggregate(
     }
     for p in predictions:
         counts_type[p.event_type] = counts_type.get(p.event_type, 0) + 1
-        counts_reason[p.correction_reason] = (
-            counts_reason.get(p.correction_reason, 0) + 1
-        )
+        counts_reason[p.correction_reason] = counts_reason.get(p.correction_reason, 0) + 1
     return counts_type, counts_reason
 
 

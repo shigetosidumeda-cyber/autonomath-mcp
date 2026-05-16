@@ -332,8 +332,16 @@ def smoke_recall_at_k(
     rng = np.random.default_rng(seed=20260516)
     sample_ids = rng.choice(n, size=min(n_queries, n), replace=False)
     queries = embeddings[sample_ids]
+    # PERF-40 (2026-05-17): nprobe baked into the serialized v2 IVF+PQ index.
+    # The previous heuristic was nprobe = min(nlist, max(32, nlist // 2))
+    # which gave nprobe=128 for nlist=256 — measurably 4.3x over-probed.
+    # Sweep on 74,812 vectors / 200 queries / k=10 showed recall@10 plateaus
+    # at 0.5205 from nprobe=4 onward (PQ codebook is the recall floor, not
+    # the inverted-list walk), while p95 grows linearly with nprobe.
+    # nprobe=8 is the sweet spot: same 0.5205 recall, p95 ≈ 0.17ms (vs 0.73ms
+    # at nprobe=128). Doc: docs/_internal/PERF_40_FAISS_NPROBE_PROPOSAL.md.
     with contextlib.suppress(AttributeError):
-        index.nprobe = min(index.nlist, max(32, index.nlist // 2))
+        index.nprobe = min(index.nlist, 8)
     _, top = index.search(queries, k)
     hits = 0
     per_query: list[dict[str, Any]] = []

@@ -58,9 +58,9 @@ from jpintel_mcp.predictive_merge.merge import (
 from jpintel_mcp.predictive_merge.models import (
     MERGE_SCHEMA_VERSION,
     CorrectionReason,
-    MergeEventType,
     MergedDailyArtifact,
     MergedPrediction,
+    MergeEventType,
     MergePolicy,
 )
 
