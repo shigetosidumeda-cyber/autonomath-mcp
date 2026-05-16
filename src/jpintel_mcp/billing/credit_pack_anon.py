@@ -160,7 +160,7 @@ def is_anon_credit_pack_event(obj: Any) -> bool:
     else:
         md = getattr(obj, "metadata", None) or {}
     kind: Any = md.get("kind") if isinstance(md, dict) else getattr(md, "kind", None)
-    return kind == ANON_CREDIT_PACK_METADATA_KIND
+    return bool(kind == ANON_CREDIT_PACK_METADATA_KIND)
 
 
 def default_success_url() -> str:

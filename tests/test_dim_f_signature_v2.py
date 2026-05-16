@@ -45,14 +45,10 @@ import pytest
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_262 = REPO_ROOT / "scripts" / "migrations" / "262_fact_signature_v2.sql"
 MIG_285 = REPO_ROOT / "scripts" / "migrations" / "285_fact_signature_v2.sql"
-MIG_285_RB = (
-    REPO_ROOT / "scripts" / "migrations" / "285_fact_signature_v2_rollback.sql"
-)
+MIG_285_RB = REPO_ROOT / "scripts" / "migrations" / "285_fact_signature_v2_rollback.sql"
 ETL_FILE = REPO_ROOT / "scripts" / "etl" / "build_fact_signatures_v2.py"
 MANIFEST_JPCITE = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-MANIFEST_AM = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+MANIFEST_AM = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 
 # ---------------------------------------------------------------------------
@@ -77,8 +73,8 @@ def _fresh_db(tmp_path: pathlib.Path) -> pathlib.Path:
 
 def _sample_sig_blob(length: int = 64) -> bytes:
     """Produce a deterministic sig blob of the requested length."""
-    return bytes(range(length % 256)) * (length // 256 + 1)[:length] if False else (
-        b"\x42" * length
+    return (
+        bytes(range(length % 256)) * (length // 256 + 1)[:length] if False else (b"\x42" * length)
     )
 
 
@@ -136,8 +132,7 @@ def test_mig_285_rollback_drops_only_v2(tmp_path: pathlib.Path) -> None:
         names = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type='table' AND name='am_fact_signature'"
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='am_fact_signature'"
             )
         }
         assert "am_fact_signature" in names
@@ -378,9 +373,7 @@ def test_ed25519_roundtrip_insert_select_verify(tmp_path: pathlib.Path) -> None:
             ("f-001",),
         ).fetchone()
         assert row is not None
-        recovered_pub = Ed25519PublicKey.from_public_bytes(
-            bytes.fromhex(row[0])
-        )
+        recovered_pub = Ed25519PublicKey.from_public_bytes(bytes.fromhex(row[0]))
         # Must NOT raise InvalidSignature
         recovered_pub.verify(row[1], payload)
     finally:

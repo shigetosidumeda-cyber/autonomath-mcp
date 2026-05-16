@@ -85,7 +85,7 @@ def _open(path: Path) -> sqlite3.Connection | None:
         return None
 
 
-def _scalar(conn: sqlite3.Connection, sql: str, args: tuple = ()) -> int:
+def _scalar(conn: sqlite3.Connection, sql: str, args: tuple[Any, ...] = ()) -> int:
     try:
         row = conn.execute(sql, args).fetchone()
         if row is None:
@@ -100,7 +100,8 @@ def _last_refresh(conn: sqlite3.Connection, target_lang: str) -> str | None:
     try:
         row = conn.execute(
             "SELECT MAX(finished_at) FROM am_law_translation_refresh_log "
-            "WHERE target_lang = ? AND finished_at IS NOT NULL", (target_lang,)
+            "WHERE target_lang = ? AND finished_at IS NOT NULL",
+            (target_lang,),
         ).fetchone()
         if row and row[0]:
             return str(row[0])
@@ -117,9 +118,7 @@ def _coverage_pct(filled: int, total: int) -> float:
 
 def _law_stats(conn: sqlite3.Connection, lang: str) -> dict[str, Any]:
     total_laws = _scalar(conn, "SELECT COUNT(*) FROM am_law")
-    filled_laws = _scalar(
-        conn, f"SELECT COUNT(*) FROM am_law WHERE body_{lang} IS NOT NULL"
-    )
+    filled_laws = _scalar(conn, f"SELECT COUNT(*) FROM am_law WHERE body_{lang} IS NOT NULL")
     total_articles = _scalar(conn, "SELECT COUNT(*) FROM am_law_article")
     filled_articles = _scalar(
         conn,
@@ -181,8 +180,10 @@ def translation_status(
     if am_conn is None and jp_conn is None:
         raise HTTPException(
             status_code=503,
-            detail={"error": "translation_corpus_unavailable",
-                    "hint": "autonomath.db + jpintel.db both unreachable"},
+            detail={
+                "error": "translation_corpus_unavailable",
+                "hint": "autonomath.db + jpintel.db both unreachable",
+            },
         )
     target_langs = ["en", "zh", "ko"] if lang == "all" else [lang]
     out: dict[str, Any] = {"languages": {}}

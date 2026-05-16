@@ -67,9 +67,7 @@ class TestRetryThenBreakerOpens:
     breaker must observe each failure and trip after threshold."""
 
     def test_retry_attempts_feed_failure_counter(self) -> None:
-        breaker = cb.get_breaker(
-            "test_dimq_retry_then_open", failure_threshold=3
-        )
+        breaker = cb.get_breaker("test_dimq_retry_then_open", failure_threshold=3)
         policy = rp.RetryPolicy(
             max_attempts=4,
             base_delay_seconds=0.0,
@@ -94,9 +92,7 @@ class TestRetryThenBreakerOpens:
         assert snap.total_short_circuits >= 1
 
     def test_breaker_short_circuit_skips_real_call(self) -> None:
-        breaker = cb.get_breaker(
-            "test_dimq_short_circuit_skip", failure_threshold=2
-        )
+        breaker = cb.get_breaker("test_dimq_short_circuit_skip", failure_threshold=2)
 
         def explode() -> None:
             raise RuntimeError("upstream down")
@@ -132,12 +128,8 @@ class TestIdempotencyMasksRetry:
             compute_calls["n"] += 1
             return {"result": "ok", "ts": time.time()}
 
-        res1 = idem.store_or_replay(
-            key=key, body_fingerprint_value="fp-A", compute=compute
-        )
-        res2 = idem.store_or_replay(
-            key=key, body_fingerprint_value="fp-A", compute=compute
-        )
+        res1 = idem.store_or_replay(key=key, body_fingerprint_value="fp-A", compute=compute)
+        res2 = idem.store_or_replay(key=key, body_fingerprint_value="fp-A", compute=compute)
 
         assert res1.hit is False, "first call must be a miss"
         assert res2.hit is True, "second identical call must be a hit"
@@ -174,9 +166,7 @@ class TestFullStackResilience:
     served from idempotency cache without touching the upstream."""
 
     def test_transient_then_success_then_replay(self) -> None:
-        breaker = cb.get_breaker(
-            "test_dimq_full_stack", failure_threshold=5
-        )
+        breaker = cb.get_breaker("test_dimq_full_stack", failure_threshold=5)
         policy = rp.RetryPolicy(
             max_attempts=3,
             base_delay_seconds=0.0,
@@ -205,9 +195,7 @@ class TestFullStackResilience:
                     continue
             raise RuntimeError("retries exhausted") from last_exc
 
-        res1 = idem.store_or_replay(
-            key=key, body_fingerprint_value="fp-z", compute=driver
-        )
+        res1 = idem.store_or_replay(key=key, body_fingerprint_value="fp-z", compute=driver)
         assert res1.hit is False
         assert res1.value["result"] == "success"
         assert res1.value["attempts"] == 3
@@ -217,9 +205,7 @@ class TestFullStackResilience:
         assert breaker.snapshot().state == "closed"
 
         # Replay: idempotency hit, no further upstream calls.
-        res2 = idem.store_or_replay(
-            key=key, body_fingerprint_value="fp-z", compute=driver
-        )
+        res2 = idem.store_or_replay(key=key, body_fingerprint_value="fp-z", compute=driver)
         assert res2.hit is True
         assert res2.value == res1.value
         assert state["call_count"] == 3, "replay must not invoke upstream again"
@@ -270,12 +256,14 @@ def test_dim_q_v2_module_has_no_llm_import() -> None:
     import pathlib
 
     src = pathlib.Path(__file__).resolve().read_text(encoding="utf-8")
-    forbidden_prefixes = ("import " + "anthr" + "opic", "from " + "anthr" + "opic", "import " + "open" + "ai")
+    forbidden_prefixes = (
+        "import " + "anthr" + "opic",
+        "from " + "anthr" + "opic",
+        "import " + "open" + "ai",
+    )
     # Strip self-defining tuple from the source before scanning so the
     # forbidden-token literals composed above don't self-match.
-    safe_src = src.replace("forbidden_prefixes", "").replace(
-        '"import " + "anthr" + "opic"', ""
-    )
+    safe_src = src.replace("forbidden_prefixes", "").replace('"import " + "anthr" + "opic"', "")
     for forbidden in forbidden_prefixes:
         # Scan only non-comment / non-docstring source lines for the
         # canonical import statement form.
@@ -283,6 +271,4 @@ def test_dim_q_v2_module_has_no_llm_import() -> None:
             stripped = line.strip()
             if stripped.startswith("#") or stripped.startswith('"""'):
                 continue
-            assert forbidden not in stripped, (
-                f"dim Q v2 test file leaked LLM import: {forbidden}"
-            )
+            assert forbidden not in stripped, f"dim Q v2 test file leaked LLM import: {forbidden}"

@@ -25,26 +25,15 @@ from __future__ import annotations
 import importlib.util
 import pathlib
 import sqlite3
-import subprocess
 import sys
 import typing
 
-import pytest
-
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_278 = REPO_ROOT / "scripts" / "migrations" / "278_federated_mcp.sql"
-MIG_278_RB = (
-    REPO_ROOT / "scripts" / "migrations" / "278_federated_mcp_rollback.sql"
-)
-ETL_SEED = (
-    REPO_ROOT / "scripts" / "etl" / "seed_federated_mcp_partners.py"
-)
-MANIFEST_JPCITE = (
-    REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-)
-MANIFEST_AM = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+MIG_278_RB = REPO_ROOT / "scripts" / "migrations" / "278_federated_mcp_rollback.sql"
+ETL_SEED = REPO_ROOT / "scripts" / "etl" / "seed_federated_mcp_partners.py"
+MANIFEST_JPCITE = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
+MANIFEST_AM = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 EXPECTED_PARTNERS = ("freee", "mf", "notion", "slack", "github", "linear")
 
@@ -56,9 +45,7 @@ EXPECTED_PARTNERS = ("freee", "mf", "notion", "slack", "github", "linear")
 
 def _import_seed_module() -> typing.Any:
     """Load seed_federated_mcp_partners.py by file path."""
-    spec = importlib.util.spec_from_file_location(
-        "_seed_fed_mcp_test_w47_mod", ETL_SEED
-    )
+    spec = importlib.util.spec_from_file_location("_seed_fed_mcp_test_w47_mod", ETL_SEED)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["_seed_fed_mcp_test_w47_mod"] = mod
@@ -66,9 +53,7 @@ def _import_seed_module() -> typing.Any:
     return mod
 
 
-def _apply_migration(
-    db_path: pathlib.Path, sql_path: pathlib.Path
-) -> None:
+def _apply_migration(db_path: pathlib.Path, sql_path: pathlib.Path) -> None:
     conn = sqlite3.connect(str(db_path))
     try:
         conn.executescript(sql_path.read_text(encoding="utf-8"))
@@ -88,20 +73,12 @@ def test_migration_278_applies_cleanly(tmp_path: pathlib.Path) -> None:
     _apply_migration(db, MIG_278)
     conn = sqlite3.connect(str(db))
     try:
-        names = {
-            r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            )
-        }
+        names = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         assert "am_federated_mcp_partner" in names
         assert "am_handoff_log" in names
 
         idx_names = {
-            r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='index'"
-            )
+            r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
         }
         assert "idx_am_federated_mcp_partner_capability" in idx_names
         assert "idx_am_federated_mcp_partner_health" in idx_names
@@ -124,8 +101,7 @@ def test_migration_278_idempotent(tmp_path: pathlib.Path) -> None:
             "WHERE type='table' AND name='am_federated_mcp_partner'"
         ).fetchone()[0]
         n_log = conn.execute(
-            "SELECT COUNT(*) FROM sqlite_master "
-            "WHERE type='table' AND name='am_handoff_log'"
+            "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='am_handoff_log'"
         ).fetchone()[0]
         assert n_partner == 1
         assert n_log == 1
@@ -140,12 +116,7 @@ def test_migration_278_rollback(tmp_path: pathlib.Path) -> None:
     _apply_migration(db, MIG_278_RB)
     conn = sqlite3.connect(str(db))
     try:
-        names = {
-            r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            )
-        }
+        names = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         assert "am_federated_mcp_partner" not in names
         assert "am_handoff_log" not in names
     finally:
@@ -189,9 +160,7 @@ def test_seed_is_idempotent(tmp_path: pathlib.Path) -> None:
 
     conn = sqlite3.connect(str(db))
     try:
-        n = conn.execute(
-            "SELECT COUNT(*) FROM am_federated_mcp_partner"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM am_federated_mcp_partner").fetchone()[0]
         assert n == 6
     finally:
         conn.close()
@@ -207,9 +176,7 @@ def test_seed_dry_run_writes_nothing(tmp_path: pathlib.Path) -> None:
 
     conn = sqlite3.connect(str(db))
     try:
-        n = conn.execute(
-            "SELECT COUNT(*) FROM am_federated_mcp_partner"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM am_federated_mcp_partner").fetchone()[0]
         assert n == 0
     finally:
         conn.close()
@@ -258,8 +225,7 @@ def test_handoff_log_append_only(tmp_path: pathlib.Path) -> None:
             )
         conn.commit()
         rows = conn.execute(
-            "SELECT handoff_id, partner_id FROM am_handoff_log "
-            "ORDER BY handoff_id"
+            "SELECT handoff_id, partner_id FROM am_handoff_log ORDER BY handoff_id"
         ).fetchall()
         assert len(rows) == 6
         ids = [r[0] for r in rows]
@@ -315,9 +281,7 @@ def test_partner_last_health_at_nullable(tmp_path: pathlib.Path) -> None:
             "SELECT partner_id, last_health_at FROM am_federated_mcp_partner"
         ).fetchall()
         for partner_id, last_health_at in rows:
-            assert last_health_at is None, (
-                f"{partner_id} should start with NULL last_health_at"
-            )
+            assert last_health_at is None, f"{partner_id} should start with NULL last_health_at"
     finally:
         conn.close()
 
@@ -329,16 +293,12 @@ def test_partner_last_health_at_nullable(tmp_path: pathlib.Path) -> None:
 
 def test_jpcite_boot_manifest_lists_278() -> None:
     """jpcite boot manifest registers migration 278_federated_mcp.sql."""
-    assert "278_federated_mcp.sql" in MANIFEST_JPCITE.read_text(
-        encoding="utf-8"
-    )
+    assert "278_federated_mcp.sql" in MANIFEST_JPCITE.read_text(encoding="utf-8")
 
 
 def test_autonomath_boot_manifest_lists_278() -> None:
     """autonomath boot manifest registers migration 278_federated_mcp.sql."""
-    assert "278_federated_mcp.sql" in MANIFEST_AM.read_text(
-        encoding="utf-8"
-    )
+    assert "278_federated_mcp.sql" in MANIFEST_AM.read_text(encoding="utf-8")
 
 
 def test_no_legacy_brand_in_dim_r_files() -> None:

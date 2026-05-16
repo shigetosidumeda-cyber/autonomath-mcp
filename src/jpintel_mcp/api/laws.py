@@ -468,8 +468,10 @@ def _attach_translation_meta(unified_id: str, lang: str) -> dict[str, Any]:
     mounted in test contexts), returns `unavailable`. 一次資料 only.
     """
     import sqlite3 as _sqlite3
+
     try:
         from jpintel_mcp.config import settings
+
         am_path = str(settings.autonomath_db_path)
     except Exception:  # noqa: BLE001
         return {"status": "unavailable", "reason": "autonomath_db_unbound"}

@@ -124,7 +124,10 @@ def _finalize(body: dict[str, Any]) -> dict[str, Any]:
 logger = logging.getLogger("jpintel.mcp.autonomath.wave24_second_half")
 
 # Env-gated registration. Default ON; flip to "0" for one-flag rollback.
-_ENABLED = get_flag("JPCITE_WAVE24_SECOND_HALF_ENABLED", "AUTONOMATH_WAVE24_SECOND_HALF_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_WAVE24_SECOND_HALF_ENABLED", "AUTONOMATH_WAVE24_SECOND_HALF_ENABLED", "1")
+    == "1"
+)
 
 
 # ---------------------------------------------------------------------------

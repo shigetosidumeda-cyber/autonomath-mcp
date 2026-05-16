@@ -23,22 +23,11 @@ import sqlite3
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-MIGRATION_PATH = (
-    REPO_ROOT / "scripts" / "migrations" / "261_legal_chain_5layer.sql"
-)
-ROLLBACK_PATH = (
-    REPO_ROOT / "scripts" / "migrations" / "261_legal_chain_5layer_rollback.sql"
-)
-REST_API_PATH = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "legal_chain_v2.py"
-)
-MCP_TOOL_PATH = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" /
-    "legal_chain_v2.py"
-)
-BOOT_MANIFEST = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+MIGRATION_PATH = REPO_ROOT / "scripts" / "migrations" / "261_legal_chain_5layer.sql"
+ROLLBACK_PATH = REPO_ROOT / "scripts" / "migrations" / "261_legal_chain_5layer_rollback.sql"
+REST_API_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "legal_chain_v2.py"
+MCP_TOOL_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "legal_chain_v2.py"
+BOOT_MANIFEST = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 
 def _apply_migration(conn: sqlite3.Connection, path: pathlib.Path) -> None:
@@ -202,9 +191,7 @@ def test_5_layer_chain_fanout(am_conn):
     layer_names = [r["layer_name"] for r in rows]
     assert layer_names == ["budget", "law", "cabinet", "enforcement", "case"]
     for row in rows:
-        assert row["evidence_url"], (
-            f"layer {row['layer_name']} missing evidence_url"
-        )
+        assert row["evidence_url"], f"layer {row['layer_name']} missing evidence_url"
         assert row["evidence_url"].startswith(("http://", "https://"))
     for row in rows:
         if row["layer"] < 5:
@@ -226,13 +213,11 @@ def test_public_view_filters_redistribute_ok(am_conn):
     )
     am_conn.commit()
     public_rows = am_conn.execute(
-        "SELECT COUNT(*) AS n FROM v_legal_chain_public "
-        "WHERE anchor_program_id = ?",
+        "SELECT COUNT(*) AS n FROM v_legal_chain_public WHERE anchor_program_id = ?",
         ("UNI-test-a-6",),
     ).fetchone()
     raw_rows = am_conn.execute(
-        "SELECT COUNT(*) AS n FROM am_legal_chain "
-        "WHERE anchor_program_id = ?",
+        "SELECT COUNT(*) AS n FROM am_legal_chain WHERE anchor_program_id = ?",
         ("UNI-test-a-6",),
     ).fetchone()
     assert raw_rows["n"] == 1
@@ -280,6 +265,4 @@ def test_no_llm_api_imports():
     for path in (REST_API_PATH, MCP_TOOL_PATH):
         src = path.read_text(encoding="utf-8")
         for pattern in forbidden:
-            assert pattern not in src, (
-                f"LLM API import detected in {path.name}: {pattern!r}"
-            )
+            assert pattern not in src, f"LLM API import detected in {path.name}: {pattern!r}"

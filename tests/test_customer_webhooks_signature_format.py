@@ -72,7 +72,7 @@ def test_compute_signature_shape_basic():
         b"",  # empty body — corner case for new event types with no data
         b"{}",
         b'{"event_type":"test.ping"}',
-        "日本語ペイロード".encode("utf-8"),  # multi-byte UTF-8
+        "日本語ペイロード".encode(),  # multi-byte UTF-8
         b"\x00\x01\x02\xff" * 256,  # opaque binary (1 KiB)
         b"x" * 65536,  # 64 KiB upper-bound corpus
     ],
@@ -234,7 +234,7 @@ def _compute_v2_signature(secret: str, body: bytes, unix_ts: int) -> str:
     ``customer_webhooks.compute_signature_v2`` and this helper is rewired to
     import it.
     """
-    signed = f"{unix_ts}.".encode("utf-8") + body
+    signed = f"{unix_ts}.".encode() + body
     digest = hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
     return f"t={unix_ts},v1={digest}"
 
@@ -268,7 +268,7 @@ def _verify_dual_format(
             return False
         if abs(now_unix - t) > _REPLAY_TOLERANCE_S:
             return False
-        signed = f"{t}.".encode("utf-8") + body
+        signed = f"{t}.".encode() + body
         expected = hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
         return hmac.compare_digest(expected, v1)
     return False

@@ -187,9 +187,7 @@ def _apply_degradation_envelope(
         out["meta"] = meta
     # Status hint: rich/sparse/empty/partial/error (§28.2).  We do not
     # overwrite an existing terminal status, only soften rich→partial.
-    if out.get("status") == "rich":
-        out["status"] = "partial"
-    elif "status" not in out:
+    if out.get("status") == "rich" or "status" not in out:
         out["status"] = "partial"
     return out
 

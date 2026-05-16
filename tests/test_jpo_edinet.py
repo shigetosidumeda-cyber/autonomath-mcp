@@ -18,7 +18,6 @@ These are pure schema + helper unit tests — no live HTTP fetches.
 from __future__ import annotations
 
 import importlib
-import json
 import pathlib
 import sqlite3
 import sys
@@ -231,9 +230,7 @@ def test_jpo_insert_utility_models_five_rows(conn: sqlite3.Connection) -> None:
             inserted += 1
     conn.commit()
     assert inserted == 5
-    count = conn.execute(
-        "SELECT COUNT(*) AS c FROM am_jpo_utility_models"
-    ).fetchone()
+    count = conn.execute("SELECT COUNT(*) AS c FROM am_jpo_utility_models").fetchone()
     assert int(count["c"]) == 5
 
 
@@ -316,9 +313,7 @@ def test_edinet_insert_five_sample_rows_and_join(conn: sqlite3.Connection) -> No
     assert len(joined) == 5
     assert all(r["name"] == "Bookyou株式会社" for r in joined)
 
-    resolved = conn.execute(
-        "SELECT COUNT(*) AS c FROM v_edinet_filings_full_resolved"
-    ).fetchone()
+    resolved = conn.execute("SELECT COUNT(*) AS c FROM v_edinet_filings_full_resolved").fetchone()
     assert int(resolved["c"]) == 5
 
 

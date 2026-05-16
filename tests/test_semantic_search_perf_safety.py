@@ -623,8 +623,15 @@ def test_warmup_semantic_reranker_smoke(monkeypatch, tmp_path) -> None:
     """
     import importlib.util
 
-    script_path = pathlib.Path(__file__).resolve().parent.parent / "scripts" / "ops" / "warmup_semantic_reranker.py"
-    assert script_path.exists(), "warmup script must exist at scripts/ops/warmup_semantic_reranker.py"
+    script_path = (
+        pathlib.Path(__file__).resolve().parent.parent
+        / "scripts"
+        / "ops"
+        / "warmup_semantic_reranker.py"
+    )
+    assert script_path.exists(), (
+        "warmup script must exist at scripts/ops/warmup_semantic_reranker.py"
+    )
 
     predict_calls: list[object] = []
 
@@ -641,7 +648,9 @@ def test_warmup_semantic_reranker_smoke(monkeypatch, tmp_path) -> None:
     monkeypatch.delenv("HF_HOME", raising=False)
     monkeypatch.delenv("SENTENCE_TRANSFORMERS_HOME", raising=False)
 
-    spec = importlib.util.spec_from_file_location("warmup_semantic_reranker_under_test", script_path)
+    spec = importlib.util.spec_from_file_location(
+        "warmup_semantic_reranker_under_test", script_path
+    )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -671,12 +680,19 @@ def test_warmup_semantic_reranker_tolerates_missing_dep(monkeypatch) -> None:
     """
     import importlib.util
 
-    script_path = pathlib.Path(__file__).resolve().parent.parent / "scripts" / "ops" / "warmup_semantic_reranker.py"
+    script_path = (
+        pathlib.Path(__file__).resolve().parent.parent
+        / "scripts"
+        / "ops"
+        / "warmup_semantic_reranker.py"
+    )
 
     # Force ImportError on `from sentence_transformers import CrossEncoder`.
     monkeypatch.setitem(sys.modules, "sentence_transformers", None)
 
-    spec = importlib.util.spec_from_file_location("warmup_semantic_reranker_under_test_missing", script_path)
+    spec = importlib.util.spec_from_file_location(
+        "warmup_semantic_reranker_under_test_missing", script_path
+    )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

@@ -52,18 +52,13 @@ EXPERIMENTAL_GATED_MODULES: frozenset[str] = frozenset(
 
 def _autonomath_py_files() -> list[str]:
     """Return the ``*.py`` basenames (sans extension) of the legacy package."""
-    return sorted(
-        p.stem
-        for p in AUTONOMATH_DIR.glob("*.py")
-        if p.name != "__init__.py"
-    )
+    return sorted(p.stem for p in AUTONOMATH_DIR.glob("*.py") if p.name != "__init__.py")
 
 
 def test_legacy_autonomath_dir_untouched() -> None:
     """Destruction-free rule: the legacy package MUST still be on disk."""
     assert AUTONOMATH_DIR.is_dir(), (
-        f"legacy autonomath_tools/ missing — destruction-free rename violated: "
-        f"{AUTONOMATH_DIR}"
+        f"legacy autonomath_tools/ missing — destruction-free rename violated: {AUTONOMATH_DIR}"
     )
     assert (AUTONOMATH_DIR / "__init__.py").is_file(), (
         "autonomath_tools/__init__.py missing — registration entrypoint lost"
@@ -86,17 +81,13 @@ def test_jpcite_alias_dir_exists() -> None:
     assert "autonomath_tools" in body, (
         "jpcite_tools/__init__.py must re-export from autonomath_tools"
     )
-    assert "import *" in body, (
-        "jpcite_tools/__init__.py must use a star-import re-export"
-    )
+    assert "import *" in body, "jpcite_tools/__init__.py must use a star-import re-export"
 
 
 def test_jpcite_alias_mirrors_every_autonomath_file() -> None:
     """Every legacy ``*.py`` must have a matching wrapper in jpcite_tools/."""
     legacy = set(_autonomath_py_files())
-    alias = {
-        p.stem for p in JPCITE_DIR.glob("*.py") if p.name != "__init__.py"
-    }
+    alias = {p.stem for p in JPCITE_DIR.glob("*.py") if p.name != "__init__.py"}
     missing = legacy - alias
     extra = alias - legacy
     assert not missing, (
@@ -106,8 +97,7 @@ def test_jpcite_alias_mirrors_every_autonomath_file() -> None:
     # `extra` is allowed in principle (new alias-only helpers), but for
     # 47.C the alias is strictly 1:1 — surface any drift loudly.
     assert not extra, (
-        f"jpcite_tools/ has {len(extra)} unexpected files not in "
-        f"autonomath_tools/: {sorted(extra)}"
+        f"jpcite_tools/ has {len(extra)} unexpected files not in autonomath_tools/: {sorted(extra)}"
     )
 
 
@@ -123,9 +113,7 @@ def test_every_wrapper_is_pure_reexport() -> None:
         wrapper = JPCITE_DIR / f"{stem}.py"
         assert wrapper.is_file(), f"missing wrapper file: {wrapper}"
         body = wrapper.read_text(encoding="utf-8")
-        expected_import = (
-            f"from jpintel_mcp.mcp.autonomath_tools.{stem} import *"
-        )
+        expected_import = f"from jpintel_mcp.mcp.autonomath_tools.{stem} import *"
         assert expected_import in body, (
             f"wrapper {wrapper.name} is not a star-import from "
             f"autonomath_tools.{stem} — got body:\n"
@@ -170,12 +158,8 @@ def test_jpcite_submodule_equivalence_smoke() -> None:
     for stem in sample_modules:
         if stem in EXPERIMENTAL_GATED_MODULES:
             continue
-        canonical = importlib.import_module(
-            f"jpintel_mcp.mcp.autonomath_tools.{stem}"
-        )
-        alias = importlib.import_module(
-            f"jpintel_mcp.mcp.jpcite_tools.{stem}"
-        )
+        canonical = importlib.import_module(f"jpintel_mcp.mcp.autonomath_tools.{stem}")
+        alias = importlib.import_module(f"jpintel_mcp.mcp.jpcite_tools.{stem}")
         canonical_qualname = f"jpintel_mcp.mcp.autonomath_tools.{stem}"
         # Collect names that the canonical module *owns* — i.e. callables
         # whose ``__module__`` matches the canonical qualname. These are
@@ -223,6 +207,7 @@ def test_alias_does_not_duplicate_mcp_tool_registration() -> None:
     mcp_instance = getattr(server_mod, "mcp", None)
     if mcp_instance is None:
         pytest.skip("server.mcp not available in this environment")
+
     # Best-effort: not every FastMCP build exposes the same tool registry
     # API. We probe a couple of attribute paths and accept whichever
     # surfaces a tools dict/list.
@@ -271,12 +256,9 @@ def test_wrapper_files_are_small_and_disciplined() -> None:
             f"re-export wrappers must stay 1-statement"
         )
         # Must contain exactly one `from … import *` statement.
-        import_lines = [
-            ln for ln in lines if ln.strip().startswith("from ") and " import *" in ln
-        ]
+        import_lines = [ln for ln in lines if ln.strip().startswith("from ") and " import *" in ln]
         assert len(import_lines) == 1, (
-            f"wrapper {path.name} must contain exactly one star-import "
-            f"(got {len(import_lines)})"
+            f"wrapper {path.name} must contain exactly one star-import (got {len(import_lines)})"
         )
 
 
@@ -302,9 +284,7 @@ def test_no_legacy_brand_logic_imported_into_alias() -> None:
             continue
         body = path.read_text(encoding="utf-8")
         import_statements = [
-            ln.strip()
-            for ln in body.splitlines()
-            if ln.strip().startswith(("import ", "from "))
+            ln.strip() for ln in body.splitlines() if ln.strip().startswith(("import ", "from "))
         ]
         for stmt in import_statements:
             assert "autonomath_tools" in stmt, (

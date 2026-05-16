@@ -22,6 +22,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import secrets
 from datetime import UTC, datetime
 from pathlib import Path
@@ -788,6 +789,274 @@ def _apply_invoice_metadata_safe(customer_id: str | None) -> None:
         )
 
 
+# ---------------------------------------------------------------------------
+# Wave 49 G5: Stripe invoice.paid / invoice.payment_succeeded → Credit Wallet
+# auto-topup. The credit_pack branch above handles the legacy ¥300K/¥1M/¥3M
+# one-time pack flow. _handle_invoice_paid_for_wallet routes the NEW per-call
+# wallet topup (mig 281 — am_credit_wallet + am_credit_transaction_log).
+#
+# Discovery contract: the live customer carries `metadata.jpcite_wallet_id`
+# (set when the wallet is first provisioned / linked to the Stripe Customer).
+# Without that pointer we cannot map the inbound `customer` id to an
+# `am_credit_wallet.wallet_id`, so we graceful-skip — the legacy paths
+# (subscription tier / credit_pack) still run unchanged.
+#
+# Idempotency contract: Stripe re-delivers the same event up to 3 days. The
+# outer webhook already de-duplicates by `event_id` in `stripe_webhook_events`,
+# so on a re-delivery this helper never fires. As a second line of defence
+# we ALSO embed the event_id into the transaction log row's `note` column
+# (`[wallet-stripe-evt:<event_id>]`) so a forensic replay of `am_credit_*`
+# alone can detect double-credits even if `stripe_webhook_events` is
+# truncated by an operator script.
+#
+# Side-effect contract:
+#   1. UPDATE am_credit_wallet SET balance_yen = balance_yen + amount_paid_jpy
+#   2. INSERT INTO am_credit_transaction_log VALUES
+#        (wallet_id, +amount_paid_jpy, 'topup', note=marker)
+# No Stripe API call from inside this helper — we read the wallet pointer
+# from the Stripe Customer object that the test fixture or the live
+# Stripe SDK provides; we never write back to Stripe here. This keeps the
+# helper LLM-0 + Stripe-bypass + idempotent.
+# ---------------------------------------------------------------------------
+
+
+_WALLET_STRIPE_EVT_MARKER_RE = re.compile(r"\[wallet-stripe-evt:([^\]]+)\]")
+
+
+def _wallet_event_marker(event_id: str) -> str:
+    """Stable marker stamped onto am_credit_transaction_log.note for dedup."""
+    return f"[wallet-stripe-evt:{event_id}]"
+
+
+def _resolve_wallet_id_from_customer(customer_id: str | None) -> int | None:
+    """Read ``metadata.jpcite_wallet_id`` off the live Stripe Customer.
+
+    Returns ``None`` when the pointer is missing / malformed — the caller
+    treats that as "no wallet linked, graceful skip".
+    """
+    if not customer_id:
+        return None
+    try:
+        cust = stripe.Customer.retrieve(customer_id)
+    except Exception as e:  # noqa: BLE001 — never break webhook on Stripe read
+        _capture(e)
+        logger.warning(
+            "wallet_topup_customer_retrieve_failed customer=%s",
+            customer_id,
+            exc_info=True,
+        )
+        return None
+    metadata = _stripe_value(cust, "metadata") or {}
+    if not isinstance(metadata, dict):
+        try:
+            metadata = dict(metadata)
+        except Exception:  # noqa: BLE001
+            return None
+    raw_wallet_id = metadata.get("jpcite_wallet_id")
+    if raw_wallet_id is None or raw_wallet_id == "":
+        return None
+    try:
+        wid = int(raw_wallet_id)
+    except (TypeError, ValueError):
+        logger.warning(
+            "wallet_topup_bad_metadata customer=%s value=%r",
+            customer_id,
+            raw_wallet_id,
+        )
+        return None
+    if wid <= 0:
+        return None
+    return wid
+
+
+def _wallet_topup_already_applied(
+    am_conn: sqlite3.Connection,
+    *,
+    wallet_id: int,
+    event_id: str,
+) -> bool:
+    """True iff a topup ledger row already carries this event_id marker."""
+    marker = _wallet_event_marker(event_id)
+    row = am_conn.execute(
+        "SELECT 1 FROM am_credit_transaction_log "
+        "WHERE wallet_id = ? AND txn_type = 'topup' "
+        "  AND note IS NOT NULL AND note LIKE ? "
+        "LIMIT 1",
+        (wallet_id, f"%{marker}%"),
+    ).fetchone()
+    return row is not None
+
+
+def _handle_invoice_paid_for_wallet(
+    *,
+    obj: Any,
+    event_id: str,
+    etype: str,
+) -> dict[str, Any]:
+    """Apply ``invoice.paid`` / ``invoice.payment_succeeded`` to the wallet.
+
+    Returns a small dict describing what happened (caller logs it):
+      - ``status``: ``"applied"``, ``"duplicate"``, ``"skipped_no_wallet"``,
+                    ``"skipped_no_amount"``, ``"skipped_no_customer"``,
+                    ``"skipped_schema_missing"``, ``"error"``.
+      - ``wallet_id`` / ``amount_yen`` / ``customer_id`` echoed for observability.
+
+    Never raises into the webhook. A wallet-side failure must NEVER prevent
+    the legacy subscription / credit_pack branches from running, and Stripe
+    MUST always see a 200 for an otherwise-valid event.
+    """
+    if not isinstance(obj, dict):
+        try:
+            obj_dict = dict(obj)
+        except Exception:  # noqa: BLE001
+            return {"status": "error", "reason": "obj_not_dict"}
+    else:
+        obj_dict = obj
+
+    customer_id = obj_dict.get("customer")
+    if not customer_id or not isinstance(customer_id, str):
+        return {"status": "skipped_no_customer"}
+
+    # Stripe Invoice.amount_paid is in JPY *minor units* — but for JPY
+    # Stripe uses 1 unit = ¥1 (zero-decimal currency), so amount_paid IS
+    # the ¥ value directly. Defensive cast in case the test fixture sends
+    # a string.
+    raw_amount = obj_dict.get("amount_paid")
+    if raw_amount is None:
+        # Some Stripe Invoice shapes use `amount_due` when fully paid via
+        # balance — fall back if amount_paid is missing.
+        raw_amount = obj_dict.get("amount_due")
+    if raw_amount is None:
+        return {"status": "skipped_no_amount"}
+    try:
+        amount_jpy = int(raw_amount)
+    except (TypeError, ValueError):
+        return {"status": "skipped_no_amount", "raw_amount": raw_amount}
+    if amount_jpy <= 0:
+        return {"status": "skipped_no_amount", "amount": amount_jpy}
+
+    wallet_id = _resolve_wallet_id_from_customer(customer_id)
+    if wallet_id is None:
+        return {"status": "skipped_no_wallet", "customer_id": customer_id}
+
+    # Late-bind the credit_wallet module's autonomath.db opener so this
+    # helper stays import-cheap on the 99% of webhook events that are
+    # not wallet topups.
+    try:
+        from jpintel_mcp.api.credit_wallet import (
+            _open_am_rw as _open_wallet_db,
+        )
+        from jpintel_mcp.api.credit_wallet import (
+            _table_exists as _wallet_table_exists,
+        )
+    except Exception as imp_exc:  # noqa: BLE001
+        _capture(imp_exc)
+        logger.warning(
+            "wallet_topup_import_failed customer=%s",
+            customer_id,
+            exc_info=True,
+        )
+        return {"status": "error", "reason": "import_failed"}
+
+    am_conn = _open_wallet_db()
+    try:
+        # If migration 281 has not been applied (fresh dev DB), graceful skip.
+        if not _wallet_table_exists(am_conn, "am_credit_wallet") or not _wallet_table_exists(
+            am_conn, "am_credit_transaction_log"
+        ):
+            logger.warning(
+                "wallet_topup_schema_missing customer=%s wallet_id=%s",
+                customer_id,
+                wallet_id,
+            )
+            return {"status": "skipped_schema_missing", "wallet_id": wallet_id}
+
+        # Confirm the wallet row exists. If the metadata pointer is stale
+        # (wallet deleted but Customer still carries the id), skip.
+        wallet_row = am_conn.execute(
+            "SELECT wallet_id FROM am_credit_wallet WHERE wallet_id = ? LIMIT 1",
+            (wallet_id,),
+        ).fetchone()
+        if wallet_row is None:
+            logger.warning(
+                "wallet_topup_unknown_wallet customer=%s wallet_id=%s",
+                customer_id,
+                wallet_id,
+            )
+            return {"status": "skipped_no_wallet", "wallet_id": wallet_id}
+
+        # Dedup: event_id-based ledger marker. The outer webhook also
+        # de-duplicates via stripe_webhook_events; this is belt + braces.
+        if event_id and _wallet_topup_already_applied(
+            am_conn, wallet_id=wallet_id, event_id=event_id
+        ):
+            logger.info(
+                "wallet_topup_duplicate customer=%s wallet_id=%s event_id=%s",
+                customer_id,
+                wallet_id,
+                event_id,
+            )
+            return {
+                "status": "duplicate",
+                "wallet_id": wallet_id,
+                "amount_yen": amount_jpy,
+                "customer_id": customer_id,
+            }
+
+        note = (
+            f"stripe {etype} invoice={obj_dict.get('id') or ''} "
+            f"{_wallet_event_marker(event_id or 'unknown')}"
+        )
+
+        am_conn.execute("BEGIN IMMEDIATE")
+        try:
+            am_conn.execute(
+                "UPDATE am_credit_wallet "
+                "SET balance_yen = balance_yen + ?, "
+                "    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now') "
+                "WHERE wallet_id = ?",
+                (amount_jpy, wallet_id),
+            )
+            am_conn.execute(
+                "INSERT INTO am_credit_transaction_log "
+                "(wallet_id, amount_yen, txn_type, note) "
+                "VALUES (?, ?, 'topup', ?)",
+                (wallet_id, amount_jpy, note),
+            )
+            am_conn.commit()
+        except Exception:
+            with contextlib.suppress(Exception):
+                am_conn.rollback()
+            raise
+
+        logger.info(
+            "wallet_topup_applied customer=%s wallet_id=%s amount=%s event=%s",
+            customer_id,
+            wallet_id,
+            amount_jpy,
+            event_id,
+        )
+        return {
+            "status": "applied",
+            "wallet_id": wallet_id,
+            "amount_yen": amount_jpy,
+            "customer_id": customer_id,
+        }
+    except Exception as e:  # noqa: BLE001 — never break webhook
+        _capture(e)
+        logger.warning(
+            "wallet_topup_failed customer=%s wallet_id=%s event=%s",
+            customer_id,
+            wallet_id,
+            event_id,
+            exc_info=True,
+        )
+        return {"status": "error", "reason": "exception"}
+    finally:
+        with contextlib.suppress(Exception):
+            am_conn.close()
+
+
 class CheckoutRequest(BaseModel):
     success_url: str
     cancel_url: str
@@ -1371,8 +1640,7 @@ async def webhook(
             if event_id.endswith("00"):
                 with contextlib.suppress(Exception):
                     conn.execute(
-                        "DELETE FROM stripe_webhook_events"
-                        " WHERE received_at < datetime('now', ?)",
+                        "DELETE FROM stripe_webhook_events WHERE received_at < datetime('now', ?)",
                         (f"-{STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS} days",),
                     )
                     conn.execute(
@@ -1463,6 +1731,28 @@ async def webhook(
             # Do not mint API keys from webhooks. Raw keys are reveal-once
             # credentials, and the only safe reveal surface is the browser-bound
             # /keys/from-checkout path guarded by the Checkout state cookie.
+            #
+            # Wave 49 G5: route to Credit Wallet auto-topup BEFORE the
+            # legacy branches. The helper graceful-skips when the Customer
+            # carries no `metadata.jpcite_wallet_id`, so the credit_pack +
+            # subscription branches below run exactly as before for the
+            # non-wallet path.
+            _wallet_result = _handle_invoice_paid_for_wallet(
+                obj=obj, event_id=event_id, etype=etype
+            )
+            if _wallet_result.get("status") not in (
+                "skipped_no_wallet",
+                "skipped_no_amount",
+                "skipped_no_customer",
+                "skipped_schema_missing",
+                "error",
+            ):
+                logger.info(
+                    "wallet_topup_route status=%s wallet_id=%s amount=%s",
+                    _wallet_result.get("status"),
+                    _wallet_result.get("wallet_id"),
+                    _wallet_result.get("amount_yen"),
+                )
             if metadata_kind(obj) == CREDIT_PACK_METADATA_KIND:
                 invoice_id = _stripe_obj_id(obj)
                 customer_id = (
@@ -1695,6 +1985,24 @@ async def webhook(
                     "next_retry_epoch": obj.get("next_payment_attempt"),
                 },
                 dedup_key=f"dunning:{sub_id}:{attempt}",
+            )
+        elif etype == "invoice.payment_succeeded":
+            # Wave 49 G5: Stripe emits BOTH `invoice.paid` and
+            # `invoice.payment_succeeded` for the same invoice. The wallet
+            # topup is idempotent via the ledger event_id marker, so we
+            # route through the same helper here so a Stripe account
+            # configured to deliver only `invoice.payment_succeeded` still
+            # tops up the wallet. The credit_pack + subscription branches
+            # remain anchored to `invoice.paid` only — this path is
+            # wallet-exclusive.
+            _wallet_result = _handle_invoice_paid_for_wallet(
+                obj=obj, event_id=event_id, etype=etype
+            )
+            logger.info(
+                "wallet_topup_route_payment_succeeded status=%s wallet_id=%s amount=%s",
+                _wallet_result.get("status"),
+                _wallet_result.get("wallet_id"),
+                _wallet_result.get("amount_yen"),
             )
         elif etype == "charge.refunded":
             # A refund (full or partial) is a strong fraud / chargeback signal —

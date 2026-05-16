@@ -75,9 +75,7 @@ def _resolve_db_path() -> str:
     return os.path.join(cwd, "data", "autonomath.db")
 
 
-def _lookup_one(
-    conn: sqlite3.Connection, fact_id: str
-) -> dict[str, Any] | None:
+def _lookup_one(conn: sqlite3.Connection, fact_id: str) -> dict[str, Any] | None:
     """Return a JSON-LD-compatible provenance dict for a single fact_id.
 
     Returns None when no metadata row exists. Reads from the helper view
@@ -128,9 +126,7 @@ def _lookup_one(
     return out
 
 
-def lookup(
-    fact_ids: list[str], *, db_path: str | None = None
-) -> list[dict[str, Any]]:
+def lookup(fact_ids: list[str], *, db_path: str | None = None) -> list[dict[str, Any]]:
     """Resolve provenance for a list of fact_ids. Soft-fails to []."""
     if not fact_ids:
         return []

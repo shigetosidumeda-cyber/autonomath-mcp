@@ -222,8 +222,7 @@ def instrument_fastapi(app: FastAPI) -> bool:
         from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
     except ImportError as exc:
         logger.warning(
-            "opentelemetry-instrumentation-fastapi missing — REST spans "
-            "disabled. exc=%s",
+            "opentelemetry-instrumentation-fastapi missing — REST spans disabled. exc=%s",
             type(exc).__name__,
         )
         return False

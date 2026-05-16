@@ -70,7 +70,9 @@ def test_w47d_alias_file_exists(canonical_stem: str, alias_stem: str) -> None:
 
 
 @pytest.mark.parametrize("canonical_stem,alias_stem", ALIAS_PAIRS)
-def test_w47d_canonical_file_exists_and_is_untouched_on_disk(canonical_stem: str, alias_stem: str) -> None:
+def test_w47d_canonical_file_exists_and_is_untouched_on_disk(
+    canonical_stem: str, alias_stem: str
+) -> None:
     """The canonical source file must still exist at its original path.
 
     Wave 46.D does NOT delete or move the legacy file (`rm`/`mv` 禁止).
@@ -157,7 +159,9 @@ def test_w47d_alias_has_edit_lock_notice(canonical_stem: str, alias_stem: str) -
 
 
 @pytest.mark.parametrize("canonical_stem,alias_stem", ALIAS_PAIRS)
-def test_w47d_alias_does_not_verbatim_copy_canonical_steps(canonical_stem: str, alias_stem: str) -> None:
+def test_w47d_alias_does_not_verbatim_copy_canonical_steps(
+    canonical_stem: str, alias_stem: str
+) -> None:
     """The alias MUST NOT copy the canonical operator steps verbatim.
 
     Wave 46.D is banner-only — the alias paraphrases scope at most.  We
@@ -181,7 +185,9 @@ def test_w47d_alias_does_not_verbatim_copy_canonical_steps(canonical_stem: str, 
 
 
 @pytest.mark.parametrize("canonical_stem,alias_stem", ALIAS_PAIRS)
-def test_w47d_canonical_file_does_not_contain_wave46d_banner(canonical_stem: str, alias_stem: str) -> None:
+def test_w47d_canonical_file_does_not_contain_wave46d_banner(
+    canonical_stem: str, alias_stem: str
+) -> None:
     """The canonical source must remain untouched — no Wave 46.D banner
     should have been injected into it."""
     text = (INTERNAL / f"{canonical_stem}.md").read_text(encoding="utf-8")
@@ -214,9 +220,7 @@ def test_w47d_alias_minimal_markdown_validity(canonical_stem: str, alias_stem: s
 def test_w47d_redirect_map_inventory_count_matches_pairs() -> None:
     text = REDIRECT_MAP.read_text(encoding="utf-8")
     # Count rows that look like the inventory table: lines starting "| <digit>"
-    inventory_lines = [
-        line for line in text.splitlines() if re.match(r"^\|\s*\d+\s*\|", line)
-    ]
+    inventory_lines = [line for line in text.splitlines() if re.match(r"^\|\s*\d+\s*\|", line)]
     assert len(inventory_lines) == len(ALIAS_PAIRS), (
         f"redirect map inventory has {len(inventory_lines)} rows, expected {len(ALIAS_PAIRS)}"
     )

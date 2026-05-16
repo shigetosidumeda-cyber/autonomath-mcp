@@ -50,9 +50,8 @@ def test_no_5_6_7_gyohou_drift_in_site() -> None:
         for lineno, line in enumerate(text.splitlines(), start=1):
             if DRIFT_RE.search(line):
                 offenders.append((path.relative_to(SITE_ROOT), lineno, line.strip()[:200]))
-    assert not offenders, (
-        f"fence_count drift detected ({len(offenders)} line(s)):\n"
-        + "\n".join(f"  {p}:{ln}: {snippet}" for p, ln, snippet in offenders[:30])
+    assert not offenders, f"fence_count drift detected ({len(offenders)} line(s)):\n" + "\n".join(
+        f"  {p}:{ln}: {snippet}" for p, ln, snippet in offenders[:30]
     )
 
 

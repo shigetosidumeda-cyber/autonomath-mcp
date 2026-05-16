@@ -86,9 +86,7 @@ _DISCOVERY_DISCLAIMER = (
 
 def _open_autonomath_ro() -> sqlite3.Connection:
     """Open autonomath.db read-only-by-intent (no PRAGMA writes)."""
-    path = os.environ.get(
-        "AUTONOMATH_DB_PATH", str(settings.autonomath_db_path)
-    )
+    path = os.environ.get("AUTONOMATH_DB_PATH", str(settings.autonomath_db_path))
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     return conn
@@ -144,9 +142,7 @@ async def list_latest_signatures(
             status_code=422,
             detail={
                 "error": "invalid_cursor",
-                "message": (
-                    "cursor must match ^[A-Za-z0-9_-]{1,128}$"
-                ),
+                "message": ("cursor must match ^[A-Za-z0-9_-]{1,128}$"),
                 "field": "cursor",
             },
         )
@@ -244,8 +240,7 @@ async def get_signature_metadata(
                 detail={
                     "error": "signature_store_unavailable",
                     "message": (
-                        "autonomath am_fact_signature is not available "
-                        "on this deployment."
+                        "autonomath am_fact_signature is not available on this deployment."
                     ),
                 },
             ) from exc

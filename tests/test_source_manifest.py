@@ -861,8 +861,7 @@ def test_blocked_license_rollup_bounded_on_huge_program(
     # so this measurement reflects the cold-cache cost the endpoint pays.
     allowed_licenses = sorted(REDISTRIBUTABLE_LICENSES)
     allowed_sql = ",".join("?" for _ in allowed_licenses)
-    sql = (
-        f"""SELECT COALESCE(s.license, 'unknown_null') AS license, COUNT(*) AS n
+    sql = f"""SELECT COALESCE(s.license, 'unknown_null') AS license, COUNT(*) AS n
               FROM am_entity_facts f
               JOIN am_source s ON s.id = f.source_id
              WHERE f.entity_id = ?
@@ -871,7 +870,6 @@ def test_blocked_license_rollup_bounded_on_huge_program(
              GROUP BY COALESCE(s.license, 'unknown_null')
              ORDER BY n DESC, license ASC
              LIMIT 50"""
-    )
     ro = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
     ro.row_factory = sqlite3.Row
     try:

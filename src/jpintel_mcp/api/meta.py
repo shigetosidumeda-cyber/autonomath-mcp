@@ -2,7 +2,7 @@ import sqlite3
 import time
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -135,7 +135,7 @@ _RESOURCES_PROMPTS_CACHE: dict[str, Any] = {"resources": None, "prompts": None}
 def _load_mcp_resources() -> list[dict[str, Any]]:
     """Aggregate registered MCP resources (jpcite + cohort + autonomath)."""
     if _RESOURCES_PROMPTS_CACHE["resources"] is not None:
-        return _RESOURCES_PROMPTS_CACHE["resources"]  # type: ignore[return-value]
+        return cast("list[dict[str, Any]]", _RESOURCES_PROMPTS_CACHE["resources"])
     resources: list[dict[str, Any]] = []
     try:
         from jpintel_mcp.mcp.jpcite_resources import list_jpcite_resources
@@ -150,7 +150,7 @@ def _load_mcp_resources() -> list[dict[str, Any]]:
     except Exception:  # pragma: no cover - registry import optional
         pass
     try:
-        from jpintel_mcp.mcp.autonomath_tools.resources import (
+        from jpintel_mcp.mcp.autonomath_tools.resources import (  # type: ignore[attr-defined]
             list_autonomath_resources,
         )
 
@@ -164,7 +164,7 @@ def _load_mcp_resources() -> list[dict[str, Any]]:
 def _load_mcp_prompts() -> list[dict[str, Any]]:
     """Aggregate registered MCP prompts (jpcite + autonomath)."""
     if _RESOURCES_PROMPTS_CACHE["prompts"] is not None:
-        return _RESOURCES_PROMPTS_CACHE["prompts"]  # type: ignore[return-value]
+        return cast("list[dict[str, Any]]", _RESOURCES_PROMPTS_CACHE["prompts"])
     prompts: list[dict[str, Any]] = []
     try:
         from jpintel_mcp.mcp.jpcite_prompts import list_jpcite_prompts
@@ -173,7 +173,7 @@ def _load_mcp_prompts() -> list[dict[str, Any]]:
     except Exception:  # pragma: no cover
         pass
     try:
-        from jpintel_mcp.mcp.autonomath_tools.prompts import list_autonomath_prompts
+        from jpintel_mcp.mcp.autonomath_tools.prompts import list_autonomath_prompts  # type: ignore[attr-defined]  # noqa: E501, I001
 
         prompts.extend(list_autonomath_prompts())
     except Exception:  # pragma: no cover

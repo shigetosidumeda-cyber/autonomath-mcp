@@ -370,7 +370,7 @@ Web で確認、通知はメールで受け取る
 
 ### AI 開発者 (横断利用)
 
-REST + MCP、 151 機能、 SDK 不要
+REST + MCP、 155 機能、 SDK 不要
 
 上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠、 uvx 1 行で起動。 Evidence Packet で事前に根拠を渡し、ヒット率・追加検索回数・トークン量への影響を自社ベンチマークで測定できます。
 
@@ -479,7 +479,7 @@ PDF 全文投入の前段に置く
 
 制度 → 法令 → 判例 → 行政処分 → 適格事業者
 
-trace_program_to_law ・ combined_compliance_check ・ search_tax_incentives ・ related_programs など 151 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。
+trace_program_to_law ・ combined_compliance_check ・ search_tax_incentives ・ related_programs など 155 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。
 
 ### 自前データ基盤を持たずに使う
 

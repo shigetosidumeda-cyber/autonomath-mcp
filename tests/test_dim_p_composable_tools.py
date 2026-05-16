@@ -35,16 +35,10 @@ import sys
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_276 = REPO_ROOT / "scripts" / "migrations" / "276_composable_tools.sql"
-MIG_276_RB = (
-    REPO_ROOT / "scripts" / "migrations" / "276_composable_tools_rollback.sql"
-)
+MIG_276_RB = REPO_ROOT / "scripts" / "migrations" / "276_composable_tools_rollback.sql"
 ETL_SEED = REPO_ROOT / "scripts" / "etl" / "seed_composed_tools.py"
-MANIFEST_JPCITE = (
-    REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-)
-MANIFEST_AM = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+MANIFEST_JPCITE = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
+MANIFEST_AM = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 EXPECTED_TOOL_IDS = {
     "ultimate_due_diligence_kit",
@@ -87,8 +81,7 @@ def test_migration_276_creates_tables(tmp_path: pathlib.Path) -> None:
         names = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view') ORDER BY name"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') ORDER BY name"
             ).fetchall()
         }
     finally:
@@ -125,8 +118,7 @@ def test_migration_276_idempotent(tmp_path: pathlib.Path) -> None:
     conn = sqlite3.connect(str(db))
     try:
         count = conn.execute(
-            "SELECT COUNT(*) FROM sqlite_master "
-            "WHERE name='am_composed_tool_catalog'"
+            "SELECT COUNT(*) FROM sqlite_master WHERE name='am_composed_tool_catalog'"
         ).fetchone()[0]
     finally:
         conn.close()
@@ -141,9 +133,7 @@ def test_migration_276_rollback_drops(tmp_path: pathlib.Path) -> None:
     try:
         names = {
             r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
         }
     finally:
         conn.close()
@@ -173,9 +163,7 @@ def test_seed_etl_dry_run(tmp_path: pathlib.Path) -> None:
     # No actual write occurred.
     conn = sqlite3.connect(str(db))
     try:
-        n = conn.execute(
-            "SELECT COUNT(*) FROM am_composed_tool_catalog"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM am_composed_tool_catalog").fetchone()[0]
     finally:
         conn.close()
     assert n == 0
@@ -264,9 +252,7 @@ def test_seed_latest_view_resolves_committed(tmp_path: pathlib.Path) -> None:
     conn = sqlite3.connect(str(db))
     try:
         rows = dict(
-            conn.execute(
-                "SELECT tool_id, latest_version FROM v_composed_tools_latest"
-            ).fetchall()
+            conn.execute("SELECT tool_id, latest_version FROM v_composed_tools_latest").fetchall()
         )
     finally:
         conn.close()
@@ -291,9 +277,7 @@ def test_invocation_log_appends_row(tmp_path: pathlib.Path) -> None:
             ),
         )
         conn.commit()
-        n = conn.execute(
-            "SELECT COUNT(*) FROM am_composed_tool_invocation_log"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM am_composed_tool_invocation_log").fetchone()[0]
     finally:
         conn.close()
     assert n == 1
@@ -306,16 +290,12 @@ def test_invocation_log_appends_row(tmp_path: pathlib.Path) -> None:
 
 def test_manifest_jpcite_lists_276() -> None:
     """jpcite boot manifest registers migration 276_composable_tools.sql."""
-    assert "276_composable_tools.sql" in MANIFEST_JPCITE.read_text(
-        encoding="utf-8"
-    )
+    assert "276_composable_tools.sql" in MANIFEST_JPCITE.read_text(encoding="utf-8")
 
 
 def test_manifest_autonomath_lists_276() -> None:
     """autonomath boot manifest (mirror) registers migration 276."""
-    assert "276_composable_tools.sql" in MANIFEST_AM.read_text(
-        encoding="utf-8"
-    )
+    assert "276_composable_tools.sql" in MANIFEST_AM.read_text(encoding="utf-8")
 
 
 _FORBIDDEN_LLM_IMPORTS = ("anthropic", "openai", "google.generativeai")

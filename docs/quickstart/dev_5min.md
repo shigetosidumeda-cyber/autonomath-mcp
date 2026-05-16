@@ -68,7 +68,7 @@ mv ./data/jpintel.db.prod ./data/jpintel.db
           -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
 ```
 
-`tools/list` should return 151 tools by default; verify with `len(await mcp.list_tools())`.
+`tools/list` should return 155 tools by default; verify with `len(await mcp.list_tools())`.
 
 ## 4. Cloudflare Pages preview (≤90 seconds)
 
@@ -114,8 +114,8 @@ If the brand grep returns hits in `site/` or `docs/*.md` outside of historical-s
 
 ## What you have now
 
-- API @ `http://localhost:8080` (FastAPI, hot reload, 302 paths).
-- MCP server @ `stdio` or `http://localhost:8081/mcp` (151 tools).
+- API @ `http://localhost:8080` (FastAPI, hot reload, 306 paths).
+- MCP server @ `stdio` or `http://localhost:8081/mcp` (155 tools).
 - A personal Cloudflare Pages preview URL.
 - Lint + fast tests green.
 

@@ -94,9 +94,7 @@ def test_balance_anonymous_returns_401(client: TestClient, wallet_am_db) -> None
     assert r.status_code == 401, r.text
 
 
-def test_balance_zero_on_first_call(
-    client: TestClient, paid_key: str, wallet_am_db
-) -> None:
+def test_balance_zero_on_first_call(client: TestClient, paid_key: str, wallet_am_db) -> None:
     r = client.get("/v1/wallet/balance", headers={"X-API-Key": paid_key})
     assert r.status_code == 200, r.text
     body = r.json()
@@ -322,9 +320,7 @@ def test_topup_same_idempotency_key_rejects_changed_payload(
     assert second.json()["detail"] == "idempotency_key_in_use"
 
 
-def test_topup_rejects_negative_amount(
-    client: TestClient, paid_key: str, wallet_am_db
-) -> None:
+def test_topup_rejects_negative_amount(client: TestClient, paid_key: str, wallet_am_db) -> None:
     r = client.post(
         "/v1/wallet/topup",
         json={"auto_topup_amount": -1},
@@ -338,9 +334,7 @@ def test_topup_rejects_negative_amount(
 # ---------------------------------------------------------------------------
 
 
-def test_transactions_anonymous_returns_401(
-    client: TestClient, wallet_am_db
-) -> None:
+def test_transactions_anonymous_returns_401(client: TestClient, wallet_am_db) -> None:
     r = client.get("/v1/wallet/transactions")
     assert r.status_code == 401, r.text
 
@@ -372,18 +366,14 @@ def test_transactions_filter_and_pagination(
     assert all(t["txn_type"] == "topup" for t in body["transactions"])
 
     # Pagination: limit=2, offset=1 → middle + oldest.
-    r = client.get(
-        "/v1/wallet/transactions?limit=2&offset=1", headers=headers
-    )
+    r = client.get("/v1/wallet/transactions?limit=2&offset=1", headers=headers)
     assert r.status_code == 200
     body = r.json()
     assert body["returned"] == 2
     assert [t["amount_yen"] for t in body["transactions"]] == [2000, 1000]
 
     # txn_type filter: charge → empty (nothing charged yet).
-    r = client.get(
-        "/v1/wallet/transactions?txn_type=charge", headers=headers
-    )
+    r = client.get("/v1/wallet/transactions?txn_type=charge", headers=headers)
     assert r.status_code == 200
     assert r.json()["total"] == 0
 
@@ -398,9 +388,7 @@ def test_alerts_anonymous_returns_401(client: TestClient, wallet_am_db) -> None:
     assert r.status_code == 401, r.text
 
 
-def test_alerts_empty_when_no_budget(
-    client: TestClient, paid_key: str, wallet_am_db
-) -> None:
+def test_alerts_empty_when_no_budget(client: TestClient, paid_key: str, wallet_am_db) -> None:
     r = client.get("/v1/wallet/alerts", headers={"X-API-Key": paid_key})
     assert r.status_code == 200, r.text
     body = r.json()
@@ -412,9 +400,7 @@ def test_alerts_billing_cycle_filter_validation(
     client: TestClient, paid_key: str, wallet_am_db
 ) -> None:
     # Malformed YYYY-MM → 422 (pattern mismatch).
-    r = client.get(
-        "/v1/wallet/alerts?billing_cycle=2026", headers={"X-API-Key": paid_key}
-    )
+    r = client.get("/v1/wallet/alerts?billing_cycle=2026", headers={"X-API-Key": paid_key})
     assert r.status_code == 422
 
 
@@ -432,9 +418,7 @@ def test_charge_anonymous_returns_401(client: TestClient, wallet_am_db) -> None:
     assert r.status_code == 401, r.text
 
 
-def test_charge_requires_internal_token(
-    client: TestClient, paid_key: str, wallet_am_db
-) -> None:
+def test_charge_requires_internal_token(client: TestClient, paid_key: str, wallet_am_db) -> None:
     r = client.post(
         "/v1/wallet/charge",
         json={"amount_yen": 3},
@@ -590,9 +574,7 @@ def test_charge_concurrent_debits_cannot_overspend(
     assert charges == 1
 
 
-def test_charge_alert_trigger_50_80_100(
-    client: TestClient, paid_key: str, wallet_am_db
-) -> None:
+def test_charge_alert_trigger_50_80_100(client: TestClient, paid_key: str, wallet_am_db) -> None:
     """Crossing each threshold fires that alert exactly once per cycle."""
     headers = {"X-API-Key": paid_key}
     internal_headers = {
@@ -696,9 +678,7 @@ def test_credit_wallet_module_imports_no_llm_sdk() -> None:
         assert needle not in src, f"forbidden LLM SDK import found: {needle}"
 
     # Sanity: module is importable.
-    spec = importlib.util.spec_from_file_location(
-        "_w48_credit_wallet_probe", str(CREDIT_WALLET_PY)
-    )
+    spec = importlib.util.spec_from_file_location("_w48_credit_wallet_probe", str(CREDIT_WALLET_PY))
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

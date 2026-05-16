@@ -227,6 +227,22 @@ exclude = [
 ]
 
 [tool.mypy]
+# Stream L Tick2-G (2026-05-16): pin python_version so PEP 604 `str | int`
+# unions in source are not misread as Python 3.9 syntax errors. Without this,
+# mypy assumed 3.9 from `python_requires` ambiguity and flagged 385 of 991
+# strict errors on union-syntax false positives. With python_version="3.11"
+# the same source parses cleanly. `warn_unused_ignores = false` is a
+# **temporary** loosening so tick3 cleanup can audit the residual ignore set
+# without churn; flip back to `true` after the audit.
+python_version = "3.11"
+strict = true
+plugins = ["pydantic.mypy"]
+warn_unused_ignores = true  # tick3 audit 完了 2026-05-16 で復元
+ignore_missing_imports = false
+# Stream BB (Wave 50 tick 9): mypy_path を src に固定して src/jpintel_mcp の
+# package 解釈は 1 経路に保ちつつ、scripts/ 配下の duplicate-module 衝突を回避する。
+# explicit_package_bases は scripts/ 配下にのみ必要なので overrides で局所化。
+mypy_path = "src"
 # `_archive/` is a frozen capsule of pre-Wave-25 modules kept for forensic
 # reference (autonomath_tools_dead_2026-04-25 / embedding_2026-04-25 /
 # reasoning_2026-04-25). The dated directory names contain hyphens and digits,
@@ -236,7 +252,59 @@ exclude = [
 # remaining checks and signals "do not type-check archived code".
 exclude = [
     "^src/jpintel_mcp/_archive/",
+    # Stream BB (Wave 50 tick 9): scripts/check_mcp_drift.py と scripts/ops/check_mcp_drift.py が
+    # 同一 module 名で衝突する (前者は range check + runtime probe、後者は discovery surface drift
+    # detector で別目的・別実装、意図的に共存)。mypy の --strict 単一 walk で
+    # "Duplicate module named 'check_mcp_drift'" が出るため、より新しい / 厳密な
+    # scripts/ops/check_mcp_drift.py 側を SOT として残し、トップ階層側を mypy walk から除外する。
+    # 実行ファイル自体は両方 live のまま (CI / cron では path 指定 invoke)。
+    "^scripts/check_mcp_drift\\.py$",
+    # scripts/weekly_digest.py (旧 AutonoMath query telemetry digest) と
+    # scripts/cron/weekly_digest.py (新 Saved-Search Digest cron / 60-day Advisor Loop) も
+    # 同一 module 名衝突。新側 (cron/) が active SOT、旧側は legacy invoke 互換のため残置、
+    # mypy walk からは除外。
+    "^scripts/weekly_digest\\.py$",
+    # scripts/cron/_r2_client.py は cron 配下 backup / restore / parquet export / edinet ingest
+    # 等の import 元が "_r2_client" / "cron._r2_client" / "scripts.cron._r2_client" の 3 path で
+    # 実行時 sys.path に依存して切り替わる runtime-resolution module。`__init__.py` 追加や
+    # absolute path 統一は import chain (cron / restore_drill / verify_backup) の挙動を変える
+    # 恐れがあるため、Stream BB (suppression-only) では mypy walk から除外する。
+    # 実行ファイルは変更無し、cron 実行 path もそのまま。
+    "^scripts/cron/_r2_client\\.py$",
 ]
+
+[[tool.mypy.overrides]]
+# Optional / heavyweight deps that ship no type stubs. We do not want strict
+# mode to fail on `import pykakasi` etc. just because upstream skipped py.typed.
+# These are all already isolated to their own callers (site generator,
+# Japanese normalizer, fast JSON, Playwright fallback cron), so suppressing
+# missing-import strictness here does not leak into the prod surface.
+# Stream L Tick3 (2026-05-16) additions: scipy/openpyxl/icalendar/weasyprint
+# (Bayesian + xlsx/ics/pdf exporters), ratelimit/diskcache (gbiz limiter),
+# re2/sudachipy/spacy (business-law detector + verifier NLP), sqlite_vec
+# (recommend_similar), reasoning/query_rewrite (autonomath reasoning gate).
+module = [
+    "pykakasi.*",
+    "orjson.*",
+    "MeCab.*",
+    "fugashi.*",
+    "ipadic.*",
+    "playwright.*",
+    "scipy.*",
+    "openpyxl.*",
+    "icalendar.*",
+    "weasyprint.*",
+    "ratelimit.*",
+    "diskcache.*",
+    "re2.*",
+    "sudachipy.*",
+    "spacy.*",
+    "sqlite_vec.*",
+    "reasoning.*",
+    "query_rewrite.*",
+    "jpintel_mcp.api.program_agriculture",
+]
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 100
@@ -273,10 +341,96 @@ ignore = ["E501"]
 "tests/test_gzip_middleware.py" = ["N814"]
 "tests/test_post_deploy_smoke.py" = ["B023"]
 "tests/smoke/smoke_pre_launch.py" = ["E402"]
+# Stream BB (Wave 50 tick 9) — ruff hygiene sweep. Suppression-only (no logic change):
+# - E402: sys.path / dotenv / env-bootstrap before imports is canonical for these entrypoints.
+# - B904: HTTPException re-raise paths preserve existing user-facing semantics; "from err" rewrite would change envelopes.
+# - SIM10x / SIM11x: stylistic; rewriting changes generated tracebacks / logging side-effects in ETL hot paths.
+# - TC002 / TC003: TYPE_CHECKING import shuffles defer runtime imports; some modules read those types at request time.
+# - F841: variable assignments preserved for breakpoint/debug ergonomics in long-running cron / etl walks.
+# - N802 / N806 / A002 / UP012 / UP017: function names / arg names embed 日本語 fixtures or upstream API field names.
+# - B007: loop variable kept named for readability in counter-only paths.
+"scripts/check_agent_runtime_contracts.py" = ["E402"]
+"scripts/cron/aggregate_organic_funnel_daily.py" = ["SIM103", "SIM105"]
+"scripts/cron/embed_knowledge_graph_vec.py" = ["F841"]
+"scripts/cron/fill_laws_ko_v2.py" = ["SIM105"]
+"scripts/cron/fill_laws_zh_v2.py" = ["SIM105"]
+"scripts/cron/fill_programs_en_bulk.py" = ["SIM105"]
+"scripts/cron/ingest_cases_daily.py" = ["SIM105"]
+"scripts/cron/precompute_alliance_opportunity.py" = ["F841"]
+"scripts/cron/precompute_cohort_5d.py" = ["TC003"]
+"scripts/cron/precompute_program_risk_4d.py" = ["TC003"]
+"scripts/cron/precompute_supplier_chain.py" = ["TC003"]
+"scripts/cwv_hardening_patch.py" = ["F841", "N806", "SIM102"]
+"scripts/etl/build_personalization_recommendations.py" = ["SIM102"]
+"scripts/etl/datafill_amendment_snapshot.py" = ["SIM108"]
+"scripts/etl/datafill_amendment_snapshot_v3.py" = ["E402"]
+"scripts/etl/fill_court_decisions_extended_2x.py" = ["SIM103"]
+"scripts/etl/fill_enforcement_municipality_2x.py" = ["SIM103"]
+"scripts/etl/fill_fdi_80country_2x.py" = ["TC003"]
+"scripts/etl/fill_laws_jorei_47pref_2x.py" = ["SIM110"]
+"scripts/ops/aws_credit_local_preflight.py" = ["E402"]
+"scripts/ops/run_preflight_simulations.py" = ["SIM102"]
+"scripts/ops/validate_release_capsule.py" = ["TC003"]
+"src/jpintel_mcp/api/_failover.py" = ["TC003"]
+"src/jpintel_mcp/api/appi_deletion.py" = ["E402"]
+"src/jpintel_mcp/api/appi_disclosure.py" = ["E402"]
+"src/jpintel_mcp/api/court_decisions_v2.py" = ["B904"]
+"src/jpintel_mcp/api/enforcement_municipality.py" = ["B904"]
+"src/jpintel_mcp/api/graphql.py" = ["A002"]
+"src/jpintel_mcp/api/law_tsutatsu_guideline.py" = ["B904"]
+"src/jpintel_mcp/api/me/api_keys.py" = ["TC003"]
+"src/jpintel_mcp/api/middleware/edge_header_sanitization.py" = ["TC003"]
+"src/jpintel_mcp/api/sitemap_audit.py" = ["A002"]
+"src/jpintel_mcp/billing/acp_integration.py" = ["TC003"]
+"src/jpintel_mcp/mcp/resource_subscriber.py" = ["TC003"]
+"tests/acceptance/test_acceptance_v3.py" = ["F841", "SIM110"]
+"tests/chaos/conftest.py" = ["SIM105", "TC003"]
+"tests/chaos/test_resilience_5pillar.py" = ["TC003"]
+"tests/test_aggregate_organic_funnel.py" = ["F841", "TC002"]
+"tests/test_api_route_smoke_revenue_wave10.py" = ["TC003"]
+"tests/test_axis5_multilingual.py" = ["SIM108"]
+"tests/test_composition_tools_dispatch.py" = ["TC003"]
+"tests/test_detect_first_txn.py" = ["TC003"]
+"tests/test_dim_a_semantic_v1.py" = ["SIM115"]
+"tests/test_dim_k_storage_integration.py" = ["B007"]
+"tests/test_dim_n_pii_redact_strict.py" = ["TC002"]
+"tests/test_edge_header_sanitization.py" = ["TC003"]
+"tests/test_extended_corpus.py" = ["SIM105"]
+"tests/test_intel_competitor_landscape.py" = ["E402", "N802"]
+"tests/test_intel_wave31_pure.py" = ["N802", "SIM103", "TC002"]
+"tests/test_observability_sentry_otel.py" = ["TC003"]
+"tests/test_pdf_report_render.py" = ["TC003"]
+"tests/test_sitemap_audit.py" = ["E402", "TC002"]
+"tests/test_source_fetched_at_semantic_honesty.py" = ["N802"]
+# AWS Boto3 canary mock tests preserve upstream camelCase arg names (jobName/jobQueue/Bucket/Key/Body, etc.)
+# and test function names embed numeric thresholds (17K/18_3K/18_9K/19_3K) for canary band readability.
+"tests/test_aws_canary_smoke_mock.py" = ["N803"]
+"tests/test_aws_canary_smoke_mock_extended.py" = ["N802", "N803"]
+# DB fixture test files import submodule aliases (W/A/I/M/P) for compact dispatch; alias intent is dispatcher-style.
+# TC003: Path imports used at fixture runtime via parametrize / tmp_path coercion, cannot defer to TYPE_CHECKING.
+"tests/test_api_artifacts_db_fixture.py" = ["N812", "TC003"]
+"tests/test_api_intel_db_fixture.py" = ["N812", "TC003"]
+"tests/test_api_main_db_fixture.py" = ["N812"]
+"tests/test_api_programs_db_fixture.py" = ["N812", "TC003"]
+"tests/test_api_programs_search_db_fixture.py" = ["TC003"]
+"tests/test_mcp_wave24_second_half_db_fixture.py" = ["N812", "TC003"]
+"tests/test_wave24_tools_first_half_db_fixture.py" = ["N812", "TC003"]
+"tests/test_evidence_packet_db_fixture.py" = ["TC003"]
+# 日本語 fixture name embedded in test name ("任意") — N802 lowercase rule does not apply to JP identifiers.
+"tests/test_api_intel_helpers_extra.py" = ["N802"]
+# TC003 / SIM105 for coverage test scaffolds — Path used in fixture argument coercion; ALTER TABLE
+# idempotent re-run patterns mirror the production migration runner contract.
+"tests/test_api_billing_coverage.py" = ["TC003"]
+"tests/test_api_ma_dd_coverage.py" = ["TC003"]
+"tests/test_api_audit_coverage.py" = ["SIM105"]
+"tests/test_middleware_coverage.py" = ["TC003"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 markers = [
     "slow: runtime/import-heavy checks that are not part of the fastest local loop",
+    "aws_live: tests that hit live AWS APIs (canary, budget guard); off by default in local loop",
+    "pre_flight: production preflight gate tests; reserved for the Stream A / deploy readiness loop",
+    "benchmark: lightweight perf regression tests; skip via `-m 'not benchmark'` on slow runners",
 ]

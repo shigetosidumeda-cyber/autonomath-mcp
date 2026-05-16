@@ -115,18 +115,14 @@ def test_migration_287_applies_cleanly(tmp_path):
     try:
         tables = {
             row[0]
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
         }
         assert "am_personalization_profile" in tables
         assert "am_personalization_recommendation_log" in tables
 
         views = {
             row[0]
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='view'"
-            ).fetchall()
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='view'").fetchall()
         }
         assert "v_personalization_recent_recs" in views
     finally:
@@ -151,17 +147,13 @@ def test_migration_287_rollback(tmp_path):
     try:
         tables = {
             row[0]
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
         }
         assert "am_personalization_profile" not in tables
         assert "am_personalization_recommendation_log" not in tables
         views = {
             row[0]
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='view'"
-            ).fetchall()
+            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='view'").fetchall()
         }
         assert "v_personalization_recent_recs" not in views
     finally:
@@ -369,14 +361,12 @@ def test_schema_no_pii_columns(tmp_path):
             "am_personalization_recommendation_log",
         ):
             cols = {
-                row[1].lower()
-                for row in conn.execute(f"PRAGMA table_info({table})").fetchall()
+                row[1].lower() for row in conn.execute(f"PRAGMA table_info({table})").fetchall()
             }
             for banned in _PII_PATTERNS:
                 for col in cols:
                     assert banned not in col, (
-                        f"PII column '{col}' (matches '{banned}') "
-                        f"forbidden in {table}"
+                        f"PII column '{col}' (matches '{banned}') forbidden in {table}"
                     )
     finally:
         conn.close()
@@ -389,9 +379,7 @@ def test_schema_uses_token_hash_only(tmp_path):
     try:
         cols = {
             row[1]
-            for row in conn.execute(
-                "PRAGMA table_info(am_personalization_profile)"
-            ).fetchall()
+            for row in conn.execute("PRAGMA table_info(am_personalization_profile)").fetchall()
         }
         assert "user_token_hash" in cols
     finally:
@@ -427,9 +415,9 @@ def test_etl_llm_zero():
         r"^\s*from\s+openai",
     )
     for pat in forbidden:
-        assert not re.search(
-            pat, src, flags=re.MULTILINE
-        ), f"LLM SDK import pattern '{pat}' must not appear in {ETL}"
+        assert not re.search(pat, src, flags=re.MULTILINE), (
+            f"LLM SDK import pattern '{pat}' must not appear in {ETL}"
+        )
 
 
 def test_etl_no_legacy_brand():

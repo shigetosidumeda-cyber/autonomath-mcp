@@ -124,12 +124,8 @@ class TestStoreOrReplay:
 
     def test_body_mismatch_yields_conflict(self):
         key = idem.IdempotencyKey.from_request_header("k3")
-        idem.store_or_replay(
-            key, idem.body_fingerprint("body-A"), lambda: {"v": "A"}
-        )
-        out = idem.store_or_replay(
-            key, idem.body_fingerprint("body-B"), lambda: {"v": "B"}
-        )
+        idem.store_or_replay(key, idem.body_fingerprint("body-A"), lambda: {"v": "A"})
+        out = idem.store_or_replay(key, idem.body_fingerprint("body-B"), lambda: {"v": "B"})
         assert out.hit is False
         assert out.conflict is True
         # Conflict returns the PRIOR cached value (so caller can build 409).
@@ -178,9 +174,7 @@ class TestStoreOrReplay:
         with pytest.raises(RuntimeError):
             idem.store_or_replay(key, idem.body_fingerprint("b"), boom)
         # Next call should be a miss — exceptions are not cached.
-        out = idem.store_or_replay(
-            key, idem.body_fingerprint("b"), lambda: {"ok": True}
-        )
+        out = idem.store_or_replay(key, idem.body_fingerprint("b"), lambda: {"ok": True})
         assert out.hit is False
         assert out.value == {"ok": True}
 
@@ -219,8 +213,10 @@ class TestRetryPolicy:
 
     def test_jitter_none_is_strict_exponential(self):
         p = rp.RetryPolicy(
-            max_attempts=10, base_delay_seconds=1.0,
-            max_delay_seconds=100.0, jitter="none",
+            max_attempts=10,
+            base_delay_seconds=1.0,
+            max_delay_seconds=100.0,
+            jitter="none",
         )
         assert p.next_delay(0) == 1.0
         assert p.next_delay(1) == 2.0
@@ -229,8 +225,10 @@ class TestRetryPolicy:
 
     def test_jitter_full_within_bounds(self):
         p = rp.RetryPolicy(
-            max_attempts=10, base_delay_seconds=1.0,
-            max_delay_seconds=100.0, jitter="full",
+            max_attempts=10,
+            base_delay_seconds=1.0,
+            max_delay_seconds=100.0,
+            jitter="full",
         )
         for _ in range(50):
             d = p.next_delay(3)  # raw = 8s
@@ -239,8 +237,10 @@ class TestRetryPolicy:
 
     def test_jitter_equal_within_bounds(self):
         p = rp.RetryPolicy(
-            max_attempts=10, base_delay_seconds=1.0,
-            max_delay_seconds=100.0, jitter="equal",
+            max_attempts=10,
+            base_delay_seconds=1.0,
+            max_delay_seconds=100.0,
+            jitter="equal",
         )
         for _ in range(50):
             d = p.next_delay(3)
@@ -249,8 +249,10 @@ class TestRetryPolicy:
 
     def test_jitter_decorrelated_runs(self):
         p = rp.RetryPolicy(
-            max_attempts=10, base_delay_seconds=1.0,
-            max_delay_seconds=100.0, jitter="decorrelated",
+            max_attempts=10,
+            base_delay_seconds=1.0,
+            max_delay_seconds=100.0,
+            jitter="decorrelated",
         )
         prev = None
         for attempt in range(5):
@@ -261,8 +263,10 @@ class TestRetryPolicy:
 
     def test_max_delay_cap(self):
         p = rp.RetryPolicy(
-            max_attempts=20, base_delay_seconds=1.0,
-            max_delay_seconds=10.0, jitter="none",
+            max_attempts=20,
+            base_delay_seconds=1.0,
+            max_delay_seconds=10.0,
+            jitter="none",
         )
         # attempt=10 → raw 1024s, but cap at 10s.
         assert p.next_delay(10) == 10.0
@@ -295,16 +299,20 @@ class TestRetryAfter:
 
     def test_retry_after_used_when_respected(self):
         p = rp.RetryPolicy(
-            max_attempts=5, base_delay_seconds=0.1,
-            max_delay_seconds=60.0, jitter="full",
+            max_attempts=5,
+            base_delay_seconds=0.1,
+            max_delay_seconds=60.0,
+            jitter="full",
         )
         d = p.next_delay(0, retry_after_header="5")
         assert d == 5.0  # exact (no jitter applied)
 
     def test_retry_after_above_ceiling_ignored(self):
         p = rp.RetryPolicy(
-            max_attempts=5, base_delay_seconds=0.1,
-            max_delay_seconds=60.0, jitter="none",
+            max_attempts=5,
+            base_delay_seconds=0.1,
+            max_delay_seconds=60.0,
+            jitter="none",
         )
         # 10 days = 864000s — well above the 600s ceiling, falls through.
         d = p.next_delay(0, retry_after_header="864000")
@@ -448,9 +456,16 @@ class TestCircuitBreaker:
         snap = b.snapshot()
         d = snap.to_dict()
         for field_name in (
-            "name", "state", "failure_count", "success_count",
-            "half_open_calls", "opened_at", "last_failure_at",
-            "last_success_at", "total_calls", "total_failures",
+            "name",
+            "state",
+            "failure_count",
+            "success_count",
+            "half_open_calls",
+            "opened_at",
+            "last_failure_at",
+            "last_success_at",
+            "total_calls",
+            "total_failures",
             "total_short_circuits",
         ):
             assert field_name in d

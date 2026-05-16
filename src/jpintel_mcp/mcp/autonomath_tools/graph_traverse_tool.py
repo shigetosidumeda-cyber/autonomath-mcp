@@ -34,7 +34,7 @@ from __future__ import annotations
 import logging
 import sqlite3
 import time
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from pydantic import Field
 
@@ -469,7 +469,7 @@ if _ENABLED:
         return out
 
     def _graph_traverse_unwrapped(*args: Any, **kwargs: Any) -> dict[str, Any]:
-        return graph_traverse(*args, **kwargs)
+        return cast("dict[str, Any]", graph_traverse(*args, **kwargs))
 
     graph_traverse.__wrapped__ = _graph_traverse_unwrapped  # type: ignore[attr-defined]
 

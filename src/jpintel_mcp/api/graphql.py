@@ -55,9 +55,8 @@ still succeeds.
 
 from __future__ import annotations
 
-import json
 import logging
-from typing import Any
+from typing import Any, cast
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
@@ -76,8 +75,8 @@ try:
 
     _STRAWBERRY_AVAILABLE = True
 except ImportError:
-    strawberry = None  # type: ignore
-    GraphQLRouter = None  # type: ignore
+    strawberry = None
+    GraphQLRouter = None
     _STRAWBERRY_AVAILABLE = False
 
 # --------------------------------------------------------------------- #
@@ -121,15 +120,15 @@ if _STRAWBERRY_AVAILABLE:
         source_fetched_at: str | None
         disclaimer: str | None = None
 
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def laws(self) -> list[LawArticle]:
             return _resolve_laws_for_program(self.id)
 
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def cases(self, limit: int = 5) -> list[CaseStudy]:
             return _resolve_cases_for_program(self.id, limit)
 
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def court_decisions(self, limit: int = 3) -> list[CourtDecision]:
             return _resolve_court_decisions_for_program(self.id, limit)
 
@@ -143,11 +142,11 @@ if _STRAWBERRY_AVAILABLE:
 
     @strawberry.type
     class Query:
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def program(self, id: str) -> Program | None:
-            return _resolve_program(id)
+            return cast("Program | None", _resolve_program(id))
 
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def search_programs(
             self,
             q: str,
@@ -155,21 +154,21 @@ if _STRAWBERRY_AVAILABLE:
             prefecture: str | None = None,
             limit: int = 20,
         ) -> list[Program]:
-            return _resolve_search_programs(q, tier, prefecture, limit)
+            return cast("list[Program]", _resolve_search_programs(q, tier, prefecture, limit))
 
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def law_article(self, article_id: str) -> LawArticle | None:
-            return _resolve_law_article(article_id)
+            return cast("LawArticle | None", _resolve_law_article(article_id))
 
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def case_study(self, case_id: str) -> CaseStudy | None:
-            return _resolve_case_study(case_id)
+            return cast("CaseStudy | None", _resolve_case_study(case_id))
 
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def tax_rule(self, rule_id: str) -> TaxRule | None:
-            return _resolve_tax_rule(rule_id)
+            return cast("TaxRule | None", _resolve_tax_rule(rule_id))
 
-        @strawberry.field
+        @strawberry.field  # type: ignore[untyped-decorator]
         def health(self) -> str:
             return "ok"
 
@@ -250,13 +249,15 @@ def _resolve_laws_for_program(program_id: str) -> list[Any]:  # noqa: ARG001
 
 
 def _resolve_cases_for_program(
-    program_id: str, limit: int  # noqa: ARG001
+    program_id: str,
+    limit: int,  # noqa: ARG001
 ) -> list[Any]:
     return []
 
 
 def _resolve_court_decisions_for_program(
-    program_id: str, limit: int  # noqa: ARG001
+    program_id: str,
+    limit: int,  # noqa: ARG001
 ) -> list[Any]:
     return []
 
@@ -272,7 +273,7 @@ def graphql_sdl() -> str:
     if not _STRAWBERRY_AVAILABLE:
         return "# GraphQL not enabled; install strawberry-graphql.\n"
     try:
-        return schema.as_str()  # type: ignore[attr-defined]
+        return cast("str", schema.as_str())
     except Exception as exc:  # noqa: BLE001
         logger.warning("graphql_sdl_export_failed", extra={"err": str(exc)})
         return "# SDL export failed; see server logs.\n"

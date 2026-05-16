@@ -56,10 +56,10 @@ def _count_sitemap_urls() -> tuple[int, dict[str, int]]:
     ``other`` (defensive — should be empty in production).
     """
     if not _SITEMAP_COMPANION_MD.exists():
-        return (0, {c: 0 for c in _CATEGORIES})
+        return (0, dict.fromkeys(_CATEGORIES, 0))
     text = _SITEMAP_COMPANION_MD.read_text(encoding="utf-8")
     urls = _URL_RE.findall(text)
-    by_cat: dict[str, int] = {c: 0 for c in _CATEGORIES}
+    by_cat: dict[str, int] = dict.fromkeys(_CATEGORIES, 0)
     other = 0
     for u in urls:
         matched = False
@@ -81,7 +81,7 @@ def _count_on_disk_md() -> tuple[int, dict[str, int]]:
     Excludes ``index.md`` and ``README.md`` — those are surface-level
     indexes, not companion-Markdown records.
     """
-    by_cat: dict[str, int] = {c: 0 for c in _CATEGORIES}
+    by_cat: dict[str, int] = dict.fromkeys(_CATEGORIES, 0)
     total = 0
     for cat in _CATEGORIES:
         cat_dir = _SITE_DIR / cat
@@ -159,5 +159,3 @@ def get_sitemap_audit(
             detail=f"unsupported sitemap type: {type}",
         )
     return _coverage_envelope()
-
-

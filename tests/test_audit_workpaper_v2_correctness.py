@@ -183,12 +183,7 @@ def test_mcp_compose_uses_current_autonomath_schema(
 
 def test_mcp_audit_workpaper_avoids_duplicate_legacy_tool_registration() -> None:
     src = (
-        REPO_ROOT
-        / "src"
-        / "jpintel_mcp"
-        / "mcp"
-        / "autonomath_tools"
-        / "audit_workpaper_v2.py"
+        REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "audit_workpaper_v2.py"
     ).read_text(encoding="utf-8")
 
     assert '_has_tool_registered("compose_audit_workpaper")' in src
@@ -403,9 +398,9 @@ def test_audit_workpaper_migration_is_idempotent_and_matches_etl(tmp_path: Path)
 
 
 def test_audit_workpaper_sql_uses_range_friendly_date_predicates() -> None:
-    api_sql = (
-        REPO_ROOT / "src" / "jpintel_mcp" / "api" / "audit_workpaper_v2.py"
-    ).read_text(encoding="utf-8")
+    api_sql = (REPO_ROOT / "src" / "jpintel_mcp" / "api" / "audit_workpaper_v2.py").read_text(
+        encoding="utf-8"
+    )
     etl_sql = ETL_SCRIPT.read_text(encoding="utf-8")
 
     assert "substr(announced_at" not in api_sql
@@ -425,9 +420,7 @@ def test_audit_workpaper_migration_adds_source_supporting_indexes(tmp_path: Path
         conn.executescript(sql)
         index_names = {
             r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type = 'index'"
-            ).fetchall()
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'index'").fetchall()
         }
     finally:
         conn.close()

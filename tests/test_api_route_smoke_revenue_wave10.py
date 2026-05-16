@@ -15,7 +15,6 @@ import pytest
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
 
-
 MOUNTED_ROUTE_EXPECTATIONS: Mapping[str, tuple[str, set[str]]] = {
     "houjin_360": ("/v1/houjin/{houjin_bangou}/360", {"GET"}),
     "tax_chain": ("/v1/tax_rules/{rule_id}/full_chain", {"GET"}),
@@ -38,9 +37,7 @@ MOUNTED_ROUTE_EXPECTATIONS: Mapping[str, tuple[str, set[str]]] = {
 }
 
 OPENAPI_ROUTE_EXPECTATIONS: Mapping[str, tuple[str, set[str]]] = {
-    key: value
-    for key, value in MOUNTED_ROUTE_EXPECTATIONS.items()
-    if key != "billing_webhook"
+    key: value for key, value in MOUNTED_ROUTE_EXPECTATIONS.items() if key != "billing_webhook"
 }
 
 GUARD_PROBES: tuple[tuple[str, str, str, dict[str, Any] | None, set[int]], ...] = (

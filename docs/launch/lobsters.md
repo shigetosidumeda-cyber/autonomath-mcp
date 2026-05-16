@@ -31,7 +31,7 @@ Three reasons:
 
 ## MCP server
 
-151 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. Drop into Claude Desktop config:
+155 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. Drop into Claude Desktop config:
 
 ```json
 {

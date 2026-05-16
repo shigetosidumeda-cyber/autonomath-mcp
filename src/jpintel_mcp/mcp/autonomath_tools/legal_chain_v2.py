@@ -78,9 +78,7 @@ def _legal_chain_am_impl(
     if max_n < 1 or max_n > _lc._HARD_MAX_PER_LAYER:
         return make_error(
             code="out_of_range",
-            message=(
-                f"max_per_layer must be in [1, {_lc._HARD_MAX_PER_LAYER}]; got {max_n}"
-            ),
+            message=(f"max_per_layer must be in [1, {_lc._HARD_MAX_PER_LAYER}]; got {max_n}"),
             field="max_per_layer",
         )
 

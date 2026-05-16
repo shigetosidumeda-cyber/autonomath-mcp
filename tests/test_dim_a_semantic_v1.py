@@ -116,8 +116,7 @@ def test_log_latency_nonneg(db):
     cur = db.cursor()
     with pytest.raises(sqlite3.IntegrityError):
         cur.execute(
-            "INSERT INTO am_semantic_search_v1_log "
-            "(query_hash, latency_ms) VALUES (?,?)",
+            "INSERT INTO am_semantic_search_v1_log (query_hash, latency_ms) VALUES (?,?)",
             ("hash", -1),
         )
 
@@ -225,9 +224,7 @@ def test_no_overlap_with_mig_260():
     for name in ("am_semantic_search_v1_cache", "am_semantic_search_v1_log"):
         assert name not in mig260
     # Strip comment lines from mig 284 before name-collision check.
-    ddl_lines = [
-        ln for ln in mig284.splitlines() if not ln.lstrip().startswith("--")
-    ]
+    ddl_lines = [ln for ln in mig284.splitlines() if not ln.lstrip().startswith("--")]
     ddl = "\n".join(ddl_lines)
     for name in ("am_entities_vec_e5", "am_entities_vec_reranker_score"):
         assert name not in ddl, f"DDL must not reference v2 table {name}"

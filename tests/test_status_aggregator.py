@@ -53,8 +53,20 @@ class _HTMLValidator(HTMLParser):
         # Void elements (HTML5 self-closing without `/`) — must not be
         # pushed onto the stack.
         self._void = {
-            "area", "base", "br", "col", "embed", "hr", "img", "input",
-            "link", "meta", "param", "source", "track", "wbr",
+            "area",
+            "base",
+            "br",
+            "col",
+            "embed",
+            "hr",
+            "img",
+            "input",
+            "link",
+            "meta",
+            "param",
+            "source",
+            "track",
+            "wbr",
         }
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -144,9 +156,7 @@ def test_atom_feed_parses_as_xml() -> None:
 
 
 def _import_aggregator():
-    spec = importlib.util.spec_from_file_location(
-        "wave41_aggregator_under_test", AGGREGATOR_PY
-    )
+    spec = importlib.util.spec_from_file_location("wave41_aggregator_under_test", AGGREGATOR_PY)
     assert spec and spec.loader, "aggregator spec failed"
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -194,12 +204,12 @@ def test_aggregator_judge_status_components_levels() -> None:
 def test_aggregator_judge_six_axis_levels() -> None:
     mod = _import_aggregator()
     assert mod._judge_six_axis(None)["level"] == "unknown"
-    happy = {"axes": [{"id": "data_quantity", "sub_axes": [{"id": "programs", "sla_status": "pass"}]}]}
+    happy = {
+        "axes": [{"id": "data_quantity", "sub_axes": [{"id": "programs", "sla_status": "pass"}]}]
+    }
     assert mod._judge_six_axis(happy)["level"] == "info"
     breach = {
-        "axes": [
-            {"id": "data_quantity", "sub_axes": [{"id": "programs", "sla_status": "fail"}]}
-        ]
+        "axes": [{"id": "data_quantity", "sub_axes": [{"id": "programs", "sla_status": "fail"}]}]
     }
     out = mod._judge_six_axis(breach)
     assert out["level"] == "critical"
@@ -255,7 +265,7 @@ def test_aggregator_end_to_end_honest_null(tmp_path, monkeypatch) -> None:
     assert (analytics / "status_alerts_w41.jsonl").exists()
     atom = (site_status / "feed.atom").read_text("utf-8")
     assert atom.startswith("<?xml")
-    assert "<feed xmlns=\"http://www.w3.org/2005/Atom\">" in atom
+    assert '<feed xmlns="http://www.w3.org/2005/Atom">' in atom
 
 
 def test_aggregator_sidecar_counts_critical_status_probe(tmp_path, monkeypatch) -> None:
@@ -291,9 +301,7 @@ def test_aggregator_sidecar_counts_critical_status_probe(tmp_path, monkeypatch) 
 
 
 def test_rest_endpoint_module_importable() -> None:
-    spec = importlib.util.spec_from_file_location(
-        "wave41_rest_under_test", ENDPOINT_PY
-    )
+    spec = importlib.util.spec_from_file_location("wave41_rest_under_test", ENDPOINT_PY)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -308,9 +316,7 @@ def test_rest_endpoint_smoke_honest_null(tmp_path, monkeypatch) -> None:
     """Hit the FastAPI route handlers directly (no full app) with empty
     sidecar files. Endpoint should return a well-formed envelope, not
     raise."""
-    spec = importlib.util.spec_from_file_location(
-        "wave41_rest_smoke", ENDPOINT_PY
-    )
+    spec = importlib.util.spec_from_file_location("wave41_rest_smoke", ENDPOINT_PY)
     assert spec and spec.loader
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

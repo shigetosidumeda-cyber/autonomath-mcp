@@ -97,8 +97,23 @@ _GIT_VERB_RE = re.compile(
 # File extensions that can carry executable git invocations. We do NOT
 # scan binary blobs or vendored archives.
 _SCANNABLE_SUFFIXES: frozenset[str] = frozenset(
-    {".py", ".sh", ".bash", ".zsh", ".yml", ".yaml", ".toml", ".cfg",
-     ".ini", ".mk", ".make", ".dockerfile", ".env", ".txt", ".md"}
+    {
+        ".py",
+        ".sh",
+        ".bash",
+        ".zsh",
+        ".yml",
+        ".yaml",
+        ".toml",
+        ".cfg",
+        ".ini",
+        ".mk",
+        ".make",
+        ".dockerfile",
+        ".env",
+        ".txt",
+        ".md",
+    }
 )
 
 
@@ -173,8 +188,7 @@ def test_no_git_bypass_in_scripts_and_workflows() -> None:
     assert not violations, (
         "CLAUDE.md non-negotiable violated: scripts/ and .github/workflows/ "
         "must not invoke git with hook/signing/editor bypass flags. "
-        "Fix the underlying hook failure instead of bypassing.\n"
-        + "\n".join(violations)
+        "Fix the underlying hook failure instead of bypassing.\n" + "\n".join(violations)
     )
 
 

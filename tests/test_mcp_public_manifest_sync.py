@@ -99,7 +99,7 @@ def _publisher_meta(data: dict) -> dict:
 def test_full_public_manifests_match_runtime_tool_manager(
     runtime_tool_names: list[str],
 ) -> None:
-    assert len(runtime_tool_names) == 151
+    assert len(runtime_tool_names) == 155
     assert len(runtime_tool_names) == len(set(runtime_tool_names))
     assert not [name for name in runtime_tool_names if name.startswith("intel_")]
 
@@ -154,7 +154,7 @@ def test_public_tool_descriptions_do_not_leak_internal_process_terms() -> None:
     for path in SERVER_MANIFESTS:
         data = _load(path)
         publisher = _publisher_meta(data)
-        assert publisher["tool_count"] == 151
+        assert publisher["tool_count"] == 155
         assert publisher["transports"] == EXPECTED_MCP_TRANSPORTS
         for package in data.get("packages", []):
             assert package["transport"]["type"] == "stdio"
@@ -232,12 +232,12 @@ def test_tool_count_rewriter_handles_public_variants() -> None:
             sys.path.remove(str(REPO_ROOT / "scripts"))
 
     raw = "139 tools; 139-tool MCP; MCP tools (139); tools (139); **139 個の MCP ツール**"
-    rewritten = sync._replace_tool_count_text(raw, 151)
+    rewritten = sync._replace_tool_count_text(raw, 155)
     assert "139" not in rewritten
-    assert "151 tools" in rewritten
-    assert "151-tool MCP" in rewritten
-    assert "MCP tools (151)" in rewritten
-    assert "**151 個の MCP ツール**" in rewritten
+    assert "155 tools" in rewritten
+    assert "155-tool MCP" in rewritten
+    assert "MCP tools (155)" in rewritten
+    assert "**155 個の MCP ツール**" in rewritten
 
 
 def test_llms_marker_upsert_rewrites_count_and_required_markers() -> None:
@@ -249,9 +249,9 @@ def test_llms_marker_upsert_rewrites_count_and_required_markers() -> None:
             sys.path.remove(str(REPO_ROOT / "scripts"))
 
     raw = "# jpcite\nBrand: jpcite.\n- [MCP tools (139)](https://jpcite.com/docs/mcp-tools/)\n"
-    updated = sync._upsert_llms_marker(raw, 151)
+    updated = sync._upsert_llms_marker(raw, 155)
     assert "MCP package: autonomath-mcp" in updated
-    assert "Public MCP tools: 151" in updated
+    assert "Public MCP tools: 155" in updated
     assert "JPY 3 ex-tax per billable unit" in updated
     assert "3 requests/day/IP" in updated
     assert "139" not in updated

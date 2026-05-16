@@ -82,9 +82,7 @@ class CircuitOpenError(RuntimeError):
         self.opened_at = opened_at
         self.cooldown_seconds = cooldown_seconds
         remaining = max(0.0, opened_at + cooldown_seconds - time.time())
-        super().__init__(
-            f"circuit '{name}' is open (retry in {remaining:.1f}s)"
-        )
+        super().__init__(f"circuit '{name}' is open (retry in {remaining:.1f}s)")
 
 
 @dataclass
@@ -135,9 +133,7 @@ class CircuitBreaker:
     # Caller can pass an iterable of exception classes that should NOT
     # trip the breaker (e.g. ``ValueError`` for client bugs that are not
     # an upstream outage signal). Default = all exceptions count.
-    excluded_exceptions: tuple[type[BaseException], ...] = field(
-        default_factory=tuple
-    )
+    excluded_exceptions: tuple[type[BaseException], ...] = field(default_factory=tuple)
 
     _state: StateType = field(default="closed", init=False)
     _failure_count: int = field(default=0, init=False)
@@ -195,8 +191,10 @@ class CircuitBreaker:
                 self._failure_count = 0
 
     def record_failure(self, exc: BaseException | None = None) -> None:
-        if exc is not None and self.excluded_exceptions and isinstance(
-            exc, self.excluded_exceptions
+        if (
+            exc is not None
+            and self.excluded_exceptions
+            and isinstance(exc, self.excluded_exceptions)
         ):
             # Client-bug-like exceptions don't count.
             return
@@ -222,24 +220,25 @@ class CircuitBreaker:
             self._total_calls += 1
             if self._state == "open":
                 self._total_short_circuits += 1
-                raise CircuitOpenError(
-                    self.name, self._opened_at, self.cooldown_seconds
-                )
+                raise CircuitOpenError(self.name, self._opened_at, self.cooldown_seconds)
             if self._state == "half_open":
                 if self._half_open_calls >= self.half_open_max_calls:
                     self._total_short_circuits += 1
-                    raise CircuitOpenError(
-                        self.name, self._opened_at, self.cooldown_seconds
-                    )
+                    raise CircuitOpenError(self.name, self._opened_at, self.cooldown_seconds)
                 self._half_open_calls += 1
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: Any,
+    ) -> None:
         if exc_type is None:
             self.record_success()
         else:
             self.record_failure(exc_val)
-        return False  # never swallow the exception
+        # never swallow the exception
 
     def reset(self) -> None:
         """Force the breaker back to closed (test / admin operation)."""

@@ -128,9 +128,7 @@ def test_dev_extra_installs_playwright_python_package() -> None:
 
 def test_helper_exposes_expected_constants() -> None:
     """Helper exports the screenshot edge cap + UA the spec requires."""
-    assert MAX_SCREENSHOT_EDGE == 1600, (
-        "screenshot cap must be 1600 px per feedback_image_resize"
-    )
+    assert MAX_SCREENSHOT_EDGE == 1600, "screenshot cap must be 1600 px per feedback_image_resize"
     assert "jpcite-etl" in JPCITE_USER_AGENT
 
 
@@ -185,12 +183,15 @@ def test_fetch_with_fallback_4xx_triggers_playwright_pass() -> None:
         async def _fake_render(url, *, screenshot_dir, timeout_ms, max_retries):
             return _make_render_result("PLAYWRIGHT_RECOVERED_BODY", status=200)
 
-        with patch(
-            "scripts.etl._playwright_helper._httpx_get",
-            side_effect=_fake_httpx_get,
-        ), patch(
-            "scripts.etl._playwright_helper._render_async",
-            new=AsyncMock(side_effect=_fake_render),
+        with (
+            patch(
+                "scripts.etl._playwright_helper._httpx_get",
+                side_effect=_fake_httpx_get,
+            ),
+            patch(
+                "scripts.etl._playwright_helper._render_async",
+                new=AsyncMock(side_effect=_fake_render),
+            ),
         ):
             return await fetch_with_fallback("https://www.meti.go.jp/policy/sme")
 
@@ -209,12 +210,15 @@ def test_fetch_with_fallback_httpx_200_skips_playwright() -> None:
             return (200, body, url, None)
 
         render_mock = AsyncMock()
-        with patch(
-            "scripts.etl._playwright_helper._httpx_get",
-            side_effect=_fake_httpx_get,
-        ), patch(
-            "scripts.etl._playwright_helper._render_async",
-            new=render_mock,
+        with (
+            patch(
+                "scripts.etl._playwright_helper._httpx_get",
+                side_effect=_fake_httpx_get,
+            ),
+            patch(
+                "scripts.etl._playwright_helper._render_async",
+                new=render_mock,
+            ),
         ):
             r = await fetch_with_fallback("https://elaws.e-gov.go.jp/document")
             assert render_mock.await_count == 0, (
@@ -238,12 +242,15 @@ def test_fetch_with_fallback_short_body_triggers_playwright() -> None:
         async def _fake_render(url, *, screenshot_dir, timeout_ms, max_retries):
             return _make_render_result("FULL_BODY_FROM_DOM", status=200)
 
-        with patch(
-            "scripts.etl._playwright_helper._httpx_get",
-            side_effect=_fake_httpx_get,
-        ), patch(
-            "scripts.etl._playwright_helper._render_async",
-            new=AsyncMock(side_effect=_fake_render),
+        with (
+            patch(
+                "scripts.etl._playwright_helper._httpx_get",
+                side_effect=_fake_httpx_get,
+            ),
+            patch(
+                "scripts.etl._playwright_helper._render_async",
+                new=AsyncMock(side_effect=_fake_render),
+            ),
         ):
             return await fetch_with_fallback("https://www.meti.go.jp/policy/x")
 
@@ -270,12 +277,15 @@ def test_fetch_with_fallback_both_passes_fail_returns_error() -> None:
                 error="playwright_not_installed",
             )
 
-        with patch(
-            "scripts.etl._playwright_helper._httpx_get",
-            side_effect=_fake_httpx_get,
-        ), patch(
-            "scripts.etl._playwright_helper._render_async",
-            new=AsyncMock(side_effect=_fake_render),
+        with (
+            patch(
+                "scripts.etl._playwright_helper._httpx_get",
+                side_effect=_fake_httpx_get,
+            ),
+            patch(
+                "scripts.etl._playwright_helper._render_async",
+                new=AsyncMock(side_effect=_fake_render),
+            ),
         ):
             return await fetch_with_fallback("https://www.meti.go.jp/down")
 

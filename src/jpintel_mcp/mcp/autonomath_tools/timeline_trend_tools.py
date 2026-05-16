@@ -42,7 +42,9 @@ from .snapshot_helper import attach_corpus_snapshot
 
 logger = logging.getLogger("jpintel.mcp.autonomath.timeline_trend")
 
-_ENABLED = get_flag("JPCITE_TIMELINE_TREND_ENABLED", "AUTONOMATH_TIMELINE_TREND_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_TIMELINE_TREND_ENABLED", "AUTONOMATH_TIMELINE_TREND_ENABLED", "1") == "1"
+)
 
 
 def _open_jpintel_ro() -> sqlite3.Connection | dict[str, Any]:

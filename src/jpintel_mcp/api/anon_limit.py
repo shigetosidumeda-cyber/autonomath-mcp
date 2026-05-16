@@ -321,8 +321,7 @@ def _raise_edge_ip_unavailable(request: Request) -> NoReturn:
             "code": "edge_ip_unavailable",
             "reason": "edge_ip_unavailable",
             "detail": (
-                "発信元 IP を特定できませんでした。"
-                "https://jpcite.com 経由でアクセスしてください。"
+                "発信元 IP を特定できませんでした。https://jpcite.com 経由でアクセスしてください。"
             ),
             "detail_en": (
                 "Caller IP could not be identified. Route the request "
@@ -383,8 +382,10 @@ def _signed_edge_forwarded_for(request: Request) -> str | None:
         return None
     secret = _edge_auth_secret()
     token = request.headers.get("x-edge-auth", "")
-    if not secret or not token or not _verify_signed_edge_header(
-        token, secret, caller_ip=caller_ip
+    if (
+        not secret
+        or not token
+        or not _verify_signed_edge_header(token, secret, caller_ip=caller_ip)
     ):
         return None
     return caller_ip

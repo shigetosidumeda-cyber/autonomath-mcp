@@ -36,7 +36,7 @@ Probe time: 2026-05-11 12:20 JST。本番 https://api.jpcite.com + https://jpcit
 | 2. step 数 | ✗ 5 step | uvx install → register (`claude mcp add ...`) → restart → verify → first prompt。Cursor は更に「Settings → MCP 緑 dot 待ち」が UI 介在 |
 | 3. error 経路 | △ | `claude mcp add` 失敗時に「uvx が PATH に無い」を CLI が指摘しない、user 自力で `which uvx` 必要 |
 | 4. 依存物 | ✗ | uv + Python 3.11+ + Claude Code CLI 最新 + ~150MB PyPI download (autonomath-mcp wheel 1.5MB だが依存 transitive で fastmcp/httpx/sqlalchemy 等) |
-| 5. first call 質 | ✓ | `search_programs` が source_url + fetched_at + tier 付きで返る。151 tools tool list の説得力高 |
+| 5. first call 質 | ✓ | `search_programs` が source_url + fetched_at + tier 付きで返る。155 tools tool list の説得力高 |
 | 6. discoverability after install | △ | `mcp.json` `resources` に `facts_registry` + `fence.md` 2 件のみ。`recurring_agent_workflows` JSON は存在するが MCP `resources` から exposeされていない (`mcp://jpcite/workflows.json` 未登録) |
 
 **pinch point**:

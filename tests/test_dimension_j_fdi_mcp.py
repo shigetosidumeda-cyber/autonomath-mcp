@@ -34,25 +34,9 @@ if TYPE_CHECKING:
     import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-MCP_MOD_PATH = (
-    REPO_ROOT
-    / "src"
-    / "jpintel_mcp"
-    / "mcp"
-    / "autonomath_tools"
-    / "foreign_fdi_mcp.py"
-)
-REST_MOD_PATH = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "foreign_fdi_v2.py"
-)
-INIT_PATH = (
-    REPO_ROOT
-    / "src"
-    / "jpintel_mcp"
-    / "mcp"
-    / "autonomath_tools"
-    / "__init__.py"
-)
+MCP_MOD_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "foreign_fdi_mcp.py"
+REST_MOD_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "foreign_fdi_v2.py"
+INIT_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "__init__.py"
 MIG_265 = REPO_ROOT / "scripts" / "migrations" / "265_cross_source_agreement.sql"
 MIG_266 = REPO_ROOT / "scripts" / "migrations" / "266_fdi_country_80.sql"
 
@@ -143,9 +127,7 @@ def test_no_llm_api_imports() -> None:
 def test_no_llm_env_var_refs() -> None:
     text = MCP_MOD_PATH.read_text(encoding="utf-8")
     for banned_var in BANNED_ENV_VARS:
-        assert banned_var not in text, (
-            f"foreign_fdi_mcp must not reference {banned_var}"
-        )
+        assert banned_var not in text, f"foreign_fdi_mcp must not reference {banned_var}"
 
 
 def test_delegates_to_rest_module() -> None:
@@ -159,9 +141,7 @@ def test_delegates_to_rest_module() -> None:
 def test_tool_docstring_schema() -> None:
     src = MCP_MOD_PATH.read_text(encoding="utf-8")
     for tool_name in ("foreign_fdi_list_am", "foreign_fdi_country_am"):
-        m = re.search(
-            rf'def {tool_name}\(.*?\).*?"""(.+?)"""', src, re.S
-        )
+        m = re.search(rf'def {tool_name}\(.*?\).*?"""(.+?)"""', src, re.S)
         assert m is not None, f"docstring on {tool_name} not found"
         body = m.group(1)
         assert "いつ使う" in body
@@ -173,10 +153,7 @@ def test_tool_docstring_schema() -> None:
 
 def test_env_gate_default_on() -> None:
     src = MCP_MOD_PATH.read_text(encoding="utf-8")
-    assert (
-        'os.environ.get("AUTONOMATH_FOREIGN_FDI_MCP_ENABLED", "1") == "1"'
-        in src
-    )
+    assert 'os.environ.get("AUTONOMATH_FOREIGN_FDI_MCP_ENABLED", "1") == "1"' in src
 
 
 def test_init_registers_module() -> None:
@@ -201,9 +178,7 @@ def test_list_impl_rejects_bad_region(
 ) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp", MCP_MOD_PATH
-    )
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp", MCP_MOD_PATH)
     out = mod._foreign_fdi_list_am_impl(region="atlantis")
     assert "error" in out
     assert out["error"]["code"] == "invalid_input"
@@ -214,21 +189,15 @@ def test_list_impl_rejects_oversize_limit(
 ) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_b", MCP_MOD_PATH
-    )
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_b", MCP_MOD_PATH)
     out = mod._foreign_fdi_list_am_impl(limit=99999)
     assert out["error"]["code"] == "invalid_input"
 
 
-def test_list_impl_happy_path(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_list_impl_happy_path(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_c", MCP_MOD_PATH
-    )
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_c", MCP_MOD_PATH)
     out = mod._foreign_fdi_list_am_impl(is_g7=1, limit=20)
     assert "items" in out
     assert out["total"] == 7  # G7 = 7 countries by migration spec
@@ -243,23 +212,17 @@ def test_country_impl_rejects_bad_iso(
 ) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_d", MCP_MOD_PATH
-    )
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_d", MCP_MOD_PATH)
     # Lower-case input must still normalize to upper before regex; passing
     # an invalid 3-letter code should fail.
     out = mod._foreign_fdi_country_am_impl(country_iso="USA")
     assert out["error"]["code"] == "invalid_input"
 
 
-def test_country_impl_happy_path(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_country_impl_happy_path(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_e", MCP_MOD_PATH
-    )
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_e", MCP_MOD_PATH)
     out = mod._foreign_fdi_country_am_impl(country_iso="jp")
     assert out["country_iso"] == "JP"
     assert out["country_name_ja"] == "日本"
@@ -268,13 +231,9 @@ def test_country_impl_happy_path(
     assert out["license"] == "gov_standard"
 
 
-def test_country_impl_not_found(
-    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_country_impl_not_found(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
     _build_am_fixture(tmp_path).close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(tmp_path / "autonomath.db"))
-    mod = _import_module(
-        "jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_f", MCP_MOD_PATH
-    )
+    mod = _import_module("jpintel_mcp.mcp.autonomath_tools.foreign_fdi_mcp_f", MCP_MOD_PATH)
     out = mod._foreign_fdi_country_am_impl(country_iso="ZZ")
     assert out["error"]["code"] == "not_found"

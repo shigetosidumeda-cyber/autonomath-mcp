@@ -70,9 +70,7 @@ _DEFAULT_TTL_SECONDS = int(os.environ.get("REPLAY_TOKEN_TTL_SECONDS", str(24 * 3
 # Maximum body size we will cache (bytes). Larger responses fall
 # through. Conservative bound prevents the cache from blowing through
 # SQLite's 1GB row limit + keeps drain sweep cheap.
-_MAX_CACHED_BODY_BYTES = int(
-    os.environ.get("REPLAY_TOKEN_MAX_BODY_BYTES", str(256 * 1024))
-)
+_MAX_CACHED_BODY_BYTES = int(os.environ.get("REPLAY_TOKEN_MAX_BODY_BYTES", str(256 * 1024)))
 
 # The token itself must be at least this long. Rejects accidental
 # empty strings + brute-force friendly short tokens.
@@ -119,21 +117,19 @@ def _secret() -> bytes:
     # Late import to avoid a hard dependency at module load (tests
     # may stub `settings` before importing this module).
     try:
-        from jpintel_mcp.config import settings  # type: ignore  # noqa: PLC0415
+        from jpintel_mcp.config import settings  # noqa: PLC0415
+
         secret = getattr(settings, "audit_seal_secret", None)
     except (ImportError, AttributeError):
         secret = None
     if not secret:
-        secret = os.environ.get("AUDIT_SEAL_SECRET") or os.environ.get(
-            "REPLAY_TOKEN_SECRET"
-        )
+        secret = os.environ.get("AUDIT_SEAL_SECRET") or os.environ.get("REPLAY_TOKEN_SECRET")
     if not secret:
         # Development-only fallback. In production the secret MUST be
         # set; the absence is logged but does not crash the request
         # path — the cache simply becomes a no-op (returns None).
         logger.warning(
-            "replay_token: no AUDIT_SEAL_SECRET / REPLAY_TOKEN_SECRET set; "
-            "cache is no-op"
+            "replay_token: no AUDIT_SEAL_SECRET / REPLAY_TOKEN_SECRET set; cache is no-op"
         )
         return b""
     return secret.encode("utf-8") if isinstance(secret, str) else secret
@@ -226,8 +222,7 @@ def lookup(
         expires_at = row["expires_at"]
         hit_count = int(row["hit_count"])
     else:
-        (_ck, body, status, headers_text, cached_path,
-         cached_method, expires_at, hit_count) = row
+        (_ck, body, status, headers_text, cached_path, cached_method, expires_at, hit_count) = row
         status = int(status)
         hit_count = int(hit_count)
 
@@ -292,11 +287,7 @@ def store(
         return False
     key = compute_cache_key(token, api_key_hash)
     ttl = ttl_seconds if ttl_seconds is not None else _DEFAULT_TTL_SECONDS
-    headers_text = (
-        json.dumps(response_headers, ensure_ascii=False)
-        if response_headers
-        else None
-    )
+    headers_text = json.dumps(response_headers, ensure_ascii=False) if response_headers else None
     try:
         conn.execute(
             """

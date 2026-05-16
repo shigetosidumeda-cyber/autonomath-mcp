@@ -9,7 +9,6 @@ and boot manifest references.
 from __future__ import annotations
 
 import importlib.util
-import json
 import pathlib
 import re
 import sqlite3
@@ -120,8 +119,9 @@ def _build_jp_fixture(tmp_path: pathlib.Path) -> sqlite3.Connection:
 
 def test_mig_263_apply_and_idempotent(tmp_path: pathlib.Path) -> None:
     conn = _build_am_fixture(tmp_path)
-    names = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    names = {
+        r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+    }
     assert "am_realtime_subscribers" in names
     assert "am_realtime_dispatch_history" in names
     _apply_sql(conn, MIG_263)
@@ -155,9 +155,7 @@ def test_mig_263_dispatch_history_idempotency(tmp_path: pathlib.Path) -> None:
            ) VALUES (?,?,?,?)""",
         ("kh1", "amendment", "https://example.com/hook", "secret123"),
     )
-    sub_id = conn.execute(
-        "SELECT subscriber_id FROM am_realtime_subscribers"
-    ).fetchone()[0]
+    sub_id = conn.execute("SELECT subscriber_id FROM am_realtime_subscribers").fetchone()[0]
     conn.execute(
         """INSERT INTO am_realtime_dispatch_history(
                 subscriber_id, target_kind, signal_id, status_code, attempt_count
@@ -176,8 +174,9 @@ def test_mig_263_dispatch_history_idempotency(tmp_path: pathlib.Path) -> None:
 
 def test_mig_264_apply_and_idempotent(tmp_path: pathlib.Path) -> None:
     conn = _build_am_fixture(tmp_path)
-    names = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    names = {
+        r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+    }
     assert "am_personalization_score" in names
     assert "am_personalization_refresh_log" in names
     _apply_sql(conn, MIG_264)
@@ -251,17 +250,21 @@ def test_personalization_refresh_upserts_rows(
 
     jp_conn = _build_jp_fixture(tmp_path)
     am_conn = _build_am_fixture(tmp_path)
-    jp_conn.execute(
-        "INSERT INTO api_keys(key_hash, tier) VALUES (?, ?)", ("kh-test", "paid")
-    )
+    jp_conn.execute("INSERT INTO api_keys(key_hash, tier) VALUES (?, ?)", ("kh-test", "paid"))
     jp_conn.execute(
         """INSERT INTO programs(
                 unified_id, primary_name, tier, prefecture, program_kind,
                 source_url, target_types_json, excluded, updated_at)
            VALUES (?,?,?,?,?,?,?,?,?)""",
         (
-            "P-1", "ものづくり補助金 (製造業 設備投資)", "S", "東京都", "subsidy",
-            "https://example.gov.jp/p1", '["製造業","設備投資","E"]', 0,
+            "P-1",
+            "ものづくり補助金 (製造業 設備投資)",
+            "S",
+            "東京都",
+            "subsidy",
+            "https://example.gov.jp/p1",
+            '["製造業","設備投資","E"]',
+            0,
             "2026-05-12T00:00:00Z",
         ),
     )
@@ -271,8 +274,14 @@ def test_personalization_refresh_upserts_rows(
                 source_url, target_types_json, excluded, updated_at)
            VALUES (?,?,?,?,?,?,?,?,?)""",
         (
-            "P-2", "農業6次産業化 補助", "A", "鹿児島県", "subsidy",
-            "https://example.gov.jp/p2", '["農業","A"]', 0,
+            "P-2",
+            "農業6次産業化 補助",
+            "A",
+            "鹿児島県",
+            "subsidy",
+            "https://example.gov.jp/p2",
+            '["農業","A"]',
+            0,
             "2026-05-12T00:00:00Z",
         ),
     )
@@ -282,8 +291,14 @@ def test_personalization_refresh_upserts_rows(
                 employee_count, capital_yen, created_at, updated_at)
            VALUES (?,?,?,?,?,?,?,?)""",
         (
-            "kh-test", "○○製作所", "E", "東京都", 50, 10_000_000,
-            "2026-05-12T00:00:00Z", "2026-05-12T00:00:00Z",
+            "kh-test",
+            "○○製作所",
+            "E",
+            "東京都",
+            50,
+            10_000_000,
+            "2026-05-12T00:00:00Z",
+            "2026-05-12T00:00:00Z",
         ),
     )
     jp_conn.execute(
@@ -319,9 +334,7 @@ def test_personalization_refresh_upserts_rows(
         p1_score = next(r["score"] for r in rows if r["program_id"] == "P-1")
         p2_score = next(r["score"] for r in rows if r["program_id"] == "P-2")
         assert p1_score >= p2_score
-    p1_pack = next(
-        (r["industry_pack"] for r in rows if r["program_id"] == "P-1"), None
-    )
+    p1_pack = next((r["industry_pack"] for r in rows if r["program_id"] == "P-1"), None)
     assert p1_pack == "pack_manufacturing"
 
     jp_conn.close()

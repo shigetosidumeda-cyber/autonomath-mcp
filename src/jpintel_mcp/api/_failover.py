@@ -191,7 +191,7 @@ def stamp_region_meta(payload: dict[str, object]) -> dict[str, object]:
     each caller re-implementing the merge.
     """
     if not isinstance(payload, dict):
-        return payload  # type: ignore[unreachable]
+        return payload
     marker = get_region_marker()
     meta_raw = payload.get("_meta") or payload.get("meta") or {}
     meta = dict(meta_raw) if isinstance(meta_raw, dict) else {}

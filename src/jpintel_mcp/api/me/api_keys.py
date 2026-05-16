@@ -48,6 +48,7 @@ docstring sentinels alone) so the regex hit count is non-zero.
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, status
@@ -126,8 +127,7 @@ def validate_scopes(scopes: list[str]) -> list[ScopeLiteral]:
                     "error": {
                         "code": "invalid_enum",
                         "message": (
-                            f"unknown scope '{s}'; "
-                            f"expected one of {list(CANONICAL_SCOPES)}"
+                            f"unknown scope '{s}'; expected one of {list(CANONICAL_SCOPES)}"
                         ),
                         "docs_url": "https://jpcite.com/docs/errors.html#invalid_enum",
                         "expected": list(CANONICAL_SCOPES),
@@ -146,12 +146,8 @@ def validate_scopes(scopes: list[str]) -> list[ScopeLiteral]:
 class IssueScopedKeyRequest(BaseModel):
     """Caller-supplied input for the scope-bearing key issue endpoint."""
 
-    label: str = Field(
-        ..., min_length=1, max_length=128, description="Human-readable key label"
-    )
-    scopes: list[ScopeLiteral] = Field(
-        ..., min_length=1, description="Subset of CANONICAL_SCOPES"
-    )
+    label: str = Field(..., min_length=1, max_length=128, description="Human-readable key label")
+    scopes: list[ScopeLiteral] = Field(..., min_length=1, description="Subset of CANONICAL_SCOPES")
 
 
 class IssueScopedKeyResponse(BaseModel):
@@ -288,9 +284,7 @@ class ScopeListResponse(BaseModel):
         default_factory=lambda: list(CANONICAL_SCOPES),
         description="Canonical scope enum",
     )
-    key_prefix: str = Field(
-        default=CANONICAL_KEY_PREFIX, description="Prefix carried by new keys"
-    )
+    key_prefix: str = Field(default=CANONICAL_KEY_PREFIX, description="Prefix carried by new keys")
     legacy_prefixes: list[str] = Field(
         default_factory=lambda: list(LEGACY_KEY_PREFIXES),
         description="Prefixes that still authenticate but are not issued fresh",
@@ -341,7 +335,7 @@ def get_scopes(ctx: ApiContextDep, conn: DbDep) -> ScopeListResponse:
 # ---------------------------------------------------------------------------
 
 
-def require_scope(scope: ScopeLiteral):
+def require_scope(scope: ScopeLiteral) -> Callable[..., None]:
     """Return a FastAPI dependency that enforces ``scope`` membership.
 
     Usage::
@@ -369,6 +363,7 @@ def require_scope(scope: ScopeLiteral):
                    "docs_url": "https://jpcite.com/docs/errors.html#auth_required",
                    "required_scope": "write:webhooks"}}
     """
+
     def _check(ctx: ApiContextDep, conn: DbDep) -> None:
         if ctx.key_hash is None:
             return

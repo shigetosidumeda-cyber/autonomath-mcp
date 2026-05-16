@@ -59,7 +59,9 @@ from .snapshot_helper import attach_corpus_snapshot
 logger = logging.getLogger("jpintel.mcp.autonomath.industry_packs")
 
 # Env-gated registration (default on). Flip to "0" to roll back without redeploy.
-_ENABLED = get_flag("JPCITE_INDUSTRY_PACKS_ENABLED", "AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_INDUSTRY_PACKS_ENABLED", "AUTONOMATH_INDUSTRY_PACKS_ENABLED", "1") == "1"
+)
 
 
 # ---------------------------------------------------------------------------

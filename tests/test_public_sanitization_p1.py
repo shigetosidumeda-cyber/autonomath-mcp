@@ -207,7 +207,7 @@ def _install_raw_probe_stubs(status_probe: ModuleType, monkeypatch) -> None:
             "latency_ms": 42,
             "http": 200,
             "tools_count": 120,
-            "tools_expected": 151,
+            "tools_expected": 155,
             "recurring_workflows": 1,
             "recurring_expected": 3,
             "error": None,

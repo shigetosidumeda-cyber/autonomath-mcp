@@ -24,7 +24,7 @@
 | ステータス | 公開中 |
 | 提供形態 | REST API + MCP server (stdio) |
 | MCP プロトコル | 2025-06-18 |
-| MCP ツール総数 | 151 |
+| MCP ツール総数 | 155 |
 | REST API 経路 | `/v1/*` |
 
 ## Coverage (2026-05-03 時点)

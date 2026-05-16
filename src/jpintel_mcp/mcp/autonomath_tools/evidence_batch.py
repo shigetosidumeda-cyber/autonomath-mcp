@@ -45,7 +45,9 @@ MAX_BATCH_LOOKUPS: int = 100
 
 #: Env-gate. Default ON; flip "0" to disable without redeploy. Pairs with
 #: the global AUTONOMATH_ENABLED gate at the package boundary.
-_ENABLED = get_flag("JPCITE_EVIDENCE_BATCH_ENABLED", "AUTONOMATH_EVIDENCE_BATCH_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_EVIDENCE_BATCH_ENABLED", "AUTONOMATH_EVIDENCE_BATCH_ENABLED", "1") == "1"
+)
 
 
 def _impl_get_evidence_packet_batch(

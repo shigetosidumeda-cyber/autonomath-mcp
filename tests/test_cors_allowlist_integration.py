@@ -74,13 +74,11 @@ def test_unknown_origin_returns_403_origin_not_allowed(client):
         headers={"Origin": "https://attacker.example.com"},
     )
     assert r.status_code == 403, (
-        f"unlisted attacker origin not blocked; expected 403 got "
-        f"{r.status_code}: {r.text[:200]}"
+        f"unlisted attacker origin not blocked; expected 403 got {r.status_code}: {r.text[:200]}"
     )
     body = r.json()
     assert body.get("error") == "origin_not_allowed", (
-        f"403 envelope shape changed; expected error='origin_not_allowed', "
-        f"got {body!r}"
+        f"403 envelope shape changed; expected error='origin_not_allowed', got {body!r}"
     )
 
 
@@ -117,8 +115,7 @@ def test_options_preflight_unknown_origin_blocked(client):
         },
     )
     assert r.status_code == 403, (
-        f"OPTIONS preflight from unlisted Origin not blocked; "
-        f"got {r.status_code}: {r.text[:200]}"
+        f"OPTIONS preflight from unlisted Origin not blocked; got {r.status_code}: {r.text[:200]}"
     )
     body = r.json()
     assert body.get("error") == "origin_not_allowed"

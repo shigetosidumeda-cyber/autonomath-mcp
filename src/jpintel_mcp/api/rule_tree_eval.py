@@ -166,9 +166,7 @@ def _parse_predicate(predicate: str) -> tuple[str, str, Any]:
     raise ValueError(f"unparseable predicate: {predicate}")
 
 
-def _evaluate_leaf(
-    predicate: str, input_data: dict[str, Any]
-) -> bool:
+def _evaluate_leaf(predicate: str, input_data: dict[str, Any]) -> bool:
     """Evaluate a single LEAF predicate against the input dict.
 
     Numeric comparators only succeed when both sides are numeric (int /
@@ -181,11 +179,11 @@ def _evaluate_leaf(
         return field not in input_data or input_data[field] is None
     actual = input_data.get(field)
     if op == "==":
-        return actual == value
+        return bool(actual == value)
     if op == "!=":
-        return actual != value
+        return bool(actual != value)
     if op == "in":
-        return actual in value
+        return bool(actual in value)
     # Numeric comparators (>=, <=, >, <)
     if actual is None:
         return False
@@ -244,9 +242,7 @@ def _validate_tree_node(
         return
     children = node.get("children")
     if not isinstance(children, list) or len(children) == 0:
-        raise ValueError(
-            f"{operator} at {nid} requires non-empty children list"
-        )
+        raise ValueError(f"{operator} at {nid} requires non-empty children list")
     seen_ids.add(nid)
     try:
         for child in children:
@@ -283,10 +279,7 @@ def _evaluate_tree_node(
             }
         )
         return decision
-    child_results = [
-        _evaluate_tree_node(c, input_data, path, rationale)
-        for c in node["children"]
-    ]
+    child_results = [_evaluate_tree_node(c, input_data, path, rationale) for c in node["children"]]
     if operator == "AND":
         decision = all(child_results)
     elif operator == "OR":
@@ -306,9 +299,7 @@ def _evaluate_tree_node(
     return decision
 
 
-def evaluate_rule_tree(
-    tree: dict[str, Any], input_data: dict[str, Any]
-) -> dict[str, Any]:
+def evaluate_rule_tree(tree: dict[str, Any], input_data: dict[str, Any]) -> dict[str, Any]:
     """Public eval entry. Returns the wire-shape envelope (without billing).
 
     Raises ``ValueError`` on malformed tree (caller maps to HTTP 422).
@@ -321,8 +312,7 @@ def evaluate_rule_tree(
     # "conditional" reserved for trees where any LEAF lacked a source_doc_id
     # — exposes the citation gap to the caller without failing the eval.
     has_citation_gap = any(
-        r["operator"] == "LEAF" and r["source_doc_id"] is None
-        for r in rationale
+        r["operator"] == "LEAF" and r["source_doc_id"] is None for r in rationale
     )
     if final and has_citation_gap:
         # All LEAFs evaluated true but at least one lacks a citation —
@@ -352,9 +342,7 @@ async def evaluate_rule_tree_endpoint(
         dict[str, Any],
         Body(
             ...,
-            description=(
-                "{tree: <JSON tree def>, input: <entity field map>}"
-            ),
+            description=("{tree: <JSON tree def>, input: <entity field map>}"),
         ),
     ],
 ) -> JSONResponse:

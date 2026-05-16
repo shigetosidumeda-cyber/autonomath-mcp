@@ -43,7 +43,10 @@ from .snapshot_helper import attach_corpus_snapshot_with_conn
 
 logger = logging.getLogger("jpintel.mcp.autonomath.compatibility")
 
-_ENABLED = get_flag("JPCITE_COMPATIBILITY_TOOLS_ENABLED", "AUTONOMATH_COMPATIBILITY_TOOLS_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_COMPATIBILITY_TOOLS_ENABLED", "AUTONOMATH_COMPATIBILITY_TOOLS_ENABLED", "1")
+    == "1"
+)
 
 _MAX_CANDIDATES = 30
 _RECOMMENDED_MIX_LIMIT = 3

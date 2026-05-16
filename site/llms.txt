@@ -2,7 +2,7 @@
 
 Brand identity: current primary brand is jpcite. Canonical domain: https://jpcite.com.
 Brand history: formerly discovered as 税務会計AI / AutonoMath / zeimu-kaikei.ai; current primary brand is jpcite.
-MCP package: autonomath-mcp. Public MCP tools: 151. Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included); anonymous usage is 3 requests/day/IP.
+MCP package: autonomath-mcp. Public MCP tools: 155. Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included); anonymous usage is 3 requests/day/IP.
 Pricing: JPY 3 ex-tax per billable unit (about JPY 3.30 tax-included). Ordinary successful search/detail lookup requests are usually 1 billable unit; anonymous evaluation is 3 requests/day/IP.
 Agent keywords: Evidence prefetch, compact Evidence Packet, token-cost control, company_public_baseline, source_url, source_fetched_at, known_gaps, Source Receipt, Review Handoff Packet, ¥3.30, 匿名 3 回/日, 外部LLM charges are separate, openapi.agent.json, mcp-server.json.
 
@@ -30,6 +30,19 @@ Do not invent entity pages. For individual programs, cases, laws, companies, or 
 3. Program lookup: `GET /v1/programs/search`, then `GET /v1/programs/{unified_id}` using an ID returned by search.
 4. Citation pair check: `POST /v1/citations/verify`.
 5. Company public-record baseline: use the company endpoints documented in the OpenAPI files, preferably with a 13-digit corporate number when available.
+
+## P0 Facade
+
+P0 deterministic facade for agent-runtime packet planning. 4 tools, no request-time LLM call, no AWS dependency, no Stripe charge except on accepted_artifact delivery via `jpcite_execute_packet`. Each REST endpoint is mirrored 1:1 by an MCP tool of the same name; the `x-mcp-tool` extension in the OpenAPI spec is the binding.
+
+1. `jpcite_route` — `POST /v1/jpcite/route`. Free. Routes an agent intent to the cheapest sufficient jpcite deliverable across the outcome catalog. Returns recommended_tool, outcome_contract_id, deliverable_slug, estimated_price_jpy, execute_input_hash, free_inline_packets, and next_action.
+2. `jpcite_preview_cost` — `POST /v1/jpcite/preview_cost`. Free preflight. Returns predicted_total_jpy = ¥0 for free packets and estimated_price_jpy + cap_passed for paid outcomes. Use before `jpcite_execute_packet` to confirm price + scope.
+3. `jpcite_execute_packet` — `POST /v1/jpcite/execute_packet`. Paid (charging only on accepted_artifact). Requires `X-Jpcite-Scoped-Cap-Token` + `Idempotency-Key` headers bound to (execute_input_hash, outcome_contract_id, max_price_jpy). 402 if cap < price, 403 if guard rejects, 409 if guard accepts but live execution not yet wired.
+4. `jpcite_get_packet` — `GET /v1/jpcite/get_packet/{packet_id}`. Free. Returns inline_static_packet / capsule_contract_packet / static_packet_skeleton, or 404 packet_not_found_or_not_materialized.
+
+Outcome catalog (deliverables resolvable via outcome_contract_id): https://jpcite.com/releases/rc1-p0-bootstrap/outcome_catalog.json
+Inline packet registry (free packets): https://jpcite.com/releases/rc1-p0-bootstrap/inline_packets.json
+Packet skeletons: https://jpcite.com/releases/rc1-p0-bootstrap/packet_skeletons.json
 
 ## Public pages
 

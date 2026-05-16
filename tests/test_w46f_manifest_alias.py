@@ -30,7 +30,6 @@ from pathlib import Path
 
 import pytest
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MIGRATIONS_DIR = REPO_ROOT / "scripts" / "migrations"
 AUTONOMATH_MANIFEST = MIGRATIONS_DIR / "autonomath_boot_manifest.txt"
@@ -43,12 +42,8 @@ def _sha256(p: Path) -> str:
 
 
 def test_both_manifests_exist() -> None:
-    assert AUTONOMATH_MANIFEST.is_file(), (
-        f"legacy manifest missing: {AUTONOMATH_MANIFEST}"
-    )
-    assert JPCITE_MANIFEST.is_file(), (
-        f"jpcite alias manifest missing: {JPCITE_MANIFEST}"
-    )
+    assert AUTONOMATH_MANIFEST.is_file(), f"legacy manifest missing: {AUTONOMATH_MANIFEST}"
+    assert JPCITE_MANIFEST.is_file(), f"jpcite alias manifest missing: {JPCITE_MANIFEST}"
 
 
 def test_manifests_are_byte_identical() -> None:
@@ -121,15 +116,14 @@ def test_entrypoint_dual_read_block_present() -> None:
 def test_entrypoint_env_override_still_respected() -> None:
     """Explicit AUTONOMATH_BOOT_MIGRATION_MANIFEST must still win over autodetect."""
     src = ENTRYPOINT.read_text(encoding="utf-8")
-    assert 'AUTONOMATH_BOOT_MIGRATION_MANIFEST' in src
+    assert "AUTONOMATH_BOOT_MIGRATION_MANIFEST" in src
     # The override branch must be evaluated BEFORE the dual-candidate loop.
-    override_pos = src.find('AUTONOMATH_BOOT_MIGRATION_MANIFEST:-')
+    override_pos = src.find("AUTONOMATH_BOOT_MIGRATION_MANIFEST:-")
     loop_pos = src.find("am_mig_manifest_candidate")
     assert override_pos != -1, "explicit env override branch dropped"
     assert loop_pos != -1, "dual-candidate loop missing"
     assert override_pos < loop_pos, (
-        "AUTONOMATH_BOOT_MIGRATION_MANIFEST env override must short-circuit the "
-        "dual-candidate loop"
+        "AUTONOMATH_BOOT_MIGRATION_MANIFEST env override must short-circuit the dual-candidate loop"
     )
 
 

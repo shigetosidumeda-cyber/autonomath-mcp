@@ -102,7 +102,14 @@ def test_mount_layout_parity(fly_legacy: dict, fly_jpcite: dict) -> None:
 def test_http_service_parity(fly_legacy: dict, fly_jpcite: dict) -> None:
     legacy_http = fly_legacy["http_service"]
     jpcite_http = fly_jpcite["http_service"]
-    for key in ("internal_port", "force_https", "auto_stop_machines", "auto_start_machines", "min_machines_running", "processes"):
+    for key in (
+        "internal_port",
+        "force_https",
+        "auto_stop_machines",
+        "auto_start_machines",
+        "min_machines_running",
+        "processes",
+    ):
         assert jpcite_http[key] == legacy_http[key], f"http_service.{key} drift"
     assert jpcite_http["concurrency"] == legacy_http["concurrency"]
 
@@ -217,9 +224,7 @@ def test_jpcite_workflow_targets_jpcite_api_not_autonomath(jpcite_workflow_text:
     assert "-c fly.jpcite.toml" in jpcite_workflow_text
     assert "-a jpcite-api" in jpcite_workflow_text
     # The workflow MUST NOT flyctl-deploy against the legacy app name.
-    flyctl_lines = [
-        line for line in jpcite_workflow_text.splitlines() if "flyctl deploy" in line
-    ]
+    flyctl_lines = [line for line in jpcite_workflow_text.splitlines() if "flyctl deploy" in line]
     assert flyctl_lines, "no flyctl deploy invocation found"
     for line in flyctl_lines:
         assert "autonomath-api" not in line, (

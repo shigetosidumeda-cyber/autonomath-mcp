@@ -205,6 +205,13 @@
   Access-Control-Allow-Origin: *
   Cross-Origin-Resource-Policy: cross-origin
 
+/.well-known/jpcite-release.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, s-maxage=600
+  CDN-Cache-Control: public, max-age=600
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
 /llms-meta.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
@@ -274,6 +281,37 @@
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600
   CDN-Cache-Control: public, max-age=600
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+# Release Capsule aliases for agent runtimes. `/release/current/*` is served by
+# a Pages Function backed by `/releases/current/runtime_pointer.json`; direct
+# `/release/rc1-p0-bootstrap/*` reads immutable generated assets.
+/release/current/*
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=60, s-maxage=60
+  CDN-Cache-Control: public, max-age=60
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+/release/rc1-p0-bootstrap/*
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+  CDN-Cache-Control: public, max-age=31536000
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+/releases/current/*
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=60, s-maxage=60
+  CDN-Cache-Control: public, max-age=60
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
+/releases/rc1-p0-bootstrap/*
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+  CDN-Cache-Control: public, max-age=31536000
   Access-Control-Allow-Origin: *
   Cross-Origin-Resource-Policy: cross-origin
 

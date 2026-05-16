@@ -137,10 +137,7 @@ def test_empty_string_treated_as_unset(
     """`export JPCITE_X=` should NOT pin the empty string; fall through to legacy."""
     monkeypatch.setenv("JPCITE_EMPTY_PROBE", "")
     monkeypatch.setenv("AUTONOMATH_EMPTY_PROBE", "legacy-resolved")
-    assert (
-        get_flag("JPCITE_EMPTY_PROBE", "AUTONOMATH_EMPTY_PROBE", "default")
-        == "legacy-resolved"
-    )
+    assert get_flag("JPCITE_EMPTY_PROBE", "AUTONOMATH_EMPTY_PROBE", "default") == "legacy-resolved"
 
 
 def test_get_bool_flag_truthy_falsy(monkeypatch: pytest.MonkeyPatch) -> None:

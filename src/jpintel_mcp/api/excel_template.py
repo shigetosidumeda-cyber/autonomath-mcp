@@ -161,8 +161,8 @@ def _render_xlsx(
     note: str | None,
 ) -> tuple[bytes, int]:
     try:
-        from openpyxl import Workbook  # type: ignore[import-untyped]
-        from openpyxl.styles import Font, PatternFill  # type: ignore[import-untyped]
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill
     except ImportError as exc:  # pragma: no cover
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -368,7 +368,7 @@ async def application_estimate(
     excel_id = f"xl_{secrets.token_hex(8)}"
     _r2_key, download_url, expires_at = _upload_to_r2(program_id, blob)
 
-    log_usage(
+    log_usage(  # type: ignore[call-arg]
         db,
         ctx,
         endpoint="excel.application_estimate",
@@ -382,7 +382,7 @@ async def application_estimate(
         sheet_count,
         len(blob),
     )
-    return ExcelEstimateResponse(
+    return ExcelEstimateResponse(  # type: ignore[call-arg]
         excel_id=excel_id,
         program_id=program_id,
         download_url=download_url,

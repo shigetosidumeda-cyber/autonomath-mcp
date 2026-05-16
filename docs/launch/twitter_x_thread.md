@@ -37,7 +37,7 @@ Stack:
 • 8.29 GB unified DB, 503k entities, 6.12M facts (EAV)
 • Fly.io Tokyo, single-region
 
-151 MCP tools, protocol 2025-06-18.
+155 MCP tools, protocol 2025-06-18.
 
 ---
 

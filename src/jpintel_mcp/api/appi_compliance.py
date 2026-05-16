@@ -123,9 +123,7 @@ def get_appi_compliance(
     if not houjin_bangou.isdigit():
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=(
-                f"houjin_bangou must be 13 numeric digits, got {houjin_bangou!r}."
-            ),
+            detail=(f"houjin_bangou must be 13 numeric digits, got {houjin_bangou!r}."),
         )
 
     rows: list[dict[str, Any]] = []

@@ -146,14 +146,20 @@ def _build_list_query(
 async def list_countries(
     region: Annotated[
         str | None,
-        Query(description="region filter (asia_pacific / eu / north_america / latam / mideast_africa / oceania / other)"),
+        Query(
+            description="region filter (asia_pacific / eu / north_america / latam / mideast_africa / oceania / other)"
+        ),
     ] = None,
     is_g7: Annotated[int | None, Query(ge=0, le=1, description="1=G7 members only")] = None,
     is_oecd: Annotated[int | None, Query(ge=0, le=1, description="1=OECD members only")] = None,
     is_asean: Annotated[int | None, Query(ge=0, le=1, description="1=ASEAN members only")] = None,
     is_eu: Annotated[int | None, Query(ge=0, le=1, description="1=EU members only")] = None,
-    has_dta: Annotated[int | None, Query(ge=0, le=1, description="1=double-tax treaty with Japan present")] = None,
-    limit: Annotated[int, Query(ge=1, le=_MAX_LIMIT, description=f"max rows (cap {_MAX_LIMIT})")] = _DEFAULT_LIMIT,
+    has_dta: Annotated[
+        int | None, Query(ge=0, le=1, description="1=double-tax treaty with Japan present")
+    ] = None,
+    limit: Annotated[
+        int, Query(ge=1, le=_MAX_LIMIT, description=f"max rows (cap {_MAX_LIMIT})")
+    ] = _DEFAULT_LIMIT,
 ) -> JSONResponse:
     """List 80-country FDI cohort with optional region / membership filters."""
     if region is not None and region not in _ALLOWED_REGIONS:

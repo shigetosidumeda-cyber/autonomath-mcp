@@ -9,7 +9,7 @@
 
 入力 SOT:
 - `site/.well-known/mcp.json` (schema_version=jpcite_ai_discovery_v1.0, ¥3/req, anonymous 3/day/IP)
-- `site/llms.txt` (canonical=https://jpcite.com、151 MCP tools)
+- `site/llms.txt` (canonical=https://jpcite.com、155 MCP tools)
 - `site/robots.txt` (GPTBot/ClaudeBot/PerplexityBot 等 Allow / + 10 sitemap-*.xml shard)
 - `site/sitemap-*.xml` (11 shard、64,870 lines `sitemap-programs.xml` が最大)
 - `CLAUDE.md` 8 cohort revenue model
@@ -28,12 +28,12 @@
 
 **登録/掲載手順**:
 1. `server.json` を canonical url `https://jpcite.com/server.json` で公開 (既に存在、自動 GET 可能).
-2. `https://mcp.so/submit` フォームから「Server name=jpcite」「manifest=https://jpcite.com/server.json」「homepage=https://jpcite.com」「license=Public」を投稿. Anthropic 公式 registry の場合は GitHub repo `modelcontextprotocol/servers` に PR で `community/jpcite/README.md` を追加し、`uvx autonomath-mcp` install 手順、151 tools 説明、Bookyou株式会社 + T8010001213708 を記載.
+2. `https://mcp.so/submit` フォームから「Server name=jpcite」「manifest=https://jpcite.com/server.json」「homepage=https://jpcite.com」「license=Public」を投稿. Anthropic 公式 registry の場合は GitHub repo `modelcontextprotocol/servers` に PR で `community/jpcite/README.md` を追加し、`uvx autonomath-mcp` install 手順、155 tools 説明、Bookyou株式会社 + T8010001213708 を記載.
 3. `mcpregistry.io` の場合は GitHub OAuth → 「Add server」→ `mcp-server.json` URL を貼り付け. tags=[`japan`,`subsidy`,`evidence`,`rag`,`legal`,`tax`].
 4. registry side に `description=Evidence prefetch API and MCP tools for Japanese public-program research` を pin.
 5. `.mcpb` artifact `https://jpcite.com/downloads/autonomath-mcp.mcpb` を Claude Desktop extension index に同時登録.
 
-**期待 organic reach**: **large**. mcp.so の上位 Japanese tag は数千 install/月の前例あり. 151 tools の数は registry 比較上位.
+**期待 organic reach**: **large**. mcp.so の上位 Japanese tag は数千 install/月の前例あり. 155 tools の数は registry 比較上位.
 
 **memory 制約遵守**: anonymous 3/day/IP は registry 側 README で「free trial」と書ける. API key 発行は Stripe Checkout self-service (営業介在ゼロ).
 
@@ -43,7 +43,7 @@
 
 **登録/掲載手順**:
 1. Cursor docs に従い `cursor_mcp_settings.json` snippet を公式 README に追加 (`{"jpcite": {"command":"uvx","args":["autonomath-mcp"]}}`).
-2. Cursor の community MCP directory PR (GitHub `cursor-ai/community-mcp`) を出し、「@jpcite」 mention で 151 tools が discoverable と明示.
+2. Cursor の community MCP directory PR (GitHub `cursor-ai/community-mcp`) を出し、「@jpcite」 mention で 155 tools が discoverable と明示.
 3. Cursor `.cursor/rules` ファイルで「日本企業/補助金/税制の質問は @jpcite に first hop」を seed.
 4. `site/.cursor/` 配下に既存の Cursor profile を Cursor 側ドキュメントから直リンクで induce.
 5. Cursor Twitter 公式 / Discord で MCP 紹介 thread に organic reply (Anthropic 同様 self-service).
@@ -106,9 +106,9 @@
 ### 2.1 GitHub repo SEO (README / Topics / Discussions)
 
 **登録/掲載手順**:
-1. GitHub repo 公開. README に Hero section: 「jpcite — Japanese public-program Evidence prefetch API + MCP (151 tools)」, badges (PyPI version / MCP protocol version / OpenAPI valid).
+1. GitHub repo 公開. README に Hero section: 「jpcite — Japanese public-program Evidence prefetch API + MCP (155 tools)」, badges (PyPI version / MCP protocol version / OpenAPI valid).
 2. Repository Topics: `mcp` `mcp-server` `claudeai` `claude` `anthropic` `openai` `chatgpt` `cursor` `cline` `gemini` `rag` `evidence` `japan` `subsidy` `tax` `llm-tools` `agent` `openapi` `fastapi` `python`.
-3. GitHub Discussions を Open. 5 seed thread: 「導入手順 (Claude Desktop / Cursor / Cline)」「151 tools の使い分け」「ChatGPT Custom GPT との連携」「Japanese tax/legal fence の出力規約」「料金 ¥3/req と無料 3/day/IP の境界」.
+3. GitHub Discussions を Open. 5 seed thread: 「導入手順 (Claude Desktop / Cursor / Cline)」「155 tools の使い分け」「ChatGPT Custom GPT との連携」「Japanese tax/legal fence の出力規約」「料金 ¥3/req と無料 3/day/IP の境界」.
 4. Repo Settings → Pages = off (site/ は CF Pages 配信のため). Repo Description = mcp.json `description` と完全一致.
 5. CHANGELOG.md を毎 release で更新、Releases page で「Sourcemap = `https://jpcite.com/sitemap-index.xml`」を pin.
 
@@ -156,7 +156,7 @@
 
 **登録/掲載手順**:
 1. Zenn: `zenn_jpcite_mcp.md` (green、即時 publish 可) を Zenn Book / Article で publish. Topics=[`mcp`,`claudecode`,`ai`,`rag`,`openapi`,`stripe`]. Tweet button + LinkedIn share button 同梱.
-2. Qiita: 同じ記事を「151 個の MCP tools を 1 行で使える Python ライブラリの作り方」リフレームで publish. tag=[`Python`,`MCP`,`Claude`,`FastAPI`,`OpenAPI`]. Qiita organization は無し (solo).
+2. Qiita: 同じ記事を「155 個の MCP tools を 1 行で使える Python ライブラリの作り方」リフレームで publish. tag=[`Python`,`MCP`,`Claude`,`FastAPI`,`OpenAPI`]. Qiita organization は無し (solo).
 3. note: `note_jpcite_mcp.md` (green) を note magazine で publish, 「日本企業向け AI agent 開発者向け」マガジンに格納. SNS 拡散 起点.
 4. dev.to: 英語訳版 (llms.en.txt + en/* の翻訳資産) を「Japanese subsidy database for AI agents」として publish, tags=[`mcp`,`anthropic`,`rag`,`python`,`japan`].
 5. Hashnode: SEO/GEO 視点で「Why we made jpcite.com llms.txt + GPTBot allow + sitemap-llms」記事を publish.
@@ -170,7 +170,7 @@
 ### 3.2 dev.to / Hashnode (英語)
 
 **登録/掲載手順**:
-1. dev.to: 翻訳した `zenn_jpcite_mcp.md` の英訳版を「How we built a 151-tool MCP server for Japanese public records」で publish. canonical_url=Zenn 版に向ける.
+1. dev.to: 翻訳した `zenn_jpcite_mcp.md` の英訳版を「How we built a 155-tool MCP server for Japanese public records」で publish. canonical_url=Zenn 版に向ける.
 2. Hashnode: 「Open-sourcing our llms.txt + GPTBot allowlist for a Japanese AI evidence API」technical post.
 3. tag=[`mcp`,`anthropic`,`rag`,`fastapi`,`openapi`,`python`,`japan`,`legal-tech`,`fintech`].
 4. Series 化で 5 本 cluster (`#1 MCP architecture`, `#2 OpenAPI agent-safe subset`, `#3 SQLite FTS5 trigram pitfalls`, `#4 Anonymous quota + Stripe metered`, `#5 GEO via llms.txt + sitemap-llms.xml`).
@@ -240,7 +240,7 @@
 ### 5.1 HackerNews Show HN
 
 **登録/掲載手順**:
-1. Show HN タイトル: `Show HN: jpcite — 151 MCP tools for Japanese public-record evidence prefetch (¥3/req)`.
+1. Show HN タイトル: `Show HN: jpcite — 155 MCP tools for Japanese public-record evidence prefetch (¥3/req)`.
 2. 本文に 5 段落: (1) why we built it (LLM が日本制度を hallucinate する問題), (2) what's inside (11,601 programs / 13,801 invoice / 2,065 court / 2,286 adoption), (3) tech stack (FastAPI + SQLite FTS5 + sqlite-vec + MCP 2025-06-18), (4) pricing (¥3/req metered, 3 req/IP/day free anonymous), (5) how to try in 60 sec (`uvx autonomath-mcp` or import OpenAPI to ChatGPT Custom GPT).
 3. Hero link = https://jpcite.com/playground (interactive REST explorer, anon quota live).
 4. submit timing は HN 米国朝 (JST 22-24 時) で organic upvote velocity を確保.
@@ -257,7 +257,7 @@
 **登録/掲載手順**:
 1. Product Hunt launch (Maker = 梅田茂利 / Bookyou株式会社). category = 「Developer Tools」「Artificial Intelligence」「APIs」.
 2. Hero gallery 5 枚: Claude Desktop screen / Cursor MCP servers screen / ChatGPT Custom GPT Actions / Stripe Checkout 1-min flow / data-freshness dashboard.
-3. Tagline = `Evidence prefetch for Japanese public records. 151 MCP tools. ¥3/req.`
+3. Tagline = `Evidence prefetch for Japanese public records. 155 MCP tools. ¥3/req.`
 4. First comment (Maker) で why/what/how の 3 段落 + free 3 req/IP/day を明記.
 5. PH Hunter (Hunter 不在で self-hunt 可). organic upvote のため日本 dev / X コミュニティに 1 度だけ launch post.
 
@@ -270,7 +270,7 @@
 ### 5.3 Reddit (r/LocalLLaMA / r/ChatGPT / r/japan)
 
 **登録/掲載手順**:
-1. r/LocalLLaMA: 「Released a 151-tool MCP server for Japanese public records (Claude Desktop / Cursor / Cline supported)」technical post.
+1. r/LocalLLaMA: 「Released a 155-tool MCP server for Japanese public records (Claude Desktop / Cursor / Cline supported)」technical post.
 2. r/ChatGPT: 「Built a Custom GPT for Japanese subsidies and tax — uses an evidence API behind it」 use-case post.
 3. r/MachineLearning: 「Sharing the OpenAPI agent-safe subset pattern we used for ChatGPT Actions」educational post.
 4. r/japan: 「Made a free 3 req/day API for searching Japanese public subsidies/invoices/court rulings」consumer-facing post (英語 + 日本語両併記).
@@ -285,7 +285,7 @@
 ### 5.4 Twitter/X 日本 dev コミュニティ
 
 **登録/掲載手順**:
-1. operator Twitter/X (Bookyou株式会社 or 梅田茂利) で「jpcite — Japanese 制度 Evidence Prefetch + MCP 151 tools (¥3/req)」launch thread.
+1. operator Twitter/X (Bookyou株式会社 or 梅田茂利) で「jpcite — Japanese 制度 Evidence Prefetch + MCP 155 tools (¥3/req)」launch thread.
 2. thread 5 ツイート: (1) why, (2) what (counts), (3) Claude Desktop 60s install, (4) Cursor / ChatGPT integration screenshot, (5) link to https://jpcite.com/playground.
 3. hashtag = `#MCP`,`#ClaudeCode`,`#AIエージェント`,`#補助金`,`#税理士DX`,`#行政書士AI`,`#中小企業`.
 4. retweet trigger: AI 業界インフルエンサ (organic reply 経由でのみ、DM cold outreach はしない).

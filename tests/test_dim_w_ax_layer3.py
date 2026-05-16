@@ -90,8 +90,7 @@ def test_mig_283_applies_clean(tmp_path: pathlib.Path) -> None:
         names = {
             row[0]
             for row in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view','index')"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view','index')"
             )
         }
     finally:
@@ -125,8 +124,7 @@ def test_mig_283_rollback_clean(tmp_path: pathlib.Path) -> None:
         names = {
             row[0]
             for row in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view','index')"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view','index')"
             )
         }
     finally:
@@ -152,8 +150,7 @@ def test_webmcp_transport_enum(tmp_path: pathlib.Path) -> None:
     try:
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO am_webmcp_endpoint "
-                "(path, transport, capability_tag) VALUES (?, ?, ?)",
+                "INSERT INTO am_webmcp_endpoint (path, transport, capability_tag) VALUES (?, ?, ?)",
                 ("/v1/mcp/bad", "websocket", "tools"),  # 'websocket' not in enum
             )
     finally:
@@ -166,8 +163,7 @@ def test_webmcp_capability_enum(tmp_path: pathlib.Path) -> None:
     try:
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO am_webmcp_endpoint "
-                "(path, transport, capability_tag) VALUES (?, ?, ?)",
+                "INSERT INTO am_webmcp_endpoint (path, transport, capability_tag) VALUES (?, ?, ?)",
                 ("/v1/mcp/bad2", "sse", "billing"),  # 'billing' not in enum
             )
     finally:
@@ -180,8 +176,7 @@ def test_webmcp_path_must_be_rooted(tmp_path: pathlib.Path) -> None:
     try:
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO am_webmcp_endpoint "
-                "(path, transport, capability_tag) VALUES (?, ?, ?)",
+                "INSERT INTO am_webmcp_endpoint (path, transport, capability_tag) VALUES (?, ?, ?)",
                 ("v1/mcp/bad3", "sse", "tools"),  # no leading '/'
             )
     finally:
@@ -193,14 +188,12 @@ def test_webmcp_path_transport_unique(tmp_path: pathlib.Path) -> None:
     conn = sqlite3.connect(str(db))
     try:
         conn.execute(
-            "INSERT INTO am_webmcp_endpoint "
-            "(path, transport, capability_tag) VALUES (?, ?, ?)",
+            "INSERT INTO am_webmcp_endpoint (path, transport, capability_tag) VALUES (?, ?, ?)",
             ("/v1/mcp/sse", "sse", "tools"),
         )
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO am_webmcp_endpoint "
-                "(path, transport, capability_tag) VALUES (?, ?, ?)",
+                "INSERT INTO am_webmcp_endpoint (path, transport, capability_tag) VALUES (?, ?, ?)",
                 ("/v1/mcp/sse", "sse", "tools"),  # duplicate (path, transport)
             )
     finally:
@@ -258,14 +251,12 @@ def test_observability_metric_name_length(tmp_path: pathlib.Path) -> None:
     try:
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO am_observability_metric "
-                "(metric_name, value) VALUES (?, ?)",
+                "INSERT INTO am_observability_metric (metric_name, value) VALUES (?, ?)",
                 ("", 1.0),  # empty metric_name
             )
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO am_observability_metric "
-                "(metric_name, value) VALUES (?, ?)",
+                "INSERT INTO am_observability_metric (metric_name, value) VALUES (?, ?)",
                 ("x" * 129, 1.0),  # too long
             )
     finally:
@@ -311,15 +302,9 @@ def test_etl_seed_apply_then_idempotent(tmp_path: pathlib.Path) -> None:
     # Verify the row counts from the DB itself.
     conn = sqlite3.connect(str(db))
     try:
-        assert conn.execute(
-            "SELECT COUNT(*) FROM am_webmcp_endpoint"
-        ).fetchone()[0] == 3
-        assert conn.execute(
-            "SELECT COUNT(*) FROM am_a2a_handshake_log"
-        ).fetchone()[0] == 2
-        assert conn.execute(
-            "SELECT COUNT(*) FROM am_observability_metric"
-        ).fetchone()[0] == 8
+        assert conn.execute("SELECT COUNT(*) FROM am_webmcp_endpoint").fetchone()[0] == 3
+        assert conn.execute("SELECT COUNT(*) FROM am_a2a_handshake_log").fetchone()[0] == 2
+        assert conn.execute("SELECT COUNT(*) FROM am_observability_metric").fetchone()[0] == 8
     finally:
         conn.close()
 
@@ -337,15 +322,13 @@ def test_etl_seed_force_appends_audit_rows(tmp_path: pathlib.Path) -> None:
 
     conn = sqlite3.connect(str(db))
     try:
-        assert conn.execute(
-            "SELECT COUNT(*) FROM am_webmcp_endpoint"
-        ).fetchone()[0] == 3
-        assert conn.execute(
-            "SELECT COUNT(*) FROM am_a2a_handshake_log"
-        ).fetchone()[0] == 4  # 2 seed + 2 force-append
-        assert conn.execute(
-            "SELECT COUNT(*) FROM am_observability_metric"
-        ).fetchone()[0] == 16  # 8 seed + 8 force-append
+        assert conn.execute("SELECT COUNT(*) FROM am_webmcp_endpoint").fetchone()[0] == 3
+        assert (
+            conn.execute("SELECT COUNT(*) FROM am_a2a_handshake_log").fetchone()[0] == 4
+        )  # 2 seed + 2 force-append
+        assert (
+            conn.execute("SELECT COUNT(*) FROM am_observability_metric").fetchone()[0] == 16
+        )  # 8 seed + 8 force-append
     finally:
         conn.close()
 
@@ -377,12 +360,7 @@ def test_view_v_observability_recent(tmp_path: pathlib.Path) -> None:
     _run_etl(db)
     conn = sqlite3.connect(str(db))
     try:
-        names = {
-            row[0]
-            for row in conn.execute(
-                "SELECT metric_name FROM v_observability_recent"
-            )
-        }
+        names = {row[0] for row in conn.execute("SELECT metric_name FROM v_observability_recent")}
     finally:
         conn.close()
     # 4 AX pillar metrics + 4 Layer-3-specific signals.
@@ -434,10 +412,6 @@ def test_migration_has_no_llm_column() -> None:
     why they are disallowed.
     """
     lines = MIG_283.read_text(encoding="utf-8").splitlines()
-    non_comment_text = "\n".join(
-        ln for ln in lines if not ln.lstrip().startswith("--")
-    )
+    non_comment_text = "\n".join(ln for ln in lines if not ln.lstrip().startswith("--"))
     for forbidden in ("summary_text", "ai_explanation", "ai_summary"):
-        assert forbidden not in non_comment_text, (
-            f"LLM-coupled column leaked: {forbidden}"
-        )
+        assert forbidden not in non_comment_text, f"LLM-coupled column leaked: {forbidden}"

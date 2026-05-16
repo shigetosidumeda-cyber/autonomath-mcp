@@ -9,6 +9,7 @@ Verifies each of 14 audience pages (rest after tick#3 cpa_firm/shindanshi/ma_adv
 5. h2/h3 structure is intact (HTML structure not corrupted)
 6. canonical doc link present
 """
+
 from __future__ import annotations
 
 import re
@@ -104,7 +105,9 @@ def test_canonical_doc_exists(canonical_text: str) -> None:
     assert "¥3/billable unit" in canonical_text
     assert "Wave 46 tick#4" in canonical_text
     # canonical brand
-    assert "AutonoMath" not in canonical_text or "AutonoMath EC" in canonical_text  # AutonoMath EC v4 ref ok
+    assert (
+        "AutonoMath" not in canonical_text or "AutonoMath EC" in canonical_text
+    )  # AutonoMath EC v4 ref ok
     assert "税務会計AI" not in canonical_text
 
 
@@ -128,7 +131,9 @@ def test_page_has_cost_saving_section(pages: dict[str, str], name: str) -> None:
     body = pages[name]
     assert 'aria-labelledby="cost-title"' in body, f"{name}: missing cost-title section"
     assert 'id="cost-title"' in body, f"{name}: missing cost-title heading"
-    assert ("API fee delta" in body or "コスト比較" in body), f"{name}: missing cost comparison phrase"
+    assert "API fee delta" in body or "コスト比較" in body, (
+        f"{name}: missing cost comparison phrase"
+    )
 
 
 @pytest.mark.parametrize("name", TICK4_PAGES)

@@ -36,9 +36,7 @@ def _load_helper():
     sys.path.insert(0, str(_ETL_DIR))
     if mod_name in sys.modules and getattr(sys.modules[mod_name], "RenderResult", None):
         return sys.modules[mod_name]
-    spec = importlib.util.spec_from_file_location(
-        mod_name, str(_ETL_DIR / "_playwright_helper.py")
-    )
+    spec = importlib.util.spec_from_file_location(mod_name, str(_ETL_DIR / "_playwright_helper.py"))
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules[mod_name] = mod
@@ -111,15 +109,36 @@ def seeded_autonomath_db(empty_autonomath_db: Path) -> Path:
         cur.executemany(
             "INSERT INTO am_compat_matrix VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             [
-                ("prog-A", "prog-B", "compatible",
-                 "https://www.mhlw.go.jp/sample/page.html",
-                 0.55, "synergistic", 0, "internal"),
-                ("prog-C", "prog-D", "compatible",
-                 "https://noukaweb.com/aggregator",
-                 0.90, "synergistic", 0, "internal"),
-                ("prog-E", "prog-F", "compatible",
-                 "https://example.com/notgov",
-                 0.55, None, 1, "internal"),
+                (
+                    "prog-A",
+                    "prog-B",
+                    "compatible",
+                    "https://www.mhlw.go.jp/sample/page.html",
+                    0.55,
+                    "synergistic",
+                    0,
+                    "internal",
+                ),
+                (
+                    "prog-C",
+                    "prog-D",
+                    "compatible",
+                    "https://noukaweb.com/aggregator",
+                    0.90,
+                    "synergistic",
+                    0,
+                    "internal",
+                ),
+                (
+                    "prog-E",
+                    "prog-F",
+                    "compatible",
+                    "https://example.com/notgov",
+                    0.55,
+                    None,
+                    1,
+                    "internal",
+                ),
             ],
         )
         cur.executemany(
@@ -144,15 +163,19 @@ def seeded_autonomath_db(empty_autonomath_db: Path) -> Path:
             "(entity_id, observed_at, source_url, raw_snapshot_json) "
             "VALUES (?, ?, ?, ?)",
             [
-                ("ent-x", "2026-05-01T00:00:00Z",
-                 "https://www.mhlw.go.jp/sample/v1",
-                 '{"expected_start": "2026-04-01"}'),
-                ("ent-y", "2026-05-01T00:00:00Z",
-                 "https://www.maff.go.jp/sample/v2",
-                 "令和8年4月施行"),
-                ("ent-z", "2026-05-01T00:00:00Z",
-                 "https://www.meti.go.jp/page",
-                 None),
+                (
+                    "ent-x",
+                    "2026-05-01T00:00:00Z",
+                    "https://www.mhlw.go.jp/sample/v1",
+                    '{"expected_start": "2026-04-01"}',
+                ),
+                (
+                    "ent-y",
+                    "2026-05-01T00:00:00Z",
+                    "https://www.maff.go.jp/sample/v2",
+                    "令和8年4月施行",
+                ),
+                ("ent-z", "2026-05-01T00:00:00Z", "https://www.meti.go.jp/page", None),
             ],
         )
         conn.commit()
@@ -184,9 +207,19 @@ def test_etl_help_smoke(script: str) -> None:
 def test_promote_compat_matrix_v2_dry_run(seeded_autonomath_db: Path) -> None:
     path = _ETL_DIR / "promote_compat_matrix_v2.py"
     result = subprocess.run(
-        [sys.executable, str(path), "--db", str(seeded_autonomath_db),
-         "--dry-run", "--no-fetch", "--limit", "10"],
-        capture_output=True, text=True, timeout=30,
+        [
+            sys.executable,
+            str(path),
+            "--db",
+            str(seeded_autonomath_db),
+            "--dry-run",
+            "--no-fetch",
+            "--limit",
+            "10",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     assert result.returncode == 0, result.stderr
     assert "candidates scanned" in result.stdout
@@ -197,9 +230,18 @@ def test_promote_compat_matrix_v2_dry_run(seeded_autonomath_db: Path) -> None:
 def test_verify_amount_conditions_v2_dry_run(seeded_autonomath_db: Path) -> None:
     path = _ETL_DIR / "verify_amount_conditions_v2.py"
     result = subprocess.run(
-        [sys.executable, str(path), "--db", str(seeded_autonomath_db),
-         "--dry-run", "--limit", "10"],
-        capture_output=True, text=True, timeout=30,
+        [
+            sys.executable,
+            str(path),
+            "--db",
+            str(seeded_autonomath_db),
+            "--dry-run",
+            "--limit",
+            "10",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     assert result.returncode == 0, result.stderr
     assert "verified (A: EAV)" in result.stdout
@@ -209,9 +251,18 @@ def test_verify_amount_conditions_v2_dry_run(seeded_autonomath_db: Path) -> None
 def test_datafill_amendment_snapshot_v2_dry_run(seeded_autonomath_db: Path) -> None:
     path = _ETL_DIR / "datafill_amendment_snapshot_v2.py"
     result = subprocess.run(
-        [sys.executable, str(path), "--db", str(seeded_autonomath_db),
-         "--dry-run", "--limit", "10"],
-        capture_output=True, text=True, timeout=30,
+        [
+            sys.executable,
+            str(path),
+            "--db",
+            str(seeded_autonomath_db),
+            "--dry-run",
+            "--limit",
+            "10",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=30,
     )
     assert result.returncode == 0, result.stderr
     assert "NULL rows scanned" in result.stdout

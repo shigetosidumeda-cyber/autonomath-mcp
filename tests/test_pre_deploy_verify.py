@@ -71,9 +71,7 @@ def test_build_commands_passes_preflight_db_and_migrations_dir(tmp_path):
     )
 
     preflight = next(
-        command.argv
-        for command in commands
-        if command.name == "production_improvement_preflight"
+        command.argv for command in commands if command.name == "production_improvement_preflight"
     )
     assert preflight[-4:] == [
         "--db",
@@ -134,9 +132,7 @@ def test_build_report_collects_json_and_exit_failures(monkeypatch, tmp_path):
     ]
 
 
-def test_build_report_blocks_on_manifest_payload_failure_even_warn_only(
-    monkeypatch, tmp_path
-):
+def test_build_report_blocks_on_manifest_payload_failure_even_warn_only(monkeypatch, tmp_path):
     module = _load_module()
     responses = [
         _completed({"ok": True, "issues": []}),

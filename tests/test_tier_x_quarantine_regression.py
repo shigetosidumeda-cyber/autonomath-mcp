@@ -44,8 +44,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import pytest
-
 if TYPE_CHECKING:
     from fastapi.testclient import TestClient
 
@@ -216,8 +214,7 @@ def test_generate_program_pages_safe_tiers_filter_excludes_x() -> None:
     assert m, "expected a `safe_tiers = [...] or [...]` filter in _iter_rows"
     snippet = m.group(0)
     assert "'X'" not in snippet and '"X"' not in snippet, (
-        f"`safe_tiers` filter in generate_program_pages.py mentions 'X': "
-        f"{snippet!r}"
+        f"`safe_tiers` filter in generate_program_pages.py mentions 'X': {snippet!r}"
     )
     # And it must explicitly allow only S/A/B/C. Accept either single- or
     # double-quoted literals — the source file uses double quotes today.
@@ -298,9 +295,7 @@ def _insert_tier_x_row(
     conn.commit()
 
 
-def test_tier_x_row_not_returned_by_programs_search(
-    client: TestClient, seeded_db: Path
-) -> None:
+def test_tier_x_row_not_returned_by_programs_search(client: TestClient, seeded_db: Path) -> None:
     """Seed a tier='X' / excluded=0 row, call /v1/programs/search, assert
     the row is NOT in results.
 
@@ -339,8 +334,7 @@ def test_tier_x_row_not_returned_by_programs_search(
         if isinstance(row, dict) and (row.get("unified_id") == unified_id or row.get("tier") == "X")
     ]
     assert not leaked, (
-        f"tier='X' / excluded=0 row leaked into targeted /v1/programs/search; "
-        f"found {leaked!r}"
+        f"tier='X' / excluded=0 row leaked into targeted /v1/programs/search; found {leaked!r}"
     )
     # Also assert the API-reported total is 0 for this unique name —
     # paginating past `limit` doesn't change the leakage verdict.
@@ -404,9 +398,7 @@ def test_tier_x_row_filter_active_even_with_explicit_tier_param(
             if isinstance(row, dict)
             and (row.get("unified_id") == unified_id or row.get("tier") == "X")
         ]
-        assert not leaked, (
-            f"explicit `tier=X` query surfaced quarantined row: {leaked!r}"
-        )
+        assert not leaked, f"explicit `tier=X` query surfaced quarantined row: {leaked!r}"
     else:
         # 422 (FastAPI validation) is the strictest outcome and also acceptable.
         assert r.status_code in (400, 422), (

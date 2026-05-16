@@ -104,8 +104,14 @@ def _seed_program(conn: sqlite3.Connection, **overrides: Any) -> None:
                 source_url, official_url, excluded)
            VALUES (?,?,?,?,?,?,?,?)""",
         (
-            row["unified_id"], row["primary_name"], row["tier"], row["prefecture"],
-            row["program_kind"], row["source_url"], row["official_url"], row["excluded"],
+            row["unified_id"],
+            row["primary_name"],
+            row["tier"],
+            row["prefecture"],
+            row["program_kind"],
+            row["source_url"],
+            row["official_url"],
+            row["excluded"],
         ),
     )
 
@@ -143,11 +149,15 @@ def _seed_score(
                 refreshed_at)
            VALUES (?,?,?,?,?,?,?,?)""",
         (
-            api_key_hash, client_id, program_id, score,
+            api_key_hash,
+            client_id,
+            program_id,
+            score,
             '{"client_fit": 40, "industry_pack": 25, "saved_search": 10}',
             '{"client_fit_reason": "JSIC E + 東京都 一致", '
             '"saved_searches_matched": ["製造業 設備投資 watch"]}',
-            industry_pack, "2026-05-12T01:00:00.000Z",
+            industry_pack,
+            "2026-05-12T01:00:00.000Z",
         ),
     )
     am_conn.commit()
@@ -268,9 +278,7 @@ def test_recommendations_missing_api_key_returns_401(
 
     app = FastAPI()
     app.include_router(pers_module.router)
-    app.dependency_overrides[deps_module.require_key] = lambda: _StubApiContext(
-        key_hash=None
-    )
+    app.dependency_overrides[deps_module.require_key] = lambda: _StubApiContext(key_hash=None)
     app.dependency_overrides[deps_module.get_db] = lambda: jp_conn
 
     with TestClient(app) as client:
@@ -317,9 +325,14 @@ def test_recommendations_score_breakdown_filters_non_numeric(
                 refreshed_at)
            VALUES (?,?,?,?,?,?,?,?)""",
         (
-            "kh-test", profile_id, "P-DIM-H-1", 55,
+            "kh-test",
+            profile_id,
+            "P-DIM-H-1",
+            55,
             '{"client_fit": 30, "note": "non-numeric should be filtered"}',
-            "{}", "pack_manufacturing", "2026-05-12T02:00:00.000Z",
+            "{}",
+            "pack_manufacturing",
+            "2026-05-12T02:00:00.000Z",
         ),
     )
     am_conn.commit()

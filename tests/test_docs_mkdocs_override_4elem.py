@@ -36,8 +36,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-import pytest
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MAIN_HTML = REPO_ROOT / "overrides" / "main.html"
 CONTENT_HTML = REPO_ROOT / "overrides" / "partials" / "content.html"
@@ -59,9 +57,9 @@ def test_main_html_injects_billing_progress_script() -> None:
         "<head>; mkdocs sub-pages will fail the 4-element contract"
     )
     # script tag must be defer so CWV isn't hurt
-    assert re.search(
-        r"<script[^>]*src=\"/assets/billing_progress\.js\"[^>]*defer", src
-    ), "billing_progress.js must be loaded with defer (CWV contract)"
+    assert re.search(r"<script[^>]*src=\"/assets/billing_progress\.js\"[^>]*defer", src), (
+        "billing_progress.js must be loaded with defer (CWV contract)"
+    )
 
 
 def test_main_html_injects_rum_funnel_collector_script() -> None:
@@ -99,15 +97,14 @@ def test_content_html_injects_billing_progress_div() -> None:
     )
     # the variant must match the static landing-page contract so the JS
     # branch that fires there also fires here
-    assert "data-cta-variant=\"docs-progress\"" in src, (
-        "data-cta-variant=\"docs-progress\" missing — billing_progress.js "
+    assert 'data-cta-variant="docs-progress"' in src, (
+        'data-cta-variant="docs-progress" missing — billing_progress.js '
         "branches by variant; mismatched variants render the wrong copy"
     )
     # hidden by default so unauthenticated visitors don't see an empty
     # rectangle; JS removes the attribute once data is available
     assert re.search(r"<div[^>]*data-billing-progress[^>]*\bhidden\b", src), (
-        "billing-progress div must be hidden by default; visible-when-empty "
-        "is a UX regression"
+        "billing-progress div must be hidden by default; visible-when-empty is a UX regression"
     )
 
 
@@ -141,7 +138,7 @@ def test_main_html_still_inherits_base() -> None:
     nav drawer, ...). Keep the extends contract.
     """
     src = MAIN_HTML.read_text(encoding="utf-8")
-    assert "{% extends \"base.html\" %}" in src, (
+    assert '{% extends "base.html" %}' in src, (
         "overrides/main.html must extend base.html — replacing with raw "
         "HTML drops Material's entire theme"
     )

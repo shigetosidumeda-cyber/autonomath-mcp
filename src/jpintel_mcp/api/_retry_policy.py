@@ -140,7 +140,7 @@ class RetryPolicy:
                 return float(min(parsed, max(remaining, 0.0)))
 
         # 2. Otherwise, compute exponential backoff + jitter.
-        raw = self.base_delay_seconds * (2 ** attempt)
+        raw = self.base_delay_seconds * (2**attempt)
         capped = min(raw, self.max_delay_seconds)
         jittered = _apply_jitter(
             capped,

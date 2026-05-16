@@ -40,21 +40,11 @@ import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_274 = REPO_ROOT / "scripts" / "migrations" / "274_anonymized_query.sql"
-MIG_274_RB = (
-    REPO_ROOT / "scripts" / "migrations" / "274_anonymized_query_rollback.sql"
-)
-ETL_AGGREGATE = (
-    REPO_ROOT / "scripts" / "etl" / "aggregate_anonymized_outcomes.py"
-)
-SRC_REST = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "anonymized_query.py"
-)
-MANIFEST_JPCITE = (
-    REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-)
-MANIFEST_AM = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+MIG_274_RB = REPO_ROOT / "scripts" / "migrations" / "274_anonymized_query_rollback.sql"
+ETL_AGGREGATE = REPO_ROOT / "scripts" / "etl" / "aggregate_anonymized_outcomes.py"
+SRC_REST = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "anonymized_query.py"
+MANIFEST_JPCITE = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
+MANIFEST_AM = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 
 # ---------------------------------------------------------------------------
@@ -64,9 +54,7 @@ MANIFEST_AM = (
 
 def _import_rest_module() -> typing.Any:
     """Load anonymized_query.py by file path (avoids package init)."""
-    spec = importlib.util.spec_from_file_location(
-        "_anon_query_test_w47_mod", SRC_REST
-    )
+    spec = importlib.util.spec_from_file_location("_anon_query_test_w47_mod", SRC_REST)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["_anon_query_test_w47_mod"] = mod
@@ -74,9 +62,7 @@ def _import_rest_module() -> typing.Any:
     return mod
 
 
-def _apply_migration(
-    db_path: pathlib.Path, sql_path: pathlib.Path
-) -> None:
+def _apply_migration(db_path: pathlib.Path, sql_path: pathlib.Path) -> None:
     conn = sqlite3.connect(str(db_path))
     try:
         sql = sql_path.read_text(encoding="utf-8")
@@ -137,8 +123,7 @@ def test_migration_274_creates_tables(tmp_path: pathlib.Path) -> None:
         names = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view') ORDER BY name"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') ORDER BY name"
             ).fetchall()
         }
     finally:
@@ -155,8 +140,7 @@ def test_migration_274_idempotent(tmp_path: pathlib.Path) -> None:
     conn = sqlite3.connect(str(db))
     try:
         cnt = conn.execute(
-            "SELECT COUNT(*) FROM sqlite_master "
-            "WHERE name='am_anonymized_query_log'"
+            "SELECT COUNT(*) FROM sqlite_master WHERE name='am_anonymized_query_log'"
         ).fetchone()[0]
     finally:
         conn.close()
@@ -172,8 +156,7 @@ def test_migration_274_rollback_drops(tmp_path: pathlib.Path) -> None:
         names = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view')"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view')"
             ).fetchall()
         }
     finally:
@@ -205,9 +188,7 @@ def test_aggregate_view_k_lt_5_rejected_by_check(
             "VALUES (?,?,?,?)",
             ("industry=F|k=5", "adoption", 5, 5),
         )
-        n = conn.execute(
-            "SELECT COUNT(*) FROM am_aggregated_outcome_view"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM am_aggregated_outcome_view").fetchone()[0]
     finally:
         conn.close()
     assert n == 1
@@ -243,9 +224,7 @@ def test_aggregator_dry_run(tmp_path: pathlib.Path) -> None:
     # No rows were written.
     conn = sqlite3.connect(str(db))
     try:
-        n = conn.execute(
-            "SELECT COUNT(*) FROM am_aggregated_outcome_view"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM am_aggregated_outcome_view").fetchone()[0]
     finally:
         conn.close()
     assert n == 0
@@ -297,9 +276,7 @@ def test_aggregator_idempotent_rebuild(tmp_path: pathlib.Path) -> None:
         assert res.returncode == 0, f"stderr={res.stderr}"
     conn = sqlite3.connect(str(db))
     try:
-        n = conn.execute(
-            "SELECT COUNT(*) FROM am_aggregated_outcome_view"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM am_aggregated_outcome_view").fetchone()[0]
     finally:
         conn.close()
     assert n == 4
@@ -417,16 +394,12 @@ def test_rest_whitelist_matches_substrate_columns(
 
 def test_manifest_jpcite_lists_274() -> None:
     """jpcite boot manifest registers migration 274_anonymized_query.sql."""
-    assert "274_anonymized_query.sql" in MANIFEST_JPCITE.read_text(
-        encoding="utf-8"
-    )
+    assert "274_anonymized_query.sql" in MANIFEST_JPCITE.read_text(encoding="utf-8")
 
 
 def test_manifest_autonomath_lists_274() -> None:
     """autonomath boot manifest registers migration 274_anonymized_query.sql."""
-    assert "274_anonymized_query.sql" in MANIFEST_AM.read_text(
-        encoding="utf-8"
-    )
+    assert "274_anonymized_query.sql" in MANIFEST_AM.read_text(encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
@@ -459,6 +432,4 @@ def test_no_legacy_brand_in_new_files() -> None:
     ]
     for src in sources:
         for bad in legacy_phrases:
-            assert bad not in src, (
-                f"legacy brand `{bad}` found in new file"
-            )
+            assert bad not in src, f"legacy brand `{bad}` found in new file"

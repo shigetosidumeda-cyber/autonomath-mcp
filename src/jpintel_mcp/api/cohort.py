@@ -99,17 +99,13 @@ class CohortMatch5DBody(BaseModel):
     )
     employee_band: str = Field(
         ...,
-        description=(
-            "Coarse size band. One of '1-9' / '10-99' / '100-999' / "
-            "'1000+'. Required."
-        ),
+        description=("Coarse size band. One of '1-9' / '10-99' / '100-999' / '1000+'. Required."),
     )
     prefecture_code: str | None = Field(
         default=None,
         max_length=2,
         description=(
-            "2-digit JIS prefecture code (e.g. '13' = 東京都). NULL = "
-            "nationwide synthetic cohort."
+            "2-digit JIS prefecture code (e.g. '13' = 東京都). NULL = nationwide synthetic cohort."
         ),
     )
 
@@ -209,9 +205,7 @@ def cohort_5d_match(
 def program_risk_4d(
     conn: DbDep,
     ctx: ApiContextDep,
-    program_id: Annotated[
-        str, Path(description="Program unified_id (e.g. 'UNI-it-2025-...')")
-    ],
+    program_id: Annotated[str, Path(description="Program unified_id (e.g. 'UNI-it-2025-...')")],
 ) -> JSONResponse:
     t0 = time.perf_counter()
     am = _open_am_ro()

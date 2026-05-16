@@ -74,9 +74,7 @@ _HANDLERS = _enumerate_handlers()
 
 # Parametrized so each handler shows up as its own test id; one failure does
 # not mask others.
-@pytest.mark.skipif(
-    not _esbuild_available(), reason="esbuild / npx unavailable in this env"
-)
+@pytest.mark.skipif(not _esbuild_available(), reason="esbuild / npx unavailable in this env")
 @pytest.mark.skipif(not _HANDLERS, reason="no functions/*.ts handlers found")
 @pytest.mark.parametrize(
     "handler",
@@ -86,13 +84,7 @@ _HANDLERS = _enumerate_handlers()
 def test_edge_handler_bundle_size_under_1mb(handler: Path, tmp_path: Path) -> None:
     rel = handler.relative_to(REPO_ROOT)
     # Sanitize output filename: replace path separators + special chars.
-    slug = (
-        str(rel)
-        .replace(os.sep, "__")
-        .replace("[", "_")
-        .replace("]", "_")
-        .replace(".ts", "")
-    )
+    slug = str(rel).replace(os.sep, "__").replace("[", "_").replace("]", "_").replace(".ts", "")
     outfile = tmp_path / f"edge_{slug}.js"
     cmd = [
         _NPX,
@@ -127,6 +119,5 @@ def test_edge_handler_bundle_size_under_1mb(handler: Path, tmp_path: Path) -> No
         )
 
     assert size < CF_PAGES_BYTE_LIMIT, (
-        f"edge bundle {rel} = {size:,} B exceeds CF Pages limit "
-        f"{CF_PAGES_BYTE_LIMIT:,} B"
+        f"edge bundle {rel} = {size:,} B exceeds CF Pages limit {CF_PAGES_BYTE_LIMIT:,} B"
     )

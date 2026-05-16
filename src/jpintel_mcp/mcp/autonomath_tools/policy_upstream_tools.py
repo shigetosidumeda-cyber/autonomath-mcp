@@ -71,7 +71,9 @@ from .snapshot_helper import attach_corpus_snapshot_with_conn
 logger = logging.getLogger("jpintel.mcp.autonomath.policy_upstream")
 
 # Env-gated registration (default ON). Flip to "0" for one-flag rollback.
-_ENABLED = get_flag("JPCITE_POLICY_UPSTREAM_ENABLED", "AUTONOMATH_POLICY_UPSTREAM_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_POLICY_UPSTREAM_ENABLED", "AUTONOMATH_POLICY_UPSTREAM_ENABLED", "1") == "1"
+)
 
 
 # ---------------------------------------------------------------------------

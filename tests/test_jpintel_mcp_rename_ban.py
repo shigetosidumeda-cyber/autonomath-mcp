@@ -133,6 +133,7 @@ def test_jpintel_mcp_importable() -> None:
     if src_path not in sys.path:
         sys.path.insert(0, src_path)
     import jpintel_mcp  # noqa: F401  (smoke import — load-bearing assertion)
+
     # Sanity-check: the imported module resolves to our source tree,
     # not some stale site-packages shadow.
     module_file = getattr(jpintel_mcp, "__file__", None)

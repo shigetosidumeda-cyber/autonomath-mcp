@@ -13,11 +13,12 @@ No LLM, pure SELECT against autonomath.db. AnonIpLimitDep applied at
 include. 都道府県条例 is `gov_public` license (条例 = 公文書 + 著作物性
 不在 per 著作権法 §13) — relay source_url honestly.
 """
+
 from __future__ import annotations
 
 import logging
 import sqlite3
-from typing import Annotated
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -139,7 +140,11 @@ def search_jorei(
 ) -> JoreiPrefSearchResponse:
     """Search 都道府県条例 corpus."""
     if jorei_kind and jorei_kind not in (
-        "jorei", "kisoku", "kunrei", "kokuji", "youkou",
+        "jorei",
+        "kisoku",
+        "kunrei",
+        "kokuji",
+        "youkou",
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -147,7 +152,7 @@ def search_jorei(
         )
 
     where: list[str] = []
-    params: list = []
+    params: list[Any] = []
     join_fts = False
 
     if q:
@@ -174,10 +179,7 @@ def search_jorei(
         params.append(enacted_to)
 
     if join_fts:
-        base_from = (
-            "am_law_jorei_pref_fts "
-            "JOIN am_law_jorei_pref USING(canonical_id)"
-        )
+        base_from = "am_law_jorei_pref_fts JOIN am_law_jorei_pref USING(canonical_id)"
         where_clause = "am_law_jorei_pref_fts MATCH ?"
         if where:
             where_clause += " AND " + " AND ".join(where)
@@ -189,9 +191,7 @@ def search_jorei(
         count_sql = f"SELECT COUNT(*) FROM {base_from} WHERE {where_clause}"
         (total,) = conn.execute(count_sql, params).fetchone()
 
-        order_sql = (
-            "ORDER BY COALESCE(enacted_date, fetched_at) DESC, canonical_id ASC"
-        )
+        order_sql = "ORDER BY COALESCE(enacted_date, fetched_at) DESC, canonical_id ASC"
         select_sql = (
             f"SELECT am_law_jorei_pref.* FROM {base_from} "
             f"WHERE {where_clause} {order_sql} LIMIT ? OFFSET ?"

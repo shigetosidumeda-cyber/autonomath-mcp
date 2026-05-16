@@ -272,7 +272,9 @@ def _generate(
         if unified_id in missing_program_ids:
             continue
         slug = mod._program_slug(primary_name, unified_id)
-        (program_dir / f"{slug}.html").write_text("<!doctype html><title>program</title>", encoding="utf-8")
+        (program_dir / f"{slug}.html").write_text(
+            "<!doctype html><title>program</title>", encoding="utf-8"
+        )
 
     return mod.main(
         [

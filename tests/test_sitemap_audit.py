@@ -104,9 +104,7 @@ def test_missing_sitemap_returns_zero_safely(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """If the sitemap file is missing the helper returns zero counts, not raising."""
-    monkeypatch.setattr(
-        sitemap_audit, "_SITEMAP_COMPANION_MD", tmp_path / "nonexistent.xml"
-    )
+    monkeypatch.setattr(sitemap_audit, "_SITEMAP_COMPANION_MD", tmp_path / "nonexistent.xml")
     total, by_cat = sitemap_audit._count_sitemap_urls()
     assert total == 0
     assert by_cat["cases"] == 0

@@ -34,24 +34,38 @@ _TAX_DISCLAIMER = (
 )
 
 _KIND_TO_TABLE = {
-    "program": "am_entities_vec_S", "case_study": "am_entities_vec_C",
-    "court_decision": "am_entities_vec_J", "adoption": "am_entities_vec_A",
-    "corporate_entity": "am_entities_vec_E", "statistic": "am_entities_vec_T",
-    "tax_measure": "am_entities_vec_T", "enforcement": "am_entities_vec_F",
-    "invoice_registrant": "am_entities_vec_I", "law": "am_entities_vec_L",
-    "certification": "am_entities_vec_R", "authority": "am_entities_vec_R",
+    "program": "am_entities_vec_S",
+    "case_study": "am_entities_vec_C",
+    "court_decision": "am_entities_vec_J",
+    "adoption": "am_entities_vec_A",
+    "corporate_entity": "am_entities_vec_E",
+    "statistic": "am_entities_vec_T",
+    "tax_measure": "am_entities_vec_T",
+    "enforcement": "am_entities_vec_F",
+    "invoice_registrant": "am_entities_vec_I",
+    "law": "am_entities_vec_L",
+    "certification": "am_entities_vec_R",
+    "authority": "am_entities_vec_R",
     "document": "am_entities_vec_R",
 }
 
 
-def _select_first(conn, sql, params):
+def _select_first(
+    conn: sqlite3.Connection,
+    sql: str,
+    params: tuple[Any, ...],
+) -> Any:
     try:
         return conn.execute(sql, params).fetchone()
     except sqlite3.OperationalError:
         return None
 
 
-def _select_all(conn, sql, params):
+def _select_all(
+    conn: sqlite3.Connection,
+    sql: str,
+    params: tuple[Any, ...],
+) -> list[Any]:
     try:
         return list(conn.execute(sql, params).fetchall())
     except sqlite3.OperationalError:
@@ -92,15 +106,22 @@ def portfolio_optimize_precomputed_am(
                 signals = json.loads(r["reason_json"]).get("signals", {})
             except (json.JSONDecodeError, TypeError):
                 signals = {}
-        items.append({
-            "rank": r["rank"], "program_unified_id": r["program_unified_id"],
-            "program_primary_name": r["program_primary_name"],
-            "score_0_100": r["score_0_100"], "tier": r["tier"],
-            "program_amount_max_yen": r["program_amount_max_yen"], "signals": signals,
-        })
+        items.append(
+            {
+                "rank": r["rank"],
+                "program_unified_id": r["program_unified_id"],
+                "program_primary_name": r["program_primary_name"],
+                "score_0_100": r["score_0_100"],
+                "tier": r["tier"],
+                "program_amount_max_yen": r["program_amount_max_yen"],
+                "signals": signals,
+            }
+        )
     return {
-        "houjin_bangou": houjin_bangou, "refreshed_at": refreshed_at,
-        "items": items, "_disclaimer": _TAX_DISCLAIMER,
+        "houjin_bangou": houjin_bangou,
+        "refreshed_at": refreshed_at,
+        "items": items,
+        "_disclaimer": _TAX_DISCLAIMER,
         "_source": "am_portfolio_optimize (mig 235, daily cron)",
     }
 
@@ -124,9 +145,12 @@ def houjin_risk_score_am(houjin_bangou: str) -> dict[str, Any]:
         (houjin_bangou,),
     )
     if row is None:
-        return {"houjin_bangou": houjin_bangou, "found": False,
-                "_disclaimer": _TAX_DISCLAIMER,
-                "_hint": "Risk row not yet precomputed for this houjin_bangou."}
+        return {
+            "houjin_bangou": houjin_bangou,
+            "found": False,
+            "_disclaimer": _TAX_DISCLAIMER,
+            "_hint": "Risk row not yet precomputed for this houjin_bangou.",
+        }
     signals = {}
     if row["signals_json"]:
         try:
@@ -134,14 +158,18 @@ def houjin_risk_score_am(houjin_bangou: str) -> dict[str, Any]:
         except (json.JSONDecodeError, TypeError):
             signals = {}
     return {
-        "houjin_bangou": houjin_bangou, "found": True,
+        "houjin_bangou": houjin_bangou,
+        "found": True,
         "risk_score_0_100": row["risk_score_0_100"],
         "risk_bucket": row["risk_bucket"],
         "subscores": {
-            "enforcement": row["enforcement_subscore"], "invoice": row["invoice_subscore"],
-            "adoption": row["adoption_subscore"], "credit_age": row["credit_age_subscore"],
+            "enforcement": row["enforcement_subscore"],
+            "invoice": row["invoice_subscore"],
+            "adoption": row["adoption_subscore"],
+            "credit_age": row["credit_age_subscore"],
         },
-        "signals": signals, "refreshed_at": row["refreshed_at"],
+        "signals": signals,
+        "refreshed_at": row["refreshed_at"],
         "_disclaimer": _TAX_DISCLAIMER,
         "_source": "am_houjin_risk_score (mig 236, daily cron)",
     }
@@ -175,11 +203,16 @@ def program_forecast_30yr_am(program_unified_id: str, year_offset_max: int = 30)
         "refreshed_at": rows[0]["refreshed_at"] if rows else None,
         "found": bool(rows),
         "horizon": [
-            {"forecast_year_offset": r["forecast_year_offset"],
-             "horizon_month": r["horizon_month"], "state": r["state"],
-             "p_active": r["p_active"], "p_paused": r["p_paused"],
-             "p_sunset": r["p_sunset"], "p_renewed": r["p_renewed"],
-             "expected_call_count": r["expected_call_count"]}
+            {
+                "forecast_year_offset": r["forecast_year_offset"],
+                "horizon_month": r["horizon_month"],
+                "state": r["state"],
+                "p_active": r["p_active"],
+                "p_paused": r["p_paused"],
+                "p_sunset": r["p_sunset"],
+                "p_renewed": r["p_renewed"],
+                "expected_call_count": r["expected_call_count"],
+            }
             for r in rows
         ],
         "_source": "am_subsidy_30yr_forecast (mig 237, monthly cron)",
@@ -216,17 +249,24 @@ def alliance_opportunities_am(houjin_bangou: str, limit: int = 10) -> dict[str, 
                 signals = json.loads(r["reason_json"]).get("signals", {})
             except (json.JSONDecodeError, TypeError):
                 signals = {}
-        items.append({
-            "rank": r["rank"], "partner_houjin_bangou": r["partner_houjin_bangou"],
-            "partner_primary_name": r["partner_primary_name"],
-            "alliance_score_0_100": r["alliance_score_0_100"],
-            "co_adoption_count": r["co_adoption_count"],
-            "industry_chain_pair": r["industry_chain_pair"],
-            "region_a": r["region_a"], "region_b": r["region_b"], "signals": signals,
-        })
+        items.append(
+            {
+                "rank": r["rank"],
+                "partner_houjin_bangou": r["partner_houjin_bangou"],
+                "partner_primary_name": r["partner_primary_name"],
+                "alliance_score_0_100": r["alliance_score_0_100"],
+                "co_adoption_count": r["co_adoption_count"],
+                "industry_chain_pair": r["industry_chain_pair"],
+                "region_a": r["region_a"],
+                "region_b": r["region_b"],
+                "signals": signals,
+            }
+        )
     return {
-        "houjin_bangou": houjin_bangou, "refreshed_at": refreshed_at,
-        "items": items, "_disclaimer": _TAX_DISCLAIMER,
+        "houjin_bangou": houjin_bangou,
+        "refreshed_at": refreshed_at,
+        "items": items,
+        "_disclaimer": _TAX_DISCLAIMER,
         "_source": "am_alliance_opportunity (mig 238, weekly cron)",
     }
 
@@ -259,7 +299,7 @@ def graph_vec_search_am(
     text = (query_text or "").strip() or " "
     seed = text.encode("utf-8")
     h = hashlib.sha256(seed).digest()
-    qvec = []
+    qvec: list[float] = []
     while len(qvec) < dim:
         qvec.extend((b - 127.5) / 127.5 for b in h)
         h = hashlib.sha256(h).digest()
@@ -285,18 +325,23 @@ def graph_vec_search_am(
                     "SELECT primary_name, record_kind FROM am_entities WHERE canonical_id = ?",
                     (row[0],),
                 )
-                hits.append({
-                    "canonical_id": row[0],
-                    "record_kind": (meta["record_kind"] if meta else "unknown"),
-                    "primary_name": (meta["primary_name"] if meta else None),
-                    "distance": float(row[1]),
-                })
+                hits.append(
+                    {
+                        "canonical_id": row[0],
+                        "record_kind": (meta["record_kind"] if meta else "unknown"),
+                        "primary_name": (meta["primary_name"] if meta else None),
+                        "distance": float(row[1]),
+                    }
+                )
         except sqlite3.OperationalError:
             continue
     hits.sort(key=lambda h: h["distance"])
     hits = hits[:top_k]
     return {
-        "query_text": query_text, "embed_model": model_id, "embed_dim": dim, "hits": hits,
+        "query_text": query_text,
+        "embed_model": model_id,
+        "embed_dim": dim,
+        "hits": hits,
         "_disclaimer": _TAX_DISCLAIMER,
         "_source": "am_entities_vec_* (mig 239, monthly+daily cron)",
     }

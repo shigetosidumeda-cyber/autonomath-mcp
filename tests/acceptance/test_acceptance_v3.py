@@ -46,7 +46,6 @@ import json
 import os
 import py_compile
 import re
-import sys
 from pathlib import Path
 
 import pytest
@@ -186,9 +185,7 @@ def test_federation_well_known_present() -> None:
         "site/.well-known/federation.json",
         "functions/.well-known/jpcite-federation.json",
     ]
-    assert any(_file_exists(c) for c in candidates), (
-        "A5: federation .well-known doc missing"
-    )
+    assert any(_file_exists(c) for c in candidates), "A5: federation .well-known doc missing"
 
 
 def test_mcp_error_codes_module() -> None:
@@ -290,7 +287,7 @@ def test_stripe_portal_billing_address_jp() -> None:
         b = pp.read_text(encoding="utf-8")
         # The marker we plant in D3 is `JP_ONLY_COUNTRY` or
         # billing_address_collection=required with country='JP' check
-        if "JP_ONLY_COUNTRY" in b or "allowed_countries" in b or "country=\"JP\"" in b:
+        if "JP_ONLY_COUNTRY" in b or "allowed_countries" in b or 'country="JP"' in b:
             has_jp_gate = True
             break
     # Until D3 is fully wired, soft-assert via skip if absent.
@@ -330,7 +327,9 @@ def test_geo_bench_500_queries_present() -> None:
     if not p.exists():
         pytest.skip("geo_bench corpus optional (bench falls back to embedded baseline)")
     body = json.loads(p.read_text(encoding="utf-8"))
-    total = sum(len(body.get(k, []) or []) for k in ("programs", "laws", "cases", "enforcement", "loans"))
+    total = sum(
+        len(body.get(k, []) or []) for k in ("programs", "laws", "cases", "enforcement", "loans")
+    )
     assert total == 500, f"B11 corpus expected 500 queries, got {total}"
 
 
@@ -377,7 +376,7 @@ def test_acceptance_v3_self_consistency() -> None:
 def test_repo_no_llm_imports_in_src() -> None:
     """CLAUDE.md non-negotiable: no LLM SDK in src/."""
     forbidden = ["anthropic", "openai", "google.generativeai", "claude_agent_sdk"]
-    for f in (SRC_ROOT.rglob("*.py")):
+    for f in SRC_ROOT.rglob("*.py"):
         body = f.read_text(encoding="utf-8", errors="ignore")
         for fb in forbidden:
             assert f"import {fb}" not in body and f"from {fb}" not in body, (

@@ -11,6 +11,7 @@ Pure stdlib + pytest tmpdir; no DB / network. Verifies:
 * 5pillars audit: total = 60.00 when all cells present, monotonic verdict
   thresholds.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -34,15 +35,24 @@ def _load_module(name: str, rel: str):
 
 # ---------------- cell 10: sla_breach_alert ----------------------------
 
+
 def test_sla_breach_alert_has_12_metrics():
     mod = _load_module("sla_breach_alert", "scripts/cron/sla_breach_alert.py")
     assert len(mod.METRICS) == 12, f"expected 12 SLA metrics, got {len(mod.METRICS)}"
     ids = {m["id"] for m in mod.METRICS}
     for required in (
-        "healthz_uptime_24h", "endpoint_surface_200_rate", "freshness_axes_ok",
-        "cron_success_rate_24h", "rum_lcp_p75", "dlq_depth", "circuit_state_open",
-        "backup_integrity_pass", "r2_hash_match", "postmortem_queue",
-        "status_alerts_critical", "ax_5pillars_average",
+        "healthz_uptime_24h",
+        "endpoint_surface_200_rate",
+        "freshness_axes_ok",
+        "cron_success_rate_24h",
+        "rum_lcp_p75",
+        "dlq_depth",
+        "circuit_state_open",
+        "backup_integrity_pass",
+        "r2_hash_match",
+        "postmortem_queue",
+        "status_alerts_critical",
+        "ax_5pillars_average",
     ):
         assert required in ids, f"missing metric id={required}"
 
@@ -57,8 +67,14 @@ def test_sla_breach_alert_telegram_skip_when_env_missing(monkeypatch):
 
 def test_sla_breach_alert_evaluator_unknown_path(tmp_path):
     mod = _load_module("sla_breach_alert", "scripts/cron/sla_breach_alert.py")
-    metric = {"id": "x", "label": "x", "src": "this/does/not/exist.json",
-              "field": "v", "op": "lt", "threshold": 1}
+    metric = {
+        "id": "x",
+        "label": "x",
+        "src": "this/does/not/exist.json",
+        "field": "v",
+        "op": "lt",
+        "threshold": 1,
+    }
     r = mod._evaluate(metric)
     assert r["state"] == "unknown"
     assert r["breach"] is False
@@ -79,6 +95,7 @@ def test_sla_breach_alert_run_writes_sidecar(monkeypatch, tmp_path):
 
 
 # ---------------- cell 11: postmortem_auto_v2 --------------------------
+
 
 def test_postmortem_auto_v2_detect_empty_when_no_signals(monkeypatch):
     mod = _load_module("postmortem_auto_v2", "scripts/ops/postmortem_auto_v2.py")
@@ -103,10 +120,13 @@ def test_postmortem_auto_v2_detect_healthz_breach(monkeypatch):
 
 def test_postmortem_auto_v2_render_md_template_shape():
     mod = _load_module("postmortem_auto_v2", "scripts/ops/postmortem_auto_v2.py")
-    inc = {"kind": "cronfail", "severity": "P1",
-           "detected_at": "2026-05-12T00:00:00Z",
-           "signal": "cron success_rate_24h=0.70 < 80%",
-           "evidence": {"success_rate_24h": 0.7}}
+    inc = {
+        "kind": "cronfail",
+        "severity": "P1",
+        "detected_at": "2026-05-12T00:00:00Z",
+        "signal": "cron success_rate_24h=0.70 < 80%",
+        "evidence": {"success_rate_24h": 0.7},
+    }
     md = mod.render_md(inc, "2026-05-12")
     assert "# Postmortem — 2026-05-12 (cronfail)" in md
     assert "Severity**: P1" in md
@@ -118,9 +138,13 @@ def test_postmortem_auto_v2_render_md_template_shape():
 def test_postmortem_auto_v2_write_draft_collision(tmp_path, monkeypatch):
     mod = _load_module("postmortem_auto_v2", "scripts/ops/postmortem_auto_v2.py")
     monkeypatch.setattr(mod, "POSTMORTEM_DIR", tmp_path)
-    inc = {"kind": "slacluster", "severity": "P1",
-           "detected_at": "2026-05-12T00:00:00Z",
-           "signal": "3 breaches", "evidence": {}}
+    inc = {
+        "kind": "slacluster",
+        "severity": "P1",
+        "detected_at": "2026-05-12T00:00:00Z",
+        "signal": "3 breaches",
+        "evidence": {},
+    }
     p1 = mod.write_draft(inc, "2026-05-12", force=False)
     p2 = mod.write_draft(inc, "2026-05-12", force=False)
     assert p1 != p2
@@ -139,6 +163,7 @@ def test_postmortem_auto_v2_open_draft_pr_dry_run_skips():
 
 # ---------------- cell 12: verify_backup_daily -------------------------
 
+
 def test_verify_backup_daily_sha256_helper(tmp_path):
     mod = _load_module("verify_backup_daily", "scripts/cron/verify_backup_daily.py")
     blob = tmp_path / "blob"
@@ -151,6 +176,7 @@ def test_verify_backup_daily_sha256_helper(tmp_path):
 
 def test_verify_backup_daily_gzip_verify(tmp_path):
     import gzip
+
     mod = _load_module("verify_backup_daily", "scripts/cron/verify_backup_daily.py")
     gz = tmp_path / "ok.gz"
     payload = b"jpcite-test-payload" * 1000
@@ -173,8 +199,11 @@ def test_verify_backup_daily_gzip_verify_corrupt(tmp_path):
 def test_verify_backup_daily_dry_run_writes_sidecar(tmp_path, monkeypatch):
     mod = _load_module("verify_backup_daily", "scripts/cron/verify_backup_daily.py")
     # Stub the R2 listing so dry-run still produces an inventory hit.
-    monkeypatch.setattr(mod, "_latest_r2_snapshot",
-                        lambda prefix, bucket: ("jpintel/jpintel-20260512-000000.db.gz", 1024))
+    monkeypatch.setattr(
+        mod,
+        "_latest_r2_snapshot",
+        lambda prefix, bucket: ("jpintel/jpintel-20260512-000000.db.gz", 1024),
+    )
     monkeypatch.setattr(mod, "SIDECAR", tmp_path / "sidecar.json")
     monkeypatch.setattr(mod, "ANALYTICS", tmp_path)
     rc = mod.run(argv=["--dry-run"])
@@ -186,6 +215,7 @@ def test_verify_backup_daily_dry_run_writes_sidecar(tmp_path, monkeypatch):
 
 
 # ---------------- audit_runner_ax_5pillars ----------------------------
+
 
 def test_ax_5pillars_runs_and_scores():
     spec = importlib.util.spec_from_file_location(
@@ -205,7 +235,13 @@ def test_ax_5pillars_runs_and_scores():
     )
     assert result["cell_count"] >= 36
     # 5 pillars × at least 1 cell each.
-    assert set(result["pillars"].keys()) >= {"Access", "Context", "Tools", "Orchestration", "Resilience"}
+    assert set(result["pillars"].keys()) >= {
+        "Access",
+        "Context",
+        "Tools",
+        "Orchestration",
+        "Resilience",
+    }
     # Resilience has exactly 12 cells.
     assert result["pillars"]["Resilience"]["cells"] == 12
     assert result["verdict"] in ("green", "yellow", "red")
@@ -228,6 +264,7 @@ def test_ax_5pillars_render_md_shape():
 
 # ---------------- dashboard surface ----------------------------------
 
+
 def test_dashboard_html_present():
     dashboard = REPO_ROOT / "site" / "status" / "ax_5pillars_dashboard.html"
     assert dashboard.exists()
@@ -236,7 +273,7 @@ def test_dashboard_html_present():
     assert "Resilience" in text
     assert "/status/ax_5pillars.json" in text
     # JS-light: no external script tags
-    assert "<script src=\"http" not in text
+    assert '<script src="http' not in text
 
 
 if __name__ == "__main__":

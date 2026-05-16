@@ -73,7 +73,7 @@ PUBLISH_ORDER_2026_05_11.md の audit を踏まえた使い回し可能性。
 
 | field | value |
 |-------|-------|
-| 載りやすい angle | "Japanese public-info Evidence Packet MCP server — 151 tools, 9.4 GB SQLite FTS5, 1-line `uvx` install for Claude Code / Cursor". 英語圏 AI dev 向けに 「Japan-specific evidence benchmark」「MCP design patterns」軸で出す。 |
+| 載りやすい angle | "Japanese public-info Evidence Packet MCP server — 155 tools, 9.4 GB SQLite FTS5, 1-line `uvx` install for Claude Code / Cursor". 英語圏 AI dev 向けに 「Japan-specific evidence benchmark」「MCP design patterns」軸で出す。 |
 | 既存 draft 流用度 | **改稿要** (zenn draft 全文英訳 + Japan-specific 文脈の説明追加 / 英語 reader 向けに「なぜ日本特化が necessary か」の framing を冒頭に挿入) |
 | publish 手順 | (1) dev.to signup (GitHub) → (2) "Create new post" → markdown editor → (3) tags `mcp` `ai` `rag` `python` `showdev` → (4) Publish |
 | review SLA | 即時公開 (community moderation あり、spam フラグ無ければ即) |

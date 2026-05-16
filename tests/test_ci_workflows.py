@@ -22,6 +22,7 @@ REQUIRED_PYTEST_TARGETS = {
     "tests/test_perf_smoke.py",
     "tests/test_pre_deploy_verify.py",
     "tests/test_production_deploy_go_gate.py",
+    "tests/test_production_deploy_readiness_gate.py",
     "tests/test_production_improvement_preflight.py",
     "tests/test_release_readiness.py",
 }
@@ -30,6 +31,7 @@ REQUIRED_RUFF_TARGETS = {
     "scripts/ops/pre_deploy_verify.py",
     "scripts/ops/preflight_production_improvement.py",
     "scripts/ops/production_deploy_go_gate.py",
+    "scripts/ops/production_deploy_readiness_gate.py",
     "scripts/ops/repo_dirty_lane_report.py",
     "scripts/ops/release_readiness.py",
 }
@@ -155,6 +157,7 @@ def test_deploy_runs_local_gates_before_fly_deploy() -> None:
 
     assert "PRODUCTION_DEPLOY_OPERATOR_ACK_YAML" in text
     assert "python scripts/ops/pre_deploy_verify.py" in text
+    assert "python scripts/ops/production_deploy_readiness_gate.py" in text
     assert "python scripts/ops/production_deploy_go_gate.py --operator-ack" in text
     assert (
         "--warn-only"
@@ -166,6 +169,15 @@ def test_deploy_runs_local_gates_before_fly_deploy() -> None:
     )
     assert text.index("python scripts/ops/pre_deploy_verify.py") < text.index(
         "flyctl deploy --remote-only"
+    )
+    assert text.index("python scripts/ops/production_deploy_readiness_gate.py") < text.index(
+        "flyctl deploy --remote-only"
+    )
+    assert text.index("python scripts/ops/pre_deploy_verify.py") < text.index(
+        "python scripts/ops/production_deploy_readiness_gate.py"
+    )
+    assert text.index("python scripts/ops/production_deploy_readiness_gate.py") < text.index(
+        "python scripts/ops/production_deploy_go_gate.py --operator-ack"
     )
     assert text.index("python scripts/ops/production_deploy_go_gate.py --operator-ack") < (
         text.index("flyctl deploy --remote-only")

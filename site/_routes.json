@@ -5,6 +5,7 @@
     "/api/*",
     "/x402",
     "/x402/*",
+    "/release/*",
     "/webhook/*",
     "/artifacts/*",
     "/dpa_issue",

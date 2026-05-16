@@ -46,7 +46,9 @@ from .error_envelope import make_error
 
 logger = logging.getLogger("jpintel.mcp.autonomath.cohort_risk_chain")
 
-_ENABLED = get_flag("JPCITE_COHORT_RISK_CHAIN_ENABLED", "AUTONOMATH_COHORT_RISK_CHAIN_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_COHORT_RISK_CHAIN_ENABLED", "AUTONOMATH_COHORT_RISK_CHAIN_ENABLED", "1") == "1"
+)
 
 
 _DISCLAIMER = (

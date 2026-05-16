@@ -165,7 +165,7 @@ description_for_model に「8 業法フェンス + 匿名 3 req/日 + jc_ プレ
 
 - **Transport**: stdio / HTTP / SSE。jpcite は stdio (`uvx autonomath-mcp`) + HTTPS (`https://api.jpcite.com/mcp`)
 - **3 つの primary capability**:
-  - **Tools** — AI agent が呼べる関数 (jpcite は 151 tools)
+  - **Tools** — AI agent が呼べる関数 (jpcite は 155 tools)
   - **Resources** — AI agent が読み取れる文書/ファイル (jpcite は facts_registry + fence.md)
   - **Prompts** — Templated prompt workflow (jpcite は未配信)
 - **Client → Server 方向の 3 capability**:

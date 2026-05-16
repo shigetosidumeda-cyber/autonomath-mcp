@@ -58,10 +58,7 @@ _DEFAULT_API_BASE = "https://api.jpcite.com"
 
 
 def _api_base() -> str:
-    base = (
-        get_flag("JPCITE_API_BASE", "AUTONOMATH_API_BASE")
-        or _DEFAULT_API_BASE
-    )
+    base = get_flag("JPCITE_API_BASE", "AUTONOMATH_API_BASE") or _DEFAULT_API_BASE
     return base.rstrip("/")
 
 

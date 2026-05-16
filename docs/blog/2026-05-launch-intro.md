@@ -1,6 +1,6 @@
 ---
 title: "jpcite launch — 日本制度を 1 query で AI に聞く"
-description: "jpcite ローンチ記事 (Intro) — 11,601 件の検索対象制度を REST + MCP 151 ツールで横断検索。¥3/billable unit 完全従量、匿名 3 req/日 per IP free。"
+description: "jpcite ローンチ記事 (Intro) — 11,601 件の検索対象制度を REST + MCP 155 ツールで横断検索。¥3/billable unit 完全従量、匿名 3 req/日 per IP free。"
 tags:
   - api
   - mcp
@@ -61,7 +61,7 @@ curl -sS https://api.jpcite.com/v1/programs/search \
 }
 ```
 
-151 個の MCP ツールを Claude / Cursor / ChatGPT などの AI クライアントから呼べます。
+155 個の MCP ツールを Claude / Cursor / ChatGPT などの AI クライアントから呼べます。
 
 ## 価格
 
@@ -75,7 +75,7 @@ curl -sS https://api.jpcite.com/v1/programs/search \
 2. **行政書士** — 補助金 + 融資 + 許認可を 1 call で束ねる
 3. **SMB 経営者** — LINE notifications と web handoff で制度確認の続きを受け取る
 4. **VC / M&A advisor** — 法人番号で行政処分歴・採択歴・適格請求書を 1 query で due diligence
-5. **AI agent developer** — MCP / REST どちらでも統合、151 ツール全部叩ける
+5. **AI agent developer** — MCP / REST どちらでも統合、155 ツール全部叩ける
 
 ## なぜ今出すか
 

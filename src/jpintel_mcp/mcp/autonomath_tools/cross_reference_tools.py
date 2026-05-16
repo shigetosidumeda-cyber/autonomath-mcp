@@ -49,7 +49,9 @@ from .error_envelope import make_error
 logger = logging.getLogger("jpintel.mcp.autonomath.cross_reference")
 
 # Env gate. Default ON; flip to "0" for one-flag rollback without redeploy.
-_ENABLED = get_flag("JPCITE_CROSS_REFERENCE_ENABLED", "AUTONOMATH_CROSS_REFERENCE_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_CROSS_REFERENCE_ENABLED", "AUTONOMATH_CROSS_REFERENCE_ENABLED", "1") == "1"
+)
 
 
 # ---------------------------------------------------------------------------

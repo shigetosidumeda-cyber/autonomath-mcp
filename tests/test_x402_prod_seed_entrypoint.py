@@ -27,6 +27,7 @@ runs ``seed_x402_endpoints.py`` directly twice, and verifies idempotency
 (no-op on the second invocation). This exercises the script the entrypoint
 calls without forcing a 9 GB R2 download in CI.
 """
+
 from __future__ import annotations
 
 import contextlib
@@ -116,9 +117,7 @@ def _block_runtime_lines(text: str) -> str:
     assert end_candidates, "could not find end marker after W48.x402 block"
     end = min(end_candidates)
     block = text[start:end]
-    runtime = "\n".join(
-        line for line in block.splitlines() if not line.lstrip().startswith("#")
-    )
+    runtime = "\n".join(line for line in block.splitlines() if not line.lstrip().startswith("#"))
     return runtime
 
 
@@ -127,7 +126,9 @@ def test_entrypoint_seed_block_omits_pragma_quick_check() -> None:
     runtime = _block_runtime_lines(_entrypoint_text())
     assert "PRAGMA quick_check" not in runtime
     assert "PRAGMA integrity_check" not in runtime
-    assert "sqlite3 " not in runtime, "no inline sqlite3 calls — let the python seeder do all DB work"
+    assert "sqlite3 " not in runtime, (
+        "no inline sqlite3 calls — let the python seeder do all DB work"
+    )
 
 
 def test_entrypoint_seed_block_does_not_pass_force_flag() -> None:
@@ -143,9 +144,9 @@ def test_seed_script_idempotent_against_fresh_schema(tmp_path: Path) -> None:
     # Confirm the canonical migration declares the schema we mirror inline
     # below (so a future schema change forces an intentional test update).
     mig_text = MIGRATION.read_text(encoding="utf-8")
-    assert (
-        "CREATE TABLE IF NOT EXISTS am_x402_endpoint_config" in mig_text
-    ), "migration 282 must define am_x402_endpoint_config"
+    assert "CREATE TABLE IF NOT EXISTS am_x402_endpoint_config" in mig_text, (
+        "migration 282 must define am_x402_endpoint_config"
+    )
     # Minimal schema the seeder needs. Keep this in sync with 282_x402_payment.sql.
     create_stmt = """
     CREATE TABLE IF NOT EXISTS am_x402_endpoint_config (
@@ -170,9 +171,7 @@ def test_seed_script_idempotent_against_fresh_schema(tmp_path: Path) -> None:
     retired_first = [ep for ep in first["endpoints"] if ep["action"].startswith("retired_")]
     assert len(active_first) == 4
     assert {ep["action"] for ep in active_first} == {"inserted"}
-    assert retired_first == [
-        {"endpoint_path": "/v1/programs/search", "action": "retired_absent"}
-    ]
+    assert retired_first == [{"endpoint_path": "/v1/programs/search", "action": "retired_absent"}]
 
     second = _run_seed(db)
     active_second = [ep for ep in second["endpoints"] if not ep["action"].startswith("retired_")]
@@ -183,12 +182,9 @@ def test_seed_script_idempotent_against_fresh_schema(tmp_path: Path) -> None:
 
     conn = sqlite3.connect(str(db))
     try:
-        row_count = conn.execute(
-            "SELECT COUNT(*) FROM am_x402_endpoint_config"
-        ).fetchone()[0]
+        row_count = conn.execute("SELECT COUNT(*) FROM am_x402_endpoint_config").fetchone()[0]
         paths = sorted(
-            r[0]
-            for r in conn.execute("SELECT endpoint_path FROM am_x402_endpoint_config")
+            r[0] for r in conn.execute("SELECT endpoint_path FROM am_x402_endpoint_config")
         )
     finally:
         conn.close()

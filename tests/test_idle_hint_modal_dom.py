@@ -47,18 +47,13 @@ import os
 import socket
 import threading
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
-
-if TYPE_CHECKING:  # pragma: no cover
-    from playwright.async_api import Page
 
 _REQUIRES_LIVE = pytest.mark.skipif(
     os.environ.get("JPINTEL_E2E_IDLE_MODAL", "").strip() not in ("1", "true"),
     reason=(
-        "idle modal DOM emit e2e takes 32s (IDLE_MS=30000); "
-        "set JPINTEL_E2E_IDLE_MODAL=1 to opt-in"
+        "idle modal DOM emit e2e takes 32s (IDLE_MS=30000); set JPINTEL_E2E_IDLE_MODAL=1 to opt-in"
     ),
 )
 
@@ -93,9 +88,7 @@ def _serve_site(port: int, stop_event: threading.Event) -> None:
     import functools
     import http.server
 
-    handler = functools.partial(
-        http.server.SimpleHTTPRequestHandler, directory=str(_SITE_ROOT)
-    )
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(_SITE_ROOT))
     httpd = http.server.ThreadingHTTPServer(("127.0.0.1", port), handler)
     httpd.timeout = 0.25
 
@@ -193,9 +186,7 @@ async def test_idle_modal_suppressed_by_intentional_click(site_server: str) -> N
 
         await asyncio.sleep(5.0)
         # Click anywhere on body (not on a link — we don't want to navigate).
-        await page.evaluate(
-            "document.body.dispatchEvent(new MouseEvent('click', {bubbles: true}))"
-        )
+        await page.evaluate("document.body.dispatchEvent(new MouseEvent('click', {bubbles: true}))")
         # Wait less than IDLE_MS from the click — modal must still be absent.
         await asyncio.sleep((IDLE_MS / 1000) - 2.0)
         modal = await page.query_selector("#jpcite-bp-modal")
@@ -217,9 +208,7 @@ def test_mousemove_not_in_reset_events() -> None:
     assert "resetEvents" in src, "resetEvents identifier missing — file restructured?"
     # The literal list assignment after the fix.
     needle = 'var resetEvents = ["click", "keydown", "scroll", "touchstart"]'
-    assert needle in src, (
-        f"resetEvents literal drifted from the tick#4 fix; expected {needle!r}"
-    )
+    assert needle in src, f"resetEvents literal drifted from the tick#4 fix; expected {needle!r}"
     assert '"mousemove"' not in src.split("resetEvents")[1].split("]")[0], (
         "mousemove re-introduced into resetEvents — would suppress idle timer"
     )
@@ -233,9 +222,9 @@ def test_canonical_modal_hooks_present() -> None:
     src = (_SITE_ROOT / "assets" / "billing_progress.js").read_text(encoding="utf-8")
     for token in (
         'modal.id = "jpcite-bp-modal"',
-        'hint-modal',
-        'lost-user-hint',
-        'data-idle-hint',
+        "hint-modal",
+        "lost-user-hint",
+        "data-idle-hint",
         'modal.setAttribute("role", "dialog")',
     ):
         assert token in src, f"canonical modal hook missing: {token!r}"

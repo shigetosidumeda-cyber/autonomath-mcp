@@ -10,9 +10,7 @@ ETL_SCRIPT = REPO_ROOT / "scripts" / "etl" / "provenance_backfill_6M_facts_v2.py
 
 
 def _load_etl_module():
-    spec = importlib.util.spec_from_file_location(
-        "provenance_backfill_6M_facts_v2", ETL_SCRIPT
-    )
+    spec = importlib.util.spec_from_file_location("provenance_backfill_6M_facts_v2", ETL_SCRIPT)
     assert spec is not None
     assert spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
@@ -105,9 +103,7 @@ def test_provenance_backfill_still_supports_text_ids() -> None:
     counts = etl._walk(conn, None, max_rows=0, chunk_size=1, dry_run=False)
     metadata_ids = [
         r[0]
-        for r in conn.execute(
-            "SELECT fact_id FROM am_fact_metadata ORDER BY fact_id"
-        ).fetchall()
+        for r in conn.execute("SELECT fact_id FROM am_fact_metadata ORDER BY fact_id").fetchall()
     ]
 
     assert counts == {"upserted": 2, "unchanged": 0, "skipped": 0, "errors": 0}

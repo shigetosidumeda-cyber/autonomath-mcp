@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 HEADERS_FILE = REPO_ROOT / "site" / "_headers"
 
@@ -35,8 +34,7 @@ def test_global_static_security_headers_keep_baseline() -> None:
     assert headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
 
     hsts_directives = {
-        directive.strip().lower()
-        for directive in headers["Strict-Transport-Security"].split(";")
+        directive.strip().lower() for directive in headers["Strict-Transport-Security"].split(";")
     }
     assert {"max-age=31536000", "includesubdomains", "preload"} <= hsts_directives
 

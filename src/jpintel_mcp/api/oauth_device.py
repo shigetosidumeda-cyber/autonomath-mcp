@@ -39,7 +39,6 @@ from __future__ import annotations
 
 import logging
 import secrets
-import string
 import time
 from typing import Any
 
@@ -184,9 +183,7 @@ def device_code(
         device_code=device_code,
         user_code=user_code,
         verification_uri=VERIFICATION_URI,
-        verification_uri_complete=VERIFICATION_URI_COMPLETE_TEMPLATE.format(
-            code=user_code
-        ),
+        verification_uri_complete=VERIFICATION_URI_COMPLETE_TEMPLATE.format(code=user_code),
         expires_in=DEFAULT_EXPIRES_IN,
         interval=DEFAULT_INTERVAL,
     )
@@ -281,14 +278,10 @@ def device_approve(
     _prune_expired()
     device_code = _USER_CODE_INDEX.get(user_code.upper().strip())
     if not device_code:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user_code not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_code not found")
     state = _DEVICE_STATE.get(device_code)
     if state is None or state["expires_at"] < _now():
-        raise HTTPException(
-            status_code=status.HTTP_410_GONE, detail="device_code expired"
-        )
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="device_code expired")
     state["status"] = "approved"
     state["bound_api_key"] = api_key
     state["approved_at"] = _now()
@@ -306,14 +299,10 @@ def device_deny(user_code: str = Form(...)) -> dict[str, Any]:
     _prune_expired()
     device_code = _USER_CODE_INDEX.get(user_code.upper().strip())
     if not device_code:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="user_code not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_code not found")
     state = _DEVICE_STATE.get(device_code)
     if state is None:
-        raise HTTPException(
-            status_code=status.HTTP_410_GONE, detail="device_code expired"
-        )
+        raise HTTPException(status_code=status.HTTP_410_GONE, detail="device_code expired")
     state["status"] = "denied"
     return {"status": "denied"}
 

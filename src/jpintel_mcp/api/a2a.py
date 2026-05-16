@@ -102,7 +102,7 @@ _EPHEMERAL_SECRET = secrets.token_bytes(32)
 def _mint_state_token(task_id: str) -> str:
     """Issue a `state_token` bound to `task_id` + UTC issue time."""
     issued = int(time.time())
-    payload = f"{task_id}.{issued}".encode("utf-8")
+    payload = f"{task_id}.{issued}".encode()
     sig = hmac.new(_state_secret(), payload, hashlib.sha256).hexdigest()[:32]
     return f"{task_id}.{issued}.{sig}"
 
@@ -122,9 +122,9 @@ def _verify_state_token(task_id: str, token: str) -> bool:
     age = time.time() - issued
     if age < 0 or age > _STATE_TOKEN_TTL.total_seconds():
         return False
-    expected = hmac.new(
-        _state_secret(), f"{tid}.{issued_s}".encode("utf-8"), hashlib.sha256
-    ).hexdigest()[:32]
+    expected = hmac.new(_state_secret(), f"{tid}.{issued_s}".encode(), hashlib.sha256).hexdigest()[
+        :32
+    ]
     return hmac.compare_digest(expected, sig)
 
 
@@ -132,9 +132,7 @@ def _gc_old_tasks() -> None:
     """Drop tasks older than `_TASK_RETENTION` to bound in-memory store."""
     cutoff = datetime.now(UTC) - _TASK_RETENTION
     expired = [
-        tid
-        for tid, task in _TASKS.items()
-        if datetime.fromisoformat(task["created_at"]) < cutoff
+        tid for tid, task in _TASKS.items() if datetime.fromisoformat(task["created_at"]) < cutoff
     ]
     for tid in expired:
         _TASKS.pop(tid, None)
@@ -455,7 +453,11 @@ SKILL_CATALOG: dict[str, dict[str, Any]] = {
         "category": "search",
         "tags": ["read", "corpus_query", "primary_source"],
         "description": "Free-text + faceted search across 11,601 制度.",
-        "input_schema": {"type": "object", "properties": {"q": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["q"]},
+        "input_schema": {
+            "type": "object",
+            "properties": {"q": {"type": "string"}, "limit": {"type": "integer"}},
+            "required": ["q"],
+        },
         "output_schema": {"type": "object", "properties": {"results": {"type": "array"}}},
         "typical_latency_ms": 120,
         "sensitive": False,
@@ -492,7 +494,11 @@ SKILL_CATALOG: dict[str, dict[str, Any]] = {
         "category": "verify",
         "tags": ["verify", "no_inference"],
         "description": "Fact-verification against the live corpus.",
-        "input_schema": {"type": "object", "properties": {"claim": {"type": "string"}}, "required": ["claim"]},
+        "input_schema": {
+            "type": "object",
+            "properties": {"claim": {"type": "string"}},
+            "required": ["claim"],
+        },
         "output_schema": {"type": "object", "properties": {"verdict": {"type": "string"}}},
         "typical_latency_ms": 200,
         "sensitive": True,
@@ -511,7 +517,10 @@ SKILL_CATALOG: dict[str, dict[str, Any]] = {
         "category": "graph",
         "tags": ["read", "graph", "cross_corpus"],
         "description": "Multi-hop traversal across 503,930 entities + 6.12M facts.",
-        "input_schema": {"type": "object", "properties": {"start": {"type": "string"}, "depth": {"type": "integer"}}},
+        "input_schema": {
+            "type": "object",
+            "properties": {"start": {"type": "string"}, "depth": {"type": "integer"}},
+        },
         "output_schema": {"type": "object", "properties": {"path": {"type": "array"}}},
         "typical_latency_ms": 320,
         "sensitive": False,
@@ -530,7 +539,13 @@ SKILL_CATALOG: dict[str, dict[str, Any]] = {
         "category": "cohort",
         "tags": ["read", "cohort", "采択事例"],
         "description": "Match 採択事例 to a target profile.",
-        "input_schema": {"type": "object", "properties": {"industry_jsic": {"type": "string"}, "employee_count": {"type": "integer"}}},
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "industry_jsic": {"type": "string"},
+                "employee_count": {"type": "integer"},
+            },
+        },
         "output_schema": {"type": "object", "properties": {"matches": {"type": "array"}}},
         "typical_latency_ms": 240,
         "sensitive": False,
@@ -574,7 +589,9 @@ async def list_skills(
         "agent_name": "jpcite",
         "skill_count": len(skills),
         "total_skill_count": len(SKILL_CATALOG),
-        "categories": sorted({body.get("category", "") for body in SKILL_CATALOG.values() if body.get("category")}),
+        "categories": sorted(
+            {body.get("category", "") for body in SKILL_CATALOG.values() if body.get("category")}
+        ),
         "tags": sorted({t for body in SKILL_CATALOG.values() for t in body.get("tags", [])}),
         "skills": skills,
     }
@@ -586,7 +603,11 @@ async def get_skill(skill_name: str) -> dict[str, Any]:
     if not body:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "skill_not_found", "skill": skill_name, "valid_skills": sorted(SKILL_CATALOG.keys())},
+            detail={
+                "error": "skill_not_found",
+                "skill": skill_name,
+                "valid_skills": sorted(SKILL_CATALOG.keys()),
+            },
         )
     return _normalise_skill_card(skill_name, body)
 
@@ -605,11 +626,19 @@ async def negotiate_skills(payload: A2ASkillNegotiation) -> dict[str, Any]:
     for name, body in SKILL_CATALOG.items():
         if payload.requested_skills and name not in payload.requested_skills:
             continue
-        if payload.requested_tags and not any(t in body.get("tags", []) for t in payload.requested_tags):
+        if payload.requested_tags and not any(
+            t in body.get("tags", []) for t in payload.requested_tags
+        ):
             continue
-        if payload.requested_categories and body.get("category") not in payload.requested_categories:
+        if (
+            payload.requested_categories
+            and body.get("category") not in payload.requested_categories
+        ):
             continue
-        if payload.max_latency_ms is not None and body.get("typical_latency_ms", 0) > payload.max_latency_ms:
+        if (
+            payload.max_latency_ms is not None
+            and body.get("typical_latency_ms", 0) > payload.max_latency_ms
+        ):
             continue
         if not payload.accept_sensitive and body.get("sensitive", False):
             continue

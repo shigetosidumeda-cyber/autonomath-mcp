@@ -257,7 +257,9 @@ def test_resilience_artifact_skipped_marker(toxiproxy_host: str, toxiproxy_port:
     assert row["status"] == "skipped"
 
 
-def test_artifact_directory_writeable(tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_artifact_directory_writeable(
+    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Independent of Toxiproxy: prove the artifact pipeline works.
 
     Validates that ``_write_row`` writes JSONL the dashboard can parse.

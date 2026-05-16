@@ -52,7 +52,9 @@ SCRIPTS: list[tuple[str, str]] = [
 ]
 
 
-def _run(script_rel: str, db_path: Path, extra_args: list[str] | None = None) -> subprocess.CompletedProcess:
+def _run(
+    script_rel: str, db_path: Path, extra_args: list[str] | None = None
+) -> subprocess.CompletedProcess:
     """Invoke the ETL script with --dry-run in a subprocess.
 
     Passing an explicit --db to a non-existent path proves the gate works

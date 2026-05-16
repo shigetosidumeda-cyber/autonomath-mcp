@@ -31,7 +31,6 @@ import pathlib
 import sqlite3
 import subprocess
 import sys
-import tempfile
 
 import pytest
 
@@ -39,15 +38,9 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_271 = REPO_ROOT / "scripts" / "migrations" / "271_rule_tree.sql"
 MIG_271_RB = REPO_ROOT / "scripts" / "migrations" / "271_rule_tree_rollback.sql"
 ETL_SEED = REPO_ROOT / "scripts" / "etl" / "seed_rule_tree_definitions.py"
-SRC_RULE_TREE = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "rule_tree_eval.py"
-)
-MANIFEST_JPCITE = (
-    REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-)
-MANIFEST_AM = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+SRC_RULE_TREE = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "rule_tree_eval.py"
+MANIFEST_JPCITE = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
+MANIFEST_AM = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 
 # ---------------------------------------------------------------------------
@@ -57,9 +50,7 @@ MANIFEST_AM = (
 
 def _import_rule_tree_module():
     """Load the rule_tree_eval module by file path (avoids package init)."""
-    spec = importlib.util.spec_from_file_location(
-        "_rule_tree_test_w47_mod", SRC_RULE_TREE
-    )
+    spec = importlib.util.spec_from_file_location("_rule_tree_test_w47_mod", SRC_RULE_TREE)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["_rule_tree_test_w47_mod"] = mod
@@ -95,8 +86,7 @@ def test_migration_271_creates_tables(tmp_path: pathlib.Path) -> None:
         names = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view') ORDER BY name"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') ORDER BY name"
             ).fetchall()
         }
     finally:
@@ -129,9 +119,7 @@ def test_migration_271_rollback_drops(tmp_path: pathlib.Path) -> None:
     try:
         names = {
             r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
         }
     finally:
         conn.close()
@@ -288,15 +276,11 @@ def _positive_input() -> dict:
     }
 
 
-def test_seeded_trees_pass_with_positive_input(
-    seeded_db: pathlib.Path, rule_tree_module
-) -> None:
+def test_seeded_trees_pass_with_positive_input(seeded_db: pathlib.Path, rule_tree_module) -> None:
     """Each seeded tree evaluates to 'pass' for a hand-picked positive input."""
     conn = sqlite3.connect(str(seeded_db))
     try:
-        rows = conn.execute(
-            "SELECT tree_id, tree_def_json FROM am_rule_trees"
-        ).fetchall()
+        rows = conn.execute("SELECT tree_id, tree_def_json FROM am_rule_trees").fetchall()
     finally:
         conn.close()
     inp = _positive_input()
@@ -304,8 +288,7 @@ def test_seeded_trees_pass_with_positive_input(
         tree = json.loads(defj)
         env = rule_tree_module.evaluate_rule_tree(tree, inp)
         assert env["result"] == "pass", (
-            f"tree={tid} expected pass, got {env['result']}, "
-            f"rationale={env['rationale']}"
+            f"tree={tid} expected pass, got {env['result']}, rationale={env['rationale']}"
         )
         assert len(env["path"]) >= 1
         assert len(env["rationale"]) == len(env["path"])
@@ -333,9 +316,7 @@ def test_seeded_subsidy_tree_fails_when_industry_out_of_set(
     assert env["result"] == "fail"
 
 
-def test_seeded_dd_tree_xor_branch(
-    seeded_db: pathlib.Path, rule_tree_module
-) -> None:
+def test_seeded_dd_tree_xor_branch(seeded_db: pathlib.Path, rule_tree_module) -> None:
     """XOR path in due_diligence_v1: exactly one of audit_opinion / exempt is true."""
     conn = sqlite3.connect(str(seeded_db))
     try:
@@ -366,9 +347,7 @@ def test_seeded_dd_tree_xor_branch(
 
 def test_manifest_jpcite_lists_271(rule_tree_module) -> None:
     """jpcite boot manifest registers migration 271_rule_tree.sql."""
-    assert "271_rule_tree.sql" in MANIFEST_JPCITE.read_text(
-        encoding="utf-8"
-    )
+    assert "271_rule_tree.sql" in MANIFEST_JPCITE.read_text(encoding="utf-8")
 
 
 def test_manifest_autonomath_lists_271(rule_tree_module) -> None:

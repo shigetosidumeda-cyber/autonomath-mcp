@@ -95,7 +95,9 @@ logger = logging.getLogger("jpintel.mcp.autonomath.wave24a")
 
 # Env-gated registration (default on). Flip to "0" for one-flag rollback
 # if a regression surfaces.
-_ENABLED = get_flag("JPCITE_WAVE24_FIRST_HALF_ENABLED", "AUTONOMATH_WAVE24_FIRST_HALF_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_WAVE24_FIRST_HALF_ENABLED", "AUTONOMATH_WAVE24_FIRST_HALF_ENABLED", "1") == "1"
+)
 
 
 # ---------------------------------------------------------------------------

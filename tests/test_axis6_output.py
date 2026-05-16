@@ -23,7 +23,6 @@ import sqlite3
 import tempfile
 import time
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -54,16 +53,16 @@ def test_pdf_render_produces_bytes_with_sections() -> None:
         "fetched_at": "2026-05-12T00:00:00Z",
         "houjin_360": {"name": "テスト株式会社", "prefecture": "東京都"},
         "risk_score": {"composite_score": 0.42, "computed_at": "2026-05-11"},
-        "new_programs": [
-            {"program_id": "P-001", "title": "テスト補助金", "authority": "経産省"}
-        ],
+        "new_programs": [{"program_id": "P-001", "title": "テスト補助金", "authority": "経産省"}],
         "amendments": [
-            {"amendment_id": "A-001", "law_id": "L-001",
-             "summary": "テスト改正", "effective_from": "2026-06-01"}
+            {
+                "amendment_id": "A-001",
+                "law_id": "L-001",
+                "summary": "テスト改正",
+                "effective_from": "2026-06-01",
+            }
         ],
-        "fence_summary": [
-            {"law": "税理士法 §52", "rule": "テスト fence"}
-        ],
+        "fence_summary": [{"law": "税理士法 §52", "rule": "テスト fence"}],
     }
     blob, page_count = _render_pdf("9123456789012", ctx)
     assert isinstance(blob, bytes)
@@ -120,15 +119,23 @@ def test_excel_render_5_sheet_workbook() -> None:
         ],
     }
     blob, sheet_count = _render_xlsx(
-        "P-001", substrate,
-        include_value_estimate=True, include_calendar=True, note="test note",
+        "P-001",
+        substrate,
+        include_value_estimate=True,
+        include_calendar=True,
+        note="test note",
     )
     assert blob[:2] == b"PK"
     assert sheet_count == 5
     from openpyxl import load_workbook  # type: ignore[import-untyped]
+
     wb = load_workbook(io.BytesIO(blob))
     assert set(wb.sheetnames) == {
-        "制度サマリ", "必要書類chk", "金額目安", "期限calendar", "補足連絡先"
+        "制度サマリ",
+        "必要書類chk",
+        "金額目安",
+        "期限calendar",
+        "補足連絡先",
     }
 
 
@@ -142,9 +149,12 @@ def test_excel_request_accepts_legacy_include_roi_alias() -> None:
 def test_excel_template_seed_exists_and_opens() -> None:
     pytest.importorskip("openpyxl")
     from openpyxl import load_workbook  # type: ignore[import-untyped]
+
     seed = (
         Path(__file__).resolve().parent.parent
-        / "templates" / "excel" / "application_estimate_v1.xlsx"
+        / "templates"
+        / "excel"
+        / "application_estimate_v1.xlsx"
     )
     assert seed.exists(), f"seed missing: {seed}"
     wb = load_workbook(seed)
@@ -163,10 +173,7 @@ def _hmac_sha256(secret: str, body: bytes) -> str:
 def test_mf_webhook_verify_and_account_extraction() -> None:
     from importlib.util import module_from_spec, spec_from_file_location
 
-    target = (
-        Path(__file__).resolve().parent.parent
-        / "sdk" / "mf-plugin" / "mf_webhook_trigger.py"
-    )
+    target = Path(__file__).resolve().parent.parent / "sdk" / "mf-plugin" / "mf_webhook_trigger.py"
     spec = spec_from_file_location("mf_webhook_trigger", target)
     assert spec is not None and spec.loader is not None
     mod = module_from_spec(spec)
@@ -175,22 +182,21 @@ def test_mf_webhook_verify_and_account_extraction() -> None:
     except ImportError as exc:
         pytest.skip(f"mf plugin import skipped: {exc}")
 
-    body = json.dumps({
-        "transaction": {
-            "account_classification": {
-                "large_category": "通信費",
-                "middle_category": "ソフトウェア",
+    body = json.dumps(
+        {
+            "transaction": {
+                "account_classification": {
+                    "large_category": "通信費",
+                    "middle_category": "ソフトウェア",
+                }
             }
-        }
-    }, ensure_ascii=False).encode("utf-8")
+        },
+        ensure_ascii=False,
+    ).encode("utf-8")
     sig = _hmac_sha256("S3CR3T_MF", body)
-    mod.verify_mf_webhook(
-        raw_body=body, signature_header=sig, secret="S3CR3T_MF"
-    )
+    mod.verify_mf_webhook(raw_body=body, signature_header=sig, secret="S3CR3T_MF")
     with pytest.raises(mod.MfWebhookSignatureError):
-        mod.verify_mf_webhook(
-            raw_body=body, signature_header="bad", secret="S3CR3T_MF"
-        )
+        mod.verify_mf_webhook(raw_body=body, signature_header="bad", secret="S3CR3T_MF")
 
     payload = json.loads(body.decode("utf-8"))
     accs = mod._extract_accounts(payload)
@@ -201,10 +207,7 @@ def test_mf_webhook_verify_and_account_extraction() -> None:
 def test_yayoi_csv_parser_and_mapping() -> None:
     from importlib.util import module_from_spec, spec_from_file_location
 
-    target = (
-        Path(__file__).resolve().parent.parent
-        / "sdk" / "yayoi-plugin" / "yayoi_to_jpcite.py"
-    )
+    target = Path(__file__).resolve().parent.parent / "sdk" / "yayoi-plugin" / "yayoi_to_jpcite.py"
     spec = spec_from_file_location("yayoi_to_jpcite", target)
     assert spec is not None and spec.loader is not None
     mod = module_from_spec(spec)
@@ -231,8 +234,7 @@ def test_yayoi_csv_parser_and_mapping() -> None:
 def test_freee_journal_mapping_present() -> None:
     """The freee plugin module must have JOURNAL_ACCOUNT_TO_FUNDING_PURPOSE."""
     target = (
-        Path(__file__).resolve().parent.parent
-        / "sdk" / "freee-plugin" / "freee_webhook_trigger.py"
+        Path(__file__).resolve().parent.parent / "sdk" / "freee-plugin" / "freee_webhook_trigger.py"
     )
     assert target.exists()
     src = target.read_text(encoding="utf-8")
@@ -250,6 +252,7 @@ def test_notion_v3_amendment_property_schema() -> None:
     from tools.integrations.notion_sync_v3 import (
         _amendment_to_notion_properties,
     )
+
     hit = {
         "amendment_id": "AMD-001",
         "law_id": "law-2026-001",
@@ -269,6 +272,7 @@ def test_notion_v3_houjin_property_schema() -> None:
     from tools.integrations.notion_sync_v3 import (
         _houjin_to_notion_properties,
     )
+
     hit = {
         "watch_id": "W-001",
         "houjin_bangou": "9123456789012",
@@ -288,11 +292,13 @@ def test_notion_v3_houjin_property_schema() -> None:
 
 def test_linear_v2_gql_mutation_variables_shape() -> None:
     from tools.integrations import linear_ticket_v2 as mod
+
     assert "issueCreate" in mod._CREATE_ISSUE_GQL
     for var in ("$teamId", "$title", "$description", "$labelIds", "$priority"):
         assert var in mod._CREATE_ISSUE_GQL
 
     import os
+
     saved = os.environ.pop("LINEAR_TARGETS_JSON", None)
     try:
         n = mod._fan_out(
@@ -315,29 +321,27 @@ def test_linear_v2_gql_mutation_variables_shape() -> None:
 def test_webhook_v2_hmac_python_side_matches_ts_contract() -> None:
     secret = "test_secret_v2"
     timestamp = str(int(time.time() * 1000))
-    body = json.dumps({
-        "kind": "amendment.confirmed",
-        "event": "warn",
-        "title": "改正アラート",
-        "url": "https://jpcite.com/laws/L-001.html",
-        "summary": "テストサマリ",
-        "targets": ["slack", "discord", "teams"],
-        "fields": [{"name": "law_id", "value": "L-001"}],
-        "actions": [{"label": "jpcite で開く", "url": "https://jpcite.com/laws/L-001.html"}],
-    }, ensure_ascii=False)
-    signing_input = f"{timestamp}.{body}".encode("utf-8")
-    digest = hmac.new(
-        secret.encode("utf-8"), signing_input, hashlib.sha256
-    ).hexdigest()
+    body = json.dumps(
+        {
+            "kind": "amendment.confirmed",
+            "event": "warn",
+            "title": "改正アラート",
+            "url": "https://jpcite.com/laws/L-001.html",
+            "summary": "テストサマリ",
+            "targets": ["slack", "discord", "teams"],
+            "fields": [{"name": "law_id", "value": "L-001"}],
+            "actions": [{"label": "jpcite で開く", "url": "https://jpcite.com/laws/L-001.html"}],
+        },
+        ensure_ascii=False,
+    )
+    signing_input = f"{timestamp}.{body}".encode()
+    digest = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha256).hexdigest()
     assert len(digest) == 64
     assert all(c in "0123456789abcdef" for c in digest)
 
 
 def test_webhook_v2_file_exports_get_post_handlers() -> None:
-    p = (
-        Path(__file__).resolve().parent.parent
-        / "functions" / "webhook_router_v2.ts"
-    )
+    p = Path(__file__).resolve().parent.parent / "functions" / "webhook_router_v2.ts"
     src = p.read_text(encoding="utf-8")
     assert "export const onRequestPost" in src
     assert "export const onRequestGet" in src
@@ -356,7 +360,9 @@ def test_webhook_v2_file_exports_get_post_handlers() -> None:
 def test_migration_244_applies_idempotently() -> None:
     mig = (
         Path(__file__).resolve().parent.parent
-        / "scripts" / "migrations" / "244_pdf_report_generator.sql"
+        / "scripts"
+        / "migrations"
+        / "244_pdf_report_generator.sql"
     )
     assert mig.exists()
     sql = mig.read_text(encoding="utf-8")
@@ -372,10 +378,7 @@ def test_migration_244_applies_idempotently() -> None:
         conn = sqlite3.connect(str(db))
         try:
             tables = {
-                r[0]
-                for r in conn.execute(
-                    "SELECT name FROM sqlite_master WHERE type='table'"
-                )
+                r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
             }
             assert "am_pdf_report_subscriptions" in tables
             assert "am_pdf_report_generation_log" in tables
@@ -386,11 +389,15 @@ def test_migration_244_applies_idempotently() -> None:
 def test_migration_244_rollback_is_idempotent() -> None:
     fwd = (
         Path(__file__).resolve().parent.parent
-        / "scripts" / "migrations" / "244_pdf_report_generator.sql"
+        / "scripts"
+        / "migrations"
+        / "244_pdf_report_generator.sql"
     )
     rb = (
         Path(__file__).resolve().parent.parent
-        / "scripts" / "migrations" / "244_pdf_report_generator_rollback.sql"
+        / "scripts"
+        / "migrations"
+        / "244_pdf_report_generator_rollback.sql"
     )
     assert rb.exists()
     fwd_sql = fwd.read_text(encoding="utf-8")
@@ -404,10 +411,7 @@ def test_migration_244_rollback_is_idempotent() -> None:
             conn.executescript(rb_sql)
             conn.commit()
             tables = {
-                r[0]
-                for r in conn.execute(
-                    "SELECT name FROM sqlite_master WHERE type='table'"
-                )
+                r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
             }
             assert "am_pdf_report_subscriptions" not in tables
             assert "am_pdf_report_generation_log" not in tables

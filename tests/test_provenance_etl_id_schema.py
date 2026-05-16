@@ -46,20 +46,13 @@ import sqlite3
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-ETL_SCRIPT = (
-    REPO_ROOT
-    / "scripts"
-    / "etl"
-    / "provenance_backfill_6M_facts_v2.py"
-)
+ETL_SCRIPT = REPO_ROOT / "scripts" / "etl" / "provenance_backfill_6M_facts_v2.py"
 
 
 @pytest.fixture()
 def _etl_module():
     """Load the ETL module from its file path (it lives under scripts/etl/)."""
-    spec = importlib.util.spec_from_file_location(
-        "_prov_backfill_v2", ETL_SCRIPT
-    )
+    spec = importlib.util.spec_from_file_location("_prov_backfill_v2", ETL_SCRIPT)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -130,26 +123,17 @@ def test_am_entity_facts_pk_is_id_not_fact_id(_seeded_conn) -> None:
     This is the schema axis the Wave 49 tick#2 fix encodes — the ETL
     walker MUST cursor-paginate on `id`, not `fact_id`.
     """
-    cols = {
-        row[1] for row in _seeded_conn.execute(
-            "PRAGMA table_info(am_entity_facts)"
-        )
-    }
+    cols = {row[1] for row in _seeded_conn.execute("PRAGMA table_info(am_entity_facts)")}
     assert "id" in cols, "am_entity_facts must have `id` column (PK)"
     assert "fact_id" not in cols, (
-        "am_entity_facts must NOT have `fact_id` column "
-        "(Wave 49 tick#2 regression-class guard)"
+        "am_entity_facts must NOT have `fact_id` column (Wave 49 tick#2 regression-class guard)"
     )
 
 
 def test_am_fact_metadata_has_fact_id_column(_seeded_conn) -> None:
     """am_fact_metadata.fact_id IS the canonical PK column (migration 275).
     The ETL must keep using `fact_id` when writing to this table."""
-    cols = {
-        row[1] for row in _seeded_conn.execute(
-            "PRAGMA table_info(am_fact_metadata)"
-        )
-    }
+    cols = {row[1] for row in _seeded_conn.execute("PRAGMA table_info(am_fact_metadata)")}
     assert "fact_id" in cols
     assert "id" not in cols
 
@@ -165,9 +149,7 @@ def test_etl_script_uses_id_for_am_entity_facts(_etl_module) -> None:
         "ORDER BY fact_id ASC",  # tied to the walker cursor SELECT
     ]
     for needle in forbidden:
-        assert needle not in src, (
-            f"forbidden schema-mismatch pattern present in ETL: {needle!r}"
-        )
+        assert needle not in src, f"forbidden schema-mismatch pattern present in ETL: {needle!r}"
 
 
 def test_walker_dry_run_does_not_write(_etl_module, _seeded_conn) -> None:
@@ -181,12 +163,8 @@ def test_walker_dry_run_does_not_write(_etl_module, _seeded_conn) -> None:
         dry_run=True,
     )
     # No commits, no rows persisted.
-    meta_n = _seeded_conn.execute(
-        "SELECT COUNT(*) FROM am_fact_metadata"
-    ).fetchone()[0]
-    log_n = _seeded_conn.execute(
-        "SELECT COUNT(*) FROM am_fact_attestation_log"
-    ).fetchone()[0]
+    meta_n = _seeded_conn.execute("SELECT COUNT(*) FROM am_fact_metadata").fetchone()[0]
+    log_n = _seeded_conn.execute("SELECT COUNT(*) FROM am_fact_attestation_log").fetchone()[0]
     assert meta_n == 0
     assert log_n == 0
     # Walker MUST have visited every seeded fact (3 rows) and returned
@@ -195,9 +173,7 @@ def test_walker_dry_run_does_not_write(_etl_module, _seeded_conn) -> None:
     assert counts["errors"] == 0
 
 
-def test_walker_non_dry_run_writes_with_placeholder_sig(
-    _etl_module, _seeded_conn
-) -> None:
+def test_walker_non_dry_run_writes_with_placeholder_sig(_etl_module, _seeded_conn) -> None:
     """Non-dry-run path with no priv_key MUST still write metadata rows
     using the 64-byte zero-pad placeholder signature (mig 275 CHECK
     >= 64 satisfied)."""
@@ -208,12 +184,8 @@ def test_walker_non_dry_run_writes_with_placeholder_sig(
         chunk_size=10,
         dry_run=False,
     )
-    meta_n = _seeded_conn.execute(
-        "SELECT COUNT(*) FROM am_fact_metadata"
-    ).fetchone()[0]
-    log_n = _seeded_conn.execute(
-        "SELECT COUNT(*) FROM am_fact_attestation_log"
-    ).fetchone()[0]
+    meta_n = _seeded_conn.execute("SELECT COUNT(*) FROM am_fact_metadata").fetchone()[0]
+    log_n = _seeded_conn.execute("SELECT COUNT(*) FROM am_fact_attestation_log").fetchone()[0]
     assert meta_n == 3
     assert log_n == 3
     assert counts["upserted"] == 3
@@ -229,14 +201,10 @@ def test_walker_non_dry_run_writes_with_placeholder_sig(
         chunk_size=10,
         dry_run=False,
     )
-    meta_n2 = _seeded_conn.execute(
-        "SELECT COUNT(*) FROM am_fact_metadata"
-    ).fetchone()[0]
+    meta_n2 = _seeded_conn.execute("SELECT COUNT(*) FROM am_fact_metadata").fetchone()[0]
     assert meta_n2 == 3  # no duplicates
     # attestation_log is append-only by design (mig 275) — second pass
     # appends another 3 rows, so total grows.
-    log_n2 = _seeded_conn.execute(
-        "SELECT COUNT(*) FROM am_fact_attestation_log"
-    ).fetchone()[0]
+    log_n2 = _seeded_conn.execute("SELECT COUNT(*) FROM am_fact_attestation_log").fetchone()[0]
     assert log_n2 >= log_n
     assert counts2["errors"] == 0

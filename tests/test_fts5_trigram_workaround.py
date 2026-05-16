@@ -44,7 +44,6 @@ import pytest
 
 from jpintel_mcp.api.programs import _build_fts_match
 
-
 # ---------------------------------------------------------------------------
 # Seed fixture: a private in-memory FTS5(trigram) table with three controlled
 # rows. The rows are crafted to expose the gotcha *if* the workaround
@@ -67,9 +66,7 @@ def fts5_db() -> sqlite3.Connection:
     ``programs_fts`` table: a single content column (``primary_name``)
     tokenized via FTS5's ``trigram`` tokenizer."""
     conn = sqlite3.connect(":memory:")
-    conn.execute(
-        "CREATE VIRTUAL TABLE programs_fts USING fts5(primary_name, tokenize='trigram')"
-    )
+    conn.execute("CREATE VIRTUAL TABLE programs_fts USING fts5(primary_name, tokenize='trigram')")
     conn.executemany(
         "INSERT INTO programs_fts(rowid, primary_name) VALUES (?, ?)",
         [
@@ -152,9 +149,7 @@ def test_single_kanji_does_not_overfilter(
         rows (no over-filter).
     """
     expr = _build_fts_match("税")
-    assert expr == '"税"', (
-        f"single-kanji rewriter regressed: got {expr!r}, expected '\"税\"'"
-    )
+    assert expr == '"税"', f"single-kanji rewriter regressed: got {expr!r}, expected '\"税\"'"
     # The FTS5 trigram path is allowed to return [] for a 1-char token
     # (trigram needs 3+ chars). The contract is "does not raise" and
     # "is syntactically valid".
@@ -181,8 +176,7 @@ def test_single_kanji_does_not_overfilter(
         f"single-kanji LIKE recall missed the 税額控除 row: {like_hits!r}"
     )
     assert "テスト企業版ふるさと納税" in like_hits, (
-        f"single-kanji LIKE recall missed the ふるさと納税 row "
-        f"(over-filter): {like_hits!r}"
+        f"single-kanji LIKE recall missed the ふるさと納税 row (over-filter): {like_hits!r}"
     )
     # Sanity: FTS path returned valid result set (possibly empty), no exception.
     assert isinstance(fts_hits, list)

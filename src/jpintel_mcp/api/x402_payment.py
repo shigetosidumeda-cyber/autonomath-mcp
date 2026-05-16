@@ -74,6 +74,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from jpintel_mcp.config import settings
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
+    from starlette.responses import Response
     from starlette.types import ASGIApp
 
 logger = logging.getLogger("jpintel.x402.payment")
@@ -352,7 +355,7 @@ def _record_payment(
                 (challenge_nonce, endpoint_path, amount_usdc, payer_address, txn_hash),
             )
             conn.commit()
-            return int(cur.lastrowid)
+            return int(cur.lastrowid or 0)
         except sqlite3.IntegrityError:
             # txn_hash UNIQUE collision => already settled; surface the
             # original row id (idempotent replay).
@@ -395,7 +398,11 @@ class X402PaymentMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp) -> None:
         super().__init__(app)
 
-    async def dispatch(self, request: Request, call_next):  # type: ignore[override]
+    async def dispatch(
+        self,
+        request: Request,
+        call_next: Callable[[Request], Awaitable[Response]],
+    ) -> Response:
         if _has_valid_auth_shape(request):
             return await call_next(request)
 

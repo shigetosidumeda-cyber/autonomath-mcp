@@ -28,6 +28,7 @@ single-source. This module deliberately does NOT mint a DB row — the
 idempotency_cache (migration 087) handles the heavier "replay this exact
 POST" case; this is the lightweight "remember my cursor" case.
 """
+
 from __future__ import annotations
 
 import base64

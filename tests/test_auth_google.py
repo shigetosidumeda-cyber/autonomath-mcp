@@ -136,9 +136,7 @@ def _sign_jws(
     header_b64 = _b64url(json.dumps(header, separators=(",", ":")).encode("utf-8"))
     payload_b64 = _b64url(json.dumps(payload, separators=(",", ":")).encode("utf-8"))
     signing_input = f"{header_b64}.{payload_b64}".encode("ascii")
-    hash_for_alg = {"RS256": hashes.SHA256, "RS384": hashes.SHA384, "RS512": hashes.SHA512}[
-        alg
-    ]
+    hash_for_alg = {"RS256": hashes.SHA256, "RS384": hashes.SHA384, "RS512": hashes.SHA512}[alg]
     signature = private_key.sign(signing_input, padding.PKCS1v15(), hash_for_alg())
     return f"{header_b64}.{payload_b64}.{_b64url(signature)}"
 
@@ -400,9 +398,7 @@ def test_google_oauth_callback_rejects_id_token_missing_kid(client, monkeypatch)
     assert "kid" in r.text.lower()
 
 
-def test_google_oauth_callback_rejects_unknown_kid_when_jwks_unreachable(
-    client, monkeypatch
-):
+def test_google_oauth_callback_rejects_unknown_kid_when_jwks_unreachable(client, monkeypatch):
     """If the id_token's kid is unknown AND a JWKS refresh fails (network
     down), the callback MUST fail closed rather than accepting the
     token's claims.

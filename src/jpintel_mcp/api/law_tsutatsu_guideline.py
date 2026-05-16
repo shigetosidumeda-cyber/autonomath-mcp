@@ -11,6 +11,7 @@ Endpoints:
 
 NO LLM call. No aggregator URLs surfaced.
 """
+
 from __future__ import annotations
 
 import os
@@ -47,40 +48,49 @@ def _connect() -> sqlite3.Connection:
 
 def _row_to_tsutatsu(row: sqlite3.Row) -> dict[str, Any]:
     return {
-        "tsutatsu_id": row["tsutatsu_id"], "agency_id": row["agency_id"],
+        "tsutatsu_id": row["tsutatsu_id"],
+        "agency_id": row["agency_id"],
         "agency_name": row["agency_name"],
-        "tsutatsu_number": row["tsutatsu_number"], "title": row["title"],
+        "tsutatsu_number": row["tsutatsu_number"],
+        "title": row["title"],
         "body_excerpt": row["body_excerpt"],
-        "issued_date": row["issued_date"], "last_revised": row["last_revised"],
+        "issued_date": row["issued_date"],
+        "last_revised": row["last_revised"],
         "industry_jsic_major": row["industry_jsic_major"],
         "applicable_law_id": row["applicable_law_id"],
         "document_type": row["document_type"],
-        "source_url": row["source_url"], "full_text_url": row["full_text_url"],
-        "pdf_url": row["pdf_url"], "license": row["license"],
+        "source_url": row["source_url"],
+        "full_text_url": row["full_text_url"],
+        "pdf_url": row["pdf_url"],
+        "license": row["license"],
     }
 
 
 def _row_to_guideline(row: sqlite3.Row) -> dict[str, Any]:
     return {
-        "guideline_id": row["guideline_id"], "issuer_type": row["issuer_type"],
+        "guideline_id": row["guideline_id"],
+        "issuer_type": row["issuer_type"],
         "issuer_org": row["issuer_org"],
         "issuer_agency_id": row["issuer_agency_id"],
-        "title": row["title"], "short_title": row["short_title"],
+        "title": row["title"],
+        "short_title": row["short_title"],
         "body_excerpt": row["body_excerpt"],
         "industry_jsic_major": row["industry_jsic_major"],
         "industry_jsic_minor": row["industry_jsic_minor"],
         "industry_jsic_label": row["industry_jsic_label"],
         "target_audience": row["target_audience"],
         "compliance_status": row["compliance_status"],
-        "issued_date": row["issued_date"], "last_revised": row["last_revised"],
+        "issued_date": row["issued_date"],
+        "last_revised": row["last_revised"],
         "document_type": row["document_type"],
-        "source_url": row["source_url"], "full_text_url": row["full_text_url"],
-        "pdf_url": row["pdf_url"], "license": row["license"],
+        "source_url": row["source_url"],
+        "full_text_url": row["full_text_url"],
+        "pdf_url": row["pdf_url"],
+        "license": row["license"],
     }
 
 
-@router.get("/tsutatsu_all/search",
-            summary="Search 通達 across 15 ministries")
+@router.get("/tsutatsu_all/search", summary="Search 通達 across 15 ministries")
 def search_tsutatsu_all(
     q: str | None = Query(None),
     agency_id: str | None = Query(None),
@@ -93,7 +103,9 @@ def search_tsutatsu_all(
     where: list[str] = []
     params: list[Any] = []
     if q:
-        where.append("rowid IN (SELECT rowid FROM am_law_tsutatsu_all_fts WHERE am_law_tsutatsu_all_fts MATCH ?)")
+        where.append(
+            "rowid IN (SELECT rowid FROM am_law_tsutatsu_all_fts WHERE am_law_tsutatsu_all_fts MATCH ?)"
+        )
         params.append(q)
     if agency_id:
         where.append("agency_id = ?")
@@ -115,18 +127,26 @@ def search_tsutatsu_all(
         conn.close()
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={"error": "schema_pending_migration",
-                    "migration": "253_law_tsutatsu_all", "reason": str(exc)},
+            detail={
+                "error": "schema_pending_migration",
+                "migration": "253_law_tsutatsu_all",
+                "reason": str(exc),
+            },
         )
     count_sql = "SELECT COUNT(*) AS c FROM am_law_tsutatsu_all"
     if where:
         count_sql += " WHERE " + " AND ".join(where)
     total = conn.execute(count_sql, params[:-2]).fetchone()["c"]
     conn.close()
-    return JSONResponse({
-        "ok": True, "total": int(total), "limit": limit, "offset": offset,
-        "results": [_row_to_tsutatsu(r) for r in rows],
-    })
+    return JSONResponse(
+        {
+            "ok": True,
+            "total": int(total),
+            "limit": limit,
+            "offset": offset,
+            "results": [_row_to_tsutatsu(r) for r in rows],
+        }
+    )
 
 
 @router.get("/tsutatsu_all/agencies", summary="List agencies + tsutatsu counts")
@@ -138,8 +158,11 @@ def list_tsutatsu_agencies() -> JSONResponse:
         conn.close()
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={"error": "schema_pending_migration",
-                    "migration": "253_law_tsutatsu_all", "reason": str(exc)},
+            detail={
+                "error": "schema_pending_migration",
+                "migration": "253_law_tsutatsu_all",
+                "reason": str(exc),
+            },
         )
     conn.close()
     return JSONResponse({"ok": True, "agencies": [dict(r) for r in rows]})
@@ -157,8 +180,11 @@ def get_tsutatsu_detail(tsutatsu_id: str) -> JSONResponse:
         conn.close()
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={"error": "schema_pending_migration",
-                    "migration": "253_law_tsutatsu_all", "reason": str(exc)},
+            detail={
+                "error": "schema_pending_migration",
+                "migration": "253_law_tsutatsu_all",
+                "reason": str(exc),
+            },
         )
     conn.close()
     if not row:
@@ -188,7 +214,9 @@ def search_guideline(
     where: list[str] = []
     params: list[Any] = []
     if q:
-        where.append("rowid IN (SELECT rowid FROM am_law_guideline_fts WHERE am_law_guideline_fts MATCH ?)")
+        where.append(
+            "rowid IN (SELECT rowid FROM am_law_guideline_fts WHERE am_law_guideline_fts MATCH ?)"
+        )
         params.append(q)
     if issuer_type:
         where.append("issuer_type = ?")
@@ -213,18 +241,26 @@ def search_guideline(
         conn.close()
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={"error": "schema_pending_migration",
-                    "migration": "254_law_guideline", "reason": str(exc)},
+            detail={
+                "error": "schema_pending_migration",
+                "migration": "254_law_guideline",
+                "reason": str(exc),
+            },
         )
     count_sql = "SELECT COUNT(*) AS c FROM am_law_guideline"
     if where:
         count_sql += " WHERE " + " AND ".join(where)
     total = conn.execute(count_sql, params[:-2]).fetchone()["c"]
     conn.close()
-    return JSONResponse({
-        "ok": True, "total": int(total), "limit": limit, "offset": offset,
-        "results": [_row_to_guideline(r) for r in rows],
-    })
+    return JSONResponse(
+        {
+            "ok": True,
+            "total": int(total),
+            "limit": limit,
+            "offset": offset,
+            "results": [_row_to_guideline(r) for r in rows],
+        }
+    )
 
 
 @router.get("/guideline/issuers", summary="List guideline issuers + counts")
@@ -240,8 +276,11 @@ def list_guideline_issuers() -> JSONResponse:
         conn.close()
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={"error": "schema_pending_migration",
-                    "migration": "254_law_guideline", "reason": str(exc)},
+            detail={
+                "error": "schema_pending_migration",
+                "migration": "254_law_guideline",
+                "reason": str(exc),
+            },
         )
     conn.close()
     return JSONResponse({"ok": True, "issuers": [dict(r) for r in rows]})
@@ -259,8 +298,11 @@ def get_guideline_detail(guideline_id: str) -> JSONResponse:
         conn.close()
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail={"error": "schema_pending_migration",
-                    "migration": "254_law_guideline", "reason": str(exc)},
+            detail={
+                "error": "schema_pending_migration",
+                "migration": "254_law_guideline",
+                "reason": str(exc),
+            },
         )
     conn.close()
     if not row:

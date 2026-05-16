@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -321,12 +321,10 @@ def _make_typed_callback(prompt: _JpcitePrompt) -> Callable[..., list[dict[str, 
 
     def _renderer(_args: dict[str, Any]) -> list[dict[str, Any]]:
         payload = get_jpcite_prompt(prompt.name, _args)
-        return payload["messages"]
+        return cast("list[dict[str, Any]]", payload["messages"])
 
     # Build explicit signature: def _cb(a, b, c): ...
-    params_src = ", ".join(
-        f"{n}" if n in required else f"{n}=None" for n in arg_names
-    )
+    params_src = ", ".join(f"{n}" if n in required else f"{n}=None" for n in arg_names)
     body_src = (
         f"def _cb({params_src}):\n"
         f"    _args = {{{', '.join(f'{n!r}: {n}' for n in arg_names)}}}\n"
@@ -337,7 +335,7 @@ def _make_typed_callback(prompt: _JpcitePrompt) -> Callable[..., list[dict[str, 
     cb = ns["_cb"]
     cb.__name__ = prompt.name
     cb.__doc__ = prompt.description
-    return cb
+    return cast("Callable[..., list[dict[str, Any]]]", cb)
 
 
 def register_jpcite_prompts(mcp: Any) -> None:

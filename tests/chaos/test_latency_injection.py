@@ -71,18 +71,14 @@ def test_healthz_under_latency_injection(
     # subtracts a small skew for the proxy's own overhead.
     min_expected = (toxic_latency_ms / 1000.0) * 0.5
     assert elapsed >= min_expected, (
-        f"toxic not active: elapsed={elapsed:.3f}s "
-        f"< min_expected={min_expected:.3f}s"
+        f"toxic not active: elapsed={elapsed:.3f}s < min_expected={min_expected:.3f}s"
     )
     assert elapsed <= max_response_s, (
-        f"response exceeded budget: elapsed={elapsed:.3f}s "
-        f"> max={max_response_s:.3f}s"
+        f"response exceeded budget: elapsed={elapsed:.3f}s > max={max_response_s:.3f}s"
     )
 
 
-def test_request_id_propagation_under_latency(
-    api_proxy: Any, proxy_base_url: str
-) -> None:
+def test_request_id_propagation_under_latency(api_proxy: Any, proxy_base_url: str) -> None:
     """Correlation IDs must survive a slow upstream.
 
     The client supplies ``x-request-id``; the API echoes it back via
@@ -103,8 +99,7 @@ def test_request_id_propagation_under_latency(
     assert resp.status_code == 200
     echoed = resp.headers.get("x-request-id", "")
     assert echoed == rid, (
-        f"request-id round-trip broken under latency injection: "
-        f"sent={rid!r} got={echoed!r}"
+        f"request-id round-trip broken under latency injection: sent={rid!r} got={echoed!r}"
     )
 
 

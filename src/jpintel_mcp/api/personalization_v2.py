@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import logging
 import sqlite3
+from typing import cast
 
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -80,13 +81,16 @@ def _resolve_am_conn() -> sqlite3.Connection:
 def _fetch_client_profile(
     jp_conn: sqlite3.Connection, key_hash: str, client_id: int
 ) -> sqlite3.Row | None:
-    return jp_conn.execute(
-        """SELECT profile_id, name_label, jsic_major, prefecture,
+    return cast(
+        "sqlite3.Row | None",
+        jp_conn.execute(
+            """SELECT profile_id, name_label, jsic_major, prefecture,
                   employee_count, capital_yen
              FROM client_profiles
             WHERE profile_id = ? AND api_key_hash = ?""",
-        (client_id, key_hash),
-    ).fetchone()
+            (client_id, key_hash),
+        ).fetchone(),
+    )
 
 
 def _fetch_program_rows(
@@ -178,7 +182,9 @@ async def get_recommendations(
                 program_kind=prog["program_kind"],
                 source_url=prog["source_url"] or prog["official_url"],
                 score=int(r["score"] or 0),
-                score_breakdown={k: int(v) for k, v in breakdown.items() if isinstance(v, (int, float))},
+                score_breakdown={
+                    k: int(v) for k, v in breakdown.items() if isinstance(v, (int, float))
+                },
                 reasoning=reasoning,
                 refreshed_at=r["refreshed_at"],
             )

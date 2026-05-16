@@ -144,15 +144,13 @@ def test_wave22_wave30_anchor_tool_surfaces_disclaimer(tool_name: str) -> None:
     # Direct disclaimer_for() lookup must resolve a non-None string.
     direct = disclaimer_for(tool_name)
     assert isinstance(direct, str) and len(direct) >= 20, (
-        f"{tool_name}: disclaimer_for() returned {direct!r} "
-        "(expected non-empty string ≥20 chars)"
+        f"{tool_name}: disclaimer_for() returned {direct!r} (expected non-empty string ≥20 chars)"
     )
 
     # End-to-end via _envelope_merge must also surface the field.
     _, disclaimer = _invoke_and_extract_disclaimer(tool_name)
     assert isinstance(disclaimer, str), (
-        f"{tool_name}: missing `_disclaimer` on merged envelope "
-        "(business-law fence breach)"
+        f"{tool_name}: missing `_disclaimer` on merged envelope (business-law fence breach)"
     )
     assert len(disclaimer) >= 20, (
         f"{tool_name}: `_disclaimer` too short ({len(disclaimer)} chars) — "
@@ -234,8 +232,7 @@ def test_every_sensitive_tool_surfaces_disclaimer(tool_name: str) -> None:
     )
     assert disclaimer.strip(), f"{tool_name}: `_disclaimer` is empty/whitespace"
     assert len(disclaimer) >= 20, (
-        f"{tool_name}: `_disclaimer` too short ({len(disclaimer)} chars) "
-        "after envelope merge"
+        f"{tool_name}: `_disclaimer` too short ({len(disclaimer)} chars) after envelope merge"
     )
 
 
@@ -283,6 +280,5 @@ def test_build_envelope_direct_path_surfaces_disclaimer(tool_name: str) -> None:
         "tool-body decorator path lost the fence."
     )
     assert len(disclaimer) >= 20, (
-        f"{tool_name}: build_envelope() `_disclaimer` too short "
-        f"({len(disclaimer)} chars)"
+        f"{tool_name}: build_envelope() `_disclaimer` too short ({len(disclaimer)} chars)"
     )

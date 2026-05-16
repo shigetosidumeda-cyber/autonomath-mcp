@@ -49,7 +49,7 @@ import threading
 import time
 from collections import deque
 from datetime import UTC, datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
@@ -814,7 +814,9 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
 
     success_url = validate_jpcite_service_redirect_url(payload.success_url, kind="success")
     cancel_url = validate_jpcite_service_redirect_url(payload.cancel_url, kind="cancel")
-    checkout_locale = "en" if urlparse(success_url).path.startswith("/en/") else "ja"
+    checkout_locale: Literal["en", "ja"] = (
+        "en" if urlparse(success_url).path.startswith("/en/") else "ja"
+    )
     submit_message = (
         "By registering, you agree to the Terms of Service "
         "(https://jpcite.com/en/tos.html) and Privacy Policy "
@@ -838,9 +840,7 @@ def widget_signup(payload: WidgetSignupRequest) -> WidgetSignupResponse:
         branding_settings={"display_name": "jpcite"},
         subscription_data={"metadata": metadata},
         metadata=metadata,
-        custom_text={
-            "submit": {"message": submit_message}
-        },
+        custom_text={"submit": {"message": submit_message}},
         **extra,
     )
     return WidgetSignupResponse(checkout_url=session.url or "", session_id=session.id)

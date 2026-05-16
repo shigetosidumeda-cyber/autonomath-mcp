@@ -98,7 +98,7 @@ Protocol: `2025-06-18`。`~/Library/Application Support/Claude/claude_desktop_co
 - `uv` 未導入なら `brew install uv` か `pip install uv`
 - `pip install autonomath-mcp` 済みなら `"command": "autonomath-mcp"`
 - ワンクリック: [jpcite MCP bundle](/downloads/autonomath-mcp.mcpb) を Claude Desktop で開く
-- 再起動後、標準構成で 151 ツールが有効。Cursor / Cline などの MCP 対応クライアントも同じ server 設定を使えます。ChatGPT Custom GPT では次節の OpenAPI Actions を使います。
+- 再起動後、標準構成で 155 ツールが有効。Cursor / Cline などの MCP 対応クライアントも同じ server 設定を使えます。ChatGPT Custom GPT では次節の OpenAPI Actions を使います。
 
 ツール一覧: [mcp-tools.md](./mcp-tools.md)。 出典付きで回答させたい場合は、 検索後に `get_evidence_packet` を呼び、 一次資料 URL・取得時刻・provenance・ルール判定を先に AI クライアントへ渡します。 トークン量や追加検索回数への影響は、 モデル・プロンプト・質問内容・キャッシュ状態に依存します。
 

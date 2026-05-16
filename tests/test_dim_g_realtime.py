@@ -110,11 +110,7 @@ def _seed_event(
         (subscriber_id, signal_type, json.dumps(payload or {"bill_id": "B-001"})),
     )
     conn.commit()
-    return int(
-        conn.execute(
-            "SELECT MAX(event_id) FROM am_realtime_signal_event_log"
-        ).fetchone()[0]
-    )
+    return int(conn.execute("SELECT MAX(event_id) FROM am_realtime_signal_event_log").fetchone()[0])
 
 
 # ---------------------------------------------------------------------------
@@ -411,7 +407,9 @@ def test_dispatcher_cli_dry_run(tmp_path: pathlib.Path) -> None:
 
     proc = subprocess.run(
         [sys.executable, str(ETL_DISPATCH), "--db", str(db), "--dry-run"],
-        check=True, capture_output=True, text=True,
+        check=True,
+        capture_output=True,
+        text=True,
     )
     last = proc.stdout.strip().splitlines()[-1]
     payload = json.loads(last)

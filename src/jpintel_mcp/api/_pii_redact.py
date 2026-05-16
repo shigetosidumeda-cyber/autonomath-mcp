@@ -97,9 +97,7 @@ _PREFECTURE_TOKEN = (
     r"福岡県|佐賀県|長崎県|熊本県|大分県|宮崎県|鹿児島県|沖縄県)"
 )
 _ADDRESS_RE = re.compile(
-    _PREFECTURE_TOKEN
-    + r"[一-鿿゠-ヿ\w]{1,30}"
-    + r"(?:[0-9０-９]{1,4}[-丁目]?){1,4}"
+    _PREFECTURE_TOKEN + r"[一-鿿゠-ヿ\w]{1,30}" + r"(?:[0-9０-９]{1,4}[-丁目]?){1,4}"
 )
 
 # 3) JP phone — mirrors security/pii_redact._PHONE_RE for behavior parity.
@@ -137,7 +135,7 @@ _HOUJIN_RE = re.compile(r"T\d{13}")
 # the broader ones (name / address) don't gobble already-redacted
 # placeholders. Each tuple is (id, compiled_regex, replacement_token).
 PATTERNS: Final[tuple[tuple[str, re.Pattern[str], str], ...]] = (
-    ("pii-houjin", _HOUJIN_RE, "[REDACTED:HOUJIN]"),     # gated
+    ("pii-houjin", _HOUJIN_RE, "[REDACTED:HOUJIN]"),  # gated
     ("pii-email", _EMAIL_RE, "[REDACTED:EMAIL]"),
     ("pii-phone", _PHONE_RE, "[REDACTED:PHONE]"),
     ("pii-mynumber", _MYNUMBER_RE, "[REDACTED:MYNUMBER]"),
@@ -224,9 +222,7 @@ def redact_with_audit(text: str) -> tuple[str, list[str]]:
                 continue
             if pid in hits:
                 counts[pid] = len(pat.findall(text))
-        logger.info(
-            "pii_redact_hits", extra={"hits": hits, "counts": counts}
-        )
+        logger.info("pii_redact_hits", extra={"hits": hits, "counts": counts})
     return clean, hits
 
 

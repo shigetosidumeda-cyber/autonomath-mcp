@@ -93,9 +93,7 @@ def _open_autonomath_ro() -> sqlite3.Connection:
     Mirrors api/audit_proof.py: we use AUTONOMATH_DB_PATH for parity with
     the cron writer and do not pin a thread-local cached handle here.
     """
-    path = os.environ.get(
-        "AUTONOMATH_DB_PATH", str(settings.autonomath_db_path)
-    )
+    path = os.environ.get("AUTONOMATH_DB_PATH", str(settings.autonomath_db_path))
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     return conn
@@ -123,9 +121,9 @@ def _canonical_payload(fact_row: Any, snapshot_id: str | None) -> bytes:
         "source_document_id": fact_row["source_document_id"],
         "corpus_snapshot_id": snapshot_id,
     }
-    return json.dumps(
-        payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")
-    ).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode(
+        "utf-8"
+    )
 
 
 def _ed25519_public_key_bytes() -> bytes | None:
@@ -300,8 +298,8 @@ def _why_paragraph(fact_row: Any, src_row: Any | None) -> str:
             val_str = text
 
     if src_row is not None:
-        license_name = (src_row["license"] or "unknown")
-        fetched_at = (src_row["fetched_at"] or "unknown")
+        license_name = src_row["license"] or "unknown"
+        fetched_at = src_row["fetched_at"] or "unknown"
     else:
         license_name = "unknown"
         fetched_at = "unknown"
@@ -355,8 +353,7 @@ async def why_fact(
         if sdid:
             with contextlib.suppress(sqlite3.Error):
                 src_row = conn.execute(
-                    "SELECT license, fetched_at FROM source_document "
-                    "WHERE source_document_id = ?",
+                    "SELECT license, fetched_at FROM source_document WHERE source_document_id = ?",
                     (sdid,),
                 ).fetchone()
 

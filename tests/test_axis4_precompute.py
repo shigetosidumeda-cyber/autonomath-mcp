@@ -24,10 +24,14 @@ AXIS4_MIGRATIONS = [
 ]
 
 _BANNED_IMPORT_LINES = (
-    "import anthropic", "from anthropic",
-    "import openai", "from openai ",
-    "import google.generativeai", "from google.generativeai",
-    "import claude_agent_sdk", "from claude_agent_sdk",
+    "import anthropic",
+    "from anthropic",
+    "import openai",
+    "from openai ",
+    "import google.generativeai",
+    "from google.generativeai",
+    "import claude_agent_sdk",
+    "from claude_agent_sdk",
 )
 
 
@@ -130,11 +134,16 @@ def test_axis4_migrations_apply(tmp_path: Path) -> None:
     db = tmp_path / "axis4.db"
     conn = _apply_migrations(db)
     expected = {
-        "am_portfolio_optimize", "am_portfolio_optimize_refresh_log",
-        "am_houjin_risk_score", "am_houjin_risk_score_refresh_log",
-        "am_subsidy_30yr_forecast", "am_subsidy_30yr_forecast_refresh_log",
-        "am_alliance_opportunity", "am_alliance_opportunity_refresh_log",
-        "am_entities_vec_embed_log", "am_entities_vec_refresh_log",
+        "am_portfolio_optimize",
+        "am_portfolio_optimize_refresh_log",
+        "am_houjin_risk_score",
+        "am_houjin_risk_score_refresh_log",
+        "am_subsidy_30yr_forecast",
+        "am_subsidy_30yr_forecast_refresh_log",
+        "am_alliance_opportunity",
+        "am_alliance_opportunity_refresh_log",
+        "am_entities_vec_embed_log",
+        "am_entities_vec_refresh_log",
     }
     rows = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     missing = expected - rows
@@ -158,11 +167,23 @@ def test_axis4_migrations_carry_target_db_marker() -> None:
 
 def _run_cron(script: str, db_path: Path, extra: list[str]) -> tuple[int, str, str]:
     p = subprocess.run(
-        [sys.executable, str(CRON_DIR / script),
-         "--autonomath-db", str(db_path), "--dry-run", *extra],
-        cwd=str(REPO_ROOT), capture_output=True, timeout=120,
+        [
+            sys.executable,
+            str(CRON_DIR / script),
+            "--autonomath-db",
+            str(db_path),
+            "--dry-run",
+            *extra,
+        ],
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        timeout=120,
     )
-    return p.returncode, p.stdout.decode("utf-8", errors="replace"), p.stderr.decode("utf-8", errors="replace")
+    return (
+        p.returncode,
+        p.stdout.decode("utf-8", errors="replace"),
+        p.stderr.decode("utf-8", errors="replace"),
+    )
 
 
 @pytest.mark.parametrize(
@@ -201,6 +222,7 @@ def test_portfolio_optimize_empty_db_dry_run_does_not_crash(tmp_path: Path) -> N
 def test_axis4_vec_embed_hash_fallback_dim() -> None:
     sys.path.insert(0, str(REPO_ROOT))
     from scripts.cron import embed_knowledge_graph_vec as mod
+
     vec = mod._hash_vector("test_kk", dim=mod.HASH_FALLBACK_DIM)
     assert len(vec) == mod.HASH_FALLBACK_DIM == 384
     vec2 = mod._hash_vector("test_kk", dim=mod.HASH_FALLBACK_DIM)
@@ -213,7 +235,9 @@ def test_axis4_vec_embed_hash_fallback_dim() -> None:
 def test_axis4_modules_no_llm_sdk_import() -> None:
     """REST + MCP modules must not import LLM SDKs (docstrings are exempt)."""
     rest_path = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "precompute_axis4.py"
-    mcp_path = REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "precompute_axis4.py"
+    mcp_path = (
+        REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "precompute_axis4.py"
+    )
     for path in (rest_path, mcp_path):
         assert path.exists()
         for line in _import_lines(path.read_text(encoding="utf-8")):

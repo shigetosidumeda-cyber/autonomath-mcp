@@ -371,7 +371,9 @@ def _resolve_personalized_overlay(api_key: str | None) -> dict[str, Any] | None:
         import sqlite3
 
         # jpintel.db carries client_profiles per CLAUDE.md (mig 096).
-        db_path = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH") or str(_REPO_ROOT / "data" / "jpintel.db")
+        db_path = get_flag("JPCITE_DB_PATH", "JPINTEL_DB_PATH") or str(
+            _REPO_ROOT / "data" / "jpintel.db"
+        )
         if not Path(db_path).exists():
             return None
         with sqlite3.connect(f"file:{db_path}?mode=ro", uri=True, timeout=2.0) as conn:

@@ -69,9 +69,7 @@ def toxiproxy_listen_port() -> int:
 
 
 @pytest.fixture(scope="session")
-def toxiproxy_client(
-    toxiproxy_host: str, toxiproxy_port: int
-) -> Iterator[Any]:
+def toxiproxy_client(toxiproxy_host: str, toxiproxy_port: int) -> Iterator[Any]:
     """Return a connected ``toxiproxy.Toxiproxy`` client, or skip.
 
     Skips the test cleanly when (a) the ``toxiproxy-python`` package is
@@ -89,10 +87,7 @@ def toxiproxy_client(
     try:
         from toxiproxy import Toxiproxy
     except ImportError:
-        pytest.skip(
-            "toxiproxy-python not installed; "
-            "run `pip install toxiproxy-python`."
-        )
+        pytest.skip("toxiproxy-python not installed; run `pip install toxiproxy-python`.")
     client = Toxiproxy(host=toxiproxy_host, port=toxiproxy_port)
     # Reset any leftover state from a previous run so each session
     # starts from a known-clean control plane.
@@ -139,9 +134,7 @@ def api_proxy(
 
 
 @pytest.fixture
-def proxy_base_url(
-    api_proxy: Any, toxiproxy_host: str, toxiproxy_listen_port: int
-) -> str:
+def proxy_base_url(api_proxy: Any, toxiproxy_host: str, toxiproxy_listen_port: int) -> str:
     """Base URL clients hit instead of the direct API to see toxic faults."""
     _ = api_proxy  # ensure fixture ordering — proxy must exist first
     return f"http://{toxiproxy_host}:{toxiproxy_listen_port}"

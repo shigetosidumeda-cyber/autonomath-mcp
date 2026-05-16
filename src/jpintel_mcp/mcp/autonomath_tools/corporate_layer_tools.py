@@ -59,7 +59,9 @@ logger = logging.getLogger("jpintel.mcp.autonomath.corporate_layer")
 
 # Env-gated registration (default on). Flip to "0" for one-flag rollback
 # if a regression surfaces post-launch.
-_ENABLED = get_flag("JPCITE_CORPORATE_LAYER_ENABLED", "AUTONOMATH_CORPORATE_LAYER_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_CORPORATE_LAYER_ENABLED", "AUTONOMATH_CORPORATE_LAYER_ENABLED", "1") == "1"
+)
 _JST = datetime.timezone(datetime.timedelta(hours=9))
 
 

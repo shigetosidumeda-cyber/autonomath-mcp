@@ -48,7 +48,9 @@ from jpintel_mcp.mcp.server import _READ_ONLY, mcp
 
 logger = logging.getLogger("jpintel.mcp.autonomath.eligibility_check")
 
-_ENABLED = get_flag("JPCITE_ELIGIBILITY_CHECK_ENABLED", "AUTONOMATH_ELIGIBILITY_CHECK_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_ELIGIBILITY_CHECK_ENABLED", "AUTONOMATH_ELIGIBILITY_CHECK_ENABLED", "1") == "1"
+)
 
 _DISCLAIMER = (
     "Dynamic eligibility check is a deterministic join of public 行政処分 records "

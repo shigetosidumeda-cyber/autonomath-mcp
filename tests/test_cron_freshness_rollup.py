@@ -9,18 +9,18 @@ Strategy:
   * Smoke the dashboard HTML extension for valid Schema.org JSON-LD
     and presence of the 19-cron heatmap container.
 """
+
 from __future__ import annotations
 
-import json
 import sqlite3
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
 
 from scripts.cron import detect_freshness_sla_breach, rollup_freshness_daily
 
-UTC = timezone.utc
+UTC = UTC
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -47,10 +47,7 @@ def test_canonical_lane_split():
 
 def test_no_collisions_in_canonical_table():
     """No two daily crons may share the same UTC minute (Wave 37 rebalance)."""
-    daily = [
-        c for c in rollup_freshness_daily.CANONICAL_CRONS
-        if c.lane in {"A", "B", "C"}
-    ]
+    daily = [c for c in rollup_freshness_daily.CANONICAL_CRONS if c.lane in {"A", "B", "C"}]
     slots = [c.cron_utc for c in daily]
     assert len(set(slots)) == len(slots), f"collision in daily slots: {slots}"
 
@@ -88,9 +85,7 @@ def test_db_table_freshness_db_missing(tmp_path):
 def test_db_table_freshness_reads_max_last_verified(tmp_path):
     db = tmp_path / "tiny.db"
     conn = sqlite3.connect(db)
-    conn.execute(
-        "CREATE TABLE programs (id INTEGER PRIMARY KEY, last_verified TEXT)"
-    )
+    conn.execute("CREATE TABLE programs (id INTEGER PRIMARY KEY, last_verified TEXT)")
     conn.execute(
         "INSERT INTO programs(id, last_verified) VALUES (1, '2026-05-10T00:00:00Z'), (2, '2026-05-12T00:00:00Z')"
     )
@@ -105,9 +100,7 @@ def test_db_table_freshness_reads_max_last_verified(tmp_path):
 
 def test_build_rollup_no_gh(monkeypatch):
     monkeypatch.setattr(rollup_freshness_daily, "gh_cli_available", lambda: False)
-    snapshot = rollup_freshness_daily.build_rollup(
-        now=datetime(2026, 5, 12, 1, 0, tzinfo=UTC)
-    )
+    snapshot = rollup_freshness_daily.build_rollup(now=datetime(2026, 5, 12, 1, 0, tzinfo=UTC))
     assert snapshot["gh_available"] is False
     assert snapshot["canonical_cron_count"] == 19
     assert len(snapshot["crons"]) == 19
@@ -117,9 +110,7 @@ def test_build_rollup_no_gh(monkeypatch):
 def test_build_rollup_writes_idempotent_snapshot(tmp_path, monkeypatch):
     monkeypatch.setattr(rollup_freshness_daily, "gh_cli_available", lambda: False)
     monkeypatch.setattr(rollup_freshness_daily, "ANALYTICS_DIR", tmp_path)
-    snapshot = rollup_freshness_daily.build_rollup(
-        now=datetime(2026, 5, 12, 1, 0, tzinfo=UTC)
-    )
+    snapshot = rollup_freshness_daily.build_rollup(now=datetime(2026, 5, 12, 1, 0, tzinfo=UTC))
     out = rollup_freshness_daily.write_snapshot(snapshot, "2026-05-12")
     assert out.exists()
     # idempotent: re-running overwrites without error.
@@ -151,7 +142,10 @@ def test_detect_breach_stale():
         "cron_utc": "0 20 * * *",
         "sla_hours": 24,
         "db": "jpintel",
-        "last_run": {"created_at": (now - timedelta(hours=30)).isoformat(), "conclusion": "success"},
+        "last_run": {
+            "created_at": (now - timedelta(hours=30)).isoformat(),
+            "conclusion": "success",
+        },
         "success_rate_24h_pct": 100.0,
         "tables": {},
     }

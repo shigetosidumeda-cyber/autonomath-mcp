@@ -115,9 +115,7 @@ def search_overseas_programs(
     program_type: Annotated[
         str | None,
         Query(
-            description=(
-                "One of: JETRO海外進出支援 / JETRO対日投資 / METI / JBIC / NEXI / other."
-            ),
+            description=("One of: JETRO海外進出支援 / JETRO対日投資 / METI / JBIC / NEXI / other."),
             max_length=32,
         ),
     ] = None,
@@ -174,9 +172,7 @@ def search_overseas_programs(
         ).fetchall()
     except sqlite3.Error as exc:
         logger.warning("am_program_overseas query failed: %s", exc)
-        return JSONResponse(
-            {"total": 0, "limit": limit, "offset": offset, "results": []}
-        )
+        return JSONResponse({"total": 0, "limit": limit, "offset": offset, "results": []})
 
     results = [
         {

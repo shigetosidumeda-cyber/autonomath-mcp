@@ -254,8 +254,7 @@ def _cleanup_program_law_refs(jpintel_db_path: Path) -> None:
     con = sqlite3.connect(jpintel_db_path)
     try:
         con.execute(
-            "DELETE FROM program_law_refs "
-            "WHERE law_unified_id = ? OR program_unified_id = ?",
+            "DELETE FROM program_law_refs WHERE law_unified_id = ? OR program_unified_id = ?",
             ("LAW-disc-shared", "UNI-disc-plr2"),
         )
         con.execute("DELETE FROM laws WHERE unified_id = ?", ("LAW-disc-shared",))
@@ -275,8 +274,7 @@ def _seed_program_law_refs(jpintel_db_path: Path) -> None:
     con = sqlite3.connect(jpintel_db_path)
     try:
         con.execute(
-            "DELETE FROM program_law_refs "
-            "WHERE law_unified_id = ? OR program_unified_id = ?",
+            "DELETE FROM program_law_refs WHERE law_unified_id = ? OR program_unified_id = ?",
             ("LAW-disc-shared", "UNI-disc-plr2"),
         )
         con.execute("DELETE FROM laws WHERE unified_id = ?", ("LAW-disc-shared",))

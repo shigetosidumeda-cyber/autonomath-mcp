@@ -29,9 +29,7 @@ from __future__ import annotations
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-PREFERRED_MANIFEST = (
-    REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-)
+PREFERRED_MANIFEST = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
 MIG_288 = REPO_ROOT / "scripts" / "migrations" / "288_dim_n_k10_strict.sql"
 MIG_274 = REPO_ROOT / "scripts" / "migrations" / "274_anonymized_query.sql"
 
@@ -55,9 +53,7 @@ def test_mig288_sql_file_exists() -> None:
 
 def test_mig288_listed_in_boot_manifest() -> None:
     """288 filename must appear exactly once in the active allowlist."""
-    assert PREFERRED_MANIFEST.is_file(), (
-        f"missing manifest file: {PREFERRED_MANIFEST}"
-    )
+    assert PREFERRED_MANIFEST.is_file(), f"missing manifest file: {PREFERRED_MANIFEST}"
     entries = _active_entries(PREFERRED_MANIFEST.read_text(encoding="utf-8"))
     occurrences = entries.count(ENTRY_288)
     assert occurrences == 1, (

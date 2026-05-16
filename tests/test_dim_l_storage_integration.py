@@ -42,21 +42,11 @@ import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_272 = REPO_ROOT / "scripts" / "migrations" / "272_session_context.sql"
-MIG_272_RB = (
-    REPO_ROOT / "scripts" / "migrations" / "272_session_context_rollback.sql"
-)
-ETL_CLEAN = (
-    REPO_ROOT / "scripts" / "etl" / "clean_session_context_expired.py"
-)
-SRC_SESSION = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "session_context.py"
-)
-MANIFEST_JPCITE = (
-    REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-)
-MANIFEST_AM = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+MIG_272_RB = REPO_ROOT / "scripts" / "migrations" / "272_session_context_rollback.sql"
+ETL_CLEAN = REPO_ROOT / "scripts" / "etl" / "clean_session_context_expired.py"
+SRC_SESSION = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "session_context.py"
+MANIFEST_JPCITE = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
+MANIFEST_AM = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 
 # ---------------------------------------------------------------------------
@@ -66,9 +56,7 @@ MANIFEST_AM = (
 
 def _import_session_module():
     """Load the session_context module by file path (avoids package init)."""
-    spec = importlib.util.spec_from_file_location(
-        "_session_test_w47_mod", SRC_SESSION
-    )
+    spec = importlib.util.spec_from_file_location("_session_test_w47_mod", SRC_SESSION)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["_session_test_w47_mod"] = mod
@@ -175,8 +163,7 @@ def test_migration_272_creates_tables(tmp_path: pathlib.Path) -> None:
         names = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view') ORDER BY name"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') ORDER BY name"
             ).fetchall()
         }
     finally:
@@ -215,8 +202,7 @@ def test_migration_272_rollback_drops(tmp_path: pathlib.Path) -> None:
         names = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view')"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view')"
             ).fetchall()
         }
     finally:
@@ -326,9 +312,7 @@ def test_purge_deletes_orphan_step_log(tmp_path: pathlib.Path) -> None:
     try:
         sessions = {
             r[0]
-            for r in conn.execute(
-                "SELECT DISTINCT session_id FROM am_session_step_log"
-            ).fetchall()
+            for r in conn.execute("SELECT DISTINCT session_id FROM am_session_step_log").fetchall()
         }
     finally:
         conn.close()
@@ -340,12 +324,8 @@ def test_purge_deletes_aged_step_log(tmp_path: pathlib.Path) -> None:
     db = _fresh_db_with_migration(tmp_path)
     now = int(time.time())
     _insert_session(db, session_id="z" * 32, expires_at=now + 3600)
-    aged_iso = time.strftime(
-        "%Y-%m-%dT%H:%M:%fZ", time.gmtime(now - 9 * 24 * 3600)
-    )
-    fresh_iso = time.strftime(
-        "%Y-%m-%dT%H:%M:%fZ", time.gmtime(now - 1 * 24 * 3600)
-    )
+    aged_iso = time.strftime("%Y-%m-%dT%H:%M:%fZ", time.gmtime(now - 9 * 24 * 3600))
+    fresh_iso = time.strftime("%Y-%m-%dT%H:%M:%fZ", time.gmtime(now - 1 * 24 * 3600))
     _insert_step(db, session_id="z" * 32, step_index=1, created_at=aged_iso)
     _insert_step(db, session_id="z" * 32, step_index=2, created_at=fresh_iso)
     payload = _run_clean(db)
@@ -466,9 +446,7 @@ def test_kernel_step_cap_matches_schema(session_module) -> None:
 
 def test_manifest_jpcite_lists_272() -> None:
     """jpcite boot manifest registers migration 272_session_context.sql."""
-    assert "272_session_context.sql" in MANIFEST_JPCITE.read_text(
-        encoding="utf-8"
-    )
+    assert "272_session_context.sql" in MANIFEST_JPCITE.read_text(encoding="utf-8")
 
 
 def test_manifest_autonomath_lists_272() -> None:

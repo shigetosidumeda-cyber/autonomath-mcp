@@ -162,9 +162,7 @@ def test_robots_txt_lists_ai_bot(label: str, token: str, _ua: str) -> None:
     AI_BOT_WELCOME_LIST,
     ids=[entry[0] for entry in AI_BOT_WELCOME_LIST],
 )
-def test_v1_programs_serves_ai_bot_ua(
-    label: str, _token: str, ua: str, jpintel_seeded_db
-) -> None:
+def test_v1_programs_serves_ai_bot_ua(label: str, _token: str, ua: str, jpintel_seeded_db) -> None:
     """Hitting /v1/programs/search?limit=1 with each AI bot UA must return 200 JSON.
 
     Catches the regression where a middleware (WAF, Bot Fight, custom
@@ -180,9 +178,7 @@ def test_v1_programs_serves_ai_bot_ua(
         params={"limit": 1},
         headers={"User-Agent": ua, "Accept": "application/json"},
     )
-    assert r.status_code == 200, (
-        f"{label}: expected 200, got {r.status_code}. Body: {r.text[:200]}"
-    )
+    assert r.status_code == 200, f"{label}: expected 200, got {r.status_code}. Body: {r.text[:200]}"
     ct = r.headers.get("content-type", "")
     assert ct.startswith("application/json"), (
         f"{label}: expected application/json content-type, got `{ct}`"

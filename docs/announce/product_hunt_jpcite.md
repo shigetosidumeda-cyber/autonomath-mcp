@@ -21,7 +21,7 @@ jpcite
 ```
 Evidence API for Japan's public programs — 11,601 subsidies, 9,484
 statutes, 1,185 enforcement records, 13,801 invoice registrants.
-302 REST/OpenAPI paths + 151 MCP tools. ¥3/req metered. Built for AI
+306 REST/OpenAPI paths + 155 MCP tools. ¥3/req metered. Built for AI
 agents (Claude/ChatGPT/Cursor) with source_url + content_hash
 on every payload.
 ```
@@ -53,7 +53,7 @@ matches this 法人?' returns a confident-sounding 2024 hallucination.
 jpcite is the evidence layer underneath. 11,601 programs + 9,484
 statutes + 2,065 court decisions + 1,185 enforcement records +
 13,801 invoice registrants, every row with source_url +
-fetched_at + content_hash. 302 REST/OpenAPI paths and 151 MCP tools so
+fetched_at + content_hash. 306 REST/OpenAPI paths and 155 MCP tools so
 agents can probe by 法人番号 / 業種 / 都道府県 / 制度 ID under one
 evidence-packet contract.
 

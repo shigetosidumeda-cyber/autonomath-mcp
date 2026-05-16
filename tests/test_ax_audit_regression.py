@@ -97,9 +97,9 @@ def test_ax_audit_honest_green_after_scope_routes_land(tmp_path: pathlib.Path) -
     assert not any("scoped_api_token" in m for m in access_missing), access_missing
     # Other pillars must still be 12/12 — scope wiring must not hide regressions.
     for name in ("Context", "Tools"):
-        assert (
-            audit["pillars"][name]["score"] == 12.0
-        ), f"{name} regressed: {audit['pillars'][name]}"
+        assert audit["pillars"][name]["score"] == 12.0, (
+            f"{name} regressed: {audit['pillars'][name]}"
+        )
     assert audit["pillars"]["Orchestration"]["score"] == 12.0
     orchestration_evidence = audit["pillars"]["Orchestration"]["evidence"]
     assert any("streamable_http" in e for e in orchestration_evidence), orchestration_evidence
@@ -120,6 +120,6 @@ def test_ax_audit_wave41_new_cells_present(tmp_path: pathlib.Path) -> None:
     }
     for pillar, cell_name in expected_cells.items():
         evidence = audit["pillars"][pillar]["evidence"]
-        assert any(
-            cell_name in row for row in evidence
-        ), f"{pillar} missing Wave 41 cell {cell_name!r}; evidence={evidence}"
+        assert any(cell_name in row for row in evidence), (
+            f"{pillar} missing Wave 41 cell {cell_name!r}; evidence={evidence}"
+        )

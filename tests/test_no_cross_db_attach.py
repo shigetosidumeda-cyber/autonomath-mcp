@@ -233,7 +233,7 @@ def test_no_autonomath_programs_qualifier_in_production() -> None:
 _SYNTHESIZED_ATTACH_LEAKS = (
     "ATTACH DATABASE 'data/jpintel.db' AS jp;",
     "attach database '/tmp/x.db' as x;",
-    'conn.execute("ATTACH DATABASE \'foo\' AS bar")',
+    "conn.execute(\"ATTACH DATABASE 'foo' AS bar\")",
     "ATTACH\tDATABASE '/x' AS y",
 )
 
@@ -290,9 +290,7 @@ def test_scan_autonomath_programs_detects_synthesized_leaks(tmp_path: pathlib.Pa
         hits = _scan_pattern(leak_file, _AUTONOMATH_PROGRAMS_RE)
         if not hits:
             misses.append(f"`{stmt}` not detected")
-    assert not misses, (
-        "autonomath.programs leak not flagged:\n  - " + "\n  - ".join(misses)
-    )
+    assert not misses, "autonomath.programs leak not flagged:\n  - " + "\n  - ".join(misses)
 
 
 def test_allowlist_path_is_recognized(tmp_path: pathlib.Path, monkeypatch) -> None:

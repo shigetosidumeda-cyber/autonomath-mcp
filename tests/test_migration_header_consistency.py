@@ -64,16 +64,16 @@ def test_manifest_file_exists() -> None:
 
 def test_manifest_has_at_least_one_entry() -> None:
     entries = _manifest_entries()
-    assert entries, "boot manifest has zero uncommented entries — schema_guard would skip every autonomath migration on boot"
+    assert entries, (
+        "boot manifest has zero uncommented entries — schema_guard would skip every autonomath migration on boot"
+    )
 
 
 @pytest.mark.parametrize("entry", _manifest_entries())
 def test_manifest_entry_file_exists(entry: str) -> None:
     """Every uncommented manifest entry must resolve to a file on disk."""
     path = MIGRATIONS_DIR / entry
-    assert path.exists(), (
-        f"boot manifest references missing file: {entry} (expected at {path})"
-    )
+    assert path.exists(), f"boot manifest references missing file: {entry} (expected at {path})"
 
 
 @pytest.mark.parametrize("entry", _manifest_entries())

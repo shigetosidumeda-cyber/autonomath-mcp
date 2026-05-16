@@ -149,9 +149,7 @@ def test_pyproject_version_is_parseable() -> None:
 
 
 @pytest.mark.parametrize("rel_path", JSON_MANIFESTS)
-def test_json_manifest_version_matches_pyproject(
-    rel_path: str, pyproject_version: str
-) -> None:
+def test_json_manifest_version_matches_pyproject(rel_path: str, pyproject_version: str) -> None:
     """Every JSON manifest must agree with pyproject at both axes.
 
     1. Top-level ``version`` (must exist and match).
@@ -196,9 +194,7 @@ def test_json_manifest_version_matches_pyproject(
 
 
 @pytest.mark.parametrize("rel_path", YAML_MANIFESTS)
-def test_yaml_manifest_version_matches_pyproject(
-    rel_path: str, pyproject_version: str
-) -> None:
+def test_yaml_manifest_version_matches_pyproject(rel_path: str, pyproject_version: str) -> None:
     """``smithery.yaml`` ``metadata.version`` must agree with pyproject.
 
     Scraped (no PyYAML import) to keep this gate cheap.  Skips when the

@@ -11,7 +11,7 @@ from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from importlib import import_module
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -110,6 +110,7 @@ from jpintel_mcp.api.invoice_risk import (
 from jpintel_mcp.api.invoice_risk import (
     router as invoice_risk_router,
 )
+from jpintel_mcp.api.jpcite_facade import router as jpcite_facade_router
 from jpintel_mcp.api.jpo import router as jpo_router  # Wave 31 Axis 1b
 from jpintel_mcp.api.laws import router as laws_router
 from jpintel_mcp.api.laws_jorei import router as laws_jorei_router  # Wave 43.1.5
@@ -122,7 +123,7 @@ from jpintel_mcp.api.ma_dd import (
 from jpintel_mcp.api.ma_dd import (
     watches_router as me_watches_router,
 )
-from jpintel_mcp.api.me import router as me_router
+from jpintel_mcp.api.me import router as me_router  # type: ignore[attr-defined]
 from jpintel_mcp.api.meta import router as meta_router
 from jpintel_mcp.api.meta_freshness import router as meta_freshness_router
 from jpintel_mcp.api.middleware import (
@@ -171,7 +172,7 @@ try:  # Wave 43.1.4 module deferred — guard so missing file does not block imp
         router as program_agriculture_router,
     )
 except ModuleNotFoundError:
-    program_agriculture_router = None  # type: ignore[assignment]
+    program_agriculture_router = None
 from jpintel_mcp.api.programs import router as programs_router
 from jpintel_mcp.api.programs_municipality_v2 import (
     router as programs_municipality_v2_router,
@@ -1248,7 +1249,10 @@ _OPENAPI_LEAK_REPLACEMENTS_RUNTIME: tuple[tuple[re.Pattern[str], str], ...] = (
     (re.compile(r"\bmigrations?\s+\d+(?:[-/]\d+)+\b", re.IGNORECASE), "schema update"),
     (re.compile(r"\bmigration\s+\d+\b", re.IGNORECASE), "schema update"),
     (re.compile(r"\bmig\s+\d+\b", re.IGNORECASE), "schema update"),
-    (re.compile(r"\bEvery tool response carries\b", re.IGNORECASE), "Evidence-oriented tool responses include"),
+    (
+        re.compile(r"\bEvery tool response carries\b", re.IGNORECASE),
+        "Evidence-oriented tool responses include",
+    ),
     (re.compile(r"\bevery response carries\b", re.IGNORECASE), "covered responses include"),
     (re.compile(r"\bevery response surfaces\b", re.IGNORECASE), "covered responses surface"),
     (re.compile(r"\benvelope on every response\b", re.IGNORECASE), "envelope on covered responses"),
@@ -1691,7 +1695,7 @@ def create_app() -> FastAPI:
             "## About\n\n"
             "Canonical site: https://jpcite.com. "
             "MCP package: `pip install autonomath-mcp` (PyPI). "
-            "MCP exposes 151 tools in the standard configuration.\n\n"
+            "MCP exposes 155 tools in the standard configuration.\n\n"
             "---\n\n"
             "## 日本語要約 (JP summary)\n\n"
             "jpcite は **11,601 件の検索可能な補助金 / 融資 / 税制 / 認定** "
@@ -2076,13 +2080,16 @@ def create_app() -> FastAPI:
             ctx = safe.get("ctx")
             if isinstance(ctx, dict):
                 safe["ctx"] = {
-                    str(k): v if isinstance(v, (str, int, float, bool)) or v is None else str(v)
+                    str(k): v if isinstance(v, str | int | float | bool) or v is None else str(v)
                     for k, v in ctx.items()
                 }
             return safe
 
         errors_en = [_json_safe_error(e) for e in exc.errors()]
-        errors_ja = [{**e, "msg_ja": _msg_ja.get(e.get("type"), e.get("msg"))} for e in errors_en]
+        errors_ja = [
+            {**e, "msg_ja": _msg_ja.get(cast("str", e.get("type")), cast("str", e.get("msg")))}
+            for e in errors_en
+        ]
         # δ2: attach the canonical {"error": {...}} envelope alongside the
         # back-compat `detail` / `detail_summary_ja` keys so tooling can
         # opt into the structured shape without breaking existing callers.
@@ -2282,6 +2289,7 @@ def create_app() -> FastAPI:
     #     has its own 10/day per-IP-hash limiter (see api/feedback.py), so
     #     removing the global dep doesn't open a spam vector.
     app.include_router(meta_router)
+    app.include_router(jpcite_facade_router)
     # Public anti-詐欺 transparency endpoint (/v1/meta/freshness). No auth, no
     # AnonIpLimitDep — same posture as /healthz; serves aggregated freshness
     # stats so customers/agents can verify data is fresh enough for purpose.

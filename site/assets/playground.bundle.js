@@ -2039,7 +2039,7 @@
       display: 'Claude (Desktop / Code / claude.ai)',
       badge: 'Claude',
       snippet: 'claude mcp add jpcite -- uvx autonomath-mcp',
-      hint: 'Claude Desktop / Claude Code に 1 行追加すると 151 tools が即利用可能。続きは API キーで継続できます。',
+      hint: 'Claude Desktop / Claude Code に 1 行追加すると 155 tools が即利用可能。続きは API キーで継続できます。',
     },
     chatgpt: {
       display: 'ChatGPT (Custom GPT / Actions)',
@@ -2051,7 +2051,7 @@
       display: 'Cursor',
       badge: 'Cursor',
       snippet: '// ~/.cursor/mcp.json\n{\n  "mcpServers": {\n    "jpcite": {\n      "command": "uvx",\n      "args": ["autonomath-mcp"]\n    }\n  }\n}',
-      hint: '~/.cursor/mcp.json に jpcite サーバーを追加 → Cursor 再起動で 151 tools が候補に。',
+      hint: '~/.cursor/mcp.json に jpcite サーバーを追加 → Cursor 再起動で 155 tools が候補に。',
     },
     cline: {
       display: 'Cline (VS Code)',

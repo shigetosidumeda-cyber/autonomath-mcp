@@ -292,7 +292,9 @@ def query_at_snapshot(
 # Late import (E402): legacy-gate read happens here, after the canonical
 # tool surface above; module-top imports remain grouped for the canonical surface.
 
-_LEGACY_ENABLED = (get_flag("JPCITE_LEGACY_SNAPSHOT_ENABLED", "AUTONOMATH_LEGACY_SNAPSHOT_ENABLED", "0") or "") in (
+_LEGACY_ENABLED = (
+    get_flag("JPCITE_LEGACY_SNAPSHOT_ENABLED", "AUTONOMATH_LEGACY_SNAPSHOT_ENABLED", "0") or ""
+) in (
     "1",
     "true",
     "True",

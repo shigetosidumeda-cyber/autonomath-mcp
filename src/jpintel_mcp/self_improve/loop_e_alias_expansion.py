@@ -66,7 +66,7 @@ from typing import TYPE_CHECKING, Any
 try:
     import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover - yaml optional at import time
-    yaml = None  # type: ignore[assignment]
+    yaml = None
 
 try:
     import pykakasi
@@ -82,7 +82,10 @@ if TYPE_CHECKING:
 # Repo layout: src/jpintel_mcp/self_improve/loop_e_alias_expansion.py
 # climb four parents to reach the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_DB_PATH = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db")))
+DEFAULT_DB_PATH = Path(
+    get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(REPO_ROOT / "autonomath.db"))
+    or str(REPO_ROOT / "autonomath.db")
+)
 PROPOSALS_PATH = REPO_ROOT / "data" / "alias_proposed.yaml"
 
 # Similarity thresholds — sniper-claim posture: high precision, low recall.

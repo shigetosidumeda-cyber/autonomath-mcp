@@ -25,32 +25,20 @@ Hard constraints exercised
 from __future__ import annotations
 
 import importlib.util
-import json
-import os
 import pathlib
 import re
 import sqlite3
-import subprocess
 import sys
-import tempfile
 
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_262 = REPO_ROOT / "scripts" / "migrations" / "262_fact_signature_v2.sql"
 MIG_275 = REPO_ROOT / "scripts" / "migrations" / "275_explainable_fact.sql"
-MIG_275_RB = (
-    REPO_ROOT / "scripts" / "migrations" / "275_explainable_fact_rollback.sql"
-)
-ETL_BUILD = (
-    REPO_ROOT / "scripts" / "etl" / "build_explainable_fact_metadata.py"
-)
-MANIFEST_JPCITE = (
-    REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-)
-MANIFEST_AM = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+MIG_275_RB = REPO_ROOT / "scripts" / "migrations" / "275_explainable_fact_rollback.sql"
+ETL_BUILD = REPO_ROOT / "scripts" / "etl" / "build_explainable_fact_metadata.py"
+MANIFEST_JPCITE = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
+MANIFEST_AM = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 
 # ---------------------------------------------------------------------------
@@ -144,9 +132,7 @@ def _seed_current_eav_fact(
 
 
 def _import_etl_module():
-    spec = importlib.util.spec_from_file_location(
-        "_dim_o_etl_mod", ETL_BUILD
-    )
+    spec = importlib.util.spec_from_file_location("_dim_o_etl_mod", ETL_BUILD)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["_dim_o_etl_mod"] = mod
@@ -180,8 +166,7 @@ def test_migration_275_creates_tables(tmp_path: pathlib.Path) -> None:
         names = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master "
-                "WHERE type IN ('table','view') ORDER BY name"
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') ORDER BY name"
             ).fetchall()
         }
         assert "am_fact_metadata" in names
@@ -241,8 +226,7 @@ def test_confidence_band_check_lower_le_upper(tmp_path: pathlib.Path) -> None:
                      confidence_lower, confidence_upper, ed25519_sig)
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
-                ("fact_bad", "https://example.jp/a", "test", 0.9, 0.5,
-                 b"\x00" * 64),
+                ("fact_bad", "https://example.jp/a", "test", 0.9, 0.5, b"\x00" * 64),
             )
     finally:
         conn.close()
@@ -274,8 +258,7 @@ def test_sig_size_check_min(tmp_path: pathlib.Path) -> None:
     try:
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO am_fact_metadata (fact_id, verified_by, "
-                "ed25519_sig) VALUES (?, ?, ?)",
+                "INSERT INTO am_fact_metadata (fact_id, verified_by, ed25519_sig) VALUES (?, ?, ?)",
                 ("fact_short", "test", b"\x00" * 32),
             )
     finally:
@@ -310,9 +293,7 @@ def test_etl_helpers_read_current_eav_schema_without_confidence(
         conn.close()
 
 
-def test_etl_run_signs_and_appends(
-    tmp_path: pathlib.Path, ed25519_keypair, monkeypatch
-) -> None:
+def test_etl_run_signs_and_appends(tmp_path: pathlib.Path, ed25519_keypair, monkeypatch) -> None:
     """ETL produces an Ed25519 signature on am_fact_metadata + attestation log."""
     _priv, _pub, seed_hex = ed25519_keypair
     db = _fresh_db(tmp_path)
@@ -349,17 +330,14 @@ def test_etl_run_signs_and_appends(
 
         # Attestation log has exactly one row.
         log_count = conn.execute(
-            "SELECT COUNT(*) FROM am_fact_attestation_log "
-            "WHERE fact_id='fact_alpha'"
+            "SELECT COUNT(*) FROM am_fact_attestation_log WHERE fact_id='fact_alpha'"
         ).fetchone()[0]
         assert log_count == 1
     finally:
         conn.close()
 
 
-def test_etl_idempotent_on_unchanged(
-    tmp_path: pathlib.Path, ed25519_keypair, monkeypatch
-) -> None:
+def test_etl_idempotent_on_unchanged(tmp_path: pathlib.Path, ed25519_keypair, monkeypatch) -> None:
     """Running the ETL twice produces ONE attestation log row.
 
     The second tick must observe unchanged metadata and NOT append a
@@ -379,12 +357,9 @@ def test_etl_idempotent_on_unchanged(
     conn = sqlite3.connect(str(db))
     try:
         log_count = conn.execute(
-            "SELECT COUNT(*) FROM am_fact_attestation_log "
-            "WHERE fact_id='fact_beta'"
+            "SELECT COUNT(*) FROM am_fact_attestation_log WHERE fact_id='fact_beta'"
         ).fetchone()[0]
-        assert log_count == 1, (
-            "second ETL tick must NOT append a duplicate attestation row"
-        )
+        assert log_count == 1, "second ETL tick must NOT append a duplicate attestation row"
     finally:
         conn.close()
 
@@ -411,8 +386,7 @@ def test_ed25519_sign_verify_roundtrip(
     conn = sqlite3.connect(str(db))
     try:
         row = conn.execute(
-            "SELECT signature_hex FROM am_fact_attestation_log "
-            "WHERE fact_id='fact_gamma'"
+            "SELECT signature_hex FROM am_fact_attestation_log WHERE fact_id='fact_gamma'"
         ).fetchone()
         assert row is not None
         sig_bytes = bytes.fromhex(row[0])
@@ -454,8 +428,7 @@ def test_etl_never_touches_am_fact_signature(
     conn = sqlite3.connect(str(db))
     try:
         before = conn.execute(
-            "SELECT ed25519_sig, payload_sha256 FROM am_fact_signature "
-            "WHERE fact_id='fact_delta'"
+            "SELECT ed25519_sig, payload_sha256 FROM am_fact_signature WHERE fact_id='fact_delta'"
         ).fetchone()
     finally:
         conn.close()
@@ -468,8 +441,7 @@ def test_etl_never_touches_am_fact_signature(
     conn = sqlite3.connect(str(db))
     try:
         after = conn.execute(
-            "SELECT ed25519_sig, payload_sha256 FROM am_fact_signature "
-            "WHERE fact_id='fact_delta'"
+            "SELECT ed25519_sig, payload_sha256 FROM am_fact_signature WHERE fact_id='fact_delta'"
         ).fetchone()
     finally:
         conn.close()
@@ -512,12 +484,10 @@ def test_attestation_log_appends_on_change(
     conn = sqlite3.connect(str(db))
     try:
         log_count = conn.execute(
-            "SELECT COUNT(*) FROM am_fact_attestation_log "
-            "WHERE fact_id='fact_epsilon'"
+            "SELECT COUNT(*) FROM am_fact_attestation_log WHERE fact_id='fact_epsilon'"
         ).fetchone()[0]
         assert log_count == 2, (
-            "metadata change must APPEND a new attestation row "
-            "(append-only audit log)"
+            "metadata change must APPEND a new attestation row (append-only audit log)"
         )
     finally:
         conn.close()

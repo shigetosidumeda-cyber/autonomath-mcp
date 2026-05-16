@@ -249,9 +249,7 @@ def test_invoice_diff_dry_run(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(httpx.Client, "get", stub_get)
     counters = mod.run(
         db_path=Path("/dev/null"),
-        since_override=(datetime.now(UTC) - timedelta(days=1)).strftime(
-            "%Y-%m-%dT%H:%M:%S"
-        ),
+        since_override=(datetime.now(UTC) - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%S"),
         dry_run=True,
     )
     assert counters["fetched"] >= 1
@@ -312,14 +310,16 @@ def test_invoice_diff_upsert_idempotent(autonomath_db: Path) -> None:
     mod = _load_cron("diff_invoice_registrants_daily")
     conn = mod._open(str(autonomath_db))
     mod._ensure_tables(conn)
-    row = mod._row_from_api({
-        "houjin_bangou": "9999999999999",
-        "registration_no": "T9999999999999",
-        "name": "サンプル株式会社",
-        "address": "東京都港区",
-        "prefecture": "東京都",
-        "registered_at": "2026-05-01",
-    })
+    row = mod._row_from_api(
+        {
+            "houjin_bangou": "9999999999999",
+            "registration_no": "T9999999999999",
+            "name": "サンプル株式会社",
+            "address": "東京都港区",
+            "prefecture": "東京都",
+            "registered_at": "2026-05-01",
+        }
+    )
     assert row is not None
     ins1, upd1, sd1 = mod._upsert(conn, row)
     ins2, upd2, sd2 = mod._upsert(conn, row)

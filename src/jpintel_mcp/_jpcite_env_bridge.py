@@ -182,7 +182,7 @@ def get_bool_flag(primary: str, legacy: str, default: bool) -> bool:
     not crash because a downstream operator typed ``ENABLED=on`` instead of
     ``1``).
     """
-    raw = get_flag(primary, legacy, None)
+    raw = get_flag(primary, legacy, default=None)
     if raw is None:
         return default
     if raw in _TRUTHY:
@@ -200,7 +200,7 @@ def get_int_flag(primary: str, legacy: str, default: int) -> int:
     Returns ``default`` when the value is missing, empty, or not a valid int
     (so a typo in CI does not crash boot).
     """
-    raw = get_flag(primary, legacy, None)
+    raw = get_flag(primary, legacy, default=None)
     if raw is None:
         return default
     try:
@@ -222,9 +222,9 @@ def get_bool(
 ) -> bool:
     """Boolean variant accepting variadic legacy names (46.D signature)."""
     if not legacy_names:
-        raw = get_flag(new_name, None, None)
+        raw = get_flag(new_name, None, default=None)
     else:
-        raw = get_flag(new_name, legacy_names[0], None, *legacy_names[1:])
+        raw = get_flag(new_name, legacy_names[0], *legacy_names[1:], default=None)
     if raw is None:
         return default
     return _truthy(raw)
@@ -237,9 +237,9 @@ def get_int(
 ) -> int:
     """Integer variant accepting variadic legacy names (46.D signature)."""
     if not legacy_names:
-        raw = get_flag(new_name, None, None)
+        raw = get_flag(new_name, None, default=None)
     else:
-        raw = get_flag(new_name, legacy_names[0], None, *legacy_names[1:])
+        raw = get_flag(new_name, legacy_names[0], *legacy_names[1:], default=None)
     if raw is None or raw.strip() == "":
         return default
     try:

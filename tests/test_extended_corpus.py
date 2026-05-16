@@ -10,7 +10,6 @@ NO LLM. Pure stdlib + sqlite3.
 
 from __future__ import annotations
 
-import json
 import os
 import sqlite3
 import sys
@@ -60,9 +59,11 @@ def fresh_autonomath_db():
         )
         conn.commit()
 
-        for fname in ("228_court_decisions_extended.sql",
-                      "229_industry_guidelines.sql",
-                      "230_nta_tsutatsu_extended.sql"):
+        for fname in (
+            "228_court_decisions_extended.sql",
+            "229_industry_guidelines.sql",
+            "230_nta_tsutatsu_extended.sql",
+        ):
             sql = (SCRIPTS_MIG / fname).read_text()
             conn.executescript(sql)
         conn.commit()
@@ -82,9 +83,12 @@ def fresh_autonomath_db():
 
 def test_migration_228_tables(fresh_autonomath_db):
     conn = sqlite3.connect(fresh_autonomath_db)
-    tables = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'am_court_decisions_extended%'"
-    )}
+    tables = {
+        r[0]
+        for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'am_court_decisions_extended%'"
+        )
+    }
     assert "am_court_decisions_extended" in tables
     # FTS5 shadow tables present
     assert "am_court_decisions_extended_fts" in tables
@@ -100,9 +104,12 @@ def test_migration_228_tables(fresh_autonomath_db):
 
 def test_migration_229_tables(fresh_autonomath_db):
     conn = sqlite3.connect(fresh_autonomath_db)
-    tables = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'am_industry_guidelines%'"
-    )}
+    tables = {
+        r[0]
+        for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'am_industry_guidelines%'"
+        )
+    }
     assert "am_industry_guidelines" in tables
     assert "am_industry_guidelines_fts" in tables
     # CHECK constraint rejects bogus ministry
@@ -117,15 +124,21 @@ def test_migration_229_tables(fresh_autonomath_db):
 
 def test_migration_230_tables(fresh_autonomath_db):
     conn = sqlite3.connect(fresh_autonomath_db)
-    tables = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'am_nta_tsutatsu_extended%'"
-    )}
+    tables = {
+        r[0]
+        for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'am_nta_tsutatsu_extended%'"
+        )
+    }
     assert "am_nta_tsutatsu_extended" in tables
     assert "am_nta_tsutatsu_extended_fts" in tables
     # View should exist
-    views = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='view' AND name='v_am_nta_tsutatsu_sections'"
-    )}
+    views = {
+        r[0]
+        for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='view' AND name='v_am_nta_tsutatsu_sections'"
+        )
+    }
     assert "v_am_nta_tsutatsu_sections" in views
     conn.close()
 
@@ -149,12 +162,17 @@ def test_dry_run_industry_guidelines(fresh_autonomath_db, capsys):
     import importlib
 
     mod = importlib.import_module("ingest_industry_guidelines")
-    rc = mod.main([
-        "--db-path", str(fresh_autonomath_db),
-        "--ministries", "env,maff,mhlw",
-        "--max-per-ministry", "3",
-        "--dry-run",
-    ])
+    rc = mod.main(
+        [
+            "--db-path",
+            str(fresh_autonomath_db),
+            "--ministries",
+            "env,maff,mhlw",
+            "--max-per-ministry",
+            "3",
+            "--dry-run",
+        ]
+    )
     assert rc == 0
     captured = capsys.readouterr()
     assert "[dry-run] done" in captured.out
@@ -164,12 +182,17 @@ def test_dry_run_nta_tsutatsu_extended(fresh_autonomath_db, capsys):
     import importlib
 
     mod = importlib.import_module("ingest_nta_tsutatsu_extended")
-    rc = mod.main([
-        "--db-path", str(fresh_autonomath_db),
-        "--tsutatsu-code", "法基通-9-2-3",
-        "--max-tsutatsu", "3",
-        "--dry-run",
-    ])
+    rc = mod.main(
+        [
+            "--db-path",
+            str(fresh_autonomath_db),
+            "--tsutatsu-code",
+            "法基通-9-2-3",
+            "--max-tsutatsu",
+            "3",
+            "--dry-run",
+        ]
+    )
     assert rc == 0
     captured = capsys.readouterr()
     assert "[dry-run] done" in captured.out
@@ -182,9 +205,11 @@ def test_dry_run_nta_tsutatsu_extended(fresh_autonomath_db, capsys):
 
 @pytest.mark.parametrize(
     "module_name",
-    ["ingest_court_decisions_extended",
-     "ingest_industry_guidelines",
-     "ingest_nta_tsutatsu_extended"],
+    [
+        "ingest_court_decisions_extended",
+        "ingest_industry_guidelines",
+        "ingest_nta_tsutatsu_extended",
+    ],
 )
 def test_banned_aggregator_urls_refused(module_name):
     import importlib

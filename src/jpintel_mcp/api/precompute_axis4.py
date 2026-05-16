@@ -132,7 +132,11 @@ class VecSearchResponse(BaseModel):
     disclaimer: str = Field(default=_TAX_DISCLAIMER, alias="_disclaimer")
 
 
-def _select_rows(conn, sql, params):
+def _select_rows(
+    conn: sqlite3.Connection,
+    sql: str,
+    params: tuple[Any, ...],
+) -> list[Any]:
     try:
         return list(conn.execute(sql, params).fetchall())
     except sqlite3.OperationalError as exc:
@@ -159,8 +163,10 @@ def get_portfolio_optimize(
     if not rows:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"code": "portfolio_not_precomputed",
-                    "message": f"houjin_bangou={houjin_bangou} not in am_portfolio_optimize."},
+            detail={
+                "code": "portfolio_not_precomputed",
+                "message": f"houjin_bangou={houjin_bangou} not in am_portfolio_optimize.",
+            },
         )
     items = []
     refreshed_at = None
@@ -172,14 +178,20 @@ def get_portfolio_optimize(
                 signals = json.loads(r["reason_json"]).get("signals", {})
             except (json.JSONDecodeError, TypeError):
                 signals = {}
-        items.append(PortfolioOptimizeItem(
-            rank=r["rank"], program_unified_id=r["program_unified_id"],
-            program_primary_name=r["program_primary_name"], score_0_100=r["score_0_100"],
-            tier=r["tier"], program_amount_max_yen=r["program_amount_max_yen"],
-            signals=signals,
-        ))
-    return PortfolioOptimizeResponse(houjin_bangou=houjin_bangou,
-                                     refreshed_at=refreshed_at, items=items)
+        items.append(
+            PortfolioOptimizeItem(
+                rank=r["rank"],
+                program_unified_id=r["program_unified_id"],
+                program_primary_name=r["program_primary_name"],
+                score_0_100=r["score_0_100"],
+                tier=r["tier"],
+                program_amount_max_yen=r["program_amount_max_yen"],
+                signals=signals,
+            )
+        )
+    return PortfolioOptimizeResponse(
+        houjin_bangou=houjin_bangou, refreshed_at=refreshed_at, items=items
+    )
 
 
 @router.get(
@@ -198,8 +210,10 @@ def get_houjin_risk(houjin_bangou: str, am_db: AutonomathDbDep) -> HoujinRiskRes
     if not rows:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"code": "risk_not_precomputed",
-                    "message": f"houjin_bangou={houjin_bangou} not in am_houjin_risk_score."},
+            detail={
+                "code": "risk_not_precomputed",
+                "message": f"houjin_bangou={houjin_bangou} not in am_houjin_risk_score.",
+            },
         )
     r = rows[0]
     signals = {}
@@ -209,10 +223,14 @@ def get_houjin_risk(houjin_bangou: str, am_db: AutonomathDbDep) -> HoujinRiskRes
         except (json.JSONDecodeError, TypeError):
             signals = {}
     return HoujinRiskResponse(
-        houjin_bangou=houjin_bangou, risk_score_0_100=r["risk_score_0_100"],
-        risk_bucket=r["risk_bucket"], enforcement_subscore=r["enforcement_subscore"],
-        invoice_subscore=r["invoice_subscore"], adoption_subscore=r["adoption_subscore"],
-        credit_age_subscore=r["credit_age_subscore"], signals=signals,
+        houjin_bangou=houjin_bangou,
+        risk_score_0_100=r["risk_score_0_100"],
+        risk_bucket=r["risk_bucket"],
+        enforcement_subscore=r["enforcement_subscore"],
+        invoice_subscore=r["invoice_subscore"],
+        adoption_subscore=r["adoption_subscore"],
+        credit_age_subscore=r["credit_age_subscore"],
+        signals=signals,
         refreshed_at=r["refreshed_at"],
     )
 
@@ -239,20 +257,27 @@ def get_program_forecast_30yr(
     if not rows:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"code": "forecast_not_precomputed",
-                    "message": f"program_unified_id={program_unified_id} not precomputed."},
+            detail={
+                "code": "forecast_not_precomputed",
+                "message": f"program_unified_id={program_unified_id} not precomputed.",
+            },
         )
     items = [
         Forecast30yrItem(
-            forecast_year_offset=r["forecast_year_offset"], horizon_month=r["horizon_month"],
-            state=r["state"], p_active=r["p_active"], p_paused=r["p_paused"],
-            p_sunset=r["p_sunset"], p_renewed=r["p_renewed"],
+            forecast_year_offset=r["forecast_year_offset"],
+            horizon_month=r["horizon_month"],
+            state=r["state"],
+            p_active=r["p_active"],
+            p_paused=r["p_paused"],
+            p_sunset=r["p_sunset"],
+            p_renewed=r["p_renewed"],
             expected_call_count=r["expected_call_count"],
         )
         for r in rows
     ]
-    return Forecast30yrResponse(program_unified_id=program_unified_id,
-                                refreshed_at=rows[0]["refreshed_at"], horizon=items)
+    return Forecast30yrResponse(
+        program_unified_id=program_unified_id, refreshed_at=rows[0]["refreshed_at"], horizon=items
+    )
 
 
 @router.get(
@@ -274,8 +299,10 @@ def get_alliance_opportunities(
     if not rows:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail={"code": "alliance_not_precomputed",
-                    "message": f"houjin_bangou={houjin_bangou} not in am_alliance_opportunity."},
+            detail={
+                "code": "alliance_not_precomputed",
+                "message": f"houjin_bangou={houjin_bangou} not in am_alliance_opportunity.",
+            },
         )
     items = []
     refreshed_at = None
@@ -287,16 +314,22 @@ def get_alliance_opportunities(
                 signals = json.loads(r["reason_json"]).get("signals", {})
             except (json.JSONDecodeError, TypeError):
                 signals = {}
-        items.append(AllianceOpportunityItem(
-            rank=r["rank"], partner_houjin_bangou=r["partner_houjin_bangou"],
-            partner_primary_name=r["partner_primary_name"],
-            alliance_score_0_100=r["alliance_score_0_100"],
-            co_adoption_count=r["co_adoption_count"],
-            industry_chain_pair=r["industry_chain_pair"],
-            region_a=r["region_a"], region_b=r["region_b"], signals=signals,
-        ))
-    return AllianceOpportunityResponse(houjin_bangou=houjin_bangou,
-                                       refreshed_at=refreshed_at, items=items)
+        items.append(
+            AllianceOpportunityItem(
+                rank=r["rank"],
+                partner_houjin_bangou=r["partner_houjin_bangou"],
+                partner_primary_name=r["partner_primary_name"],
+                alliance_score_0_100=r["alliance_score_0_100"],
+                co_adoption_count=r["co_adoption_count"],
+                industry_chain_pair=r["industry_chain_pair"],
+                region_a=r["region_a"],
+                region_b=r["region_b"],
+                signals=signals,
+            )
+        )
+    return AllianceOpportunityResponse(
+        houjin_bangou=houjin_bangou, refreshed_at=refreshed_at, items=items
+    )
 
 
 @router.post(
@@ -318,7 +351,7 @@ def post_graph_vec_search(req: VecSearchRequest, am_db: AutonomathDbDep) -> VecS
     text = (req.query_text or "").strip() or " "
     seed = text.encode("utf-8")
     h = hashlib.sha256(seed).digest()
-    qvec = []
+    qvec: list[float] = []
     while len(qvec) < dim:
         qvec.extend((b - 127.5) / 127.5 for b in h)
         h = hashlib.sha256(h).digest()
@@ -326,12 +359,18 @@ def post_graph_vec_search(req: VecSearchRequest, am_db: AutonomathDbDep) -> VecS
     qbytes = struct.pack(f"{len(qvec)}f", *qvec)
 
     kind_to_table = {
-        "program": "am_entities_vec_S", "case_study": "am_entities_vec_C",
-        "court_decision": "am_entities_vec_J", "adoption": "am_entities_vec_A",
-        "corporate_entity": "am_entities_vec_E", "statistic": "am_entities_vec_T",
-        "tax_measure": "am_entities_vec_T", "enforcement": "am_entities_vec_F",
-        "invoice_registrant": "am_entities_vec_I", "law": "am_entities_vec_L",
-        "certification": "am_entities_vec_R", "authority": "am_entities_vec_R",
+        "program": "am_entities_vec_S",
+        "case_study": "am_entities_vec_C",
+        "court_decision": "am_entities_vec_J",
+        "adoption": "am_entities_vec_A",
+        "corporate_entity": "am_entities_vec_E",
+        "statistic": "am_entities_vec_T",
+        "tax_measure": "am_entities_vec_T",
+        "enforcement": "am_entities_vec_F",
+        "invoice_registrant": "am_entities_vec_I",
+        "law": "am_entities_vec_L",
+        "certification": "am_entities_vec_R",
+        "authority": "am_entities_vec_R",
         "document": "am_entities_vec_R",
     }
     if req.record_kinds:
@@ -352,15 +391,18 @@ def post_graph_vec_search(req: VecSearchRequest, am_db: AutonomathDbDep) -> VecS
                     "SELECT primary_name, record_kind FROM am_entities WHERE canonical_id = ?",
                     (row[0],),
                 ).fetchone()
-                hits.append(VecSearchHit(
-                    canonical_id=row[0],
-                    record_kind=(meta["record_kind"] if meta else "unknown"),
-                    primary_name=(meta["primary_name"] if meta else None),
-                    distance=float(row[1]),
-                ))
+                hits.append(
+                    VecSearchHit(
+                        canonical_id=row[0],
+                        record_kind=(meta["record_kind"] if meta else "unknown"),
+                        primary_name=(meta["primary_name"] if meta else None),
+                        distance=float(row[1]),
+                    )
+                )
         except sqlite3.OperationalError:
             continue
     hits.sort(key=lambda h: h.distance)
     hits = hits[: req.top_k]
-    return VecSearchResponse(query_text=req.query_text, embed_model=model_id,
-                             embed_dim=dim, hits=hits)
+    return VecSearchResponse(
+        query_text=req.query_text, embed_model=model_id, embed_dim=dim, hits=hits
+    )

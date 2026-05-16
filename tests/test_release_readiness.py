@@ -91,6 +91,8 @@ jobs:
           printf '%s\n' "$PRODUCTION_DEPLOY_OPERATOR_ACK_YAML" > "$RUNNER_TEMP/ack.yml"
       - name: Run local pre-deploy verification
         run: python scripts/ops/pre_deploy_verify.py
+      - name: Run production deploy readiness gate
+        run: python scripts/ops/production_deploy_readiness_gate.py
       - name: Run production deploy GO gate
         run: python scripts/ops/production_deploy_go_gate.py --operator-ack "$RUNNER_TEMP/ack.yml"
       - name: Hydrate jpintel seed DB for Docker build
@@ -191,7 +193,7 @@ def test_build_report_flags_missing_deploy_preflight_gate(tmp_path):
     deploy = tmp_path / ".github/workflows/deploy.yml"
     deploy.write_text(
         deploy.read_text(encoding="utf-8").replace(
-            '      - name: Run production deploy GO gate\n        run: python scripts/ops/production_deploy_go_gate.py --operator-ack "$RUNNER_TEMP/ack.yml"\n',
+            "      - name: Run production deploy readiness gate\n        run: python scripts/ops/production_deploy_readiness_gate.py\n",
             "",
         ),
         encoding="utf-8",

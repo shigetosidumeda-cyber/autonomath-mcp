@@ -45,9 +45,7 @@ def _load_module():
     import os
 
     os.environ["JPCITE_NO_VENV_REEXEC"] = "1"
-    spec = importlib.util.spec_from_file_location(
-        "_check_mcp_drift_under_test", DRIFT_SCRIPT
-    )
+    spec = importlib.util.spec_from_file_location("_check_mcp_drift_under_test", DRIFT_SCRIPT)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -78,9 +76,7 @@ def test_live_manifest_versions_agree_with_pyproject(drift_module) -> None:
 
     fails: list[str] = []
     drift_module._check_manifest_versions(fails)
-    assert fails == [], (
-        "manifest version drift detected vs pyproject.toml: " + "; ".join(fails)
-    )
+    assert fails == [], "manifest version drift detected vs pyproject.toml: " + "; ".join(fails)
 
 
 def test_drift_gate_catches_synthetic_regression(

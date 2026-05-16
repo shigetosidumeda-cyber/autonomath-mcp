@@ -171,16 +171,14 @@ def test_268_am_state_checkpoint_table(db: sqlite3.Connection) -> None:
     tables = {
         r[0]
         for r in db.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' "
-            "AND name='am_state_checkpoint'"
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='am_state_checkpoint'"
         )
     }
     assert tables == {"am_state_checkpoint"}
     views = {
         r[0]
         for r in db.execute(
-            "SELECT name FROM sqlite_master WHERE type='view' "
-            "AND name='v_state_checkpoint_latest'"
+            "SELECT name FROM sqlite_master WHERE type='view' AND name='v_state_checkpoint_latest'"
         )
     }
     assert views == {"v_state_checkpoint_latest"}
@@ -216,9 +214,7 @@ def test_268_latest_view(db: sqlite3.Connection) -> None:
             """,
             (idx, name),
         )
-    row = db.execute(
-        "SELECT * FROM v_state_checkpoint_latest WHERE workflow_id='wf-2'"
-    ).fetchone()
+    row = db.execute("SELECT * FROM v_state_checkpoint_latest WHERE workflow_id='wf-2'").fetchone()
     assert row is not None
     assert row["latest_step_index"] == 2
     assert row["total_steps"] == 3
@@ -248,7 +244,9 @@ def test_replay_token_store_and_lookup(db: sqlite3.Connection) -> None:
     body = {"data": [{"id": 1, "name": "test"}]}
     assert (
         store(
-            db, tok, ak,
+            db,
+            tok,
+            ak,
             request_path="/v1/programs",
             request_method="GET",
             response_body=body,
@@ -256,7 +254,9 @@ def test_replay_token_store_and_lookup(db: sqlite3.Connection) -> None:
         is True
     )
     hit = lookup(
-        db, tok, ak,
+        db,
+        tok,
+        ak,
         request_path="/v1/programs",
         request_method="GET",
     )
@@ -272,24 +272,25 @@ def test_replay_token_isolation_across_keys(db: sqlite3.Connection) -> None:
     tok = "shared-" + "x" * 20
     body_a = {"who": "a"}
     body_b = {"who": "b"}
-    store(db, tok, "ak-a", request_path="/v1/x", request_method="GET",
-          response_body=body_a)
-    store(db, tok, "ak-b", request_path="/v1/x", request_method="GET",
-          response_body=body_b)
-    assert lookup(db, tok, "ak-a", request_path="/v1/x",
-                  request_method="GET")["body"] == body_a
-    assert lookup(db, tok, "ak-b", request_path="/v1/x",
-                  request_method="GET")["body"] == body_b
+    store(db, tok, "ak-a", request_path="/v1/x", request_method="GET", response_body=body_a)
+    store(db, tok, "ak-b", request_path="/v1/x", request_method="GET", response_body=body_b)
+    assert lookup(db, tok, "ak-a", request_path="/v1/x", request_method="GET")["body"] == body_a
+    assert lookup(db, tok, "ak-b", request_path="/v1/x", request_method="GET")["body"] == body_b
 
 
 def test_replay_token_path_mismatch_returns_none(db: sqlite3.Connection) -> None:
     from jpintel_mcp.api._replay_token import lookup, store
 
     tok = "tok_" + "a" * 20
-    store(db, tok, "ak-1", request_path="/v1/programs",
-          request_method="GET", response_body={"ok": True})
-    miss = lookup(db, tok, "ak-1", request_path="/v1/different",
-                  request_method="GET")
+    store(
+        db,
+        tok,
+        "ak-1",
+        request_path="/v1/programs",
+        request_method="GET",
+        response_body={"ok": True},
+    )
+    miss = lookup(db, tok, "ak-1", request_path="/v1/different", request_method="GET")
     assert miss is None
 
 
@@ -359,8 +360,7 @@ def test_state_checkpoint_abort(db: sqlite3.Connection) -> None:
     # After abort the helper returns no committed rows for these
     # step names, but the audit row remains in the table.
     row = db.execute(
-        "SELECT status, notes FROM am_state_checkpoint "
-        "WHERE workflow_id='wf-5' AND step_name='a'"
+        "SELECT status, notes FROM am_state_checkpoint WHERE workflow_id='wf-5' AND step_name='a'"
     ).fetchone()
     assert row is not None
     assert row["status"] == "aborted"
@@ -409,9 +409,7 @@ def test_dlq_drain_bg_task_replay(db: sqlite3.Connection, tmp_path: Path) -> Non
     # Re-open the file and verify state.
     fresh = sqlite3.connect(str(tmp_path / "am_test.db"))
     fresh.row_factory = sqlite3.Row
-    dlq_row = fresh.execute(
-        "SELECT status FROM am_dlq WHERE source_id='orig-101'"
-    ).fetchone()
+    dlq_row = fresh.execute("SELECT status FROM am_dlq WHERE source_id='orig-101'").fetchone()
     assert dlq_row is not None
     assert dlq_row["status"] == "replayed"
     bg_row = fresh.execute(
@@ -422,8 +420,7 @@ def test_dlq_drain_bg_task_replay(db: sqlite3.Connection, tmp_path: Path) -> Non
     fresh.close()
 
 
-def test_dlq_drain_dry_run_no_mutation(db: sqlite3.Connection,
-                                       tmp_path: Path) -> None:
+def test_dlq_drain_dry_run_no_mutation(db: sqlite3.Connection, tmp_path: Path) -> None:
     """--dry-run leaves DLQ rows quarantined."""
     now = datetime.now(UTC).isoformat()
     db.execute(
@@ -437,14 +434,17 @@ def test_dlq_drain_dry_run_no_mutation(db: sqlite3.Connection,
     )
     from cron.dlq_drain import main  # type: ignore[import-not-found]
 
-    rc = main([
-        "--db", str(tmp_path / "am_test.db"),
-        "--batch-size", "10", "--dry-run",
-    ])
+    rc = main(
+        [
+            "--db",
+            str(tmp_path / "am_test.db"),
+            "--batch-size",
+            "10",
+            "--dry-run",
+        ]
+    )
     assert rc == 0
     fresh = sqlite3.connect(str(tmp_path / "am_test.db"))
-    row = fresh.execute(
-        "SELECT status FROM am_dlq WHERE source_id='orig-202'"
-    ).fetchone()
+    row = fresh.execute("SELECT status FROM am_dlq WHERE source_id='orig-202'").fetchone()
     fresh.close()
     assert row[0] == "quarantined"

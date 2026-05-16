@@ -21,6 +21,7 @@ NOT enforce the order or attribute styling.
 Run:
   pytest tests/test_lost_zero_100_4page.py -v
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -78,8 +79,7 @@ def test_page_has_element(page: Path, element: tuple[str, list[str]]) -> None:
     text = page.read_text(encoding="utf-8")
     matched = any(needle in text for needle in needles)
     assert matched, (
-        f"{page.relative_to(REPO_ROOT)} missing element '{label}' "
-        f"(looked for any of: {needles})"
+        f"{page.relative_to(REPO_ROOT)} missing element '{label}' (looked for any of: {needles})"
     )
 
 
@@ -99,9 +99,7 @@ def test_no_duplicate_rum_funnel_collector_script() -> None:
     for page in PAGES:
         text = page.read_text(encoding="utf-8")
         count = text.count("rum_funnel_collector.js")
-        assert count <= 1, (
-            f"{page.relative_to(REPO_ROOT)} has rum_funnel_collector.js x{count}"
-        )
+        assert count <= 1, f"{page.relative_to(REPO_ROOT)} has rum_funnel_collector.js x{count}"
 
 
 def test_breadcrumb_links_to_home() -> None:

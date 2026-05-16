@@ -115,11 +115,11 @@ Scaffolding が **本日着地** (`src/jpintel_mcp/mcp/real_estate_tools/`):
   との区別が機械可読 (`status` キーで判定)。実 SQL は **T+200d 直前**
   (target 2026-11-22) で本 stub の body 差し替えとして land する。
 - `AUTONOMATH_REAL_ESTATE_ENABLED` env (default `False`) で gate。
-  launch (2026-05-06) 時点では disabled、manifest は **151 tools** のまま。
-- operator が `True` に flip すると 69 + 5 = **151 tools** に増えるので、
+  launch (2026-05-06) 時点では disabled、manifest は **155 tools** のまま。
+- operator が `True` に flip すると 69 + 5 = **155 tools** に増えるので、
   T+150d 程度で partner 向け OpenAPI 事前公開・契約面の peer review が可能。
 - `tests/test_real_estate_tools.py` が
-  ① env-False で 151 tools / ② env-True で 151 tools / ③ sentinel 注記
+  ① env-False で 155 tools / ② env-True で 155 tools / ③ sentinel 注記
   return / ④ 各 stub の signature shape (parameter set + 型注釈 + docstring)
   を担保。
 - migration 042 (real_estate_programs + zoning_overlays) は C7 で適用済み。

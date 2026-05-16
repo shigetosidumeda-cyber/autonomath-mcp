@@ -33,12 +33,11 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Response
-
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_STATUS_PATH = REPO_ROOT / "analytics" / "six_axis_status.json"
@@ -62,7 +61,8 @@ def _load_report() -> dict[str, Any] | None:
     if not path.exists():
         return None
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        loaded: Any = json.loads(path.read_text(encoding="utf-8"))
+        return loaded if isinstance(loaded, dict) else None
     except (json.JSONDecodeError, OSError):
         return None
 
@@ -88,7 +88,7 @@ def get_six_axis_status(response: Response) -> dict[str, Any]:
         return {
             "ready": False,
             "schema_version": 1,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "message": (
                 "six-axis sanity probe has not run yet. The daily cron "
                 "writes analytics/six_axis_status.json at 06:30 UTC."

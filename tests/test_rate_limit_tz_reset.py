@@ -167,8 +167,7 @@ def test_api_key_quota_does_not_use_jst():
 
     assert utc_bucket(jst_pre) == "2026-06-15"
     assert utc_bucket(jst_post) == "2026-06-15", (
-        "API-key UTC bucket must not roll over at JST midnight (15:00 UTC); "
-        "only at UTC midnight."
+        "API-key UTC bucket must not roll over at JST midnight (15:00 UTC); only at UTC midnight."
     )
 
 

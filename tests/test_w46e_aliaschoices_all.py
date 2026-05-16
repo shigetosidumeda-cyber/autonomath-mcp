@@ -164,9 +164,7 @@ ENV_MATRIX: list[tuple[str, str, str, object, object]] = [
 # Every env key the matrix touches. Centralised so the fixture clears all of them
 # before each parametrised case — leaks between cases would silently mask the
 # 3-state check.
-_ALL_KEYS = sorted(
-    {key for _, jp, lg, _, _ in ENV_MATRIX for key in (jp, lg)}
-)
+_ALL_KEYS = sorted({key for _, jp, lg, _, _ in ENV_MATRIX for key in (jp, lg)})
 
 
 @pytest.fixture

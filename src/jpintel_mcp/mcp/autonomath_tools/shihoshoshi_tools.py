@@ -51,7 +51,9 @@ from .wave22_tools import _cross_check_jurisdiction_impl
 logger = logging.getLogger("jpintel.mcp.autonomath.shihoshoshi")
 
 # Env-gated registration (default ON). Flip "0" for one-flag rollback.
-_ENABLED = get_flag("JPCITE_SHIHOSHOSHI_PACK_ENABLED", "AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_SHIHOSHOSHI_PACK_ENABLED", "AUTONOMATH_SHIHOSHOSHI_PACK_ENABLED", "1") == "1"
+)
 
 
 # ---------------------------------------------------------------------------

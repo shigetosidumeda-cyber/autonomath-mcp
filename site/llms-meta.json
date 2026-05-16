@@ -7,24 +7,24 @@
   "publisher_legal_entity": "Bookyou株式会社",
   "publisher_invoice_id": "T8010001213708",
   "canonical": "https://jpcite.com",
-  "generated_at": "2026-05-14T09:59:01Z",
+  "generated_at": "2026-05-15T16:05:47Z",
   "generator": "scripts/regen_structured_sitemap_and_llms_meta.py",
   "description": "Machine-readable index of 4 llms.txt cohort files plus 4 well-known discovery surfaces (sitemap-llms.xml, .well-known/mcp.json, agents.json, ai-plugin.json). AI agents can use this index to range-fetch a single section anchor without re-pulling the whole llms-full.txt body.",
   "license": "CC BY 4.0 (this index file). Underlying program/law data: see /data-licensing.html.",
   "total_files": 4,
   "total_discovery_surfaces": 4,
   "total_indexed_surfaces": 8,
-  "total_section_anchors": 156,
+  "total_section_anchors": 157,
   "files": [
     {
       "file": "/llms.txt",
       "lang": "ja",
-      "size_bytes": 6439,
-      "line_count": 97,
-      "content_hash_sha256": "01012ae98847080513ee76bc7f45c27a74d8bbead24fe433d78425c9d1e91731",
-      "last_modified": "2026-05-14T09:49:30Z",
-      "sections": 8,
-      "anchors_total": 9,
+      "size_bytes": 8181,
+      "line_count": 110,
+      "content_hash_sha256": "78679de8be650448d11975b207aab6a701b517ac47a9b0f812aae8511020ddfa",
+      "last_modified": "2026-05-15T15:45:42Z",
+      "sections": 9,
+      "anchors_total": 10,
       "section_anchors": [
         {
           "level": 1,
@@ -49,44 +49,51 @@
         },
         {
           "level": 2,
+          "text": "P0 Facade",
+          "anchor": "p0-facade",
+          "line": 34,
+          "kind": "heading"
+        },
+        {
+          "level": 2,
           "text": "Public pages",
           "anchor": "public-pages",
-          "line": 34,
+          "line": 47,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Machine-readable discovery",
           "anchor": "machine-readable-discovery",
-          "line": 52,
+          "line": 65,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Use when",
           "anchor": "use-when",
-          "line": 75,
+          "line": 88,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Do not use as final judgment",
           "anchor": "do-not-use-as-final-judgment",
-          "line": 82,
+          "line": 95,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Pricing",
           "anchor": "pricing",
-          "line": 88,
+          "line": 101,
           "kind": "heading"
         },
         {
           "level": 2,
           "text": "Languages",
           "anchor": "languages",
-          "line": 94,
+          "line": 107,
           "kind": "heading"
         }
       ]
@@ -96,8 +103,8 @@
       "lang": "en",
       "size_bytes": 6042,
       "line_count": 94,
-      "content_hash_sha256": "a50119470b65494b1983fdf2e679196aa83fd21cae25271e4c940fbd41fa7677",
-      "last_modified": "2026-05-14T09:49:30Z",
+      "content_hash_sha256": "2cbdb42875b9e0008361f0c7255bf83b59c6e8fff816f2381bc1e130926ef471",
+      "last_modified": "2026-05-15T11:08:06Z",
       "sections": 8,
       "anchors_total": 9,
       "section_anchors": [
@@ -171,8 +178,8 @@
       "lang": "ja",
       "size_bytes": 2244331,
       "line_count": 13135,
-      "content_hash_sha256": "bde29ee8a9c4d9a97a340cdfcffe0f1e32288d1d4a7f00feb64de6c0e19180f3",
-      "last_modified": "2026-05-14T09:53:06Z",
+      "content_hash_sha256": "e6bbf9309128fce977430b62b5717488edefb7336c4289101fcd4baff7bb3ac3",
+      "last_modified": "2026-05-15T11:08:01Z",
       "sections": 83,
       "anchors_total": 129,
       "section_anchors": [
@@ -1086,8 +1093,8 @@
       "lang": "en",
       "size_bytes": 4392703,
       "line_count": 23245,
-      "content_hash_sha256": "1ab622227c99a36967f1b8c2926b5dd1e8d45c7df587adf1ea5d549cd8ea7fff",
-      "last_modified": "2026-05-14T09:49:30Z",
+      "content_hash_sha256": "8287dae008b6f9b24a1ec04612da51a7019166d1222b97638d02ef00d1246327",
+      "last_modified": "2026-05-15T11:08:07Z",
       "sections": 8,
       "anchors_total": 9,
       "section_anchors": [
@@ -1163,28 +1170,28 @@
       "kind": "ai_surface_sitemap",
       "size_bytes": 4612,
       "content_hash_sha256": "845f7a2f87252ece5e157f85083e5a72a109873dd21b4e7e7dba55e1b356fe09",
-      "last_modified": "2026-05-14T02:00:23Z"
+      "last_modified": "2026-05-14T18:54:41Z"
     },
     {
       "file": ".well-known/mcp.json",
       "kind": "mcp_discovery",
-      "size_bytes": 12599,
-      "content_hash_sha256": "ae276517fbfd9df86f3edbd5c29893ec46ca2d886ab1387ca501f1d70b9641b7",
-      "last_modified": "2026-05-14T05:32:16Z"
+      "size_bytes": 12829,
+      "content_hash_sha256": "83a5b3fff297b3240ec1fa86829bfd77ac6dd41d205528286bc97a404addc795",
+      "last_modified": "2026-05-15T11:07:55Z"
     },
     {
       "file": ".well-known/agents.json",
       "kind": "agents_protocol",
-      "size_bytes": 2609,
-      "content_hash_sha256": "d2f0c3dbb8a04c76e0021cebf12e0bde72a7fa7aadacd79d9f9ffed19847161f",
-      "last_modified": "2026-05-13T00:33:55Z"
+      "size_bytes": 6296,
+      "content_hash_sha256": "a21475b0e33a50f7c4722043ac4b28ba3018994b3b123a03311a1368af4ea9f7",
+      "last_modified": "2026-05-15T16:05:44Z"
     },
     {
       "file": ".well-known/ai-plugin.json",
       "kind": "openai_plugin",
       "size_bytes": 1507,
       "content_hash_sha256": "b5150a4224d06ceb96ce39fa794fb31dc5154a8ae5e6767f0d651c8205ed79c8",
-      "last_modified": "2026-05-13T00:12:21Z"
+      "last_modified": "2026-05-15T11:07:55Z"
     }
   ],
   "consumption_notes": {

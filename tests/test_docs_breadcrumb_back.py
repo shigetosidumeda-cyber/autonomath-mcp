@@ -70,17 +70,14 @@ def test_content_partial_exists():
     """The content.html override carries the back-btn + home + docs links."""
     text = _read_text(PARTIAL)
     # Sanity: non-trivial Jinja template (> 200 chars guard).
-    assert len(text) > 200, (
-        f"{PARTIAL} is too small ({len(text)} chars); back-btn partial missing"
-    )
+    assert len(text) > 200, f"{PARTIAL} is too small ({len(text)} chars); back-btn partial missing"
     # Must contain a Jinja conditional (skip on homepage).
     assert "{% if" in text and "{% endif %}" in text, (
         "content.html should conditionally skip the back-btn on the homepage"
     )
     # Must call page.content so Material renders the body underneath.
     assert "page.content" in text, (
-        "content.html override must still render `{{ page.content }}` "
-        "or the docs body disappears"
+        "content.html override must still render `{{ page.content }}` or the docs body disappears"
     )
 
 
@@ -89,7 +86,7 @@ def test_back_button_markup():
     text = _read_text(PARTIAL)
     # class="back-btn" anchor (audit selector hits exactly this class).
     assert 'class="back-btn"' in text, (
-        "partial must include `class=\"back-btn\"` (audit selector match)"
+        'partial must include `class="back-btn"` (audit selector match)'
     )
     # href uses javascript:history.back() (works without referrer).
     assert "javascript:history.back()" in text, (
@@ -144,9 +141,7 @@ def test_homepage_skip_guard():
     """Homepage should not render the back-btn (it would be a no-op at root)."""
     text = _read_text(PARTIAL)
     # `is_homepage` guard or explicit not page.is_homepage check.
-    assert "is_homepage" in text, (
-        "partial must guard with `is_homepage` so homepage skips back-btn"
-    )
+    assert "is_homepage" in text, "partial must guard with `is_homepage` so homepage skips back-btn"
 
 
 if __name__ == "__main__":

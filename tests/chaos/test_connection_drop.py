@@ -26,9 +26,7 @@ import pytest
 httpx = pytest.importorskip("httpx")
 
 
-def test_reset_peer_raises_connection_error(
-    api_proxy: Any, proxy_base_url: str
-) -> None:
+def test_reset_peer_raises_connection_error(api_proxy: Any, proxy_base_url: str) -> None:
     """A TCP RST 100 ms in must surface as a connection error, not a hang.
 
     The ``reset_peer`` toxic with ``timeout=100`` injects a RST after
@@ -42,20 +40,15 @@ def test_reset_peer_raises_connection_error(
         attributes={"timeout": 100},
     )
     started = time.monotonic()
-    with pytest.raises(httpx.HTTPError):
-        with httpx.Client(timeout=5.0) as client:
-            client.get(f"{proxy_base_url}/healthz")
+    with pytest.raises(httpx.HTTPError), httpx.Client(timeout=5.0) as client:
+        client.get(f"{proxy_base_url}/healthz")
     elapsed = time.monotonic() - started
     # Must surface within 5 s — we are checking that the failure is
     # *fast*, not that it eventually happens.
-    assert elapsed < 5.0, (
-        f"connection reset did not surface quickly: elapsed={elapsed:.3f}s"
-    )
+    assert elapsed < 5.0, f"connection reset did not surface quickly: elapsed={elapsed:.3f}s"
 
 
-def test_timeout_toxic_respects_client_budget(
-    api_proxy: Any, proxy_base_url: str
-) -> None:
+def test_timeout_toxic_respects_client_budget(api_proxy: Any, proxy_base_url: str) -> None:
     """``timeout`` toxic must trip the client's own read-timeout.
 
     The toxic holds the connection open for 5000 ms before closing.
@@ -66,18 +59,16 @@ def test_timeout_toxic_respects_client_budget(
         attributes={"timeout": 5000},
     )
     started = time.monotonic()
-    with pytest.raises(httpx.HTTPError):
-        with httpx.Client(timeout=httpx.Timeout(connect=1.0, read=1.0, write=1.0, pool=1.0)) as client:
-            client.get(f"{proxy_base_url}/healthz")
+    with (
+        pytest.raises(httpx.HTTPError),
+        httpx.Client(timeout=httpx.Timeout(connect=1.0, read=1.0, write=1.0, pool=1.0)) as client,
+    ):
+        client.get(f"{proxy_base_url}/healthz")
     elapsed = time.monotonic() - started
-    assert elapsed < 4.0, (
-        f"client timeout did not fire in time: elapsed={elapsed:.3f}s"
-    )
+    assert elapsed < 4.0, f"client timeout did not fire in time: elapsed={elapsed:.3f}s"
 
 
-def test_limit_data_truncates_response(
-    api_proxy: Any, proxy_base_url: str
-) -> None:
+def test_limit_data_truncates_response(api_proxy: Any, proxy_base_url: str) -> None:
     """``limit_data`` closing after 32 bytes must produce a recognizable error.
 
     The toxic disconnects after 32 bytes of upstream→downstream flow,
@@ -143,6 +134,4 @@ def test_recovery_after_toxic_clear(api_proxy: Any, proxy_base_url: str) -> None
         fast = client.get(f"{proxy_base_url}/healthz")
     elapsed = time.monotonic() - started
     assert fast.status_code == 200
-    assert elapsed < 2.0, (
-        f"baseline did not return after toxic removal: elapsed={elapsed:.3f}s"
-    )
+    assert elapsed < 2.0, f"baseline did not return after toxic removal: elapsed={elapsed:.3f}s"

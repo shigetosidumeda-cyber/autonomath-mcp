@@ -35,10 +35,14 @@ AXIS5_CRON_SCRIPTS = [
 ]
 
 _BANNED_IMPORT_LINES = (
-    "import anthropic", "from anthropic",
-    "import openai", "from openai ",
-    "import google.generativeai", "from google.generativeai",
-    "import claude_agent_sdk", "from claude_agent_sdk",
+    "import anthropic",
+    "from anthropic",
+    "import openai",
+    "from openai ",
+    "import google.generativeai",
+    "from google.generativeai",
+    "import claude_agent_sdk",
+    "from claude_agent_sdk",
 )
 
 
@@ -85,8 +89,7 @@ def _seed_autonomath_db(db: Path) -> sqlite3.Connection:
         """
     )
     for i in range(10):
-        conn.execute("INSERT INTO am_law VALUES (?, ?)",
-                     (f"LAW-{i:010d}", f"test law {i}"))
+        conn.execute("INSERT INTO am_law VALUES (?, ?)", (f"LAW-{i:010d}", f"test law {i}"))
     for slug in AXIS5_MIGRATIONS_AUTONOMATH:
         with (MIGRATIONS_DIR / f"{slug}.sql").open(encoding="utf-8") as f:
             conn.executescript(f.read())
@@ -108,9 +111,12 @@ def _seed_jpintel_db(db: Path) -> sqlite3.Connection:
     for i in range(10):
         conn.execute(
             "INSERT INTO programs VALUES (?, ?, ?, 0, ?)",
-            (f"UNI-{i:04d}", f"test program {i}",
-             "B" if i % 2 else "A",
-             f"https://www.meti.go.jp/policy/test_{i}.html"),
+            (
+                f"UNI-{i:04d}",
+                f"test program {i}",
+                "B" if i % 2 else "A",
+                f"https://www.meti.go.jp/policy/test_{i}.html",
+            ),
         )
     for slug in AXIS5_MIGRATIONS_JPINTEL:
         with (MIGRATIONS_DIR / f"{slug}.sql").open(encoding="utf-8") as f:
@@ -136,8 +142,14 @@ def test_axis5_migrations_apply(tmp_path: Path) -> None:
     assert "programs_translation_review_queue" in tables2
     assert "programs_translation_refresh_log" in tables2
     cols = {r[1] for r in conn2.execute("PRAGMA table_info(programs)")}
-    for needed in ("title_en", "summary_en", "eligibility_en",
-                   "source_url_en", "translation_status", "translation_fetched_at"):
+    for needed in (
+        "title_en",
+        "summary_en",
+        "eligibility_en",
+        "source_url_en",
+        "translation_status",
+        "translation_fetched_at",
+    ):
         assert needed in cols, f"programs missing column: {needed}"
     conn2.close()
 
@@ -160,8 +172,15 @@ def test_axis5_migrations_carry_target_db_marker() -> None:
 def _run_cron(script: str, db_path: Path, db_flag: str, extra: list[str]) -> tuple[int, str, str]:
     p = subprocess.run(
         [sys.executable, str(CRON_DIR / script), db_flag, str(db_path), *extra],
-        cwd=str(REPO_ROOT), capture_output=True, timeout=60)
-    return p.returncode, p.stdout.decode("utf-8", errors="replace"), p.stderr.decode("utf-8", errors="replace")
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        timeout=60,
+    )
+    return (
+        p.returncode,
+        p.stdout.decode("utf-8", errors="replace"),
+        p.stderr.decode("utf-8", errors="replace"),
+    )
 
 
 @pytest.mark.parametrize(
@@ -195,12 +214,16 @@ def test_aggregator_url_refused(tmp_path: Path) -> None:
     conn.execute(
         "INSERT INTO programs (unified_id, primary_name, tier, excluded, source_url) "
         "VALUES (?, ?, 'A', 0, ?)",
-        ("UNI-BAN-1", "noukaweb test", "https://noukaweb.com/test"))
+        ("UNI-BAN-1", "noukaweb test", "https://noukaweb.com/test"),
+    )
     conn.commit()
     conn.close()
     rc, out, err = _run_cron(
-        "fill_programs_en.py", db, "--jpintel-db",
-        ["--max-programs", "1", "--dry-run", "--no-network"])
+        "fill_programs_en.py",
+        db,
+        "--jpintel-db",
+        ["--max-programs", "1", "--dry-run", "--no-network"],
+    )
     assert rc == 0, f"rc={rc} err={err[-300:]}"
     payload = json.loads(out.strip().splitlines()[-1])
     assert payload["totals"]["refused_aggregator"] >= 1
@@ -234,10 +257,21 @@ def test_translate_review_queue_export(tmp_path: Path) -> None:
     _seed_jpintel_db(jp_db).close()
     out_csv = tmp_path / "review.csv"
     p = subprocess.run(
-        [sys.executable, str(CRON_DIR / "translate_review_queue.py"), "--export",
-         "--autonomath-db", str(am_db), "--jpintel-db", str(jp_db),
-         "--out", str(out_csv)],
-        cwd=str(REPO_ROOT), capture_output=True, timeout=30)
+        [
+            sys.executable,
+            str(CRON_DIR / "translate_review_queue.py"),
+            "--export",
+            "--autonomath-db",
+            str(am_db),
+            "--jpintel-db",
+            str(jp_db),
+            "--out",
+            str(out_csv),
+        ],
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        timeout=30,
+    )
     assert p.returncode == 0, p.stderr.decode()[-300:]
     payload = json.loads(p.stdout.decode().strip().splitlines()[-1])
     assert payload["ok"] is True

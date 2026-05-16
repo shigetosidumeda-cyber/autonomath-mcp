@@ -178,7 +178,7 @@ keys, usage, and billing at <https://jpcite.com/dashboard>.
 
 ## MCP tools
 
-151 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
+155 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
 
 | Group | Coverage |
 |-------|----------|
@@ -251,7 +251,7 @@ Tool quality is publicly verifiable: see [`evals/`](./evals/) for a 79-query gol
 
 ## Optional disabled domains
 
-The standard distribution exposes 151 tools for Japanese public-program
+The standard distribution exposes 155 tools for Japanese public-program
 search, evidence, provenance, tax rulesets, laws, court decisions, bids,
 invoice registrants, and related entity facts. Additional domain-specific
 surfaces are intentionally disabled unless enabled through support-managed
@@ -309,4 +309,45 @@ Keywords: mcp, mcp-server, mcp-tools, claude, rag, agent-tools, japan, japanese,
 [![API status](https://img.shields.io/badge/api-status-4c1)](https://jpcite.com/status)
 
 Offline / mirrored copies of the same badges live in [`badges/`](./badges/)
+
+## Wave 50 status (2026-05-16, append-only)
+
+Wave 50 RC1 contract layer 完成 + production deploy preflight gate substrate landed. Architecture-snapshot counts above remain authoritative; this section is **additive** alongside the 2026-05-07 hardening / 2026-05-12 v0.4.0 LIVE markers.
+
+- **mypy strict**: tick 5 → tick 6 で **71 → 0 errors achieved** (Optional / Pydantic v1↔v2 boundary 残務 sweep + Python target version 引き直し).
+- **pytest**: **8215/8628 PASS, 0 fail** (tick 6 で coverage gap top 5 を +190 tests で fill、collected 8628 維持).
+- **production deploy readiness gate**: tick 4 で **7/7 PASS** 達成、tick 5 で G5 schema sync gap により 6/7 一時 regression、tick 6 e2e で **7/7 再達成**、tick 7 で **7/7 維持**.
+- **RC1 contract layer**: **19 Pydantic models + 20 JSON Schema** (agent_runtime/contracts.py + schemas/jpcir/、`scripts/check_schema_contract_parity.py` で双方向 round-trip 0 drift).
+- **Release Capsule**: **21 artifacts in manifest + 14 outcome contracts + 3 inline packets** (`estimated_price_jpy` ¥300-¥900 band 実値 fill 完了).
+- **AWS canary readiness**: **8/8 prerequisites** (IAM role / budget envelope / SNS topic / teardown attestation / DRY_RUN smoke 30/30 / `aws_budget_canary_attestation` schema bind / `release_capsule_manifest.json` 登録 / `.github/workflows/aws-canary.yml` ready).
+- **Stream G staged drift**: tick 5 340 → tick 6 479 → tick 7 540+ (target、3 PR commit + push + CI green 一気通貫).
+- **preflight READY**: 4/5 (tick 6) → **5/5** (tick 7 目標、AWS_CANARY_READY flip target).
+
+last_updated: 2026-05-16
 for use in environments where shields.io is unreachable.
+
+## Wave 50 RC1 status badges (2026-05-16, append-only)
+
+Additive to the 2026-05-07 hardening / 2026-05-12 v0.4.0 LIVE / above Wave 50 status section markers. Existing badge / metric sections remain authoritative.
+
+[![production gate](https://img.shields.io/badge/production%20gate-7%2F7%20PASSING-4c1.svg)](./docs/_internal/WAVE50_RC1_2026-05-16.md)
+[![mypy strict](https://img.shields.io/badge/mypy%20strict-0%20errors-4c1.svg)](./CHANGELOG.md)
+[![pytest](https://img.shields.io/badge/pytest-8215%2B%20PASS-4c1.svg)](./tests/)
+[![coverage](https://img.shields.io/badge/coverage-76%25-4c1.svg)](./tests/)
+[![AWS canary](https://img.shields.io/badge/AWS%20canary-READY%20(operator%20unlock%20pending)-yellow.svg)](./docs/runbook/aws_canary.md)
+
+### Wave 50 RC1 final state (2026-05-16)
+
+- **production deploy readiness gate**: **7/7 PASSING** (tick 6 で regression を経て tick 7-9 で 7/7 維持)
+- **mypy strict**: **0 errors** (tick 6 で 71 → 0 achieved、新規 strict error は red gate)
+- **pytest**: **8215+ PASS, 0 fail** (collected 8628、tick 8-9 で coverage gap top 5 + high-impact 5 module で +200+ tests landed)
+- **coverage**: **76+%** (tick 7 73.52% → tick 8 75%+ → tick 9 76-77%)
+- **preflight**: **5/5 READY** (Stream A 5 preflight artifact 全件 READY 達成、tick 9 で Stream A → completed)
+- **preflight_scorecard.state**: **AWS_CANARY_READY** (tick 9 Stream Y で AWS_BLOCKED → AWS_CANARY_READY 進行)
+- **live_aws_commands_allowed**: **false** (絶対条件堅守、operator token gate `--unlock-live-aws-commands` 経由でのみ flip 可)
+- **22+ Stream landed in 10 tick** (Stream A/B/C/D/E/F/G/H/I/K/L/M/N/O/P/Q/R/S/T/U/V/W/X/Y/Z 累計 24/26 completed)
+- **RC1 contract layer**: 19 Pydantic models + 20 JSON Schema、`scripts/check_schema_contract_parity.py` で双方向 round-trip 0 drift
+- **Release Capsule**: 21 artifacts in manifest + 14 outcome contracts (¥300-¥900 band 実値 fill 完了) + 3 inline packets
+- **AWS canary readiness**: 8/8 prerequisites + 追加 4 gate audit OK、Stream W concern separation で `live_aws=true` flip を operator token gate 経由のみに分離
+
+last_updated: 2026-05-16

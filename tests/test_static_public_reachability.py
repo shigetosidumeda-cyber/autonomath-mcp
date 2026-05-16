@@ -641,9 +641,7 @@ def test_public_frontend_discovery_links_do_not_point_at_missing_legacy_targets(
     assert not re.search(r"^/sitemap-structured\.xml\s+", redirects, re.MULTILINE)
     assert (REPO_ROOT / "site" / "analytics" / "confidence_index.json").exists()
 
-    monitoring = (REPO_ROOT / "site" / "status" / "monitoring.html").read_text(
-        encoding="utf-8"
-    )
+    monitoring = (REPO_ROOT / "site" / "status" / "monitoring.html").read_text(encoding="utf-8")
     assert 'href="/v1/status' not in monitoring
     assert "https://api.jpcite.com/v1/status/" in monitoring
 
@@ -658,9 +656,9 @@ def test_public_frontend_discovery_links_do_not_point_at_missing_legacy_targets(
 
     llms_full = (REPO_ROOT / "site" / "llms-full.txt").read_text(encoding="utf-8")
     assert "](./" not in llms_full
-    assert "https://jpcite.com/openapi.json" not in (
-        REPO_ROOT / "docs" / "agents.md"
-    ).read_text(encoding="utf-8")
+    assert "https://jpcite.com/openapi.json" not in (REPO_ROOT / "docs" / "agents.md").read_text(
+        encoding="utf-8"
+    )
 
 
 def test_status_html_renders_coarse_public_categories_only() -> None:
@@ -703,7 +701,7 @@ def test_openapi_discovery_tiers_match_committed_public_specs() -> None:
         "full"
     ].read_text(encoding="utf-8")
     assert tiers["full"]["mirror_url"] == "https://jpcite.com/openapi/v1.json"
-    assert tiers["full"]["path_count"] == 302
+    assert tiers["full"]["path_count"] == 306
     assert tiers["agent"]["path_count"] == 34
     assert tiers["agent"]["parent_tier"] == "full"
     assert tiers["gpt30"]["path_count"] == 30
@@ -765,9 +763,7 @@ def test_llms_meta_schema_and_file_metadata_resolve() -> None:
         assert entry["line_count"] == expected_line_count
         assert entry["content_hash_sha256"] == hashlib.sha256(payload).hexdigest()
         assert entry["anchors_total"] == len(entry["section_anchors"])
-    assert meta["total_section_anchors"] == sum(
-        entry["anchors_total"] for entry in meta["files"]
-    )
+    assert meta["total_section_anchors"] == sum(entry["anchors_total"] for entry in meta["files"])
 
     rendered = json.dumps(meta, ensure_ascii=False)
     assert not re.search(r"revenue model|R8 grow|cohort revenue", rendered, re.IGNORECASE)
@@ -813,9 +809,7 @@ def test_generated_program_related_links_resolve_after_static_normalization() ->
             if parsed.path.startswith(("/programs/", "/qa/")) and not _static_target_exists(
                 site_root, parsed.path
             ):
-                offenders.append(
-                    f"{path.relative_to(REPO_ROOT)}: {tag}[{attr}]={raw_url}"
-                )
+                offenders.append(f"{path.relative_to(REPO_ROOT)}: {tag}[{attr}]={raw_url}")
                 if len(offenders) > 50:
                     offenders.append("... truncated")
                     break
@@ -866,9 +860,7 @@ def test_docs_search_index_visible_snippets_do_not_expose_stale_current_doc_sign
         "/v0.3",
         "v0.3 path",
     ]
-    offenders = [
-        signal for signal in stale_current_doc_signals if signal in visible_snippets
-    ]
+    offenders = [signal for signal in stale_current_doc_signals if signal in visible_snippets]
 
     stale_recipe_tool_count = re.compile(
         r"(?:\b139\b.{0,40}\b(?:tools?|MCP tools?)\b|"
@@ -990,7 +982,10 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
     assert "REST / MCP / OpenAPI Actions / Widget / Webhook / dataset は実行手段です" in products
     assert "拡張されたアウトプット一覧" in products
     assert "context-compression layer before an AI reads Japanese institutional evidence" in en_home
-    assert "REST, MCP, OpenAPI Actions, widgets, webhooks, and datasets are entry surfaces" in en_products
+    assert (
+        "REST, MCP, OpenAPI Actions, widgets, webhooks, and datasets are entry surfaces"
+        in en_products
+    )
     for label in [
         "Evidence Packet",
         "Company Folder",
@@ -1009,10 +1004,10 @@ def test_home_and_products_surface_expanded_outputs_to_frontend() -> None:
         assert label in en_products
     assert en_playground.count("</html>") == 1
     assert not en_playground.split("</html>", 1)[1].strip()
-    assert '<span class="num">151</span><span class="lbl">AI から呼べる MCP ツール</span>' in about
-    assert '<span class="num">302</span><span class="lbl">REST paths (OpenAPI)</span>' in about
-    assert '"endpoint_catalog_paths", "value": 302' in playground
-    assert "v0.4.0 (public runtime cohort=151)" in facts
+    assert '<span class="num">155</span><span class="lbl">AI から呼べる MCP ツール</span>' in about
+    assert '<span class="num">306</span><span class="lbl">REST paths (OpenAPI)</span>' in about
+    assert '"endpoint_catalog_paths", "value": 306' in playground
+    assert "v0.4.0 (public runtime cohort=155)" in facts
 
 
 def test_expanded_output_surface_is_visible_before_lower_page_sections() -> None:
@@ -1129,7 +1124,9 @@ def test_top_level_public_entry_surfaces_use_connect_chooser_for_agent_setup() -
 
         for href in hrefs:
             parsed_path = urlparse(href).path
-            if parsed_path.startswith("/integrations/") or parsed_path.startswith("../integrations/"):
+            if parsed_path.startswith("/integrations/") or parsed_path.startswith(
+                "../integrations/"
+            ):
                 offenders.append(f"{rel}: setup CTA still points to {href}")
 
         if forbidden_phrase in text.lower():
@@ -1261,8 +1258,14 @@ def test_static_sitemap_includes_public_legal_surfaces() -> None:
         "https://jpcite.com/en/legal-fence",
     ):
         assert f"<loc>{loc}</loc>" in sitemap
-    assert '<xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/tokushoho"/>' in sitemap
-    assert '<xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/legal-fence"/>' in sitemap
+    assert (
+        '<xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/tokushoho"/>'
+        in sitemap
+    )
+    assert (
+        '<xhtml:link rel="alternate" hreflang="en" href="https://jpcite.com/en/legal-fence"/>'
+        in sitemap
+    )
     assert "<lastmod>2026-05-14</lastmod>" in sitemap
 
 
@@ -1546,7 +1549,10 @@ def test_enforcement_pages_do_not_regress_to_legacy_chrome() -> None:
         text = path.read_text(encoding="utf-8", errors="ignore")
         if '<a class="brand" href="/" aria-label="jpcite ホーム">jpcite</a>' in text:
             offenders.append(f"{rel}: legacy text-only logo")
-        if '<header class="site-header"' in text and "lockup-transparent-600-darklogo.png" not in text:
+        if (
+            '<header class="site-header"' in text
+            and "lockup-transparent-600-darklogo.png" not in text
+        ):
             offenders.append(f"{rel}: missing canonical logo lockup")
         if '<header class="site-header"' in text and 'class="lang-switch"' not in text:
             offenders.append(f"{rel}: missing JP/EN language switch")
@@ -1653,7 +1659,7 @@ def test_public_agent_and_billing_docs_use_current_auth_and_pricing_copy() -> No
     banned = [
         "¥3/req",
         "¥3/request",
-        "API Key\" (Bearer)",
+        'API Key" (Bearer)',
         "API Key (Bearer)",
         "https://api.jpcite.com/v1/openapi.agent.json?src=cookbook_r18-chatgpt-custom-gpt",
         "(¥3 / 通知)",
@@ -1771,9 +1777,9 @@ def test_structured_data_uses_extensionless_product_canonical_urls() -> None:
     products = (REPO_ROOT / "site" / "products.html").read_text(encoding="utf-8")
     assert '"url": "https://jpcite.com/pricing"' in products
     assert '"url": "https://jpcite.com/dashboard"' in products
-    sitemap_source = (REPO_ROOT / "scripts" / "regen_structured_sitemap_and_llms_meta.py").read_text(
-        encoding="utf-8"
-    )
+    sitemap_source = (
+        REPO_ROOT / "scripts" / "regen_structured_sitemap_and_llms_meta.py"
+    ).read_text(encoding="utf-8")
     assert '("/pricing", "weekly", 0.9)' in sitemap_source
     assert '("/pricing.html", "weekly", 0.9)' not in sitemap_source
     assert offenders == []
@@ -1820,17 +1826,23 @@ def test_public_runtime_counts_remain_visible_on_static_surfaces() -> None:
     expectations = {
         "site/index.html": [
             "AI が読む前の制度データ圧縮レイヤー",
-            "151 MCP ツール",
+            "155 MCP ツール",
         ],
-        "site/products.html": ["REST / MCP / OpenAPI Actions / Widget / Webhook / dataset は実行手段です"],
-        "site/en/index.html": ["context-compression layer before an AI reads Japanese institutional evidence"],
-        "site/en/products.html": ["REST, MCP, OpenAPI Actions, widgets, webhooks, and datasets are entry surfaces"],
+        "site/products.html": [
+            "REST / MCP / OpenAPI Actions / Widget / Webhook / dataset は実行手段です"
+        ],
+        "site/en/index.html": [
+            "context-compression layer before an AI reads Japanese institutional evidence"
+        ],
+        "site/en/products.html": [
+            "REST, MCP, OpenAPI Actions, widgets, webhooks, and datasets are entry surfaces"
+        ],
         "site/about.html": [
-            '<span class="num">151</span><span class="lbl">AI から呼べる MCP ツール</span>',
-            '<span class="num">302</span><span class="lbl">REST paths (OpenAPI)</span>',
+            '<span class="num">155</span><span class="lbl">AI から呼べる MCP ツール</span>',
+            '<span class="num">306</span><span class="lbl">REST paths (OpenAPI)</span>',
         ],
-        "site/playground.html": ['"endpoint_catalog_paths", "value": 302'],
-        "site/facts.html": ["v0.4.0 (public runtime cohort=151)"],
+        "site/playground.html": ['"endpoint_catalog_paths", "value": 306'],
+        "site/facts.html": ["v0.4.0 (public runtime cohort=155)"],
     }
 
     offenders: list[str] = []
@@ -1874,7 +1886,9 @@ def test_public_rss_entrypoints_are_role_specific() -> None:
     monitoring = (REPO_ROOT / "site" / "status" / "monitoring.html").read_text(encoding="utf-8")
     news = (REPO_ROOT / "site" / "news" / "index.html").read_text(encoding="utf-8")
     llms = (REPO_ROOT / "site" / "llms.txt").read_text(encoding="utf-8")
-    feeds = json.loads((REPO_ROOT / "site" / "assets" / "rss-feeds.json").read_text(encoding="utf-8"))
+    feeds = json.loads(
+        (REPO_ROOT / "site" / "assets" / "rss-feeds.json").read_text(encoding="utf-8")
+    )
 
     assert 'title="jpcite お知らせ・リリース" href="/rss.xml"' in home
     assert 'title="jpcite お知らせ・リリース (Japanese)" href="/rss.xml"' in en_home
@@ -1891,7 +1905,9 @@ def test_public_rss_entrypoints_are_role_specific() -> None:
     assert feed_urls["announcements"] == "https://jpcite.com/rss.xml"
     assert feed_urls["amendments"] == "https://jpcite.com/rss/amendments.xml"
 
-    manifest = json.loads((REPO_ROOT / "site" / ".well-known" / "llms.json").read_text(encoding="utf-8"))
+    manifest = json.loads(
+        (REPO_ROOT / "site" / ".well-known" / "llms.json").read_text(encoding="utf-8")
+    )
     assert manifest["feeds"]["rss"] == "https://jpcite.com/feed.rss"
     assert manifest["feeds"]["release_rss"] == "https://jpcite.com/rss.xml"
     assert manifest["feeds"]["amendments_rss"] == "https://jpcite.com/rss/amendments.xml"
@@ -1900,8 +1916,12 @@ def test_public_rss_entrypoints_are_role_specific() -> None:
 def test_ai_discovery_surfaces_token_cost_positioning() -> None:
     llms = (REPO_ROOT / "site" / "llms.txt").read_text(encoding="utf-8")
     llms_en = (REPO_ROOT / "site" / "llms.en.txt").read_text(encoding="utf-8")
-    llms_json = json.loads((REPO_ROOT / "site" / ".well-known" / "llms.json").read_text(encoding="utf-8"))
-    mcp_json = json.loads((REPO_ROOT / "site" / ".well-known" / "mcp.json").read_text(encoding="utf-8"))
+    llms_json = json.loads(
+        (REPO_ROOT / "site" / ".well-known" / "llms.json").read_text(encoding="utf-8")
+    )
+    mcp_json = json.loads(
+        (REPO_ROOT / "site" / ".well-known" / "mcp.json").read_text(encoding="utf-8")
+    )
 
     for text in (llms, llms_en):
         assert "long-document AI cost" in text
@@ -2148,7 +2168,9 @@ def test_public_copy_version_and_navigation_surfaces_are_current() -> None:
     changelog = (REPO_ROOT / "site" / "changelog" / "index.html").read_text(encoding="utf-8")
     redirects = (REPO_ROOT / "site" / "_redirects").read_text(encoding="utf-8")
     robots = (REPO_ROOT / "site" / "robots.txt").read_text(encoding="utf-8")
-    trust = json.loads((REPO_ROOT / "site" / ".well-known" / "trust.json").read_text(encoding="utf-8"))
+    trust = json.loads(
+        (REPO_ROOT / "site" / ".well-known" / "trust.json").read_text(encoding="utf-8")
+    )
     evolution = (REPO_ROOT / "site" / "transparency" / "evolution.html").read_text(encoding="utf-8")
 
     assert "v0.4.0 LIVE on Fly.io Tokyo" in readme
@@ -2312,9 +2334,9 @@ def test_public_readiness_surfaces_do_not_link_to_missing_static_targets() -> No
 
 def test_static_fragment_scan_blockers_stay_fixed() -> None:
     calculator = (REPO_ROOT / "site" / "calculator.html").read_text(encoding="utf-8")
-    prefecture_template = (
-        REPO_ROOT / "site" / "_templates" / "prefecture_index.html"
-    ).read_text(encoding="utf-8")
+    prefecture_template = (REPO_ROOT / "site" / "_templates" / "prefecture_index.html").read_text(
+        encoding="utf-8"
+    )
     smb = (REPO_ROOT / "site" / "audiences" / "smb.html").read_text(encoding="utf-8")
     share = (REPO_ROOT / "site" / "programs" / "share.html").read_text(encoding="utf-8")
 
@@ -2583,9 +2605,9 @@ def test_generated_law_pages_do_not_link_to_missing_uni_program_query_pages() ->
                 offenders.append(f"{law_path.relative_to(REPO_ROOT)}: /en/programs/?id=UNI-*")
             if re.search(r'href=["\']/programs/\?id=UNI-', text):
                 offenders.append(f"{law_path.relative_to(REPO_ROOT)}: /programs/?id=UNI-*")
-            if re.search(r'\]\(/en/programs/\?id=UNI-', text):
+            if re.search(r"\]\(/en/programs/\?id=UNI-", text):
                 offenders.append(f"{law_path.relative_to(REPO_ROOT)}: ](/en/programs/?id=UNI-*")
-            if re.search(r'\]\(/programs/\?id=UNI-', text):
+            if re.search(r"\]\(/programs/\?id=UNI-", text):
                 offenders.append(f"{law_path.relative_to(REPO_ROOT)}: ](/programs/?id=UNI-*")
             if len(offenders) > 20:
                 offenders.append("... truncated")
@@ -2613,17 +2635,17 @@ def test_public_readiness_surfaces_do_not_expose_internal_or_topup_copy() -> Non
         rel = path.relative_to(REPO_ROOT).as_posix()
         for lineno, line in enumerate(
             path.read_text(encoding="utf-8", errors="ignore").splitlines(), start=1
-            ):
-                for label, pattern in banned_patterns:
-                    match = pattern.search(line)
-                    if not match:
-                        continue
-                    if (
-                        label == "legacy codename"
-                        and match.group(0).lower() == "autonomath"
-                        and "autonomath-mcp" in line
-                    ):
-                        continue
-                    offenders.append(f"{rel}:L{lineno}:{label}: {line.strip()[:180]}")
+        ):
+            for label, pattern in banned_patterns:
+                match = pattern.search(line)
+                if not match:
+                    continue
+                if (
+                    label == "legacy codename"
+                    and match.group(0).lower() == "autonomath"
+                    and "autonomath-mcp" in line
+                ):
+                    continue
+                offenders.append(f"{rel}:L{lineno}:{label}: {line.strip()[:180]}")
 
     assert offenders == [], "\n".join(offenders)

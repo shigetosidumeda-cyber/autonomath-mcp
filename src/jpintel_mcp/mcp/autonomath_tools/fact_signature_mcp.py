@@ -50,9 +50,7 @@ _ENABLED = os.environ.get("AUTONOMATH_FACT_SIGNATURE_MCP_ENABLED", "1") == "1"
 def _open_autonomath_ro_safe() -> sqlite3.Connection | dict[str, Any]:
     """Open autonomath.db RO-by-intent; mirror api/fact_verify._open_autonomath_ro."""
     try:
-        path = os.environ.get(
-            "AUTONOMATH_DB_PATH", str(settings.autonomath_db_path)
-        )
+        path = os.environ.get("AUTONOMATH_DB_PATH", str(settings.autonomath_db_path))
         conn = sqlite3.connect(path)
         conn.row_factory = sqlite3.Row
         return conn
@@ -138,9 +136,7 @@ def _fact_signature_verify_impl(fact_id: str) -> dict[str, Any]:
         else:
             import hashlib
 
-            payload = fv._canonical_payload(
-                fact_row, sig_row["corpus_snapshot_id"]
-            )
+            payload = fv._canonical_payload(fact_row, sig_row["corpus_snapshot_id"])
             payload_hash = hashlib.sha256(payload).hexdigest()
             sig_bytes = bytes(sig_row["ed25519_sig"])
             is_valid = fv._verify_signature(payload, sig_bytes, pubkey)
@@ -159,8 +155,7 @@ def _fact_signature_verify_impl(fact_id: str) -> dict[str, Any]:
         if sdid:
             with contextlib.suppress(sqlite3.Error):
                 src_row = conn.execute(
-                    "SELECT license, fetched_at FROM source_document "
-                    "WHERE source_document_id = ?",
+                    "SELECT license, fetched_at FROM source_document WHERE source_document_id = ?",
                     (sdid,),
                 ).fetchone()
 

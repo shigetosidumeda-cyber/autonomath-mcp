@@ -368,7 +368,9 @@ def _scan_secret_literals(py_file: pathlib.Path) -> list[str]:
                 # Show prefix only — never echo the suspected full secret
                 # back into the failure message (CI logs are not safe
                 # for secret payloads even when fake).
-                hits.append(f"line {lineno}: matches {pat.pattern!r} (prefix shown: {m.group(0)[:10]}...)")
+                hits.append(
+                    f"line {lineno}: matches {pat.pattern!r} (prefix shown: {m.group(0)[:10]}...)"
+                )
     return hits
 
 
@@ -651,8 +653,7 @@ def test_scan_imports_detects_new_provider_sdks(tmp_path: pathlib.Path) -> None:
         if not any(expected in h for h in hits):
             misses.append(f"`{stmt}` not detected (hits={hits!r})")
     assert not misses, (
-        "New-provider SDK import not flagged by _scan_imports:\n  - "
-        + "\n  - ".join(misses)
+        "New-provider SDK import not flagged by _scan_imports:\n  - " + "\n  - ".join(misses)
     )
 
 
@@ -681,9 +682,8 @@ def test_scan_env_vars_detects_new_provider_keys(tmp_path: pathlib.Path) -> None
         hits = _scan_env_vars(leak_file, in_meta_allowlist=False)
         if not any(name in h for h in hits):
             misses.append(f"`{name}` not detected (hits={hits!r})")
-    assert not misses, (
-        "New-provider env var not flagged by _scan_env_vars:\n  - "
-        + "\n  - ".join(misses)
+    assert not misses, "New-provider env var not flagged by _scan_env_vars:\n  - " + "\n  - ".join(
+        misses
     )
 
 
@@ -713,7 +713,4 @@ def test_scan_bedrock_client_calls_detects_synthesized_leaks(
         hits = _scan_bedrock_client_calls(leak_file)
         if not hits:
             misses.append(f"`{stmt}` not detected (no hits)")
-    assert not misses, (
-        "Bedrock client factory call not flagged:\n  - "
-        + "\n  - ".join(misses)
-    )
+    assert not misses, "Bedrock client factory call not flagged:\n  - " + "\n  - ".join(misses)

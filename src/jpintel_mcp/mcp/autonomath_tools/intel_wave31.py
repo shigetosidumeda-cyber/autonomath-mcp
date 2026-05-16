@@ -68,7 +68,9 @@ logger = logging.getLogger("jpintel.mcp.autonomath.intel_wave31")
 
 # Env gate. Default ON so the 14 tools register on stdio boot; flip to "0"
 # for rollback without redeploy (FastMCP re-enumerates on next connect).
-_ENABLED = get_flag("JPCITE_INTEL_COMPOSITE_ENABLED", "AUTONOMATH_INTEL_COMPOSITE_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_INTEL_COMPOSITE_ENABLED", "AUTONOMATH_INTEL_COMPOSITE_ENABLED", "1") == "1"
+)
 
 
 # ---------------------------------------------------------------------------

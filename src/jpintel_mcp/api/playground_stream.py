@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fastapi import APIRouter, Query
 from fastapi.responses import StreamingResponse
@@ -93,7 +93,7 @@ async def evidence3_events(
         yield _sse("error", {"message": "invalid step (1-3 only)"})
 
 
-def _sse(event: str, data: dict) -> bytes:
+def _sse(event: str, data: dict[str, Any]) -> bytes:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n".encode()
 
 

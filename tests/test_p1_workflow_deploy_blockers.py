@@ -149,12 +149,17 @@ def test_pages_deploy_main_has_fast_cached_frontend_lane() -> None:
 
 def test_pages_deploy_main_requires_fly_only_for_full_generation() -> None:
     text = _text(PAGES_DEPLOY_MAIN)
-    cf_step = text[text.index("Check Cloudflare Pages secrets") : text.index("Select Pages deploy lane")]
-    fly_step = text[text.index("Check Fly token for full generation") : text.index("Install flyctl")]
+    cf_step = text[
+        text.index("Check Cloudflare Pages secrets") : text.index("Select Pages deploy lane")
+    ]
+    fly_step = text[
+        text.index("Check Fly token for full generation") : text.index("Install flyctl")
+    ]
     install_step = text[text.index("Install flyctl") : text.index("Pull latest jpintel.db")]
     pull_step = text[
-        text.index("Pull latest jpintel.db for generated public artifacts") :
-        text.index("Build docs (MkDocs Material")
+        text.index("Pull latest jpintel.db for generated public artifacts") : text.index(
+            "Build docs (MkDocs Material"
+        )
     ]
 
     assert "FLY_API_TOKEN" not in cf_step
@@ -166,7 +171,43 @@ def test_pages_deploy_main_requires_fly_only_for_full_generation() -> None:
     assert "Skipping Cloudflare Pages deploy" not in text
 
 
-def test_deploy_live_fly_secret_gate_requires_edge_auth_secret_and_consistent_optional_x402() -> None:
+def test_pages_deploy_validates_and_smokes_release_capsule_surfaces() -> None:
+    text = _text(PAGES_DEPLOY_MAIN)
+    drift_step = text[text.index("Run deploy drift gates") : text.index("Build static artifact")]
+    critical_step = text[
+        text.index("Validate critical JSON manifests") : text.index("GEO readiness guard")
+    ]
+    smoke_step = text[
+        text.index("Post-deploy smoke (public JSON surface)") : text.index(
+            "Post-deploy smoke (generated pages and source-backed Function)"
+        )
+    ]
+
+    assert "scripts/check_agent_runtime_contracts.py --repo-root ." in drift_step
+    assert "scripts/ops/validate_release_capsule.py --repo-root ." in drift_step
+    for path in (
+        "dist/site/.well-known/jpcite-release.json",
+        "dist/site/releases/current/runtime_pointer.json",
+        "dist/site/releases/rc1-p0-bootstrap/release_capsule_manifest.json",
+        "dist/site/releases/rc1-p0-bootstrap/agent_surface/p0_facade.json",
+        "dist/site/releases/rc1-p0-bootstrap/packet_skeletons.json",
+        "dist/site/releases/rc1-p0-bootstrap/aws_execution_templates.json",
+    ):
+        assert path in critical_step
+    for url in (
+        "https://jpcite.com/.well-known/jpcite-release.json?$Q",
+        "https://jpcite.com/releases/current/runtime_pointer.json?$Q",
+        "https://jpcite.com/release/current/capsule_manifest.json?$Q",
+        "https://jpcite.com/release/current/agent_surface/p0_facade.json?$Q",
+    ):
+        assert url in smoke_step
+    assert "access-control-allow-origin: \\*" in smoke_step
+    assert "cross-origin-resource-policy: cross-origin" in smoke_step
+
+
+def test_deploy_live_fly_secret_gate_requires_edge_auth_secret_and_consistent_optional_x402() -> (
+    None
+):
     text = _text(DEPLOY)
     step = text[text.index("Verify live Fly secret names before deploy") :]
 
@@ -252,7 +293,7 @@ def test_status_probe_workflows_commit_all_public_status_artifacts_and_dispatch_
         assert "-f deploy_mode=fast" in text
 
     pages_deploy = _text(PAGES_DEPLOY_MAIN)
-    assert "- \"site/**\"" in pages_deploy
+    assert '- "site/**"' in pages_deploy
 
 
 def test_pages_deploy_main_triggers_on_pages_functions_changes() -> None:
@@ -312,16 +353,13 @@ def test_chaos_24_7_uses_runner_side_toxiproxy_wait_and_module_uvicorn() -> None
 
 def test_pages_source_backed_route_smoke_is_hard_gate() -> None:
     text = _text(PAGES_DEPLOY_MAIN)
-    step = text[
-        text.index("Post-deploy smoke (generated pages and source-backed Function)") :
-    ]
+    step = text[text.index("Post-deploy smoke (generated pages and source-backed Function)") :]
 
     assert "https://jpcite.com/laws/chusho-kihon?$Q" in step
     assert "https://jpcite.com/laws/chusho-kihon.html?$Q" in step
     assert (
         "https://jpcite.com/programs/"
-        "jizoku-ka-hojokin-ippankei-tsuujou-waku-shoukou-kai-han-dai-defacd.html?$Q"
-        in step
+        "jizoku-ka-hojokin-ippankei-tsuujou-waku-shoukou-kai-han-dai-defacd.html?$Q" in step
     )
     assert "https://jpcite.com/enforcement/act-10084.html?$Q" in step
     assert "https://jpcite.com/cases/mirasapo_case_118.html?$Q" in step
@@ -364,18 +402,13 @@ def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> Non
             assert text.index(f"--include '{cohort}/index.html'") < text.index(
                 f"--exclude '{cohort}/*.html'"
             )
-            assert text.index(f"--exclude '{cohort}/*.html'") < text.index(
-                "--exclude '*.md'"
-            )
+            assert text.index(f"--exclude '{cohort}/*.html'") < text.index("--exclude '*.md'")
         assert "--exclude 'programs/*.html'" not in text
         assert "--include 'programs/share.html'" not in text
         assert "Cloudflare Pages artifact has ${file_count} files" in text
 
     function = _text(PAGES_CATCH_ALL_FUNCTION)
-    assert (
-        "function sourceBackedGeneratedHtmlPath(pathname: string): string | null"
-        in function
-    )
+    assert "function sourceBackedGeneratedHtmlPath(pathname: string): string | null" in function
     assert '"/laws/"' in function
     assert '"/programs/"' not in function
     assert '"/cases/"' in function
@@ -383,7 +416,9 @@ def test_pages_generated_html_artifact_trim_is_backed_by_function_proxy() -> Non
     assert "return `${pathname}.html`;" in function
     assert 'const HTML_CONTENT_TYPE = "text/html; charset=utf-8";' in function
     assert 'sourceHeader: "x-jpcite-html-source"' in function
-    assert "raw.githubusercontent.com/shigetosidumeda-cyber/autonomath-mcp/main/site" not in function
+    assert (
+        "raw.githubusercontent.com/shigetosidumeda-cyber/autonomath-mcp/main/site" not in function
+    )
     assert "CF_PAGES_COMMIT_SHA" in function
     assert "JPCITE_SOURCE_REF" in function
     assert "source_ref_unpinned" in function

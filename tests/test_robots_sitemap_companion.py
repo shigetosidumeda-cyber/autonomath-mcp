@@ -60,9 +60,7 @@ def test_existing_sitemaps_preserved() -> None:
     untouched. This guards against accidental destruction during edits.
     """
     body = _read_robots()
-    sitemap_lines = [
-        ln.strip() for ln in body.splitlines() if ln.strip().startswith("Sitemap:")
-    ]
+    sitemap_lines = [ln.strip() for ln in body.splitlines() if ln.strip().startswith("Sitemap:")]
     # Minimum: pre-existing shards we know shipped before this patch.
     required_pre_existing = [
         "https://jpcite.com/sitemap-index.xml",

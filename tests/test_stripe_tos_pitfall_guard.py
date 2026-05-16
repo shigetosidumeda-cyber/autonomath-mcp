@@ -117,9 +117,7 @@ def test_no_forbidden_terms_of_service_required_in_source_via_rg() -> None:
     proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
 
     # rg exit codes: 0 = matches found, 1 = no matches, 2 = error.
-    assert proc.returncode in (0, 1), (
-        f"rg failed with rc={proc.returncode}: stderr={proc.stderr!r}"
-    )
+    assert proc.returncode in (0, 1), f"rg failed with rc={proc.returncode}: stderr={proc.stderr!r}"
 
     matches = [line for line in proc.stdout.splitlines() if line.strip()]
 
@@ -196,7 +194,11 @@ def _dict_get_str(d: ast.Dict, key: str) -> str | None:
     for k_node, v_node in zip(d.keys, d.values, strict=False):
         if k_node is None:
             continue
-        if _is_str_literal(k_node, key) and isinstance(v_node, ast.Constant) and isinstance(v_node.value, str):
+        if (
+            _is_str_literal(k_node, key)
+            and isinstance(v_node, ast.Constant)
+            and isinstance(v_node.value, str)
+        ):
             return v_node.value
     return None
 
@@ -269,8 +271,8 @@ def _check_call(node: ast.Call, rel: str) -> list[str]:
     # AND is not paired with a custom_text.submit.message ToS surface
     # in the same call.
     has_auto = _dict_has_key_value(consent_value, "terms_of_service", "auto")
-    has_paired_custom = (
-        custom_text_kw is not None and _custom_text_mentions_tos(custom_text_kw.value)
+    has_paired_custom = custom_text_kw is not None and _custom_text_mentions_tos(
+        custom_text_kw.value
     )
     if not has_auto and not has_paired_custom:
         violations.append(

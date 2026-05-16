@@ -26,9 +26,10 @@ import asyncio
 import logging
 import threading
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, Callable
+from datetime import UTC, datetime
+from typing import Any
 
 logger = logging.getLogger("jpintel.mcp.resource_subscriber")
 
@@ -62,7 +63,9 @@ class ResourceSubscriberRegistry:
         self._max_updates = max_updates_per_uri
         self._listeners: list[Callable[[ResourceUpdate], None]] = []
 
-    def subscribe(self, session_id: str, uri: str, metadata: dict[str, Any] | None = None) -> Subscription:
+    def subscribe(
+        self, session_id: str, uri: str, metadata: dict[str, Any] | None = None
+    ) -> Subscription:
         key = (session_id, uri)
         with self._lock:
             existing = self._subscriptions.get(key)
@@ -85,7 +88,9 @@ class ResourceSubscriberRegistry:
         with self._lock:
             removed = self._subscriptions.pop(key, None)
             if removed is not None:
-                logger.info("mcp_resource_unsubscribe", extra={"session_id": session_id, "uri": uri})
+                logger.info(
+                    "mcp_resource_unsubscribe", extra={"session_id": session_id, "uri": uri}
+                )
             return removed is not None
 
     def list_subscriptions(self, session_id: str | None = None) -> list[Subscription]:
@@ -135,7 +140,7 @@ class ResourceSubscriberRegistry:
                 "buffered_updates": total_updates,
                 "updates_by_uri": {k: len(v) for k, v in self._updates.items()},
                 "listener_count": len(self._listeners),
-                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "generated_at": datetime.now(UTC).isoformat(),
             }
 
 
@@ -156,7 +161,12 @@ def handle_subscribe_request(session_id: str, params: dict[str, Any]) -> dict[st
     """MCP ``resources/subscribe`` request handler."""
     uri = params.get("uri")
     if not isinstance(uri, str) or not uri:
-        return {"error": {"code": -32602, "message": "missing required field 'uri' in resources/subscribe params"}}
+        return {
+            "error": {
+                "code": -32602,
+                "message": "missing required field 'uri' in resources/subscribe params",
+            }
+        }
     sub = get_registry().subscribe(session_id, uri, metadata=params.get("metadata") or {})
     return {"result": {"uri": uri, "subscribed_at": sub.subscribed_at}}
 
@@ -165,12 +175,19 @@ def handle_unsubscribe_request(session_id: str, params: dict[str, Any]) -> dict[
     """MCP ``resources/unsubscribe`` request handler."""
     uri = params.get("uri")
     if not isinstance(uri, str) or not uri:
-        return {"error": {"code": -32602, "message": "missing required field 'uri' in resources/unsubscribe params"}}
+        return {
+            "error": {
+                "code": -32602,
+                "message": "missing required field 'uri' in resources/unsubscribe params",
+            }
+        }
     removed = get_registry().unsubscribe(session_id, uri)
     return {"result": {"uri": uri, "removed": removed}}
 
 
-async def emit_notification_loop(notify_fn: Callable[[str, dict[str, Any]], Any], interval_seconds: float = 1.0) -> None:
+async def emit_notification_loop(
+    notify_fn: Callable[[str, dict[str, Any]], Any], interval_seconds: float = 1.0
+) -> None:
     """Background fanout loop translating publishes into
     ``notifications/resources/updated`` deliveries."""
     registry = get_registry()

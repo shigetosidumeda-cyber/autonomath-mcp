@@ -216,8 +216,7 @@ def test_same_event_id_twice_within_window(client, stripe_env, seeded_db: Path):
     c = sqlite3.connect(seeded_db)
     try:
         rows = c.execute(
-            "SELECT event_id, processed_at FROM stripe_webhook_events"
-            " WHERE event_id = ?",
+            "SELECT event_id, processed_at FROM stripe_webhook_events WHERE event_id = ?",
             (event_id,),
         ).fetchall()
     finally:
@@ -231,9 +230,7 @@ def test_same_event_id_twice_within_window(client, stripe_env, seeded_db: Path):
 # ---------------------------------------------------------------------------
 
 
-def test_livemode_true_in_dev_env_silent_skip(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_livemode_true_in_dev_env_silent_skip(client, stripe_env, monkeypatch, seeded_db: Path):
     """settings.env != 'prod' + event.livemode=True → 200 + skip + no error.
 
     Mirrors R2 P2 finding that this returns 200 (correct) rather than 4xx.
@@ -259,9 +256,7 @@ def test_livemode_true_in_dev_env_silent_skip(
 # ---------------------------------------------------------------------------
 
 
-def test_timestamp_drift_beyond_tolerance_rejected(
-    client, stripe_env, seeded_db: Path
-):
+def test_timestamp_drift_beyond_tolerance_rejected(client, stripe_env, seeded_db: Path):
     """t=now-600 with otherwise-valid HMAC is outside the 300s window → 400."""
     event_id = "evt_r2p2_drift_beyond_300"
     body = _make_event_body(event_id)
@@ -272,9 +267,7 @@ def test_timestamp_drift_beyond_tolerance_rejected(
     assert _row_count(seeded_db, event_id) == 0
 
 
-def test_timestamp_drift_at_tolerance_boundary_accepted(
-    client, stripe_env, seeded_db: Path
-):
+def test_timestamp_drift_at_tolerance_boundary_accepted(client, stripe_env, seeded_db: Path):
     """t=now-280 is inside the 300s window → 200 (boundary sanity)."""
     event_id = "evt_r2p2_drift_at_boundary"
     body = _make_event_body(event_id)
@@ -299,9 +292,7 @@ def test_cache_size_cap_constants_present():
     assert billing_mod.STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS >= 3
 
 
-def test_lazy_sweep_trims_aged_rows(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_lazy_sweep_trims_aged_rows(client, stripe_env, monkeypatch, seeded_db: Path):
     """Old rows are trimmed when the lazy-sweep branch fires.
 
     We pre-seed the dedup table with a row dated 60 days old, then deliver
@@ -312,9 +303,7 @@ def test_lazy_sweep_trims_aged_rows(
     from jpintel_mcp.api import billing as billing_mod
 
     # Cap retention to 30 days for this test (it already defaults to 30).
-    monkeypatch.setattr(
-        billing_mod, "STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS", 30, raising=True
-    )
+    monkeypatch.setattr(billing_mod, "STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS", 30, raising=True)
 
     # Seed an aged row.
     c = sqlite3.connect(seeded_db)
@@ -342,13 +331,11 @@ def test_lazy_sweep_trims_aged_rows(
     c = sqlite3.connect(seeded_db)
     try:
         aged = c.execute(
-            "SELECT COUNT(*) FROM stripe_webhook_events"
-            " WHERE event_id = ?",
+            "SELECT COUNT(*) FROM stripe_webhook_events WHERE event_id = ?",
             ("evt_r2p2_aged_row",),
         ).fetchone()[0]
         fresh = c.execute(
-            "SELECT COUNT(*) FROM stripe_webhook_events"
-            " WHERE event_id = ?",
+            "SELECT COUNT(*) FROM stripe_webhook_events WHERE event_id = ?",
             (event_id,),
         ).fetchone()[0]
     finally:
@@ -358,9 +345,7 @@ def test_lazy_sweep_trims_aged_rows(
     assert fresh == 1, "fresh row must remain"
 
 
-def test_lazy_sweep_enforces_max_row_cap(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_lazy_sweep_enforces_max_row_cap(client, stripe_env, monkeypatch, seeded_db: Path):
     """When row count exceeds the cap, oldest rows are trimmed to the cap.
 
     We shrink the cap to a tiny value, seed CAP+5 fresh-dated rows, then
@@ -369,14 +354,10 @@ def test_lazy_sweep_enforces_max_row_cap(
     """
     from jpintel_mcp.api import billing as billing_mod
 
-    monkeypatch.setattr(
-        billing_mod, "STRIPE_WEBHOOK_EVENTS_MAX_ROWS", 5, raising=True
-    )
+    monkeypatch.setattr(billing_mod, "STRIPE_WEBHOOK_EVENTS_MAX_ROWS", 5, raising=True)
     # Make sure the retention sweep does NOT also fire — seeded rows are
     # all dated "today".
-    monkeypatch.setattr(
-        billing_mod, "STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS", 30, raising=True
-    )
+    monkeypatch.setattr(billing_mod, "STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS", 30, raising=True)
 
     # Seed 8 fresh rows with deterministic, monotonically older timestamps.
     c = sqlite3.connect(seeded_db)
@@ -475,9 +456,7 @@ def test_sweep_branch_uses_contextlib_suppress():
 # NOT touch `src/jpintel_mcp/api/billing.py` (E6 owns that file).
 
 
-def test_lazy_sweep_retention_boundary_precise(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_lazy_sweep_retention_boundary_precise(client, stripe_env, monkeypatch, seeded_db: Path):
     """Row at `(retention - 5s)` → kept; row at `(retention + 5s)` → swept.
 
     SQLite `datetime('now')` is second-precision and the seed + DELETE run
@@ -490,18 +469,14 @@ def test_lazy_sweep_retention_boundary_precise(
     """
     from jpintel_mcp.api import billing as billing_mod
 
-    monkeypatch.setattr(
-        billing_mod, "STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS", 30, raising=True
-    )
+    monkeypatch.setattr(billing_mod, "STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS", 30, raising=True)
 
     inside_id = "evt_r2p2_boundary_inside_5s"
     outside_id = "evt_r2p2_boundary_outside_5s"
 
     c = sqlite3.connect(seeded_db)
     try:
-        c.execute(
-            "DELETE FROM stripe_webhook_events WHERE event_id LIKE 'evt_r2p2_boundary_%'"
-        )
+        c.execute("DELETE FROM stripe_webhook_events WHERE event_id LIKE 'evt_r2p2_boundary_%'")
         # INSIDE window: received_at = now - 30 days + 5 seconds.
         # received_at > cutoff (cutoff = now - 30 days) → kept.
         c.execute(
@@ -557,9 +532,7 @@ def test_lazy_sweep_retention_boundary_precise(
 # ---------------------------------------------------------------------------
 
 
-def test_lazy_sweep_caps_at_max_rows_exactly_100k(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_lazy_sweep_caps_at_max_rows_exactly_100k(client, stripe_env, monkeypatch, seeded_db: Path):
     """Insert 100_001 pre-seeded rows + 1 trigger event → sweep cuts back to 100_000.
 
     Uses the default `STRIPE_WEBHOOK_EVENTS_MAX_ROWS = 100_000` (not a shrunk
@@ -600,9 +573,7 @@ def test_lazy_sweep_caps_at_max_rows_exactly_100k(
             rows,
         )
         c.commit()
-        before = c.execute(
-            "SELECT COUNT(*) FROM stripe_webhook_events"
-        ).fetchone()[0]
+        before = c.execute("SELECT COUNT(*) FROM stripe_webhook_events").fetchone()[0]
     finally:
         c.close()
     assert before == 100_001, f"expected 100_001 seed rows, got {before}"
@@ -615,25 +586,20 @@ def test_lazy_sweep_caps_at_max_rows_exactly_100k(
 
     c = sqlite3.connect(seeded_db)
     try:
-        total = c.execute(
-            "SELECT COUNT(*) FROM stripe_webhook_events"
-        ).fetchone()[0]
+        total = c.execute("SELECT COUNT(*) FROM stripe_webhook_events").fetchone()[0]
         trigger_present = c.execute(
             "SELECT COUNT(*) FROM stripe_webhook_events WHERE event_id = ?",
             (trigger_id,),
         ).fetchone()[0]
         # The oldest seeds (lowest index = oldest `received_at`) must be evicted.
         oldest_present = c.execute(
-            "SELECT COUNT(*) FROM stripe_webhook_events"
-            " WHERE event_id IN (?, ?)",
+            "SELECT COUNT(*) FROM stripe_webhook_events WHERE event_id IN (?, ?)",
             ("evt_r2p2_cap100k_seed_000000", "evt_r2p2_cap100k_seed_000001"),
         ).fetchone()[0]
     finally:
         c.close()
 
-    assert total == 100_000, (
-        f"size cap must hold the table at exactly 100_000 rows, got {total}"
-    )
+    assert total == 100_000, f"size cap must hold the table at exactly 100_000 rows, got {total}"
     assert trigger_present == 1, "the trigger event is the freshest row and must survive"
     assert oldest_present == 0, "the oldest seed rows must be the ones evicted"
 
@@ -643,9 +609,7 @@ def test_lazy_sweep_caps_at_max_rows_exactly_100k(
 # ---------------------------------------------------------------------------
 
 
-def test_lazy_sweep_invocation_rate_is_1_in_256(
-    client, stripe_env, monkeypatch, seeded_db: Path
-):
+def test_lazy_sweep_invocation_rate_is_1_in_256(client, stripe_env, monkeypatch, seeded_db: Path):
     """Count actual DELETE-FROM-stripe_webhook_events invocations across 1000 inserts.
 
     The current implementation gates the sweep on `event_id.endswith("00")`.
@@ -663,12 +627,8 @@ def test_lazy_sweep_invocation_rate_is_1_in_256(
 
     # Shrink the cap to a tiny value so the sweep DELETE has visible work —
     # but the gate itself is what we measure, not the trim behavior.
-    monkeypatch.setattr(
-        billing_mod, "STRIPE_WEBHOOK_EVENTS_MAX_ROWS", 10, raising=True
-    )
-    monkeypatch.setattr(
-        billing_mod, "STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS", 30, raising=True
-    )
+    monkeypatch.setattr(billing_mod, "STRIPE_WEBHOOK_EVENTS_MAX_ROWS", 10, raising=True)
+    monkeypatch.setattr(billing_mod, "STRIPE_WEBHOOK_EVENTS_RETENTION_DAYS", 30, raising=True)
 
     # Clean slate.
     c = sqlite3.connect(seeded_db)
@@ -705,9 +665,7 @@ def test_lazy_sweep_invocation_rate_is_1_in_256(
         body = _make_event_body(event_id)
         sig = _stripe_signature(body, WHSEC, int(time.time()))
         r = _post(client, body, sig)
-        assert r.status_code == 200, (
-            f"event {event_id} ({i}/1000) failed: {r.text}"
-        )
+        assert r.status_code == 200, f"event {event_id} ({i}/1000) failed: {r.text}"
         if event_id.endswith("00"):
             expected_sweeps += 1
 

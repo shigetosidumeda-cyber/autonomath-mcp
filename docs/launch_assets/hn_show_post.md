@@ -68,7 +68,7 @@ where Claude / Cursor / ChatGPT can answer "is my company eligible?" with
 primary-source URLs attached.
 
 How:
-MCP-native, 151 tools, protocol 2025-06-18, stdio transport. One Manifest
+MCP-native, 155 tools, protocol 2025-06-18, stdio transport. One Manifest
 line plugs it into Claude Desktop. Backed by SQLite 全文検索インデックス (3-gram, Japanese
 compound-word search) + ベクトル検索 for the entity-fact layer. Hosted on
 Fly.io Tokyo. Stripe metered + Stripe Tax for JP invoice compliance.

@@ -11,10 +11,7 @@ from scripts import generate_industry_hub_pages as hub  # noqa: E402
 
 
 def test_preparing_source_title_renders_as_unpublished_guideline_status() -> None:
-    display_title = (
-        "令和8年度徳島県地域脱炭素移行・再エネ推進事業"
-        "補助金について"
-    )
+    display_title = "令和8年度徳島県地域脱炭素移行・再エネ推進事業補助金について"
     raw_title = f"【準備中】{display_title}"
     html_doc = hub._render_hub(
         "F",

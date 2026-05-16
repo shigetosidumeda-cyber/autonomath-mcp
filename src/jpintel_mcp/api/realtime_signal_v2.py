@@ -61,8 +61,12 @@ def _is_internal_host(host: str) -> bool:
     try:
         ip = ipaddress.ip_address(host)
         return bool(
-            ip.is_loopback or ip.is_private or ip.is_link_local
-            or ip.is_multicast or ip.is_reserved or ip.is_unspecified
+            ip.is_loopback
+            or ip.is_private
+            or ip.is_link_local
+            or ip.is_multicast
+            or ip.is_reserved
+            or ip.is_unspecified
         )
     except ValueError:
         return False
@@ -87,9 +91,14 @@ def _validate_webhook_url(url: str) -> tuple[str, str]:
 
 class SubscribeRequest(BaseModel):
     target_kind: Literal[
-        "kokkai_bill", "amendment", "enforcement_municipality",
-        "program_created", "tax_treaty_amended", "court_decision_added",
-        "pubcomment_announcement", "other",
+        "kokkai_bill",
+        "amendment",
+        "enforcement_municipality",
+        "program_created",
+        "tax_treaty_amended",
+        "court_decision_added",
+        "pubcomment_announcement",
+        "other",
     ]
     filter_json: dict[str, Any] = Field(default_factory=dict)
     webhook_url: str
@@ -218,9 +227,15 @@ async def create_subscription(
                     signature_secret, status, failure_count, created_at, updated_at
                ) VALUES (?,?,?,?,?,?,?,?,?)""",
             (
-                str(key_hash), body.target_kind,
+                str(key_hash),
+                body.target_kind,
                 json.dumps(body.filter_json, ensure_ascii=False),
-                body.webhook_url, secret_hex, "active", 0, now, now,
+                body.webhook_url,
+                secret_hex,
+                "active",
+                0,
+                now,
+                now,
             ),
         )
         am_conn.commit()
@@ -233,7 +248,9 @@ async def create_subscription(
             raise HTTPException(status_code=500, detail="subscriber row not found after insert")
         logger.info(
             "realtime_signal.subscribe key=%s kind=%s id=%s",
-            str(key_hash)[:12] + "…", body.target_kind, new_id,
+            str(key_hash)[:12] + "…",
+            body.target_kind,
+            new_id,
         )
         return _row_to_subscriber(row, include_secret=True)
     finally:

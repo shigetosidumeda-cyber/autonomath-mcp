@@ -68,7 +68,7 @@ from typing import Any
 try:
     import yaml  # type: ignore[import-untyped,unused-ignore]
 except Exception:  # pragma: no cover - yaml optional at import time
-    yaml = None  # type: ignore[assignment]
+    yaml = None
 
 from jpintel_mcp.api import response_sanitizer as _sanitizer
 

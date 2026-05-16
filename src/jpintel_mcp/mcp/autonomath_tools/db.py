@@ -191,7 +191,10 @@ def connect_autonomath(
             f"(got {mode!r}). Write access must go through the ingest "
             f"pipeline in /tmp/autonomath_infra_2026-04-24/ingest/."
         )
-    path = Path(get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_PATH)))
+    path = Path(
+        get_flag("JPCITE_AUTONOMATH_DB_PATH", "AUTONOMATH_DB_PATH", str(AUTONOMATH_DB_PATH))
+        or str(AUTONOMATH_DB_PATH)
+    )
     conn = getattr(_local, "autonomath", None)
     conn_path = getattr(_local, "autonomath_path", None)
     if conn is None or conn_path != path:
@@ -213,7 +216,10 @@ def connect_graph(
     """Return a read-only connection to ``graph.sqlite`` for the current thread."""
     if mode != "ro":
         raise ValueError(f"connect_graph: only mode='ro' supported in Wave 3 (got {mode!r}).")
-    path = Path(get_flag("JPCITE_GRAPH_DB_PATH", "AUTONOMATH_GRAPH_DB_PATH", str(GRAPH_DB_PATH)))
+    path = Path(
+        get_flag("JPCITE_GRAPH_DB_PATH", "AUTONOMATH_GRAPH_DB_PATH", str(GRAPH_DB_PATH))
+        or str(GRAPH_DB_PATH)
+    )
     conn = getattr(_local, "graph", None)
     conn_path = getattr(_local, "graph_path", None)
     if conn is None or conn_path != path:

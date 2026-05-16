@@ -16,8 +16,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-import pytest
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ETL_SCRIPT = REPO_ROOT / "scripts" / "etl" / "fill_laws_jorei_47pref_2x.py"
 MIGRATION = REPO_ROOT / "scripts" / "migrations" / "252_law_jorei_pref.sql"
@@ -25,10 +23,14 @@ ROLLBACK = REPO_ROOT / "scripts" / "migrations" / "252_law_jorei_pref_rollback.s
 
 
 _BANNED_IMPORT_LINES = (
-    "import anthropic", "from anthropic ",
-    "import openai", "from openai ",
-    "import google.generativeai", "from google.generativeai",
-    "import claude_agent_sdk", "from claude_agent_sdk",
+    "import anthropic",
+    "from anthropic ",
+    "import openai",
+    "from openai ",
+    "import google.generativeai",
+    "from google.generativeai",
+    "import claude_agent_sdk",
+    "from claude_agent_sdk",
 )
 
 
@@ -74,27 +76,22 @@ def test_migration_round_trip(tmp_path):
     db = tmp_path / "rt.db"
     conn = sqlite3.connect(db)
     conn.executescript(MIGRATION.read_text(encoding="utf-8"))
-    tables = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table'"
-    )}
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     assert "am_law_jorei_pref" in tables
     assert "am_law_jorei_pref_run_log" in tables
-    fts = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master "
-        "WHERE type='table' AND name='am_law_jorei_pref_fts'"
-    )}
+    fts = {
+        r[0]
+        for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='am_law_jorei_pref_fts'"
+        )
+    }
     assert "am_law_jorei_pref_fts" in fts
-    views = {r[0] for r in conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='view'"
-    )}
+    views = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='view'")}
     assert "v_law_jorei_pref_density" in views
     # Round-trip rollback.
     conn.executescript(ROLLBACK.read_text(encoding="utf-8"))
     remaining = {
-        r[0] for r in conn.execute(
-            "SELECT name FROM sqlite_master "
-            "WHERE name LIKE '%jorei_pref%'"
-        )
+        r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE name LIKE '%jorei_pref%'")
     }
     assert remaining == set(), f"rollback left tables: {remaining}"
 
@@ -136,8 +133,17 @@ def test_etl_dry_run_no_network(tmp_path):
     """`--dry-run` flag must not touch the network nor write a DB row."""
     db = tmp_path / "dry.db"
     proc = subprocess.run(
-        [sys.executable, str(ETL_SCRIPT), "--dry-run",
-         "--db", str(db), "--pref-from", "01", "--pref-to", "02"],
+        [
+            sys.executable,
+            str(ETL_SCRIPT),
+            "--dry-run",
+            "--db",
+            str(db),
+            "--pref-from",
+            "01",
+            "--pref-to",
+            "02",
+        ],
         capture_output=True,
         text=True,
         timeout=30,
@@ -150,12 +156,13 @@ def test_etl_dry_run_no_network(tmp_path):
 def test_etl_classify_helpers():
     sys.path.insert(0, str(REPO_ROOT))
     from scripts.etl.fill_laws_jorei_47pref_2x import (
+        _canonical_id,
         _classify_kind,
-        _looks_like_jorei,
         _is_banned,
         _is_primary,
-        _canonical_id,
+        _looks_like_jorei,
     )
+
     assert _classify_kind("環境基本条例") == "jorei"
     assert _classify_kind("施行規則") == "kisoku"
     assert _classify_kind("災害告示") == "kokuji"
@@ -178,10 +185,11 @@ def test_etl_upsert_and_fts_against_real_schema(tmp_path):
     conn.executescript(MIGRATION.read_text(encoding="utf-8"))
     sys.path.insert(0, str(REPO_ROOT))
     from scripts.etl.fill_laws_jorei_47pref_2x import (
+        _audit_counts,
         _upsert,
         _upsert_fts,
-        _audit_counts,
     )
+
     rows = [
         {
             "canonical_id": "JOREI-13-test1",
@@ -227,11 +235,12 @@ def test_etl_upsert_and_fts_against_real_schema(tmp_path):
     assert "13" in audit["per_pref"]
     assert "14" in audit["per_pref"]
     # FTS round-trip (>=3 char queries pass trigram).
-    hits = list(conn.execute(
-        "SELECT canonical_id FROM am_law_jorei_pref_fts "
-        "WHERE am_law_jorei_pref_fts MATCH ?",
-        ("気候変動",),
-    ))
+    hits = list(
+        conn.execute(
+            "SELECT canonical_id FROM am_law_jorei_pref_fts WHERE am_law_jorei_pref_fts MATCH ?",
+            ("気候変動",),
+        )
+    )
     assert any(r[0] == "JOREI-13-test1" for r in hits)
     # Re-upsert is idempotent on canonical_id.
     n2 = _upsert(conn, rows)

@@ -78,7 +78,7 @@ for (const m of d.matches) console.log(m.program_id, m.tier, m.source_url);
 
 ## known gaps
 - Free ChatGPT (基本プラン) は Custom GPT 作成不可、Plus / Team / Enterprise 必須
-- Action は 30 endpoint 上限のため full OpenAPI (302 REST paths) ではなく `openapi.agent.gpt30.json` (GPT Actions 30-path subset) を採用
+- Action は 30 endpoint 上限のため full OpenAPI (306 REST paths) ではなく `openapi.agent.gpt30.json` (GPT Actions 30-path subset) を採用
 - Custom GPT の Action 出力は ChatGPT 側で再生成される可能性があり、jpcite の生 JSON が完全に維持される保証はない
 - Privacy policy URL を未設定だと Public 公開不可、Team / Enterprise の社内共有は workspace 内で完結
 - Action error 時の retry は ChatGPT 側の挙動に依存、`X-API-Key` 設定ミスは `401 invalid_credentials`

@@ -30,29 +30,12 @@ import re
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MCP_MOD_PATH = (
-    REPO_ROOT
-    / "src"
-    / "jpintel_mcp"
-    / "mcp"
-    / "autonomath_tools"
-    / "semantic_search_mcp.py"
+    REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "semantic_search_mcp.py"
 )
 SHARED_IMPL_PATH = (
-    REPO_ROOT
-    / "src"
-    / "jpintel_mcp"
-    / "mcp"
-    / "autonomath_tools"
-    / "semantic_search_v2.py"
+    REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "semantic_search_v2.py"
 )
-INIT_PATH = (
-    REPO_ROOT
-    / "src"
-    / "jpintel_mcp"
-    / "mcp"
-    / "autonomath_tools"
-    / "__init__.py"
-)
+INIT_PATH = REPO_ROOT / "src" / "jpintel_mcp" / "mcp" / "autonomath_tools" / "__init__.py"
 
 
 def test_module_file_exists() -> None:
@@ -104,9 +87,7 @@ def test_no_llm_api_imports() -> None:
 def test_no_llm_env_var_refs() -> None:
     text = MCP_MOD_PATH.read_text(encoding="utf-8")
     for banned_var in BANNED_ENV_VARS:
-        assert banned_var not in text, (
-            f"semantic_search_mcp must not reference {banned_var}"
-        )
+        assert banned_var not in text, f"semantic_search_mcp must not reference {banned_var}"
 
 
 def test_delegates_to_canonical_impl() -> None:
@@ -134,10 +115,7 @@ def test_env_gate_default_on() -> None:
     src = MCP_MOD_PATH.read_text(encoding="utf-8")
     # Env gate should default to "1" (ON) so production keeps the tool live
     # unless explicitly disabled.
-    assert (
-        'os.environ.get("AUTONOMATH_SEMANTIC_SEARCH_MCP_ENABLED", "1") == "1"'
-        in src
-    )
+    assert 'os.environ.get("AUTONOMATH_SEMANTIC_SEARCH_MCP_ENABLED", "1") == "1"' in src
 
 
 def test_init_registers_module() -> None:

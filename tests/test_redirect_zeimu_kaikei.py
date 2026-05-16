@@ -79,7 +79,9 @@ def test_jpcite_www_rule_is_301_to_apex(rules_doc: dict) -> None:
     params = rule["action_parameters"]["from_value"]
     assert params["status_code"] == 301
     assert params["preserve_query_string"] is True
-    assert params["target_url"]["expression"] == 'concat("https://jpcite.com", http.request.uri.path)'
+    assert (
+        params["target_url"]["expression"] == 'concat("https://jpcite.com", http.request.uri.path)'
+    )
 
 
 def test_zeimu_kaikei_apex_rule_is_301_to_jpcite(rules_doc: dict) -> None:
@@ -194,7 +196,10 @@ def test_jpcite_json_discovery_cache_rule(rules_doc: dict) -> None:
         '"/openapi.agent.json"',
         '"/v1/mcp-server.json"',
         '"/.well-known/mcp.json"',
+        '"/.well-known/jpcite-release.json"',
         'starts_with(http.request.uri.path, "/docs/openapi/")',
+        'starts_with(http.request.uri.path, "/release/current/")',
+        'starts_with(http.request.uri.path, "/releases/current/")',
     ):
         assert needle in expression
     params = rule["action_parameters"]

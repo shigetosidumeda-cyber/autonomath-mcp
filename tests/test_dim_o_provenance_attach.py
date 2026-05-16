@@ -29,12 +29,8 @@ import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_275 = REPO_ROOT / "scripts" / "migrations" / "275_explainable_fact.sql"
-ETL_V2 = (
-    REPO_ROOT / "scripts" / "etl" / "provenance_backfill_6M_facts_v2.py"
-)
-MIDDLEWARE = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "_provenance_attach.py"
-)
+ETL_V2 = REPO_ROOT / "scripts" / "etl" / "provenance_backfill_6M_facts_v2.py"
+MIDDLEWARE = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "_provenance_attach.py"
 
 
 # ---------------------------------------------------------------------------
@@ -131,9 +127,7 @@ def _seed_one(
 
 
 def _import_etl():
-    spec = importlib.util.spec_from_file_location(
-        "provenance_backfill_v2", ETL_V2
-    )
+    spec = importlib.util.spec_from_file_location("provenance_backfill_v2", ETL_V2)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -141,9 +135,7 @@ def _import_etl():
 
 
 def _import_middleware():
-    spec = importlib.util.spec_from_file_location(
-        "_provenance_attach", MIDDLEWARE
-    )
+    spec = importlib.util.spec_from_file_location("_provenance_attach", MIDDLEWARE)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -261,9 +253,7 @@ def test_etl_v2_backfills_missing_metadata(tmp_db: str, monkeypatch: pytest.Monk
         assert row[1] is None
         assert row[2] is None
         # When f.source_url is NULL, source_doc falls back to am_source.source_url.
-        row = conn.execute(
-            "SELECT source_doc FROM am_fact_metadata WHERE fact_id='F-2'"
-        ).fetchone()
+        row = conn.execute("SELECT source_doc FROM am_fact_metadata WHERE fact_id='F-2'").fetchone()
         assert row[0] == "https://example.test/source-table-source"
         # attestation log appended one row per UPSERT
         n_log = conn.execute(
@@ -281,13 +271,17 @@ def test_etl_v2_idempotent(tmp_db: str, monkeypatch: pytest.MonkeyPatch) -> None
     mod = _import_etl()
     assert mod.main(["--chunk-size", "10"]) == 0
     # second run should not append again (source_doc now set)
-    n_before = sqlite3.connect(tmp_db).execute(
-        "SELECT COUNT(*) FROM am_fact_attestation_log"
-    ).fetchone()[0]
+    n_before = (
+        sqlite3.connect(tmp_db)
+        .execute("SELECT COUNT(*) FROM am_fact_attestation_log")
+        .fetchone()[0]
+    )
     assert mod.main(["--chunk-size", "10"]) == 0
-    n_after = sqlite3.connect(tmp_db).execute(
-        "SELECT COUNT(*) FROM am_fact_attestation_log"
-    ).fetchone()[0]
+    n_after = (
+        sqlite3.connect(tmp_db)
+        .execute("SELECT COUNT(*) FROM am_fact_attestation_log")
+        .fetchone()[0]
+    )
     assert n_before == n_after, "v2 must be idempotent on converged corpus"
 
 
@@ -296,9 +290,7 @@ def test_etl_v2_dry_run_writes_nothing(tmp_db: str, monkeypatch: pytest.MonkeyPa
     monkeypatch.setenv("AUTONOMATH_DB_PATH", tmp_db)
     mod = _import_etl()
     assert mod.main(["--dry-run", "--chunk-size", "10"]) == 0
-    n = sqlite3.connect(tmp_db).execute(
-        "SELECT COUNT(*) FROM am_fact_metadata"
-    ).fetchone()[0]
+    n = sqlite3.connect(tmp_db).execute("SELECT COUNT(*) FROM am_fact_metadata").fetchone()[0]
     assert n == 0
 
 
@@ -310,9 +302,11 @@ def test_etl_v2_signature_optional(tmp_db: str, monkeypatch: pytest.MonkeyPatch)
     mod = _import_etl()
     rc = mod.main(["--chunk-size", "10"])
     assert rc == 0
-    sig_len = sqlite3.connect(tmp_db).execute(
-        "SELECT length(ed25519_sig) FROM am_fact_metadata WHERE fact_id='F-5'"
-    ).fetchone()[0]
+    sig_len = (
+        sqlite3.connect(tmp_db)
+        .execute("SELECT length(ed25519_sig) FROM am_fact_metadata WHERE fact_id='F-5'")
+        .fetchone()[0]
+    )
     assert sig_len >= 64  # honors am_fact_metadata CHECK constraint
 
 
@@ -340,9 +334,11 @@ def test_etl_v2_with_real_ed25519_key(tmp_db: str, monkeypatch: pytest.MonkeyPat
     monkeypatch.setenv("AUTONOMATH_FACT_SIGN_PRIVATE_KEY", seed_hex)
     mod = _import_etl()
     assert mod.main(["--chunk-size", "10"]) == 0
-    sig_len = sqlite3.connect(tmp_db).execute(
-        "SELECT length(ed25519_sig) FROM am_fact_metadata WHERE fact_id='F-6'"
-    ).fetchone()[0]
+    sig_len = (
+        sqlite3.connect(tmp_db)
+        .execute("SELECT length(ed25519_sig) FROM am_fact_metadata WHERE fact_id='F-6'")
+        .fetchone()[0]
+    )
     # prefixed shape = 8 + 64 + 8 = 80 bytes; <= 96 CHECK
     assert 64 <= sig_len <= 96
 
@@ -360,12 +356,12 @@ def test_no_llm_sdk_import_in_new_modules() -> None:
     )
     for path in (ETL_V2, MIDDLEWARE):
         body = path.read_text(encoding="utf-8")
-        assert pattern.search(body) is None, (
-            f"LLM SDK import found in {path}"
-        )
+        assert pattern.search(body) is None, f"LLM SDK import found in {path}"
 
 
-def test_etl_v2_never_touches_am_fact_signature(tmp_db: str, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_etl_v2_never_touches_am_fact_signature(
+    tmp_db: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Regression: backfill must not mutate the Wave 43.2.5 substrate."""
     # Create am_fact_signature table empty
     conn = sqlite3.connect(tmp_db)
@@ -385,9 +381,11 @@ def test_etl_v2_never_touches_am_fact_signature(tmp_db: str, monkeypatch: pytest
     monkeypatch.setenv("AUTONOMATH_DB_PATH", tmp_db)
     mod = _import_etl()
     assert mod.main(["--chunk-size", "10"]) == 0
-    row = sqlite3.connect(tmp_db).execute(
-        "SELECT signed_at FROM am_fact_signature WHERE fact_id='F-sig-1'"
-    ).fetchone()
+    row = (
+        sqlite3.connect(tmp_db)
+        .execute("SELECT signed_at FROM am_fact_signature WHERE fact_id='F-sig-1'")
+        .fetchone()
+    )
     assert row[0] == "2026-01-01T00:00:00Z"  # untouched
 
 

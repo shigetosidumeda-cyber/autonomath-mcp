@@ -16,9 +16,7 @@ def test_transport_metadata_advertises_streamable_http() -> None:
     assert mcp_transport_names() == ["stdio", "sse", "streamable_http"]
     assert meta["transports"] == ["stdio", "sse", "streamable_http"]
     assert meta["transport_endpoints"]["streamable_http"]["type"] == "streamable_http"
-    assert meta["transport_endpoints"]["streamable_http"]["url"].endswith(
-        "/v1/mcp/streamable_http"
-    )
+    assert meta["transport_endpoints"]["streamable_http"]["url"].endswith("/v1/mcp/streamable_http")
 
 
 def test_a2a_agent_card_uses_shared_transport_metadata() -> None:

@@ -163,7 +163,7 @@ def test_pyproject_does_not_declare_cutlet_or_mojimoji() -> None:
         + "\n  - ".join(violations)
         + "\n\n`pykakasi` is the only allowed Hepburn romaji backend"
         " (see CLAUDE.md 'Common gotchas'). `mojimoji` fails to compile"
-        " on macOS Rosetta and blocks `pip install -e \".[site]\"`."
+        ' on macOS Rosetta and blocks `pip install -e ".[site]"`.'
     )
 
 
@@ -219,7 +219,6 @@ def test_scan_imports_detects_synthesized_leaks(tmp_path: pathlib.Path) -> None:
         hits = _scan_imports(leak_file)
         if not any(expected in h for h in hits):
             misses.append(f"`{stmt}` not detected (hits={hits!r})")
-    assert not misses, (
-        "Forbidden import not flagged by _scan_imports:\n  - "
-        + "\n  - ".join(misses)
+    assert not misses, "Forbidden import not flagged by _scan_imports:\n  - " + "\n  - ".join(
+        misses
     )

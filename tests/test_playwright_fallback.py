@@ -143,12 +143,15 @@ def test_httpx_success_short_circuits() -> None:
             return (200, body, url, None)
 
         render_mock = AsyncMock()
-        with patch(
-            "scripts.etl._playwright_helper._httpx_get",
-            side_effect=_fake_httpx_get,
-        ), patch(
-            "scripts.etl._playwright_helper._render_async",
-            new=render_mock,
+        with (
+            patch(
+                "scripts.etl._playwright_helper._httpx_get",
+                side_effect=_fake_httpx_get,
+            ),
+            patch(
+                "scripts.etl._playwright_helper._render_async",
+                new=render_mock,
+            ),
         ):
             result = await fetch_with_fallback("https://www.meti.go.jp/sample")
             assert render_mock.await_count == 0
@@ -181,12 +184,15 @@ def test_httpx_failure_then_fallback_invoked() -> None:
             error=None,
         )
 
-    with patch(
-        "scripts.etl._playwright_helper._httpx_get",
-        side_effect=_broken,
-    ), patch(
-        "scripts.etl._playwright_helper._render_async",
-        new=AsyncMock(side_effect=_mock_render),
+    with (
+        patch(
+            "scripts.etl._playwright_helper._httpx_get",
+            side_effect=_broken,
+        ),
+        patch(
+            "scripts.etl._playwright_helper._render_async",
+            new=AsyncMock(side_effect=_mock_render),
+        ),
     ):
 
         async def _run() -> FetchResult:
@@ -217,12 +223,15 @@ def test_short_httpx_body_triggers_fallback() -> None:
             error=None,
         )
 
-    with patch(
-        "scripts.etl._playwright_helper._httpx_get",
-        side_effect=_short,
-    ), patch(
-        "scripts.etl._playwright_helper._render_async",
-        new=AsyncMock(side_effect=_mock_render),
+    with (
+        patch(
+            "scripts.etl._playwright_helper._httpx_get",
+            side_effect=_short,
+        ),
+        patch(
+            "scripts.etl._playwright_helper._render_async",
+            new=AsyncMock(side_effect=_mock_render),
+        ),
     ):
 
         async def _run() -> FetchResult:
@@ -251,12 +260,15 @@ def test_playwright_failure_returns_error_result() -> None:
             error="RuntimeError: chromium crashed",
         )
 
-    with patch(
-        "scripts.etl._playwright_helper._httpx_get",
-        side_effect=_broken,
-    ), patch(
-        "scripts.etl._playwright_helper._render_async",
-        new=AsyncMock(side_effect=_mock_render),
+    with (
+        patch(
+            "scripts.etl._playwright_helper._httpx_get",
+            side_effect=_broken,
+        ),
+        patch(
+            "scripts.etl._playwright_helper._render_async",
+            new=AsyncMock(side_effect=_mock_render),
+        ),
     ):
 
         async def _run() -> FetchResult:

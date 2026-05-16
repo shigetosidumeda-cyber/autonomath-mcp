@@ -49,9 +49,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 def _ed25519_keypair() -> tuple[bytes, bytes]:
     """Return (private_seed, public_key) raw bytes, or skip if unavailable."""
-    crypto = pytest.importorskip(
-        "cryptography.hazmat.primitives.asymmetric.ed25519"
-    )
+    crypto = pytest.importorskip("cryptography.hazmat.primitives.asymmetric.ed25519")
     from cryptography.hazmat.primitives import serialization
 
     private_key = crypto.Ed25519PrivateKey.generate()
@@ -106,23 +104,19 @@ def _build_extended_payload(
         "confidence_lower": confidence_lower,
         "confidence_upper": confidence_upper,
     }
-    return json.dumps(
-        payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")
-    ).encode("utf-8")
+    return json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode(
+        "utf-8"
+    )
 
 
 def _sign(seed: bytes, payload: bytes) -> bytes:
-    crypto = pytest.importorskip(
-        "cryptography.hazmat.primitives.asymmetric.ed25519"
-    )
+    crypto = pytest.importorskip("cryptography.hazmat.primitives.asymmetric.ed25519")
     key = crypto.Ed25519PrivateKey.from_private_bytes(seed)
     return key.sign(payload)
 
 
 def _verify(pub: bytes, payload: bytes, sig: bytes) -> bool:
-    crypto = pytest.importorskip(
-        "cryptography.hazmat.primitives.asymmetric.ed25519"
-    )
+    crypto = pytest.importorskip("cryptography.hazmat.primitives.asymmetric.ed25519")
     from cryptography.exceptions import InvalidSignature
 
     try:
@@ -140,21 +134,15 @@ def _verify(pub: bytes, payload: bytes, sig: bytes) -> bool:
 def test_extended_payload_is_byte_stable_across_call_order():
     """The canonical payload must hash identically regardless of caller
     keyword-argument order (sorted keys guarantee)."""
-    a = _build_extended_payload(
-        confidence_lower=0.5, confidence_upper=0.6, verified_by="cron"
-    )
-    b = _build_extended_payload(
-        verified_by="cron", confidence_upper=0.6, confidence_lower=0.5
-    )
+    a = _build_extended_payload(confidence_lower=0.5, confidence_upper=0.6, verified_by="cron")
+    b = _build_extended_payload(verified_by="cron", confidence_upper=0.6, confidence_lower=0.5)
     assert hashlib.sha256(a).hexdigest() == hashlib.sha256(b).hexdigest()
 
 
 def test_confidence_bounds_serialize_without_drift():
     """Float bounds round-trip via JSON without precision loss for our
     canonical precision (4 decimal digits)."""
-    payload = _build_extended_payload(
-        confidence_lower=0.7891, confidence_upper=0.9234
-    )
+    payload = _build_extended_payload(confidence_lower=0.7891, confidence_upper=0.9234)
     parsed = json.loads(payload.decode("utf-8"))
     assert math.isclose(parsed["confidence_lower"], 0.7891, abs_tol=1e-9)
     assert math.isclose(parsed["confidence_upper"], 0.9234, abs_tol=1e-9)

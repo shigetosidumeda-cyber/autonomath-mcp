@@ -92,9 +92,7 @@ def migrated_db() -> Path:
     return db_path
 
 
-@pytest.mark.parametrize(
-    "name", ["appi_compliance", "credit_signal", "industry_sector_175"]
-)
+@pytest.mark.parametrize("name", ["appi_compliance", "credit_signal", "industry_sector_175"])
 def test_migration_files_present(name: str) -> None:
     assert MIG_FILES[name].exists()
     assert ROLLBACK_FILES[name].exists()
@@ -196,8 +194,7 @@ def test_industry_jsic_175_code_len(migrated_db: Path) -> None:
     try:
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
-                "INSERT INTO am_industry_jsic_175 "
-                "(jsic_code, major_code, name) VALUES (?, ?, ?)",
+                "INSERT INTO am_industry_jsic_175 (jsic_code, major_code, name) VALUES (?, ?, ?)",
                 ("12", "A", "bad code"),
             )
     finally:
@@ -273,9 +270,7 @@ def test_no_llm_imports(source_file: Path) -> None:
     """Belt-and-braces: no anthropic / openai / google.generativeai imports."""
     text = source_file.read_text(encoding="utf-8")
     for banned in BANNED_LLM_IMPORTS:
-        assert banned not in text, (
-            f"{source_file.name} contains banned LLM import: {banned}"
-        )
+        assert banned not in text, f"{source_file.name} contains banned LLM import: {banned}"
 
 
 # --------------------------------------------------------------------------- #
@@ -330,11 +325,15 @@ def test_jsic_175_seed_size() -> None:
     """
     import importlib
 
-    mod = importlib.import_module(
-        "scripts.cron.aggregate_industry_sector_175_weekly"
+    mod = (
+        importlib.import_module(
+            "scripts.cron.aggregate_industry_sector_175_weekly"
+            if (REPO_ROOT / "scripts/__init__.py").exists()
+            else None
+        )
         if (REPO_ROOT / "scripts/__init__.py").exists()
         else None
-    ) if (REPO_ROOT / "scripts/__init__.py").exists() else None
+    )
     # Fallback: load via spec since `scripts/` is not a package by default.
     if mod is None:
         import importlib.util

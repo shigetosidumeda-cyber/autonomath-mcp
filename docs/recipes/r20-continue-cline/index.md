@@ -64,7 +64,7 @@ subprocess.run(["uvx", "autonomath-mcp", "--help"], check=True)
   "fetched_at": "2026-05-11T09:00:00Z",
   "source_url": "https://api.jpcite.com/mcp",
   "tools_loaded": ["search_programs", "get_corp_360", "check_invoice_status",
-                    "list_adoptions", "get_enforcement", "(...合計 151 tool)"],
+                    "list_adoptions", "get_enforcement", "(...合計 155 tool)"],
   "extension": "Continue 0.9.x or Cline 1.4.x",
   "sample_chat": [
     {

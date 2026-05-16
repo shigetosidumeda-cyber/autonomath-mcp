@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     import sqlite3
@@ -37,7 +37,7 @@ def mark_success(
     conn: sqlite3.Connection,
     event_id: str,
     api_key_id: str | None = None,
-    extra: dict | None = None,
+    extra: dict[str, Any] | None = None,
 ) -> None:
     conn.execute(
         "UPDATE stripe_event_idempotency SET processing_outcome = 'success', processed_at = ?, api_key_id_minted = ?, metadata_json = ? WHERE event_id = ?",

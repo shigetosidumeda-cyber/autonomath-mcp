@@ -472,9 +472,7 @@ def test_direct_to_fly_loopback_peer_without_fly_header_returns_503(
         assert detail.get("reason") == "edge_ip_unavailable"
 
 
-def test_direct_to_fly_public_peer_without_fly_header_passes(
-    client: TestClient, seeded_db: Path
-):
+def test_direct_to_fly_public_peer_without_fly_header_passes(client: TestClient, seeded_db: Path):
     """If the transport peer is public (e.g. Fly proxy IP itself) and
     Fly-Client-IP is absent, the request is bucketed against the peer
     address — NOT refused. This is the "Fly proxy hit us directly" path

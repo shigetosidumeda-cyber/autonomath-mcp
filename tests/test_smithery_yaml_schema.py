@@ -199,9 +199,7 @@ def _fallback_parse(text: str) -> dict:
                     out[current_props]["properties"].setdefault(current_property, {})
                     continue
                 if current_property is not None:
-                    out[current_props]["properties"][current_property][key] = (
-                        _strip_quotes(rest)
-                    )
+                    out[current_props]["properties"][current_property][key] = _strip_quotes(rest)
                 continue
 
         # top-level continuation block (e.g. `commandFunction: |-` body)
@@ -267,9 +265,7 @@ def test_manifest_file_present_and_nonempty() -> None:
 def test_metadata_block_present(manifest: dict) -> None:
     """``metadata`` block exists and is a mapping."""
     assert "metadata" in manifest, "missing top-level 'metadata' block"
-    assert isinstance(manifest["metadata"], dict), (
-        "smithery.yaml 'metadata' must be a mapping"
-    )
+    assert isinstance(manifest["metadata"], dict), "smithery.yaml 'metadata' must be a mapping"
 
 
 def test_metadata_name_present(manifest: dict) -> None:
@@ -288,8 +284,7 @@ def test_metadata_name_present(manifest: dict) -> None:
     ]
     name = next((c for c in candidates if isinstance(c, str) and c.strip()), None)
     assert name, (
-        "smithery.yaml must declare a name via metadata.name, top-level name, "
-        "qualifiedName, or id"
+        "smithery.yaml must declare a name via metadata.name, top-level name, qualifiedName, or id"
     )
 
 
@@ -320,12 +315,9 @@ def test_metadata_description_present(manifest: dict) -> None:
     """``metadata.description`` is a non-trivial string."""
     md = manifest.get("metadata", {})
     description = md.get("description")
-    assert isinstance(description, str), (
-        "smithery.yaml metadata.description must be a string"
-    )
+    assert isinstance(description, str), "smithery.yaml metadata.description must be a string"
     assert len(description.strip()) >= 20, (
-        f"smithery.yaml metadata.description suspiciously short "
-        f"({len(description.strip())} chars)"
+        f"smithery.yaml metadata.description suspiciously short ({len(description.strip())} chars)"
     )
 
 
@@ -366,8 +358,7 @@ def test_start_command_contract(manifest: dict) -> None:
     )
 
     assert has_commands_start or has_startcommand_pair, (
-        "smithery.yaml must declare commands.start OR "
-        "(startCommand.type + commandFunction)"
+        "smithery.yaml must declare commands.start OR (startCommand.type + commandFunction)"
     )
 
 
@@ -381,9 +372,7 @@ def test_config_properties_well_formed(manifest: dict) -> None:
         block = manifest.get(block_key)
         if block is None:
             continue
-        assert isinstance(block, dict), (
-            f"smithery.yaml {block_key} must be a mapping when present"
-        )
+        assert isinstance(block, dict), f"smithery.yaml {block_key} must be a mapping when present"
         properties = block.get("properties")
         if properties is None:
             # block exists with no properties — Smithery allows this (e.g.

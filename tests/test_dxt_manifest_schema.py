@@ -141,9 +141,7 @@ def manifest() -> dict:
 def test_manifest_is_a_json_object(manifest: dict) -> None:
     """Top-level manifest must parse as a JSON object (dict)."""
 
-    assert isinstance(manifest, dict), (
-        f"{MANIFEST_PATH}: top-level JSON is not an object"
-    )
+    assert isinstance(manifest, dict), f"{MANIFEST_PATH}: top-level JSON is not an object"
 
 
 def test_dxt_version_present(manifest: dict) -> None:
@@ -165,9 +163,7 @@ def test_dxt_version_present(manifest: dict) -> None:
 
 def test_name_present_and_string(manifest: dict) -> None:
     name = manifest.get("name")
-    assert isinstance(name, str) and name, (
-        f"name must be a non-empty string, got {name!r}"
-    )
+    assert isinstance(name, str) and name, f"name must be a non-empty string, got {name!r}"
 
 
 def test_display_name_present_and_string(manifest: dict) -> None:
@@ -191,18 +187,14 @@ def test_version_is_semver(manifest: dict) -> None:
 
 def test_description_present_and_string(manifest: dict) -> None:
     desc = manifest.get("description")
-    assert isinstance(desc, str) and desc, (
-        f"description must be a non-empty string, got {desc!r}"
-    )
+    assert isinstance(desc, str) and desc, f"description must be a non-empty string, got {desc!r}"
 
 
 def test_author_name_present(manifest: dict) -> None:
     """``author`` must be an object with a non-empty ``name`` field."""
 
     author = manifest.get("author")
-    assert isinstance(author, dict), (
-        f"author must be an object, got {type(author).__name__}"
-    )
+    assert isinstance(author, dict), f"author must be an object, got {type(author).__name__}"
     author_name = author.get("name")
     assert isinstance(author_name, str) and author_name, (
         f"author.name must be a non-empty string, got {author_name!r}"
@@ -211,9 +203,7 @@ def test_author_name_present(manifest: dict) -> None:
 
 def test_server_block_present(manifest: dict) -> None:
     server = manifest.get("server")
-    assert isinstance(server, dict), (
-        f"server must be an object, got {type(server).__name__}"
-    )
+    assert isinstance(server, dict), f"server must be an object, got {type(server).__name__}"
 
 
 def test_server_type_is_allowed(manifest: dict) -> None:

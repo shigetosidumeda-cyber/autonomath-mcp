@@ -162,9 +162,9 @@ def test_dimd_schema_source_tables_match_compose_path(client):  # noqa: ANN001
     }
     assert declared == expected, f"source_tables drift: {declared ^ expected}"
     # And the same names must literally appear in the REST module source.
-    rest_text = (
-        _REPO / "src" / "jpintel_mcp" / "api" / "audit_workpaper_v2.py"
-    ).read_text(encoding="utf-8")
+    rest_text = (_REPO / "src" / "jpintel_mcp" / "api" / "audit_workpaper_v2.py").read_text(
+        encoding="utf-8"
+    )
     for table in expected:
         assert table in rest_text, f"declared source_table {table!r} not in compose source"
 

@@ -212,8 +212,10 @@ def _signed_edge_forwarded_for(request: Request) -> str | None:
         return None
     secret = _edge_auth_secret()
     token = request.headers.get("x-edge-auth", "")
-    if not secret or not token or not _verify_signed_edge_header(
-        token, secret, caller_ip=caller_ip
+    if (
+        not secret
+        or not token
+        or not _verify_signed_edge_header(token, secret, caller_ip=caller_ip)
     ):
         return None
     return caller_ip

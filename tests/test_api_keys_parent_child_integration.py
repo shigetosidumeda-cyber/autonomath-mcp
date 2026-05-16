@@ -249,8 +249,7 @@ def test_parent_revocation_cascades_to_children(parent_with_quota, seeded_db):
         c.close()
 
     assert total == 4, (
-        f"revoke_key_tree must report 4 rows revoked (1 parent + 3 children), "
-        f"got {total}"
+        f"revoke_key_tree must report 4 rows revoked (1 parent + 3 children), got {total}"
     )
 
     # Verify: parent + every child carry revoked_at IS NOT NULL.
@@ -258,8 +257,7 @@ def test_parent_revocation_cascades_to_children(parent_with_quota, seeded_db):
     c.row_factory = sqlite3.Row
     try:
         rows = c.execute(
-            "SELECT key_hash, revoked_at FROM api_keys "
-            "WHERE key_hash = ? OR key_hash IN (?, ?, ?)",
+            "SELECT key_hash, revoked_at FROM api_keys WHERE key_hash = ? OR key_hash IN (?, ?, ?)",
             (parent_hash, *child_hashes),
         ).fetchall()
     finally:
@@ -267,8 +265,7 @@ def test_parent_revocation_cascades_to_children(parent_with_quota, seeded_db):
 
     revoked_count = sum(1 for r in rows if r["revoked_at"] is not None)
     assert revoked_count == 4, (
-        f"all 4 rows (parent + 3 children) must be revoked after cascade, "
-        f"got {revoked_count}"
+        f"all 4 rows (parent + 3 children) must be revoked after cascade, got {revoked_count}"
     )
 
 
@@ -334,9 +331,7 @@ def test_child_inherits_parent_monthly_cap_yen(parent_with_quota, seeded_db):
 # ---------------------------------------------------------------------------
 
 
-def test_billing_fan_out_attributes_usage_to_child_with_client_tag(
-    parent_with_quota, seeded_db
-):
+def test_billing_fan_out_attributes_usage_to_child_with_client_tag(parent_with_quota, seeded_db):
     """Per-顧問先 attribution: usage_events row carries child's key_hash +
     customer-supplied client_tag (mig 085 X-Client-Tag header).
 
@@ -383,14 +378,11 @@ def test_billing_fan_out_attributes_usage_to_child_with_client_tag(
     try:
         for label, kh in children:
             rows = c.execute(
-                "SELECT key_hash, client_tag, status, metered "
-                "FROM usage_events WHERE key_hash = ?",
+                "SELECT key_hash, client_tag, status, metered FROM usage_events WHERE key_hash = ?",
                 (kh,),
             ).fetchall()
             expected_n = {"ck_test_a1": 3, "ck_test_a2": 5, "ck_test_a3": 7}[label]
-            assert len(rows) == expected_n, (
-                f"{label}: expected {expected_n} rows, got {len(rows)}"
-            )
+            assert len(rows) == expected_n, f"{label}: expected {expected_n} rows, got {len(rows)}"
             assert all(r["client_tag"] == label for r in rows), (
                 f"{label}: every row must carry client_tag={label!r}"
             )
@@ -404,8 +396,7 @@ def test_billing_fan_out_attributes_usage_to_child_with_client_tag(
             (parent_hash,),
         ).fetchone()
         assert parent_count == 0, (
-            f"parent must have NO usage rows when only children served "
-            f"traffic. Got {parent_count}."
+            f"parent must have NO usage rows when only children served traffic. Got {parent_count}."
         )
 
         # All children share the parent's customer_id (proves billing
@@ -430,9 +421,7 @@ def test_billing_fan_out_attributes_usage_to_child_with_client_tag(
 # ---------------------------------------------------------------------------
 
 
-def test_tree_scope_aggregation_sums_siblings_under_parent_cap(
-    parent_with_quota, seeded_db
-):
+def test_tree_scope_aggregation_sums_siblings_under_parent_cap(parent_with_quota, seeded_db):
     """Cap is enforced at TREE scope: parent + all siblings sum against
     parent's monthly_cap_yen.
 
@@ -495,8 +484,7 @@ def test_tree_scope_aggregation_sums_siblings_under_parent_cap(
 
     # Tree must include parent + both children.
     assert parent_hash in tree_hashes, (
-        f"parent_hash must appear in tree (cap is at tree scope, not row); "
-        f"got {tree_hashes}"
+        f"parent_hash must appear in tree (cap is at tree scope, not row); got {tree_hashes}"
     )
     for ch in children:
         assert ch in tree_hashes, f"child {ch[:8]} missing from tree {tree_hashes}"

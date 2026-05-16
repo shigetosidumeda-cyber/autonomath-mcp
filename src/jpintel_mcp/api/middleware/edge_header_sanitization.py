@@ -94,13 +94,13 @@ import hmac
 import ipaddress
 import os
 import time
-from typing import TYPE_CHECKING
+from collections.abc import MutableMapping
+from typing import TYPE_CHECKING, Any, cast
 
 from starlette.middleware.base import BaseHTTPMiddleware
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any
 
     from starlette.requests import Request
     from starlette.responses import Response
@@ -289,7 +289,7 @@ def _verify_signed_edge_header(
     return hmac.compare_digest(expected, sig_hex.lower())
 
 
-def _strip_cf_headers_inplace(scope: dict[str, Any]) -> int:
+def _strip_cf_headers_inplace(scope: MutableMapping[str, Any]) -> int:
     """Remove every ``CF-*`` header from ``scope["headers"]`` in place.
 
     ASGI's ``scope["headers"]`` is a ``list[tuple[bytes, bytes]]`` keyed
@@ -358,21 +358,21 @@ class EdgeHeaderSanitizationMiddleware(BaseHTTPMiddleware):
         # downed health-check is a worse outcome than a leaked CF-Country
         # header on /healthz.
         if _is_exempt_path(request.url.path):
-            return await call_next(request)
+            return cast("Response", await call_next(request))
 
         # Trust path 1: signed header.
         secret = _edge_auth_secret()
         if secret:
             raw_token = request.headers.get("x-edge-auth", "")
             if raw_token and _verify_signed_edge_header(raw_token, secret):
-                return await call_next(request)
+                return cast("Response", await call_next(request))
 
         # Trust path 2: peer IP allowlist.
         peer_host: str | None = None
         if request.client:
             peer_host = request.client.host
         if _peer_is_trusted(peer_host):
-            return await call_next(request)
+            return cast("Response", await call_next(request))
 
         # Untrusted: strip every CF-* header. Stash the count on
         # request.state for downstream observability (audit log,
@@ -382,7 +382,7 @@ class EdgeHeaderSanitizationMiddleware(BaseHTTPMiddleware):
         # request.state is a SimpleNamespace; safe to attach freely.
         with contextlib.suppress(AttributeError):
             request.state.edge_headers_stripped = stripped
-        return await call_next(request)
+        return cast("Response", await call_next(request))
 
 
 __all__ = [

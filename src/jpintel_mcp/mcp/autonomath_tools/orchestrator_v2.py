@@ -59,7 +59,9 @@ logger = logging.getLogger("jpintel.mcp.autonomath.orchestrator_v2")
 
 # Env-gated registration (default on). Flip to "0" for one-flag rollback
 # if a regression surfaces post-launch.
-_ENABLED = get_flag("JPCITE_ORCHESTRATOR_V2_ENABLED", "AUTONOMATH_ORCHESTRATOR_V2_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_ORCHESTRATOR_V2_ENABLED", "AUTONOMATH_ORCHESTRATOR_V2_ENABLED", "1") == "1"
+)
 
 # Mirror the REST router. Adding a new target requires touching BOTH the
 # REST routes (api/orchestrator_v2.py) and this list — keep them in sync.
@@ -80,9 +82,7 @@ _REQUIRED_PAYLOAD_FIELDS: dict[str, frozenset[str]] = {
     "freee": frozenset({"freee_token", "company_id", "rows"}),
     "mf": frozenset({"mf_token", "office_id", "rows"}),
     "notion": frozenset({"notion_token", "database_id", "amendment_keys"}),
-    "slack": frozenset(
-        {"slack_webhook_url", "kind", "title", "summary", "url"}
-    ),
+    "slack": frozenset({"slack_webhook_url", "kind", "title", "summary", "url"}),
 }
 
 
@@ -105,9 +105,7 @@ _DISCLAIMER = (
 # ---------------------------------------------------------------------------
 
 
-def _next_calls_for_orchestrate(
-    target: str, delivered_count: int
-) -> list[dict[str, Any]]:
+def _next_calls_for_orchestrate(target: str, delivered_count: int) -> list[dict[str, Any]]:
     """Suggest 1-2 follow-up calls so the customer LLM chains naturally.
 
     Compound multiplier target: 1.8× — after an orchestrate the LLM
@@ -172,9 +170,7 @@ def _next_calls_for_orchestrate(
 # ---------------------------------------------------------------------------
 
 
-def _orchestrate_impl(
-    target: str, action: str, payload: dict[str, Any]
-) -> dict[str, Any]:
+def _orchestrate_impl(target: str, action: str, payload: dict[str, Any]) -> dict[str, Any]:
     """Validate inputs and surface the orchestration manifest.
 
     Important: the MCP path does NOT make the outbound HTTP call to the
@@ -187,18 +183,14 @@ def _orchestrate_impl(
     if target not in _ALLOWED_TARGETS:
         return make_error(
             code="invalid_argument",
-            message=(
-                f"target must be one of {_ALLOWED_TARGETS!r}; got {target!r}."
-            ),
+            message=(f"target must be one of {_ALLOWED_TARGETS!r}; got {target!r}."),
             field="target",
             retry_with=["list_orchestrate_targets_am"],
         )
     if action not in _ALLOWED_ACTIONS:
         return make_error(
             code="invalid_argument",
-            message=(
-                f"action must be one of {_ALLOWED_ACTIONS!r}; got {action!r}."
-            ),
+            message=(f"action must be one of {_ALLOWED_ACTIONS!r}; got {action!r}."),
             field="action",
         )
     if not isinstance(payload, dict):
@@ -212,9 +204,7 @@ def _orchestrate_impl(
     if missing:
         return make_error(
             code="missing_required_arg",
-            message=(
-                f"payload missing required keys for target={target!r}: {missing!r}."
-            ),
+            message=(f"payload missing required keys for target={target!r}: {missing!r}."),
             field="payload",
         )
     rest_path = f"/v1/orchestrate/{target}"
@@ -242,9 +232,7 @@ def _list_targets_impl() -> dict[str, Any]:
         "actions": list(_ALLOWED_ACTIONS),
         "metered_units_per_call": ORCHESTRATE_UNIT_COUNT,
         "yen_per_call": ORCHESTRATE_UNIT_COUNT * 3,
-        "rest_endpoints": [
-            f"/v1/orchestrate/{t}" for t in _ALLOWED_TARGETS
-        ],
+        "rest_endpoints": [f"/v1/orchestrate/{t}" for t in _ALLOWED_TARGETS],
         "required_payload_fields": {
             t: sorted(_REQUIRED_PAYLOAD_FIELDS[t]) for t in _ALLOWED_TARGETS
         },
@@ -284,8 +272,7 @@ if _ENABLED and settings.autonomath_enabled:
             dict[str, Any],
             Field(
                 description=(
-                    "Body that mirrors the target's REST schema (see"
-                    " /v1/orchestrate/{target})."
+                    "Body that mirrors the target's REST schema (see /v1/orchestrate/{target})."
                 ),
             ),
         ],

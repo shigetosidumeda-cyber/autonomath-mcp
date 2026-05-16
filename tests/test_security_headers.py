@@ -197,6 +197,4 @@ def test_response_does_not_leak_unsafe_eval(client: TestClient) -> None:
     assert r.status_code == 200, r.text
 
     csp = r.headers.get("Content-Security-Policy") or ""
-    assert "'unsafe-eval'" not in csp, (
-        f"unexpected 'unsafe-eval' in CSP: {csp!r}"
-    )
+    assert "'unsafe-eval'" not in csp, f"unexpected 'unsafe-eval' in CSP: {csp!r}"

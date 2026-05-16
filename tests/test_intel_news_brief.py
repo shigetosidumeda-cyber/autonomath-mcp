@@ -261,8 +261,7 @@ def test_news_brief_row_cap_50_at_max_items_20(bulk_news_client: TestClient) -> 
         "_AXIS_FIELD_NAMES['program'] still contains the seed bucket."
     )
     assert len(seen_urls) <= 50, (
-        f"row cap regression: saw {len(seen_urls)} distinct URLs, "
-        f"expected ≤ 50 (LIMIT cap)"
+        f"row cap regression: saw {len(seen_urls)} distinct URLs, expected ≤ 50 (LIMIT cap)"
     )
 
 

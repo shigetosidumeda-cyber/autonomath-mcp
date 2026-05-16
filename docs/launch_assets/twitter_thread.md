@@ -64,7 +64,7 @@ I wanted one API where Claude can just answer.
 ```
 4/ Built for 5 audiences:
 
-- AI agent devs — 151 MCP tools at default gates, 1 manifest line
+- AI agent devs — 155 MCP tools at default gates, 1 manifest line
 - Tax accountants — Article-level statute trace
 - SMB owners — "what subsidies fit me?" via Claude
 - VCs — DD on subsidy/enforcement/invoice via 法人番号

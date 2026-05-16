@@ -27,6 +27,7 @@ Acceptance
    not a placeholder)
 5. source_url points to e-Gov / METI (no aggregator)
 """
+
 from __future__ import annotations
 
 import json
@@ -106,10 +107,7 @@ def test_each_fence_has_wave46_schema_fields() -> None:
                 defects.append(f"{fid} missing {field}")
             elif not fence[field]:
                 defects.append(f"{fid} empty {field}")
-    assert not defects, (
-        "Wave 46 schema requires "
-        f"{REQUIRED_FIELDS}; defects: {defects[:20]}"
-    )
+    assert not defects, f"Wave 46 schema requires {REQUIRED_FIELDS}; defects: {defects[:20]}"
 
 
 def test_surface_text_is_real_statute_quote() -> None:
@@ -138,9 +136,7 @@ def test_source_url_points_to_primary_source() -> None:
         host = m.group(1) if m else ""
         if host not in ALLOWED_SOURCE_HOSTS:
             defects.append(f"{fid} source_url host={host!r} not in allow-list")
-    assert not defects, (
-        f"source_url must be primary source (e-Gov / METI): {defects}"
-    )
+    assert not defects, f"source_url must be primary source (e-Gov / METI): {defects}"
 
 
 def test_three_new_wave46_fences_added() -> None:
@@ -149,9 +145,7 @@ def test_three_new_wave46_fences_added() -> None:
     ids = {f.get("id") for f in reg["fences"]}
     assert "sharoushi" in ids, "sharoushi (社会保険労務士法 §27) must be present"
     assert "cpa" in ids, "cpa (公認会計士法 §47条の2) must be present"
-    assert "labor_standards" in ids, (
-        "labor_standards (労働基準法 §12+§32+§36) must be present"
-    )
+    assert "labor_standards" in ids, "labor_standards (労働基準法 §12+§32+§36) must be present"
 
     # sharoushi.law must be the canonical full form
     sharoushi = next(f for f in reg["fences"] if f["id"] == "sharoushi")
@@ -167,7 +161,11 @@ def test_three_new_wave46_fences_added() -> None:
     rouki = next(f for f in reg["fences"] if f["id"] == "labor_standards")
     assert rouki["law"] == "労働基準法"
     # §32 (40h/week) + §36 (kyoutei) surfaces must appear in surface_text
-    assert "三十六" in rouki["surface_text"] or "36" in rouki["surface_text"] or "三十二" in rouki["surface_text"]
+    assert (
+        "三十六" in rouki["surface_text"]
+        or "36" in rouki["surface_text"]
+        or "三十二" in rouki["surface_text"]
+    )
 
 
 def test_no_existing_five_fences_were_deleted() -> None:
@@ -211,8 +209,7 @@ def test_journey_audit_step2_score_is_full() -> None:
         timeout=60,
     )
     assert result.returncode == 0, (
-        f"audit_runner_agent_journey.py exited {result.returncode}: "
-        f"stderr={result.stderr[-500:]}"
+        f"audit_runner_agent_journey.py exited {result.returncode}: stderr={result.stderr[-500:]}"
     )
     data = json.loads(pathlib.Path(out_json).read_text(encoding="utf-8"))
     step2 = next(s for s in data["steps"] if s["step"] == 2)

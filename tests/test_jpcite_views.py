@@ -104,8 +104,7 @@ def test_view_count_matches_am_table_count_within_tolerance():
     # tables before this view migration is regenerated, and (b) the rare
     # case where a regular table is intentionally excluded.
     assert delta <= 5, (
-        f"am_* tables={len(am_tables)} vs jc_* views={len(jc_views)} "
-        f"diverged by {delta} (>5)"
+        f"am_* tables={len(am_tables)} vs jc_* views={len(jc_views)} diverged by {delta} (>5)"
     )
 
 
@@ -119,11 +118,9 @@ def test_every_jc_view_targets_am_prefix():
     )
     assert pairs, "no jc_/am_ pairs parsed"
     for jc_name, am_name in pairs:
-        suffix_jc = jc_name[len("jc_"):]
-        suffix_am = am_name[len("am_"):]
-        assert suffix_jc == suffix_am, (
-            f"name mismatch: view={jc_name} target={am_name}"
-        )
+        suffix_jc = jc_name[len("jc_") :]
+        suffix_am = am_name[len("am_") :]
+        assert suffix_jc == suffix_am, f"name mismatch: view={jc_name} target={am_name}"
 
 
 def test_select_through_one_view_returns_source_rows():
@@ -207,9 +204,7 @@ def test_no_fts5_or_vec0_in_view_targets():
         re.IGNORECASE,
     )
     leaked = sorted(am_name for am_name in pairs if am_name in vtables)
-    assert not leaked, (
-        f"jc_* views must not wrap FTS5/vec0 vtables; leaked: {leaked}"
-    )
+    assert not leaked, f"jc_* views must not wrap FTS5/vec0 vtables; leaked: {leaked}"
 
 
 if __name__ == "__main__":

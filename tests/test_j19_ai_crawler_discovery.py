@@ -31,7 +31,9 @@ def test_llms_surfaces_use_current_brand_pricing_and_safe_claims() -> None:
     banned_claims = [
         re.compile(r"\bROI\b", re.IGNORECASE),
         re.compile(r"\bARR\b"),
-        re.compile(r"\bprofit\s+(?:projection|guarantee|uplift|increase|growth)s?\b", re.IGNORECASE),
+        re.compile(
+            r"\bprofit\s+(?:projection|guarantee|uplift|increase|growth)s?\b", re.IGNORECASE
+        ),
         re.compile(r"\brevenue\s+guarantee\b", re.IGNORECASE),
     ]
 
@@ -50,7 +52,9 @@ def test_llms_surfaces_use_current_brand_pricing_and_safe_claims() -> None:
         assert "3 requests/day/IP" in text or "3 req/日" in text
 
         for pattern in banned_claims:
-            assert not pattern.search(text), f"{path.name} contains unsafe claim pattern {pattern.pattern}"
+            assert not pattern.search(text), (
+                f"{path.name} contains unsafe claim pattern {pattern.pattern}"
+            )
 
 
 def test_llms_surfaces_advertise_obvious_crawler_discovery_links() -> None:
@@ -71,7 +75,10 @@ def test_feed_variants_expose_llm_discovery_entry() -> None:
 
 
 def test_llms_hreflang_clusters_are_symmetric_in_static_sitemap() -> None:
-    ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9", "xhtml": "http://www.w3.org/1999/xhtml"}
+    ns = {
+        "sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
+        "xhtml": "http://www.w3.org/1999/xhtml",
+    }
     root = ET.parse(SITE / "sitemap.xml").getroot()
     urls: dict[str, dict[str, str]] = {}
 

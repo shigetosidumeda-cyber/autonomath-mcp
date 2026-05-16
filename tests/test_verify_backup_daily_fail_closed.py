@@ -29,7 +29,9 @@ def _wire_sidecar(mod: Any, tmp_path: Path) -> Path:
     return sidecar
 
 
-def _snapshot(*, age_hours: float = 0.1, checksum_listed: bool = True, size: int = 128) -> dict[str, Any]:
+def _snapshot(
+    *, age_hours: float = 0.1, checksum_listed: bool = True, size: int = 128
+) -> dict[str, Any]:
     key = "jpintel/jpintel-20260513-000000.db.gz"
     return {
         "key": key,

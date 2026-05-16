@@ -133,9 +133,7 @@ def _patch_getaddrinfo(mapping: dict[str, list[str]]) -> mock._patch:
 
     def fake(host, port, *args, **kwargs):  # noqa: ANN001
         if host in mapping:
-            return [
-                (0, 0, 0, "", (addr, 0)) for addr in mapping[host]
-            ]
+            return [(0, 0, 0, "", (addr, 0)) for addr in mapping[host]]
         raise OSError(f"unmocked host: {host}")
 
     return mock.patch("refresh_sources.socket.getaddrinfo", side_effect=fake)
@@ -162,9 +160,7 @@ def test_is_url_safe_rejects_file_scheme() -> None:
 
 def test_is_url_safe_rejects_aws_imds_resolving_host() -> None:
     """A hostname that resolves to the AWS IMDS address must be refused."""
-    with _patch_getaddrinfo(
-        {"metadata.internal.example.com": ["169.254.169.254"]}
-    ):
+    with _patch_getaddrinfo({"metadata.internal.example.com": ["169.254.169.254"]}):
         safe, reason = refresh_sources.is_url_safe(
             "https://metadata.internal.example.com/latest/meta-data/"
         )
@@ -200,9 +196,7 @@ def test_is_url_safe_rejects_nxdomain() -> None:
         "refresh_sources.socket.getaddrinfo",
         side_effect=OSError("nxdomain"),
     ):
-        safe, reason = refresh_sources.is_url_safe(
-            "https://nx.invalid.example/"
-        )
+        safe, reason = refresh_sources.is_url_safe("https://nx.invalid.example/")
     assert safe is False
     assert reason is not None and reason.startswith("dns:")
 
@@ -262,9 +256,7 @@ def test_dns_cache_ttl_re_resolves_after_expiry() -> None:
 
         # Age the cached entry past TTL by rewriting its cached_at.
         is_safe, reason, _ = refresh_sources._DNS_RESOLVE_CACHE["rebind.example"]
-        stale_at = (
-            __import__("time").time() - refresh_sources._DNS_RESOLVE_TTL_SEC - 1.0
-        )
+        stale_at = __import__("time").time() - refresh_sources._DNS_RESOLVE_TTL_SEC - 1.0
         refresh_sources._DNS_RESOLVE_CACHE["rebind.example"] = (
             is_safe,
             reason,
@@ -296,10 +288,7 @@ def test_dns_cache_lru_evicts_oldest_at_capacity() -> None:
                 refresh_sources.is_url_safe(f"https://host-{i:04d}.example/")
 
         # Cache must be bounded — never exceeds MAX.
-        assert (
-            len(refresh_sources._DNS_RESOLVE_CACHE)
-            == refresh_sources._DNS_RESOLVE_CACHE_MAX
-        )
+        assert len(refresh_sources._DNS_RESOLVE_CACHE) == refresh_sources._DNS_RESOLVE_CACHE_MAX
         # The 5 oldest entries (host-0000..host-0004) were evicted; the
         # newest 10 (host-0005..host-0014) remain.
         for i in range(5):
@@ -409,9 +398,7 @@ def test_handle_row_refuses_imds_without_probing_but_counts_failure() -> None:
     per_host: Counter[str] = Counter()
     changes: list[dict] = []
 
-    with _patch_getaddrinfo(
-        {"metadata.example.invalid": ["169.254.169.254"]}
-    ):
+    with _patch_getaddrinfo({"metadata.example.invalid": ["169.254.169.254"]}):
         asyncio.run(
             refresh_sources.handle_row(
                 _row("UID-2", "https://metadata.example.invalid/latest/"),
@@ -591,9 +578,7 @@ def test_commit_changes_quarantines_failure_outcomes_on_third_strike(
         "SELECT excluded, tier, source_fail_count, source_fetched_at "
         "FROM programs WHERE unified_id='UID-Q'"
     ).fetchone()
-    failure = con.execute(
-        "SELECT action FROM source_failures WHERE unified_id='UID-Q'"
-    ).fetchone()
+    failure = con.execute("SELECT action FROM source_failures WHERE unified_id='UID-Q'").fetchone()
 
     assert written["quarantine"] == 1
     assert row == (1, "X", 3, "2026-01-01")

@@ -137,14 +137,14 @@ class StateCheckpoint:
         # Look up existing step by name (UNIQUE(workflow_id, step_index)
         # not step_name, so we have to query).
         existing = self.conn.execute(
-            "SELECT step_index FROM am_state_checkpoint "
-            "WHERE workflow_id = ? AND step_name = ?",
+            "SELECT step_index FROM am_state_checkpoint WHERE workflow_id = ? AND step_name = ?",
             (self.workflow_id, step_name),
         ).fetchone()
 
         try:
-            state_text = json.dumps(state if state is not None else {},
-                                    ensure_ascii=False, default=str)
+            state_text = json.dumps(
+                state if state is not None else {}, ensure_ascii=False, default=str
+            )
         except (TypeError, ValueError) as exc:
             raise ValueError(f"state blob not JSON-serializable: {exc}") from exc
         if len(state_text.encode("utf-8")) > _MAX_STATE_BLOB_BYTES:

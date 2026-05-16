@@ -44,7 +44,6 @@ from pathlib import Path
 from typing import Any
 from unittest import mock
 
-import pytest
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -58,7 +57,6 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import refresh_sources  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # 1. Repo-wide grep — 最終更新 must not appear next to source_fetched_at
@@ -140,24 +138,24 @@ _EXPLANATORY_COPY_ALLOWLIST: frozenset[str] = frozenset(
 # the longer / more specific patterns come first so a partial match doesn't
 # shadow them.
 _NEGATION_MARKERS: tuple[str, ...] = (
-    "最終更新ではな",          # 最終更新ではなく / 最終更新ではない
-    "「最終更新」",            # bracketed-out usage in advisory copy
+    "最終更新ではな",  # 最終更新ではなく / 最終更新ではない
+    "「最終更新」",  # bracketed-out usage in advisory copy
     "「最終更新日」",
-    'never as "最終更新',      # JSON tool description advisory
+    'never as "最終更新',  # JSON tool description advisory
     "never as '最終更新",
     "never as 最終更新",
     "no 最終更新",
     "not 最終更新",
-    "not '最終更新",           # Python comments / string literals
+    "not '最終更新",  # Python comments / string literals
     'not "最終更新',
-    "(not '最終更新')",        # Rendered as '出典取得' (not '最終更新')
-    "do NOT claim",            # Python comments forbidding the label
+    "(not '最終更新')",  # Rendered as '出典取得' (not '最終更新')
+    "do NOT claim",  # Python comments forbidding the label
     "do not claim",
-    "誤誘導はせず",            # 「最終更新」のような誤誘導はせず
-    "-style currency claim",   # 最終更新-style currency claim — comment idiom
+    "誤誘導はせず",  # 「最終更新」のような誤誘導はせず
+    "-style currency claim",  # 最終更新-style currency claim — comment idiom
     "data-honesty rule bans",  # CLAUDE.md's data-honesty rule bans the label
     "honesty rule bans",
-    "semantic honesty rule",   # 'source_fetched_at semantic honesty rule in CLAUDE.md'
+    "semantic honesty rule",  # 'source_fetched_at semantic honesty rule in CLAUDE.md'
     'must call that "出典取得"',  # the copy must call that 出典取得 — advisory
     "must call that '出典取得",
     "matching the source_fetched_at",  # "matching the source_fetched_at semantic honesty rule"
@@ -183,11 +181,27 @@ def _iter_text_files() -> list[Path]:
     """
     files: list[Path] = []
     binary_suffixes = {
-        ".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg",
-        ".ico", ".woff", ".woff2", ".ttf", ".eot",
-        ".zip", ".tar", ".gz", ".mcpb",
-        ".db", ".sqlite", ".wal", ".shm",
-        ".pyc", ".pyo",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".webp",
+        ".svg",
+        ".ico",
+        ".woff",
+        ".woff2",
+        ".ttf",
+        ".eot",
+        ".zip",
+        ".tar",
+        ".gz",
+        ".mcpb",
+        ".db",
+        ".sqlite",
+        ".wal",
+        ".shm",
+        ".pyc",
+        ".pyo",
     }
     for root in _SCAN_DIRS:
         if not root.exists():
@@ -292,9 +306,7 @@ def test_window_proximity_grep_finds_zero_最終更新_near_source_fetched_at() 
         for offset, window in _scan_window(path):
             if _line_is_advisory_negation(window):
                 continue
-            offenders.append(
-                f"{rel} @offset={offset}: ...{window.replace(chr(10), ' / ')}..."
-            )
+            offenders.append(f"{rel} @offset={offset}: ...{window.replace(chr(10), ' / ')}...")
     assert not offenders, (
         "Found '最終更新' within ±120 chars of 'source_fetched_at' outside allowlist.\n"
         "Per CLAUDE.md, the column must render as '出典取得', not '最終更新'.\n"
@@ -309,10 +321,7 @@ def test_program_template_uses_出典取得_label() -> None:
     # The byline must say 出典取得 next to a fetched_at expression. We do not
     # assert the exact variable name (fetched_at_ja / fetched_at) — only that
     # the label travels with a Jinja expression on the same line.
-    label_lines = [
-        line for line in text.splitlines()
-        if "出典取得" in line and "{{" in line
-    ]
+    label_lines = [line for line in text.splitlines() if "出典取得" in line and "{{" in line]
     assert label_lines, (
         "site/_templates/program.html must contain a '出典取得: {{ ... }}' span. "
         "The label is the user-visible signal mandated by CLAUDE.md."
@@ -417,8 +426,7 @@ def test_rendered_program_page_never_labels_fetched_at_as_最終更新() -> None
         end = min(len(html), off + len(sentinel) + radius)
         window = html[start:end]
         assert _LAST_UPDATED_TOKEN not in window, (
-            f"Rendered HTML labels fetched_at as '最終更新' near offset {off}:\n"
-            f"  ...{window}..."
+            f"Rendered HTML labels fetched_at as '最終更新' near offset {off}:\n  ...{window}..."
         )
 
 
@@ -548,9 +556,7 @@ def test_commit_changes_does_not_update_fetched_at_on_error_outcome(tmp_path: Pa
     ]
     refresh_sources.commit_changes(con, changes, dry_run=False)
     post = _row_fetched_at(con, "UID-PRE-EXISTING")
-    assert post == pre, (
-        "outcome=error must not rewrite source_fetched_at — transport failed."
-    )
+    assert post == pre, "outcome=error must not rewrite source_fetched_at — transport failed."
 
 
 def test_commit_changes_does_not_update_fetched_at_on_unsafe_url(tmp_path: Path) -> None:
@@ -572,9 +578,7 @@ def test_commit_changes_does_not_update_fetched_at_on_unsafe_url(tmp_path: Path)
     ]
     refresh_sources.commit_changes(con, changes, dry_run=False)
     post = _row_fetched_at(con, "UID-PRE-EXISTING")
-    assert post == pre, (
-        "outcome=unsafe_url must not rewrite source_fetched_at — no fetch ran."
-    )
+    assert post == pre, "outcome=unsafe_url must not rewrite source_fetched_at — no fetch ran."
 
 
 def test_commit_changes_does_not_update_fetched_at_on_redirect_unresolved(
@@ -693,8 +697,10 @@ def test_handle_row_500_probe_records_fail_outcome_without_fetched_at_bump() -> 
     async def fake_probe_url(client: Any, url: str) -> tuple[int | None, str | None, str | None]:
         return 500, url, None
 
-    with mock.patch.object(refresh_sources, "is_url_safe", return_value=(True, None)), \
-         mock.patch.object(refresh_sources, "probe_url", side_effect=fake_probe_url):
+    with (
+        mock.patch.object(refresh_sources, "is_url_safe", return_value=(True, None)),
+        mock.patch.object(refresh_sources, "probe_url", side_effect=fake_probe_url),
+    ):
         client = mock.MagicMock()
         sem = asyncio.Semaphore(1)
         asyncio.run(
@@ -724,8 +730,10 @@ def test_handle_row_200_probe_records_ok_outcome_eligible_for_fetched_at_bump() 
     async def fake_probe_url(client: Any, url: str) -> tuple[int | None, str | None, str | None]:
         return 200, url, None
 
-    with mock.patch.object(refresh_sources, "is_url_safe", return_value=(True, None)), \
-         mock.patch.object(refresh_sources, "probe_url", side_effect=fake_probe_url):
+    with (
+        mock.patch.object(refresh_sources, "is_url_safe", return_value=(True, None)),
+        mock.patch.object(refresh_sources, "probe_url", side_effect=fake_probe_url),
+    ):
         client = mock.MagicMock()
         sem = asyncio.Semaphore(1)
         asyncio.run(
@@ -768,9 +776,7 @@ def test_refresh_sources_update_fetched_at_sql_lives_only_in_ok_branch() -> None
     )
     # Find every occurrence of the destructive UPDATE.
     target = "UPDATE programs SET source_fetched_at"
-    offsets = [
-        m.start() for m in re.finditer(re.escape(target), src)
-    ]
+    offsets = [m.start() for m in re.finditer(re.escape(target), src)]
     assert offsets, (
         "refresh_sources.py no longer contains the canonical "
         "`UPDATE programs SET source_fetched_at=...` statement — schema drift?"

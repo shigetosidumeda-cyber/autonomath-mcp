@@ -266,10 +266,32 @@ def test_insert_dry_run_is_noop() -> None:
     _seed_snapshot(
         conn,
         [
-            ("program:dry", 1, "2026-04-01", 100, None, None, None, None,
-             "https://example.test", None, None),
-            ("program:dry", 2, "2026-04-02", 200, None, None, None, None,
-             "https://example.test", None, None),
+            (
+                "program:dry",
+                1,
+                "2026-04-01",
+                100,
+                None,
+                None,
+                None,
+                None,
+                "https://example.test",
+                None,
+                None,
+            ),
+            (
+                "program:dry",
+                2,
+                "2026-04-02",
+                200,
+                None,
+                None,
+                None,
+                None,
+                "https://example.test",
+                None,
+                None,
+            ),
         ],
     )
     diffs = backfill.collect_snapshot_diffs(conn)
@@ -284,10 +306,32 @@ def test_insert_apply_then_dry_run_idempotency_metrics() -> None:
     _seed_snapshot(
         conn,
         [
-            ("program:apply", 1, "2026-04-01", 100, None, None, None, None,
-             "https://example.test", None, None),
-            ("program:apply", 2, "2026-04-02", 200, None, None, None, None,
-             "https://example.test", None, None),
+            (
+                "program:apply",
+                1,
+                "2026-04-01",
+                100,
+                None,
+                None,
+                None,
+                None,
+                "https://example.test",
+                None,
+                None,
+            ),
+            (
+                "program:apply",
+                2,
+                "2026-04-02",
+                200,
+                None,
+                None,
+                None,
+                None,
+                "https://example.test",
+                None,
+                None,
+            ),
         ],
     )
     diffs = backfill.collect_snapshot_diffs(conn)

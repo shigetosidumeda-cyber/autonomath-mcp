@@ -49,7 +49,9 @@ from .error_envelope import make_error
 
 logger = logging.getLogger("jpintel.mcp.autonomath.audit_workpaper_v2")
 
-_ENABLED = get_flag("JPCITE_AUDIT_WORKPAPER_ENABLED", "AUTONOMATH_AUDIT_WORKPAPER_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_AUDIT_WORKPAPER_ENABLED", "AUTONOMATH_AUDIT_WORKPAPER_ENABLED", "1") == "1"
+)
 
 # Sensitive — 4-業法 fence, mirrors envelope_wrapper.SENSITIVE_TOOLS.
 _DISCLAIMER = (
@@ -68,9 +70,7 @@ def _table_columns(conn: sqlite3.Connection, table: str) -> set[str]:
         rows = conn.execute(f"PRAGMA table_info({table})").fetchall()
     except sqlite3.Error:
         return set()
-    return {
-        str(row["name"] if isinstance(row, sqlite3.Row) else row[1]) for row in rows
-    }
+    return {str(row["name"] if isinstance(row, sqlite3.Row) else row[1]) for row in rows}
 
 
 def _has_tool_registered(name: str) -> bool:
@@ -94,9 +94,7 @@ def _normalize_houjin(raw: str) -> str | None:
     return s
 
 
-def _section_houjin_meta(
-    conn: sqlite3.Connection, houjin_id: str
-) -> dict[str, Any] | None:
+def _section_houjin_meta(conn: sqlite3.Connection, houjin_id: str) -> dict[str, Any] | None:
     """Min 法人 metadata used by the workpaper cover page."""
     columns = _table_columns(conn, "jpi_houjin_master")
     jsic_expr = "jsic_major" if "jsic_major" in columns else "NULL AS jsic_major"
@@ -208,9 +206,7 @@ def _section_fy_enforcement(
     return [dict(r) for r in rows]
 
 
-def _section_jurisdiction_mismatch(
-    conn: sqlite3.Connection, houjin_id: str
-) -> dict[str, Any]:
+def _section_jurisdiction_mismatch(conn: sqlite3.Connection, houjin_id: str) -> dict[str, Any]:
     """Registered vs invoice vs operational mismatch.
 
     Mirrors `wave22_tools._cross_check_jurisdiction_impl` minimally — we
@@ -243,12 +239,12 @@ def _section_jurisdiction_mismatch(
         if i:
             out["invoice_prefecture"] = i["prefecture"]
         op = conn.execute(
-            """
+            f"""
             SELECT prefecture, COUNT(*) AS n
               FROM jpi_adoption_records
              WHERE {houjin_col} = ? AND prefecture IS NOT NULL
              GROUP BY prefecture ORDER BY n DESC LIMIT 1
-            """.format(houjin_col=houjin_col),
+            """,
             (houjin_id,),
         ).fetchone()
         if op:
@@ -294,10 +290,7 @@ def _compose_workpaper_impl(
     if hb is None:
         return make_error(
             code="invalid_input",
-            message=(
-                f"client_houjin_bangou must be 13 digits "
-                f"(got {client_houjin_bangou!r})."
-            ),
+            message=(f"client_houjin_bangou must be 13 digits (got {client_houjin_bangou!r})."),
             field="client_houjin_bangou",
         )
     if not isinstance(fiscal_year, int) or not (2000 <= fiscal_year <= 2100):
@@ -333,27 +326,18 @@ def _compose_workpaper_impl(
         adoptions = _section_fy_adoptions(conn, hb, fy_start, fy_end)
         enforcement = _section_fy_enforcement(conn, hb, fy_start, fy_end)
         jurisdiction = _section_jurisdiction_mismatch(conn, hb)
-        active_pids = [
-            a["program_id"] for a in adoptions if isinstance(a.get("program_id"), str)
-        ]
-        amendment_alerts = _section_amendment_alerts(
-            conn, active_pids, fy_start, fy_end
-        )
+        active_pids = [a["program_id"] for a in adoptions if isinstance(a.get("program_id"), str)]
+        amendment_alerts = _section_amendment_alerts(conn, active_pids, fy_start, fy_end)
 
         # Decision support: 監査人の注意喚起 (ranked).
         flags: list[str] = []
         if enforcement:
-            flags.append(
-                f"FY内 行政処分 {len(enforcement)} 件 — 監査調書の重大記載項目候補。"
-            )
+            flags.append(f"FY内 行政処分 {len(enforcement)} 件 — 監査調書の重大記載項目候補。")
         if jurisdiction.get("mismatch"):
-            flags.append(
-                "登録/適格/操業 都道府県の3軸不一致 — 課税地・連結納税のヒアリング推奨。"
-            )
+            flags.append("登録/適格/操業 都道府県の3軸不一致 — 課税地・連結納税のヒアリング推奨。")
         if amendment_alerts:
             flags.append(
-                f"FY内 当該採択先制度の改正イベント {len(amendment_alerts)} 件 — "
-                "適用要件再評価。"
+                f"FY内 当該採択先制度の改正イベント {len(amendment_alerts)} 件 — 適用要件再評価。"
             )
         if not adoptions:
             flags.append(
@@ -401,7 +385,6 @@ def _compose_workpaper_impl(
 # MCP tool registration.
 # ---------------------------------------------------------------------------
 if _ENABLED and settings.autonomath_enabled:
-
     _TOOL_NAME = (
         "compose_audit_workpaper_v2"
         if _has_tool_registered("compose_audit_workpaper")
@@ -413,9 +396,7 @@ if _ENABLED and settings.autonomath_enabled:
         client_houjin_bangou: Annotated[
             str,
             Field(
-                description=(
-                    "13-digit 法人番号 (with or without 'T' prefix) of the client."
-                ),
+                description=("13-digit 法人番号 (with or without 'T' prefix) of the client."),
                 min_length=13,
                 max_length=14,
             ),
@@ -424,8 +405,7 @@ if _ENABLED and settings.autonomath_enabled:
             int,
             Field(
                 description=(
-                    "JP fiscal year start year (e.g. 2025 = FY2025 = 2025-04-01"
-                    "..2026-03-31)."
+                    "JP fiscal year start year (e.g. 2025 = FY2025 = 2025-04-01..2026-03-31)."
                 ),
                 ge=2000,
                 le=2100,

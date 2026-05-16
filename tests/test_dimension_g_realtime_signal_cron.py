@@ -27,20 +27,15 @@ from datetime import UTC, datetime, timedelta
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-CRON_PATH = (
-    REPO_ROOT / "scripts" / "cron" / "maintain_realtime_signal_subscribers.py"
-)
-WORKFLOW_PATH = (
-    REPO_ROOT / ".github" / "workflows" / "realtime-signal-maintenance-daily.yml"
-)
-MIG_263 = (
-    REPO_ROOT / "scripts" / "migrations" / "263_realtime_signal_subscribers.sql"
-)
+CRON_PATH = REPO_ROOT / "scripts" / "cron" / "maintain_realtime_signal_subscribers.py"
+WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "realtime-signal-maintenance-daily.yml"
+MIG_263 = REPO_ROOT / "scripts" / "migrations" / "263_realtime_signal_subscribers.sql"
 
 
 def _load_cron_module():
     spec = importlib.util.spec_from_file_location(
-        "_maintain_realtime_signal_subscribers", CRON_PATH,
+        "_maintain_realtime_signal_subscribers",
+        CRON_PATH,
     )
     if spec is None or spec.loader is None:
         raise RuntimeError("cannot load cron module")
@@ -102,12 +97,27 @@ def fixture_db(tmp_path: pathlib.Path) -> pathlib.Path:
     now = datetime.now(UTC).isoformat()
     old = (datetime.now(UTC) - timedelta(days=180)).isoformat()
     rows = [
-        ("hash_healthy", "amendment", "{}", "https://example.com/ok",
-         "secret_a", "active", 0, now),
-        ("hash_stale", "amendment", "{}", "https://example.com/stale",
-         "secret_b", "active", 5, now),
-        ("hash_disabled", "amendment", "{}", "https://example.com/disabled",
-         "secret_c", "disabled", 9, now),
+        ("hash_healthy", "amendment", "{}", "https://example.com/ok", "secret_a", "active", 0, now),
+        (
+            "hash_stale",
+            "amendment",
+            "{}",
+            "https://example.com/stale",
+            "secret_b",
+            "active",
+            5,
+            now,
+        ),
+        (
+            "hash_disabled",
+            "amendment",
+            "{}",
+            "https://example.com/disabled",
+            "secret_c",
+            "disabled",
+            9,
+            now,
+        ),
     ]
     conn.executemany(
         """INSERT INTO am_realtime_subscribers

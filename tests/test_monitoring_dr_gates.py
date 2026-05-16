@@ -25,9 +25,7 @@ def test_monitoring_readme_documents_sentry_and_status_probe_gates() -> None:
 
 
 def test_dr_runbook_rto_rpo_contract_is_present() -> None:
-    text = (REPO_ROOT / "docs" / "runbook" / "disaster_recovery.md").read_text(
-        encoding="utf-8"
-    )
+    text = (REPO_ROOT / "docs" / "runbook" / "disaster_recovery.md").read_text(encoding="utf-8")
     for marker in [
         "| DB",
         "RPO",

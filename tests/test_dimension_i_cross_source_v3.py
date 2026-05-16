@@ -287,12 +287,10 @@ def test_idempotent_rerun(tmp_path, v3_module):
     conn = sqlite3.connect(tmp_path / "autonomath.db")
     conn.row_factory = sqlite3.Row
     sig_1 = conn.execute(
-        "SELECT attestation_sig FROM am_fact_source_agreement "
-        "WHERE entity_id='NTA-001'"
+        "SELECT attestation_sig FROM am_fact_source_agreement WHERE entity_id='NTA-001'"
     ).fetchone()["attestation_sig"]
     computed_at_1 = conn.execute(
-        "SELECT computed_at FROM am_fact_source_agreement "
-        "WHERE entity_id='NTA-001'"
+        "SELECT computed_at FROM am_fact_source_agreement WHERE entity_id='NTA-001'"
     ).fetchone()["computed_at"]
     conn.close()
     # Re-run with a forced computed_at via direct UPDATE so the
@@ -301,12 +299,10 @@ def test_idempotent_rerun(tmp_path, v3_module):
     conn = sqlite3.connect(tmp_path / "autonomath.db")
     conn.row_factory = sqlite3.Row
     sig_2 = conn.execute(
-        "SELECT attestation_sig FROM am_fact_source_agreement "
-        "WHERE entity_id='NTA-001'"
+        "SELECT attestation_sig FROM am_fact_source_agreement WHERE entity_id='NTA-001'"
     ).fetchone()["attestation_sig"]
     computed_at_2 = conn.execute(
-        "SELECT computed_at FROM am_fact_source_agreement "
-        "WHERE entity_id='NTA-001'"
+        "SELECT computed_at FROM am_fact_source_agreement WHERE entity_id='NTA-001'"
     ).fetchone()["computed_at"]
     conn.close()
     # computed_at WILL differ run-to-run (timestamp), so signatures

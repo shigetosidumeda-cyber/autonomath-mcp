@@ -2159,8 +2159,7 @@ def _build_search_response(
             # (primary_name, unified_id) keyset, which still preserves
             # order within equal-score ties.
             cursor_predicate = (
-                "AND (primary_name > ? OR "
-                "     (primary_name = ? AND unified_id > ?))"
+                "AND (primary_name > ? OR      (primary_name = ? AND unified_id > ?))"
             )
             cursor_params = [anchor_name, anchor_name, anchor_uid]
         else:
@@ -2757,9 +2756,7 @@ def get_program(
     # title_en / summary_en / eligibility_en land in programs (mig 241).
     if isinstance(body, dict) and lang in ("en", "zh", "ko"):
         body["_meta"] = body.get("_meta", {})
-        body["_meta"]["translation"] = _attach_program_translation_meta(
-            conn, unified_id, lang
-        )
+        body["_meta"]["translation"] = _attach_program_translation_meta(conn, unified_id, lang)
 
     def _record_success_usage() -> None:
         log_usage(

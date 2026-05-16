@@ -38,7 +38,7 @@
 | robots Allow 対象 AI bot | 16 種 (Googlebot / Bingbot / Google-Extended / GPTBot / ChatGPT-User / OAI-SearchBot / ClaudeBot / Claude-User / Claude-SearchBot / anthropic-ai / PerplexityBot / CCBot / Applebot / Applebot-Extended / Meta-ExternalAgent / Amazonbot) | `site/robots.txt` |
 | Schema.org JSON-LD on `/` | 5 blocks (SoftwareApplication / Organization / WebSite / Dataset / WebAPI + common @graph: Organization / WebSite / Service / UnitPriceSpecification + ProductCatalog @graph 5 products) | `site/index.html` |
 
-honest gap (data drift): 旧 snapshot の stale OpenAPI/tool counters は 2026-05-14 時点で公開カウンタを 151 tools / 302 paths に補正済み。以後は `jq '.paths | length' docs/openapi/v1.json` と `docs/mcp-tools.md` を deploy 前に確認する。
+honest gap (data drift): 旧 snapshot の stale OpenAPI/tool counters は 2026-05-14 時点で公開カウンタを 155 tools / 306 paths に補正済み。以後は `jq '.paths | length' docs/openapi/v1.json` と `docs/mcp-tools.md` を deploy 前に確認する。
 
 ---
 
@@ -57,7 +57,7 @@ honest gap (data drift): 旧 snapshot の stale OpenAPI/tool counters は 2026-0
 **Yellow 要因 (= green でない理由)**:
 1. **per-case / per-law / per-enforcement SEO page が未生成**。`site/cases/` `site/laws/` ディレクトリ自体が存在しない (`ls: No such file or directory`)。enforcement は sitemap 301 entry あるが個別 HTML 未生成、`/enforcement/{slug}.html` 生成器なし。
 2. sitemap-index.xml の `<lastmod>` が 2026-05-02..06 で **5 日前固定**、毎日 deploy のたびに自動更新する pipeline が未配線 (`scripts/sitemap_gen.py` は手動実行)。
-3. JSON-LD `Dataset.variableMeasured` は 151 tools に補正済みだが、runtime / manifest / Schema.org 側を自動同期する仕組みは未整備。
+3. JSON-LD `Dataset.variableMeasured` は 155 tools に補正済みだが、runtime / manifest / Schema.org 側を自動同期する仕組みは未整備。
 4. `/news/` sitemap shard が **index page 1 行のみ**、`scripts/cron/generate_news_posts.py` が稼働しても自動追記しない (sitemap-pages.xml の冒頭 comment が "current does NOT rewrite this file in-place" と明記)。
 
 **即実行アクション (序列なし、並列扱い)**:

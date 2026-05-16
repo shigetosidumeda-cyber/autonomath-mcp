@@ -37,6 +37,7 @@ MANIFEST_PATH = SCRIPTS_DIR / "distribution_manifest.yml"
 DRIFT_SCRIPT = SCRIPTS_DIR / "check_distribution_manifest_drift.py"
 PROBE_SCRIPT = SCRIPTS_DIR / "probe_runtime_distribution.py"
 
+
 # Pinned expectation values are sourced dynamically from
 # `scripts/distribution_manifest.yml` so the test never drifts from the
 # canonical manifest. Hardcoding here was the 186→219→220 drift footgun.
@@ -236,8 +237,7 @@ def test_manifest_parses_and_has_required_keys() -> None:
     # Wave 6 P0 additions should not broaden pricing/free-tier scans.
     allowed_pricing_p0 = {"site/llms.en.txt", "site/en/llms.txt"}
     assert not (
-        (EXPECTED_WAVE6_P0_CANDIDATES - allowed_pricing_p0)
-        & set(data["pricing_surface_paths"])
+        (EXPECTED_WAVE6_P0_CANDIDATES - allowed_pricing_p0) & set(data["pricing_surface_paths"])
     )
 
     # Agent-safe OpenAPI files are Actions schemas, not MCP package manifests.

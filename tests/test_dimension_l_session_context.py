@@ -59,9 +59,7 @@ def test_no_llm_imports() -> None:
     )
     for needle in banned:
         pattern = rf"^\s*(import|from)\s+{re.escape(needle)}\b"
-        assert not re.search(pattern, src, re.MULTILINE), (
-            f"LLM SDK import detected: {needle}"
-        )
+        assert not re.search(pattern, src, re.MULTILINE), f"LLM SDK import detected: {needle}"
 
 
 def test_disclaimer_present() -> None:

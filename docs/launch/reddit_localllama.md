@@ -1,6 +1,6 @@
 # r/LocalLLaMA
 
-**Title**: `MCP server for Japanese tax/subsidy/law data — works with any local agent (Claude Desktop, Cline, custom), 151 tools, ¥3/billable unit`
+**Title**: `MCP server for Japanese tax/subsidy/law data — works with any local agent (Claude Desktop, Cline, custom), 155 tools, ¥3/billable unit`
 
 ---
 
@@ -20,7 +20,7 @@ If you're building agents that need to reason about Japanese institutional data 
 
 **MCP integration**:
 
-- 151 tools at default gates, protocol `2025-06-18`, FastMCP over stdio
+- 155 tools at default gates, protocol `2025-06-18`, FastMCP over stdio
 - Tested with Claude Desktop, Cline, and custom Python MCP clients
 - Tools cover search, get-by-ID, lifecycle, prerequisite chains, rule-engine checks, snapshot-time queries, and provenance lookup
 

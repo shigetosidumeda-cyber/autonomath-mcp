@@ -36,7 +36,7 @@ Where jGrants is the application portal, jpcite is the discovery, compatibility,
 | Enforcement cases | 1,185 |
 | Primary-source coverage | 主要な公開行に source_url + fetched_at を付与。欠落行は backfill せず明示 |
 | Exclusion rules | 181 public-rule entries for compatibility and prerequisite checks |
-| MCP tools | 151 tools for program search, eligibility checks, evidence packets, laws, tax rulesets, invoice registrants, court decisions, and bids |
+| MCP tools | 155 tools for program search, eligibility checks, evidence packets, laws, tax rulesets, invoice registrants, court decisions, and bids |
 | MCP protocol | 2025-06-18 |
 | Pricing | ¥3/billable unit 税別 metered (税込 ¥3.30; anonymous 3 req/日 per IP free, JST 翌日リセット) |
 | Region | Japan |

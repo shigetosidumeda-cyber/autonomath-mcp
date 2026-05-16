@@ -27,6 +27,7 @@ The helper takes an opaque ``challenge_token`` string and a ``challenge_kind``
 discriminator so the call site in API code never names the underlying
 provider — keeping the API-source surface marker-free.
 """
+
 from __future__ import annotations
 
 import os
@@ -39,9 +40,7 @@ from fastapi import HTTPException, status
 # changing call-site code.
 CHALLENGE_KIND_CLOUDFLARE_POW: Final[str] = "cf_pow_v0"
 
-_CF_VERIFY_URL: Final[str] = (
-    "https://challenges.cloudflare.com/turnstile/v0/siteverify"
-)
+_CF_VERIFY_URL: Final[str] = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 
 
 def _cf_secret() -> str:

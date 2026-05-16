@@ -205,16 +205,16 @@ def test_public_openapi_and_api_reference_hide_operational_surfaces() -> None:
 def test_site_ai_discovery_tool_counts_advertise_runtime_total() -> None:
     for path in (SITE / "mcp-server.json", SITE / "mcp-server.full.json"):
         payload = json.loads(path.read_text(encoding="utf-8"))
-        assert len(payload["tools"]) == 151
-        assert payload["_meta"]["tool_count"] == 151
+        assert len(payload["tools"]) == 155
+        assert payload["_meta"]["tool_count"] == 155
         assert (
             payload["_meta"]["io.modelcontextprotocol.registry/publisher-provided"]["tool_count"]
-            == 151
+            == 155
         )
-        assert "151 tools" in payload["description"]
+        assert "155 tools" in payload["description"]
         assert "150 tools" not in payload["description"]
 
     agents = json.loads((SITE / ".well-known" / "agents.json").read_text(encoding="utf-8"))
-    assert agents["tools_count"]["public_default"] == 151
-    assert agents["tools_count"]["runtime_verified"] == 151
+    assert agents["tools_count"]["public_default"] == 155
+    assert agents["tools_count"]["runtime_verified"] == 155
     assert "139" not in json.dumps(agents["tools_count"], ensure_ascii=False)

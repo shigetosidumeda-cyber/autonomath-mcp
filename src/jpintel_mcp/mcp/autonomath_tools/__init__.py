@@ -48,6 +48,7 @@ from . import (
     health_tool,  # noqa: F401  — Phase A: deep_health_am (10-check aggregate)
     industry_packs,  # noqa: F401  — Wave 23 (2026-04-29): 3 industry-specific cohort wrappers (pack_construction / pack_manufacturing / pack_real_estate). Top 10 programs + 5 saiketsu + 3 通達 per call. AUTONOMATH_INDUSTRY_PACKS_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§47条の2 envelope.
     invoice_risk_tools,  # noqa: F401  — R8 (2026-05-07): 3 invoice-risk lookup tools (invoice_risk_lookup / invoice_risk_batch / houjin_invoice_status). Composes invoice_registrants (PDL v1.0) × houjin_master + 6m/1y registration-age heuristic into 0-100 risk_score + tax_credit_eligible boolean. AUTONOMATH_INVOICE_RISK_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52 fence on 仕入税額控除 territory.
+    jpcite_facade,  # noqa: F401  — P0 agent-first facade: jpcite_route / jpcite_preview_cost / jpcite_execute_packet / jpcite_get_packet. Free deterministic routing/preview/get; execute fails closed until accepted-artifact billing is wired.
     kokkai_tools,  # noqa: F401  — DEEP-39 (2026-05-07): 2 kokkai/shingikai surface tools (search_kokkai_utterance / search_shingikai_minutes) over kokkai_utterance + shingikai_minutes (migration wave24_185). AUTONOMATH_KOKKAI_ENABLED gate (default ON). NO LLM, single ¥3/req billing. §52/§47条の2/§72/§3 envelope.
     lifecycle_calendar_tool,  # noqa: F401  — O4 Wave 18: unified_lifecycle_calendar (tax+program sunset + app close + law cliff merge, AUTONOMATH_LIFECYCLE_CALENDAR_ENABLED gate)
     lifecycle_tool,  # noqa: F401  — O4 Wave 18: program_lifecycle (8-step deterministic status over am_amendment_snapshot + am_relation, AUTONOMATH_LIFECYCLE_ENABLED gate)
@@ -89,7 +90,10 @@ from .resources import register_resources as _register_resources
 
 
 def _experimental_mcp_enabled() -> bool:
-    return (get_flag("JPCITE_EXPERIMENTAL_MCP_ENABLED", "AUTONOMATH_EXPERIMENTAL_MCP_ENABLED", "0") or "").strip().lower() in {
+    return (
+        get_flag("JPCITE_EXPERIMENTAL_MCP_ENABLED", "AUTONOMATH_EXPERIMENTAL_MCP_ENABLED", "0")
+        or ""
+    ).strip().lower() in {
         "1",
         "true",
         "yes",

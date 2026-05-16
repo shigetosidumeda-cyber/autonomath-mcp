@@ -116,7 +116,7 @@ class SafeWebhookTransport(httpx.BaseTransport):
     def handle_request(self, request: httpx.Request) -> httpx.Response:
         with _CONNECT_LOCK:
             original = socket.create_connection
-            socket.create_connection = _safe_create_connection
+            socket.create_connection = _safe_create_connection  # type: ignore[assignment]
             try:
                 return self._transport.handle_request(request)
             finally:

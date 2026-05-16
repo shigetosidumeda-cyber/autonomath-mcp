@@ -8,7 +8,7 @@ published: true
 
 ## TL;DR (300 字)
 
-`uvx autonomath-mcp` の 1 行で Claude Code に統合できる MCP server を公開しました。日本の公的制度 11,601+ 補助金 / 9,484+ 法令メタ / 1,185+ 行政処分 / 13,801+ 適格事業者 / 22,258+ 行政処分詳細を、法人番号 1 つで横断照会できます。151 tool、`source_url + fetched_at + content_hash` を付ける Evidence Packet 設計、業法フェンス 8 種 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1の2 / 司法書士法 §3 / 社会保険労務士法 §27 / 弁理士法 §75 / 労働基準法 §36) の sensitive surface では個別税務・法律助言に踏み込みません。¥3/billable unit 完全従量、無料 3 req/IP/日 (API key 不要)。Stripe Checkout 1 分で metered billing 開始、月額固定費ゼロ、解約は dashboard 1 click。Bookyou株式会社 (T8010001213708) 提供。
+`uvx autonomath-mcp` の 1 行で Claude Code に統合できる MCP server を公開しました。日本の公的制度 11,601+ 補助金 / 9,484+ 法令メタ / 1,185+ 行政処分 / 13,801+ 適格事業者 / 22,258+ 行政処分詳細を、法人番号 1 つで横断照会できます。155 tool、`source_url + fetched_at + content_hash` を付ける Evidence Packet 設計、業法フェンス 8 種 (税理士法 §52 / 弁護士法 §72 / 公認会計士法 §47-2 / 行政書士法 §1の2 / 司法書士法 §3 / 社会保険労務士法 §27 / 弁理士法 §75 / 労働基準法 §36) の sensitive surface では個別税務・法律助言に踏み込みません。¥3/billable unit 完全従量、無料 3 req/IP/日 (API key 不要)。Stripe Checkout 1 分で metered billing 開始、月額固定費ゼロ、解約は dashboard 1 click。Bookyou株式会社 (T8010001213708) 提供。
 
 ## なぜ作ったか (背景)
 
@@ -56,7 +56,7 @@ Cursor の `.cursor/mcp.json` に MCP server を 1 block 追加。Cursor IDE 内
 ```python
 from agents import Agent, hosted_mcp
 mcp = hosted_mcp(server_url="https://api.jpcite.com/mcp")
-agent = Agent(name="jp_subsidy", tools=mcp.list_tools())  # 151 tool 即時利用
+agent = Agent(name="jp_subsidy", tools=mcp.list_tools())  # 155 tool 即時利用
 ```
 
 OpenAI Agents SDK の `hosted_mcp` で remote MCP として叩く 1-import 構成です。tool discovery → call → response の 3 step は SDK が cover、認証は header injection で完結します。

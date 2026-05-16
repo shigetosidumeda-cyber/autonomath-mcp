@@ -667,9 +667,7 @@ def test_view_topup_due_lists_low_balance(tmp_path: pathlib.Path) -> None:
             auto_topup_threshold=0,
             auto_topup_amount=0,
         )
-        due_ids = [r[0] for r in conn.execute(
-            "SELECT wallet_id FROM v_credit_wallet_topup_due"
-        )]
+        due_ids = [r[0] for r in conn.execute("SELECT wallet_id FROM v_credit_wallet_topup_due")]
     finally:
         conn.close()
     assert due_ids == [wid_due]

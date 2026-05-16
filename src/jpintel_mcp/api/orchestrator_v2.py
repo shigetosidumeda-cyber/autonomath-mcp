@@ -84,7 +84,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 from pydantic import BaseModel, ConfigDict, Field
@@ -480,7 +480,7 @@ async def orchestrate_freee(
 ) -> OrchestrateResponse:
     """Map freee 仕訳 account_item rows -> jpcite programs and PUSH a memo."""
     require_metered_api_key(ctx, "orchestrate.freee")
-    _rate_floor_check(ctx.key_hash)
+    _rate_floor_check(cast("str", ctx.key_hash))
     results: list[_OrchestrateResultRow] = []
     delivered = 0
     matched = 0
@@ -545,7 +545,7 @@ async def orchestrate_mf(
 ) -> OrchestrateResponse:
     """Map MoneyForward 経費 rows -> jpcite programs and PUSH a memo."""
     require_metered_api_key(ctx, "orchestrate.mf")
-    _rate_floor_check(ctx.key_hash)
+    _rate_floor_check(cast("str", ctx.key_hash))
     results: list[_OrchestrateResultRow] = []
     delivered = 0
     matched = 0
@@ -611,7 +611,7 @@ async def orchestrate_notion(
 ) -> OrchestrateResponse:
     """Map amendment keys -> jpcite programs and PUSH one Notion page each."""
     require_metered_api_key(ctx, "orchestrate.notion")
-    _rate_floor_check(ctx.key_hash)
+    _rate_floor_check(cast("str", ctx.key_hash))
     results: list[_OrchestrateResultRow] = []
     delivered = 0
     matched = 0
@@ -680,7 +680,7 @@ async def orchestrate_slack(
 ) -> OrchestrateResponse:
     """One-shot Slack alert via the customer's incoming-webhook URL."""
     require_metered_api_key(ctx, "orchestrate.slack")
-    _rate_floor_check(ctx.key_hash)
+    _rate_floor_check(cast("str", ctx.key_hash))
     status_code = _invoke_slack(
         body.slack_webhook_url,
         {

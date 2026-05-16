@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" data-jpcite-a11y="baseline">
 <title>OpenAI Codex CLI / Agents SDK から jpcite 1 import | jpcite</title>
-<meta name="description" content="openai-agents SDK の HostedMCPTool で https://api.jpcite.com/mcp を 1 行 import。151 MCP 機能を利用でき、anon free 3req/IP/日、paid は税別 ¥3/billable unit metered。">
+<meta name="description" content="openai-agents SDK の HostedMCPTool で https://api.jpcite.com/mcp を 1 行 import。155 MCP 機能を利用でき、anon free 3req/IP/日、paid は税別 ¥3/billable unit metered。">
 <link rel="canonical" href="https://jpcite.com/connect/codex">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="alternate" hreflang="ja" href="https://jpcite.com/connect/codex">
 <link rel="alternate" hreflang="x-default" href="https://jpcite.com/connect/codex">
 <meta property="og:type" content="website">
 <meta property="og:title" content="OpenAI Codex CLI / Agents SDK から jpcite 1 import | jpcite">
-<meta property="og:description" content="openai-agents SDK の HostedMCPTool で https://api.jpcite.com/mcp を 1 行 import。151 MCP 機能を利用できます。">
+<meta property="og:description" content="openai-agents SDK の HostedMCPTool で https://api.jpcite.com/mcp を 1 行 import。155 MCP 機能を利用できます。">
 <meta property="og:url" content="https://jpcite.com/connect/codex">
 <meta property="og:site_name" content="jpcite">
 <meta property="og:locale" content="ja_JP">
@@ -33,7 +33,7 @@
     {"@type": "HowToStep", "position": 1, "name": "openai-agents をインストール", "text": "pip install openai-agents"},
     {"@type": "HowToStep", "position": 2, "name": "HostedMCPTool で jpcite を構築", "text": "from agents import Agent, HostedMCPTool; mcp_tool = HostedMCPTool(tool_config={'type': 'mcp', 'server_label': 'jpcite', 'server_url': 'https://api.jpcite.com/mcp', 'require_approval': 'never', 'headers': {'X-API-Key': os.environ.get('JPCITE_API_KEY', '')}})"},
     {"@type": "HowToStep", "position": 3, "name": "Agent に bind", "text": "agent = Agent(name='jp_subsidy', tools=[mcp_tool])"},
-    {"@type": "HowToStep", "position": 4, "name": "動作確認", "text": "Runner.run_sync(agent, input='ものづくり補助金 東京都') で 151 MCP 機能経由の回答を評価"}
+    {"@type": "HowToStep", "position": 4, "name": "動作確認", "text": "Runner.run_sync(agent, input='ものづくり補助金 東京都') で 155 MCP 機能経由の回答を評価"}
   ]
 }
 </script>
@@ -53,7 +53,7 @@
   "@context": "https://schema.org",
   "@type": "Dataset",
   "name": "jpcite OpenAI Codex CLI / Agents SDK 接続データセット",
-  "description": "openai-agents SDK の HostedMCPTool で https://api.jpcite.com/mcp を 1 行 import するための設定情報。X-API-Key 認証で 151 MCP 機能を利用できます。",
+  "description": "openai-agents SDK の HostedMCPTool で https://api.jpcite.com/mcp を 1 行 import するための設定情報。X-API-Key 認証で 155 MCP 機能を利用できます。",
   "url": "https://jpcite.com/connect/codex",
   "creator": {"@id": "https://jpcite.com/#publisher"},
   "provider": {"@id": "https://jpcite.com/#publisher"},
@@ -66,7 +66,7 @@
     {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": "https://api.jpcite.com/mcp"}
   ],
   "variableMeasured": [
-    {"@type": "PropertyValue", "name": "mcp_tools_total", "value": 151},
+    {"@type": "PropertyValue", "name": "mcp_tools_total", "value": 155},
     {"@type": "PropertyValue", "name": "python_min_version", "value": "3.10"},
     {"@type": "PropertyValue", "name": "auth_header", "value": "X-API-Key"}
   ],
@@ -184,7 +184,7 @@
 <main id="main">
   <section class="hero">
     <h1>OpenAI Codex CLI / Agents SDK から jpcite 1 import</h1>
-    <p><code>from agents import Agent, HostedMCPTool</code> + <code>HostedMCPTool(tool_config={'type':'mcp','server_label':'jpcite','server_url':'https://api.jpcite.com/mcp','require_approval':'never'})</code> で 151 MCP 機能を利用できます。anon free 3 req/IP/日、paid は税別 ¥3/billable unit metered。</p>
+    <p><code>from agents import Agent, HostedMCPTool</code> + <code>HostedMCPTool(tool_config={'type':'mcp','server_label':'jpcite','server_url':'https://api.jpcite.com/mcp','require_approval':'never'})</code> で 155 MCP 機能を利用できます。anon free 3 req/IP/日、paid は税別 ¥3/billable unit metered。</p>
   </section>
 
   <section>
@@ -192,9 +192,9 @@
     <ol>
       <li><strong>openai-agents をインストール</strong>: <code>pip install openai-agents</code> (Python 3.10+)。</li>
       <li><strong>HostedMCPTool で jpcite を構築</strong>: <code>mcp_tool = HostedMCPTool(tool_config={'type': 'mcp', 'server_label': 'jpcite', 'server_url': 'https://api.jpcite.com/mcp', 'require_approval': 'never'})</code> を 1 行で記述。</li>
-      <li><strong>Agent に bind</strong>: <code>agent = Agent(name='jp_subsidy', tools=[mcp_tool])</code> で 151 MCP 機能を Agent に bind。</li>
+      <li><strong>Agent に bind</strong>: <code>agent = Agent(name='jp_subsidy', tools=[mcp_tool])</code> で 155 MCP 機能を Agent に bind。</li>
       <li><strong>(任意) API key を渡す</strong>: <code>tool_config</code> に <code>'headers': {'X-API-Key': os.environ.get('JPCITE_API_KEY', '')}</code> を追加で metered モードへ昇格。anon free のままなら省略可。</li>
-      <li><strong>動作確認</strong>: 次節のサンプルで <code>Runner.run_sync(agent, input='...')</code> が 151 MCP 機能経由で回答することを確認。</li>
+      <li><strong>動作確認</strong>: 次節のサンプルで <code>Runner.run_sync(agent, input='...')</code> が 155 MCP 機能経由で回答することを確認。</li>
     </ol>
   </section>
 

@@ -111,7 +111,7 @@ def _cross_source_score_am_impl(fact_id: Any) -> dict[str, Any]:
         ).fetchone()
     except sqlite3.Error as exc:
         return make_error(
-            code="db_query_failed",
+            code="db_unavailable",
             message=f"agreement query failed: {exc}",
             field="fact_id",
         )
@@ -147,8 +147,7 @@ def _cross_source_score_am_impl(fact_id: Any) -> dict[str, Any]:
         "canonical_value": row["canonical_value"],
         "confidence_band": row["confidence_band"],
         "source_breakdown": {
-            k: int(v) for k, v in breakdown.items()
-            if isinstance(v, (int, float))
+            k: int(v) for k, v in breakdown.items() if isinstance(v, (int, float))
         },
         "per_source_values": {
             "egov": row["egov_value"],

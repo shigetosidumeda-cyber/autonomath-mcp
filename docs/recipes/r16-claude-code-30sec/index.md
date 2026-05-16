@@ -16,7 +16,7 @@ license: "PDL v1.0 / CC-BY-4.0"
 # Claude Code 30 秒接続
 
 ## 想定 user
-Anthropic 公式 CLI `Claude Code` を使う agent dev / 補助金 SaaS 開発者 / 税務会計プロダクト開発者で、CLI チャットから jpcite MCP server を 1 コマンドで登録し、対話 / コード review / 自動化 task で jpcite 151 tool を呼び出せる状態に持っていく。30 秒以内 (uvx install + `claude mcp add` 1 コマンド) で接続完了し、`/mcp` で接続状態 + tools count を目視確認するワークフロー。
+Anthropic 公式 CLI `Claude Code` を使う agent dev / 補助金 SaaS 開発者 / 税務会計プロダクト開発者で、CLI チャットから jpcite MCP server を 1 コマンドで登録し、対話 / コード review / 自動化 task で jpcite 155 tool を呼び出せる状態に持っていく。30 秒以内 (uvx install + `claude mcp add` 1 コマンド) で接続完了し、`/mcp` で接続状態 + tools count を目視確認するワークフロー。
 
 ## 必要な前提
 - jpcite API key (標準従量料金、初回 3 req/IP/日無料、JST 翌日 00:00 リセット)

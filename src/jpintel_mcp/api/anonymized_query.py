@@ -80,18 +80,20 @@ _VALID_SIZE_BUCKETS = frozenset({"small", "medium", "large"})
 
 # PII field allowlist — anything NOT in this set is stripped at the
 # response-shaping layer. Cohort filters surface; per-entity data does not.
-_RESPONSE_WHITELIST = frozenset({
-    "cohort_size",
-    "industry_jsic_major",
-    "region_code",
-    "size_bucket",
-    "top_program_id_anon",
-    "mean_amount_yen",
-    "median_amount_yen",
-    "_billing_unit",
-    "_disclaimer",
-    "_redact_policy_version",
-})
+_RESPONSE_WHITELIST = frozenset(
+    {
+        "cohort_size",
+        "industry_jsic_major",
+        "region_code",
+        "size_bucket",
+        "top_program_id_anon",
+        "mean_amount_yen",
+        "median_amount_yen",
+        "_billing_unit",
+        "_disclaimer",
+        "_redact_policy_version",
+    }
+)
 
 # In-memory audit log ring buffer. Production-side this gets mirrored to
 # am_anon_query_log when migration substrate is wired; for the REST tier
@@ -123,9 +125,7 @@ def _validate_filters(body: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("body must be a dict")
     industry = body.get("industry_jsic_major")
     if not isinstance(industry, str) or not _JSIC_MAJOR_RE.match(industry):
-        raise ValueError(
-            "industry_jsic_major must be a single A..T character"
-        )
+        raise ValueError("industry_jsic_major must be a single A..T character")
     out: dict[str, Any] = {"industry_jsic_major": industry}
 
     region = body.get("region_code")
@@ -137,9 +137,7 @@ def _validate_filters(body: dict[str, Any]) -> dict[str, Any]:
     size = body.get("size_bucket")
     if size is not None:
         if not isinstance(size, str) or size not in _VALID_SIZE_BUCKETS:
-            raise ValueError(
-                "size_bucket must be one of small / medium / large"
-            )
+            raise ValueError("size_bucket must be one of small / medium / large")
         out["size_bucket"] = size
 
     return out
@@ -166,10 +164,7 @@ def aggregate_cohort(filters: dict[str, Any]) -> dict[str, Any] | None:
     Returns ``None`` if the substrate cannot be queried (raise at the
     REST layer would mask the legitimate "no cohort matches" path).
     """
-    key = "|".join(
-        f"{k}={v}"
-        for k, v in sorted(filters.items())
-    )
+    key = "|".join(f"{k}={v}" for k, v in sorted(filters.items()))
     digest = hashlib.sha256(key.encode("utf-8")).digest()
     # Map first byte → cohort size in [0..100). All-three filters →
     # narrower (≤ 12 typical), industry-only → wider (≥ 30 typical).
@@ -184,9 +179,7 @@ def aggregate_cohort(filters: dict[str, Any]) -> dict[str, Any] | None:
     # before the substrate lands.
     mean_amount = (int.from_bytes(digest[1:3], "big") % 9000 + 1000) * 1000
     median_amount = (int.from_bytes(digest[3:5], "big") % 8000 + 800) * 1000
-    top_program_anon = hashlib.sha256(
-        (key + ":top_program").encode("utf-8")
-    ).hexdigest()[:16]
+    top_program_anon = hashlib.sha256((key + ":top_program").encode("utf-8")).hexdigest()[:16]
     return {
         "cohort_size": int(cohort_size),
         "mean_amount_yen": int(mean_amount),
@@ -200,9 +193,7 @@ def aggregate_cohort(filters: dict[str, Any]) -> dict[str, Any] | None:
 # ---------------------------------------------------------------------------
 
 
-def redact_response(
-    filters: dict[str, Any], aggregates: dict[str, Any]
-) -> dict[str, Any]:
+def redact_response(filters: dict[str, Any], aggregates: dict[str, Any]) -> dict[str, Any]:
     """Project filter + aggregate dicts through the response whitelist.
 
     Any key not in ``_RESPONSE_WHITELIST`` is stripped. This is the last
@@ -234,10 +225,7 @@ def _audit_log_call(
     storing the raw filter values (defense in depth — even the audit
     log avoids per-entity PII).
     """
-    key = "|".join(
-        f"{k}={v}"
-        for k, v in sorted(filters.items())
-    )
+    key = "|".join(f"{k}={v}" for k, v in sorted(filters.items()))
     filter_hash = hashlib.sha256(key.encode("utf-8")).hexdigest()[:16]
     _AUDIT_LOG.append(
         {
@@ -266,10 +254,7 @@ async def anonymized_outcomes_endpoint(
         dict[str, Any],
         Body(
             ...,
-            description=(
-                "Cohort filter: "
-                "{industry_jsic_major, region_code?, size_bucket?}"
-            ),
+            description=("Cohort filter: {industry_jsic_major, region_code?, size_bucket?}"),
         ),
     ],
 ) -> JSONResponse:
@@ -300,9 +285,7 @@ async def anonymized_outcomes_endpoint(
             status_code=503,
             detail={
                 "error": "anon_query_substrate_unavailable",
-                "message": (
-                    "am_anon_query_view is not available on this deployment"
-                ),
+                "message": ("am_anon_query_view is not available on this deployment"),
             },
         )
 

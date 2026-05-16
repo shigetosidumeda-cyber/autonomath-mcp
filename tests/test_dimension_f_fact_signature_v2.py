@@ -31,9 +31,7 @@ import sqlite3
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-SRC_FACT_SIGNATURE_V2 = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "fact_signature_v2.py"
-)
+SRC_FACT_SIGNATURE_V2 = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "fact_signature_v2.py"
 
 
 # ---------------------------------------------------------------------------
@@ -63,9 +61,7 @@ def test_fact_signature_v2_no_llm_imports() -> None:
     )
     for needle in banned:
         pattern = rf"^\s*(import|from)\s+{re.escape(needle)}\b"
-        assert not re.search(pattern, src, re.MULTILINE), (
-            f"LLM SDK import detected: {needle}"
-        )
+        assert not re.search(pattern, src, re.MULTILINE), f"LLM SDK import detected: {needle}"
 
 
 def test_fact_signature_v2_disclaimer_present() -> None:
@@ -114,8 +110,7 @@ def _load_shape_helper() -> dict:
         ):
             continue
         if isinstance(node, (ast.Import, ast.ImportFrom)) or (
-            isinstance(node, ast.FunctionDef)
-            and node.name == "_shape_signature_row"
+            isinstance(node, ast.FunctionDef) and node.name == "_shape_signature_row"
         ):
             keep.append(node)
     stub = ast.Module(body=keep, type_ignores=[])
@@ -234,15 +229,8 @@ def test_refresh_fact_signatures_workflow_exists() -> None:
     missing — flagged as the "cron MISSING" axis of the 2026-05-12
     dim 19 dim F audit. This test asserts the wiring landed.
     """
-    workflow = (
-        REPO_ROOT
-        / ".github"
-        / "workflows"
-        / "refresh-fact-signatures-weekly.yml"
-    )
-    assert workflow.exists(), (
-        "Wave 46 dim 19 dim F round 2 must land the cron workflow"
-    )
+    workflow = REPO_ROOT / ".github" / "workflows" / "refresh-fact-signatures-weekly.yml"
+    assert workflow.exists(), "Wave 46 dim 19 dim F round 2 must land the cron workflow"
     src = workflow.read_text(encoding="utf-8")
     # Schedule, script reference, and operator-LLM-ban context must all be present.
     assert "schedule:" in src
@@ -264,12 +252,7 @@ def test_refresh_fact_signatures_workflow_no_llm_secret() -> None:
     (NOT as a GHA secret), so the workflow should only reference
     `FLY_API_TOKEN` from `secrets.*`.
     """
-    workflow = (
-        REPO_ROOT
-        / ".github"
-        / "workflows"
-        / "refresh-fact-signatures-weekly.yml"
-    )
+    workflow = REPO_ROOT / ".github" / "workflows" / "refresh-fact-signatures-weekly.yml"
     src = workflow.read_text(encoding="utf-8")
     banned_secret_substrings = (
         "ANTHROPIC_API_KEY",
@@ -278,9 +261,7 @@ def test_refresh_fact_signatures_workflow_no_llm_secret() -> None:
         "GOOGLE_API_KEY",
     )
     for needle in banned_secret_substrings:
-        assert needle not in src, (
-            f"refresh-fact-signatures-weekly.yml must not reference {needle}"
-        )
+        assert needle not in src, f"refresh-fact-signatures-weekly.yml must not reference {needle}"
 
 
 if __name__ == "__main__":  # pragma: no cover

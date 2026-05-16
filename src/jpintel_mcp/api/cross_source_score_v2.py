@@ -54,7 +54,7 @@ import logging
 import os
 import re
 import sqlite3
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, HTTPException
 from fastapi import Path as PathParam
@@ -89,19 +89,20 @@ def _open_autonomath_ro() -> sqlite3.Connection:
     return conn
 
 
-def _fetch_agreement_row(
-    conn: sqlite3.Connection, fact_id: int
-) -> sqlite3.Row | None:
-    return conn.execute(
-        """SELECT fact_id, entity_id, field_name,
+def _fetch_agreement_row(conn: sqlite3.Connection, fact_id: int) -> sqlite3.Row | None:
+    return cast(
+        "sqlite3.Row | None",
+        conn.execute(
+            """SELECT fact_id, entity_id, field_name,
                   agreement_ratio, sources_total, sources_agree,
                   canonical_value, source_breakdown,
                   egov_value, nta_value, meti_value, other_value,
                   computed_at, confidence_band
              FROM v_fact_source_agreement
             WHERE fact_id = ?""",
-        (int(fact_id),),
-    ).fetchone()
+            (int(fact_id),),
+        ).fetchone(),
+    )
 
 
 def _shape_response(row: sqlite3.Row) -> dict[str, Any]:
@@ -129,8 +130,7 @@ def _shape_response(row: sqlite3.Row) -> dict[str, Any]:
         "canonical_value": row["canonical_value"],
         "confidence_band": row["confidence_band"],
         "source_breakdown": {
-            k: int(v) for k, v in breakdown.items()
-            if isinstance(v, (int, float))
+            k: int(v) for k, v in breakdown.items() if isinstance(v, (int, float))
         },
         "per_source_values": per_source,
         "computed_at": row["computed_at"],

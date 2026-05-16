@@ -34,25 +34,18 @@ import json
 import pathlib
 import sqlite3
 import sys
-import tempfile
 
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 MIG_271 = REPO_ROOT / "scripts" / "migrations" / "271_rule_tree.sql"
 MIG_273 = REPO_ROOT / "scripts" / "migrations" / "273_rule_tree_v2_chain.sql"
-MIG_273_RB = (
-    REPO_ROOT / "scripts" / "migrations" / "273_rule_tree_v2_chain_rollback.sql"
-)
+MIG_273_RB = REPO_ROOT / "scripts" / "migrations" / "273_rule_tree_v2_chain_rollback.sql"
 ETL_SEED_K = REPO_ROOT / "scripts" / "etl" / "seed_rule_tree_definitions.py"
 ETL_SEED_M = REPO_ROOT / "scripts" / "etl" / "seed_rule_tree_chains.py"
 SRC_RULE_TREE = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "rule_tree_eval.py"
-MANIFEST_JPCITE = (
-    REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
-)
-MANIFEST_AM = (
-    REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-)
+MANIFEST_JPCITE = REPO_ROOT / "scripts" / "migrations" / "jpcite_boot_manifest.txt"
+MANIFEST_AM = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
 
 
 # ---------------------------------------------------------------------------
@@ -102,8 +95,7 @@ def test_mig_273_applies_on_fresh_db_alongside_271(tmp_path: pathlib.Path) -> No
         rows = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' "
-                "AND name LIKE 'am_rule_tree%'"
+                "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'am_rule_tree%'"
             ).fetchall()
         }
         # PR #152 (mig 271) tables + Dim M (mig 273) tables both present.
@@ -115,8 +107,7 @@ def test_mig_273_applies_on_fresh_db_alongside_271(tmp_path: pathlib.Path) -> No
         views = {
             r[0]
             for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='view' "
-                "AND name LIKE 'v_rule_tree%'"
+                "SELECT name FROM sqlite_master WHERE type='view' AND name LIKE 'v_rule_tree%'"
             ).fetchall()
         }
         assert "v_rule_trees_latest" in views
@@ -131,18 +122,8 @@ def test_mig_273_idempotent_re_apply(tmp_path: pathlib.Path) -> None:
     _apply_sql(db, MIG_273)
     conn = sqlite3.connect(str(db))
     try:
-        assert (
-            conn.execute(
-                "SELECT COUNT(*) FROM am_rule_tree_chain"
-            ).fetchone()[0]
-            == 0
-        )
-        assert (
-            conn.execute(
-                "SELECT COUNT(*) FROM am_rule_tree_version_history"
-            ).fetchone()[0]
-            == 0
-        )
+        assert conn.execute("SELECT COUNT(*) FROM am_rule_tree_chain").fetchone()[0] == 0
+        assert conn.execute("SELECT COUNT(*) FROM am_rule_tree_version_history").fetchone()[0] == 0
     finally:
         conn.close()
 
@@ -156,9 +137,7 @@ def test_mig_273_rollback_drops_only_dim_m_objects(
     try:
         survivors = {
             r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ).fetchall()
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
         }
         # Dim K (271) tables MUST survive a Dim M rollback.
         assert "am_rule_trees" in survivors
@@ -181,14 +160,10 @@ def test_mig_273_no_fk_on_am_rule_trees(tmp_path: pathlib.Path) -> None:
     try:
         conn.execute("PRAGMA foreign_keys = ON")
         # No FK on chain → tree should be declared.
-        fks = conn.execute(
-            "PRAGMA foreign_key_list(am_rule_tree_chain)"
-        ).fetchall()
+        fks = conn.execute("PRAGMA foreign_key_list(am_rule_tree_chain)").fetchall()
         assert fks == []
         # Same for history.
-        fks2 = conn.execute(
-            "PRAGMA foreign_key_list(am_rule_tree_version_history)"
-        ).fetchall()
+        fks2 = conn.execute("PRAGMA foreign_key_list(am_rule_tree_version_history)").fetchall()
         assert fks2 == []
     finally:
         conn.close()
@@ -210,8 +185,7 @@ def test_etl_seed_inserts_3_chains(tmp_path: pathlib.Path) -> None:
     conn = sqlite3.connect(str(db))
     try:
         rows = conn.execute(
-            "SELECT chain_id, domain, status FROM am_rule_tree_chain "
-            "ORDER BY chain_id"
+            "SELECT chain_id, domain, status FROM am_rule_tree_chain ORDER BY chain_id"
         ).fetchall()
         assert len(rows) == 3
         ids = [r[0] for r in rows]
@@ -242,12 +216,7 @@ def test_etl_seed_dry_run_stats_match(tmp_path: pathlib.Path) -> None:
     # dry-run must not actually write rows.
     conn = sqlite3.connect(str(db))
     try:
-        assert (
-            conn.execute(
-                "SELECT COUNT(*) FROM am_rule_tree_chain"
-            ).fetchone()[0]
-            == 0
-        )
+        assert conn.execute("SELECT COUNT(*) FROM am_rule_tree_chain").fetchone()[0] == 0
     finally:
         conn.close()
 
@@ -333,8 +302,7 @@ def test_history_backfill_hash_is_canonical(tmp_path: pathlib.Path) -> None:
     conn = sqlite3.connect(str(db))
     try:
         for tree_id, def_json in conn.execute(
-            "SELECT tree_id, tree_def_json FROM am_rule_trees "
-            "WHERE status='committed'"
+            "SELECT tree_id, tree_def_json FROM am_rule_trees WHERE status='committed'"
         ).fetchall():
             expected = _canonical_hash(json.loads(def_json))
             stored = conn.execute(
@@ -426,9 +394,7 @@ def test_no_llm_sdk_import_in_dim_m_files() -> None:
             "from openai",
             "google.generativeai",
         ):
-            assert forbidden not in body, (
-                f"LLM SDK import found in {path.name}: {forbidden}"
-            )
+            assert forbidden not in body, f"LLM SDK import found in {path.name}: {forbidden}"
 
 
 def test_no_legacy_brand_in_dim_m_files() -> None:

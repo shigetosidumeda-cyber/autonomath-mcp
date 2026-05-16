@@ -138,8 +138,7 @@ def list_industry_sector_175(
                     base_sql += "AND major_code = ? "
                     params.append(major_code)
                 base_sql += (
-                    "ORDER BY programs_count DESC, adoption_count DESC, jsic_code ASC "
-                    "LIMIT 200"
+                    "ORDER BY programs_count DESC, adoption_count DESC, jsic_code ASC LIMIT 200"
                 )
                 for r in am.execute(base_sql, params).fetchall():
                     rows.append(

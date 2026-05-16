@@ -47,14 +47,10 @@ CANONICAL_VECTORS: list[tuple[str, str]] = [
 
 
 @pytest.mark.parametrize("raw,expected", CANONICAL_VECTORS)
-def test_canonical_ipv6_64_matches_python_network_address(
-    raw: str, expected: str
-) -> None:
+def test_canonical_ipv6_64_matches_python_network_address(raw: str, expected: str) -> None:
     """`canonical_ipv6_64` returns the same string as Python's stdlib."""
     addr = ipaddress.IPv6Address(raw)
-    py_canonical = str(
-        ipaddress.IPv6Network((addr, 64), strict=False).network_address
-    )
+    py_canonical = str(ipaddress.IPv6Network((addr, 64), strict=False).network_address)
     assert py_canonical == expected, (
         f"Fixture drift: stdlib produced {py_canonical!r} but the test "
         f"vector says {expected!r}. Update CANONICAL_VECTORS."

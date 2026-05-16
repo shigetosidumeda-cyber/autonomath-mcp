@@ -89,7 +89,7 @@ import threading
 import time
 from contextlib import suppress
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, Body, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field
@@ -218,7 +218,7 @@ def _open_autonomath_ro() -> sqlite3.Connection | None:
         else:
             try:
                 conn.enable_load_extension(True)
-                import sqlite_vec  # type: ignore[import-not-found]
+                import sqlite_vec
 
                 sqlite_vec.load(conn)
             except (ImportError, sqlite3.OperationalError, AttributeError):
@@ -275,7 +275,7 @@ def _get_reranker_model() -> Any:
         model = _RERANKER_MODEL_CACHE.get(key)
         if model is not None:
             return model
-        from sentence_transformers import CrossEncoder  # type: ignore[import-not-found]
+        from sentence_transformers import CrossEncoder
 
         kwargs: dict[str, Any] = {}
         if cache_dir:
@@ -671,7 +671,7 @@ def search_semantic(
     quantity = 2 if body.rerank else 1
     cap_response = _projected_cap_response(conn, ctx, quantity)
     if cap_response is not None:
-        return cap_response
+        return cast("dict[str, Any]", cap_response)
 
     t0 = time.perf_counter()
     deadline = _request_deadline(t0)

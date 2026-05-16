@@ -70,7 +70,10 @@ from .error_envelope import make_error
 logger = logging.getLogger("jpintel.mcp.autonomath.lifecycle_calendar")
 
 # Env-gated registration. Default is "1" (on); flip to "0" for rollback.
-_ENABLED = get_flag("JPCITE_LIFECYCLE_CALENDAR_ENABLED", "AUTONOMATH_LIFECYCLE_CALENDAR_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_LIFECYCLE_CALENDAR_ENABLED", "AUTONOMATH_LIFECYCLE_CALENDAR_ENABLED", "1")
+    == "1"
+)
 
 # Window cap. 1 year max so p95 latency stays bounded — agents must
 # paginate by year for multi-year sweeps.

@@ -18,6 +18,7 @@ Hits 3 sub-criteria from the Wave 46 dim19 audit:
 
 All pure stdlib. NO LLM call. NO network. NO SQLite.
 """
+
 from __future__ import annotations
 
 import time

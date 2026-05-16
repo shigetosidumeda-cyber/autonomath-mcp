@@ -253,7 +253,9 @@ def _amount_by_program(
     template_expr = f"COALESCE({template_col}, 0)" if template_col else "0"
     trusted_clauses: list[str] = []
     if quality_col:
-        trusted_clauses.append(f"{quality_expr} IN ({','.join(['?'] * len(_VERIFIED_AMOUNT_TIERS))})")
+        trusted_clauses.append(
+            f"{quality_expr} IN ({','.join(['?'] * len(_VERIFIED_AMOUNT_TIERS))})"
+        )
     if authoritative_col:
         trusted_clauses.append(f"{authoritative_expr} = 1")
     trusted_sql = "(" + " OR ".join(trusted_clauses) + ")" if trusted_clauses else "1=1"
@@ -344,7 +346,9 @@ def _compatibility_advisory_fields(row: dict[str, Any] | None) -> dict[str, Any]
     }
 
 
-def _compatibility_row_advisory(pid: str, pairs: list[dict[str, Any]], status: str) -> dict[str, Any]:
+def _compatibility_row_advisory(
+    pid: str, pairs: list[dict[str, Any]], status: str
+) -> dict[str, Any]:
     related = [p for p in pairs if pid in {p["program_a"], p["program_b"]}]
     qualities = {str(p.get("advisory_quality") or p.get("quality") or "") for p in related}
     if status == "single_program":
@@ -585,9 +589,7 @@ def _build_envelope(
         known_gaps.append(f"{table} unavailable; related heatmap axis is partial")
     high_count = sum(1 for r in rows if r["risk"]["label"] == "high")
     total_verified_amount = sum(
-        r["amount"]["verified_max_yen"] or 0
-        for r in rows
-        if r["amount"].get("counts_toward_total")
+        r["amount"]["verified_max_yen"] or 0 for r in rows if r["amount"].get("counts_toward_total")
     )
     summary = {
         "program_count": len(rows),
@@ -600,8 +602,7 @@ def _build_envelope(
         "verified_amount_count": sum(
             1
             for r in rows
-            if ((r.get("amount") or {}).get("quality") or {}).get("source")
-            == "am_amount_condition"
+            if ((r.get("amount") or {}).get("quality") or {}).get("source") == "am_amount_condition"
         ),
         "omitted_amount_condition_count": omitted_amount_count,
     }

@@ -100,9 +100,7 @@ def test_create_export_projected_cap_rejects_before_materialize_or_render(
         customer_id="cus_test",
         stripe_subscription_id="sub_test",
     )
-    request = Request(
-        {"type": "http", "method": "POST", "path": "/v1/export", "headers": []}
-    )
+    request = Request({"type": "http", "method": "POST", "path": "/v1/export", "headers": []})
 
     response = create_export(
         ExportRequest(dataset="programs", format="csv"),
@@ -272,10 +270,7 @@ def test_render_xlsx_rejects_row_count_above_xlsx_budget() -> None:
     """XLSX is not end-to-end streamed, so the renderer enforces a
     format-specific row cap before building the final ZIP bytes."""
     columns = ["program_id"]
-    rows = [
-        _redistributable_row(program_id=f"p{i}")
-        for i in range(EXPORT_MAX_XLSX_ROWS + 1)
-    ]
+    rows = [_redistributable_row(program_id=f"p{i}") for i in range(EXPORT_MAX_XLSX_ROWS + 1)]
 
     with pytest.raises(HTTPException) as excinfo:
         _render_xlsx(list(columns), rows)
@@ -430,9 +425,7 @@ def test_create_export_rejects_xlsx_limit_before_materialize(
         customer_id="cus_test",
         stripe_subscription_id="sub_test",
     )
-    request = Request(
-        {"type": "http", "method": "POST", "path": "/v1/export", "headers": []}
-    )
+    request = Request({"type": "http", "method": "POST", "path": "/v1/export", "headers": []})
 
     with pytest.raises(HTTPException) as excinfo:
         create_export(
@@ -561,8 +554,7 @@ def test_render_xlsx_streaming_peak_memory_under_50mb() -> None:
     # plus the rendered XLSX zip. The streaming path should keep peak
     # comfortably under 50 MB.
     rows = [
-        _redistributable_row(**{c: f"value-{c}-{i}-xxxxx" for c in columns})
-        for i in range(n_rows)
+        _redistributable_row(**{c: f"value-{c}-{i}-xxxxx" for c in columns}) for i in range(n_rows)
     ]
 
     tracemalloc.start()
@@ -632,8 +624,7 @@ def test_render_xlsx_streaming_threshold_boundary() -> None:
     columns = ["program_id"]
     # `threshold` exactly → inmemory.
     at_threshold = [
-        _redistributable_row(program_id=f"p{i}")
-        for i in range(EXPORT_XLSX_STREAM_THRESHOLD_ROWS)
+        _redistributable_row(program_id=f"p{i}") for i in range(EXPORT_XLSX_STREAM_THRESHOLD_ROWS)
     ]
     blob_inmem = _render_xlsx(list(columns), at_threshold)
     assert _zip_magic_ok(blob_inmem)

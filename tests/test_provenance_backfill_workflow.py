@@ -29,16 +29,13 @@ import pytest
 import yaml  # PyYAML is already in dev-deps
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-WORKFLOW = (
-    REPO_ROOT / ".github" / "workflows" / "provenance-backfill-daily.yml"
-)
+WORKFLOW = REPO_ROOT / ".github" / "workflows" / "provenance-backfill-daily.yml"
 
 
 def test_workflow_file_exists() -> None:
     """Workflow YAML must exist at the canonical path."""
     assert WORKFLOW.exists(), (
-        "Wave 49 tick#3 must land "
-        ".github/workflows/provenance-backfill-daily.yml"
+        "Wave 49 tick#3 must land .github/workflows/provenance-backfill-daily.yml"
     )
 
 
@@ -78,14 +75,14 @@ def test_workflow_dispatch_inputs_present() -> None:
 def test_workflow_invokes_v2_etl_with_daily_1000() -> None:
     """Fly SSH step must invoke v2 ETL with daily 1000-row default."""
     src = WORKFLOW.read_text(encoding="utf-8")
-    assert (
-        "scripts/etl/provenance_backfill_6M_facts_v2.py" in src
-    ), "Workflow must call the v2 backfill ETL"
+    assert "scripts/etl/provenance_backfill_6M_facts_v2.py" in src, (
+        "Workflow must call the v2 backfill ETL"
+    )
     assert "flyctl ssh console" in src
     assert "-a autonomath-api" in src
     # Daily 1000-row / 100-row chunk defaults stated in the docstring.
-    assert "MAX_ROWS=\"${INPUT_MAX_ROWS:-1000}\"" in src
-    assert "CHUNK_SIZE=\"${INPUT_CHUNK_SIZE:-100}\"" in src
+    assert 'MAX_ROWS="${INPUT_MAX_ROWS:-1000}"' in src
+    assert 'CHUNK_SIZE="${INPUT_CHUNK_SIZE:-100}"' in src
     # --dry-run flag must be conditionally appended.
     assert "--dry-run" in src
 
@@ -115,9 +112,7 @@ def test_workflow_no_llm_secret_reference() -> None:
         "GOOGLE_API_KEY",
     )
     for needle in banned:
-        assert needle not in src, (
-            f"provenance-backfill-daily.yml must not reference {needle}"
-        )
+        assert needle not in src, f"provenance-backfill-daily.yml must not reference {needle}"
 
 
 def test_workflow_does_not_invoke_quick_check() -> None:
@@ -139,9 +134,7 @@ def test_workflow_does_not_invoke_quick_check() -> None:
         ".quick_check",
     )
     for needle in banned_invocations:
-        assert needle not in src, (
-            f"provenance-backfill-daily.yml must not invoke {needle!r}"
-        )
+        assert needle not in src, f"provenance-backfill-daily.yml must not invoke {needle!r}"
 
 
 if __name__ == "__main__":  # pragma: no cover

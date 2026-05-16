@@ -111,7 +111,9 @@ def _insert_subscription(
         conn.close()
 
 
-def _insert_diff(db: pathlib.Path, *, entity_id: str, field_name: str = "x", detected_at: str | None = None) -> int:
+def _insert_diff(
+    db: pathlib.Path, *, entity_id: str, field_name: str = "x", detected_at: str | None = None
+) -> int:
     conn = sqlite3.connect(str(db))
     try:
         if detected_at:

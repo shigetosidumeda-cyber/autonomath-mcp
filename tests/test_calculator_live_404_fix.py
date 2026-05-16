@@ -41,6 +41,7 @@ PREVIEW_YML = REPO_ROOT / ".github" / "workflows" / "pages-preview.yml"
 # A. site/tools/ への .html hard-copy verify
 # ──────────────────────────────────────────────────────────────────────
 
+
 def test_site_calculator_html_exists():
     """A1: site/tools/cost_saving_calculator.html が存在する。"""
     assert SITE_CALC.exists(), (
@@ -68,6 +69,7 @@ def test_site_calculator_is_hard_copy_not_empty():
 # ──────────────────────────────────────────────────────────────────────
 # B. site/tools/ への .md hard-copy verify
 # ──────────────────────────────────────────────────────────────────────
+
 
 def test_site_examples_md_exists():
     """B1: site/tools/cost_saving_examples.md が存在する。"""
@@ -101,6 +103,7 @@ def test_site_examples_md_is_hard_copy_not_empty():
 # C. rsync filter の include rule verify
 # ──────────────────────────────────────────────────────────────────────
 
+
 def test_pages_deploy_main_rsync_includes_tools_md():
     """C1: pages-deploy-main.yml の rsync が tools/*.md を include する。"""
     text = DEPLOY_YML.read_text(encoding="utf-8")
@@ -114,8 +117,7 @@ def test_pages_preview_rsync_includes_tools_md():
     """C2: pages-preview.yml も同じ rule を持つ (workflow parity)。"""
     text = PREVIEW_YML.read_text(encoding="utf-8")
     assert "tools/*.md" in text, (
-        "pages-preview.yml must mirror the tools/*.md include "
-        "so PR-preview deploys match prod."
+        "pages-preview.yml must mirror the tools/*.md include so PR-preview deploys match prod."
     )
 
 
@@ -138,6 +140,7 @@ def test_rsync_include_ordered_before_md_exclude():
 # ──────────────────────────────────────────────────────────────────────
 # D. destruction-free invariant
 # ──────────────────────────────────────────────────────────────────────
+
 
 def test_original_tools_and_docs_canonical_untouched():
     """D1: 元 tools/ + docs/canonical/ が削除/move されていない。"""

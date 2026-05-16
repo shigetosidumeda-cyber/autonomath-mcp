@@ -73,7 +73,7 @@ import sqlite3
 from contextlib import suppress
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
 from fastapi import APIRouter, Header, HTTPException, Query, status
 from fastapi.responses import JSONResponse
@@ -152,9 +152,7 @@ def _require_wallet_schema(conn: sqlite3.Connection) -> None:
         )
 
 
-def _get_or_create_wallet(
-    conn: sqlite3.Connection, owner_token_hash: str
-) -> sqlite3.Row:
+def _get_or_create_wallet(conn: sqlite3.Connection, owner_token_hash: str) -> sqlite3.Row:
     """Return the wallet row for the caller, creating one (balance=0) on miss."""
     row = conn.execute(
         "SELECT wallet_id, owner_token_hash, balance_yen, auto_topup_threshold, "
@@ -163,7 +161,7 @@ def _get_or_create_wallet(
         (owner_token_hash,),
     ).fetchone()
     if row is not None:
-        return row
+        return cast("sqlite3.Row", row)
     conn.execute(
         "INSERT OR IGNORE INTO am_credit_wallet (owner_token_hash) VALUES (?)",
         (owner_token_hash,),
@@ -180,7 +178,7 @@ def _get_or_create_wallet(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="failed to create wallet row",
         )
-    return row
+    return cast("sqlite3.Row", row)
 
 
 def _require_owner_token_hash(ctx: Any) -> str:
@@ -194,7 +192,7 @@ def _require_owner_token_hash(ctx: Any) -> str:
                 "have no wallet). Provision a key via /v1/billing/checkout."
             ),
         )
-    return key_hash
+    return cast("str", key_hash)
 
 
 def _current_billing_cycle() -> str:
@@ -303,8 +301,7 @@ def _append_topup_idempotency_marker(
     if idem_hash is None:
         return note
     marker = (
-        f"[wallet-topup-idem:{idem_hash}:fp={payload_hash}:"
-        f"bal={balance_yen}:cycle={billing_cycle}]"
+        f"[wallet-topup-idem:{idem_hash}:fp={payload_hash}:bal={balance_yen}:cycle={billing_cycle}]"
     )
     return f"{note}\n{marker}" if note else marker
 
@@ -315,13 +312,16 @@ def _find_idempotent_topup(
     wallet_id: int,
     idem_hash: str,
 ) -> sqlite3.Row | None:
-    return conn.execute(
-        "SELECT txn_id, amount_yen, occurred_at, note "
-        "FROM am_credit_transaction_log "
-        "WHERE wallet_id = ? AND txn_type = 'topup' AND note LIKE ? "
-        "ORDER BY txn_id DESC LIMIT 1",
-        (wallet_id, f"%[wallet-topup-idem:{idem_hash}:%"),
-    ).fetchone()
+    return cast(
+        "sqlite3.Row | None",
+        conn.execute(
+            "SELECT txn_id, amount_yen, occurred_at, note "
+            "FROM am_credit_transaction_log "
+            "WHERE wallet_id = ? AND txn_type = 'topup' AND note LIKE ? "
+            "ORDER BY txn_id DESC LIMIT 1",
+            (wallet_id, f"%[wallet-topup-idem:{idem_hash}:%"),
+        ).fetchone(),
+    )
 
 
 def _find_idempotent_charge(
@@ -330,13 +330,16 @@ def _find_idempotent_charge(
     wallet_id: int,
     idem_hash: str,
 ) -> sqlite3.Row | None:
-    return conn.execute(
-        "SELECT txn_id, amount_yen, occurred_at, note "
-        "FROM am_credit_transaction_log "
-        "WHERE wallet_id = ? AND txn_type = 'charge' AND note LIKE ? "
-        "ORDER BY txn_id DESC LIMIT 1",
-        (wallet_id, f"%[wallet-idem:{idem_hash}:%"),
-    ).fetchone()
+    return cast(
+        "sqlite3.Row | None",
+        conn.execute(
+            "SELECT txn_id, amount_yen, occurred_at, note "
+            "FROM am_credit_transaction_log "
+            "WHERE wallet_id = ? AND txn_type = 'charge' AND note LIKE ? "
+            "ORDER BY txn_id DESC LIMIT 1",
+            (wallet_id, f"%[wallet-idem:{idem_hash}:%"),
+        ).fetchone(),
+    )
 
 
 def _replay_topup_response(
@@ -396,7 +399,7 @@ def _replay_charge_response(
     match = _IDEMPOTENCY_MARKER_RE.search(row["note"] or "")
     balance_yen = int(match.group(2)) if match else 0
     billing_cycle = match.group(3) if match else str(row["occurred_at"])[:7]
-    payload = {
+    payload: dict[str, Any] = {
         "wallet_id": wallet_id,
         "charge_yen": charge_amount,
         "balance_yen": balance_yen,

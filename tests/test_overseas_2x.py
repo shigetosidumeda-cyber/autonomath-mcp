@@ -22,10 +22,14 @@ API_DIR = REPO_ROOT / "src" / "jpintel_mcp" / "api"
 WORKFLOW = REPO_ROOT / ".github" / "workflows" / "overseas-subsidy-weekly.yml"
 
 _BANNED_LLM_IMPORTS = (
-    "import anthropic", "from anthropic",
-    "import openai", "from openai ",
-    "import google.generativeai", "from google.generativeai",
-    "import claude_agent_sdk", "from claude_agent_sdk",
+    "import anthropic",
+    "from anthropic",
+    "import openai",
+    "from openai ",
+    "import google.generativeai",
+    "from google.generativeai",
+    "import claude_agent_sdk",
+    "from claude_agent_sdk",
 )
 
 
@@ -44,9 +48,13 @@ def test_migration_files_exist() -> None:
 def test_migration_creates_table_and_view(tmp_path: Path) -> None:
     db = tmp_path / "auto.db"
     conn = sqlite3.connect(db)
-    conn.executescript((MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8"))
+    conn.executescript(
+        (MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8")
+    )
     # Confirm idempotent re-run.
-    conn.executescript((MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8"))
+    conn.executescript(
+        (MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8")
+    )
     tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     views = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='view'")}
     assert "am_program_overseas" in tables
@@ -58,7 +66,9 @@ def test_migration_creates_table_and_view(tmp_path: Path) -> None:
 def test_migration_country_length_check(tmp_path: Path) -> None:
     db = tmp_path / "auto.db"
     conn = sqlite3.connect(db)
-    conn.executescript((MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8"))
+    conn.executescript(
+        (MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8")
+    )
     with pytest.raises(sqlite3.IntegrityError):
         conn.execute(
             "INSERT INTO am_program_overseas(program_id, country_code, program_type, source_url) "
@@ -75,8 +85,12 @@ def test_migration_country_length_check(tmp_path: Path) -> None:
 def test_migration_rollback_drops_everything(tmp_path: Path) -> None:
     db = tmp_path / "auto.db"
     conn = sqlite3.connect(db)
-    conn.executescript((MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8"))
-    conn.executescript((MIGRATIONS_DIR / "249_program_overseas_jetro_rollback.sql").read_text(encoding="utf-8"))
+    conn.executescript(
+        (MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8")
+    )
+    conn.executescript(
+        (MIGRATIONS_DIR / "249_program_overseas_jetro_rollback.sql").read_text(encoding="utf-8")
+    )
     tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
     assert "am_program_overseas" not in tables
     assert "am_overseas_run_log" not in tables
@@ -86,7 +100,9 @@ def test_migration_rollback_drops_everything(tmp_path: Path) -> None:
 def test_fill_script_dry_run_no_network(tmp_path: Path) -> None:
     db = tmp_path / "auto.db"
     conn = sqlite3.connect(db)
-    conn.executescript((MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8"))
+    conn.executescript(
+        (MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8")
+    )
     conn.close()
     proc = subprocess.run(
         [
@@ -110,7 +126,9 @@ def test_fill_script_dry_run_no_network(tmp_path: Path) -> None:
 def test_fill_script_writes_rows_when_not_dry_run(tmp_path: Path) -> None:
     db = tmp_path / "auto.db"
     conn = sqlite3.connect(db)
-    conn.executescript((MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8"))
+    conn.executescript(
+        (MIGRATIONS_DIR / "249_program_overseas_jetro.sql").read_text(encoding="utf-8")
+    )
     conn.close()
     proc = subprocess.run(
         [

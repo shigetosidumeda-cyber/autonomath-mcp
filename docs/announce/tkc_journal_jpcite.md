@@ -47,7 +47,7 @@ TKC の OMS・FX シリーズは、会計事務所の「文書管理・申告書
 
 TKC が提供する事務所内処理 (顧問先データの構造化、申告書生成) に対し、jpcite は「外部公開情報の構造化された取得」を担う。OMS のワークフローに jpcite API を組み込めば、「顧問先別補助金 candidate を月次 alert として配信」「税制改正適用 eligibility を OMS の顧問先 master と join」といったワークフローが自動化できる。
 
-TKC API・MCP 連携については、jpcite 側の OpenAPI v0.4.0 (302 paths) を参照し、OMS の外部連携設計に組み込む形が現実的である。recipe r01 / r07 は TKC ユーザの月次運用フローと相性が良い。
+TKC API・MCP 連携については、jpcite 側の OpenAPI v0.4.0 (306 paths) を参照し、OMS の外部連携設計に組み込む形が現実的である。recipe r01 / r07 は TKC ユーザの月次運用フローと相性が良い。
 
 ## 節約額と業法 fence の両立試算
 

@@ -54,7 +54,6 @@ from jpintel_mcp.api.programs import (
     _build_tier_weight_case,
 )
 
-
 # ---------------------------------------------------------------------------
 # Substrate guards: lock the constants the SQL below relies on. If anyone
 # changes the bm25 weight tuple or the tier multiplier dict shape, these
@@ -225,8 +224,7 @@ def _rank(conn: sqlite3.Connection, q: str) -> list[tuple[str, str, float, float
         "  programs.unified_id ASC"
     )
     return [
-        (row[0], row[1], float(row[2]), float(row[3]))
-        for row in conn.execute(sql, (q,)).fetchall()
+        (row[0], row[1], float(row[2]), float(row[3])) for row in conn.execute(sql, (q,)).fetchall()
     ]
 
 
@@ -254,8 +252,7 @@ def test_same_bm25_different_tier_s_outranks_c(
     # the back of the list and aren't the subject of this assertion.
     ids = [r[0] for r in ranked]
     assert "UNI-S-strong" in ids and "UNI-C-strong" in ids, (
-        f"seed corpus regression: both strong-hit rows must MATCH. "
-        f"Got ranked={ranked!r}"
+        f"seed corpus regression: both strong-hit rows must MATCH. Got ranked={ranked!r}"
     )
     s_pos = ids.index("UNI-S-strong")
     c_pos = ids.index("UNI-C-strong")

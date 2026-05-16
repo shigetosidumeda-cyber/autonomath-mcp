@@ -188,9 +188,7 @@ def _ensure_acp_table(conn: sqlite3.Connection) -> None:
         )
         """
     )
-    conn.execute(
-        "CREATE INDEX IF NOT EXISTS ix_acp_session_agent ON acp_session_bind(agent_id)"
-    )
+    conn.execute("CREATE INDEX IF NOT EXISTS ix_acp_session_agent ON acp_session_bind(agent_id)")
 
 
 def create_acp_checkout(
@@ -326,7 +324,9 @@ def confirm_acp_session(
             raise PermissionError(f"acp_session_not_paid: {payment_status}")
 
         customer_id = str(session["customer"] if isinstance(session, dict) else session.customer)
-        subscription = session["subscription"] if isinstance(session, dict) else session.subscription
+        subscription = (
+            session["subscription"] if isinstance(session, dict) else session.subscription
+        )
         subscription_id = str(
             subscription["id"]
             if isinstance(subscription, dict)

@@ -327,9 +327,7 @@ def test_supplier_chain_dry_run(monkeypatch: pytest.MonkeyPatch) -> None:
         conn.close()
     monkeypatch.setenv("AUTONOMATH_DB_PATH", str(db))
     mod = _import_cron("precompute_supplier_chain")
-    summary = mod.precompute(
-        anchor_limit=2, max_hops=2, partners_per_anchor=4, dry_run=True
-    )
+    summary = mod.precompute(anchor_limit=2, max_hops=2, partners_per_anchor=4, dry_run=True)
     assert summary["status"] in {"ok", "partial"}
     assert summary["dry_run"] is True
 

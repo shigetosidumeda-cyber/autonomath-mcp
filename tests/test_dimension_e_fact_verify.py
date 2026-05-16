@@ -17,12 +17,8 @@ import sqlite3
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-SRC_FACT_VERIFY = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "fact_verify.py"
-)
-CRON_REFRESH = (
-    REPO_ROOT / "scripts" / "cron" / "refresh_fact_signatures_weekly.py"
-)
+SRC_FACT_VERIFY = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "fact_verify.py"
+CRON_REFRESH = REPO_ROOT / "scripts" / "cron" / "refresh_fact_signatures_weekly.py"
 
 
 # ---------------------------------------------------------------------------
@@ -96,9 +92,7 @@ def _seed_fact(
 
 def _ed25519_keypair() -> tuple[bytes, bytes]:
     """Return (private_seed_hex, public_key_hex). Skips if no cryptography."""
-    crypto = pytest.importorskip(
-        "cryptography.hazmat.primitives.asymmetric.ed25519"
-    )
+    crypto = pytest.importorskip("cryptography.hazmat.primitives.asymmetric.ed25519")
     private_key = crypto.Ed25519PrivateKey.generate()
     from cryptography.hazmat.primitives import serialization
 
@@ -123,8 +117,8 @@ def test_fact_verify_file_exists():
     """The new fact_verify module must exist."""
     assert SRC_FACT_VERIFY.exists()
     src = SRC_FACT_VERIFY.read_text(encoding="utf-8")
-    assert "router = APIRouter(prefix=\"/v1/facts\"" in src
-    assert "tags=[\"fact-verify\"]" in src
+    assert 'router = APIRouter(prefix="/v1/facts"' in src
+    assert 'tags=["fact-verify"]' in src
 
 
 def test_fact_verify_no_llm_imports():
@@ -133,9 +127,7 @@ def test_fact_verify_no_llm_imports():
     banned = ("anthropic", "openai", "google.generativeai", "claude_agent_sdk")
     for needle in banned:
         pattern = rf"^\s*(import|from)\s+{re.escape(needle)}\b"
-        assert not re.search(pattern, src, re.MULTILINE), (
-            f"LLM SDK import detected: {needle}"
-        )
+        assert not re.search(pattern, src, re.MULTILINE), f"LLM SDK import detected: {needle}"
 
 
 def test_cron_refresh_no_llm_imports():
@@ -144,9 +136,7 @@ def test_cron_refresh_no_llm_imports():
     banned = ("anthropic", "openai", "google.generativeai", "claude_agent_sdk")
     for needle in banned:
         pattern = rf"^\s*(import|from)\s+{re.escape(needle)}\b"
-        assert not re.search(pattern, src, re.MULTILINE), (
-            f"LLM SDK import detected: {needle}"
-        )
+        assert not re.search(pattern, src, re.MULTILINE), f"LLM SDK import detected: {needle}"
 
 
 def test_cron_refresh_uses_cryptography_stdlib_only():
@@ -192,11 +182,11 @@ def _load_helpers() -> dict:
             keep_nodes.append(node)
         # Preserve only helper `_foo` and `_why_paragraph` defs (private
         # by convention `_` prefix). Skip async-def route handlers.
-        elif isinstance(node, ast.FunctionDef) and node.name.startswith("_"):
-            keep_nodes.append(node)
-        # Preserve module-level constants (regex, disclaimer).
-        elif isinstance(node, ast.Assign) and all(
-            isinstance(t, ast.Name) and t.id.startswith("_") for t in node.targets
+        elif (
+            isinstance(node, ast.FunctionDef)
+            and node.name.startswith("_")
+            or isinstance(node, ast.Assign)
+            and all(isinstance(t, ast.Name) and t.id.startswith("_") for t in node.targets)
         ):
             keep_nodes.append(node)
 
@@ -232,9 +222,7 @@ def test_canonical_payload_is_deterministic():
 
 def test_ed25519_tamper_detected(tmp_path):
     """Byte-flip the stored payload or signature -> verify must reject."""
-    crypto = pytest.importorskip(
-        "cryptography.hazmat.primitives.asymmetric.ed25519"
-    )
+    crypto = pytest.importorskip("cryptography.hazmat.primitives.asymmetric.ed25519")
 
     db_path = _build_fixture_db(tmp_path)
     _seed_fact(db_path)
@@ -391,8 +379,6 @@ def test_migration_262_rollback_exists():
 
 
 def test_boot_manifest_lists_262():
-    manifest = (
-        REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
-    )
+    manifest = REPO_ROOT / "scripts" / "migrations" / "autonomath_boot_manifest.txt"
     text = manifest.read_text(encoding="utf-8")
     assert "262_fact_signature_v2.sql" in text

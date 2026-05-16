@@ -24,16 +24,12 @@ import sys
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-SRC_RULE_TREE = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "rule_tree_eval.py"
-)
+SRC_RULE_TREE = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "rule_tree_eval.py"
 
 
 def _import_rule_tree_module():
     """Load the rule_tree_eval module by file path (avoids package init)."""
-    spec = importlib.util.spec_from_file_location(
-        "_rule_tree_test_mod", SRC_RULE_TREE
-    )
+    spec = importlib.util.spec_from_file_location("_rule_tree_test_mod", SRC_RULE_TREE)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["_rule_tree_test_mod"] = mod
@@ -68,9 +64,7 @@ def test_rule_tree_no_llm_imports() -> None:
     )
     for needle in banned:
         pattern = rf"^\s*(import|from)\s+{re.escape(needle)}\b"
-        assert not re.search(pattern, src, re.MULTILINE), (
-            f"LLM SDK import detected: {needle}"
-        )
+        assert not re.search(pattern, src, re.MULTILINE), f"LLM SDK import detected: {needle}"
 
 
 def test_rule_tree_disclaimer_present() -> None:
@@ -155,9 +149,7 @@ def test_case_linear_and_fail_on_capital() -> None:
             },
         ],
     }
-    env = mod.evaluate_rule_tree(
-        tree, {"employees": 250, "capital_yen": 800_000_000}
-    )
+    env = mod.evaluate_rule_tree(tree, {"employees": 250, "capital_yen": 800_000_000})
     assert env["result"] == "fail"
     decisions = {r["node_id"]: r["decision"] for r in env["rationale"]}
     assert decisions["n_cap"] is False
@@ -243,14 +235,10 @@ def test_case_branching_xor_exactly_one() -> None:
         ],
     }
     # Exactly one path present → pass.
-    env_one = mod.evaluate_rule_tree(
-        tree, {"claim_path_a": "yes"}
-    )
+    env_one = mod.evaluate_rule_tree(tree, {"claim_path_a": "yes"})
     assert env_one["result"] == "pass"
     # Both present → XOR fail.
-    env_both = mod.evaluate_rule_tree(
-        tree, {"claim_path_a": "yes", "claim_path_b": "yes"}
-    )
+    env_both = mod.evaluate_rule_tree(tree, {"claim_path_a": "yes", "claim_path_b": "yes"})
     assert env_both["result"] == "fail"
     # Neither present → XOR fail.
     env_neither = mod.evaluate_rule_tree(tree, {})
@@ -279,9 +267,7 @@ def test_case_citation_gap_returns_conditional() -> None:
             },
         ],
     }
-    env = mod.evaluate_rule_tree(
-        tree, {"employees": 100, "capital_yen": 100_000_000}
-    )
+    env = mod.evaluate_rule_tree(tree, {"employees": 100, "capital_yen": 100_000_000})
     # All LEAFs pass but one lacks citation → conditional, not pass.
     assert env["result"] == "conditional"
     assert env["citation_gap"] is True
@@ -378,8 +364,7 @@ def test_main_py_includes_rule_tree_eval() -> None:
     main = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "main.py"
     src = main.read_text(encoding="utf-8")
     assert "jpintel_mcp.api.rule_tree_eval" in src, (
-        "main.py must include rule_tree_eval via "
-        "_include_experimental_router"
+        "main.py must include rule_tree_eval via _include_experimental_router"
     )
 
 

@@ -61,9 +61,7 @@ def _count_md_files(category_dir: Path) -> int:
     return sum(
         1
         for p in category_dir.iterdir()
-        if p.is_file()
-        and p.suffix == ".md"
-        and p.name not in {"index.md", "README.md"}
+        if p.is_file() and p.suffix == ".md" and p.name not in {"index.md", "README.md"}
     )
 
 
@@ -92,9 +90,7 @@ def test_companion_md_sitemap_matches_disk_inventory() -> None:
     inventory. Wave 46 added public root/press/legal/security .md surfaces, so
     the expected count mirrors scripts/generate_sitemap_companion_md.py.
     """
-    assert SITEMAP_COMPANION_MD_PATH.is_file(), (
-        f"missing {SITEMAP_COMPANION_MD_PATH}"
-    )
+    assert SITEMAP_COMPANION_MD_PATH.is_file(), f"missing {SITEMAP_COMPANION_MD_PATH}"
     xml = SITEMAP_COMPANION_MD_PATH.read_text(encoding="utf-8")
     sitemap_count = _count_url_tags(xml)
 
@@ -128,9 +124,7 @@ def test_companion_md_sitemap_uses_canonical_apex() -> None:
     xml = SITEMAP_COMPANION_MD_PATH.read_text(encoding="utf-8")
     forbidden_hosts = ("zeimu-kaikei.ai", "autonomath.ai", "jpintel.com")
     for host in forbidden_hosts:
-        assert host not in xml, (
-            f"sitemap-companion-md.xml still references legacy host {host!r}"
-        )
+        assert host not in xml, f"sitemap-companion-md.xml still references legacy host {host!r}"
     # Must include the canonical apex on at least one URL.
     assert "https://jpcite.com/" in xml
 
@@ -167,8 +161,7 @@ def test_known_basenames_includes_wave22_companion_md() -> None:
     }
     missing = required - set(sitemap_gen.KNOWN_BASENAMES)
     assert not missing, (
-        f"scripts/sitemap_gen.py KNOWN_BASENAMES missing Wave 17/22 shards: "
-        f"{sorted(missing)}"
+        f"scripts/sitemap_gen.py KNOWN_BASENAMES missing Wave 17/22 shards: {sorted(missing)}"
     )
 
 
@@ -221,9 +214,7 @@ def test_robots_explicitly_lists_required_bot_ua(ua: str) -> None:
     assert ROBOTS_PATH.is_file(), f"missing {ROBOTS_PATH}"
     text = ROBOTS_PATH.read_text(encoding="utf-8")
     pattern = re.compile(rf"^User-agent:\s*{re.escape(ua)}\s*$", re.MULTILINE)
-    assert pattern.search(text), (
-        f"site/robots.txt is missing explicit `User-agent: {ua}` stanza"
-    )
+    assert pattern.search(text), f"site/robots.txt is missing explicit `User-agent: {ua}` stanza"
 
 
 def test_robots_blocks_admin_and_internal_paths_globally() -> None:
@@ -245,9 +236,7 @@ def test_robots_blocks_admin_and_internal_paths_globally() -> None:
     )
     block = star_block_match.group(1)
     for path in ("/admin/", "/_internal/", "/v1/admin/"):
-        assert f"Disallow: {path}" in block, (
-            f"`User-agent: *` block does not Disallow {path}"
-        )
+        assert f"Disallow: {path}" in block, f"`User-agent: *` block does not Disallow {path}"
 
 
 def test_robots_advertises_canonical_ai_discovery_paths() -> None:
@@ -265,6 +254,4 @@ def test_robots_advertises_canonical_ai_discovery_paths() -> None:
         "/mcp-server.json",
         "/.well-known/",
     ):
-        assert f"Allow: {path}" in text, (
-            f"robots.txt does not advertise canonical AEO path {path}"
-        )
+        assert f"Allow: {path}" in text, f"robots.txt does not advertise canonical AEO path {path}"

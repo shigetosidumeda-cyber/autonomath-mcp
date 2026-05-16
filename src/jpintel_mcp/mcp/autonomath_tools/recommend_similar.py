@@ -65,7 +65,9 @@ from .snapshot_helper import attach_corpus_snapshot
 
 logger = logging.getLogger("jpintel.mcp.autonomath.recommend_similar")
 
-_ENABLED = get_flag("JPCITE_RECOMMEND_SIMILAR_ENABLED", "AUTONOMATH_RECOMMEND_SIMILAR_ENABLED", "1") == "1"
+_ENABLED = (
+    get_flag("JPCITE_RECOMMEND_SIMILAR_ENABLED", "AUTONOMATH_RECOMMEND_SIMILAR_ENABLED", "1") == "1"
+)
 
 # ---------------------------------------------------------------------------
 # Disclaimer text (also auto-injected by envelope_wrapper.SENSITIVE_TOOLS).

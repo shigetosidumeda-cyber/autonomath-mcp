@@ -468,7 +468,7 @@ def _verify_id_token_signature(id_token: str) -> tuple[dict[str, Any], dict[str,
             signature,
             signing_input,
             padding.PKCS1v15(),
-            hash_cls(),
+            hash_cls(),  # type: ignore[abstract]
         )
     except InvalidSignature as exc:
         # The token's signature does not match the published key for its
@@ -542,9 +542,7 @@ def _mint_session_jwt(email: str) -> tuple[str, int]:
     Returns (jwt, exp_unix). Cookie name + max_age are set by the
     caller so this helper stays composable for the JSON-mode return.
     """
-    secret = os.environ.get(
-        "JPCITE_SESSION_SECRET", "dev-secret-do-not-use-in-prod-please-set-env"
-    )
+    secret = os.environ.get("JPCITE_SESSION_SECRET", "dev-secret-do-not-use-in-prod-please-set-env")
     now = int(time.time())
     exp = now + 86400
     header = {"alg": "HS256", "typ": "JWT"}

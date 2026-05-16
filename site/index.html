@@ -212,7 +212,7 @@
     {
       "@type": "Product",
       "name": "jpcite 成果物API/MCP",
-      "description": "151 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
+      "description": "155 MCP ツール + REST API。AI 開発者向け。stdio 接続、SDK 不要。",
       "brand": {"@type": "Brand", "name": "jpcite"},
       "url": "https://jpcite.com/docs/getting-started/",
       "offers": {"@type": "Offer", "url": "https://jpcite.com/pricing", "description": "現在の公開料金、匿名枠、従量条件はPricingに掲載"}
@@ -498,7 +498,7 @@
  <p style="font-size:14px;line-height:1.7;margin:0 0 12px;color:var(--text);">jpcite は回答生成前に一次資料 URL・取得時刻・known gaps を構造化して返す evidence layer です。Claude Desktop・Cursor・ChatGPT Custom GPT・Codex・自社 AI ワークフローから、1 行追加で日本公的制度 11,601 + 法令 catalog 9,484 (全文対応 6,493) + 採択 2,286 + 行政処分 1,185 + 適格事業者 13,801 を evidence packet として取得できます。公開カタログは <a href="/programs/">制度</a>・<a href="/laws/">法令</a>・<a href="/enforcement/">行政処分</a>・<a href="/prompts/">Prompts</a> から確認できます。現在の availability は <a href="/status.html">Status</a> を正とします (AI の頭脳は AI 側、jpcite は根拠取得に徹する設計)。</p>
  <ul style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;font-size:13px;line-height:1.65;color:var(--text);">
  <li><a href="/connect/chatgpt.html"><strong>ChatGPT Custom GPT</strong></a> — OpenAPI Actions から GPT 向け 30-path subset を利用</li>
- <li><a href="/connect/claude-code.html"><strong>Claude Code / MCP</strong></a> — <code>uvx autonomath-mcp</code> 1 行で 151 MCP 機能を利用</li>
+ <li><a href="/connect/claude-code.html"><strong>Claude Code / MCP</strong></a> — <code>uvx autonomath-mcp</code> 1 行で 155 MCP 機能を利用</li>
  <li><a href="/connect/cursor.html"><strong>Cursor</strong></a> — MCP 設定に貼って再起動</li>
  <li><a href="/connect/codex.html"><strong>Codex</strong></a> — agent workflow から MCP server 追加</li>
  <li><a href="/docs/getting-started/"><strong>REST direct</strong></a> — REST / OpenAPI を自社 AI・業務システムの根拠取得に</li>
@@ -882,10 +882,10 @@
 
  <article class="card audience-card" aria-labelledby="aud-dev" style="background:var(--bg-alt);border-color:var(--accent);">
  <h3 id="aud-dev">AI 開発者 (横断利用)</h3>
- <p class="card-lead audience-context">REST + MCP、 151 機能、 SDK 不要</p>
+ <p class="card-lead audience-context">REST + MCP、 155 機能、 SDK 不要</p>
  <p class="audience-pitch">上記すべての利用者層を、 1 つのサーバーから呼べます。 MCP プロトコル準拠、 uvx 1 行で起動。 Evidence Packet で事前に根拠を渡し、ヒット率・追加検索回数・トークン量への影響を自社ベンチマークで測定できます。</p>
  <ul class="card-list">
- <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">151</span> 個 / REST 公開 OpenAPI spec</li>
+ <li>AI から呼べる機能 <span data-fact="mcp_tools_total" data-stat-key="mcp_tools_total">155</span> 個 / REST 公開 OpenAPI spec</li>
  <li>uvx 1 行で起動 (SDK 不要)</li>
  <li>無料 3 リクエスト/日で動作確認 → 商用は税込 ¥3.30 / billable unit の完全従量</li>
  </ul>
@@ -1097,7 +1097,7 @@
  <article class="card">
  <h3>横断連結を 1 リクエストで</h3>
  <p class="card-lead">制度 → 法令 → 判例 → 行政処分 → 適格事業者</p>
- <p><code>trace_program_to_law</code>・<code>combined_compliance_check</code>・<code>search_tax_incentives</code>・<code>related_programs</code> など 151 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。</p>
+ <p><code>trace_program_to_law</code>・<code>combined_compliance_check</code>・<code>search_tax_incentives</code>・<code>related_programs</code> など 155 MCP ツールで横断解決。 補助金から関連法令・通達・裁決事例・処分歴・登録番号を 1 コールで連結します。</p>
  </article>
 
  <article class="card">

@@ -23,16 +23,12 @@ import sys
 import pytest
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-SRC_ANONYMIZED = (
-    REPO_ROOT / "src" / "jpintel_mcp" / "api" / "anonymized_query.py"
-)
+SRC_ANONYMIZED = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "anonymized_query.py"
 
 
 def _import_anonymized_module():
     """Load the anonymized_query module by file path."""
-    spec = importlib.util.spec_from_file_location(
-        "_anonymized_test_mod", SRC_ANONYMIZED
-    )
+    spec = importlib.util.spec_from_file_location("_anonymized_test_mod", SRC_ANONYMIZED)
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
     sys.modules["_anonymized_test_mod"] = mod
@@ -67,9 +63,7 @@ def test_anonymized_no_llm_imports() -> None:
     )
     for needle in banned:
         pattern = rf"^\s*(import|from)\s+{re.escape(needle)}\b"
-        assert not re.search(pattern, src, re.MULTILINE), (
-            f"LLM SDK import detected: {needle}"
-        )
+        assert not re.search(pattern, src, re.MULTILINE), f"LLM SDK import detected: {needle}"
 
 
 def test_anonymized_disclaimer_present() -> None:
@@ -188,9 +182,7 @@ def test_k_anonymity_response_whitelist_immutable() -> None:
         "ceo_name",
     )
     for field in banned_pii_fields:
-        assert field not in whitelist, (
-            f"PII field {field} must not be in response whitelist"
-        )
+        assert field not in whitelist, f"PII field {field} must not be in response whitelist"
 
 
 def test_validate_filters_accepts_valid_input() -> None:
@@ -223,22 +215,16 @@ def test_validate_filters_rejects_bad_region() -> None:
     """``_validate_filters`` raises when region_code is not 5-digit."""
     mod = _import_anonymized_module()
     with pytest.raises(ValueError, match=r"region_code"):
-        mod._validate_filters(
-            {"industry_jsic_major": "E", "region_code": "13"}
-        )
+        mod._validate_filters({"industry_jsic_major": "E", "region_code": "13"})
     with pytest.raises(ValueError, match=r"region_code"):
-        mod._validate_filters(
-            {"industry_jsic_major": "E", "region_code": "abc12"}
-        )
+        mod._validate_filters({"industry_jsic_major": "E", "region_code": "abc12"})
 
 
 def test_validate_filters_rejects_bad_size_bucket() -> None:
     """``_validate_filters`` raises when size_bucket is not in enum."""
     mod = _import_anonymized_module()
     with pytest.raises(ValueError, match=r"size_bucket"):
-        mod._validate_filters(
-            {"industry_jsic_major": "E", "size_bucket": "tiny"}
-        )
+        mod._validate_filters({"industry_jsic_major": "E", "size_bucket": "tiny"})
 
 
 # ---------------------------------------------------------------------------
@@ -272,12 +258,8 @@ def test_pii_strip_end_to_end() -> None:
     # houjin_number or 11-digit phone (deep-content PII smoke).
     for value in out.values():
         if isinstance(value, str):
-            assert not re.match(r"^\d{13}$", value), (
-                f"13-digit houjin-like value leaked: {value}"
-            )
-            assert not re.match(r"^\d{10,11}$", value), (
-                f"phone-like value leaked: {value}"
-            )
+            assert not re.match(r"^\d{13}$", value), f"13-digit houjin-like value leaked: {value}"
+            assert not re.match(r"^\d{10,11}$", value), f"phone-like value leaked: {value}"
 
 
 def test_redact_policy_version_pinned() -> None:
@@ -299,8 +281,7 @@ def test_main_py_includes_anonymized_query() -> None:
     main = REPO_ROOT / "src" / "jpintel_mcp" / "api" / "main.py"
     src = main.read_text(encoding="utf-8")
     assert "jpintel_mcp.api.anonymized_query" in src, (
-        "main.py must include anonymized_query via "
-        "_include_experimental_router"
+        "main.py must include anonymized_query via _include_experimental_router"
     )
 
 

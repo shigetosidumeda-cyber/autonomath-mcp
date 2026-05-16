@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -64,7 +64,8 @@ def _load(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        loaded: Any = json.loads(path.read_text(encoding="utf-8"))
+        return loaded if isinstance(loaded, dict) else None
     except (json.JSONDecodeError, OSError):
         return None
 
@@ -74,7 +75,7 @@ def _attach_cache_headers(response: Response, max_age: int = 180) -> None:
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _build_aggregate() -> dict[str, Any]:

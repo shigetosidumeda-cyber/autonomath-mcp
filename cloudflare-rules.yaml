@@ -100,8 +100,8 @@ cache_rules:
     ref: jpcite_json_discovery_cache
     zone: jpcite.com
     phase: http_request_cache_settings
-    description: Cache public AI/MCP/OpenAPI discovery JSON at the edge for 10 minutes.
-    expression: '(http.host eq "jpcite.com" and http.request.method eq "GET" and (http.request.uri.path in {"/server.json" "/mcp-server.json" "/mcp-server.full.json" "/openapi.agent.json" "/v1/openapi.json" "/v1/openapi.agent.json" "/v1/mcp-server.json" "/.well-known/mcp.json" "/.well-known/trust.json" "/.well-known/sbom.json"} or starts_with(http.request.uri.path, "/.well-known/sbom/") or starts_with(http.request.uri.path, "/docs/openapi/")))'
+    description: Cache public AI/MCP/OpenAPI/release discovery JSON at the edge for 10 minutes.
+    expression: '(http.host eq "jpcite.com" and http.request.method eq "GET" and (http.request.uri.path in {"/server.json" "/mcp-server.json" "/mcp-server.full.json" "/openapi.agent.json" "/v1/openapi.json" "/v1/openapi.agent.json" "/v1/mcp-server.json" "/.well-known/mcp.json" "/.well-known/trust.json" "/.well-known/jpcite-release.json" "/.well-known/sbom.json"} or starts_with(http.request.uri.path, "/.well-known/sbom/") or starts_with(http.request.uri.path, "/docs/openapi/") or starts_with(http.request.uri.path, "/release/current/") or starts_with(http.request.uri.path, "/releases/current/")))'
     action: set_cache_settings
     enabled: true
     action_parameters:

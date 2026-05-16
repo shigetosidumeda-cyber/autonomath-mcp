@@ -68,9 +68,7 @@ def test_branch_parse_simple() -> None:
 
 def test_branch_parse_compound_wave() -> None:
     # wave43_5 (two-segment) must still resolve lane
-    assert (
-        clp.parse_lane_from_branch("feat/jpcite_2026_05_12_wave43_5_ams_monthly_cron") == "ams"
-    )
+    assert clp.parse_lane_from_branch("feat/jpcite_2026_05_12_wave43_5_ams_monthly_cron") == "ams"
 
 
 def test_branch_parse_unparseable() -> None:

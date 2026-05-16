@@ -114,7 +114,9 @@ def _entrypoint_env(tmp_path: Path) -> dict[str, str]:
     return env
 
 
-def _run(script: Path, env: dict[str, str], *, timeout: float = 15.0) -> subprocess.CompletedProcess[str]:
+def _run(
+    script: Path, env: dict[str, str], *, timeout: float = 15.0
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["bash", str(script), "true"],
         cwd=REPO_ROOT,
@@ -126,7 +128,9 @@ def _run(script: Path, env: dict[str, str], *, timeout: float = 15.0) -> subproc
     )
 
 
-def test_w46c_creates_jpcite_symlink_when_autonomath_present_and_jpcite_absent(tmp_path: Path) -> None:
+def test_w46c_creates_jpcite_symlink_when_autonomath_present_and_jpcite_absent(
+    tmp_path: Path,
+) -> None:
     script = _safe_entrypoint(tmp_path)
     env = _entrypoint_env(tmp_path)
     am_db = Path(env["AUTONOMATH_DB_PATH"])
@@ -144,7 +148,9 @@ def test_w46c_creates_jpcite_symlink_when_autonomath_present_and_jpcite_absent(t
     assert "[W46.C] symlink created" in result.stdout
 
 
-def test_w46c_creates_reverse_symlink_when_jpcite_present_and_autonomath_absent(tmp_path: Path) -> None:
+def test_w46c_creates_reverse_symlink_when_jpcite_present_and_autonomath_absent(
+    tmp_path: Path,
+) -> None:
     script = _safe_entrypoint(tmp_path)
     env = _entrypoint_env(tmp_path)
     jc_db = Path(env["JPCITE_DB_PATH"])

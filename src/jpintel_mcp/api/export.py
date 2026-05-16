@@ -65,7 +65,7 @@ import secrets
 import sqlite3  # noqa: TC003 (runtime: DB connection type)
 import time
 from datetime import UTC, datetime, timedelta
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, status
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -667,10 +667,10 @@ def _stage_to_r2(blob: bytes, key: str) -> str:
     # Defer the import — only paid customers hit this surface and we
     # don't want test imports to depend on rclone being installed.
     try:
-        from scripts.cron._r2_client import (  # type: ignore  # noqa: PLC0415
+        from scripts.cron._r2_client import (  # noqa: PLC0415
             R2ConfigError as _R2ConfigError,  # noqa: N814
         )
-        from scripts.cron._r2_client import (  # type: ignore  # noqa: PLC0415
+        from scripts.cron._r2_client import (  # noqa: PLC0415
             upload as r2_upload,
         )
     except Exception:  # noqa: BLE001
@@ -690,7 +690,7 @@ def _stage_to_r2(blob: bytes, key: str) -> str:
                 local_path = fh.name
             from pathlib import Path  # noqa: PLC0415
 
-            r2_upload(Path(local_path), key)  # type: ignore[misc]
+            r2_upload(Path(local_path), key)
             Path(local_path).unlink(missing_ok=True)
             return f"{base.rstrip('/')}/{key}?ttl={EXPORT_URL_TTL_S}"
         except _R2ConfigError:
@@ -777,7 +777,7 @@ def create_export(
 
     cap_response = _projected_cap_response(conn, ctx, EXPORT_UNIT_COUNT)
     if cap_response is not None:
-        return cap_response
+        return cast("ExportResponse", cap_response)
 
     _rate_floor_check(ctx.key_hash)
 
@@ -830,7 +830,7 @@ def create_export(
 
     return ExportResponse(
         export_id=eid,
-        format=body.format,  # type: ignore[arg-type]
+        format=body.format,
         download_url=download_url,
         expires_at=expires_at,
         row_count=len(rows),
@@ -867,7 +867,7 @@ def reissue_export_url(
     )
     return ExportResponse(
         export_id=export_id,
-        format="csv",  # type: ignore[arg-type]
+        format="csv",
         download_url=placeholder,
         expires_at=expires_at,
         row_count=0,

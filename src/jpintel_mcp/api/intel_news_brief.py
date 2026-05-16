@@ -224,9 +224,7 @@ def _fetch_fact_rows(
 
     cols = _columns(conn, "am_entity_facts")
     if "field_name" not in cols or "field_value_text" not in cols:
-        known_gaps.append(
-            "am_entity_facts is missing field_name/field_value_text columns"
-        )
+        known_gaps.append("am_entity_facts is missing field_name/field_value_text columns")
         return []
 
     select = {
@@ -261,9 +259,7 @@ def _fetch_fact_rows(
         params = [*field_names, f"%{axis_value}%"]
 
     order_col = (
-        "fetched_at"
-        if "fetched_at" in cols
-        else ("created_at" if "created_at" in cols else "id")
+        "fetched_at" if "fetched_at" in cols else ("created_at" if "created_at" in cols else "id")
     )
     sql = (
         "SELECT "

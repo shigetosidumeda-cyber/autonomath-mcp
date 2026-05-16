@@ -14,7 +14,7 @@ https://jpcite.com
 jpcite is a Japanese-government public-program evidence API
 (11,601 subsidies + 9,484 statutes + 2,065 court decisions +
 1,185 enforcement records + 13,801 invoice registrants) exposed as
-a 302-path REST/OpenAPI surface + a 151-tool MCP server + a GraphQL endpoint.
+a 302-path REST/OpenAPI surface + a 155-tool MCP server + a GraphQL endpoint.
 
 Why I built it: ask Claude or GPT "what subsidies match this 法人番号?"
 and you get a confident, undated, source-less answer trained on 2024.
@@ -37,7 +37,7 @@ Stack:
 - ¥3/req (~$0.02), 3 req/IP/day anonymous, no monthly fee, 1-click cancel
 
 What's interesting technically:
-- 302 REST/OpenAPI paths + 151 MCP tools + 5 GraphQL types under one
+- 306 REST/OpenAPI paths + 155 MCP tools + 5 GraphQL types under one
   evidence-packet contract; no service mesh, single binary, all on
   one 9.4GB SQLite blob baked into the Docker image.
 - Sub-API-key fan-out (parent issues child keys per 顧問先) lets a

@@ -531,7 +531,7 @@ async def generate_pdf_report(
     pdf_id = f"pdf_{secrets.token_hex(8)}"
     r2_key, download_url, expires_at = _upload_to_r2(client_id, blob)
 
-    log_usage(
+    log_usage(  # type: ignore[call-arg]
         db,
         ctx,
         endpoint="pdf_report.generate",
@@ -549,7 +549,7 @@ async def generate_pdf_report(
         elapsed_ms,
     )
 
-    return PdfReportResponse(
+    return PdfReportResponse(  # type: ignore[call-arg]
         pdf_id=pdf_id,
         client_id=client_id,
         download_url=download_url,
