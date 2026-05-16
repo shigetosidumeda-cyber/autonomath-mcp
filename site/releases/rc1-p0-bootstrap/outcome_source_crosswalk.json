@@ -59,7 +59,17 @@
     "disaster_recovery_capability-packet",
     "third_party_audit_certification-packet",
     "devops_maturity_signal-packet",
-    "automation_intensity_index-packet"
+    "automation_intensity_index-packet",
+    "vendor_concentration_risk_packet",
+    "logistics_partner_360_packet",
+    "inventory_turnover_pattern_packet",
+    "supplier_credit_rating_match_packet",
+    "import_dependency_country_packet",
+    "just_in_time_intensity_packet",
+    "commodity_price_exposure_packet",
+    "secondary_supplier_resilience_packet",
+    "trade_credit_terms_packet",
+    "contract_manufacturing_intensity_packet"
   ],
   "crosswalk": [
     {

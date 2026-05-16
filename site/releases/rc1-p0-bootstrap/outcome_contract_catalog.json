@@ -1889,5 +1889,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 vendor concentration risk packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vendor_concentration_risk_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 logistics partner 360 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "logistics_partner_360_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 inventory turnover pattern packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "inventory_turnover_pattern_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 supplier credit rating match packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "supplier_credit_rating_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 import dependency country packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "import_dependency_country_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 just-in-time intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "just_in_time_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 commodity price exposure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "commodity_price_exposure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 secondary supplier resilience packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "secondary_supplier_resilience_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 trade credit terms packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "trade_credit_terms_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 contract manufacturing intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "contract_manufacturing_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

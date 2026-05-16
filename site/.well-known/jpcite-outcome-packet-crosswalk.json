@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 172,
+  "total_outcomes": 162,
   "wired_count": 69,
-  "pending_count": 83,
+  "pending_count": 93,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -3105,6 +3105,206 @@
       "estimated_rows": null,
       "athena_query_template": null,
       "status": "PENDING"
+    },
+    {
+      "outcome_id": "vendor_concentration_risk_packet",
+      "display_name": "業種別 vendor concentration risk packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_vendor_concentration_risk_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "logistics_partner_360_packet",
+      "display_name": "業種別 logistics partner 360 packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_logistics_partner_360_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "inventory_turnover_pattern_packet",
+      "display_name": "業種別 inventory turnover pattern packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_inventory_turnover_pattern_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "supplier_credit_rating_match_packet",
+      "display_name": "業種別 supplier credit rating match packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_supplier_credit_rating_match_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "import_dependency_country_packet",
+      "display_name": "業種別 import dependency country packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_import_dependency_country_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "just_in_time_intensity_packet",
+      "display_name": "業種別 just-in-time intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_just_in_time_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "commodity_price_exposure_packet",
+      "display_name": "業種別 commodity price exposure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_commodity_price_exposure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "secondary_supplier_resilience_packet",
+      "display_name": "業種別 secondary supplier resilience packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_secondary_supplier_resilience_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "trade_credit_terms_packet",
+      "display_name": "業種別 trade credit terms packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_trade_credit_terms_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "contract_manufacturing_intensity_packet",
+      "display_name": "業種別 contract manufacturing intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_contract_manufacturing_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
     }
   ],
   "gap_classification": {
@@ -3209,7 +3409,17 @@
       "disaster_recovery_capability_packet",
       "third_party_audit_certification_packet",
       "devops_maturity_signal_packet",
-      "automation_intensity_index_packet"
+      "automation_intensity_index_packet",
+      "vendor_concentration_risk_packet",
+      "logistics_partner_360_packet",
+      "inventory_turnover_pattern_packet",
+      "supplier_credit_rating_match_packet",
+      "import_dependency_country_packet",
+      "just_in_time_intensity_packet",
+      "commodity_price_exposure_packet",
+      "secondary_supplier_resilience_packet",
+      "trade_credit_terms_packet",
+      "contract_manufacturing_intensity_packet"
     ],
     "control_or_meta_outcome_no_packet_backing": [
       "agent_routing_decision",
