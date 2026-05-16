@@ -219,6 +219,57 @@
           "left": { "min": 0 }
         }
       }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 32,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "jpcite/credit", "GrossSpendUSD", "Classification", "RAMP", { "label": "Gross Spend (RAMP)" } ],
+          [ "...", "SLOWDOWN", { "label": "Gross Spend (SLOWDOWN)" } ],
+          [ "...", "STOP", { "label": "Gross Spend (STOP)" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-northeast-1",
+        "title": "Custom: jpcite/credit GrossSpendUSD (real-time, 5min EventBridge)",
+        "period": 300,
+        "stat": "Maximum",
+        "yAxis": {
+          "left": { "min": 0, "label": "USD" }
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 32,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "metrics": [
+          [ "jpcite/credit", "HourlyBurnRate", "Classification", "RAMP", { "label": "Hourly Burn (RAMP)" } ],
+          [ "...", "SLOWDOWN", { "label": "Hourly Burn (SLOWDOWN)" } ],
+          [ "...", "STOP", { "label": "Hourly Burn (STOP)" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "ap-northeast-1",
+        "title": "Custom: jpcite/credit HourlyBurnRate (real-time, 5min EventBridge)",
+        "period": 300,
+        "stat": "Maximum",
+        "yAxis": {
+          "left": { "min": 0, "label": "USD / hr" }
+        },
+        "annotations": {
+          "horizontal": [
+            { "value": 500, "label": "Hourly STOP line ($500/hr)", "color": "#d62728" }
+          ]
+        }
+      }
     }
   ]
 }
