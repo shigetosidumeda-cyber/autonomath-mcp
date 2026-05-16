@@ -5399,5 +5399,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 デジタル接点 inventory packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "digital_touchpoint_inventory_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 顧客獲得 velocity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "customer_acquisition_velocity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 コンバージョン funnel signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "conversion_funnel_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 リテンション metric proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "retention_metric_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 解約リスク signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "churn_risk_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 アップセル / クロスセル signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "upsell_cross_sell_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 サービス品質 / 苦情 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "service_quality_complaint_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 モバイルファースト signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "mobile_first_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 多言語サポート 開示 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "multilingual_support_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 アクセシビリティ JIS X 8341 / WCAG 2.1 AA packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "accessibility_compliance_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

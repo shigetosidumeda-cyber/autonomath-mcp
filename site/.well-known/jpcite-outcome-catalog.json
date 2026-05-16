@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-17",
   "generated_at": "2026-05-17T01:30:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 442,
+  "total_outcomes": 452,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -9034,6 +9034,196 @@
       "outcome_contract_id": "data_steward_program_signal_packet",
       "display_name": "業種別 Data Steward プログラム signal packet",
       "description": "業種別 CDO / Data Owner / Steward / Custodian / DAMA-DMBOK 11 機能 / RACI matrix / Data Citizen training (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "digital_touchpoint_inventory_packet",
+      "display_name": "業種別 デジタル接点 inventory packet",
+      "description": "業種別 web / モバイルアプリ / SNS / LINE / オウンドメディア / chatbot / 顧客ポータル / IVR デジタル接点 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "customer_acquisition_velocity_packet",
+      "display_name": "業種別 顧客獲得 velocity packet",
+      "description": "業種別 CAC / LTV / payback / CVR / churn-adjusted CAC / paid vs organic / コホート (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "conversion_funnel_signal_packet",
+      "display_name": "業種別 コンバージョン funnel signal packet",
+      "description": "業種別 TOFU/MOFU/BOFU / form abandon / cart abandon / micro-conversion / bounce / dwell time (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "retention_metric_proxy_packet",
+      "display_name": "業種別 リテンション metric proxy packet",
+      "description": "業種別 NRR / GRR / DAU MAU / week-N retention / cohort survival / NPS / CSAT (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "churn_risk_signal_packet",
+      "display_name": "業種別 解約リスク signal packet",
+      "description": "業種別 churn propensity / login 間隔 / 支払遅延 / サポート問合せ増 / 機能未活用 / 競合 lookalike (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "upsell_cross_sell_signal_packet",
+      "display_name": "業種別 アップセル / クロスセル signal packet",
+      "description": "業種別 next-best offer / association rule / lookalike / 上位プラン uptake / bundle attach (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "service_quality_complaint_packet",
+      "display_name": "業種別 サービス品質 / 苦情 packet",
+      "description": "業種別 PIO-NET 件数 / 苦情累計 / 解決日数 / あっせん件数 / 国セ法 §10 / 消費者契約法 §4 §10 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "mobile_first_signal_packet",
+      "display_name": "業種別 モバイルファースト signal packet",
+      "description": "業種別 モバイル share / responsive / PWA / native app / app rating / モバイル CVR / モバイル決済 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "multilingual_support_disclosure_packet",
+      "display_name": "業種別 多言語サポート 開示 packet",
+      "description": "業種別 英中韓 + ASEAN / 観光庁 多言語対応 / FDI IR / 在留外国人向けサービス / 機械翻訳 vs 人手翻訳 開示 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "accessibility_compliance_signal_packet",
+      "display_name": "業種別 アクセシビリティ JIS X 8341 / WCAG 2.1 AA packet",
+      "description": "業種別 JIS X 8341-3:2016 / WCAG 2.1 AA / 障害者差別解消法 §7 §8 合理的配慮 / 民間義務化 (採択密度 proxy) descriptive overlay",
       "subject_kind": "jsic_major",
       "subject_id_hint": "jsic_major",
       "package_kind": "evidence_packet",

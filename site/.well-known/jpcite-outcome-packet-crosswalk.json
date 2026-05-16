@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 432,
+  "total_outcomes": 442,
   "wired_count": 269,
-  "pending_count": 163,
+  "pending_count": 173,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -8544,6 +8544,186 @@
       "aws_region": "ap-northeast-1",
       "estimated_rows": 17,
       "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_data_steward_program_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "digital_touchpoint_inventory_packet",
+      "display_name": "業種別 デジタル接点 inventory packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "digital_touchpoint_inventory_v1"
+      ],
+      "packet_generator": "generate_digital_touchpoint_inventory_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_digital_touchpoint_inventory_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_digital_touchpoint_inventory_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "customer_acquisition_velocity_packet",
+      "display_name": "業種別 顧客獲得 velocity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "customer_acquisition_velocity_v1"
+      ],
+      "packet_generator": "generate_customer_acquisition_velocity_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_customer_acquisition_velocity_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_customer_acquisition_velocity_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "conversion_funnel_signal_packet",
+      "display_name": "業種別 コンバージョン funnel signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "conversion_funnel_signal_v1"
+      ],
+      "packet_generator": "generate_conversion_funnel_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_conversion_funnel_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_conversion_funnel_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "retention_metric_proxy_packet",
+      "display_name": "業種別 リテンション metric proxy packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "retention_metric_proxy_v1"
+      ],
+      "packet_generator": "generate_retention_metric_proxy_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_retention_metric_proxy_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_retention_metric_proxy_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "churn_risk_signal_packet",
+      "display_name": "業種別 解約リスク signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "churn_risk_signal_v1"
+      ],
+      "packet_generator": "generate_churn_risk_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_churn_risk_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_churn_risk_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "upsell_cross_sell_signal_packet",
+      "display_name": "業種別 アップセル / クロスセル signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "upsell_cross_sell_signal_v1"
+      ],
+      "packet_generator": "generate_upsell_cross_sell_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_upsell_cross_sell_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_upsell_cross_sell_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "service_quality_complaint_packet",
+      "display_name": "業種別 サービス品質 / 苦情 packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "service_quality_complaint_v1"
+      ],
+      "packet_generator": "generate_service_quality_complaint_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_service_quality_complaint_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_service_quality_complaint_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "mobile_first_signal_packet",
+      "display_name": "業種別 モバイルファースト signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "mobile_first_signal_v1"
+      ],
+      "packet_generator": "generate_mobile_first_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_mobile_first_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_mobile_first_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "multilingual_support_disclosure_packet",
+      "display_name": "業種別 多言語サポート 開示 packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "multilingual_support_disclosure_v1"
+      ],
+      "packet_generator": "generate_multilingual_support_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_multilingual_support_disclosure_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_multilingual_support_disclosure_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "accessibility_compliance_signal_packet",
+      "display_name": "業種別 アクセシビリティ JIS X 8341 / WCAG 2.1 AA packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "accessibility_compliance_signal_v1"
+      ],
+      "packet_generator": "generate_accessibility_compliance_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_accessibility_compliance_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_accessibility_compliance_signal_v1 LIMIT 100",
       "status": "PENDING"
     }
   ],
