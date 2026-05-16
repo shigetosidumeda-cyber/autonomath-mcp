@@ -70,8 +70,8 @@ router = APIRouter(prefix="/v1/graphql", tags=["graphql"])
 # --------------------------------------------------------------------- #
 
 try:
-    import strawberry  # type: ignore
-    from strawberry.fastapi import GraphQLRouter  # type: ignore
+    import strawberry  # type: ignore[import-not-found,unused-ignore]
+    from strawberry.fastapi import GraphQLRouter  # type: ignore[import-not-found,unused-ignore]
 
     _STRAWBERRY_AVAILABLE = True
 except ImportError:

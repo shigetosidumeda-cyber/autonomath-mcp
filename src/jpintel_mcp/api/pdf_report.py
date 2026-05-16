@@ -268,11 +268,13 @@ def _collect_client_context(
 def _render_pdf(client_id: str, ctx: dict[str, Any]) -> tuple[bytes, int]:
     """Render the PDF body with reportlab. Returns ``(bytes, page_count)``."""
     try:
-        from reportlab.lib import colors  # type: ignore[import-untyped]
-        from reportlab.lib.pagesizes import A4  # type: ignore[import-untyped]
-        from reportlab.lib.styles import getSampleStyleSheet  # type: ignore[import-untyped]
-        from reportlab.lib.units import mm  # type: ignore[import-untyped]
-        from reportlab.platypus import (  # type: ignore[import-untyped]
+        from reportlab.lib import colors  # type: ignore[import-untyped,unused-ignore]
+        from reportlab.lib.pagesizes import A4  # type: ignore[import-untyped,unused-ignore]
+        from reportlab.lib.styles import (  # type: ignore[import-untyped,unused-ignore]
+            getSampleStyleSheet,
+        )
+        from reportlab.lib.units import mm  # type: ignore[import-untyped,unused-ignore]
+        from reportlab.platypus import (  # type: ignore[import-untyped,unused-ignore]
             Paragraph,
             SimpleDocTemplate,
             Spacer,
@@ -469,7 +471,7 @@ def _upload_to_r2(client_id: str, blob: bytes) -> tuple[str, str, str]:
     expires_at = (datetime.now(UTC) + timedelta(seconds=PDF_URL_TTL_S)).isoformat()
 
     if not os.environ.get("R2_ENDPOINT"):
-        local = f"/tmp/pdf_report/{pdf_id}.pdf"  # noqa: S108
+        local = f"/tmp/pdf_report/{pdf_id}.pdf"  # noqa: S108  # nosec B108
         os.makedirs(os.path.dirname(local), exist_ok=True)
         with open(local, "wb") as fh:
             fh.write(blob)
@@ -480,13 +482,13 @@ def _upload_to_r2(client_id: str, blob: bytes) -> tuple[str, str, str]:
 
         from scripts.cron._r2_client import upload
 
-        tmp = Path(f"/tmp/{pdf_id}.pdf")  # noqa: S108
+        tmp = Path(f"/tmp/{pdf_id}.pdf")  # noqa: S108  # nosec B108
         tmp.write_bytes(blob)
         upload(tmp, key)
         tmp.unlink(missing_ok=True)
     except (ImportError, RuntimeError) as exc:
         logger.warning("r2 upload fell back to inline due to: %s", exc)
-        local = f"/tmp/pdf_report/{pdf_id}.pdf"  # noqa: S108
+        local = f"/tmp/pdf_report/{pdf_id}.pdf"  # noqa: S108  # nosec B108
         os.makedirs(os.path.dirname(local), exist_ok=True)
         with open(local, "wb") as fh:
             fh.write(blob)
@@ -664,7 +666,7 @@ async def inline_pdf(pdf_id: str) -> Any:
 
     if not pdf_id.startswith("pdf_") or "/" in pdf_id:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "invalid pdf_id")
-    path = f"/tmp/pdf_report/{pdf_id}.pdf"  # noqa: S108
+    path = f"/tmp/pdf_report/{pdf_id}.pdf"  # noqa: S108  # nosec B108
     if not os.path.exists(path):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "pdf expired or not staged")
     return FileResponse(path, media_type="application/pdf", filename=f"{pdf_id}.pdf")

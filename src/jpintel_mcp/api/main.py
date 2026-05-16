@@ -18,7 +18,19 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.utils import get_openapi
+
+# PERF-33 (2026-05-17): ``get_openapi`` is used inside the ``custom_openapi``
+# closure registered by ``create_app`` and is only invoked on the first call
+# to ``app.openapi()`` (typically the first GET /v1/openapi.json). The
+# upstream ``fastapi.openapi.utils`` module itself is unavoidably loaded by
+# ``from fastapi import FastAPI`` above (FastAPI's constructor eagerly drags
+# ``fastapi.openapi.models`` + ``fastapi.openapi.utils`` into ``sys.modules``
+# regardless), so moving the symbol resolution to the use site is purely a
+# hygiene + ratchet-protection win: if a future FastAPI release ever splits
+# ``openapi.models`` out of the core import chain, this module no longer
+# eagerly re-couples to it. Audited via ``python -X importtime`` on
+# 2026-05-17 — see PERF-27 cold-start gate budgets in
+# ``tests/perf/test_import_time_gate.py``.
 from fastapi.responses import JSONResponse, ORJSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -3153,6 +3165,15 @@ def create_app() -> FastAPI:
     def custom_openapi() -> dict[str, Any]:
         if app.openapi_schema:
             return app.openapi_schema
+        # PERF-33 (2026-05-17): import at use site rather than module top.
+        # ``fastapi.openapi.utils`` is already in ``sys.modules`` after
+        # ``from fastapi import FastAPI`` runs at module load (FastAPI's
+        # own constructor eagerly drags it), so this is a zero-cost lookup
+        # in the steady state. Keeping the symbol resolution local insulates
+        # ``api.main`` from a future FastAPI split of ``openapi.models`` /
+        # ``openapi.utils`` out of the core import chain.
+        from fastapi.openapi.utils import get_openapi
+
         schema = get_openapi(
             title=app.title,
             version=__version__,
