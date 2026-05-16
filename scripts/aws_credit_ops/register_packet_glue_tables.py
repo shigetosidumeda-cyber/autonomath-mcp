@@ -1345,6 +1345,59 @@ for _name, _prefix in _WAVE_73_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 70 — industry x geographic intersection houjin universal key packets
+# (catalog 192 -> 202). All 10 share the **houjin** subject cohort with
+# (houjin_bangou, industry_jsic_medium, prefecture or municipality) intersection
+# carrying houjin_bangou as universal key. Fixes the canonical moat hole where
+# prefecture cohort and industry cohort packets carried no shared key (Wave 67
+# Q12+Q14 EMPTY intersection). subject_kind = houjin.
+_WAVE_70_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_industry_x_prefecture_houjin_v1",
+        "industry_x_prefecture_houjin_v1/",
+    ),
+    (
+        "packet_prefecture_x_industry_density_v1",
+        "prefecture_x_industry_density_v1/",
+    ),
+    (
+        "packet_regional_industry_subsidy_match_v1",
+        "regional_industry_subsidy_match_v1/",
+    ),
+    (
+        "packet_municipality_industry_directory_v1",
+        "municipality_industry_directory_v1/",
+    ),
+    (
+        "packet_prefecture_industry_court_overlay_v1",
+        "prefecture_industry_court_overlay_v1/",
+    ),
+    (
+        "packet_regional_industry_violation_density_v1",
+        "regional_industry_violation_density_v1/",
+    ),
+    (
+        "packet_city_industry_diversification_v1",
+        "city_industry_diversification_v1/",
+    ),
+    (
+        "packet_prefecture_industry_inbound_v1",
+        "prefecture_industry_inbound_v1/",
+    ),
+    (
+        "packet_regional_industry_export_intensity_v1",
+        "regional_industry_export_intensity_v1/",
+    ),
+    (
+        "packet_municipality_industry_cluster_v1",
+        "municipality_industry_cluster_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_70_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
