@@ -30,11 +30,14 @@ from scripts.aws_credit_ops.textract_batch import (
     DEFAULT_PER_PAGE_USD,
     DEFAULT_WARN_THRESHOLD,
     DRY_RUN_SIMULATED_PAGE_COUNT,
+    MAGIC_BYTES_SCAN_LEN,
     PdfListEntry,
     RunReport,
     S3Uri,
     _parse_args,
+    audit_magic_bytes,
     build_per_page_jsonl,
+    classify_magic_bytes,
     list_pdfs,
     main,
     projected_spend_after,
@@ -51,10 +54,17 @@ from scripts.aws_credit_ops.textract_batch import (
 
 
 class _FakeS3:
-    def __init__(self, pages: list[dict[str, Any]] | None = None) -> None:
+    def __init__(
+        self,
+        pages: list[dict[str, Any]] | None = None,
+        *,
+        prefix_bytes: dict[str, bytes] | None = None,
+    ) -> None:
         self._pages = list(pages or [])
+        self._prefix_bytes = dict(prefix_bytes or {})
         self.put_calls: list[dict[str, Any]] = []
         self.list_calls: list[dict[str, Any]] = []
+        self.get_calls: list[dict[str, Any]] = []
 
     def list_objects_v2(self, **kwargs: Any) -> dict[str, Any]:
         self.list_calls.append(kwargs)
@@ -65,6 +75,22 @@ class _FakeS3:
     def put_object(self, **kwargs: Any) -> dict[str, Any]:
         self.put_calls.append(kwargs)
         return {"ETag": "abc"}
+
+    def get_object(self, **kwargs: Any) -> dict[str, Any]:
+        self.get_calls.append(kwargs)
+        key = kwargs.get("Key")
+        data = self._prefix_bytes.get(str(key), b"")
+
+        class _Body:
+            def __init__(self, payload: bytes) -> None:
+                self._payload = payload
+
+            def read(self, n: int = -1) -> bytes:
+                if n < 0:
+                    return self._payload
+                return self._payload[:n]
+
+        return {"Body": _Body(data)}
 
 
 # ---------------------------------------------------------------------------
@@ -467,3 +493,185 @@ def test_pdf_list_entry_defaults() -> None:
     entry = PdfListEntry(bucket="b", key="k.pdf", size_bytes=10)
     assert entry.estimated_page_count is None
     assert entry.skip_reason is None
+
+
+# ---------------------------------------------------------------------------
+# Magic-byte audit
+# ---------------------------------------------------------------------------
+
+
+def test_classify_magic_bytes_pdf() -> None:
+    assert classify_magic_bytes(b"%PDF-1.4") == "application/pdf"
+
+
+def test_classify_magic_bytes_html_doctype() -> None:
+    assert classify_magic_bytes(b"<!DOCTYPE html>") == "text/html"
+
+
+def test_classify_magic_bytes_html_lowercase_doctype() -> None:
+    assert classify_magic_bytes(b"<!doctype html>") == "text/html"
+
+
+def test_classify_magic_bytes_html_tag() -> None:
+    assert classify_magic_bytes(b"<html><head>") == "text/html"
+
+
+def test_classify_magic_bytes_xml() -> None:
+    assert classify_magic_bytes(b"<?xml ver") == "application/xml"
+
+
+def test_classify_magic_bytes_utf8_bom_html() -> None:
+    assert classify_magic_bytes(b"\xef\xbb\xbf<htm") == "text/html"
+
+
+def test_classify_magic_bytes_zip() -> None:
+    assert classify_magic_bytes(b"PK\x03\x04...") == "application/zip"
+
+
+def test_classify_magic_bytes_empty() -> None:
+    assert classify_magic_bytes(b"") == "empty"
+
+
+def test_classify_magic_bytes_unknown() -> None:
+    assert classify_magic_bytes(b"\x00\x01\x02\x03") == "unknown"
+
+
+def test_magic_bytes_scan_len_is_eight() -> None:
+    # Encodes the design contract: 8 bytes is enough to discriminate
+    # every prefix in the table without paying for kilobyte reads.
+    assert MAGIC_BYTES_SCAN_LEN == 8
+
+
+def test_audit_magic_bytes_j06_pattern() -> None:
+    """Reproduce the 2026-05-16 J06 finding: .bin files = HTML payload."""
+
+    fake = _FakeS3(
+        pages=[
+            {
+                "Contents": [
+                    {"Key": "J06/raw/aaa.bin", "Size": 6795},
+                    {"Key": "J06/raw/bbb.bin", "Size": 20795},
+                    {"Key": "J06/raw/ccc.bin", "Size": 42174},
+                ]
+            }
+        ],
+        prefix_bytes={
+            "J06/raw/aaa.bin": b"<!DOCTYPE",
+            "J06/raw/bbb.bin": b"<html><h",
+            "J06/raw/ccc.bin": b"<?xml ve",
+        },
+    )
+    rows = audit_magic_bytes(S3Uri.parse("s3://bkt/J06/raw/"), s3_client=fake)
+    types = sorted(r["inferred_content_type"] for r in rows)
+    assert types == ["application/xml", "text/html", "text/html"]
+    # Every object should have been ranged-GET-fetched once.
+    assert len(fake.get_calls) == 3
+    for call in fake.get_calls:
+        assert call.get("Range") == "bytes=0-7"
+
+
+def test_audit_magic_bytes_detects_real_pdf() -> None:
+    fake = _FakeS3(
+        pages=[
+            {
+                "Contents": [
+                    {"Key": "real.pdf", "Size": 100},
+                    {"Key": "fake.bin", "Size": 200},
+                ]
+            }
+        ],
+        prefix_bytes={
+            "real.pdf": b"%PDF-1.5",
+            "fake.bin": b"<!DOCTYP",
+        },
+    )
+    rows = audit_magic_bytes(S3Uri.parse("s3://bkt/"), s3_client=fake)
+    by_key = {r["key"]: r["inferred_content_type"] for r in rows}
+    assert by_key == {
+        "real.pdf": "application/pdf",
+        "fake.bin": "text/html",
+    }
+
+
+def test_audit_magic_bytes_paginates() -> None:
+    fake = _FakeS3(
+        pages=[
+            {
+                "Contents": [{"Key": "p1.bin", "Size": 1}],
+                "IsTruncated": True,
+                "NextContinuationToken": "tok-a",
+            },
+            {"Contents": [{"Key": "p2.bin", "Size": 2}]},
+        ],
+        prefix_bytes={"p1.bin": b"<html><b", "p2.bin": b"<?xml ve"},
+    )
+    rows = audit_magic_bytes(S3Uri.parse("s3://bkt/"), s3_client=fake)
+    assert [r["key"] for r in rows] == ["p1.bin", "p2.bin"]
+    assert fake.list_calls[1].get("ContinuationToken") == "tok-a"
+
+
+def test_audit_magic_bytes_honors_max_objects() -> None:
+    fake = _FakeS3(
+        pages=[
+            {
+                "Contents": [
+                    {"Key": f"x{i}.bin", "Size": 1} for i in range(50)
+                ]
+            }
+        ],
+        prefix_bytes={f"x{i}.bin": b"<!DOCTYP" for i in range(50)},
+    )
+    rows = audit_magic_bytes(
+        S3Uri.parse("s3://bkt/"), s3_client=fake, max_objects=7
+    )
+    assert len(rows) == 7
+
+
+def test_main_audit_magic_bytes_branch(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_audit(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+        captured["called"] = True
+        return [
+            {
+                "key": "J06/raw/a.bin",
+                "size_bytes": 100,
+                "magic_prefix_hex": "3c21444f43545950",
+                "inferred_content_type": "text/html",
+            },
+            {
+                "key": "J06/raw/b.bin",
+                "size_bytes": 200,
+                "magic_prefix_hex": "3c3f786d6c2076",
+                "inferred_content_type": "application/xml",
+            },
+        ]
+
+    def fake_write_jsonl(*args: Any, **kwargs: Any) -> str:
+        captured["jsonl_called"] = True
+        return "s3://out/audit/foo/magic_bytes.jsonl"
+
+    monkeypatch.setattr(
+        "scripts.aws_credit_ops.textract_batch.audit_magic_bytes", fake_audit
+    )
+    monkeypatch.setattr(
+        "scripts.aws_credit_ops.textract_batch.write_jsonl", fake_write_jsonl
+    )
+    rc = main(
+        [
+            "--input-prefix",
+            "s3://in/J06/raw/",
+            "--output-prefix",
+            "s3://out/",
+            "--audit-magic-bytes",
+        ]
+    )
+    out = capsys.readouterr().out
+    assert rc == 0
+    assert captured.get("called") is True
+    assert captured.get("jsonl_called") is True
+    assert "audit: objects=2" in out
+    assert "real_pdfs=0" in out
+    assert "AUDIT WARN" in out

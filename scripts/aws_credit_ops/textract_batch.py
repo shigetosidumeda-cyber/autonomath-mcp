@@ -81,6 +81,7 @@ Constraints
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import logging
 import os
@@ -133,6 +134,32 @@ DEFAULT_MAX_PDFS: Final[int] = 800
 #: run still drives the budget gate so an operator can preview the spend
 #: implication of a listing without paying for it.
 DRY_RUN_SIMULATED_PAGE_COUNT: Final[int] = 10
+
+#: First N bytes pulled from each candidate object during magic-byte
+#: audit. 8 is the longest interesting magic header in our corpus
+#: (``%PDF-1.4`` = 8 bytes; HTML / XML need fewer). Keeping the range
+#: tight prevents the audit from accidentally pulling a megabyte from
+#: a 9 GB object.
+MAGIC_BYTES_SCAN_LEN: Final[int] = 8
+
+#: Magic-byte prefix classifications. The 2026-05-16 J06 smoke walk
+#: caught the crawler shipping ``.bin`` artifacts whose ContentType was
+#: ``binary/octet-stream`` but whose actual payload was ``text/html``
+#: (ministry index pages, not the linked PDFs). Sending those to
+#: Textract would either fail outright or bill ``USD 0.05`` per spurious
+#: page on garbage output. The audit mode below catches this *before*
+#: --commit so the operator can re-aim the crawler.
+_MAGIC_BYTE_PREFIXES: Final[tuple[tuple[bytes, str], ...]] = (
+    (b"%PDF-", "application/pdf"),
+    (b"<!DOCTYP", "text/html"),  # 8 byte prefix of <!DOCTYPE (case-sensitive)
+    (b"<!doctyp", "text/html"),  # 8 byte prefix of <!doctype
+    (b"<html", "text/html"),
+    (b"<HTML", "text/html"),
+    (b"<?xml", "application/xml"),
+    (b"\xef\xbb\xbf<", "text/html"),
+    (b"\r\n\r\n", "text/html"),
+    (b"PK\x03\x04", "application/zip"),
+)
 
 
 @dataclass(frozen=True)
@@ -214,6 +241,119 @@ class RunReport:
             "stop_reason": self.stop_reason,
             "skipped_entries": list(self.skipped_entries),
         }
+
+
+# ---------------------------------------------------------------------------
+# Magic-byte audit
+# ---------------------------------------------------------------------------
+
+
+def classify_magic_bytes(prefix_bytes: bytes) -> str:
+    """Classify ``prefix_bytes`` against the known magic-byte table.
+
+    Returns the MIME-style label of the matched prefix, or ``"unknown"``
+    when no entry matches. Pure function so the J06 mislabel pattern
+    (HTML payload wearing ``.bin`` + ``binary/octet-stream``) is testable
+    without S3.
+    """
+
+    if not prefix_bytes:
+        return "empty"
+    for magic, label in _MAGIC_BYTE_PREFIXES:
+        if prefix_bytes.startswith(magic):
+            return label
+    return "unknown"
+
+
+def _fetch_object_prefix(
+    s3_client: Any,
+    bucket: str,
+    key: str,
+    *,
+    scan_len: int = MAGIC_BYTES_SCAN_LEN,
+) -> bytes:
+    """Fetch the first ``scan_len`` bytes of ``s3://bucket/key``.
+
+    Uses a ranged ``GetObject`` so the audit cost is ``scan_len`` bytes
+    per object — far below S3's per-request floor — regardless of the
+    underlying object size. Errors are swallowed and bubble up as an
+    empty ``b""`` so the caller can record "unreadable" without aborting
+    the audit run.
+    """
+
+    try:
+        resp = s3_client.get_object(
+            Bucket=bucket,
+            Key=key,
+            Range=f"bytes=0-{max(scan_len - 1, 0)}",
+        )
+    except Exception:  # noqa: BLE001 - audit is best-effort
+        return b""
+    body = resp.get("Body")
+    if body is None:
+        return b""
+    try:
+        data = body.read(scan_len)
+    except Exception:  # noqa: BLE001 - audit is best-effort
+        return b""
+    if isinstance(data, bytes):
+        return data
+    return b""
+
+
+def audit_magic_bytes(
+    input_uri: S3Uri,
+    *,
+    s3_client: Any | None = None,
+    max_objects: int = DEFAULT_MAX_PDFS,
+    scan_len: int = MAGIC_BYTES_SCAN_LEN,
+) -> list[dict[str, Any]]:
+    """List every object under ``input_uri`` and classify the first bytes.
+
+    Unlike :func:`list_pdfs` this does **not** filter by ``.pdf``
+    suffix — the whole point is to surface mislabeled artifacts (``.bin``
+    files whose payload is HTML / XML / zip etc.). Returns one dict per
+    object with ``key`` / ``size_bytes`` / ``magic_prefix_hex`` /
+    ``inferred_content_type``. Caller is responsible for emitting the
+    audit report (CLI does this via :func:`write_jsonl`).
+    """
+
+    if s3_client is None:
+        s3_client = _boto3_client("s3")
+    rows: list[dict[str, Any]] = []
+    continuation: str | None = None
+    while True:
+        kwargs: dict[str, Any] = {
+            "Bucket": input_uri.bucket,
+            "Prefix": input_uri.key_prefix,
+        }
+        if continuation is not None:
+            kwargs["ContinuationToken"] = continuation
+        page = s3_client.list_objects_v2(**kwargs)
+        for obj in page.get("Contents", []) or []:
+            key = obj.get("Key")
+            size = int(obj.get("Size", 0) or 0)
+            if not isinstance(key, str):
+                continue
+            prefix_bytes = _fetch_object_prefix(
+                s3_client, input_uri.bucket, key, scan_len=scan_len
+            )
+            rows.append(
+                {
+                    "key": key,
+                    "size_bytes": size,
+                    "magic_prefix_hex": prefix_bytes.hex(),
+                    "inferred_content_type": classify_magic_bytes(prefix_bytes),
+                }
+            )
+            if len(rows) >= max_objects:
+                return rows
+        if not page.get("IsTruncated"):
+            break
+        continuation = page.get("NextContinuationToken")
+        if not continuation:
+            break
+    return rows
 
 
 # ---------------------------------------------------------------------------
@@ -706,12 +846,92 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Emit the RunReport as JSON on stdout.",
     )
+    parser.add_argument(
+        "--audit-magic-bytes",
+        action="store_true",
+        help=(
+            "Scan every object under --input-prefix (regardless of suffix) "
+            "and classify the first 8 bytes against a magic-byte table. "
+            "Emits an audit summary on stdout + JSONL to "
+            "<output-prefix>/audit/<job_run>/magic_bytes.jsonl. No Textract "
+            "calls, no PDF processing. Use this to spot crawler mislabels "
+            "(e.g. HTML payload wearing .bin + binary/octet-stream) before "
+            "paying for a Textract batch."
+        ),
+    )
     return parser.parse_args(argv)
+
+
+def _run_audit_magic_bytes(
+    args: argparse.Namespace,
+    *,
+    s3_client: Any | None = None,
+) -> int:
+    """Drive the magic-byte audit path and emit the summary + JSONL.
+
+    Returns ``0`` even when no actual PDFs are present — the audit is an
+    inspection, not a gate. The CLI report makes the absence of PDFs
+    loud enough that a downstream operator notices before --commit.
+    """
+
+    input_uri = S3Uri.parse(args.input_prefix)
+    output_uri = S3Uri.parse(args.output_prefix)
+    run_id = args.job_run_id or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    rows = audit_magic_bytes(
+        input_uri,
+        s3_client=s3_client,
+        max_objects=args.max_pdfs,
+    )
+    histogram: dict[str, int] = {}
+    for row in rows:
+        label = str(row.get("inferred_content_type", "unknown"))
+        histogram[label] = histogram.get(label, 0) + 1
+    pdf_count = histogram.get("application/pdf", 0)
+    summary = {
+        "job_run_id": run_id,
+        "input_prefix": args.input_prefix,
+        "output_prefix": args.output_prefix,
+        "objects_scanned": len(rows),
+        "real_pdf_count": pdf_count,
+        "inferred_content_type_histogram": histogram,
+    }
+    audit_key = f"audit/{run_id}/magic_bytes.jsonl"
+    # No boto3 in operator env or transient AWS error — still print the
+    # summary so the audit is useful even when the JSONL emit fails. The
+    # actual exit code reflects "did we get usable info", not "did we
+    # successfully write to S3".
+    with contextlib.suppress(TextractClientError):
+        write_jsonl(
+            rows,
+            output_uri=output_uri,
+            key_suffix=audit_key,
+            s3_client=s3_client,
+        )
+    if args.json:
+        print(
+            json.dumps(
+                {**summary, "rows": rows}, ensure_ascii=False, sort_keys=True, indent=2
+            )
+        )
+    else:
+        print(
+            f"[textract_batch] audit: objects={len(rows)} real_pdfs={pdf_count} "
+            f"histogram={histogram}"
+        )
+        if pdf_count == 0 and len(rows) > 0:
+            print(
+                "[textract_batch] AUDIT WARN: zero application/pdf payloads. "
+                "Crawler likely captured index/listing pages, not the linked "
+                "PDFs. Do NOT --commit a Textract batch against this prefix."
+            )
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     args = _parse_args(argv)
+    if args.audit_magic_bytes:
+        return _run_audit_magic_bytes(args)
     dry_run = not args.commit and os.environ.get("DRY_RUN", "1") != "0"
     report = run_batch(
         input_prefix=args.input_prefix,
