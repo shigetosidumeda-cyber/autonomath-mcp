@@ -231,8 +231,59 @@ TOP_7_REMAINING: list[TableSpec] = [
     ),
 ]
 
-# Combined catalog of all specs the runner knows about (top 3 + top 7).
-ALL_SPECS: list[TableSpec] = TOP_3 + TOP_7_REMAINING
+# PERF-34 (2026-05-17) — ranks 11-30 sweep (20 more tables).
+#
+# Selection: ranked by query reference count across Wave 67/70/82 captured
+# SQL files (the 17 executed queries with concrete bytes_scanned in
+# `docs/_internal/ATHENA_QUERY_INDEX_2026_05_17.md`). Cutoff ranks 11..30.
+# Ties broken by alphabetical name.
+#
+# Schema observation (Glue DESCRIBE probe 2026-05-17): most tables share
+# the same shape used by the PERF-3/24 catalogue — `subject` JSON column +
+# `cohort_definition` JSON column. We reuse the subject_kind partition
+# axis (subject.kind is typically 'houjin'). The trademark/patent/business
+# _partner/program_amendment_timeline families carry an explicit
+# `prefecture` column but we do NOT promote it to a partition: high
+# cardinality on flat 100k-row tables hurts scan latency more than ZSTD
+# column pruning helps (PERF-3 lesson).
+TOP_20_PERF34: list[TableSpec] = [
+    TableSpec(
+        name=name,
+        parquet=f"{name}_parquet",
+        partition_cols=["subject_kind"],
+        select_extras=[
+            "COALESCE(json_extract_scalar(subject, '$.kind'), 'unknown') AS subject_kind",
+        ],
+        sample_sql_template="SELECT COUNT(*) AS row_cnt FROM {table}",
+    )
+    for name in [
+        # Rank 11-20 (highest ref count first)
+        "packet_trademark_industry_density_v1",  # 13 refs
+        "packet_patent_corp_360_v1",  # 10
+        "packet_succession_program_matching_v1",  # 9
+        "packet_region_industry_match_v1",  # 8
+        "packet_program_amendment_timeline_v2",  # 8
+        "packet_prefecture_program_heatmap_v1",  # 8
+        "packet_business_partner_360_v1",  # 8
+        "packet_board_member_overlap_v1",  # 8
+        "packet_kfs_saiketsu_industry_radar_v1",  # 7
+        "packet_enforcement_seasonal_trend_v1",  # 7
+        # Rank 21-30
+        "packet_adoption_fiscal_cycle_v1",  # 7
+        "packet_trademark_brand_protection_v1",  # 6
+        "packet_kanpou_gazette_watch_v1",  # 6
+        "packet_gbiz_invoice_dispatch_match_v1",  # 6
+        "packet_environmental_compliance_radar_v1",  # 6
+        "packet_bond_issuance_pattern_v1",  # 6
+        "packet_houjin_parent_subsidiary_v1",  # 5
+        "packet_founding_succession_chain_v1",  # 5
+        "packet_climate_transition_plan_v1",  # 5
+        "packet_carbon_reporting_compliance_v1",  # 5
+    ]
+]
+
+# Combined catalog of all specs the runner knows about (top 3 + top 7 + top 20).
+ALL_SPECS: list[TableSpec] = TOP_3 + TOP_7_REMAINING + TOP_20_PERF34
 
 
 def build_ctas(spec: TableSpec) -> str:
