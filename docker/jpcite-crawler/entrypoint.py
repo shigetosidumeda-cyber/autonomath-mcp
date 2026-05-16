@@ -316,9 +316,21 @@ def _upload_dir(s3: Any, local_dir: Path, bucket: str, prefix: str) -> int:
 
 
 def run() -> int:
-    manifest_uri = os.environ.get("JOB_MANIFEST_S3_URI", "").strip()
+    # Accept both env var names so manual `submit_job.sh` (JOB_MANIFEST_S3_URI)
+    # and the Step Functions orchestrator (JPCITE_MANIFEST_S3) can share the
+    # same container image without a name collision. The former takes
+    # precedence when both are present so existing successful invocations
+    # remain bit-for-bit identical.
+    manifest_uri = (
+        os.environ.get("JOB_MANIFEST_S3_URI", "").strip()
+        or os.environ.get("JPCITE_MANIFEST_S3", "").strip()
+    )
     if not manifest_uri:
-        _log("error", "JOB_MANIFEST_S3_URI is required")
+        _log(
+            "error",
+            "manifest_env_missing",
+            detail="set JOB_MANIFEST_S3_URI or JPCITE_MANIFEST_S3 to s3://bucket/key.json",
+        )
         return 2
 
     work_dir = Path(os.environ.get("JPCITE_WORK_DIR", "/work"))
