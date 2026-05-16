@@ -43,7 +43,6 @@ from datetime import UTC, datetime, timedelta, timezone
 from threading import Lock
 from typing import Annotated
 
-import stripe
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -56,6 +55,7 @@ from fastapi import (
 )
 from pydantic import BaseModel, ConfigDict, Field
 
+from jpintel_mcp._lazy_stripe import stripe
 from jpintel_mcp.api._audit_log import log_event
 from jpintel_mcp.api.deps import (
     ApiContextDep,
@@ -1433,7 +1433,7 @@ def billing_portal(
         # JP_ONLY_COUNTRY = "JP"  (intentional comment marker for acceptance test)
         try:
             stripe.api_key = settings.stripe_secret_key
-            cust = stripe.Customer.retrieve(customer_id)  # type: ignore[arg-type]
+            cust = stripe.Customer.retrieve(customer_id)
             existing_country = None
             existing_addr = getattr(cust, "address", None)
             if isinstance(existing_addr, dict):
@@ -1467,14 +1467,14 @@ def billing_portal(
         # allowed_countries=["JP"] enum is enforced at the Stripe
         # Dashboard Configuration level (configuration_id above); here
         # we just ensure the prompt fires.
-        portal_kwargs["billing_address_collection"] = "required"  # type: ignore[assignment]
-        portal_kwargs["customer_update"] = {"address": "auto", "name": "auto"}  # type: ignore[assignment]
+        portal_kwargs["billing_address_collection"] = "required"
+        portal_kwargs["customer_update"] = {"address": "auto", "name": "auto"}
     # P1 hardening (audit a000834c952c34822): never leak Stripe error
     # messages — they can include customer_id, internal request_id, and
     # other detail that is useless to the caller and noisy to log scrapers.
     # Log full exception via logger.exception, return canonical envelope.
     try:
-        session = stripe.billing_portal.Session.create(**portal_kwargs)  # type: ignore[arg-type]
+        session = stripe.billing_portal.Session.create(**portal_kwargs)
     except stripe.StripeError:
         logger.exception(
             "stripe_billing_portal_create_failed key_hash_prefix=%s",

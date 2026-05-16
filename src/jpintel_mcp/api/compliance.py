@@ -44,11 +44,11 @@ import sqlite3
 from datetime import UTC, datetime
 from typing import Any, Literal
 
-import stripe
 from fastapi import APIRouter, Header, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
+from jpintel_mcp._lazy_stripe import stripe
 from jpintel_mcp.api.billing import validate_jpcite_service_redirect_url
 from jpintel_mcp.api.deps import DbDep  # noqa: TC001 (runtime for FastAPI Depends resolution)
 from jpintel_mcp.config import settings
@@ -176,7 +176,7 @@ def _get_alert_price_id() -> str:
             f"Stripe price not configured (lookup_key={STRIPE_LOOKUP_KEY}). "
             "Run scripts/setup_stripe_compliance_product.py first.",
         )
-    return prices.data[0].id
+    return str(prices.data[0].id)
 
 
 def _verification_url(token: str) -> str:
@@ -657,7 +657,7 @@ async def stripe_webhook(
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "webhook secret unset")
     body = await request.body()
     try:
-        event = stripe.Webhook.construct_event(  # type: ignore[no-untyped-call]
+        event = stripe.Webhook.construct_event(
             body,
             stripe_signature or "",
             settings.stripe_webhook_secret,

@@ -58,9 +58,9 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 from urllib.parse import urlparse
 
-import stripe
 from pydantic import BaseModel, Field
 
+from jpintel_mcp._lazy_stripe import stripe
 from jpintel_mcp.billing.keys import issue_key
 from jpintel_mcp.config import settings
 

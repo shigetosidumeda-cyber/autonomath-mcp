@@ -41,10 +41,10 @@ import sqlite3
 from datetime import UTC, datetime, timedelta
 from typing import Annotated, Any, Literal
 
-import stripe
 from fastapi import APIRouter, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
+from jpintel_mcp._lazy_stripe import stripe
 from jpintel_mcp.api.deps import DbDep, hash_api_key, hash_api_key_bcrypt
 from jpintel_mcp.config import settings
 

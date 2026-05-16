@@ -36,8 +36,7 @@ from datetime import UTC, datetime
 from functools import lru_cache
 from typing import Any
 
-import stripe
-
+from jpintel_mcp._lazy_stripe import stripe
 from jpintel_mcp.config import settings
 
 logger = logging.getLogger("jpintel.billing.usage")
@@ -254,7 +253,7 @@ def _report_sync(
     else:
         idem_key = f"usage_{subscription_id}_{int(datetime.now(UTC).timestamp())}"
     try:
-        record = stripe.SubscriptionItem.create_usage_record(  # type: ignore[attr-defined]  # legacy API, pinned to stripe-api-version 2024-11-20.acacia where usage_records still exists
+        record = stripe.SubscriptionItem.create_usage_record(  # legacy API, pinned to stripe-api-version 2024-11-20.acacia where usage_records still exists
             si_id,
             quantity=quantity,
             timestamp=int(datetime.now(UTC).timestamp()),

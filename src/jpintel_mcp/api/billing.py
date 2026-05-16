@@ -29,7 +29,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Annotated, Any, Literal, cast
 from urllib.parse import urlparse
 
-import stripe
 from fastapi import (
     APIRouter,
     BackgroundTasks,
@@ -42,6 +41,7 @@ from fastapi import (
 )
 from pydantic import BaseModel
 
+from jpintel_mcp._lazy_stripe import stripe
 from jpintel_mcp.api._advisory_lock import LockNotAcquired, advisory_lock
 from jpintel_mcp.api.admin import (
     AdminAuthDep,  # noqa: TC001 (runtime for FastAPI Depends resolution)
@@ -509,7 +509,7 @@ def _stripe() -> types.ModuleType:  # returns configured stripe module
     # current restricted-key permission set.
     if settings.stripe_api_version:
         stripe.api_version = settings.stripe_api_version
-    return stripe
+    return stripe  # type: ignore[no-any-return]
 
 
 _CHECKOUT_ALLOWED_HOSTS = frozenset({"jpcite.com", "www.jpcite.com"})
@@ -1543,7 +1543,7 @@ async def webhook(
     if not settings.stripe_webhook_secret:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "webhook secret unset")
     try:
-        event = stripe.Webhook.construct_event(  # type: ignore[no-untyped-call]
+        event = stripe.Webhook.construct_event(
             body,
             stripe_signature or "",
             settings.stripe_webhook_secret,
