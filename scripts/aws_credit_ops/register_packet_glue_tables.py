@@ -1269,6 +1269,42 @@ for _name, _prefix in _WAVE_67_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 72 — ML/AI compliance cross packets (catalog 192 → 202). All 10 share
+# the jsic_major industry cohort with descriptive adoption_n proxy covering
+# AI governance disclosure / algorithmic decision transparency / bias audit
+# disclosure / AI model lineage / training data provenance / automated
+# decision dispute rate / explainability compliance / deepfake disclosure
+# obligation / AI safety certification / AI regulatory horizon scan. Reuse
+# the shared super-set columns; topic-specific fields land in raw_json.
+_WAVE_72_TABLES: list[tuple[str, str]] = [
+    ("packet_ai_governance_disclosure_v1", "ai_governance_disclosure_v1/"),
+    (
+        "packet_algorithmic_decision_transparency_v1",
+        "algorithmic_decision_transparency_v1/",
+    ),
+    ("packet_bias_audit_disclosure_v1", "bias_audit_disclosure_v1/"),
+    ("packet_ai_model_lineage_v1", "ai_model_lineage_v1/"),
+    ("packet_training_data_provenance_v1", "training_data_provenance_v1/"),
+    (
+        "packet_automated_decision_dispute_rate_v1",
+        "automated_decision_dispute_rate_v1/",
+    ),
+    ("packet_explainability_compliance_v1", "explainability_compliance_v1/"),
+    (
+        "packet_deepfake_disclosure_obligation_v1",
+        "deepfake_disclosure_obligation_v1/",
+    ),
+    ("packet_ai_safety_certification_v1", "ai_safety_certification_v1/"),
+    (
+        "packet_ai_regulatory_horizon_scan_v1",
+        "ai_regulatory_horizon_scan_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_72_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 73 — climate finance cross packets (catalog 212 → 222). All 10 share
 # the jsic_major industry cohort with descriptive adoption_n + optional
 # amount_total_yen proxy covering climate transition plan / Scope 3 emissions
