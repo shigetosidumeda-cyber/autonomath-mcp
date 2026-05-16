@@ -830,19 +830,19 @@ env:
     tests/test_x402_replay_window_boundary.py
 
 jobs:
-  test:
-    name: Test suite (release gate)
+  # PERF-8 (2026-05-16): the release gate previously ran ruff + pytest serially
+  # in one job (~30-40 min, hit the 30-min ceiling on v0.3.5). Split into:
+  #   - ruff (lint + format) — parallel, <1 min
+  #   - pytest matrix 4-shard — parallel, ~10-15 min each (was ~30-40 min serial)
+  #   - build needs both gates green (fail-fast: false surfaces all failures)
+  # Caches added for .ruff_cache + .pytest_cache so warm runs land faster.
+  ruff:
+    name: Ruff lint + format (release gate)
     runs-on: ubuntu-latest
-    # 30 → 50 minutes: full PYTEST_TARGETS list (~500 files) exceeded 30m on the
-    # v0.3.5 dispatch (run 25676951395 cancelled at 30:33, evidence in CLAUDE.md
-    # Wave 24). The Trusted Publishing OIDC flow has a hard ceiling on retries
-    # per tag, so silently re-tripping the timeout wastes the publish window.
-    timeout-minutes: 50
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
@@ -851,15 +851,18 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
-      - name: Install package with dev + site extras
-        # Match the regular test workflow's extras (dev,site) so the
-        # release gate sees the same dependency set the day-to-day CI
-        # exercises. HF / e2e modules need pandas / playwright that are
-        # NOT installed here; their tests are skipped at collection time
-        # below to avoid a release-blocking ModuleNotFoundError.
+      - name: Cache .ruff_cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: .ruff_cache
+          key: ruff-release-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ruff-release-${{ runner.os }}-
+
+      - name: Install ruff only (release lint — no full extras)
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev,site]"
+          pip install $(python -c "import tomllib;p=tomllib.load(open('pyproject.toml','rb'));d=[x for x in p['project']['optional-dependencies']['dev'] if x.startswith('ruff')];print(d[0] if d else 'ruff')")
 
       - name: Ruff lint (CLAUDE.md Quality gates target)
         # Match the lint target documented in CLAUDE.md so the release gate
@@ -960,6 +963,51 @@ jobs:
       - name: Ruff format check
         run: ruff format --check $RUFF_TARGETS
 
+  pytest:
+    # PERF-8: pytest sharded 4-way for the release gate (was a single ~30-40min
+    # job that hit the 30min ceiling on v0.3.5 / run 25676951395). Same
+    # PYTEST_TARGETS list as test.yml, same shard-builder script.
+    # fail-fast: false surfaces all shard failures in one run.
+    name: pytest (release gate, shard ${{ matrix.shard-index }}/${{ matrix.shard-count }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        shard-index: [0, 1, 2, 3]
+        shard-count: [4]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Cache .pytest_cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: .pytest_cache
+          key: pytest-cache-release-${{ runner.os }}-shard${{ matrix.shard-index }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            pytest-cache-release-${{ runner.os }}-shard${{ matrix.shard-index }}-
+            pytest-cache-release-${{ runner.os }}-
+
+      - name: Install package with dev + site extras
+        # Match the regular test workflow's extras (dev,site) so the
+        # release gate sees the same dependency set the day-to-day CI
+        # exercises. HF / e2e modules need pandas / playwright that are
+        # NOT installed here; their tests are skipped at collection time
+        # below to avoid a release-blocking ModuleNotFoundError.
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,site]"
+
       - name: Set up Node
         uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
         with:
@@ -970,12 +1018,41 @@ jobs:
       - name: Install functions TypeScript tooling
         run: npm ci --prefix functions
 
-      - name: Pytest (PYTEST_TARGETS — matches test.yml)
-        run: pytest $PYTEST_TARGETS -q --tb=short
+      - name: Build pytest shard
+        env:
+          PYTEST_SHARD_INDEX: ${{ matrix.shard-index }}
+          PYTEST_SHARD_COUNT: ${{ matrix.shard-count }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          targets = os.environ["PYTEST_TARGETS"].split()
+          shard_index = int(os.environ["PYTEST_SHARD_INDEX"])
+          shard_count = int(os.environ["PYTEST_SHARD_COUNT"])
+          shard = [
+              target
+              for index, target in enumerate(targets)
+              if index % shard_count == shard_index
+          ]
+          Path("pytest-shard-targets.txt").write_text("\n".join(shard) + "\n", encoding="utf-8")
+          print(
+              f"selected {len(shard)} of {len(targets)} pytest targets "
+              f"for shard {shard_index}/{shard_count}"
+          )
+          PY
+
+      - name: Pytest (release gate shard)
+        run: |
+          mapfile -t TARGETS < pytest-shard-targets.txt
+          pytest "${TARGETS[@]}" -q --tb=short
 
   build:
     name: Build sdist + wheel
-    needs: test
+    # PERF-8: build depends on BOTH gates (ruff + every pytest shard) so the
+    # 4-shard pytest matrix completes in parallel rather than waiting on a
+    # single serial test job.
+    needs: [ruff, pytest]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:

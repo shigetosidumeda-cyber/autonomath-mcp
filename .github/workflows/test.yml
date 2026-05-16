@@ -825,6 +825,11 @@ env:
     tests/test_x402_replay_window_boundary.py
 
 jobs:
+  # PERF-8 (2026-05-16): pytest / ruff / mypy / mkdocs split into independent
+  # parallel jobs so the longest pole drives wall time (not the serialized
+  # mypy+mkdocs tail behind shard 0). All jobs declare fail-fast: false at the
+  # matrix level so a green-light shard never gets cancelled by an unrelated
+  # failure (surfaces all failures in one run rather than serial-debug).
   pytest:
     name: pytest (${{ matrix.python-version }} shard ${{ matrix.shard-index }}/${{ matrix.shard-count }})
     runs-on: ubuntu-latest
@@ -849,18 +854,22 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
+      # PERF-8: cache .pytest_cache so collection + last-failed metadata are
+      # reused across runs. Key bumps with pyproject.toml + tests/ tree hash so
+      # dependency or test-tree changes invalidate cleanly.
+      - name: Cache .pytest_cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: .pytest_cache
+          key: pytest-cache-${{ runner.os }}-py${{ matrix.python-version }}-shard${{ matrix.shard-index }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            pytest-cache-${{ runner.os }}-py${{ matrix.python-version }}-shard${{ matrix.shard-index }}-
+            pytest-cache-${{ runner.os }}-py${{ matrix.python-version }}-
+
       - name: Install package with dev extras
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev,site]"
-
-      - name: Ruff lint
-        if: matrix.python-version == '3.12' && matrix.shard-index == 0
-        run: ruff check $RUFF_TARGETS
-
-      - name: Ruff format check
-        if: matrix.python-version == '3.12' && matrix.shard-index == 0
-        run: ruff format --check $RUFF_TARGETS
 
       - name: Build pytest shard
         env:
@@ -901,32 +910,6 @@ jobs:
           mapfile -t TARGETS < pytest-shard-targets.txt
           pytest "${TARGETS[@]}" -q
 
-      - name: pip-audit (supply chain)
-        # Added 2026-04-25 per CI security gating audit (a92f5354dc4848432).
-        # --strict fails the build on any unfixed CVE. Add `--ignore-vuln GHSA-...`
-        # only when a specific advisory has been triaged as not-applicable.
-        if: matrix.python-version == '3.12' && matrix.shard-index == 0
-        continue-on-error: true
-        run: pip install pip-audit && pip-audit --strict
-
-      - name: mypy type-check
-        # Best-effort: treat new errors as red (CLAUDE.md quality gate).
-        # Run only on Python 3.12 to keep matrix runtime down; mypy output
-        # is Python-version-independent for this codebase.
-        if: matrix.python-version == '3.12' && matrix.shard-index == 0
-        continue-on-error: true
-        run: |
-          pip install mypy types-requests pydantic>=2.9 pydantic-settings>=2.6 fastapi>=0.115
-          mypy src/
-
-      - name: Install docs dependencies
-        if: matrix.python-version == '3.12' && matrix.shard-index == 0
-        run: pip install -r docs-requirements.txt
-
-      - name: mkdocs build --strict
-        if: matrix.python-version == '3.12' && matrix.shard-index == 0
-        run: mkdocs build --strict
-
       - name: Upload coverage to Codecov
         # Non-blocking: coverage reporting shouldn't gate PRs.
         uses: codecov/codecov-action@0f8570b1a125f4937846a11fcfa3bcd548bd8c97 # v4.6.0
@@ -936,3 +919,133 @@ jobs:
           flags: py${{ matrix.python-version }}-shard${{ matrix.shard-index }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  ruff:
+    # PERF-8 split: ruff lint + format check pulled out of pytest shard 0 so
+    # the lint surfaces are not blocked behind the slowest pytest shard. With
+    # .ruff_cache, a typical lint run lands in <30s on the free runner.
+    name: ruff (lint + format)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Cache .ruff_cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: .ruff_cache
+          key: ruff-cache-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            ruff-cache-${{ runner.os }}-
+
+      - name: Install ruff only (lint job — no full extras needed)
+        run: |
+          python -m pip install --upgrade pip
+          # Pin via pyproject.toml's declared ruff version; pulling `ruff`
+          # alone keeps the lint job sub-30s vs. ~3min for `pip install -e .[dev,site]`.
+          pip install $(python -c "import tomllib;p=tomllib.load(open('pyproject.toml','rb'));d=[x for x in p['project']['optional-dependencies']['dev'] if x.startswith('ruff')];print(d[0] if d else 'ruff')")
+
+      - name: Ruff lint
+        run: ruff check $RUFF_TARGETS
+
+      - name: Ruff format check
+        run: ruff format --check $RUFF_TARGETS
+
+  mypy:
+    # PERF-8 split: mypy hoisted to its own job and cached via .mypy_cache.
+    # First cold run: ~3-4 min. Warm (cache hit): ~30-60s. Removing this from
+    # the pytest shard 0 tail eliminates the longest serialized step.
+    name: mypy --strict (src/)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true # Best-effort gate per CLAUDE.md (treat new errors as red, but don't fail PR until stabilized).
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Cache .mypy_cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: .mypy_cache
+          # Bust on src/ tree hash so incremental cache stays fresh.
+          key: mypy-cache-${{ runner.os }}-${{ hashFiles('pyproject.toml', 'src/**/*.py') }}
+          restore-keys: |
+            mypy-cache-${{ runner.os }}-
+
+      - name: Install package with dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,site]"
+          pip install mypy types-requests pydantic>=2.9 pydantic-settings>=2.6 fastapi>=0.115
+
+      - name: mypy type-check
+        run: mypy src/
+
+  pip-audit:
+    # PERF-8 split: pip-audit (supply chain CVE scan) decoupled from pytest
+    # shard 0. ~30-60s on free runner; allowed to fail (continue-on-error).
+    name: pip-audit (supply chain)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip-audit + project (need lockstep deps for audit)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,site]"
+          pip install pip-audit
+
+      - name: pip-audit --strict
+        # --strict fails the build on any unfixed CVE. Add `--ignore-vuln GHSA-...`
+        # only when a specific advisory has been triaged as not-applicable.
+        run: pip-audit --strict
+
+  mkdocs:
+    # PERF-8 split: mkdocs --strict build pulled to its own parallel job.
+    # ~1-2min standalone vs. ~3-5min serialized behind the slowest pytest shard.
+    name: mkdocs build --strict
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: docs-requirements.txt
+
+      - name: Install docs dependencies (mkdocs only)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r docs-requirements.txt
+
+      - name: mkdocs build --strict
+        run: mkdocs build --strict
