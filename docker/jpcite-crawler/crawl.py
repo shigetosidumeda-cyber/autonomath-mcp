@@ -177,13 +177,23 @@ class Fetcher:
         client: httpx.Client | None = None,
     ) -> None:
         self.policy = policy
-        ua = policy.user_agent or "jpcite-crawler/0.1.0 (+ops@bookyou.net)"
+        # Force ASCII-only User-Agent (httpx Headers() defaults to ASCII encoding)
+        raw_ua = policy.user_agent or "jpcite-crawler/0.1.0 (+ops@bookyou.net)"
+        ua = raw_ua.encode("ascii", errors="ignore").decode("ascii")
+        if not ua:
+            ua = "jpcite-crawler/0.1.0"
         self.policy.user_agent = ua
+        # httpx Headers() with encoding="utf-8" allows non-ASCII values without crashing
+        # (but UA is forced to ASCII above for upstream HTTP/1.1 compatibility)
+        client_headers = httpx.Headers(
+            {"User-Agent": ua, "Accept-Encoding": "gzip, br"},
+            encoding="utf-8",
+        )
         self._client = client or httpx.Client(
             http2=True,
             follow_redirects=True,
             timeout=policy.timeout_seconds,
-            headers={"User-Agent": ua, "Accept-Encoding": "gzip, br"},
+            headers=client_headers,
         )
         self._robots = RobotsCache(self._client, ua)
         self._limiter = HostRateLimiter()
