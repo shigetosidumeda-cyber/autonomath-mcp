@@ -1369,5 +1369,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 funding-to-revenue ratio packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "funding_to_revenue_ratio_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 debt-subsidy stack packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "debt_subsidy_stack_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 cash runway estimate packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cash_runway_estimate_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 M&A event signals packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "m_a_event_signals_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 cross-border remittance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cross_border_remittance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 trade finance eligibility packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "trade_finance_eligibility_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 angel tax uptake packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "angel_tax_uptake_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 revenue volatility subsidy offset packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "revenue_volatility_subsidy_offset_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 payroll subsidy intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "payroll_subsidy_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 invoice payment velocity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "invoice_payment_velocity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

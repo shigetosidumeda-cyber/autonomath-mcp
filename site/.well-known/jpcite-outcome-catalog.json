@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
   "generated_at": "2026-05-16T07:00:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 102,
+  "total_outcomes": 122,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -2248,6 +2248,216 @@
       "estimated_tokens_saved": 9100,
       "public_source_family_ids": [],
       "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "funding_to_revenue_ratio_packet",
+      "display_name": "業種別 funding-to-revenue ratio packet",
+      "description": "業種別 補助金/借入 vs 売上 proxy ratio descriptive 指標",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "debt_subsidy_stack_packet",
+      "display_name": "業種別 debt-subsidy stack packet",
+      "description": "業種別 公庫融資 × 制度補助金 同時受給 stack proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "cash_runway_estimate_packet",
+      "display_name": "業種別 cash runway estimate packet",
+      "description": "業種別 累積補助金 + 売上 proxy → runway distribution",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "m_a_event_signals_packet",
+      "display_name": "業種別 M&A event signals packet",
+      "description": "業種別 M&A 兆候 (商号変更 + 役員交代 + 資本金変動) signal density proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "cross_border_remittance_packet",
+      "display_name": "業種別 cross-border remittance packet",
+      "description": "業種別 海外送金 + 輸出促進補助金 signal proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "trade_finance_eligibility_packet",
+      "display_name": "業種別 trade finance eligibility packet",
+      "description": "業種別 貿易金融補助 + JBIC/JETRO 制度 eligibility proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "angel_tax_uptake_packet",
+      "display_name": "業種別 angel tax uptake packet",
+      "description": "業種別 エンジェル税制 適用 cohort signal + 投資総額 proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "revenue_volatility_subsidy_offset_packet",
+      "display_name": "業種別 revenue volatility subsidy offset packet",
+      "description": "業種別 売上変動 × 補助金 offset effect distribution proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "payroll_subsidy_intensity_packet",
+      "display_name": "業種別 payroll subsidy intensity packet",
+      "description": "業種別 雇用助成 × 給与水準 intensity proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "invoice_payment_velocity_packet",
+      "display_name": "業種別 invoice payment velocity packet",
+      "description": "業種別 適格事業者間 支払サイクル velocity proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
     }
   ],
   "filters": {
@@ -2316,7 +2526,17 @@
         "digital_transformation_subsidy_chain_packet",
         "green_investment_eligibility_packet",
         "patent_subsidy_intersection_packet",
-        "carbon_reporting_compliance_packet"
+        "carbon_reporting_compliance_packet",
+        "funding_to_revenue_ratio_packet",
+        "debt_subsidy_stack_packet",
+        "cash_runway_estimate_packet",
+        "m_a_event_signals_packet",
+        "cross_border_remittance_packet",
+        "trade_finance_eligibility_packet",
+        "angel_tax_uptake_packet",
+        "revenue_volatility_subsidy_offset_packet",
+        "payroll_subsidy_intensity_packet",
+        "invoice_payment_velocity_packet"
       ],
       "heavy": [
         "application_strategy",
