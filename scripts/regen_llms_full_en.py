@@ -285,7 +285,7 @@ def _section_about() -> list[str]:
         "",
         "Public search returns source-linked rows that have passed jpcite's publication checks. Rows cite government or official institutional sources where available.",
         "",
-        "MCP exposes 155 tools in the standard configuration. The MCP server runs over stdio (protocol 2025-06-18) for Claude Desktop, Cursor, Cline, and other MCP clients. ChatGPT Custom GPTs use the OpenAPI Actions integration instead.",
+        "MCP exposes 169 tools in the standard configuration. The MCP server runs over stdio (protocol 2025-06-18) for Claude Desktop, Cursor, Cline, and other MCP clients. ChatGPT Custom GPTs use the OpenAPI Actions integration instead.",
         "",
         "jpcite is an API-first service; downstream callers build their own product workflows and UIs.",
         "",

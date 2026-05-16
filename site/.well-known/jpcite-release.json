@@ -5,7 +5,7 @@
   "capsule_state": "candidate",
   "live_aws_commands_allowed": false,
   "manifest_path": "/releases/rc1-p0-bootstrap/release_capsule_manifest.json",
-  "manifest_sha256": "a45c3f42531789ac77d6ed0bcfe79f97dbfdbff636ed30570eafe7a965cc1f39",
+  "manifest_sha256": "78b24c633b06660acc3ca1200084ab0c88769498fdfd3961d91d97029e36871c",
   "next_resume_doc": "docs/_internal/execution/rc1-p0-bootstrap/README.md",
   "p0_facade_path": "/releases/rc1-p0-bootstrap/agent_surface/p0_facade.json",
   "runtime_pointer_path": "/releases/current/runtime_pointer.json",

@@ -395,3 +395,144 @@ class FederatedPartner(StrictModel):
     mcp_endpoint_status: Literal["official", "none_official"]
     capabilities: tuple[str, ...] = Field(min_length=1, max_length=16)
     use_when: str = Field(min_length=1, max_length=280)
+
+
+class AcceptanceProbabilityCohortDefinition(StrictModel):
+    """5-axis cohort definition for acceptance probability packets."""
+
+    cohort_id: str = Field(min_length=1)
+    prefecture: str = Field(min_length=1)
+    jsic_major: str = Field(min_length=1, max_length=8)
+    scale_band: Literal["micro", "small", "mid", "large", "unknown"]
+    program_kind: str = Field(min_length=1)
+    fiscal_year: str = Field(pattern=r"^[0-9]{4}$")
+
+
+class AcceptanceProbabilityConfidenceInterval(StrictModel):
+    """Wilson-score 95% confidence interval for acceptance probability."""
+
+    method: Literal["wilson_score"] = "wilson_score"
+    level: float = Field(default=0.95, ge=0.95, le=0.95)
+    low: float = Field(ge=0.0, le=1.0)
+    high: float = Field(ge=0.0, le=1.0)
+
+
+class AcceptanceProbabilityAdjacency(StrictModel):
+    """Adjacency suggestion entry (sibling cohort probability delta)."""
+
+    cohort_id: str = Field(min_length=1)
+    probability_estimate: float = Field(ge=0.0, le=1.0)
+    delta: float
+
+
+class AcceptanceProbabilityCohort(StrictModel):
+    """Acceptance probability packet for a 5-axis adoption cohort.
+
+    Wave 53 packet pipeline emits one row per (prefecture × jsic_major ×
+    scale_band × program_kind × fiscal_year) cohort. Class name maps via
+    snake_case to schemas/jpcir/acceptance_probability_cohort.schema.json
+    so the release-capsule parity gate passes.
+    """
+
+    header: JpcirHeader
+    package_kind: Literal["acceptance_probability_cohort_v1"] = (
+        "acceptance_probability_cohort_v1"
+    )
+    cohort_definition: AcceptanceProbabilityCohortDefinition
+    probability_estimate: float = Field(ge=0.0, le=1.0)
+    confidence_interval: AcceptanceProbabilityConfidenceInterval
+    n_sample: int = Field(ge=0)
+    n_eligible_programs: int = Field(ge=0)
+    freshest_announced_at: str | None = None
+    adjacency_suggestions: tuple[AcceptanceProbabilityAdjacency, ...] = Field(
+        default=(), max_length=5
+    )
+    known_gaps: tuple[KnownGap, ...] = Field(min_length=1)
+    disclaimer: str = Field(min_length=1)
+
+
+class CostPreviewSubject(StrictModel):
+    """Canonical subject taxonomy for a cost-preview entry."""
+
+    kind: Literal[
+        "program",
+        "houjin",
+        "invoice",
+        "cohort",
+        "watchlist",
+        "query",
+        "rule_change",
+        "jurisdiction",
+        "court",
+        "statistic",
+        "csv",
+        "control",
+    ]
+    id_hint: str | None = None
+
+
+class CostPreviewEntry(StrictModel):
+    """Single cost-preview entry for one paid outcome."""
+
+    outcome_contract_id: str = Field(min_length=1)
+    display_name: str = Field(min_length=1)
+    package_kind: Literal[
+        "evidence_packet",
+        "artifact_pack",
+        "precomputed_intelligence",
+        "watch_digest",
+        "agent_routing_control",
+        "cost_control",
+    ]
+    subject: CostPreviewSubject
+    cost_band: Literal["free", "light", "mid", "heavy"]
+    estimated_price_jpy: int = Field(ge=0)
+    free_preview_available: bool
+    approval_token_required: bool
+    idempotency_window_seconds: int = Field(ge=0)
+    jpcite_cost_jpy: Literal[3] = 3
+    estimated_tokens_saved: int = Field(ge=0)
+    source_count: int = Field(ge=0)
+    known_gaps: tuple[
+        Literal[
+            "pricing_or_cap_unconfirmed",
+            "source_freshness_unconfirmed",
+            "coverage_thin",
+            "schema_drift_possible",
+            "approval_token_semantics_pending",
+            "idempotency_window_provisional",
+            "free_preview_endpoint_pending",
+        ],
+        ...,
+    ] = ()
+    cap_per_day: int | None = None
+    preview_endpoint: str | None = None
+
+
+class CostPreviewPriceBands(StrictModel):
+    """Canonical band → JPY mapping (light=¥300, mid=¥600, heavy=¥900)."""
+
+    free: Literal[0] = 0
+    light: Literal[300] = 300
+    mid: Literal[600] = 600
+    heavy: Literal[900] = 900
+
+
+class CostPreviewCatalog(StrictModel):
+    """Public cost-preview catalog advertised at /releases/.../cost_preview_catalog.json.
+
+    Maps every paid outcome to a deterministic price band so AI agents can
+    obtain a free cost preview before invoking a billable endpoint. Class
+    name maps via snake_case to schemas/jpcir/cost_preview_catalog.schema.json
+    so the release-capsule parity gate passes.
+    """
+
+    catalog_id: str = Field(min_length=1)
+    schema_version: Literal["jpcite.cost_preview_catalog.p0.v1"] = (
+        "jpcite.cost_preview_catalog.p0.v1"
+    )
+    generated_from_capsule_id: str = Field(min_length=1)
+    jpcite_cost_jpy_unit: Literal[3] = 3
+    price_bands: CostPreviewPriceBands
+    entries: tuple[CostPreviewEntry, ...] = Field(min_length=1)
+    generated_at: str | None = None
