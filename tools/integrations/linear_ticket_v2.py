@@ -45,16 +45,22 @@ def _linear_post(api_key: str, query: str, variables: dict[str, Any]) -> dict[st
     last_exc: Exception | None = None
     for attempt in range(RETRY_MAX):
         req = urllib.request.Request(
-            LINEAR_API_URL, data=body, method="POST",
-            headers={"Authorization": api_key, "Content-Type": "application/json", "Accept": "application/json"},
+            LINEAR_API_URL,
+            data=body,
+            method="POST",
+            headers={
+                "Authorization": api_key,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
         )
         try:
-            with urllib.request.urlopen(req, timeout=30) as resp:  # noqa: S310
+            with urllib.request.urlopen(req, timeout=30) as resp:  # noqa: S310  # nosec B310
                 raw = resp.read()
             return json.loads(raw.decode("utf-8")) if raw else {}
         except urllib.error.HTTPError as exc:
             if exc.code == 429 and attempt < RETRY_MAX - 1:
-                wait = RETRY_BASE_S * (2 ** attempt)
+                wait = RETRY_BASE_S * (2**attempt)
                 time.sleep(wait)
                 last_exc = exc
                 continue
@@ -62,7 +68,7 @@ def _linear_post(api_key: str, query: str, variables: dict[str, Any]) -> dict[st
             raise RuntimeError(f"Linear HTTP {exc.code}: {text[:300]}") from exc
         except urllib.error.URLError as exc:
             last_exc = exc
-            time.sleep(RETRY_BASE_S * (2 ** attempt))
+            time.sleep(RETRY_BASE_S * (2**attempt))
     raise RuntimeError(f"Linear unreachable after {RETRY_MAX}: {last_exc!r}")
 
 
@@ -88,9 +94,15 @@ mutation IssueCreate(
 """
 
 
-def _linear_create_issue(*, api_key: str, team_id: str, title: str,
-                         body: str, label_ids: list[str] | None = None,
-                         priority: int = 2) -> dict[str, Any]:
+def _linear_create_issue(
+    *,
+    api_key: str,
+    team_id: str,
+    title: str,
+    body: str,
+    label_ids: list[str] | None = None,
+    priority: int = 2,
+) -> dict[str, Any]:
     variables = {
         "teamId": team_id,
         "title": title[:255],
@@ -131,8 +143,11 @@ def _revocation_hits(lookback_days: int) -> list[dict[str, Any]]:
         if conn is None:
             continue
         try:
-            for tbl in ("adoption_revocations", "am_adoption_revocation",
-                        "jpi_adoption_revocation"):
+            for tbl in (
+                "adoption_revocations",
+                "am_adoption_revocation",
+                "jpi_adoption_revocation",
+            ):
                 if not _table_exists(conn, tbl):
                     continue
                 try:
@@ -216,16 +231,20 @@ def _fan_out(*, kind: str, hits: list[dict[str, Any]], title_fn: Any, body_fn: A
         return 0
     pushed = 0
     for customer_id, cfg in targets.items():
-        api_key = cfg.get("api_key"); team_id = cfg.get("team_id")
+        api_key = cfg.get("api_key")
+        team_id = cfg.get("team_id")
         labels = cfg.get("label_ids") or []
         if not (api_key and team_id):
             continue
         for hit in hits:
             try:
                 issue = _linear_create_issue(
-                    api_key=api_key, team_id=team_id,
-                    title=title_fn(hit), body=body_fn(hit),
-                    label_ids=labels, priority=cfg.get("priority", 2),
+                    api_key=api_key,
+                    team_id=team_id,
+                    title=title_fn(hit),
+                    body=body_fn(hit),
+                    label_ids=labels,
+                    priority=cfg.get("priority", 2),
                 )
                 if issue:
                     pushed += 1
@@ -238,7 +257,8 @@ def cmd_revocation(args: argparse.Namespace) -> int:
     hits = _revocation_hits(args.lookback_days)
     log.info("revocation: %d hits", len(hits))
     n = _fan_out(
-        kind="revocation", hits=hits,
+        kind="revocation",
+        hits=hits,
         title_fn=lambda h: f"[採択取消] {h.get('program_id', '')} — {h.get('houjin_bangou', '')}",
         body_fn=lambda h: (
             "## 採択取消\n"
@@ -257,7 +277,8 @@ def cmd_enforcement(args: argparse.Namespace) -> int:
     hits = _enforcement_hits(args.lookback_days)
     log.info("enforcement: %d hits", len(hits))
     n = _fan_out(
-        kind="enforcement", hits=hits,
+        kind="enforcement",
+        hits=hits,
         title_fn=lambda h: f"[行政処分] {h.get('action_kind', '')} — {h.get('houjin_bangou', '')}",
         body_fn=lambda h: (
             "## 行政処分\n"
@@ -276,7 +297,8 @@ def cmd_amendment(args: argparse.Namespace) -> int:
     hits = _amendment_hits(args.lookback_days)
     log.info("amendment: %d hits", len(hits))
     n = _fan_out(
-        kind="amendment", hits=hits,
+        kind="amendment",
+        hits=hits,
         title_fn=lambda h: f"[法令改正] {h.get('law_id', '')} {h.get('effective_from', '')}",
         body_fn=lambda h: (
             "## 法令改正\n"
@@ -301,8 +323,12 @@ def cmd_all(args: argparse.Namespace) -> int:
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="linear_ticket_v2")
     sub = p.add_subparsers(dest="mode", required=True)
-    for name, fn in (("revocation", cmd_revocation), ("enforcement", cmd_enforcement),
-                     ("amendment", cmd_amendment), ("all", cmd_all)):
+    for name, fn in (
+        ("revocation", cmd_revocation),
+        ("enforcement", cmd_enforcement),
+        ("amendment", cmd_amendment),
+        ("all", cmd_all),
+    ):
         s = sub.add_parser(name)
         s.add_argument("--lookback-days", type=int, default=7)
         s.set_defaults(func=fn)

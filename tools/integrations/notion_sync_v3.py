@@ -46,9 +46,14 @@ _AM_DB_PATH = os.environ.get(
 )
 
 
-def _request(method: str, url: str, *, headers: dict[str, str],
-             body: dict[str, Any] | None = None,
-             timeout: float = 30.0) -> dict[str, Any]:
+def _request(
+    method: str,
+    url: str,
+    *,
+    headers: dict[str, str],
+    body: dict[str, Any] | None = None,
+    timeout: float = 30.0,
+) -> dict[str, Any]:
     data: bytes | None = None
     if body is not None:
         data = json.dumps(body, ensure_ascii=False).encode("utf-8")
@@ -60,14 +65,14 @@ def _request(method: str, url: str, *, headers: dict[str, str],
     for attempt in range(RETRY_MAX):
         req = urllib.request.Request(url, data=data, headers=headers, method=method)
         try:
-            with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310
+            with urllib.request.urlopen(req, timeout=timeout) as resp:  # noqa: S310  # nosec B310
                 raw = resp.read()
                 if not raw:
                     return {}
                 return json.loads(raw.decode("utf-8"))
         except urllib.error.HTTPError as exc:
             if exc.code == 429 and attempt < RETRY_MAX - 1:
-                wait = RETRY_BASE_S * (2 ** attempt)
+                wait = RETRY_BASE_S * (2**attempt)
                 time.sleep(wait)
                 last_exc = exc
                 continue
@@ -75,7 +80,7 @@ def _request(method: str, url: str, *, headers: dict[str, str],
             raise RuntimeError(f"HTTP {exc.code} from {url}: {payload[:300]}") from exc
         except urllib.error.URLError as exc:
             last_exc = exc
-            time.sleep(RETRY_BASE_S * (2 ** attempt))
+            time.sleep(RETRY_BASE_S * (2**attempt))
     raise RuntimeError(f"unable to reach {url} after {RETRY_MAX}: {last_exc!r}")
 
 
@@ -144,13 +149,22 @@ def _amendment_hits(since: datetime) -> list[dict[str, Any]]:
 
 def _amendment_to_notion_properties(hit: dict[str, Any]) -> dict[str, Any]:
     return {
-        "name": {"title": [{"text": {"content": f"[改正] {hit.get('law_id', '')} — {hit.get('summary', '')[:80]}"}}]},
+        "name": {
+            "title": [
+                {
+                    "text": {
+                        "content": f"[改正] {hit.get('law_id', '')} — {hit.get('summary', '')[:80]}"
+                    }
+                }
+            ]
+        },
         "kind": {"select": {"name": "law_amendment"}},
         "external_id": {"rich_text": [{"text": {"content": str(hit.get("amendment_id", ""))}}]},
         "law_id": {"rich_text": [{"text": {"content": str(hit.get("law_id", ""))}}]},
         "effective_from": (
             {"date": {"start": str(hit.get("effective_from"))}}
-            if hit.get("effective_from") else {"date": None}
+            if hit.get("effective_from")
+            else {"date": None}
         ),
         "source_url": {"url": f"https://jpcite.com/laws/{hit.get('law_id', '')}.html"},
     }
@@ -166,7 +180,8 @@ def cmd_amendment(args: argparse.Namespace) -> int:
     log.info("amendment: %d hits since %s", len(hits), since.date())
     pushed = 0
     for customer_id, cfg in targets.items():
-        token = cfg.get("token"); db_id = cfg.get("database_id")
+        token = cfg.get("token")
+        db_id = cfg.get("database_id")
         if not (token and db_id):
             continue
         for hit in hits:
@@ -174,8 +189,12 @@ def cmd_amendment(args: argparse.Namespace) -> int:
                 _create_notion_row(token, db_id, _amendment_to_notion_properties(hit))
                 pushed += 1
             except RuntimeError as exc:
-                log.warning("amendment customer=%s amendment=%s: %s",
-                            customer_id, hit.get("amendment_id"), exc)
+                log.warning(
+                    "amendment customer=%s amendment=%s: %s",
+                    customer_id,
+                    hit.get("amendment_id"),
+                    exc,
+                )
     log.info("amendment: %d pushed", pushed)
     return 0
 
@@ -208,7 +227,15 @@ def _houjin_hits(since: datetime) -> list[dict[str, Any]]:
 
 def _houjin_to_notion_properties(hit: dict[str, Any]) -> dict[str, Any]:
     return {
-        "name": {"title": [{"text": {"content": f"[法人 watch] {hit.get('houjin_bangou', '')} — {hit.get('hit_kind', '')}"}}]},
+        "name": {
+            "title": [
+                {
+                    "text": {
+                        "content": f"[法人 watch] {hit.get('houjin_bangou', '')} — {hit.get('hit_kind', '')}"
+                    }
+                }
+            ]
+        },
         "kind": {"select": {"name": "houjin_watch_hit"}},
         "external_id": {"rich_text": [{"text": {"content": str(hit.get("watch_id", ""))}}]},
         "houjin_bangou": {"rich_text": [{"text": {"content": str(hit.get("houjin_bangou", ""))}}]},
@@ -224,8 +251,9 @@ def cmd_houjin(args: argparse.Namespace) -> int:
     since = datetime.now(UTC) - timedelta(days=args.lookback_days)
     hits = _houjin_hits(since)
     pushed = 0
-    for customer_id, cfg in targets.items():
-        token = cfg.get("token"); db_id = cfg.get("database_id")
+    for _customer_id, cfg in targets.items():
+        token = cfg.get("token")
+        db_id = cfg.get("database_id")
         scope = set(cfg.get("client_ids") or [])
         if not (token and db_id):
             continue
@@ -250,9 +278,7 @@ def cmd_both(args: argparse.Namespace) -> int:
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="notion_sync_v3")
     sub = p.add_subparsers(dest="mode", required=True)
-    for name, fn in (("amendment", cmd_amendment),
-                     ("houjin", cmd_houjin),
-                     ("both", cmd_both)):
+    for name, fn in (("amendment", cmd_amendment), ("houjin", cmd_houjin), ("both", cmd_both)):
         s = sub.add_parser(name)
         s.add_argument("--lookback-days", type=int, default=7)
         s.set_defaults(func=fn)
