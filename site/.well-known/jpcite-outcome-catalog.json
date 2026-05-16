@@ -1,9 +1,9 @@
 {
   "schema_version": "jpcite.outcome_catalog.public.v1",
   "catalog_id": "jpcite-outcome-catalog-2026-05-17",
-  "generated_at": "2026-05-17T01:15:00+09:00",
+  "generated_at": "2026-05-17T01:30:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 422,
+  "total_outcomes": 442,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -8668,6 +8668,386 @@
       "estimated_token_size": 2000,
       "source_count": 2,
       "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "vendor_screening_intensity_packet",
+      "display_name": "業種別 vendor screening intensity packet",
+      "description": "業種別 取引先 screening intensity (反社チェック / 信用調査 / 与信限度 / NDA 締結率 採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "third_party_risk_scoring_packet",
+      "display_name": "業種別 third-party risk scoring (TPRM) packet",
+      "description": "業種別 TPRM スコアリング (financial / operational / cyber / reputational / compliance / strategic 6 軸) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "kyc_aml_compliance_signal_packet",
+      "display_name": "業種別 KYC/AML compliance signal packet",
+      "description": "業種別 本人確認 / 反マネロン / 取引時確認 / 疑わしい取引届出 / 継続的顧客管理 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "vendor_security_audit_packet",
+      "display_name": "業種別 vendor security audit packet",
+      "description": "業種別 取引先 security audit (ISO 27001 / SOC 2 / Pマーク / ISMAP / 外部監査 / 委託先監査) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "vendor_financial_health_proxy_packet",
+      "display_name": "業種別 vendor financial health proxy packet",
+      "description": "業種別 取引先 financial health (与信限度 / 自己資本比率 / D/E ratio / 営業 CF / PD / Z-score / 当座比率) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "vendor_diversification_disclosure_packet",
+      "display_name": "業種別 vendor diversification disclosure packet",
+      "description": "業種別 取引先 diversification (調達先数 / 上位 vendor 集中度 HHI / 地理的分散 / 単一購買比率 / dual sourcing) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "subcontractor_visibility_signal_packet",
+      "display_name": "業種別 subcontractor visibility signal packet",
+      "description": "業種別 下請 visibility (1 次 / 2 次 / N 次下請開示 / Tier-N 監督 / 多重請負 / 偽装請負 / 一括下請禁止) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "vendor_offboarding_history_packet",
+      "display_name": "業種別 vendor offboarding history packet",
+      "description": "業種別 取引先 offboarding 履歴 (契約解除 / 取引停止 / blacklist / 入札参加資格停止 / 指名停止) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "bsa_aml_violation_history_packet",
+      "display_name": "業種別 BSA/AML violation history packet",
+      "description": "業種別 BSA/AML 違反履歴 (犯罪収益移転防止法違反 / 是正命令 / 業務改善命令 / 課徴金 / 検査指摘) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "sanctions_screening_intensity_packet",
+      "display_name": "業種別 sanctions screening intensity packet",
+      "description": "業種別 制裁スクリーニング (OFAC SDN / EU consolidated / UN 1267 / 外為法 §16 §17 / 凍結資産名簿) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_lineage_disclosure_packet",
+      "display_name": "業種別 データ系譜 (data lineage) 開示 packet",
+      "description": "業種別 data lineage / ETL pipeline 透明性 / Reverse-ETL audit trail / consent provenance / privacy class transit / 外国移転 lineage tag (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_quality_audit_packet",
+      "display_name": "業種別 データ品質監査 packet",
+      "description": "業種別 data quality 6 軸 (completeness / consistency / accuracy / timeliness / uniqueness / validity) / Great Expectations / Soda / J-SOX IT 全般統制 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "master_data_governance_packet",
+      "display_name": "業種別 マスターデータ管理 (MDM) signal packet",
+      "description": "業種別 MDM hub (Informatica / Reltio / Stibo / SAP MDG) / Match-Merge / Survivorship / Golden Record / 法人番号 join (gBizINFO) (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_retention_policy_disclosure_packet",
+      "display_name": "業種別 データ保持期間 (retention policy) 開示 packet",
+      "description": "業種別 retention schedule / legal hold / litigation hold / 業種別 保存年限 (商法 §19 §432 10年 / 法人税法 §126 7年 / 電帳法 §5 7-10年 / 労基法 §109 3-5年) (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_archival_signal_packet",
+      "display_name": "業種別 データアーカイブ (archival) signal packet",
+      "description": "業種別 archive tier (Glacier / Deep Archive / Azure Archive / Coldline / LTO-9 テープ) / retrieval SLA / immutability lock / WORM (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_residency_disclosure_packet",
+      "display_name": "業種別 データ居住地 (data residency) 開示 packet",
+      "description": "業種別 region 選定 / 国内限定リージョン / 同等性 adequacy / SCC / BCR / 中国 PIPL §38 / 主権クラウド (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_loss_prevention_audit_packet",
+      "display_name": "業種別 DLP 監査 (data loss prevention) packet",
+      "description": "業種別 DLP (Microsoft Purview / Symantec / Forcepoint / Netskope / Zscaler) / 機密度ラベル / Egress filtering / shadow IT detection (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_classification_intensity_packet",
+      "display_name": "業種別 データ分類 (classification) 強度 packet",
+      "description": "業種別 分類体系 4 層 (Public / Internal / Confidential / Restricted) / 個人情報 / 要配慮 / 仮名加工 / 匿名加工 / 営業秘密 / Microsoft Information Protection (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_subject_request_handling_packet",
+      "display_name": "業種別 データ主体請求 (DSR) 対応 packet",
+      "description": "業種別 DSR (開示 §33 / 訂正 §34 / 利用停止 §35 / 第三者提供記録 §29 §30 / GDPR Art.15-21) / SLA (30 日 / 1 month) (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "data_steward_program_signal_packet",
+      "display_name": "業種別 Data Steward プログラム signal packet",
+      "description": "業種別 CDO / Data Owner / Steward / Custodian / DAMA-DMBOK 11 機能 / RACI matrix / Data Citizen training (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
     }
   ],
   "filters": {
@@ -8836,7 +9216,17 @@
         "retail_store_footprint_packet",
         "real_estate_investment_signal_packet",
         "j_reit_holding_proxy_packet",
-        "lease_obligation_disclosure_packet"
+        "lease_obligation_disclosure_packet",
+        "vendor_screening_intensity_packet",
+        "third_party_risk_scoring_packet",
+        "kyc_aml_compliance_signal_packet",
+        "vendor_security_audit_packet",
+        "vendor_financial_health_proxy_packet",
+        "vendor_diversification_disclosure_packet",
+        "subcontractor_visibility_signal_packet",
+        "vendor_offboarding_history_packet",
+        "bsa_aml_violation_history_packet",
+        "sanctions_screening_intensity_packet"
       ],
       "heavy": [
         "application_strategy",

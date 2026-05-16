@@ -5139,5 +5139,265 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 vendor screening intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vendor_screening_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 third-party risk scoring (TPRM) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "third_party_risk_scoring_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 KYC/AML compliance signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "kyc_aml_compliance_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 vendor security audit packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vendor_security_audit_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 vendor financial health proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vendor_financial_health_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 vendor diversification disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vendor_diversification_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 subcontractor visibility signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "subcontractor_visibility_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 vendor offboarding history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "vendor_offboarding_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 BSA/AML violation history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "bsa_aml_violation_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 sanctions screening intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "sanctions_screening_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 データ系譜 (data lineage) 開示 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_lineage_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 データ品質監査 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_quality_audit_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 マスターデータ管理 (MDM) signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "master_data_governance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 データ保持期間 (retention policy) 開示 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_retention_policy_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 データアーカイブ (archival) signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_archival_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 データ居住地 (data residency) 開示 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_residency_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 DLP 監査 (data loss prevention) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_loss_prevention_audit_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 データ分類 (classification) 強度 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_classification_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 データ主体請求 (DSR) 対応 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_subject_request_handling_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 Data Steward プログラム signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "data_steward_program_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

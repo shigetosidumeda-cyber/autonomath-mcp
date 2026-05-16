@@ -2241,6 +2241,132 @@ _WAVE_94_TABLES: list[tuple[str, str]] = [
 for _name, _prefix in _WAVE_94_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
+# Wave 96 (data governance / data ops cross packets) — 10 generators wrap the
+# enterprise data governance + data ops surface across 業種 (JSIC major)
+# cohorts: Data lineage disclosure (source-of-truth / ETL pipeline 透明性 /
+# Reverse-ETL / Apache Atlas / OpenMetadata / DataHub / Collibra / consent
+# provenance / 外国移転 lineage tag — 個人情報保護法 §28), Data quality audit
+# (completeness / consistency / accuracy / timeliness / uniqueness / validity
+# 6 軸 / Great Expectations / Soda / Monte Carlo / J-SOX IT 全般統制),
+# Master data governance (Informatica MDM / Reltio / Stibo / SAP MDG / Match-
+# Merge / Survivorship / Golden Record / 法人番号 join gBizINFO), Data
+# retention policy disclosure (商法 §19 §432 10 年 / 法人税法 §126 7 年 /
+# 電帳法 §5 7-10 年 / 労基法 §109 3-5 年 / legal hold / litigation hold),
+# Data archival signal (Glacier / Deep Archive / Azure Archive / Coldline /
+# LTO-9 テープ / immutability lock / WORM / 電帳法 §5 timestamp), Data
+# residency disclosure (個人情報保護法 §28 §31 / GDPR Art.44-50 / 中国 PIPL
+# §38 / 十分性認定 / SCC / BCR / 主権クラウド), Data loss prevention audit
+# (Microsoft Purview / Symantec / Forcepoint / Netskope / Zscaler / 機密度
+# ラベル / Egress filtering / shadow IT detection / §26 漏えい等報告), Data
+# classification intensity (Public / Internal / Confidential / Restricted /
+# 個人情報 / 要配慮 / 仮名加工 / 匿名加工 / 営業秘密 / Microsoft Information
+# Protection — §2 §16 §43 + 不正競争防止法 §2-1-7), Data subject request
+# handling (個情法 §29 §30 §33 §34 §35 / GDPR Art.15-21 / SLA 30 日 / 1 month
+# / 本人確認 / 拒否事由), Data steward program signal (CDO / Data Owner /
+# Steward / Custodian / Data Governance Council / DAMA-DMBOK 11 機能 / RACI
+# matrix / Data Citizen training / KPI). Reuse the shared super-set columns;
+# topic-specific fields land in raw_json.
+_WAVE_96_TABLES: list[tuple[str, str]] = [
+    ("packet_data_lineage_disclosure_v1", "data_lineage_disclosure_v1/"),
+    ("packet_data_quality_audit_v1", "data_quality_audit_v1/"),
+    ("packet_master_data_governance_v1", "master_data_governance_v1/"),
+    (
+        "packet_data_retention_policy_disclosure_v1",
+        "data_retention_policy_disclosure_v1/",
+    ),
+    ("packet_data_archival_signal_v1", "data_archival_signal_v1/"),
+    ("packet_data_residency_disclosure_v1", "data_residency_disclosure_v1/"),
+    (
+        "packet_data_loss_prevention_audit_v1",
+        "data_loss_prevention_audit_v1/",
+    ),
+    (
+        "packet_data_classification_intensity_v1",
+        "data_classification_intensity_v1/",
+    ),
+    (
+        "packet_data_subject_request_handling_v1",
+        "data_subject_request_handling_v1/",
+    ),
+    (
+        "packet_data_steward_program_signal_v1",
+        "data_steward_program_signal_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_96_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 97 (vendor due diligence / third-party risk cross packets) — 10
+# generators wrap the vendor DD + TPRM surface across 業種 (JSIC major)
+# cohorts: Vendor screening intensity (帝国データバンク / 東京商工リサーチ
+# 反社チェック / 信用調査 / 与信限度 / NDA / 暴力団排除条例 / 犯罪収益移転
+# 防止法 §4 / 下請法 §2 §4 / 独占禁止法 §19), Third-party risk scoring
+# (FFIEC TPRM / ISO 27036 / ISO 31000 6 軸: financial / operational / cyber
+# / reputational / compliance / strategic / 金商法 §24-4-4 内部統制報告),
+# KYC/AML compliance signal (JAFIC / FATF / 犯罪収益移転防止法 §4 §8 取引時
+# 確認 + 疑わしい取引届出 STR / 金融庁 監督指針 III-2-1), Vendor security
+# audit (ISMS-AC / ISMAP / SOC 2 / Pマーク / 委託先監査 / 個人情報保護法
+# §25 §26 §27 / クラウドサービス安全性評価制度), Vendor financial health
+# proxy (帝国データバンク / R&I / JCR / Moody's / S&P / Altman Z-score /
+# Merton モデル / PD / 金融商品取引法 §66-27 / 金商業等府令 §123), Vendor
+# diversification disclosure (公取委 / 経産省 サプライチェーン / HHI 集中
+# 度 / dual sourcing / 独禁法 §19 優越的地位 / 下請法 §2 §4 / 取引DX),
+# Subcontractor visibility (建設業法 §22 一括下請禁止 / 厚労省 偽装請負 /
+# 派遣法 §44 §40-6 / 国交省 / 下請代金支払), Vendor offboarding history
+# (財務省 入札参加資格 / 都道府県 指名停止 / 会計法 §29-3 / 予決令 §70-2
+# §71 / 地方自治法 §234 / blacklist / debarment), BSA/AML violation history
+# (金融庁 / 警察庁 JAFIC / FATF / OFAC / 犯罪収益移転防止法 §25 §31 /
+# 金融商品取引法 §51 §52 / 銀行法 §26 §27 / 是正命令 + 業務改善命令 +
+# 課徴金 + 検査指摘), Sanctions screening intensity (財務省 外為法 §16 §17
+# §25 §48 / 経産省 安全保障輸出管理 / OFAC SDN / EU consolidated / UN 1267
+# / 国際的な平和及び安全の維持を妨げることとなる事態に対処するため特別
+# 措置法 / 凍結資産名簿). Reuse the shared super-set columns; topic-specific
+# fields land in raw_json.
+_WAVE_97_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_vendor_screening_intensity_v1",
+        "vendor_screening_intensity_v1/",
+    ),
+    (
+        "packet_third_party_risk_scoring_v1",
+        "third_party_risk_scoring_v1/",
+    ),
+    (
+        "packet_kyc_aml_compliance_signal_v1",
+        "kyc_aml_compliance_signal_v1/",
+    ),
+    ("packet_vendor_security_audit_v1", "vendor_security_audit_v1/"),
+    (
+        "packet_vendor_financial_health_proxy_v1",
+        "vendor_financial_health_proxy_v1/",
+    ),
+    (
+        "packet_vendor_diversification_disclosure_v1",
+        "vendor_diversification_disclosure_v1/",
+    ),
+    (
+        "packet_subcontractor_visibility_signal_v1",
+        "subcontractor_visibility_signal_v1/",
+    ),
+    (
+        "packet_vendor_offboarding_history_v1",
+        "vendor_offboarding_history_v1/",
+    ),
+    (
+        "packet_bsa_aml_violation_history_v1",
+        "bsa_aml_violation_history_v1/",
+    ),
+    (
+        "packet_sanctions_screening_intensity_v1",
+        "sanctions_screening_intensity_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_97_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
 
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
