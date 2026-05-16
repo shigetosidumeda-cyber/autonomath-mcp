@@ -356,6 +356,17 @@ def build_transform_job_spec(
     backwards-compatible change.
     """
 
+    # NOTE: The Hugging Face inference toolkit (used by the
+    # ``huggingface-pytorch-inference`` SageMaker image) only registers
+    # decoders for ``application/json`` / ``application/x-image`` /
+    # ``audio/*`` — it does NOT accept ``application/jsonlines``. With
+    # ``SplitType=Line`` + ``BatchStrategy=SingleRecord`` SageMaker
+    # already splits the JSONL input file line-by-line and sends each
+    # line as a separate ``application/json`` payload to the model
+    # server. Each line in the input is a valid JSON object of the form
+    # ``{"id": "...", "inputs": "..."}``. See AWS Sagemaker JSON Lines
+    # batch transform docs + jpcite-embed 2026-05-16 failed batch
+    # postmortem (5/6 jobs ClientError on content type).
     return {
         "TransformJobName": job_name,
         "ModelName": sagemaker_model_name,
@@ -369,13 +380,13 @@ def build_transform_job_spec(
                     "S3Uri": f"s3://{input_uri.bucket}/{input_uri.key_prefix}",
                 }
             },
-            "ContentType": "application/jsonlines",
+            "ContentType": "application/json",
             "SplitType": "Line",
             "CompressionType": "None",
         },
         "TransformOutput": {
             "S3OutputPath": f"s3://{output_uri.bucket}/{output_uri.key_prefix}",
-            "Accept": "application/jsonlines",
+            "Accept": "application/json",
             "AssembleWith": "Line",
         },
         "TransformResources": {

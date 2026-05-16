@@ -1,0 +1,149 @@
+name: packet-samples-regen-weekly
+
+# Weekly regeneration of /packets/ static sample showcase
+# (site/packets/sample/*.html + site/packets/index.html +
+#  site/.well-known/jpcite-packet-samples.json).
+#
+# Pipeline:
+#   python scripts/aws_credit_ops/generate_sample_packet_showcase.py
+#
+# All inputs are constants in the generator (no live DB / Athena / S3),
+# so this workflow has no DB or AWS dependency. It is purely a
+# documentation/freshness regen — the deterministic generator only
+# changes its output when the constants in the script change, which
+# means "no diff" is the normal expected state.
+#
+# Cadence: Sunday 18:00 UTC == Monday 03:00 JST (off-peak), matches the
+# adoption-program-join-weekly window.
+#
+# Output handling: this workflow does NOT push to main. If the
+# generator produces any diff under site/packets/ or
+# site/.well-known/jpcite-packet-samples.json, the workflow opens a
+# pull request via the `peter-evans/create-pull-request` action so the
+# operator reviews the visual showcase delta before it ships to
+# Cloudflare Pages. No-diff runs are a no-op (workflow stays green and
+# produces an "already-fresh" summary line).
+#
+# CLAUDE.md non-negotiable: 100% organic acquisition + zero-touch ops
+# + no LLM under src/ or scripts/. This generator + workflow are
+# documentation surfaces only.
+
+on:
+  schedule:
+    # 18:00 UTC Sunday == 03:00 JST Monday (off-peak, matches the
+    # adoption-program-join-weekly cron window).
+    - cron: '0 18 * * 0'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run generator but skip PR creation (preview-only)"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+concurrency:
+  group: packet-samples-regen-weekly
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Install minimal deps
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          # The generator only needs the in-repo render_packet_preview
+          # module plus the safety_scanners module from src/jpintel_mcp/.
+          # No FastAPI / Stripe / DB deps required — keep install lean.
+          pip install pydantic>=2.0
+
+      - name: Capture pre-run sample inventory
+        id: pre
+        run: |
+          set -euo pipefail
+          BEFORE_COUNT="$(find site/packets/sample -type f -name '*.html' 2>/dev/null | wc -l | tr -d ' ')"
+          echo "before_count=${BEFORE_COUNT}" >> "$GITHUB_OUTPUT"
+
+      - name: Run generator
+        env:
+          PYTHONPATH: src
+        run: |
+          set -euo pipefail
+          python3 scripts/aws_credit_ops/generate_sample_packet_showcase.py
+
+      - name: Capture post-run sample inventory
+        id: post
+        run: |
+          set -euo pipefail
+          AFTER_COUNT="$(find site/packets/sample -type f -name '*.html' 2>/dev/null | wc -l | tr -d ' ')"
+          echo "after_count=${AFTER_COUNT}" >> "$GITHUB_OUTPUT"
+          echo "## Packet sample regen summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "* before_count: ${{ steps.pre.outputs.before_count }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "* after_count:  ${AFTER_COUNT}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if git diff --quiet -- site/packets site/.well-known/jpcite-packet-samples.json; then
+            echo "Result: no diff (samples already fresh)." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Result: diff detected — PR will be opened." >> "$GITHUB_STEP_SUMMARY"
+            git diff --stat -- site/packets site/.well-known/jpcite-packet-samples.json >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Detect diff
+        id: diff
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- site/packets site/.well-known/jpcite-packet-samples.json; then
+            echo "has_diff=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_diff=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open PR with regenerated samples
+        if: steps.diff.outputs.has_diff == 'true' && (github.event_name == 'schedule' || inputs.dry_run != 'true')
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
+        with:
+          commit-message: "chore(site): packet samples weekly regen [lane:solo]"
+          title: "chore(site): packet samples weekly regen"
+          body: |
+            Automated weekly regeneration of the `/packets/` static
+            sample showcase via
+            `scripts/aws_credit_ops/generate_sample_packet_showcase.py`.
+
+            * before_count: ${{ steps.pre.outputs.before_count }}
+            * after_count:  ${{ steps.post.outputs.after_count }}
+
+            DO NOT delete existing samples without review. This PR
+            should mostly be a docs-only refresh (HTML re-render,
+            timestamp bump in `jpcite-packet-samples.json`).
+
+            🤖 Generated with [Claude Code](https://claude.com/claude-code)
+          branch: chore/packet-samples-regen-${{ github.run_id }}
+          base: main
+          delete-branch: true
+          labels: |
+            site
+            packets
+            lane:solo
+
+      - name: Dry-run notice
+        if: steps.diff.outputs.has_diff == 'true' && github.event_name == 'workflow_dispatch' && inputs.dry_run == 'true'
+        run: |
+          echo "::notice::dry_run=true — diff detected but PR creation skipped."

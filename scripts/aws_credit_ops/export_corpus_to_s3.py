@@ -189,6 +189,25 @@ CORPUS_SPECS: Final[dict[str, dict[str, Any]]] = {
         ],
         "where_clause": "decision_summary IS NOT NULL OR title IS NOT NULL",
     },
+    "invoice_registrants": {
+        "source_table": "jpi_invoice_registrants",
+        "id_column": "invoice_registration_number",
+        "text_template": (
+            "{invoice_registration_number} | {normalized_name} | "
+            "{trade_name} | {address_normalized} | {prefecture} | "
+            "{registrant_kind} | {registered_date}"
+        ),
+        "columns": [
+            "invoice_registration_number",
+            "normalized_name",
+            "trade_name",
+            "address_normalized",
+            "prefecture",
+            "registrant_kind",
+            "registered_date",
+        ],
+        "where_clause": "normalized_name IS NOT NULL",
+    },
 }
 
 #: Max length per ``inputs`` text. MiniLM truncates to 128 tokens; over

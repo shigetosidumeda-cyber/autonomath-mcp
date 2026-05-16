@@ -162,7 +162,13 @@ def test_build_transform_job_spec_canonical_shape() -> None:
     )
     assert spec["TransformJobName"] == "job-1"
     assert spec["ModelName"] == _GOOD_MODEL_NAME
-    assert spec["TransformInput"]["ContentType"] == "application/jsonlines"
+    # HF inference toolkit decoder map only registers ``application/json``;
+    # ``application/jsonlines`` raises UnsupportedFormatError. With
+    # ``SplitType=Line`` each line is sent as a separate
+    # ``application/json`` payload.
+    assert spec["TransformInput"]["ContentType"] == "application/json"
+    assert spec["TransformInput"]["SplitType"] == "Line"
+    assert spec["TransformOutput"]["Accept"] == "application/json"
     assert spec["TransformInput"]["DataSource"]["S3DataSource"]["S3Uri"].startswith(
         "s3://in/"
     )

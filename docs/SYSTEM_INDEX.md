@@ -30,6 +30,7 @@ Brand: **jpcite** (PyPI dist: `autonomath-mcp`, import: `jpintel_mcp`) — launc
 | Browser ext | [`sdk/browser-extension/`](../sdk/browser-extension/), [`sdk/chrome-extension/`](../sdk/chrome-extension/) | |
 | Plugins | [`sdk/freee-plugin/`](../sdk/freee-plugin/), [`sdk/mf-plugin/`](../sdk/mf-plugin/), [`sdk/integrations/`](../sdk/integrations/) (slack/email/excel/kintone/google-sheets) | |
 | Static site | [`site/`](../site/) | jpcite.com on Cloudflare Pages, 104 entries, hand-written HTML + generated program pages |
+| Packet sample showcase | [`site/packets/`](../site/packets/) | 30 JS-free HTML sample packets at `https://jpcite.com/packets/` for human + AI agent discovery; machine-readable inventory at `https://jpcite.com/.well-known/jpcite-packet-samples.json`; regenerated weekly via [`.github/workflows/packet-samples-regen-weekly.yml`](../.github/workflows/packet-samples-regen-weekly.yml) |
 | Tests | [`tests/`](../tests/) | unit + integration + e2e (Playwright) + `test_no_llm_in_production.py` guard |
 | Offline tools | [`tools/offline/`](../tools/offline/) | only place LLM SDK imports allowed |
 | DXT bundle | [`dxt/`](../dxt/) | Claude Desktop MCP bundle (manifest + icon) |
