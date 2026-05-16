@@ -1,0 +1,40 @@
+[
+  {
+    "host_saas_id": "freee",
+    "allowed_origins": [
+      "https://accounts.secure.freee.co.jp",
+      "https://secure.freee.co.jp",
+      "https://www.freee.co.jp"
+    ],
+    "mcp_proxy_token": "jpcite_freee_proxy_token_placeholder_rotate_via_fly_secret",
+    "oauth_redirect_uri": "https://secure.freee.co.jp/oauth/callback/jpcite"
+  },
+  {
+    "host_saas_id": "moneyforward",
+    "allowed_origins": [
+      "https://biz.moneyforward.com",
+      "https://expense.moneyforward.com",
+      "https://moneyforward.com"
+    ],
+    "mcp_proxy_token": "jpcite_mf_proxy_token_placeholder_rotate_via_fly_secret",
+    "oauth_redirect_uri": "https://biz.moneyforward.com/oauth/callback/jpcite"
+  },
+  {
+    "host_saas_id": "notion",
+    "allowed_origins": [
+      "https://www.notion.so",
+      "https://notion.so"
+    ],
+    "mcp_proxy_token": "jpcite_notion_proxy_token_placeholder_rotate_via_fly_secret",
+    "oauth_redirect_uri": "https://www.notion.so/oauth/callback/jpcite"
+  },
+  {
+    "host_saas_id": "slack",
+    "allowed_origins": [
+      "https://app.slack.com",
+      "https://slack.com"
+    ],
+    "mcp_proxy_token": "jpcite_slack_proxy_token_placeholder_rotate_via_fly_secret",
+    "oauth_redirect_uri": "https://slack.com/oauth/v2/callback/jpcite"
+  }
+]

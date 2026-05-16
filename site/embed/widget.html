@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#0a4d8c">
+<title>jpcite copilot scaffold widget</title>
+<meta name="description" content="jpcite copilot scaffold widget — MCP proxy only, NO LLM inference. Wave 51 dim S.">
+<meta name="robots" content="noindex,nofollow">
+<!--
+  jpcite Wave 51 dim S — embedded copilot scaffold widget.
+  Vanilla HTML + JS, NO framework, NO inference.
+  Posts {tool, kwargs} to the host SaaS's proxy endpoint; inference (if any)
+  lives in the customer's own LLM, never in this widget.
+-->
+<style>
+:root { color-scheme: light dark; }
+body { margin: 0; font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN", sans-serif; }
+#jpcite-embed { padding: 12px; border: 1px solid #ddd; border-radius: 8px; max-width: 480px; box-sizing: border-box; }
+#jpcite-embed h2 { margin: 0 0 8px 0; font-size: 14px; color: #0a4d8c; }
+#jpcite-embed input, #jpcite-embed select { width: 100%; padding: 6px; box-sizing: border-box; margin-bottom: 6px; font-size: 13px; }
+#jpcite-embed button { padding: 6px 12px; background: #0a4d8c; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+#jpcite-embed button:disabled { background: #999; cursor: not-allowed; }
+#jpcite-output { margin-top: 10px; padding: 8px; background: #f4f6f8; border-radius: 4px; font-family: ui-monospace, monospace; font-size: 12px; white-space: pre-wrap; max-height: 240px; overflow: auto; }
+#jpcite-llm-banner { font-size: 11px; color: #555; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div id="jpcite-embed" data-jpcite-widget="dim-s.v1">
+  <h2>jpcite (scaffold only — no inference)</h2>
+  <select id="jpcite-tool" aria-label="jpcite MCP tool">
+    <option value="search_programs">search_programs</option>
+    <option value="get_program">get_program</option>
+    <option value="check_invoice_registrant">check_invoice_registrant</option>
+    <option value="related_programs">related_programs</option>
+  </select>
+  <input id="jpcite-q" type="text" placeholder="kwargs JSON, e.g. {&quot;q&quot;:&quot;IT導入補助金&quot;}" aria-label="kwargs JSON">
+  <button id="jpcite-go" type="button">送信</button>
+  <div id="jpcite-output" aria-live="polite"></div>
+  <div id="jpcite-llm-banner">LLM inference: 0 (scaffold + MCP proxy only)</div>
+</div>
+<script>
+(function () {
+  "use strict";
+  var cfg = (window.__jpciteEmbedConfig || {});
+  var proxyUrl = cfg.proxyUrl || "/embed/mcp_proxy";
+  var proxyToken = cfg.proxyToken || "";
+  var btn = document.getElementById("jpcite-go");
+  var tool = document.getElementById("jpcite-tool");
+  var q = document.getElementById("jpcite-q");
+  var out = document.getElementById("jpcite-output");
+  function render(label, payload) {
+    out.textContent = label + "\n" + JSON.stringify(payload, null, 2);
+  }
+  btn.addEventListener("click", function () {
+    var kwargs = {};
+    var raw = q.value.trim();
+    if (raw) {
+      try { kwargs = JSON.parse(raw); } catch (e) { render("kwargs JSON parse error", { error: String(e) }); return; }
+    }
+    btn.disabled = true;
+    fetch(proxyUrl, {
+      method: "POST",
+      credentials: "omit",
+      headers: { "Content-Type": "application/json", "X-Jpcite-Proxy-Token": proxyToken },
+      body: JSON.stringify({ tool: tool.value, kwargs: kwargs, schema_version: "copilot_scaffold.dim_s.v1" })
+    })
+    .then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+    .then(function (resp) { render("HTTP " + resp.status, resp.body); })
+    .catch(function (err) { render("network error", { error: String(err) }); })
+    .finally(function () { btn.disabled = false; });
+  });
+})();
+</script>
+</body>
+</html>
