@@ -108,31 +108,86 @@ def _build_policy(spec: dict[str, Any]) -> crawl.SourcePolicy:
     )
 
 
-def _build_targets(spec: dict[str, Any]) -> list[crawl.TargetSpec]:
-    raw = spec.get("target_urls") or []
+def _build_targets(
+    spec: dict[str, Any],
+) -> tuple[list[crawl.TargetSpec], list[dict[str, Any]]]:
+    """Build target list with per-entry resilience.
+
+    Returns ``(targets, malformed_entries)``. A malformed entry never kills
+    the whole job — the bad row is recorded in ``malformed_entries`` so the
+    caller can emit a known_gap and continue crawling the rest of the
+    manifest. The previous behaviour (raise ValueError on any bad row)
+    caused every J0X-deep retry to exit with code 1 the moment a single
+    malformed entry slipped in. Per-URL failure isolation is now the
+    contract.
+    """
+
+    raw = spec.get("target_urls")
+    if raw is None:
+        raw = []
     if not isinstance(raw, list):
-        raise ValueError("manifest.target_urls must be a list")
+        # Whole-list malformed -> log + treat as empty + emit one job-scope
+        # known_gap. Still better than dying.
+        return [], [
+            {
+                "index": -1,
+                "reason": "target_urls_not_a_list",
+                "type": type(raw).__name__,
+            }
+        ]
+
     out: list[crawl.TargetSpec] = []
+    malformed: list[dict[str, Any]] = []
     for i, entry in enumerate(raw):
-        if isinstance(entry, str):
-            out.append(crawl.TargetSpec(url=entry, target_id=f"t{i:06d}"))
-        elif isinstance(entry, dict):
-            out.append(
-                crawl.TargetSpec(
-                    url=str(entry["url"]),
-                    target_id=str(entry.get("target_id") or f"t{i:06d}"),
-                    parser=str(entry.get("parser", "raw")),
-                    license_boundary=str(
-                        entry.get("license_boundary", spec.get("license_boundary", "derived_fact"))
-                    ),
-                    etag=entry.get("etag"),
-                    last_modified=entry.get("last_modified"),
-                    extras=entry.get("extras", {}),
+        try:
+            if isinstance(entry, str):
+                out.append(crawl.TargetSpec(url=entry, target_id=f"t{i:06d}"))
+            elif isinstance(entry, dict):
+                url = entry.get("url")
+                if not isinstance(url, str) or not url:
+                    malformed.append(
+                        {
+                            "index": i,
+                            "reason": "missing_or_empty_url",
+                            "entry_preview": str(entry)[:120],
+                        }
+                    )
+                    continue
+                out.append(
+                    crawl.TargetSpec(
+                        url=str(url),
+                        target_id=str(entry.get("target_id") or f"t{i:06d}"),
+                        parser=str(entry.get("parser", "raw")),
+                        license_boundary=str(
+                            entry.get(
+                                "license_boundary",
+                                spec.get("license_boundary", "derived_fact"),
+                            )
+                        ),
+                        etag=entry.get("etag"),
+                        last_modified=entry.get("last_modified"),
+                        extras=entry.get("extras", {}),
+                    )
                 )
+            else:
+                malformed.append(
+                    {
+                        "index": i,
+                        "reason": "entry_not_string_or_object",
+                        "type": type(entry).__name__,
+                    }
+                )
+        except Exception as exc:
+            # Any unexpected build failure (e.g. unhashable extras) is
+            # isolated to this entry only.
+            malformed.append(
+                {
+                    "index": i,
+                    "reason": f"target_build_failed:{type(exc).__name__}",
+                    "error": str(exc),
+                }
             )
-        else:
-            raise ValueError(f"target_urls[{i}] must be string or object")
-    return out
+    return out, malformed
 
 
 def _emit_artifacts(
@@ -140,6 +195,7 @@ def _emit_artifacts(
     policy: crawl.SourcePolicy,
     results: list[crawl.FetchResult],
     out_dir: Path,
+    malformed_targets: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Write the six standard JSONL artifacts + run_manifest.json.
 
@@ -165,6 +221,27 @@ def _emit_artifacts(
         manifest.JsonlWriter(gaps_path) as gaps,
         manifest.JsonlWriter(quarantine_path) as quarantine,
     ):
+        # First, surface manifest-time malformed entries as known_gaps so
+        # downstream auditors can see exactly which manifest rows were
+        # skipped without crawling. These never count toward accepted /
+        # failed — they're shape errors, not fetch errors.
+        for bad in (malformed_targets or []):
+            affected = [str(bad.get("entry_preview", "")) or f"index:{bad.get('index')}"]
+            gaps.write(
+                manifest.build_known_gap_row(
+                    gap_id="source_receipt_incomplete",
+                    severity="review",
+                    scope="record",
+                    affected_records=affected,
+                    message=f"manifest_target_malformed: {bad.get('reason', 'unknown')}",
+                    agent_instruction=(
+                        "Do not assert facts about this manifest entry; the row "
+                        "could not be parsed and was skipped without a fetch."
+                    ),
+                )
+            )
+            gap_count += 1
+
         for result in results:
             # license / robots short-circuit -> known_gap, not failure
             if result.skipped_reason and not result.ok and result.http_status is None:
@@ -400,7 +477,16 @@ def run() -> int:
     )
 
     policy = _build_policy(spec)
-    targets = _build_targets(spec)
+    targets, malformed_targets = _build_targets(spec)
+    if malformed_targets:
+        _log(
+            "warn",
+            "manifest_targets_malformed",
+            run_id=run_id,
+            job_id=job_id,
+            malformed_count=len(malformed_targets),
+            sample=malformed_targets[:3],
+        )
 
     status = "succeeded"
     stop_reason: str | None = None
@@ -409,20 +495,44 @@ def run() -> int:
         "failed_count": 0,
         "known_gap_count": 0,
     }
+    results: list[crawl.FetchResult] = []
 
     try:
         with crawl.Fetcher(policy) as fetcher:
             results = fetcher.fetch_many(targets)
-        summary = _emit_artifacts(ctx, policy, results, out_dir)
     except KeyboardInterrupt:
         status = "interrupted"
         stop_reason = "sigterm_or_spot_interrupt"
         _log("warn", "interrupted", run_id=run_id, job_id=job_id)
     except Exception as exc:
+        # Fetch-time exceptions must NOT kill artifact emission. Whatever
+        # partial results came back are still serialized so the operator
+        # can audit progress + decide whether to re-run.
         status = "failed"
         stop_reason = f"unhandled_exception: {type(exc).__name__}"
         _log("error", "unhandled", run_id=run_id, job_id=job_id, error=str(exc))
         traceback.print_exc(file=sys.stderr)
+
+    # Always emit artifacts — even on partial / failed fetch, the malformed
+    # targets and any successful FetchResults still need to land as
+    # auditable rows. _emit_artifacts is per-row resilient internally.
+    try:
+        summary = _emit_artifacts(
+            ctx, policy, results, out_dir, malformed_targets=malformed_targets
+        )
+    except Exception as exc:
+        # If artifact emission itself fails, surface but do not raise.
+        _log(
+            "error",
+            "artifact_emit_failed",
+            run_id=run_id,
+            job_id=job_id,
+            error=str(exc),
+        )
+        traceback.print_exc(file=sys.stderr)
+        if status == "succeeded":
+            status = "artifact_emit_failed"
+            stop_reason = f"artifact_emit_failed: {type(exc).__name__}"
 
     # run_manifest is always written, even on failure, so the operator
     # can audit partial progress.
