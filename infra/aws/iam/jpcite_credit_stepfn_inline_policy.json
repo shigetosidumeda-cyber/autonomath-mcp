@@ -1,0 +1,82 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "BatchSubmitAndManage",
+      "Effect": "Allow",
+      "Action": [
+        "batch:SubmitJob",
+        "batch:DescribeJobs",
+        "batch:TerminateJob",
+        "batch:CancelJob",
+        "batch:ListJobs"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SnsPublishCostAlerts",
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": [
+        "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts",
+        "arn:aws:sns:ap-northeast-1:993693061769:jpcite-credit-cost-alerts-apne1"
+      ]
+    },
+    {
+      "Sid": "CloudWatchPutMetricDataForCatch",
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:PutMetricData"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "jpcite/credit"
+        }
+      }
+    },
+    {
+      "Sid": "S3WriteRunArtifacts",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:HeadObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-reports",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-reports/*",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-raw",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-raw/*"
+      ]
+    },
+    {
+      "Sid": "EventsForBatchSyncTask",
+      "Effect": "Allow",
+      "Action": [
+        "events:PutTargets",
+        "events:PutRule",
+        "events:DescribeRule"
+      ],
+      "Resource": "arn:aws:events:ap-northeast-1:993693061769:rule/StepFunctionsGetEventsForBatchJobsRule"
+    },
+    {
+      "Sid": "CloudWatchLogsForExecution",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogDelivery",
+        "logs:GetLogDelivery",
+        "logs:UpdateLogDelivery",
+        "logs:DeleteLogDelivery",
+        "logs:ListLogDeliveries",
+        "logs:PutResourcePolicy",
+        "logs:DescribeResourcePolicies",
+        "logs:DescribeLogGroups"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

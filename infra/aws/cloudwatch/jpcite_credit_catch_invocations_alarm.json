@@ -1,0 +1,20 @@
+{
+  "AlarmName": "jpcite-credit-catch-invocations-alarm",
+  "AlarmDescription": "Fires when SF Catch handlers emit >=3 invocations within 1h (J0X branch failures / parallel failure / aggregate write failure). Replaces direct SNS Publish from SF — alarm fans out to ap-northeast-1 SNS topic which queues notifications even with PendingConfirmation subscription. [lane:solo]",
+  "MetricName": "CatchInvocations",
+  "Namespace": "jpcite/credit",
+  "Statistic": "Sum",
+  "Period": 3600,
+  "EvaluationPeriods": 1,
+  "Threshold": 3,
+  "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+  "TreatMissingData": "notBreaching",
+  "AlarmActions": [
+    "arn:aws:sns:ap-northeast-1:993693061769:jpcite-credit-cost-alerts-apne1"
+  ],
+  "Tags": [
+    {"Key": "Project", "Value": "jpcite"},
+    {"Key": "CreditRun", "Value": "2026-05"},
+    {"Key": "AutoStop", "Value": "2026-05-29"}
+  ]
+}
