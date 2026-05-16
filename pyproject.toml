@@ -257,6 +257,7 @@ ignore_missing_imports = false
 # the strict gate without it.
 incremental = true
 cache_dir = ".mypy_cache"
+sqlite_cache = true
 # Stream BB (Wave 50 tick 9): mypy_path を src に固定して src/jpintel_mcp の
 # package 解釈は 1 経路に保ちつつ、scripts/ 配下の duplicate-module 衝突を回避する。
 # explicit_package_bases は scripts/ 配下にのみ必要なので overrides で局所化。

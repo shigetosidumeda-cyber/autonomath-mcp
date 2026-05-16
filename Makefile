@@ -32,7 +32,7 @@ P0_K = p0 or facade or outcome_routing or csv_intake or release_capsule or agent
 
 .DEFAULT_GOAL := help
 
-.PHONY: help test test-p0 lint format typecheck site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown
+.PHONY: help test test-p0 lint format typecheck typecheck-fast typecheck-fast-stop site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown
 
 help:
 	@echo "jpcite Makefile targets:"
@@ -40,7 +40,9 @@ help:
 	@echo "  make test-p0      Run the P0 hot-path subset (-k '$(P0_K)')"
 	@echo "  make lint         Run ruff check + black --check"
 	@echo "  make format       Run ruff format + black + isort (in-place)"
-	@echo "  make typecheck    Run mypy on src/"
+	@echo "  make typecheck    Run mypy on src/ (one-shot, sqlite-cached)"
+	@echo "  make typecheck-fast    Run dmypy daemon incremental check on src/jpintel_mcp/"
+	@echo "  make typecheck-fast-stop  Stop the dmypy daemon"
 	@echo "  make site         Regenerate sitemap + llms metadata"
 	@echo "  make api          Re-export OpenAPI v1 spec"
 	@echo "  make mcp          Run server.json drift check"
@@ -78,6 +80,22 @@ format:
 
 typecheck:
 	$(MYPY) src/
+
+# PERF-2 (Wave 51, 2026-05-16): dmypy daemon target — keeps the analyzer warm
+# in a background process for sub-second incremental checks after touching a
+# single file. dmypy reuses the same .mypy_cache/ (sqlite-backed) that the
+# one-shot `mypy` target writes, so the first `make typecheck-fast` after a
+# wipe takes ~30s (cold) but subsequent invocations are <1s. Use
+# `make typecheck-fast-stop` to shut the daemon down (or just let it idle).
+typecheck-fast:
+	@if ! .venv/bin/dmypy status >/dev/null 2>&1; then \
+		echo "[typecheck-fast] starting dmypy daemon..."; \
+		.venv/bin/dmypy start -- --strict; \
+	fi
+	.venv/bin/dmypy check src/jpintel_mcp/
+
+typecheck-fast-stop:
+	.venv/bin/dmypy stop || true
 
 site:
 	$(PY) scripts/regen_structured_sitemap_and_llms_meta.py
