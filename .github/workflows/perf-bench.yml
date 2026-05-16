@@ -1,0 +1,188 @@
+# PERF-20: continuous performance benchmark + regression gate.
+#
+# Runs every ``tests/perf/test_*.py`` under the project-standard
+# ``--runperf`` opt-in (plus ``JPCITE_RUN_PERF_GATES=1`` env var), captures
+# per-test timing into ``out/perf_bench_<ts>.json``, downloads the most
+# recent ``main``-branch baseline ledger, and posts a Markdown summary to
+# the pull-request comment thread if the workflow was triggered from a PR
+# (or on the workflow run summary otherwise). Any test slower than the
+# baseline by more than +20% is flagged as a regression.
+#
+# Why not per-PR CI:
+#   * Perf suite drives 100+ sequential in-process calls per endpoint
+#     (PERF-7) + 5K packet renders (PERF-11). On a GHA ubuntu-latest
+#     runner that's ~30-60s plus warmup, and the variance is wide enough
+#     that gating every PR on +20% would yield flaky failures unrelated
+#     to the PR diff.
+#   * The cost discipline in CLAUDE.md / Wave 50 deploy-readiness gates
+#     calls out "Don't run perf on every PR" — this gate is manual +
+#     weekly only by design.
+#
+# Triggers:
+#   * ``workflow_dispatch`` — operator can run on demand from the
+#     Actions UI; useful before tagging a release.
+#   * ``schedule`` — Monday 00:00 UTC == 09:00 JST. A clean weekly cadence
+#     so a regression introduced mid-week is caught before the next
+#     release window.
+#
+# Output artefacts:
+#   * ``out/perf_bench_<ts>.json`` uploaded as ``perf-bench-ledger``.
+#   * ``out/perf_bench_<ts>.md`` uploaded as ``perf-bench-md``.
+#   * PR comment (when triggered from a pull_request via ``workflow_dispatch``
+#     against a fork branch — see the ``post-pr-comment`` job).
+#
+# ``[lane:solo]`` per CLAUDE.md dual-CLI lane convention.
+
+name: perf-bench
+
+on:
+  workflow_dispatch:
+    inputs:
+      regression_pct:
+        description: "Regression threshold percent (default 20)"
+        default: "20"
+        required: false
+      fail_on_regression:
+        description: "Fail the workflow if any test exceeds the threshold"
+        type: boolean
+        default: false
+        required: false
+  schedule:
+    # 00:00 UTC Monday == 09:00 JST. Weekly perf bench cadence.
+    - cron: "0 0 * * 1"
+
+concurrency:
+  # PERF-20: serialize same-ref runs so a manual dispatch doesn't race
+  # the Monday cron when they land in the same window.
+  group: perf-bench-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  bench:
+    name: Run perf bench + regression detection
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install (dev extras)
+        # PERF-20 needs the full dev extras so orjson + fastapi.testclient
+        # are importable. The perf tests themselves assert orjson is on
+        # the fast path (``_HAS_ORJSON`` must be True).
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Download previous baseline ledger
+        # Pull the most recent successful run's ledger artifact from the
+        # main branch so regression detection has a baseline to diff
+        # against. On the very first run this gracefully no-ops and the
+        # Markdown table renders "—" for the baseline column.
+        id: baseline
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: perf-bench.yml
+          branch: main
+          name: perf-bench-ledger
+          path: baseline/
+          if_no_artifact_found: warn
+          search_artifacts: true
+        continue-on-error: true
+
+      - name: Resolve baseline path
+        id: resolve-baseline
+        run: |
+          set -euo pipefail
+          if [ -d baseline ] && ls baseline/perf_bench_*.json >/dev/null 2>&1; then
+            # The download step may extract one or more ledger files; pick
+            # the most recent by filename timestamp.
+            baseline_path=$(ls -1 baseline/perf_bench_*.json | sort | tail -n1)
+            echo "baseline_path=${baseline_path}" >> "$GITHUB_OUTPUT"
+            echo "found baseline: ${baseline_path}"
+          else
+            echo "baseline_path=" >> "$GITHUB_OUTPUT"
+            echo "::warning::no baseline ledger found — regression detection will skip diff column"
+          fi
+
+      - name: Run consolidated perf bench
+        env:
+          # Belt-and-suspenders opt-in: the runner sets this anyway,
+          # but having it here documents the intent and lets a manual
+          # ``act`` reproduction skip the runner flag.
+          JPCITE_RUN_PERF_GATES: "1"
+          REGRESSION_PCT: ${{ github.event.inputs.regression_pct || '20' }}
+          FAIL_ON_REGRESSION: ${{ github.event.inputs.fail_on_regression || 'false' }}
+          BASELINE_PATH: ${{ steps.resolve-baseline.outputs.baseline_path }}
+        run: |
+          set -euo pipefail
+          args=(
+            "scripts/perf/run_all_benchmarks.py"
+            "--regression-pct" "${REGRESSION_PCT}"
+            "--md-out" "out/perf_bench_summary.md"
+          )
+          if [ -n "${BASELINE_PATH}" ]; then
+            args+=("--baseline" "${BASELINE_PATH}")
+          fi
+          if [ "${FAIL_ON_REGRESSION}" = "true" ]; then
+            args+=("--fail-on-regression")
+          fi
+          python "${args[@]}"
+
+      - name: Upload ledger artifact
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: perf-bench-ledger
+          path: out/perf_bench_*.json
+          if-no-files-found: warn
+
+      - name: Upload markdown artifact
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: perf-bench-md
+          path: out/perf_bench_summary.md
+          if-no-files-found: warn
+
+      - name: Append summary to workflow run
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f out/perf_bench_summary.md ]; then
+            cat out/perf_bench_summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Comment on PR (when triggered against a PR ref)
+        # ``workflow_dispatch`` against a PR branch leaves the PR number
+        # in ``github.event.inputs.pr_number`` if the operator threads it
+        # through; otherwise this step no-ops. Schedule runs never have
+        # a PR context so the conditional below skips them cleanly.
+        if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.pull_request)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PR_NUMBER:-}" ]; then
+            echo "no PR number resolved; skipping comment"
+            exit 0
+          fi
+          if [ ! -f out/perf_bench_summary.md ]; then
+            echo "no markdown summary to post; skipping comment"
+            exit 0
+          fi
+          gh pr comment "${PR_NUMBER}" --body-file out/perf_bench_summary.md
