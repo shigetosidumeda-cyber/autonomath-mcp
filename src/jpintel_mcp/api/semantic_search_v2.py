@@ -247,7 +247,7 @@ def _get_e5_model() -> Any:
         model = _E5_MODEL_CACHE.get(key)
         if model is not None:
             return model
-        from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found]
+        from sentence_transformers import SentenceTransformer
 
         kwargs: dict[str, Any] = {}
         if cache_dir:
