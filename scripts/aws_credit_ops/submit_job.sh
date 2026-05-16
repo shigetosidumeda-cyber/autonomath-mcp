@@ -2,15 +2,18 @@
 # Submit a single jpcite-credit crawl job to AWS Batch.
 #
 # Usage:
-#   scripts/aws_credit_ops/submit_job.sh <job_id> [--ec2]
+#   scripts/aws_credit_ops/submit_job.sh <job_id> [--ec2] [--heavy]
 #
-#   <job_id>   e.g. J01, J02, ..., J07
+#   <job_id>   e.g. J01, J02, ..., J07, or deep variants like J02-deep
 #   --ec2      route to jpcite-credit-ec2-spot-cpu-queue (J06 PDF heavy default)
+#   --heavy    use jpcite-crawl-heavy job def (Fargate 16 vCPU / 32 GB, 2h timeout)
+#              instead of jpcite-crawl (Fargate 1 vCPU / 2 GB, 30 min timeout).
+#              Auto-enabled for any job_id matching *-deep (J02-deep etc).
 #
 # Reads the manifest URI from s3://jpcite-credit-993693061769-202605-reports/manifests/<job_id>_*.json
 # (resolves to a single match; bails if 0 or 2+ matches).
 #
-# Submits Batch job (definition jpcite-crawl) with env vars:
+# Submits Batch job (definition jpcite-crawl by default, jpcite-crawl-heavy with --heavy) with env vars:
 #   JOB_MANIFEST_S3_URI  full s3:// URI of the manifest
 #   OUTPUT_S3_BUCKET     jpcite-credit-993693061769-202605-raw
 #   REPORTS_S3_BUCKET    jpcite-credit-993693061769-202605-reports
@@ -34,6 +37,7 @@ REPORTS_BUCKET="${REPORTS_BUCKET:-jpcite-credit-993693061769-202605-reports}"
 RAW_BUCKET="${RAW_BUCKET:-jpcite-credit-993693061769-202605-raw}"
 MANIFEST_PREFIX="${MANIFEST_PREFIX:-manifests/}"
 JOB_DEF="${JOB_DEF:-jpcite-crawl}"
+JOB_DEF_HEAVY="${JOB_DEF_HEAVY:-jpcite-crawl-heavy}"
 FARGATE_QUEUE="${FARGATE_QUEUE:-jpcite-credit-fargate-spot-short-queue}"
 EC2_QUEUE="${EC2_QUEUE:-jpcite-credit-ec2-spot-cpu-queue}"
 LOG_GROUP="${LOG_GROUP:-/aws/batch/jpcite-credit-2026-05}"
@@ -41,9 +45,11 @@ AUTO_STOP="${AUTO_STOP:-2026-05-29}"
 
 usage() {
   cat <<USAGE
-usage: $0 <job_id> [--ec2]
-  job_id: J01 | J02 | J03 | J04 | J05 | J06 | J07
-  --ec2:  route to $EC2_QUEUE instead of $FARGATE_QUEUE (J06 PDF heavy default)
+usage: $0 <job_id> [--ec2] [--heavy]
+  job_id: J01..J07 (light) or J02-deep / J03-deep ... (heavy deep variants)
+  --ec2:    route to $EC2_QUEUE instead of $FARGATE_QUEUE (J06 PDF heavy default)
+  --heavy:  use $JOB_DEF_HEAVY (Fargate 16 vCPU / 32 GB / 2h timeout) instead of $JOB_DEF.
+            Auto-enabled when job_id ends with -deep.
 env:
   DRY_RUN=true   preview only
   AWS_PROFILE    default: bookyou-recovery
@@ -64,18 +70,26 @@ esac
 JOB_ID="$1"
 shift
 USE_EC2=false
+USE_HEAVY=false
 for arg in "$@"; do
   case "$arg" in
     --ec2) USE_EC2=true ;;
+    --heavy) USE_HEAVY=true ;;
     -h|--help) usage ;;
     *) echo "[submit_job] unknown arg: $arg" >&2; usage ;;
   esac
 done
 
-# Validate job_id pattern
-if ! [[ "$JOB_ID" =~ ^J0[1-7]$ ]]; then
-  echo "[submit_job] invalid job_id: $JOB_ID (expected J01..J07)" >&2
+# Validate job_id pattern (J01..J07 or J0X-deep variants)
+if ! [[ "$JOB_ID" =~ ^J0[1-7](-deep)?$ ]]; then
+  echo "[submit_job] invalid job_id: $JOB_ID (expected J01..J07 or J0X-deep)" >&2
   exit 64
+fi
+
+# *-deep variants auto-route to heavy job def
+if [[ "$JOB_ID" =~ -deep$ ]] && [ "$USE_HEAVY" = "false" ]; then
+  echo "[submit_job] note: $JOB_ID is a deep variant — auto-enabling --heavy (jpcite-crawl-heavy)." >&2
+  USE_HEAVY=true
 fi
 
 # J06 defaults to EC2 queue (PDF heavy) unless caller explicitly says fargate
@@ -90,13 +104,22 @@ else
   QUEUE="$FARGATE_QUEUE"
 fi
 
+if [ "$USE_HEAVY" = "true" ]; then
+  JOB_DEF_EFFECTIVE="$JOB_DEF_HEAVY"
+else
+  JOB_DEF_EFFECTIVE="$JOB_DEF"
+fi
+
 # Resolve manifest URI from S3 prefix
-echo "[submit_job] locating manifest for $JOB_ID under s3://$REPORTS_BUCKET/$MANIFEST_PREFIX ..."
+# For *-deep variants we look for "<jobid_with_dash>_" or "<jobid_with_underscore>_" prefixes
+# (J02-deep matches J02_deep_*.json or J02-deep_*.json).
+MANIFEST_MATCH_TOKEN="${JOB_ID/-/_}"
+echo "[submit_job] locating manifest for $JOB_ID (match token: ${MANIFEST_MATCH_TOKEN}) under s3://$REPORTS_BUCKET/$MANIFEST_PREFIX ..."
 MANIFEST_KEYS=$(aws s3api list-objects-v2 \
   --region "$REGION" \
   --bucket "$REPORTS_BUCKET" \
   --prefix "$MANIFEST_PREFIX" \
-  --query "Contents[?contains(Key,\`/${JOB_ID}_\`) || ends_with(Key,\`/${JOB_ID}.json\`)].Key" \
+  --query "Contents[?contains(Key,\`/${MANIFEST_MATCH_TOKEN}_\`) || ends_with(Key,\`/${MANIFEST_MATCH_TOKEN}.json\`)].Key" \
   --output text 2>/dev/null || true)
 
 # Normalize whitespace
@@ -153,13 +176,14 @@ print(json.dumps({'environment':env}))
 
 echo "[submit_job] job_id     = $JOB_ID"
 echo "[submit_job] queue      = $QUEUE"
-echo "[submit_job] job_def    = $JOB_DEF"
+echo "[submit_job] job_def    = $JOB_DEF_EFFECTIVE"
+echo "[submit_job] heavy      = $USE_HEAVY"
 echo "[submit_job] job_name   = $JOB_NAME"
 echo "[submit_job] manifest   = $MANIFEST_URI"
 echo "[submit_job] raw_bucket = s3://$RAW_BUCKET/"
 echo "[submit_job] tags       = $TAGS_JSON"
 echo "[submit_job] log_group  = $LOG_GROUP"
-echo "[submit_job] log_stream_prefix = $LOG_GROUP / $JOB_DEF/default/<task-uuid>"
+echo "[submit_job] log_stream_prefix = $LOG_GROUP / $JOB_DEF_EFFECTIVE/default/<task-uuid>"
 
 if [ "$DRY_RUN" = "true" ]; then
   echo "[submit_job] DRY_RUN — not submitting."
@@ -170,7 +194,7 @@ JOB_OUT=$(aws batch submit-job \
   --region "$REGION" \
   --job-name "$JOB_NAME" \
   --job-queue "$QUEUE" \
-  --job-definition "$JOB_DEF" \
+  --job-definition "$JOB_DEF_EFFECTIVE" \
   --tags "$TAGS_JSON" \
   --container-overrides "$ENV_JSON" \
   --output json)
