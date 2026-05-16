@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DenyInsecureTransport",
+      "Effect": "Deny",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-derived",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-derived/*"
+      ],
+      "Condition": {"Bool": {"aws:SecureTransport": "false"}}
+    },
+    {
+      "Sid": "AllowCloudFrontServicePrincipalReadOnly",
+      "Effect": "Allow",
+      "Principal": {"Service": "cloudfront.amazonaws.com"},
+      "Action": ["s3:GetObject", "s3:ListBucket"],
+      "Resource": [
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-derived",
+        "arn:aws:s3:::jpcite-credit-993693061769-202605-derived/*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "AWS:SourceArn": "arn:aws:cloudfront::993693061769:distribution/DIST_ID_PLACEHOLDER"
+        }
+      }
+    }
+  ]
+}

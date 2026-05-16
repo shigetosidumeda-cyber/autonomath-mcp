@@ -1,0 +1,7 @@
+{
+  "Name": "jpcite-packet-mirror-oac",
+  "Description": "OAC for jpcite-credit-202605-derived bucket — read-only mirror via CloudFront",
+  "SigningProtocol": "sigv4",
+  "SigningBehavior": "always",
+  "OriginAccessControlOriginType": "s3"
+}

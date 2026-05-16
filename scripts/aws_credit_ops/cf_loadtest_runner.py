@@ -1,0 +1,333 @@
+#!/usr/bin/env python3
+"""CloudFront bandwidth load tester for jpcite packet mirror.
+
+Fetches a sample of packet JSON files via the CloudFront distribution to
+burn S3-origin → CloudFront-edge → client transfer bandwidth on AWS-side
+credit. Runs locally (CLI) **and** inside Lambda — the same module is
+imported by ``infra/aws/lambda/jpcite_cf_loadtest.py``.
+
+Safety model (mirrors ``emit_burn_metric.py`` + ``emit_canary_attestation.py``):
+
+- **DRY_RUN by default.** ``--commit`` is required to actually issue HTTP
+  requests. Without it the runner prints the would-fetch URL sample +
+  expected transfer envelope and exits 0.
+- Live mode further requires ``--unlock-live-bandwidth-burn`` to pass —
+  matches the operator-only flag used by canary attestation. Without it
+  the runner short-circuits even when ``--commit`` is passed.
+- Budget cap (``--budget-usd``, default 100) gates the *projected*
+  transfer cost. The runner declines to run when projected_cost > budget,
+  printing the projection envelope.
+
+Cost model (Asia Pacific 1 — Tokyo, prefix tier ≤10 TB):
+
+    egress USD/GB  = 0.114   (CloudFront ap-northeast-1 edge → public internet)
+    request USD/req = 0.012 / 10_000 = 1.2e-6 (GET/HEAD HTTPS)
+
+CLI usage::
+
+    # Dry run — prints projection + URL sample, no HTTP.
+    $ ./scripts/aws_credit_ops/cf_loadtest_runner.py \
+        --distribution-domain d111111abcdef8.cloudfront.net \
+        --requests 10000 --concurrency 64
+
+    # Live one-shot — burns ~50 MB through the edge.
+    $ ./scripts/aws_credit_ops/cf_loadtest_runner.py \
+        --distribution-domain d111111abcdef8.cloudfront.net \
+        --requests 10000 --concurrency 64 \
+        --commit --unlock-live-bandwidth-burn
+
+The runner samples object keys from a static manifest written by
+``scripts/aws_credit_ops/cf_loadtest_build_manifest.py`` (see sibling).
+"""
+
+from __future__ import annotations
+
+import argparse
+import dataclasses
+import datetime as dt
+import json
+import logging
+import random
+import sys
+import time
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+SCHEMA_VERSION: Final[str] = "jpcite.cf_loadtest_envelope.v1"
+
+# Pricing constants. Asia-Pacific Tokyo edge, first tier (≤10 TB / month).
+USD_PER_GB_ASIA: Final[float] = 0.114
+USD_PER_REQUEST_HTTPS: Final[float] = 0.012 / 10_000  # 0.012 USD / 10k req
+BYTES_PER_GB: Final[int] = 1_073_741_824  # 1024^3 (GiB; AWS CloudFront bills in binary GiB)
+
+
+# ----------------------------------------------------------------------------
+# Helpers — pure functions, fully testable without network or HTTP client.
+# ----------------------------------------------------------------------------
+
+
+def project_transfer_cost(
+    requests: int,
+    avg_object_bytes: int,
+    *,
+    usd_per_gb: float = USD_PER_GB_ASIA,
+    usd_per_request: float = USD_PER_REQUEST_HTTPS,
+) -> dict[str, float]:
+    """Project transfer + request cost for a load test plan.
+
+    Returns a flat dict with ``total_bytes``, ``total_gb``, ``transfer_usd``,
+    ``request_usd``, and ``total_usd`` — easy to JSON-serialise.
+    """
+
+    requests = max(int(requests), 0)
+    avg = max(int(avg_object_bytes), 0)
+    total_bytes = float(requests) * float(avg)
+    total_gb = total_bytes / float(BYTES_PER_GB)
+    transfer_usd = total_gb * float(usd_per_gb)
+    request_usd = float(requests) * float(usd_per_request)
+    total_usd = transfer_usd + request_usd
+    return {
+        "requests": float(requests),
+        "avg_object_bytes": float(avg),
+        "total_bytes": total_bytes,
+        "total_gb": total_gb,
+        "transfer_usd": round(transfer_usd, 6),
+        "request_usd": round(request_usd, 6),
+        "total_usd": round(total_usd, 6),
+    }
+
+
+def load_manifest_keys(manifest_path: Path) -> list[str]:
+    """Load packet key list from a newline-delimited or JSON manifest file."""
+
+    text = manifest_path.read_text(encoding="utf-8").strip()
+    if not text:
+        return []
+    if text.startswith("["):
+        data = json.loads(text)
+        if not isinstance(data, list):
+            raise ValueError(f"manifest {manifest_path} is not a JSON list")
+        return [str(k) for k in data]
+    return [line.strip() for line in text.splitlines() if line.strip()]
+
+
+def sample_keys(keys: list[str], n: int, *, seed: int = 0) -> list[str]:
+    """Sample ``n`` keys with replacement using a deterministic seed."""
+
+    if not keys:
+        return []
+    rng = random.Random(seed)  # noqa: S311 — deterministic test sampling, not security
+    return [rng.choice(keys) for _ in range(max(int(n), 0))]
+
+
+def build_urls(distribution_domain: str, keys: Iterable[str]) -> list[str]:
+    """Compose ``https://<domain>/<key>`` URLs from CloudFront domain + keys."""
+
+    domain = distribution_domain.strip().rstrip("/")
+    if not domain:
+        raise ValueError("distribution_domain must not be empty")
+    out = []
+    for k in keys:
+        k_norm = str(k).lstrip("/")
+        out.append(f"https://{domain}/{k_norm}")
+    return out
+
+
+@dataclasses.dataclass(frozen=True)
+class LoadTestPlan:
+    distribution_domain: str
+    requests: int
+    concurrency: int
+    avg_object_bytes: int
+    manifest_path: str
+    seed: int
+    budget_usd: float
+    commit: bool
+    unlock_live: bool
+
+    def asdict(self) -> dict[str, object]:
+        return dataclasses.asdict(self)
+
+
+def classify(plan: LoadTestPlan, projection: dict[str, float]) -> str:
+    """Return ``DRY_RUN`` / ``BLOCKED_BUDGET`` / ``BLOCKED_FLAG`` / ``LIVE``."""
+
+    if not plan.commit:
+        return "DRY_RUN"
+    if not plan.unlock_live:
+        return "BLOCKED_FLAG"
+    if projection["total_usd"] > plan.budget_usd:
+        return "BLOCKED_BUDGET"
+    return "LIVE"
+
+
+def build_envelope(
+    plan: LoadTestPlan,
+    keys_total: int,
+    projection: dict[str, float],
+    *,
+    timestamp: dt.datetime | None = None,
+) -> dict[str, object]:
+    """Build the would-emit envelope for stdout / Lambda return value."""
+
+    ts = timestamp or dt.datetime.now(dt.UTC)
+    classification = classify(plan, projection)
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "timestamp": ts.isoformat(),
+        "plan": plan.asdict(),
+        "keys_total_in_manifest": int(keys_total),
+        "projection": projection,
+        "classification": classification,
+        "budget_usd": plan.budget_usd,
+    }
+
+
+# ----------------------------------------------------------------------------
+# Live HTTP exec — only imported when classification == LIVE.
+# ----------------------------------------------------------------------------
+
+
+def _run_live_http(
+    urls: list[str],
+    *,
+    concurrency: int,
+    timeout_s: float = 30.0,
+) -> dict[str, object]:
+    """Execute the HTTP fetches with bounded concurrency.
+
+    Uses ``urllib.request`` from stdlib — no third-party HTTP client so
+    Lambda zip stays minimal and there's no boto3 import cost path.
+    """
+
+    import concurrent.futures as cf
+    import urllib.request
+
+    n = len(urls)
+    bytes_total = 0
+    ok_count = 0
+    fail_count = 0
+    started = time.time()
+
+    def _fetch(url: str) -> tuple[bool, int]:
+        try:
+            req = urllib.request.Request(url, method="GET")  # noqa: S310 — known CF mirror domain
+            with urllib.request.urlopen(req, timeout=timeout_s) as resp:  # noqa: S310
+                payload = resp.read()
+                return True, len(payload)
+        except Exception as exc:  # pragma: no cover — exercised by smoke
+            logger.debug("fetch failed url=%s err=%s", url, exc)
+            return False, 0
+
+    with cf.ThreadPoolExecutor(max_workers=max(int(concurrency), 1)) as pool:
+        for ok, nbytes in pool.map(_fetch, urls):
+            if ok:
+                ok_count += 1
+                bytes_total += nbytes
+            else:
+                fail_count += 1
+
+    elapsed = max(time.time() - started, 1e-6)
+    return {
+        "requests_total": int(n),
+        "ok_count": int(ok_count),
+        "fail_count": int(fail_count),
+        "bytes_total": int(bytes_total),
+        "elapsed_s": round(elapsed, 3),
+        "rps": round(n / elapsed, 2),
+        "throughput_mbps": round((bytes_total * 8 / 1e6) / elapsed, 2),
+    }
+
+
+# ----------------------------------------------------------------------------
+# CLI entry point.
+# ----------------------------------------------------------------------------
+
+
+def _parse_argv(argv: list[str] | None = None) -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="jpcite CloudFront bandwidth load tester")
+    p.add_argument("--distribution-domain", required=True,
+                   help="CloudFront distribution domain (e.g. d1234.cloudfront.net)")
+    p.add_argument("--manifest-path", default="infra/aws/cloudfront/jpcite_packet_keys.txt",
+                   help="newline-delimited or JSON list of S3 keys to sample")
+    p.add_argument("--requests", type=int, default=10_000)
+    p.add_argument("--concurrency", type=int, default=64)
+    p.add_argument("--avg-object-bytes", type=int, default=2_000,
+                   help="projection input (real bytes are read from network when --commit)")
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--budget-usd", type=float, default=100.0,
+                   help="abort if projected total_usd exceeds this")
+    p.add_argument("--commit", action="store_true",
+                   help="actually issue HTTP requests (otherwise DRY_RUN)")
+    p.add_argument("--unlock-live-bandwidth-burn", action="store_true",
+                   dest="unlock_live",
+                   help="operator-only flag; required in addition to --commit")
+    p.add_argument("--max-sample-urls", type=int, default=10,
+                   help="print this many sampled URLs in dry-run envelope")
+    return p.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _parse_argv(argv)
+
+    plan = LoadTestPlan(
+        distribution_domain=args.distribution_domain,
+        requests=args.requests,
+        concurrency=args.concurrency,
+        avg_object_bytes=args.avg_object_bytes,
+        manifest_path=args.manifest_path,
+        seed=args.seed,
+        budget_usd=args.budget_usd,
+        commit=args.commit,
+        unlock_live=args.unlock_live,
+    )
+
+    manifest = Path(args.manifest_path)
+    if not manifest.exists():
+        logger.warning("manifest %s not found — using empty key list", manifest)
+        keys: list[str] = []
+    else:
+        keys = load_manifest_keys(manifest)
+
+    sampled = sample_keys(keys, plan.requests, seed=plan.seed)
+    projection = project_transfer_cost(plan.requests, plan.avg_object_bytes)
+    envelope = build_envelope(plan, keys_total=len(keys), projection=projection)
+
+    classification = str(envelope["classification"])
+    envelope["sample_urls"] = build_urls(plan.distribution_domain, sampled[: args.max_sample_urls])
+
+    if classification != "LIVE":
+        print(json.dumps(envelope, indent=2, ensure_ascii=False))
+        return 0
+
+    if not sampled:
+        envelope["error"] = "manifest empty — cannot execute live load test"
+        print(json.dumps(envelope, indent=2, ensure_ascii=False))
+        return 2
+
+    urls = build_urls(plan.distribution_domain, sampled)
+    result = _run_live_http(urls, concurrency=plan.concurrency)
+    envelope["result"] = result
+    bytes_total_val = result["bytes_total"]
+    requests_total_val = result["requests_total"]
+    assert isinstance(bytes_total_val, (int, float)), "bytes_total must be numeric"
+    assert isinstance(requests_total_val, (int, float)), "requests_total must be numeric"
+    actual_gb = float(bytes_total_val) / float(BYTES_PER_GB)
+    transfer_usd = round(actual_gb * USD_PER_GB_ASIA, 6)
+    request_usd = round(float(requests_total_val) * USD_PER_REQUEST_HTTPS, 6)
+    envelope["actual_transfer_usd"] = transfer_usd
+    envelope["actual_request_usd"] = request_usd
+    envelope["actual_total_usd"] = round(transfer_usd + request_usd, 6)
+    print(json.dumps(envelope, indent=2, ensure_ascii=False))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
