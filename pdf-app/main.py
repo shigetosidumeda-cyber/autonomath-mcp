@@ -1,10 +1,12 @@
 """jpcite-pdf: weasyprint-based PDF render for artifact viewer."""
+
 from __future__ import annotations
+
 import os
+
 import httpx
 from fastapi import FastAPI, HTTPException, Response
-from weasyprint import HTML, CSS  # type: ignore[import-untyped]
-
+from weasyprint import CSS, HTML  # type: ignore[import-untyped]
 
 app = FastAPI(title="jpcite-pdf", version="0.1.0")
 JPCITE_API_BASE = os.environ.get("JPCITE_API_BASE", "https://api.jpcite.com")
@@ -28,7 +30,7 @@ def render_pdf(pack_id: str) -> Response:
             r.raise_for_status()
             artifact = r.json()
     except httpx.HTTPError as e:
-        raise HTTPException(status_code=502, detail=f"upstream_error: {e}")
+        raise HTTPException(status_code=502, detail=f"upstream_error: {e}") from e
 
     # Build HTML
     html_str = _render_html(artifact)
@@ -36,10 +38,14 @@ def render_pdf(pack_id: str) -> Response:
     # Render PDF
     try:
         pdf_bytes = HTML(string=html_str).write_pdf(
-            stylesheets=[CSS(string="@page { size: A4; margin: 1.5cm; } body { font-family: 'Helvetica', sans-serif; font-size: 11pt; line-height: 1.5; }")],
+            stylesheets=[
+                CSS(
+                    string="@page { size: A4; margin: 1.5cm; } body { font-family: 'Helvetica', sans-serif; font-size: 11pt; line-height: 1.5; }"
+                )
+            ],
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"render_error: {e}")
+        raise HTTPException(status_code=500, detail=f"render_error: {e}") from e
 
     return Response(
         content=pdf_bytes,

@@ -34,10 +34,7 @@ from email.message import EmailMessage
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 ENV_LOCAL = REPO_ROOT / ".env.local"
-SUBMISSION_DOC = (
-    REPO_ROOT
-    / "docs/_internal/mcp_registry_submissions/pulsemcp_submission.md"
-)
+SUBMISSION_DOC = REPO_ROOT / "docs/_internal/mcp_registry_submissions/pulsemcp_submission.md"
 INBOX_DIR = REPO_ROOT / "tools/offline/_inbox"
 
 SMTP_HOST = "s374.xrea.com"
@@ -81,9 +78,7 @@ def _extract_body_from_doc(doc_path: pathlib.Path) -> str:
             after = text.split(marker, 1)[1]
             break
     else:
-        raise SystemExit(
-            f"Submission doc {doc_path} is missing a `## Mail body` marker."
-        )
+        raise SystemExit(f"Submission doc {doc_path} is missing a `## Mail body` marker.")
     if "```" not in after:
         raise SystemExit("No fenced code block found after the Mail body marker.")
     _, fenced = after.split("```", 1)
@@ -111,9 +106,7 @@ def _discover_pulsemcp_email() -> str | None:
         return None
     hex_str = m.group(1)
     key = int(hex_str[:2], 16)
-    return "".join(
-        chr(int(hex_str[i : i + 2], 16) ^ key) for i in range(2, len(hex_str), 2)
-    )
+    return "".join(chr(int(hex_str[i : i + 2], 16) ^ key) for i in range(2, len(hex_str), 2))
 
 
 def _compose(to_addr: str, body: str) -> EmailMessage:
@@ -122,9 +115,7 @@ def _compose(to_addr: str, body: str) -> EmailMessage:
     msg["To"] = to_addr
     msg["Reply-To"] = FROM_ADDR
     msg["Subject"] = SUBJECT
-    msg["Date"] = _dt.datetime.now(_dt.timezone.utc).strftime(
-        "%a, %d %b %Y %H:%M:%S %z"
-    )
+    msg["Date"] = _dt.datetime.now(_dt.UTC).strftime("%a, %d %b %Y %H:%M:%S %z")
     msg["X-Mailer"] = "jpcite-offline/submit_pulsemcp_mail"
     msg.set_content(body, charset="utf-8")
     return msg
@@ -132,7 +123,7 @@ def _compose(to_addr: str, body: str) -> EmailMessage:
 
 def _archive(msg: EmailMessage, send_result: dict[str, object]) -> pathlib.Path:
     INBOX_DIR.mkdir(parents=True, exist_ok=True)
-    ts = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ts = _dt.datetime.now(_dt.UTC).strftime("%Y%m%dT%H%M%SZ")
     stem = f"{ts}_pulsemcp_submission"
     eml_path = INBOX_DIR / f"{stem}.eml"
     eml_path.write_bytes(bytes(msg))
@@ -161,9 +152,7 @@ def main() -> int:
         action="store_true",
         help="Resolve PulseMCP's CF-obfuscated email from the live footer.",
     )
-    parser.add_argument(
-        "--smtp-host", default=SMTP_HOST, help=f"SMTP host (default: {SMTP_HOST})."
-    )
+    parser.add_argument("--smtp-host", default=SMTP_HOST, help=f"SMTP host (default: {SMTP_HOST}).")
     parser.add_argument(
         "--smtp-port",
         type=int,
@@ -219,7 +208,7 @@ def main() -> int:
         "to": to_addr,
         "smtp_host": args.smtp_host,
         "smtp_port": args.smtp_port,
-        "attempted_at_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "attempted_at_utc": _dt.datetime.now(_dt.UTC).isoformat(),
     }
 
     try:

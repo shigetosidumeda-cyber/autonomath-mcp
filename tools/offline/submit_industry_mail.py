@@ -27,6 +27,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as _dt
 import json
 import os
@@ -154,9 +155,7 @@ def _compose(to_addr: str, subject: str, body: str) -> EmailMessage:
     msg["To"] = to_addr
     msg["Reply-To"] = FROM_ADDR
     msg["Subject"] = subject
-    msg["Date"] = _dt.datetime.now(_dt.timezone.utc).strftime(
-        "%a, %d %b %Y %H:%M:%S %z"
-    )
+    msg["Date"] = _dt.datetime.now(_dt.UTC).strftime("%a, %d %b %Y %H:%M:%S %z")
     msg["X-Mailer"] = "jpcite-offline/submit_industry_mail"
     msg.set_content(body, charset="utf-8")
     return msg
@@ -164,7 +163,7 @@ def _compose(to_addr: str, subject: str, body: str) -> EmailMessage:
 
 def _archive(slug: str, msg: EmailMessage, result: dict[str, object]) -> pathlib.Path:
     INBOX_DIR.mkdir(parents=True, exist_ok=True)
-    ts = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ts = _dt.datetime.now(_dt.UTC).strftime("%Y%m%dT%H%M%SZ")
     stem = f"{ts}_industry_mail_{slug}"
     eml_path = INBOX_DIR / f"{stem}.eml"
     eml_path.write_bytes(bytes(msg))
@@ -267,7 +266,7 @@ def main() -> int:
                 "draft": cfg["draft"],
                 "smtp_host": args.smtp_host,
                 "smtp_port": args.smtp_port,
-                "attempted_at_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+                "attempted_at_utc": _dt.datetime.now(_dt.UTC).isoformat(),
                 "mode": "send" if args.send else "dry-run",
             }
 
@@ -297,10 +296,8 @@ def main() -> int:
             print()
     finally:
         if smtp is not None:
-            try:
+            with contextlib.suppress(Exception):
                 smtp.quit()
-            except Exception:
-                pass
 
     # Final summary line for grep-ability in CI logs
     if args.send:

@@ -28,11 +28,12 @@ import hashlib
 import hmac
 import json
 import logging
-from typing import Any
-
-import httpx
+from typing import TYPE_CHECKING, Any
 
 from .freee_to_autonomath import call_autonomath_search
+
+if TYPE_CHECKING:
+    import httpx
 
 logger = logging.getLogger("jpcite.freee_webhook")
 
@@ -120,9 +121,7 @@ def freee_webhook_handle(
     http_client: httpx.Client | None = None,
 ) -> dict[str, Any]:
     """Validate + translate a freee webhook into jpcite candidate matches."""
-    verify_freee_webhook(
-        raw_body=raw_body, signature_header=signature_header, secret=secret
-    )
+    verify_freee_webhook(raw_body=raw_body, signature_header=signature_header, secret=secret)
     try:
         payload = json.loads(raw_body.decode("utf-8") or "{}")
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -158,13 +157,15 @@ def freee_webhook_handle(
         url = raw.get("source_url")
         if not isinstance(url, str) or not url.startswith(("http://", "https://")):
             continue
-        matches.append({
-            "unified_id": raw.get("unified_id") or raw.get("id"),
-            "title": raw.get("title") or raw.get("name"),
-            "authority": raw.get("authority"),
-            "tier": raw.get("tier"),
-            "source_url": url,
-        })
+        matches.append(
+            {
+                "unified_id": raw.get("unified_id") or raw.get("id"),
+                "title": raw.get("title") or raw.get("name"),
+                "authority": raw.get("authority"),
+                "tier": raw.get("tier"),
+                "source_url": url,
+            }
+        )
         if len(matches) >= 3:
             break
 

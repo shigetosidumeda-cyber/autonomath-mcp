@@ -74,7 +74,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import statistics
 import sys
 import time
@@ -105,11 +104,11 @@ SURFACES: tuple[str, ...] = (
 # Per-surface REST endpoint + result key.
 SURFACE_ENDPOINTS: dict[str, tuple[str, str]] = {
     # surface -> (endpoint_path, result_root_key)
-    "programs":    ("/v1/programs/search",        "programs"),
-    "laws":        ("/v1/laws/search",            "laws"),
-    "cases":       ("/v1/cases/search",           "cases"),
-    "enforcement": ("/v1/enforcement/search",     "enforcement_cases"),
-    "loans":       ("/v1/loans/search",           "loan_programs"),
+    "programs": ("/v1/programs/search", "programs"),
+    "laws": ("/v1/laws/search", "laws"),
+    "cases": ("/v1/cases/search", "cases"),
+    "enforcement": ("/v1/enforcement/search", "enforcement_cases"),
+    "loans": ("/v1/loans/search", "loan_programs"),
 }
 
 # First-party host allowlist — endings (suffix match). Acceptable as
@@ -210,7 +209,11 @@ def _is_first_party(host: str) -> bool:
     for tok in (".city.", ".town.", ".vill."):
         if tok in host and host.endswith(".jp"):
             return True
-    return any(host.endswith(suf.lstrip(".")) for suf in FIRST_PARTY_HOST_SUFFIXES if not suf.startswith("."))
+    return any(
+        host.endswith(suf.lstrip("."))
+        for suf in FIRST_PARTY_HOST_SUFFIXES
+        if not suf.startswith(".")
+    )
 
 
 def _is_aggregator(host: str) -> bool:
@@ -295,7 +298,9 @@ def worst_queries(rows: list[dict[str, Any]], n: int = 10) -> dict[str, list[str
             continue
         by_surface[r["surface"]].append(r)
     for surface, rs in by_surface.items():
-        rs_sorted = sorted(rs, key=lambda x: (x.get("first_party_top3", 0), -x.get("rows_returned", 0)))
+        rs_sorted = sorted(
+            rs, key=lambda x: (x.get("first_party_top3", 0), -x.get("rows_returned", 0))
+        )
         out[surface] = [x["query"] for x in rs_sorted[:n]]
     return out
 
@@ -305,12 +310,15 @@ def worst_queries(rows: list[dict[str, Any]], n: int = 10) -> dict[str, list[str
 # ---------------------------------------------------------------------------
 
 
-def render_markdown(rows: list[dict[str, Any]], per_surface: dict[str, float], w4: float, week: int) -> str:
+def render_markdown(
+    rows: list[dict[str, Any]], per_surface: dict[str, float], w4: float, week: int
+) -> str:
     lines = []
     lines.append(f"# GEO Bench 500 — Week {week}\n")
     lines.append(f"_Generated {datetime.now(UTC).isoformat(timespec='seconds')}_\n")
-    lines.append(f"\n**W4 = {w4}** (target ≥ {W4_TARGET}) — "
-                 f"{'PASS' if w4 >= W4_TARGET else 'FAIL'}.\n")
+    lines.append(
+        f"\n**W4 = {w4}** (target ≥ {W4_TARGET}) — {'PASS' if w4 >= W4_TARGET else 'FAIL'}.\n"
+    )
     lines.append("\n## Per-surface score\n")
     lines.append("\n| surface | score | n |\n| --- | --- | --- |")
     for surface in SURFACES:
@@ -342,10 +350,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--week", type=int, required=True, help="Week number for output files.")
     p.add_argument("--base-url", type=str, default=DEFAULT_API_BASE)
     p.add_argument("--queries", type=Path, default=DEFAULT_QUERY_PATH)
-    p.add_argument("--surface", type=str, default="all",
-                   help="Restrict to one surface (programs / laws / cases / enforcement / loans).")
-    p.add_argument("--limit", type=int, default=100,
-                   help="Per-surface query cap (default 100).")
+    p.add_argument(
+        "--surface",
+        type=str,
+        default="all",
+        help="Restrict to one surface (programs / laws / cases / enforcement / loans).",
+    )
+    p.add_argument("--limit", type=int, default=100, help="Per-surface query cap (default 100).")
     p.add_argument("--out-dir", type=Path, default=Path("analytics"))
     p.add_argument("--report-dir", type=Path, default=Path("reports"))
     p.add_argument("--dry-run", action="store_true", help="Skip HTTP calls (smoke test only).")
@@ -357,9 +368,11 @@ def main(argv: list[str] | None = None) -> int:
 
     queries_path: Path = args.queries
     if not queries_path.exists():
-        print(f"[geo_bench_500] WARN: query file missing: {queries_path}\n"
-              f"  Falling back to in-source hand-curated baseline (5 per surface).",
-              file=sys.stderr)
+        print(
+            f"[geo_bench_500] WARN: query file missing: {queries_path}\n"
+            f"  Falling back to in-source hand-curated baseline (5 per surface).",
+            file=sys.stderr,
+        )
         queries = _embedded_baseline_queries()
     else:
         with open(queries_path, encoding="utf-8") as fh:
@@ -375,8 +388,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
         for q in sample:
             if args.dry_run:
-                rows.append({"surface": surface, "query": q, "skipped": True,
-                             "reason": "dry_run"})
+                rows.append({"surface": surface, "query": q, "skipped": True, "reason": "dry_run"})
                 continue
             row = verify_one(args.base_url, surface, q)
             rows.append(row)
@@ -395,9 +407,11 @@ def main(argv: list[str] | None = None) -> int:
             fh.write(json.dumps(r, ensure_ascii=False) + "\n")
     report_path.write_text(render_markdown(rows, per_surface, w4, args.week), encoding="utf-8")
 
-    print(f"[geo_bench_500] wrote {jsonl_path} + {report_path}; "
-          f"W4={w4} target≥{W4_TARGET} "
-          f"{'PASS' if w4 >= W4_TARGET else 'FAIL'}")
+    print(
+        f"[geo_bench_500] wrote {jsonl_path} + {report_path}; "
+        f"W4={w4} target≥{W4_TARGET} "
+        f"{'PASS' if w4 >= W4_TARGET else 'FAIL'}"
+    )
     return 0 if w4 >= W4_TARGET else 1
 
 

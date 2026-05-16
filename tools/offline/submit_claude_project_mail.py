@@ -84,9 +84,7 @@ def _extract_body_from_doc(doc_path: pathlib.Path) -> str:
     text = doc_path.read_text(encoding="utf-8")
     marker = "### 2-3. Body (en + ja 併記)"
     if marker not in text:
-        raise SystemExit(
-            f"Submission doc {doc_path} is missing the §2-3 body marker."
-        )
+        raise SystemExit(f"Submission doc {doc_path} is missing the §2-3 body marker.")
     after = text.split(marker, 1)[1]
     # find the first fenced ``` ... ``` block after the marker
     if "```" not in after:
@@ -103,9 +101,7 @@ def _compose(to_addr: str, body: str) -> EmailMessage:
     msg["To"] = to_addr
     msg["Reply-To"] = FROM_ADDR
     msg["Subject"] = SUBJECT
-    msg["Date"] = _dt.datetime.now(_dt.timezone.utc).strftime(
-        "%a, %d %b %Y %H:%M:%S %z"
-    )
+    msg["Date"] = _dt.datetime.now(_dt.UTC).strftime("%a, %d %b %Y %H:%M:%S %z")
     msg["X-Mailer"] = "jpcite-offline/submit_claude_project_mail"
     msg.set_content(body, charset="utf-8")
     return msg
@@ -113,7 +109,7 @@ def _compose(to_addr: str, body: str) -> EmailMessage:
 
 def _archive(msg: EmailMessage, send_result: dict[str, object]) -> pathlib.Path:
     INBOX_DIR.mkdir(parents=True, exist_ok=True)
-    ts = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ts = _dt.datetime.now(_dt.UTC).strftime("%Y%m%dT%H%M%SZ")
     stem = f"{ts}_claude_project_submission"
     eml_path = INBOX_DIR / f"{stem}.eml"
     eml_path.write_bytes(bytes(msg))
@@ -178,7 +174,7 @@ def main() -> int:
         "to": args.to,
         "smtp_host": args.smtp_host,
         "smtp_port": args.smtp_port,
-        "attempted_at_utc": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "attempted_at_utc": _dt.datetime.now(_dt.UTC).isoformat(),
     }
 
     try:

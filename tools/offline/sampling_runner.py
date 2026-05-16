@@ -152,33 +152,35 @@ async def run_sampling_session(
     )
     drafts: list[dict[str, Any]] = []
 
-    async with stdio_client(server_params) as (read_stream, write_stream):
-        async with ClientSession(
+    async with (
+        stdio_client(server_params) as (read_stream, write_stream),
+        ClientSession(
             read_stream,
             write_stream,
             sampling_callback=_sampling_handler_anthropic,
-        ) as session:
-            await session.initialize()
-            tools = await session.list_tools()
-            sys.stdout.write(f"sampling_runner: connected, {len(tools.tools)} tools\n")
-            # Operator-side: choose a small set of read-only tools that
-            # benefit from sampling-driven post-processing (narrative).
-            # Real workflows iterate over am_entity_facts rows where
-            # narrative_text is NULL. The reference implementation here
-            # exercises `get_program` for `limit` rows to keep the smoke
-            # cost bounded.
-            for ix in range(limit):
-                stub_id = f"jpcite-sample-{ix}"
-                drafts.append(
-                    {
-                        "entity_stub_id": stub_id,
-                        "ts": utc_now_iso(),
-                        "note": (
-                            "Operator review required. Sampling-driven draft "
-                            "stub; expand with real entity_id query in production runs."
-                        ),
-                    }
-                )
+        ) as session,
+    ):
+        await session.initialize()
+        tools = await session.list_tools()
+        sys.stdout.write(f"sampling_runner: connected, {len(tools.tools)} tools\n")
+        # Operator-side: choose a small set of read-only tools that
+        # benefit from sampling-driven post-processing (narrative).
+        # Real workflows iterate over am_entity_facts rows where
+        # narrative_text is NULL. The reference implementation here
+        # exercises `get_program` for `limit` rows to keep the smoke
+        # cost bounded.
+        for ix in range(limit):
+            stub_id = f"jpcite-sample-{ix}"
+            drafts.append(
+                {
+                    "entity_stub_id": stub_id,
+                    "ts": utc_now_iso(),
+                    "note": (
+                        "Operator review required. Sampling-driven draft "
+                        "stub; expand with real entity_id query in production runs."
+                    ),
+                }
+            )
 
     out_path = INBOX_DIR / f"drafts-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}.json"
     out_path.write_text(json.dumps(drafts, ensure_ascii=False, indent=2), encoding="utf-8")

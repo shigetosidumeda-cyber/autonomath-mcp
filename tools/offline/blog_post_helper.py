@@ -119,7 +119,7 @@ def _tags_from_meta(meta: dict[str, str], fallback: list[str]) -> list[str]:
 
 def _archive(slug: str, payload: dict[str, object]) -> pathlib.Path:
     INBOX_DIR.mkdir(parents=True, exist_ok=True)
-    ts = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ts = _dt.datetime.now(_dt.UTC).strftime("%Y%m%dT%H%M%SZ")
     out = INBOX_DIR / f"{ts}_blog_post_{slug}.json"
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return out
@@ -140,7 +140,9 @@ def _http_post_json(url: str, headers: dict[str, str], body: object) -> tuple[in
         return 0, repr(exc)
 
 
-def post_devto(env: dict[str, str], title: str, body: str, tags: list[str], do_post: bool) -> dict[str, object]:
+def post_devto(
+    env: dict[str, str], title: str, body: str, tags: list[str], do_post: bool
+) -> dict[str, object]:
     token = env.get("DEVTO_API_KEY", "")
     if do_post and not token:
         return {"platform": "devto", "status": "skipped", "reason": "no DEVTO_API_KEY"}
@@ -157,9 +159,7 @@ def post_devto(env: dict[str, str], title: str, body: str, tags: list[str], do_p
     }
     if not do_post:
         return {"platform": "devto", "status": "dry-run", "payload": payload}
-    code, text = _http_post_json(
-        DEVTO_ENDPOINT, {"api-key": token}, payload
-    )
+    code, text = _http_post_json(DEVTO_ENDPOINT, {"api-key": token}, payload)
     return {
         "platform": "devto",
         "status": "sent" if code in (200, 201) else "error",
@@ -168,11 +168,17 @@ def post_devto(env: dict[str, str], title: str, body: str, tags: list[str], do_p
     }
 
 
-def post_hashnode(env: dict[str, str], title: str, body: str, tags: list[str], do_post: bool) -> dict[str, object]:
+def post_hashnode(
+    env: dict[str, str], title: str, body: str, tags: list[str], do_post: bool
+) -> dict[str, object]:
     token = env.get("HASHNODE_PAT", "")
     pub_id = env.get("HASHNODE_PUBLICATION_ID", "")
     if do_post and (not token or not pub_id):
-        return {"platform": "hashnode", "status": "skipped", "reason": "no HASHNODE_PAT / HASHNODE_PUBLICATION_ID"}
+        return {
+            "platform": "hashnode",
+            "status": "skipped",
+            "reason": "no HASHNODE_PAT / HASHNODE_PUBLICATION_ID",
+        }
     # Hashnode tags are objects {slug, name}; trim to 5
     tag_objs = [{"slug": re.sub(r"[^a-zA-Z0-9]", "", t).lower(), "name": t} for t in tags][:5]
     query = """
@@ -208,7 +214,9 @@ mutation publishPost($input: PublishPostInput!) {
     }
 
 
-def post_qiita(env: dict[str, str], title: str, body: str, tags: list[str], do_post: bool) -> dict[str, object]:
+def post_qiita(
+    env: dict[str, str], title: str, body: str, tags: list[str], do_post: bool
+) -> dict[str, object]:
     token = env.get("QIITA_TOKEN", "")
     if do_post and not token:
         return {"platform": "qiita", "status": "skipped", "reason": "no QIITA_TOKEN"}
@@ -235,7 +243,9 @@ def post_qiita(env: dict[str, str], title: str, body: str, tags: list[str], do_p
     }
 
 
-def post_zenn(title: str, body: str, meta: dict[str, str], do_post: bool, draft_name: str) -> dict[str, object]:
+def post_zenn(
+    title: str, body: str, meta: dict[str, str], do_post: bool, draft_name: str
+) -> dict[str, object]:
     """Zenn lacks a public publish API.
 
     We instead emit a zenn-cli-compatible ``articles/<slug>.md`` payload under
@@ -278,7 +288,9 @@ def post_zenn(title: str, body: str, meta: dict[str, str], do_post: bool, draft_
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--draft", required=True, help="Markdown draft filename under docs/announce/")
+    parser.add_argument(
+        "--draft", required=True, help="Markdown draft filename under docs/announce/"
+    )
     parser.add_argument(
         "--targets",
         default="zenn,devto,hashnode,qiita",
@@ -306,7 +318,10 @@ def main() -> int:
     known = {"zenn", "devto", "hashnode", "qiita"}
     unknown = sorted(set(targets) - known)
     if unknown:
-        print(f"ERROR: unknown target(s): {', '.join(unknown)}; known: {', '.join(sorted(known))}", file=sys.stderr)
+        print(
+            f"ERROR: unknown target(s): {', '.join(unknown)}; known: {', '.join(sorted(known))}",
+            file=sys.stderr,
+        )
         return 2
 
     env = _load_env_local()
@@ -333,7 +348,10 @@ def main() -> int:
             print(f"[{tgt}] note: {r['note']}")
         results.append(r)
 
-    out = _archive(args.draft.replace(".md", ""), {"mode": "post" if args.post else "dry-run", "results": results})
+    out = _archive(
+        args.draft.replace(".md", ""),
+        {"mode": "post" if args.post else "dry-run", "results": results},
+    )
     print()
     print(f"[archive] {out}")
 
