@@ -32,7 +32,7 @@ P0_K = p0 or facade or outcome_routing or csv_intake or release_capsule or agent
 
 .DEFAULT_GOAL := help
 
-.PHONY: help test test-p0 lint format typecheck typecheck-fast mypy-fast mypy-file mypy-restart typecheck-fast-stop pre-commit-install pre-commit-run site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict
+.PHONY: help test test-p0 lint format typecheck typecheck-fast mypy-fast mypy-file mypy-restart typecheck-fast-stop pre-commit-install pre-commit-run safe-commit site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict
 
 help:
 	@echo "jpcite Makefile targets:"
@@ -48,6 +48,7 @@ help:
 	@echo "  make typecheck-fast-stop  Stop the dmypy daemon"
 	@echo "  make pre-commit-install   Install .git/hooks/pre-commit (one-time per clone)"
 	@echo "  make pre-commit-run       Run all pre-commit hooks across the tree"
+	@echo "  make safe-commit MSG='...'  Defensive git commit (detects silent pre-commit stash abort)"
 	@echo "  make site         Regenerate sitemap + llms metadata"
 	@echo "  make api          Re-export OpenAPI v1 spec"
 	@echo "  make mcp          Run server.json drift check"
@@ -157,6 +158,14 @@ pre-commit-install:
 
 pre-commit-run:
 	.venv/bin/pre-commit run --all-files
+
+# safe-commit (2026-05-17): defensive wrapper around `git commit` that
+# surfaces silent pre-commit stash aborts (root cause analysis +
+# remediation in docs/_internal/PRE_COMMIT_STASH_CONFLICT_2026_05_17.md).
+# Never bypasses hooks. Usage: make safe-commit MSG="subject [lane:solo]"
+safe-commit:
+	@if [ -z "$(MSG)" ]; then echo "[safe-commit] usage: make safe-commit MSG=\"subject [lane:solo]\""; exit 2; fi
+	scripts/safe_commit.sh -m "$(MSG)"
 
 site:
 	$(PY) scripts/regen_structured_sitemap_and_llms_meta.py
