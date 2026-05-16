@@ -35,6 +35,7 @@ from .forbidden_claim import (
     ALLOWED_WORDING,
     FORBIDDEN_JA,
     FORBIDDEN_WORDING,
+    JPCIR_INTERNAL_FIELDS,
     scan_forbidden_claims,
     scan_forbidden_claims_in_file,
 )
@@ -49,6 +50,7 @@ __all__ = [
     "ALLOWED_WORDING",
     "FORBIDDEN_JA",
     "FORBIDDEN_WORDING",
+    "JPCIR_INTERNAL_FIELDS",
     "NO_HIT_NOT_ABSENCE_CODE",
     "Violation",
     "scan_forbidden_claims",

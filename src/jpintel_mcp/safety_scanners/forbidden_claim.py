@@ -164,6 +164,32 @@ _IDENTIFIER_FIELD_NAMES: Final[frozenset[str]] = frozenset(
     }
 )
 
+# Internal JPCIR contract metadata field names — values are enum-style slugs
+# emitted by the crawler / manifest writers (e.g. ``privacy_class="public_safe"``,
+# ``retention_class="repo_candidate_public"``, ``freshness_bucket="within_7d"``,
+# ``support_level="direct"``). These are NOT agent-facing prose, so the English
+# forbidden-wording scan would otherwise produce false positives on substrings
+# like ``safe`` inside ``public_safe``. Japanese forbidden phrases ARE still
+# scanned (any Japanese in an internal contract enum is itself a defect — the
+# enums are ASCII).
+JPCIR_INTERNAL_FIELDS: Final[frozenset[str]] = frozenset(
+    {
+        "claim_kind",
+        "content_type",
+        "data_class",
+        "freshness_bucket",
+        "gap_code",
+        "license_boundary",
+        "policy_state",
+        "privacy_class",
+        "receipt_kind",
+        "retention_class",
+        "severity",
+        "subject_kind",
+        "support_level",
+    }
+)
+
 
 def _is_identifier_field(field_name: str | None) -> bool:
     if field_name is None:
@@ -173,6 +199,19 @@ def _is_identifier_field(field_name: str | None) -> bool:
     # Heuristic: any field ending in ``_id`` is an identifier — covers
     # producer-defined IDs we did not enumerate above.
     return field_name.endswith("_id")
+
+
+def _is_internal_jpcir_field(field_name: str | None) -> bool:
+    """Return True when ``field_name`` is an internal JPCIR metadata enum.
+
+    These fields carry slug-style enum values (e.g. ``public_safe`` for
+    ``privacy_class``) that are not user-facing prose. Forbidden English
+    wording inside such values is a false positive — the substring ``safe``
+    in ``public_safe`` is not a claim that something is safe.
+    """
+    if field_name is None:
+        return False
+    return field_name.lower() in JPCIR_INTERNAL_FIELDS
 
 
 def _mask_whitelist(text: str) -> str:
@@ -265,12 +304,15 @@ def scan_forbidden_claims(
     violations: list[Violation] = []
     for path, text, field_name in _iter_text_leaves(envelope, "$"):
         # English forbidden wording is only flagged on prose-bearing fields,
-        # not on identifier slugs (``packet_id``, ``object_id``, ``*_id``).
+        # not on identifier slugs (``packet_id``, ``object_id``, ``*_id``) and
+        # not on internal JPCIR metadata enums (``privacy_class``,
+        # ``retention_class``, etc. — see :data:`JPCIR_INTERNAL_FIELDS`).
         # Japanese forbidden phrases are flagged everywhere — Japanese in an
-        # identifier field is itself a defect.
-        en_hits: list[str] = (
-            [] if _is_identifier_field(field_name) else _find_forbidden_english(text)
-        )
+        # identifier or internal-enum field is itself a defect.
+        if _is_identifier_field(field_name) or _is_internal_jpcir_field(field_name):
+            en_hits: list[str] = []
+        else:
+            en_hits = _find_forbidden_english(text)
         ja_hits = _find_forbidden_japanese(text)
         if not en_hits and not ja_hits:
             continue
@@ -347,6 +389,7 @@ __all__ = [
     "ALLOWED_WORDING",
     "FORBIDDEN_JA",
     "FORBIDDEN_WORDING",
+    "JPCIR_INTERNAL_FIELDS",
     "_TEXT_FIELD_NAMES",
     "scan_forbidden_claims",
     "scan_forbidden_claims_in_file",
