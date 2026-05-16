@@ -1,7 +1,7 @@
 {
   "schema_version": "jpcite.outcome_packet_athena_crosswalk.v1",
   "catalog_id": "jpcite-outcome-packet-crosswalk-2026-05-17",
-  "generated_at": "2026-05-17T01:00:00+09:00",
+  "generated_at": "2026-05-17T01:15:00Z",
   "source_documents": {
     "outcome_catalog": "site/.well-known/jpcite-outcome-catalog.json",
     "outcome_contract_catalog": "site/releases/rc1-p0-bootstrap/outcome_contract_catalog.json",
@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 392,
+  "total_outcomes": 412,
   "wired_count": 239,
-  "pending_count": 153,
+  "pending_count": 173,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -7805,6 +7805,386 @@
       "estimated_rows": 17,
       "athena_query_template": null,
       "status": "PENDING"
+    },
+    {
+      "outcome_id": "product_recall_history_packet",
+      "display_name": "業種別 product recall history packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_product_recall_history_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_product_recall_history_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_product_recall_history_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "safety_certification_intensity_packet",
+      "display_name": "業種別 safety certification intensity (JIS/PSE/PSC/SG/ST) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_safety_certification_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_safety_certification_intensity_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_safety_certification_intensity_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "food_label_compliance_packet",
+      "display_name": "業種別 food label compliance (食品表示法) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_food_label_compliance_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_food_label_compliance_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_food_label_compliance_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "drug_pharmaceutical_audit_packet",
+      "display_name": "業種別 drug pharmaceutical audit (薬機法) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_drug_pharmaceutical_audit_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_drug_pharmaceutical_audit_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_drug_pharmaceutical_audit_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "medical_device_compliance_packet",
+      "display_name": "業種別 medical device compliance (QMS/ISO 13485) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_medical_device_compliance_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_medical_device_compliance_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_medical_device_compliance_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "cosmetic_safety_signal_packet",
+      "display_name": "業種別 cosmetic safety signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_cosmetic_safety_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_cosmetic_safety_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_cosmetic_safety_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "toy_safety_certification_packet",
+      "display_name": "業種別 toy safety certification (STマーク) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_toy_safety_certification_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_toy_safety_certification_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_toy_safety_certification_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "chemical_substance_disclosure_packet",
+      "display_name": "業種別 chemical substance disclosure (化審法/PRTR/SDS/GHS) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_chemical_substance_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_chemical_substance_disclosure_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_chemical_substance_disclosure_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "electrical_safety_audit_packet",
+      "display_name": "業種別 electrical safety audit (電安法/PSE) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_electrical_safety_audit_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_electrical_safety_audit_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_electrical_safety_audit_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "consumer_complaint_pulse_packet",
+      "display_name": "業種別 consumer complaint pulse (PIO-NET) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_consumer_complaint_pulse_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_consumer_complaint_pulse_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_consumer_complaint_pulse_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "liability_insurance_coverage_packet",
+      "display_name": "業種別 賠償責任保険 coverage packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "liability_insurance_coverage_v1"
+      ],
+      "packet_generator": "generate_liability_insurance_coverage_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_liability_insurance_coverage_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_liability_insurance_coverage_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "directors_officers_insurance_packet",
+      "display_name": "業種別 D&O 保険 (Side A-D) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "directors_officers_insurance_v1"
+      ],
+      "packet_generator": "generate_directors_officers_insurance_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_directors_officers_insurance_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_directors_officers_insurance_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "cyber_insurance_uptake_packet",
+      "display_name": "業種別 サイバー保険 uptake packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "cyber_insurance_uptake_v1"
+      ],
+      "packet_generator": "generate_cyber_insurance_uptake_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_cyber_insurance_uptake_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_cyber_insurance_uptake_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "business_interruption_coverage_packet",
+      "display_name": "業種別 事業中断保険 (BI) coverage packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "business_interruption_coverage_v1"
+      ],
+      "packet_generator": "generate_business_interruption_coverage_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_business_interruption_coverage_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_business_interruption_coverage_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "employer_practices_liability_packet",
+      "display_name": "業種別 雇用慣行賠償責任保険 (EPLI) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "employer_practices_liability_v1"
+      ],
+      "packet_generator": "generate_employer_practices_liability_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_employer_practices_liability_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_employer_practices_liability_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "product_liability_insurance_packet",
+      "display_name": "業種別 製造物賠償責任保険 (PL) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "product_liability_insurance_v1"
+      ],
+      "packet_generator": "generate_product_liability_insurance_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_product_liability_insurance_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_product_liability_insurance_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "professional_indemnity_insurance_packet",
+      "display_name": "業種別 専門職業賠償責任保険 (E&O) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "professional_indemnity_insurance_v1"
+      ],
+      "packet_generator": "generate_professional_indemnity_insurance_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_professional_indemnity_insurance_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_professional_indemnity_insurance_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "earthquake_insurance_uptake_packet",
+      "display_name": "業種別 地震保険 uptake packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "earthquake_insurance_uptake_v1"
+      ],
+      "packet_generator": "generate_earthquake_insurance_uptake_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_earthquake_insurance_uptake_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_earthquake_insurance_uptake_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "captive_insurance_signal_packet",
+      "display_name": "業種別 キャプティブ保険 signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "captive_insurance_signal_v1"
+      ],
+      "packet_generator": "generate_captive_insurance_signal_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_captive_insurance_signal_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_captive_insurance_signal_v1 LIMIT 100",
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "risk_management_certification_packet",
+      "display_name": "業種別 リスクマネジメント認証 packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "risk_management_certification_v1"
+      ],
+      "packet_generator": "generate_risk_management_certification_packets.py",
+      "s3_path": null,
+      "glue_database": "jpcite_credit_2026_05",
+      "glue_table": "packet_risk_management_certification_v1",
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": 17,
+      "athena_query_template": "SELECT * FROM jpcite_credit_2026_05.packet_risk_management_certification_v1 LIMIT 100",
+      "status": "PENDING"
     }
   ],
   "gap_classification": {
@@ -8838,6 +9218,96 @@
       "subject_kind": "jsic_major",
       "wired_status": "pending",
       "wave": 93
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_liability_insurance_coverage_packets.py",
+      "glue_table": "packet_liability_insurance_coverage_v1",
+      "outcome_contract_id": "liability_insurance_coverage_packet",
+      "package_kind": "liability_insurance_coverage_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_directors_officers_insurance_packets.py",
+      "glue_table": "packet_directors_officers_insurance_v1",
+      "outcome_contract_id": "directors_officers_insurance_packet",
+      "package_kind": "directors_officers_insurance_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_cyber_insurance_uptake_packets.py",
+      "glue_table": "packet_cyber_insurance_uptake_v1",
+      "outcome_contract_id": "cyber_insurance_uptake_packet",
+      "package_kind": "cyber_insurance_uptake_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_business_interruption_coverage_packets.py",
+      "glue_table": "packet_business_interruption_coverage_v1",
+      "outcome_contract_id": "business_interruption_coverage_packet",
+      "package_kind": "business_interruption_coverage_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_employer_practices_liability_packets.py",
+      "glue_table": "packet_employer_practices_liability_v1",
+      "outcome_contract_id": "employer_practices_liability_packet",
+      "package_kind": "employer_practices_liability_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_product_liability_insurance_packets.py",
+      "glue_table": "packet_product_liability_insurance_v1",
+      "outcome_contract_id": "product_liability_insurance_packet",
+      "package_kind": "product_liability_insurance_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_professional_indemnity_insurance_packets.py",
+      "glue_table": "packet_professional_indemnity_insurance_v1",
+      "outcome_contract_id": "professional_indemnity_insurance_packet",
+      "package_kind": "professional_indemnity_insurance_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_earthquake_insurance_uptake_packets.py",
+      "glue_table": "packet_earthquake_insurance_uptake_v1",
+      "outcome_contract_id": "earthquake_insurance_uptake_packet",
+      "package_kind": "earthquake_insurance_uptake_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_captive_insurance_signal_packets.py",
+      "glue_table": "packet_captive_insurance_signal_v1",
+      "outcome_contract_id": "captive_insurance_signal_packet",
+      "package_kind": "captive_insurance_signal_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
+    },
+    {
+      "generator_script": "scripts/aws_credit_ops/generate_risk_management_certification_packets.py",
+      "glue_table": "packet_risk_management_certification_v1",
+      "outcome_contract_id": "risk_management_certification_packet",
+      "package_kind": "risk_management_certification_v1",
+      "subject_kind": "jsic_major",
+      "wave": 94,
+      "wired_status": "pending"
     }
   ],
   "packet_generator_exists_but_glue_table_pending": [

@@ -2096,6 +2096,45 @@ for _name, _prefix in _WAVE_91_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 92 (2026-05-17): 10 product safety / quality cross packet generators —
+# Product recall history (消安法 §35-§36 重大事故報告 / PL法 §3 / 食衛法 §54-§59
+# 回収 / 薬機法 §68-9-3 / 道路運送車両法 §63-2 / 電安法 §27), Safety
+# certification intensity (JIS / PSE / PSC / SG / STマーク / HACCP),
+# Food label compliance (食品表示法 §4-§5 / 健康増進法 §65-§66 / 景表法 §5),
+# Drug pharmaceutical audit (薬機法 §12 §14 §17 §49 §68-10 / GMP / GVP / GQP /
+# ICH-GCP), Medical device compliance (薬機法 §23-2 §23-2-3 §23-2-23 / QMS 省令 /
+# ISO 13485 / SaMD / JIS T 14971), Cosmetic safety signal (薬機法 §12 §14 §61
+# §62 / 化粧品基準 H12告示331 / 日本化粧品工業連合会), Toy safety certification
+# (STマーク 日本玩具協会 ST 2016 / EN 71 / ASTM F963 / CPSIA / 食衛法 §51 玩具
+# 器具該当), Chemical substance disclosure (化審法 §3 §4 §5 §10 / 化管法 PRTR
+# §5 / 安衛法 §57 / GHS JIS Z 7252-7253), Electrical safety audit (電安法 §10
+# §27 §28 / 電気事業法 §39 §40 §43 / JIS C 9335-1), Consumer complaint pulse
+# (消費者基本法 / 消費者契約法 §4 §8-§10 / 特商法 §3-2 §9 §15-2 / 消安法 §11
+# §12 §40-§47 / 国セ法 §10). Reuse the shared super-set columns; topic-specific
+# fields land in raw_json.
+_WAVE_92_TABLES: list[tuple[str, str]] = [
+    ("packet_product_recall_history_v1", "product_recall_history_v1/"),
+    (
+        "packet_safety_certification_intensity_v1",
+        "safety_certification_intensity_v1/",
+    ),
+    ("packet_food_label_compliance_v1", "food_label_compliance_v1/"),
+    ("packet_drug_pharmaceutical_audit_v1", "drug_pharmaceutical_audit_v1/"),
+    ("packet_medical_device_compliance_v1", "medical_device_compliance_v1/"),
+    ("packet_cosmetic_safety_signal_v1", "cosmetic_safety_signal_v1/"),
+    ("packet_toy_safety_certification_v1", "toy_safety_certification_v1/"),
+    (
+        "packet_chemical_substance_disclosure_v1",
+        "chemical_substance_disclosure_v1/",
+    ),
+    ("packet_electrical_safety_audit_v1", "electrical_safety_audit_v1/"),
+    ("packet_consumer_complaint_pulse_v1", "consumer_complaint_pulse_v1/"),
+]
+
+for _name, _prefix in _WAVE_92_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 93 (real estate / asset / property cross packets) — 10 generators wrap
 # the real estate + property surface across 業種 (JSIC major) cohorts:
 # Commercial real estate footprint (法人土地・建物基本調査 / EDINET 設備の
@@ -2137,6 +2176,69 @@ _WAVE_93_TABLES: list[tuple[str, str]] = [
 ]
 
 for _name, _prefix in _WAVE_93_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 94 (insurance / risk transfer cross packets) — 10 generators wrap the
+# corporate insurance + risk transfer surface across 業種 (JSIC major) cohorts:
+# Liability insurance coverage (CGL / 施設賠償 / 請負業者賠償 / 借家人賠償 /
+# 受託者賠償 / 損保料率算出機構 / 日本損害保険協会), Directors & officers
+# insurance (D&O / Side A-D / 株主代表訴訟特約 / ESG D&O / 退任後 ROR /
+# §430-2 補償契約 / §430-3 D&O 保険), Cyber insurance uptake (1st/3rd party /
+# ransomware extortion / BI / regulatory fine cover / 個人情報保護法 §83-§85),
+# Business interruption coverage (休業損害 / 利益保険 / standing charges /
+# gross profit definition / contingent BI / supply chain BI / pandemic 適用
+# 除外), Employer practices liability (EPLI / ハラスメント / 差別 / 不当解雇
+# / パワハラ / 賃金未払 / 第三者ハラスメント / パワハラ防止法 §30-2),
+# Product liability insurance (PL / 製品瑕疵 / 拡大損害 / リコール費用 /
+# 設計欠陥 / 表示警告欠陥 / 海外輸出拡張 / 製造物責任法 §3 §4),
+# Professional indemnity insurance (E&O / 士業 / コンサル / IT / 医療 / 設計
+# 業務上の過誤 / claims-made / 退職後 ROR / 各士業会 strict liability),
+# Earthquake insurance uptake (家計 + 事業者向け / 全損 半損 一部損 / BCP
+# 連動 / 政府再保険プール / 地震保険法 §3 §4 §6), Captive insurance signal
+# (pure / group / rent-a / cell / fronting / 自家保険 prefunding / CFC 課税
+# / 措置法 §66-6 タックスヘイブン対策税制), Risk management certification
+# (ISO 31000 / ISO 22301 BCMS / ISO 27001 ISMS / ISO 45001 OH&S / COSO ERM /
+# 内部統制 J-SOX / 金商法 §24-4-4 §193-2). Reuse the shared super-set columns;
+# topic-specific fields land in raw_json.
+_WAVE_94_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_liability_insurance_coverage_v1",
+        "liability_insurance_coverage_v1/",
+    ),
+    (
+        "packet_directors_officers_insurance_v1",
+        "directors_officers_insurance_v1/",
+    ),
+    ("packet_cyber_insurance_uptake_v1", "cyber_insurance_uptake_v1/"),
+    (
+        "packet_business_interruption_coverage_v1",
+        "business_interruption_coverage_v1/",
+    ),
+    (
+        "packet_employer_practices_liability_v1",
+        "employer_practices_liability_v1/",
+    ),
+    (
+        "packet_product_liability_insurance_v1",
+        "product_liability_insurance_v1/",
+    ),
+    (
+        "packet_professional_indemnity_insurance_v1",
+        "professional_indemnity_insurance_v1/",
+    ),
+    (
+        "packet_earthquake_insurance_uptake_v1",
+        "earthquake_insurance_uptake_v1/",
+    ),
+    ("packet_captive_insurance_signal_v1", "captive_insurance_signal_v1/"),
+    (
+        "packet_risk_management_certification_v1",
+        "risk_management_certification_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_94_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 

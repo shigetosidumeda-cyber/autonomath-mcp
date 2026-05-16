@@ -4879,5 +4879,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "liability_insurance_coverage_packet",
+    "display_name": "業種別 賠償責任保険 coverage packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "directors_officers_insurance_packet",
+    "display_name": "業種別 D&O 保険 (Side A-D) packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "cyber_insurance_uptake_packet",
+    "display_name": "業種別 サイバー保険 uptake packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "business_interruption_coverage_packet",
+    "display_name": "業種別 事業中断保険 (BI) coverage packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "employer_practices_liability_packet",
+    "display_name": "業種別 雇用慣行賠償責任保険 (EPLI) packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "product_liability_insurance_packet",
+    "display_name": "業種別 製造物賠償責任保険 (PL) packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "professional_indemnity_insurance_packet",
+    "display_name": "業種別 専門職業賠償責任保険 (E&O) packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "earthquake_insurance_uptake_packet",
+    "display_name": "業種別 地震保険 uptake packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "captive_insurance_signal_packet",
+    "display_name": "業種別 キャプティブ保険 signal packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "outcome_contract_id": "risk_management_certification_packet",
+    "display_name": "業種別 リスクマネジメント認証 packet",
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "no_hit_semantics": "no_hit_not_absence",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

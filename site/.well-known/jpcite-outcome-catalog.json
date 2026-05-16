@@ -1,9 +1,9 @@
 {
   "schema_version": "jpcite.outcome_catalog.public.v1",
   "catalog_id": "jpcite-outcome-catalog-2026-05-17",
-  "generated_at": "2026-05-17T01:00:00+09:00",
+  "generated_at": "2026-05-17T01:15:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 412,
+  "total_outcomes": 422,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -8478,6 +8478,196 @@
       "subject_id_hint": "jsic_major",
       "source_count": 2,
       "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "liability_insurance_coverage_packet",
+      "display_name": "業種別 賠償責任保険 coverage packet",
+      "description": "業種別 賠償責任保険 / CGL / 施設賠償 / 請負業者賠償 / 借家人賠償 / 受託者賠償 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "directors_officers_insurance_packet",
+      "display_name": "業種別 D&O 保険 (Side A-D) packet",
+      "description": "業種別 D&O / Side A-D / 株主代表訴訟特約 / ESG D&O / 退任後 ROR / 補償契約 §430-2 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "cyber_insurance_uptake_packet",
+      "display_name": "業種別 サイバー保険 uptake packet",
+      "description": "業種別 サイバー保険 1st/3rd party / ransomware extortion / BI / regulatory fine cover / 個人情報保護法 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "business_interruption_coverage_packet",
+      "display_name": "業種別 事業中断保険 (BI) coverage packet",
+      "description": "業種別 事業中断保険 / 休業損害 / 利益保険 / standing charges / contingent BI / supply chain BI (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "employer_practices_liability_packet",
+      "display_name": "業種別 雇用慣行賠償責任保険 (EPLI) packet",
+      "description": "業種別 EPLI / ハラスメント / 差別 / 不当解雇 / パワハラ / 賃金未払 訴訟費用 / 第三者ハラスメント特約 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "product_liability_insurance_packet",
+      "display_name": "業種別 製造物賠償責任保険 (PL) packet",
+      "description": "業種別 PL / 製品瑕疵 / 拡大損害 / リコール費用 / 設計欠陥 / 表示警告欠陥 / 海外輸出拡張 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "professional_indemnity_insurance_packet",
+      "display_name": "業種別 専門職業賠償責任保険 (E&O) packet",
+      "description": "業種別 E&O / 士業 / コンサル / IT / 医療 / 設計 業務上の過誤 / 説明義務違反 / 法令違反 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "earthquake_insurance_uptake_packet",
+      "display_name": "業種別 地震保険 uptake packet",
+      "description": "業種別 地震保険 / 家計 + 事業者向け / 全損 半損 一部損 / BCP 連動 / 政府再保険プール (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "captive_insurance_signal_packet",
+      "display_name": "業種別 キャプティブ保険 signal packet",
+      "description": "業種別 captive / pure / group / rent-a / cell / fronting / 自家保険 prefunding / CFC 税制 (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
+    },
+    {
+      "outcome_contract_id": "risk_management_certification_packet",
+      "display_name": "業種別 リスクマネジメント認証 packet",
+      "description": "業種別 ISO 31000 / ISO 22301 BCMS / ISO 27001 ISMS / ISO 45001 / COSO ERM / 内部統制 J-SOX (採択密度 proxy) descriptive overlay",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "package_kind": "evidence_packet",
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "estimated_token_size": 2000,
+      "source_count": 2,
+      "preview_endpoint": "/v1/cost/preview"
     }
   ],
   "filters": {
