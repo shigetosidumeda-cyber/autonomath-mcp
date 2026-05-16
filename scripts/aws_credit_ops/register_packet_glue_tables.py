@@ -1550,6 +1550,52 @@ for _name, _prefix in _WAVE_77_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 78 license / permit cross packet tables (10 generators, 2026-05-16). All
+# share the jsic_major industry cohort with descriptive adoption_n proxy covering
+# construction license overlay (建設業法 §3, 28業種) / medical facility license
+# (医療法 §7) / food business permit (食品衛生法 §55, 32業種) / education
+# authority license (学校教育法 §4 / 私立学校法 §30) / transport passenger
+# license (道路運送法 §3) / alcohol retail license (酒税法 §9) / financial
+# business license (金商法 §29 / 銀行法 §4 / 貸金業法 §3 / 資金決済法 §37) /
+# environmental facility permit (大気汚染防止法 §6 / 水質汚濁防止法 §5 /
+# 環境影響評価法 §3) / waste disposal permit (廃棄物処理法 §7, §14) / real
+# estate broker license (宅建業法 §3). Reuse the shared super-set columns;
+# topic-specific fields land in raw_json.
+_WAVE_78_TABLES: list[tuple[str, str]] = [
+    (
+        "packet_construction_license_overlay_v1",
+        "construction_license_overlay_v1/",
+    ),
+    ("packet_medical_facility_license_v1", "medical_facility_license_v1/"),
+    ("packet_food_business_permit_v1", "food_business_permit_v1/"),
+    (
+        "packet_education_authority_license_v1",
+        "education_authority_license_v1/",
+    ),
+    (
+        "packet_transport_passenger_license_v1",
+        "transport_passenger_license_v1/",
+    ),
+    ("packet_alcohol_retail_license_v1", "alcohol_retail_license_v1/"),
+    (
+        "packet_financial_business_license_v1",
+        "financial_business_license_v1/",
+    ),
+    (
+        "packet_environmental_facility_permit_v1",
+        "environmental_facility_permit_v1/",
+    ),
+    ("packet_waste_disposal_permit_v1", "waste_disposal_permit_v1/"),
+    (
+        "packet_real_estate_broker_license_v1",
+        "real_estate_broker_license_v1/",
+    ),
+]
+
+for _name, _prefix in _WAVE_78_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 79 export / import trade compliance cross packet tables (10 generators,
 # 2026-05-16). All share the jsic_major industry cohort with descriptive
 # adoption_n proxy covering tariff classification match (HS code) / export
