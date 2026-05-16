@@ -1,9 +1,9 @@
 {
   "schema_version": "jpcite.outcome_catalog.public.v1",
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
-  "generated_at": "2026-05-16T20:30:00+09:00",
+  "generated_at": "2026-05-16T23:50:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 312,
+  "total_outcomes": 332,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -6564,6 +6564,386 @@
       "outcome_contract_id": "ip_portfolio_quality_packet",
       "display_name": "業種別 IP portfolio quality packet",
       "description": "業種別 IP 維持率 / forward citation / Patent Strength Index / Family Size / 存続期間残余 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "flood_zone_exposure_packet",
+      "display_name": "業種別 浸水想定区域 × 法人 exposure packet",
+      "description": "業種別 浸水想定区域 × 法人 exposure / BCP / 損害保険 / 内水氾濫 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "earthquake_hazard_overlay_packet",
+      "display_name": "業種別 地震ハザード × 事業所 overlay packet",
+      "description": "業種別 地震ハザード × 事業所 (確率論的地震動 / 活断層 / 液状化 / 耐震免震) (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "typhoon_path_frequency_packet",
+      "display_name": "業種別 台風 path 頻度 packet",
+      "description": "業種別 台風 path 頻度 / 暴風域 / 最大瞬間風速 / 高潮 / 気候変動 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "heat_stress_economic_impact_packet",
+      "display_name": "業種別 熱ストレス 経済影響 packet",
+      "description": "業種別 WBGT 暑熱 / 屋外労働 制限 / 熱中症 労災 / 農作物 高温障害 / 電力需給 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "drought_water_supply_risk_packet",
+      "display_name": "業種別 渇水 水源 supply risk packet",
+      "description": "業種別 渇水確率 / ダム貯水率 / 取水制限 / 工業用水 / 農業用水 / 地下水 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "coastal_inundation_signal_packet",
+      "display_name": "業種別 沿岸 inundation signal packet",
+      "description": "業種別 海面上昇 / 高潮 / 高波 / 沿岸侵食 / 港湾 / 防潮堤 / 気候変動 SLR (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "landslide_geotechnical_risk_packet",
+      "display_name": "業種別 土砂災害 / geotechnical risk packet",
+      "description": "業種別 土砂災害警戒区域 / 特別警戒区域 / 急傾斜地 / 土石流 / 地すべり / 深層崩壊 / 雨量警報 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "volcanic_zone_overlay_packet",
+      "display_name": "業種別 火山ハザード overlay packet",
+      "description": "業種別 活火山 / 噴火警戒レベル / 火砕流 / 火山泥流 / 火山灰 / 噴石 / 火山ガス (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "tsunami_zone_exposure_packet",
+      "display_name": "業種別 津波想定区域 exposure packet",
+      "description": "業種別 津波浸水想定 / 津波警戒区域 / 特別警戒区域 / L2 最大クラス / L1 / 避難ビル / 海岸保全 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "wildfire_risk_proxy_packet",
+      "display_name": "業種別 山火事リスク proxy packet",
+      "description": "業種別 林野火災 発生件数 / 焼失面積 / 山林近接事業所 / 季節気象 / 気候変動 干ばつ / 消防防火 (採択密度 proxy) descriptive overlay",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "population_decline_zone_packet",
+      "display_name": "業種別 人口減少地域 × 事業所立地 packet",
+      "description": "業種別 人口減少地域 × 事業所立地 descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "aging_population_proxy_packet",
+      "display_name": "業種別 高齢化進行 proxy packet",
+      "description": "業種別 高齢化進行 proxy descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "young_worker_concentration_packet",
+      "display_name": "業種別 若年労働者集中 packet",
+      "description": "業種別 若年労働者集中 descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "migration_inflow_signal_packet",
+      "display_name": "業種別 人口流入 signal packet",
+      "description": "業種別 人口流入 signal descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "rural_population_density_packet",
+      "display_name": "業種別 過疎人口密度 packet",
+      "description": "業種別 過疎人口密度 descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "gender_workforce_balance_packet",
+      "display_name": "業種別 性別労働 balance packet",
+      "description": "業種別 性別労働 balance descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "foreign_resident_density_packet",
+      "display_name": "業種別 外国人居住密度 packet",
+      "description": "業種別 外国人居住密度 descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "child_population_overlay_packet",
+      "display_name": "業種別 子供人口 overlay packet",
+      "description": "業種別 子供人口 overlay descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "household_income_geography_packet",
+      "display_name": "業種別 世帯所得地理 packet",
+      "description": "業種別 世帯所得地理 descriptive sectoral proxy (採択密度経由)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_token_size": 2000
+    },
+    {
+      "outcome_contract_id": "education_attainment_geo_packet",
+      "display_name": "業種別 学歴達成 地理 packet",
+      "description": "業種別 学歴達成 地理 descriptive sectoral proxy (採択密度経由)",
       "billable": true,
       "packet_ids": [
         "summary",

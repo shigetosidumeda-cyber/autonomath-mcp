@@ -1753,6 +1753,40 @@ for _name, _prefix in _WAVE_82_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 84 demographics / population cross packet tables (10 generators,
+# 2026-05-16). All share the jsic_major industry cohort with descriptive
+# adoption_n proxy covering 人口減少地域 × 事業所立地 / 高齢化進行 proxy
+# (65歳以上比率) / 若年労働者集中 (15-34歳 + 新卒採用 intensity) / 人口
+# 流入 signal (転入超過 + UIJターン + 関係人口) / 過疎人口密度 (DID 比率
+# + 中山間地域) / 性別労働 balance (女性管理職比率 + 育休取得率 + 男女
+# 賃金格差) / 外国人居住密度 (在留外国人 + 技能実習 + 特定技能) / 子供
+# 人口 overlay (0-14歳 + 出生率 + 保育所整備率) / 世帯所得地理 (中央値
+# + ジニ係数 + 相対貧困率 + 生活保護率) / 学歴達成 地理 (大卒比率 +
+# STEM 修了率 + リカレント教育)。Reuse the shared super-set columns;
+# topic-specific fields land in raw_json.
+_WAVE_84_TABLES: list[tuple[str, str]] = [
+    ("packet_population_decline_zone_v1", "population_decline_zone_v1/"),
+    ("packet_aging_population_proxy_v1", "aging_population_proxy_v1/"),
+    (
+        "packet_young_worker_concentration_v1",
+        "young_worker_concentration_v1/",
+    ),
+    ("packet_migration_inflow_signal_v1", "migration_inflow_signal_v1/"),
+    ("packet_rural_population_density_v1", "rural_population_density_v1/"),
+    ("packet_gender_workforce_balance_v1", "gender_workforce_balance_v1/"),
+    ("packet_foreign_resident_density_v1", "foreign_resident_density_v1/"),
+    ("packet_child_population_overlay_v1", "child_population_overlay_v1/"),
+    (
+        "packet_household_income_geography_v1",
+        "household_income_geography_v1/",
+    ),
+    ("packet_education_attainment_geo_v1", "education_attainment_geo_v1/"),
+]
+
+for _name, _prefix in _WAVE_84_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)

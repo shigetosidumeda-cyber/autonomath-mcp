@@ -3709,5 +3709,265 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 浸水想定区域 × 法人 exposure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "flood_zone_exposure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 地震ハザード × 事業所 overlay packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "earthquake_hazard_overlay_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 台風 path 頻度 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "typhoon_path_frequency_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 熱ストレス 経済影響 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "heat_stress_economic_impact_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 渇水 水源 supply risk packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "drought_water_supply_risk_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 沿岸 inundation signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "coastal_inundation_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 土砂災害 / geotechnical risk packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "landslide_geotechnical_risk_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 火山ハザード overlay packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "volcanic_zone_overlay_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 津波想定区域 exposure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "tsunami_zone_exposure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 山火事リスク proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "wildfire_risk_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 人口減少地域 × 事業所立地 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "population_decline_zone_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 高齢化進行 proxy packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "aging_population_proxy_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 若年労働者集中 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "young_worker_concentration_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 人口流入 signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "migration_inflow_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 過疎人口密度 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "rural_population_density_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 性別労働 balance packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "gender_workforce_balance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 外国人居住密度 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "foreign_resident_density_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 子供人口 overlay packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "child_population_overlay_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 世帯所得地理 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "household_income_geography_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 学歴達成 地理 packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "education_attainment_geo_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
