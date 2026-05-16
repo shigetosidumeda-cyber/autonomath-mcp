@@ -71,11 +71,14 @@ from jpintel_mcp.l1_source_family.catalog import (
 #: discovery) pin against this string.
 MAP_VERSION: Final[str] = "jpcite.aws_credit_ops.source_to_job_map.v1"
 
-#: Canonical job_id enumeration. Mirrors the ten JSON files under
-#: ``data/aws_credit_jobs/`` (J01..J10). J09 is the dedicated
+#: Canonical job_id enumeration. Mirrors the eleven JSON files under
+#: ``data/aws_credit_jobs/`` (J01..J11). J09 is the dedicated
 #: courts / judiciary / tribunal-decision fetcher (最高裁判決 last 5y +
 #: 国税不服審判所 公表裁決 + 公取委 排除/課徴金 + 中労委 命令検索 +
 #: 行政不服審査会答申 + 人事院 + 公害等調整委員会 + 知財高裁).
+#: J11 (added 2026-05-16) is the dedicated e-Stat 政府統計 + 47 都道府県
+#: + 20 政令市 + 中央省庁統計 + 国土地理院 ksj fetcher; rebinds the
+#: previously-J01-swept ``estat_statistics`` family.
 JobId = Literal[
     "J01_source_profile_sweep",
     "J02_nta_houjin_master_mirror",
@@ -87,10 +90,11 @@ JobId = Literal[
     "J08_kanpou_gazette",
     "J09_courts_judiciary",
     "J10_houmu_registry_public",
+    "J11_estat_statistics",
 ]
 
-#: All ten job_ids in declaration order. Tests gate on
-#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J10}``
+#: All eleven job_ids in declaration order. Tests gate on
+#: ``set(ALL_JOB_IDS) == set(SOURCE_TO_JOB_MAP.values()) ∪ {J01..J11}``
 #: so missing entries are caught structurally.
 ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J01_source_profile_sweep",
@@ -103,6 +107,7 @@ ALL_JOB_IDS: Final[tuple[JobId, ...]] = (
     "J08_kanpou_gazette",
     "J09_courts_judiciary",
     "J10_houmu_registry_public",
+    "J11_estat_statistics",
 )
 
 
@@ -194,7 +199,14 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
     "jisc_standards": "J01_source_profile_sweep",
     "tokkyo_jpo": "J01_source_profile_sweep",
     "mafg_climate": "J01_source_profile_sweep",
-    "estat_statistics": "J01_source_profile_sweep",
+    # --- J11: e-Stat 政府統計 + 47 都道府県 + 20 政令市 + 国土地理院 ksj ---
+    # ``estat_statistics`` (政府統計の総合窓口) is now canonically bound
+    # to J11, the dedicated 統計 deep crawler (e-Stat v3 API + 47 都道府県
+    # 統計年鑑 + 20 政令市統計 + 中央省庁統計 + 国土地理院 ksj geospatial
+    # layers + BoJ tankan + 観光庁 + 中小企業庁 / MAFF census). Before
+    # J11 landed this row pointed at J01 (sweep-only). License = 政府
+    # 統計 CC-BY 4.0 compatible.
+    "estat_statistics": "J11_estat_statistics",
     "njss_bids_aggregated": "J01_source_profile_sweep",
     # ``nta_pdb_personal`` (P2_restricted, license_tag=restricted) is
     # explicitly excluded — restricted data does not flow through the
@@ -205,7 +217,7 @@ _SOURCE_TO_JOB: dict[str, JobId] = {
 #: Immutable view of the source → job map. Keyed by L1 ``family_id``,
 #: value is the canonical ``JobId`` that fetches the family.
 SOURCE_TO_JOB_MAP: Mapping[str, JobId] = MappingProxyType(_SOURCE_TO_JOB)
-"""Read-only ``family_id → JobId`` mapping for the seven AWS-credit jobs."""
+"""Read-only ``family_id → JobId`` mapping for the eleven AWS-credit jobs."""
 
 
 # ---------------------------------------------------------------------------
@@ -266,7 +278,7 @@ def get_job_for_source(source_family_id: str) -> JobId | None:
 def get_sources_for_job(job_id: str) -> list[str]:
     """Return all L1 family_ids fetched by ``job_id`` in catalog order.
 
-    Raises ``KeyError`` if ``job_id`` is not one of the seven canonical
+    Raises ``KeyError`` if ``job_id`` is not one of the eleven canonical
     jobs. The return order matches the L1 catalog declaration order so
     downstream Athena partition generation is deterministic.
     """

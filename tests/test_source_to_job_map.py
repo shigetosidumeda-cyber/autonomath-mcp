@@ -44,14 +44,16 @@ def test_map_version_is_stable_constant() -> None:
     assert MAP_VERSION == "jpcite.aws_credit_ops.source_to_job_map.v1"
 
 
-def test_all_job_ids_has_ten_entries() -> None:
-    """The ten AWS-credit jobs J01..J10 must all appear in ALL_JOB_IDS.
+def test_all_job_ids_has_eleven_entries() -> None:
+    """The eleven AWS-credit jobs J01..J11 must all appear in ALL_JOB_IDS.
 
     J09 is the courts / judiciary / tribunal-decision crawler; J10 is
     the 法務局 public registry notices + 民事局 statistics +
-    休眠会社みなし解散告示 fetcher.
+    休眠会社みなし解散告示 fetcher; J11 is the dedicated e-Stat 政府統計
+    + 47 都道府県 + 20 政令市 + 国土地理院 ksj fetcher (added 2026-05-16,
+    rebound the previously-J01-swept ``estat_statistics`` family).
     """
-    assert len(ALL_JOB_IDS) == 10
+    assert len(ALL_JOB_IDS) == 11
     assert set(ALL_JOB_IDS) == {
         "J01_source_profile_sweep",
         "J02_nta_houjin_master_mirror",
@@ -63,6 +65,7 @@ def test_all_job_ids_has_ten_entries() -> None:
         "J08_kanpou_gazette",
         "J09_courts_judiciary",
         "J10_houmu_registry_public",
+        "J11_estat_statistics",
     }
 
 
@@ -123,6 +126,21 @@ def test_j08_kanpou_gazette_is_bound_to_gazette_official() -> None:
     assert get_job_for_source("gazette_official") == "J08_kanpou_gazette"
     sources = set(get_sources_for_job("J08_kanpou_gazette"))
     assert sources == {"gazette_official"}
+
+
+def test_j11_estat_statistics_is_bound_to_estat_statistics() -> None:
+    """J11 (e-Stat 政府統計 deep crawler) must own ``estat_statistics``.
+
+    Before J11 landed this row pinned to J01 (sweep-only). J11 now owns
+    the e-Stat v3 API + 47 都道府県統計年鑑 + 20 政令市統計 + 中央省庁
+    統計 + 国土地理院 ksj geospatial 10-yr archive surface end-to-end.
+    License = 政府統計 CC-BY 4.0 compatible.
+    """
+    assert (
+        get_job_for_source("estat_statistics") == "J11_estat_statistics"
+    )
+    sources = set(get_sources_for_job("J11_estat_statistics"))
+    assert sources == {"estat_statistics"}
 
 
 def test_only_nta_pdb_personal_is_unmapped() -> None:
@@ -253,7 +271,7 @@ def test_verify_coverage_counts_match_catalog_and_map() -> None:
     assert report.total_families == 32
     assert report.mapped_families == 31
     assert report.unmapped_families == ("nta_pdb_personal",)
-    # All eight jobs must appear in sources_per_job with ≥ 1 count.
+    # All eleven jobs must appear in sources_per_job with ≥ 1 count.
     assert set(report.sources_per_job.keys()) == set(ALL_JOB_IDS)
     for job_id, count in report.sources_per_job.items():
         assert count >= 1, f"{job_id!r} has zero mapped families"
