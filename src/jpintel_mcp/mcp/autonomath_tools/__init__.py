@@ -80,6 +80,11 @@ from . import (
     tools,  # noqa: F401  — decorator side-effect (10 tools)
     validation_tools,  # noqa: F401  — V4 Phase 4: validate (am_validation_rule dispatcher, migration 047)
     wave22_tools,  # noqa: F401  — Wave 22: 5 composition tools (match_due_diligence_questions / prepare_kessan_briefing / forecast_program_renewal / cross_check_jurisdiction / bundle_application_kit, AUTONOMATH_WAVE22_ENABLED gate). Adds dd_question_templates DB (migration 104).
+    wave51_dim_n_anonymized,  # noqa: F401  — Wave 51 dim N (2026-05-16): anonymized_aggregate_query (k=5 floor + PII redact + audit log). AUTONOMATH_WAVE51_DIM_N_ENABLED gate (default ON). NO LLM, single ¥3/req billing event. §52/§47条の2/§72/§1 envelope. 1M-entity statistical layer moat.
+    wave51_dim_o_explainable,  # noqa: F401  — Wave 51 dim O (2026-05-16): sign_fact + verify_fact (Ed25519 canonical payload + 64-byte signature verify). AUTONOMATH_WAVE51_DIM_O_ENABLED gate (default ON). NO LLM. Private keys never persisted by wrappers. §52/§47条の2/§72/§1 envelope.
+    wave51_dim_p_composed,  # noqa: F401  — Wave 51 dim P (2026-05-16): 4 server-side composed tools (eligibility_audit_workpaper_composed / subsidy_eligibility_full_composed / ma_due_diligence_pack_composed / invoice_compatibility_check_composed). Compression ratio 3-5. AUTONOMATH_WAVE51_DIM_P_ENABLED gate (default ON). NO LLM, single ¥3/req per composed call. §52/§47条の2/§72/§1/§3 envelope.
+    wave51_dim_q_time_machine_v2,  # noqa: F401  — Wave 51 dim Q (2026-05-16): query_snapshot_as_of_v2 + counterfactual_diff_v2 (file-backed monthly snapshot registry, deterministic JSON diff). AUTONOMATH_WAVE51_DIM_Q_V2_ENABLED gate (default ON). NO LLM. Companion to (not replacement of) DEEP-22 time_machine_tools.
+    wave51_dim_r_federated,  # noqa: F401  — Wave 51 dim R (2026-05-16): recommend_partner_for_gap (deterministic substring + alias matcher over curated 6-partner federation freee/mf/notion/slack/github/linear). AUTONOMATH_WAVE51_DIM_R_ENABLED gate (default ON). NO LLM, no HTTP, single ¥3/req billing event. NEVER self-references.
 )
 
 # MCP resources + prompts registration (Wave 17 — kept dormant until v8 wiring).

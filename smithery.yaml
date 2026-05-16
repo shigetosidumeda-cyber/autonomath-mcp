@@ -51,7 +51,7 @@ metadata:
     Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate
     data. 11,601 searchable programs + 9,484 e-Gov laws + 1,185 行政処分 + 22,258 detail records + 13,801 適格事業者
     + 166K corporate entities. ¥3/billable unit, 3 free/day per IP. Evidence Packet
-    with source_url + source_fetched_at + known gaps + 互換/排他 rules. 155 tools.
+    with source_url + source_fetched_at + known gaps + 互換/排他 rules. 165 tools.
   icon: "https://jpcite.com/assets/mark.svg"
   iconUrl: "https://jpcite.com/assets/favicon-v2.svg"
   homepage: "https://jpcite.com"

@@ -178,7 +178,7 @@ keys, usage, and billing at <https://jpcite.com/dashboard>.
 
 ## MCP tools
 
-155 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
+165 tools at default gates, MCP protocol `2025-06-18`, FastMCP over stdio. 完全なリストと引数は [docs/mcp-tools.md](./docs/mcp-tools.md) を参照 (Single source of truth)。
 
 | Group | Coverage |
 |-------|----------|
@@ -251,7 +251,7 @@ Tool quality is publicly verifiable: see [`evals/`](./evals/) for a 79-query gol
 
 ## Optional disabled domains
 
-The standard distribution exposes 155 tools for Japanese public-program
+The standard distribution exposes 165 tools for Japanese public-program
 search, evidence, provenance, tax rulesets, laws, court decisions, bids,
 invoice registrants, and related entity facts. Additional domain-specific
 surfaces are intentionally disabled unless enabled through support-managed

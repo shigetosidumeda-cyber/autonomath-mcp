@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "autonomath-mcp",
   "version": "0.4.0",
-  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov law metadata records + 1,185 行政処分 + 2,065 判例 + 362 入札 + 13,801 適格事業者 + corporate/entity-fact graph coverage. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 155 tools.",
+  "description": "Japan public-program MCP — subsidies, loans, tax, law, invoice & corporate data. 11,601 searchable programs + 9,484 e-Gov law metadata records + 1,185 行政処分 + 2,065 判例 + 362 入札 + 13,801 適格事業者 + corporate/entity-fact graph coverage. ¥3/billable unit, 3 free/day per IP. Evidence Packet with source_url + source_fetched_at + known gaps + 互換/排他 rules. 165 tools.",
   "author": {
     "name": "Bookyou株式会社",
     "url": "https://jpcite.com"
@@ -657,6 +657,46 @@
     {
       "name": "validate",
       "description": "[VALIDATE] applicant_data を source-derived dataset の active 述語で評価し、\n    rule 単位の passed/failed/deferred を返す (deferred = jpcite で評価できない外部依存述語).\n\n    WHAT:\n      `source-derived dataset` の active=1 / effective window 有効 / scope 適合 rule を選び、\n      python_dispatch 述語のうち既知の intake validation 述語はローカル実装で評価、\n      それ以外 (sql_expr / json_logic / 未登録 dispatch) は ``passed=null`` で deferred 返却。\n      評価結果は `source-derived dataset` に ``INSERT OR IGNORE``、同 (rule, entity, applicant_hash)\n      は SELECT-first で stored result 返却。\n\n    WHEN:\n      - LLM が \"この applicant_data に sanity 違反がないか\" 一括 check したい\n      - 画面やワークフローに出す前段で training_hours/work_days/weekly_hours の桁ミス除去\n      - 申請額 50 億超 / 開始年 ±20/+10 範囲外 / 生年-自己申告年齢 1y 以上ずれ の検出\n\n    WHEN NOT:\n      - 制度個別の eligibility 判定 → check_exclusions / search_programs\n      - 文書粒度の fact-check → 別 tool\n      - sql_expr / json_logic 述語が登録されたら本 tool では deferred 返却\n\n    RETURNS (envelope):\n      {\n        total: int,\n        applicant_hash: str,\n        scope: str,\n        entity_id: str | null,\n        summary: { passed: int, failed: int, deferred: int },\n        results: [\n          {\n            rule_id: int,\n            predicate_ref: str,\n            predicate_kind: 'python_dispatch' | 'sql_expr' | 'json_logic',\n            passed: true | false | null,\n            severity: 'info' | 'warning' | 'critical',\n            message_ja: str,\n            evaluated_at: str | null,\n            stored resultd: bool,\n          }, ...\n        ]\n      }"
+    },
+    {
+      "name": "anonymized_aggregate_query",
+      "description": "Wave 51 dim N — k-anonymity + PII-redact gate over a cohort filter triple (industry/region/size). Returns aggregates only when cohort_size >= K_ANONYMITY_MIN (5). Writes one append-only JSONL audit row. NO LLM. 1 ¥3 unit. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "sign_fact",
+      "description": "Wave 51 dim O — build canonical UTF-8 payload bytes for (fact_id, FactMetadata 4-axis). Returns canonical_payload_hex deterministically. When operator private key env set, emits Ed25519 64-byte signature. NO LLM, single ¥3 unit. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "verify_fact",
+      "description": "Wave 51 dim O — verify a hex-encoded 64-byte Ed25519 signature against (fact_id + FactMetadata 4-axis) using operator public key from env. signature_valid=True ⇒ fact+metadata unmodified since signing. NO LLM, single ¥3 unit. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "eligibility_audit_workpaper_composed",
+      "description": "Wave 51 dim P composed — 税理士 monthly eligibility audit workpaper. Compresses 4 atomic tools (apply_eligibility_chain_am + track_amendment_lineage_am + program_active_periods_am + find_complementary_programs_am) into 1 ¥3 unit. compression_ratio=4. NO LLM. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "subsidy_eligibility_full_composed",
+      "description": "Wave 51 dim P composed — 補助金 7-step full eligibility check. Compresses 5 atomic tools (search_programs_am + apply_eligibility_chain_am + check_enforcement_am + program_active_periods_am + simulate_application_am) into 1 ¥3 unit. compression_ratio=5. NO LLM. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "ma_due_diligence_pack_composed",
+      "description": "Wave 51 dim P composed — M&A 12-axis due-diligence pack. Compresses 4 atomic tools (match_due_diligence_questions + cross_check_jurisdiction + check_enforcement_am + track_amendment_lineage_am) into 1 ¥3 unit. compression_ratio=4. NO LLM. §52/§47条の2/§72/§1/§3 envelope."
+    },
+    {
+      "name": "invoice_compatibility_check_composed",
+      "description": "Wave 51 dim P composed — 適格事業者照合 + 取引先 enrichment. Compresses 3 atomic tools (check_invoice_registrant + corporate_layer_lookup + check_enforcement_am) into 1 ¥3 unit. compression_ratio=3. NO LLM. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "query_snapshot_as_of_v2",
+      "description": "Wave 51 dim Q v2 — returns the file-backed monthly snapshot whose as_of_date is the largest <= the requested date. Reads data/snapshots/<yyyy_mm>/<dataset>.json (filesystem registry, 60-month retention). Returns content_hash + payload_keys + reason. NO LLM, single ¥3 unit. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "counterfactual_diff_v2",
+      "description": "Wave 51 dim Q v2 counterfactual — resolves the file-backed monthly snapshots at as_of_a and as_of_b, then returns the top-level JSON-key diff (added/removed/changed/unchanged + content_hash_changed). Deterministic, sorted key sets. NO LLM, single ¥3 unit. §52/§47条の2/§72/§1 envelope."
+    },
+    {
+      "name": "recommend_partner_for_gap",
+      "description": "Wave 51 dim R — deterministic substring + alias matcher over the curated 6-partner federation (freee/mf/notion/slack/github/linear). Returns up to max_results partners with partner_id + name + official_url + mcp_endpoint_status + capabilities. Score-tied partners ordered by canonical partner_id ASC. NEVER self-references. NO LLM, no HTTP, single ¥3 unit. §52/§47条の2/§72/§1 envelope."
     }
   ],
   "requirements": {
@@ -1016,7 +1056,7 @@
       "loan_program_count": 108,
       "enforcement_case_count": 1185,
       "exclusion_rule_count": 181,
-      "tool_count": 155,
+      "tool_count": 165,
       "tier_labels": [
         "S",
         "A",
@@ -1065,7 +1105,7 @@
         }
       }
     },
-    "tool_count": 155,
+    "tool_count": 165,
     "transports": [
       "stdio",
       "sse",
