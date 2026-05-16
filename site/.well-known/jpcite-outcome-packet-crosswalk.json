@@ -1,7 +1,7 @@
 {
   "schema_version": "jpcite.outcome_packet_athena_crosswalk.v1",
   "catalog_id": "jpcite-outcome-packet-athena-crosswalk-2026-05-16",
-  "generated_at": "2026-05-16T18:47:05+09:00",
+  "generated_at": "2026-05-16T19:35:00+09:00",
   "source_documents": {
     "outcome_catalog": "site/.well-known/jpcite-outcome-catalog.json",
     "outcome_contract_catalog": "site/releases/rc1-p0-bootstrap/outcome_contract_catalog.json",
@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 112,
+  "total_outcomes": 142,
   "wired_count": 69,
-  "pending_count": 43,
+  "pending_count": 53,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -2305,6 +2305,206 @@
       "estimated_rows": null,
       "athena_query_template": null,
       "status": "PENDING"
+    },
+    {
+      "outcome_id": "board_diversity_signal_packet",
+      "display_name": "業種別 board diversity signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_board_diversity_signal_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "insider_trading_disclosure_packet",
+      "display_name": "業種別 insider trading × disclosure timeliness packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_insider_trading_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "related_party_transaction_packet",
+      "display_name": "業種別 related party transaction disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_related_party_transaction_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "iso_certification_overlap_packet",
+      "display_name": "業種別 ISO/JIS certification overlap packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_iso_certification_overlap_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "antimonopoly_violation_intensity_packet",
+      "display_name": "業種別 antimonopoly violation intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_antimonopoly_violation_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "consumer_protection_compliance_packet",
+      "display_name": "業種別 consumer protection compliance packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_consumer_protection_compliance_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "environmental_disclosure_packet",
+      "display_name": "業種別 environmental disclosure (温対法/GHG/TCFD) packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_environmental_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "labor_dispute_event_rate_packet",
+      "display_name": "業種別 labor dispute event rate packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_labor_dispute_event_rate_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "product_recall_intensity_packet",
+      "display_name": "業種別 product recall intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_product_recall_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "regulatory_audit_outcomes_packet",
+      "display_name": "業種別 regulatory audit outcomes packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_regulatory_audit_outcomes_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
     }
   ],
   "gap_classification": {
@@ -2369,7 +2569,17 @@
       "executive_compensation_disclosure_packet",
       "audit_firm_rotation_packet",
       "tax_haven_subsidiary_packet",
-      "fpd_etf_holdings_packet"
+      "fpd_etf_holdings_packet",
+      "board_diversity_signal_packet",
+      "insider_trading_disclosure_packet",
+      "related_party_transaction_packet",
+      "iso_certification_overlap_packet",
+      "antimonopoly_violation_intensity_packet",
+      "consumer_protection_compliance_packet",
+      "environmental_disclosure_packet",
+      "labor_dispute_event_rate_packet",
+      "product_recall_intensity_packet",
+      "regulatory_audit_outcomes_packet"
     ],
     "control_or_meta_outcome_no_packet_backing": [
       "agent_routing_decision",

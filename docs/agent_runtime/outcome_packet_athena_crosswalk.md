@@ -10,9 +10,9 @@ where does it live"_ before issuing a `/v1/cost/preview` or paid call.
 
 ## Summary
 
-- **Total outcomes**: 122
+- **Total outcomes**: 142
 - **WIRED** (packet generator + Glue table both registered): **69**
-- **PENDING** (gap — see classification below): **33**
+- **PENDING** (gap — see classification below): **53**
 
 ### Gap classification
 

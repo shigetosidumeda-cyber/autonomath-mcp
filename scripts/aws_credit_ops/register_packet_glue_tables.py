@@ -1046,6 +1046,35 @@ for _name, _prefix in _WAVE_65_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 63 — governance / compliance / ESG cross packets (catalog 132 → 142).
+# All 10 share the jsic_major industry cohort with topic-specific compliance
+# / governance proxy aggregations (board diversity / insider trading / RPT /
+# ISO certification / antimonopoly / consumer protection / environmental
+# disclosure / labor dispute / product recall / regulatory audit outcomes).
+# Reuse the shared super-set columns; topic-specific arrays land in raw_json.
+_WAVE_63_TABLES: list[tuple[str, str]] = [
+    ("packet_board_diversity_signal_v1", "board_diversity_signal_v1/"),
+    ("packet_insider_trading_disclosure_v1", "insider_trading_disclosure_v1/"),
+    ("packet_related_party_transaction_v1", "related_party_transaction_v1/"),
+    ("packet_iso_certification_overlap_v1", "iso_certification_overlap_v1/"),
+    (
+        "packet_antimonopoly_violation_intensity_v1",
+        "antimonopoly_violation_intensity_v1/",
+    ),
+    (
+        "packet_consumer_protection_compliance_v1",
+        "consumer_protection_compliance_v1/",
+    ),
+    ("packet_environmental_disclosure_v1", "environmental_disclosure_v1/"),
+    ("packet_labor_dispute_event_rate_v1", "labor_dispute_event_rate_v1/"),
+    ("packet_product_recall_intensity_v1", "product_recall_intensity_v1/"),
+    ("packet_regulatory_audit_outcomes_v1", "regulatory_audit_outcomes_v1/"),
+]
+
+for _name, _prefix in _WAVE_63_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)
