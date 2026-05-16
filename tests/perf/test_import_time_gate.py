@@ -58,16 +58,57 @@ import pytest
 # still tripping on a real regression (e.g. eager scipy.stats adds
 # ~1.0 s, eager pandas adds ~0.7 s, eager stripe sub-import tree adds
 # ~0.4 s — any of those should redden the gate).
+#
+# PERF-31 (2026-05-17) tightened the MCP budget 2.5 s → 1.5 s after
+# lazy-loading the FastAPI-dragging ``api.programs`` import out of
+# ``autonomath_tools.tools`` (saves ~370 ms cumulative at MCP cold
+# start; median dev-laptop wall went 1.62 s → 0.72 s). The ~2x headroom
+# above the 0.72 s median is retained for CI runner variance + cold pip
+# caches. A future re-introduction of the eager
+# ``from jpintel_mcp.api.programs import _build_fts_match`` at module
+# load (or any equivalently heavy chain module) will redden the gate.
 IMPORT_BUDGETS: list[tuple[str, str, float]] = [
     (
         "mcp_server",
         "from jpintel_mcp.mcp import server",
-        2.5,
+        1.5,
     ),
     (
         "api_create_app",
         "from jpintel_mcp.api.main import create_app",
         4.5,
+    ),
+]
+
+# PERF-31 (2026-05-17): explicit "module-must-not-be-eagerly-imported"
+# ratchet on the chain modules that PERF-31 lazy-loaded. The eager
+# ``from jpintel_mcp.api.programs import _build_fts_match`` at the top
+# of ``autonomath_tools.tools`` was the worst offender (cum ~370 ms via
+# the FastAPI module tree). We assert the lazy proxies stay in place by
+# importing ``tools`` + ``annotation_tools`` (the latter transitively
+# imports ``tools``) without ``api.programs`` or ``_http_fallback``
+# entering ``sys.modules``. A future regression that re-eagers the
+# import is caught here even when wall-clock variance would otherwise
+# mask it in the budget gate above.
+#
+# Each entry: (label, import statement to run in subprocess, module
+# name that MUST NOT be present in sys.modules afterwards).
+#
+# We probe ``api.programs`` only — ``mcp._http_fallback`` is already
+# eagerly imported by ``jpintel_mcp.mcp.server`` (line 41), so
+# tracking it inside the ``autonomath_tools`` boundary alone would
+# always trip. Lazy-loading ``_http_fallback`` at the server level is
+# a separate (larger) PERF task.
+LAZY_LOAD_PROBES: list[tuple[str, str, str]] = [
+    (
+        "autonomath_tools_tools_no_api_programs",
+        "from jpintel_mcp.mcp.autonomath_tools import tools",
+        "jpintel_mcp.api.programs",
+    ),
+    (
+        "autonomath_tools_annotation_no_api_programs",
+        "from jpintel_mcp.mcp.autonomath_tools import annotation_tools",
+        "jpintel_mcp.api.programs",
     ),
 ]
 
@@ -171,7 +212,90 @@ def test_cold_import_under_budget(label: str, import_stmt: str, budget_s: float)
         f"budget {budget_s:.2f}s "
         f"(samples={[f'{s:.2f}s' for s in samples_s]}, "
         f"max={max_s:.2f}s). "
-        "PERF-6/PERF-7 ratchet: look for newly eager imports of "
+        "PERF-6/PERF-7/PERF-31 ratchet: look for newly eager imports of "
         "scipy.stats, stripe submodules, pandas, faiss, sklearn, "
+        "fastapi (via ``jpintel_mcp.api.programs._build_fts_match``), "
         "or any autonomath_tools.* sub-tree that should be lazy."
+    )
+
+
+def _module_present_after_import(import_stmt: str, must_not_be_present: str) -> bool:
+    """Spawn a fresh subprocess that runs ``import_stmt`` and prints
+    whether ``must_not_be_present`` ended up in ``sys.modules``.
+
+    Returns the boolean (True == module is present, which fails the
+    lazy-load contract). Fresh subprocess is mandatory because the
+    pytest worker has the autonomath_tools chain already warm.
+    """
+    code = (
+        f"import sys\n"
+        f"{import_stmt}\n"
+        f"print('PRESENT' if {must_not_be_present!r} in sys.modules else 'ABSENT')\n"
+    )
+    cmd = [sys.executable, "-c", code]
+    env = os.environ.copy()
+    env.setdefault("AUTONOMATH_36_KYOTEI_ENABLED", "0")
+    env.pop("PYTHONSTARTUP", None)
+
+    proc = subprocess.run(
+        cmd,
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        check=False,
+        timeout=60.0,
+    )
+    if proc.returncode != 0:
+        raise AssertionError(
+            f"lazy-load probe subprocess failed ({proc.returncode}): "
+            f"stderr[:500]={proc.stderr[:500]!r}"
+        )
+    out = proc.stdout.decode("utf-8", errors="replace").strip().splitlines()
+    if not out:
+        raise AssertionError(f"lazy-load probe produced no stdout; stderr={proc.stderr[:500]!r}")
+    verdict = out[-1].strip()
+    if verdict == "PRESENT":
+        return True
+    if verdict == "ABSENT":
+        return False
+    raise AssertionError(
+        f"lazy-load probe stdout malformed: {verdict!r} "
+        f"(expected 'PRESENT' or 'ABSENT'); full stdout={out!r}"
+    )
+
+
+@pytest.mark.parametrize(
+    ("label", "import_stmt", "must_not_be_present"),
+    LAZY_LOAD_PROBES,
+    ids=[row[0] for row in LAZY_LOAD_PROBES],
+)
+def test_autonomath_chain_modules_stay_lazy(
+    label: str,
+    import_stmt: str,
+    must_not_be_present: str,
+) -> None:
+    """PERF-31 lazy-load contract.
+
+    Importing the autonomath_tools chain modules at MCP cold-start
+    must NOT drag the FastAPI-heavy ``api.programs`` (cum ~370 ms)
+    into ``sys.modules``. The ``_build_fts_match`` helper is
+    re-introduced lazily through a ``functools.cache``-d accessor in
+    ``autonomath_tools/tools.py``; this test asserts the accessor is
+    not eagerly invoked at module-import time.
+
+    A regression here means the lazy proxy was reverted to an eager
+    top-level ``from jpintel_mcp.api.programs import _build_fts_match``
+    — either inside ``autonomath_tools/tools.py`` or in a sibling
+    module that transitively imports it.
+    """
+    present = _module_present_after_import(import_stmt, must_not_be_present)
+    assert not present, (
+        f"PERF-31 lazy-load regression on {label}: "
+        f"{must_not_be_present!r} was eagerly imported by "
+        f"`{import_stmt}`. The expected contract is that the chain "
+        "module is pulled lazily on first tool call, not at module "
+        "load. Look for a re-introduced top-level "
+        "``from jpintel_mcp.api.programs import _build_fts_match`` "
+        "line in ``autonomath_tools/tools.py`` or one of the sibling "
+        "chain modules. Restore the lazy proxy."
     )

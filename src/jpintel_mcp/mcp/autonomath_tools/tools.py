@@ -45,10 +45,6 @@ from typing import Annotated, Any, Literal, TypeVar, cast
 from pydantic import Field
 
 from jpintel_mcp.config import settings
-from jpintel_mcp.mcp._http_fallback import (  # === S3 HTTP FALLBACK ===
-    detect_fallback_mode_autonomath,
-    http_call,
-)
 from jpintel_mcp.mcp.server import (
     _READ_ONLY,
     _enforce_limit_cap,
@@ -63,6 +59,86 @@ from .db import (
 from .error_envelope import ErrorCode, make_error
 
 logger = logging.getLogger("jpintel.mcp.new")
+
+
+# ---------------------------------------------------------------------------
+# PERF-31 (2026-05-17): lazy-load heavy chain modules. ``_http_fallback``
+# (~21 ms cum) and the FastAPI-dragging ``api.programs`` chain (~370 ms
+# cum via ``_build_fts_match``) are pulled at first tool call instead of
+# at module import. MCP cold start no longer needs the REST router or
+# the HTTP fallback emitter — only the 10 tool decorators register at
+# import time. The ``functools.cache`` accessors ensure the inner module
+# is imported once per process, after which every call is one dict
+# lookup. Mirrors the PERF-6 pattern in
+# ``autonomath_tools.eligibility_tools._api``.
+# ---------------------------------------------------------------------------
+
+
+@functools.cache
+def _http_fallback_module() -> Any:
+    """Lazy-import ``jpintel_mcp.mcp._http_fallback`` on first call.
+
+    Return type is ``Any`` because mypy strict rejects ``ModuleType`` as
+    a valid type and refuses attribute-check on it.
+    """
+    from jpintel_mcp.mcp import _http_fallback as _hf  # noqa: PLC0415
+
+    return _hf
+
+
+def detect_fallback_mode_autonomath() -> bool:
+    """Thin lazy proxy for ``_http_fallback.detect_fallback_mode_autonomath``.
+
+    PERF-31: keeps the existing call-site contract unchanged so the 3
+    ``if detect_fallback_mode_autonomath():`` branches in this module
+    continue to compile + behave the same.
+    """
+    result: bool = _http_fallback_module().detect_fallback_mode_autonomath()
+    return result
+
+
+def http_call(
+    path: str,
+    *,
+    method: str = "GET",
+    params: dict[str, Any] | None = None,
+    json_body: dict[str, Any] | None = None,
+    retry: int | None = None,
+) -> dict[str, Any]:
+    """Thin lazy proxy for ``_http_fallback.http_call``.
+
+    Signature mirrors the upstream so mypy strict can reason about the
+    3 ``return http_call(...)`` call sites in this module — each one
+    expects a ``dict[str, Any]`` body. The lazy resolve only fires when
+    one of the ``search_*`` tool bodies actually hits the S3 fallback
+    path; MCP cold start never imports httpx.
+    """
+    kwargs: dict[str, Any] = {"method": method, "params": params, "json_body": json_body}
+    if retry is not None:
+        kwargs["retry"] = retry
+    result: dict[str, Any] = _http_fallback_module().http_call(path, **kwargs)
+    return result
+
+
+@functools.cache
+def _build_fts_match_callable() -> Any:
+    """Resolve & cache the underlying ``api.programs._build_fts_match``
+    callable. The import of ``api.programs`` drags ``fastapi`` cum
+    ~370 ms at cold-start — none of which is needed at decoration time.
+    Called at most once per process.
+    """
+    from jpintel_mcp.api.programs import _build_fts_match as _impl  # noqa: PLC0415
+
+    return _impl
+
+
+def _build_fts_match(q: str) -> str:
+    """Lazy proxy. PERF-31: defer ``api.programs`` (fastapi) import to
+    first call. Two ``search_*`` tool bodies invoke this; all other tool
+    bodies hit the LIKE fallback path and never trip the lazy import.
+    """
+    result: str = _build_fts_match_callable()(q)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -146,11 +222,12 @@ def _fts_escape(q: str) -> str:
 # Canonical FTS5 query rewriter — defeats the trigram single-kanji
 # overlap false-positive (CLAUDE.md gotcha) by phrase-quoting every
 # token, NFKC normalizing 全角 ASCII / 半角カナ paste, and OR-injecting
-# the kana-expansion table for the common 30-ish readings. This is the
-# same builder ``api/programs.py`` uses; importing keeps the two
-# surfaces in lockstep so a fix in one place benefits both REST + MCP.
+# the kana-expansion table for the common 30-ish readings. The
+# underlying builder lives in ``api/programs.py`` and is exposed via
+# the ``_build_fts_match`` lazy proxy above (PERF-31): the FastAPI
+# module tree is no longer dragged at MCP cold-start. REST + MCP stay
+# in lockstep because both call into the same upstream impl.
 from jpintel_mcp._jpcite_env_bridge import get_flag  # noqa: E402
-from jpintel_mcp.api.programs import _build_fts_match  # noqa: E402
 
 
 def _like_escape(q: str) -> str:
