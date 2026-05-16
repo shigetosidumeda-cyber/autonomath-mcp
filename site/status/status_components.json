@@ -1,40 +1,40 @@
 {
-  "snapshot_at": "2026-05-16T08:15:20+09:00",
+  "snapshot_at": "2026-05-16T09:10:07+09:00",
   "components": [
     {
       "id": "api",
       "label": "API",
-      "status": "degraded",
-      "last_check": "2026-05-16T08:15:20+09:00",
-      "latency_ms": 10042
+      "status": "ok",
+      "last_check": "2026-05-16T09:10:07+09:00",
+      "latency_ms": 868
     },
     {
       "id": "mcp",
       "label": "MCP",
       "status": "degraded",
-      "last_check": "2026-05-16T08:15:20+09:00",
-      "latency_ms": 2661
+      "last_check": "2026-05-16T09:10:07+09:00",
+      "latency_ms": 1139
     },
     {
       "id": "billing",
       "label": "Billing (Stripe)",
       "status": "ok",
-      "last_check": "2026-05-16T08:15:20+09:00",
+      "last_check": "2026-05-16T09:10:07+09:00",
       "latency_ms": 0
     },
     {
       "id": "data-freshness",
       "label": "データ鮮度",
       "status": "degraded",
-      "last_check": "2026-05-16T08:15:20+09:00",
+      "last_check": "2026-05-16T09:10:07+09:00",
       "latency_ms": 0
     },
     {
       "id": "dashboard",
       "label": "ダッシュボード",
       "status": "ok",
-      "last_check": "2026-05-16T08:15:20+09:00",
-      "latency_ms": 190
+      "last_check": "2026-05-16T09:10:07+09:00",
+      "latency_ms": 355
     }
   ],
   "overall": "degraded"
