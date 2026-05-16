@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
   "generated_at": "2026-05-16T07:00:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 92,
+  "total_outcomes": 102,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -2038,6 +2038,216 @@
       "estimated_tokens_saved": 9100,
       "public_source_family_ids": [],
       "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "industry_compliance_index_packet",
+      "display_name": "業種別 compliance index packet",
+      "description": "業種別 行政処分 / 排他ルール / 採択密度 4軸 compliance proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "competitor_subsidy_uptake_packet",
+      "display_name": "業種別 競合 subsidy uptake packet",
+      "description": "業種別 採択件数 + 上位採択 program proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "subsidy_roi_estimate_packet",
+      "display_name": "業種別 subsidy ROI distribution packet",
+      "description": "業種別 amount_granted_yen + median ratio descriptive 指標",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "business_lifecycle_stage_packet",
+      "display_name": "業種別 lifecycle stage packet",
+      "description": "業種別 採択 lifecycle stage proxy (創業/成長/転換/承継/撤退)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "kpi_funding_correlation_packet",
+      "display_name": "業種別 KPI funding correlation packet",
+      "description": "業種別 採択数 × 平均交付額 × 行政処分 × 制度カバレッジ 4軸",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "export_program_match_packet",
+      "display_name": "業種別 export program match packet",
+      "description": "業種別 輸出/海外展開 制度マッチング proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "digital_transformation_subsidy_chain_packet",
+      "display_name": "業種別 DX subsidy chain packet",
+      "description": "業種別 DX/IT 制度 chain (IT導入補助金 + DX認定 等)",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "green_investment_eligibility_packet",
+      "display_name": "業種別 green investment eligibility packet",
+      "description": "業種別 GX/脱炭素/省エネ 制度マッチング proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "patent_subsidy_intersection_packet",
+      "display_name": "業種別 patent subsidy intersection packet",
+      "description": "業種別 特許/知財/意匠/商標 制度マッチング proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "carbon_reporting_compliance_packet",
+      "display_name": "業種別 carbon reporting compliance packet",
+      "description": "業種別 温対法/省エネ法 carbon compliance proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
     }
   ],
   "filters": {
@@ -2096,7 +2306,17 @@
         "regulatory_amendment_industry_radar_packet",
         "bid_subsidy_substitution_packet",
         "administrative_disposition_recovery_packet",
-        "environmental_certification_match_packet"
+        "environmental_certification_match_packet",
+        "industry_compliance_index_packet",
+        "competitor_subsidy_uptake_packet",
+        "subsidy_roi_estimate_packet",
+        "business_lifecycle_stage_packet",
+        "kpi_funding_correlation_packet",
+        "export_program_match_packet",
+        "digital_transformation_subsidy_chain_packet",
+        "green_investment_eligibility_packet",
+        "patent_subsidy_intersection_packet",
+        "carbon_reporting_compliance_packet"
       ],
       "heavy": [
         "application_strategy",

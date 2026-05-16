@@ -2009,6 +2009,226 @@
       "known_gaps": [
         "coverage_thin"
       ]
+    },
+    {
+      "outcome_contract_id": "industry_compliance_index_packet",
+      "display_name": "業種別 compliance index packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "competitor_subsidy_uptake_packet",
+      "display_name": "業種別 競合 subsidy uptake packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "subsidy_roi_estimate_packet",
+      "display_name": "業種別 subsidy ROI distribution packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "business_lifecycle_stage_packet",
+      "display_name": "業種別 lifecycle stage packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "kpi_funding_correlation_packet",
+      "display_name": "業種別 KPI funding correlation packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "export_program_match_packet",
+      "display_name": "業種別 export program match packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "digital_transformation_subsidy_chain_packet",
+      "display_name": "業種別 DX subsidy chain packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "green_investment_eligibility_packet",
+      "display_name": "業種別 green investment eligibility packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "patent_subsidy_intersection_packet",
+      "display_name": "業種別 patent subsidy intersection packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "carbon_reporting_compliance_packet",
+      "display_name": "業種別 carbon reporting compliance packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "industry",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 2,
+      "known_gaps": [
+        "coverage_thin"
+      ]
     }
   ]
 }
