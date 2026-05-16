@@ -1,0 +1,60 @@
+{
+  "aws_commands_allowed_initially": false,
+  "executor": "ai_only",
+  "graph_id": "rc1-p0-bootstrap-2026-05-15:execution-graph",
+  "live_aws_phase_required": true,
+  "phases": [
+    {
+      "outputs": [
+        "outcome_contract_catalog.json",
+        "capability_matrix.json",
+        "p0_facade.json"
+      ],
+      "phase_id": "p0_contract_surface",
+      "status": "ready"
+    },
+    {
+      "outputs": [
+        "runtime_pointer.json",
+        "preflight_scorecard.json",
+        "docs/_internal/execution/rc1-p0-bootstrap/README.md"
+      ],
+      "phase_id": "ai_execution_resume_control",
+      "status": "ready"
+    },
+    {
+      "outputs": [
+        "policy_decision_catalog.json",
+        "csv_private_overlay_contract.json"
+      ],
+      "phase_id": "policy_trust_csv_boundaries",
+      "status": "pending"
+    },
+    {
+      "outputs": [
+        "accepted_artifact_pricing.json",
+        "billing_event_ledger_schema.json"
+      ],
+      "phase_id": "agent_billing_accepted_artifact",
+      "status": "pending"
+    },
+    {
+      "outputs": [
+        "noop_aws_command_plan.json",
+        "spend_simulation.json",
+        "teardown_simulation.json"
+      ],
+      "phase_id": "aws_noop_preflight",
+      "status": "blocked"
+    },
+    {
+      "outputs": [
+        "source_receipt_lake",
+        "public_packet_factory",
+        "post_teardown_attestation"
+      ],
+      "phase_id": "aws_live_artifact_factory",
+      "status": "blocked"
+    }
+  ]
+}

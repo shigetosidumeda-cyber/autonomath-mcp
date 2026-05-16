@@ -1,0 +1,172 @@
+{
+  "ledger_id": "rc1-p0-bootstrap-2026-05-15:billing-event-ledger-schema",
+  "schema_version": "jpcite.billing_event_ledger.p0.v1",
+  "ledger_kind": "append_only_billing_event_ledger",
+  "append_only": true,
+  "mutability": {
+    "update_allowed": false,
+    "delete_allowed": false,
+    "compaction_allowed": false,
+    "rewrite_history_allowed": false
+  },
+  "record_schema": {
+    "fields": [
+      {
+        "name": "event_id",
+        "type": "string",
+        "format": "ulid",
+        "required": true,
+        "unique": true,
+        "description": "Monotonic ULID assigned at append time."
+      },
+      {
+        "name": "token_id",
+        "type": "string",
+        "required": true,
+        "description": "scoped_cap_token.token_id that authorized the request.",
+        "foreign_reference": "scoped_cap_token.json#token_id"
+      },
+      {
+        "name": "artifact_id",
+        "type": "string",
+        "required": true,
+        "description": "accepted_artifact identifier that was actually delivered."
+      },
+      {
+        "name": "idempotency_key",
+        "type": "string",
+        "required": true,
+        "description": "Idempotency-Key header value supplied by caller."
+      },
+      {
+        "name": "outcome_contract_id",
+        "type": "string",
+        "required": true,
+        "foreign_reference": "outcome_contract_catalog.json#outcome_contract_id",
+        "description": "Outcome contract this artifact satisfied."
+      },
+      {
+        "name": "price_jpy",
+        "type": "integer",
+        "required": true,
+        "minimum": 0,
+        "maximum": 100000,
+        "description": "Charge amount in JPY (税抜 base; tax handled at invoice consolidation)."
+      },
+      {
+        "name": "charge_status",
+        "type": "string",
+        "required": true,
+        "enum": [
+          "charged",
+          "voided",
+          "no_charge_no_hit_unscoped",
+          "no_charge_validation_failed",
+          "no_charge_cap_exceeded",
+          "no_charge_idempotency_conflict",
+          "no_charge_rejected_csv",
+          "refunded"
+        ]
+      },
+      {
+        "name": "artifact_hash",
+        "type": "string",
+        "required": true,
+        "format": "sha256_hex",
+        "description": "SHA-256 of the canonical-serialized accepted artifact bytes."
+      },
+      {
+        "name": "observed_at",
+        "type": "string",
+        "format": "rfc3339_utc",
+        "required": true,
+        "description": "Wall-clock time the ledger row was appended."
+      },
+      {
+        "name": "request_received_at",
+        "type": "string",
+        "format": "rfc3339_utc",
+        "required": false,
+        "description": "Wall-clock time the originating request landed."
+      },
+      {
+        "name": "source_family_ids",
+        "type": "array",
+        "items": {"type": "string"},
+        "required": false,
+        "description": "Source families referenced by the artifact (cross-check vs scoped_cap_token.source_families)."
+      },
+      {
+        "name": "prior_event_hash",
+        "type": "string",
+        "format": "sha256_hex",
+        "required": true,
+        "description": "Hash chain pointer to the previous ledger row for tamper evidence."
+      },
+      {
+        "name": "row_hash",
+        "type": "string",
+        "format": "sha256_hex",
+        "required": true,
+        "description": "SHA-256 over (event_id || token_id || artifact_id || idempotency_key || outcome_contract_id || price_jpy || charge_status || artifact_hash || observed_at || prior_event_hash)."
+      }
+    ]
+  },
+  "validation_rules": [
+    {
+      "rule_id": "no_double_charge_per_artifact",
+      "description": "Given identical (artifact_id, idempotency_key), at most one charge_status=charged row may exist. Any second append with those keys must emit charge_status=no_charge_idempotency_conflict.",
+      "enforcement_layer": "billing_middleware_before_append"
+    },
+    {
+      "rule_id": "token_price_cap_check",
+      "description": "For every charge_status=charged row, price_jpy MUST be <= scoped_cap_token.max_price_jpy resolved via token_id. Violations append charge_status=no_charge_cap_exceeded and emit alert.",
+      "enforcement_layer": "billing_middleware_before_append"
+    },
+    {
+      "rule_id": "idempotency_key_required",
+      "description": "All append attempts MUST carry idempotency_key. Missing key causes charge_status=no_charge_validation_failed and no charge.",
+      "enforcement_layer": "request_validator_before_router"
+    },
+    {
+      "rule_id": "artifact_hash_required",
+      "description": "Every charged row MUST carry artifact_hash that matches the canonical-serialized accepted artifact bytes; mismatch voids the charge.",
+      "enforcement_layer": "ledger_append_verifier"
+    },
+    {
+      "rule_id": "hash_chain_unbroken",
+      "description": "row_hash[n] MUST equal SHA-256 over the concatenated field stream; prior_event_hash[n] MUST equal row_hash[n-1]; chain genesis = sha256('').",
+      "enforcement_layer": "ledger_append_verifier"
+    },
+    {
+      "rule_id": "monotonic_event_id",
+      "description": "event_id[n] ULID timestamp prefix MUST be >= event_id[n-1] timestamp prefix.",
+      "enforcement_layer": "ledger_append_verifier"
+    },
+    {
+      "rule_id": "outcome_contract_resolvable",
+      "description": "outcome_contract_id MUST resolve in outcome_contract_catalog.json and that contract.billable must be true for charge_status=charged rows.",
+      "enforcement_layer": "billing_middleware_before_append"
+    },
+    {
+      "rule_id": "no_charge_for_no_hit_unless_scoped_and_consented",
+      "description": "No-hit results bill only if outcome_contract.no_hit_semantics='no_hit_not_absence' AND the scoped_cap_token recorded explicit consent for billable no-hit; otherwise charge_status=no_charge_no_hit_unscoped.",
+      "enforcement_layer": "billing_middleware_before_append"
+    },
+    {
+      "rule_id": "csv_rejection_no_charge",
+      "description": "When csv_private_overlay_contract rejects a request, ledger row must record charge_status=no_charge_rejected_csv with price_jpy=0 and artifact_hash=sha256('rejected').",
+      "enforcement_layer": "csv_overlay_pre_router"
+    }
+  ],
+  "audit_view": {
+    "billing_event_ledger_append_only": true,
+    "charge_basis": "accepted_artifact",
+    "no_accepted_artifact_decision": "no_charge_or_void",
+    "no_hit_billable_only_if_scoped_and_consented": true,
+    "pricing_contract_id": "rc1-p0-bootstrap-2026-05-15:accepted-artifact-pricing"
+  },
+  "live_aws_command_unlock": false,
+  "no_aws_runtime_dependency": true,
+  "created_at": "2026-05-15T00:00:00+09:00"
+}

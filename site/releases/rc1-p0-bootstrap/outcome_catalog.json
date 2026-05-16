@@ -1,0 +1,789 @@
+{
+  "api_wiring_required": false,
+  "deliverables": [
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "company-public-baseline",
+      "display_name": "Company public baseline",
+      "estimated_price_jpy": 600,
+      "evidence_dependency_types": [
+        "official_public_registry",
+        "official_disclosure"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "company_public_baseline",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_standard",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_registry",
+          "source_family_id": "gBizINFO",
+          "source_role": "corporate identity",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_registry",
+          "source_family_id": "nta_invoice",
+          "source_role": "invoice status",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_disclosure",
+          "source_family_id": "edinet",
+          "source_role": "securities disclosure context",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "company_registry",
+        "invoice_registry",
+        "public_disclosure"
+      ],
+      "user_segments": [
+        "agent_builder",
+        "tax_advisor",
+        "financial_institution",
+        "foreign_investor"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "invoice-registrant-public-check",
+      "display_name": "Invoice registrant public check",
+      "estimated_price_jpy": 300,
+      "evidence_dependency_types": [
+        "official_public_registry"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "invoice_registrant_public_check",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_low",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_registry",
+          "source_family_id": "nta_invoice",
+          "source_role": "qualified invoice status",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "invoice_registry",
+        "tax_compliance"
+      ],
+      "user_segments": [
+        "tax_advisor",
+        "accounting_firm",
+        "sme_operator"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "subsidy-grant-candidate-pack",
+      "display_name": "Subsidy and grant candidate pack",
+      "estimated_price_jpy": 900,
+      "evidence_dependency_types": [
+        "official_program_guideline",
+        "official_public_notice"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "application_strategy",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_premium",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_program_guideline",
+          "source_family_id": "jgrants",
+          "source_role": "program listing",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_program_guideline",
+          "source_family_id": "sme_agency",
+          "source_role": "program guideline",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "local_government_notice",
+          "source_role": "local programs",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "subsidy_grants",
+        "application_strategy",
+        "deadline_watch"
+      ],
+      "user_segments": [
+        "tax_advisor",
+        "accounting_firm",
+        "sme_operator",
+        "financial_institution"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "law-regulation-change-watch",
+      "display_name": "Law and regulation change watch",
+      "estimated_price_jpy": 600,
+      "evidence_dependency_types": [
+        "official_law_regulation",
+        "official_public_notice"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "regulation_change_watch",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_standard",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_law_regulation",
+          "source_family_id": "egov_law",
+          "source_role": "current law text",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "meti_notice",
+          "source_role": "policy notices",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "mhlw_notice",
+          "source_role": "labor and health notices",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "law_regulation",
+        "change_watch",
+        "public_comment"
+      ],
+      "user_segments": [
+        "agent_builder",
+        "tax_advisor",
+        "compliance_team"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "local-government-permit-obligation-map",
+      "display_name": "Local government permit and obligation map",
+      "estimated_price_jpy": 900,
+      "evidence_dependency_types": [
+        "official_public_notice",
+        "official_law_regulation"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "local_government_permit_obligation_map",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_premium",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "local_government_notice",
+          "source_role": "local rules",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_law_regulation",
+          "source_family_id": "egov_law",
+          "source_role": "national rule baseline",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "local_government",
+        "permits",
+        "law_regulation"
+      ],
+      "user_segments": [
+        "sme_operator",
+        "tax_advisor",
+        "local_government_vendor",
+        "compliance_team"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "court-enforcement-citation-pack",
+      "display_name": "Court and enforcement citation pack",
+      "estimated_price_jpy": 600,
+      "evidence_dependency_types": [
+        "official_court_record",
+        "official_public_notice"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "court_enforcement_citation_pack",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_standard",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_court_record",
+          "source_family_id": "courts_jp",
+          "source_role": "published decisions",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "meti_enforcement",
+          "source_role": "agency enforcement",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "maff_enforcement",
+          "source_role": "agency enforcement",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "court_enforcement",
+        "citation_pack"
+      ],
+      "user_segments": [
+        "judicial_scrivener",
+        "compliance_team",
+        "agent_builder"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "public-statistics-market-context",
+      "display_name": "Public statistics market context",
+      "estimated_price_jpy": 600,
+      "evidence_dependency_types": [
+        "official_public_statistics"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "public_statistics_market_context",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_standard",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_statistics",
+          "source_family_id": "estat",
+          "source_role": "national statistics",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_statistics",
+          "source_family_id": "prefecture_statistics",
+          "source_role": "local statistics",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "public_statistics",
+        "market_context"
+      ],
+      "user_segments": [
+        "foreign_investor",
+        "financial_institution",
+        "sme_operator",
+        "agent_builder"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "client-monthly-public-watchlist",
+      "display_name": "Client monthly public watchlist",
+      "estimated_price_jpy": 900,
+      "evidence_dependency_types": [
+        "official_public_registry",
+        "official_program_guideline",
+        "official_law_regulation"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "client_monthly_review",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_premium",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_registry",
+          "source_family_id": "gBizINFO",
+          "source_role": "client identity",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_registry",
+          "source_family_id": "nta_invoice",
+          "source_role": "invoice watch",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_program_guideline",
+          "source_family_id": "jgrants",
+          "source_role": "program watch",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_law_regulation",
+          "source_family_id": "egov_law",
+          "source_role": "legal change watch",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "monthly_review",
+        "invoice_registry",
+        "subsidy_grants",
+        "law_regulation"
+      ],
+      "user_segments": [
+        "tax_advisor",
+        "accounting_firm"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_csv_consent_and_artifact_acceptance",
+      "cached_official_public_sources_sufficient": false,
+      "deliverable_slug": "accounting-csv-public-counterparty-check",
+      "display_name": "Accounting CSV public counterparty check",
+      "estimated_price_jpy": 900,
+      "evidence_dependency_types": [
+        "tenant_private_csv_overlay",
+        "official_public_registry"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_public_plus_user_csv",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "csv_overlay_public_check",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_csv_overlay",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": true,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": false,
+          "dependency_type": "tenant_private_csv_overlay",
+          "source_family_id": "accounting_csv",
+          "source_role": "counterparty and transaction shape",
+          "user_csv": true
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_registry",
+          "source_family_id": "nta_invoice",
+          "source_role": "public invoice match",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_registry",
+          "source_family_id": "gBizINFO",
+          "source_role": "public company match",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "tax_accounting_csv_overlay",
+        "invoice_registry",
+        "company_registry"
+      ],
+      "user_segments": [
+        "tax_advisor",
+        "accounting_firm",
+        "sme_operator"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_csv_consent_and_artifact_acceptance",
+      "cached_official_public_sources_sufficient": false,
+      "deliverable_slug": "cashbook-csv-subsidy-fit-screen",
+      "display_name": "Cashbook CSV subsidy fit screen",
+      "estimated_price_jpy": 900,
+      "evidence_dependency_types": [
+        "tenant_private_csv_overlay",
+        "official_program_guideline"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_public_plus_user_csv",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "cashbook_csv_subsidy_fit_screen",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_csv_overlay",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": true,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": false,
+          "dependency_type": "tenant_private_csv_overlay",
+          "source_family_id": "cashbook_csv",
+          "source_role": "expense categories and timing",
+          "user_csv": true
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_program_guideline",
+          "source_family_id": "jgrants",
+          "source_role": "program listing",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_program_guideline",
+          "source_family_id": "sme_agency",
+          "source_role": "eligible expense rules",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "tax_accounting_csv_overlay",
+        "subsidy_grants",
+        "application_strategy"
+      ],
+      "user_segments": [
+        "tax_advisor",
+        "accounting_firm",
+        "sme_operator"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "source-receipt-ledger",
+      "display_name": "Source receipt ledger",
+      "estimated_price_jpy": 600,
+      "evidence_dependency_types": [
+        "public_source_receipt_graph",
+        "official_public_registry",
+        "official_law_regulation"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "source_receipt_ledger",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_standard",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "public_source_receipt_graph",
+          "source_family_id": "source_receipt_ledger",
+          "source_role": "claim receipts",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_registry",
+          "source_family_id": "gBizINFO",
+          "source_role": "registry receipt",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_law_regulation",
+          "source_family_id": "egov_law",
+          "source_role": "law receipt",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "source_receipts",
+        "claim_graph"
+      ],
+      "user_segments": [
+        "agent_builder",
+        "compliance_team",
+        "financial_institution"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "evidence-answer-citation-pack",
+      "display_name": "Evidence answer citation pack",
+      "estimated_price_jpy": 600,
+      "evidence_dependency_types": [
+        "official_law_regulation",
+        "official_public_notice",
+        "public_source_receipt_graph"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "evidence_answer",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_standard",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_law_regulation",
+          "source_family_id": "egov_law",
+          "source_role": "primary authority",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "official_notice",
+          "source_role": "agency context",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "public_source_receipt_graph",
+          "source_family_id": "source_receipt_ledger",
+          "source_role": "claim receipts",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "evidence_answer",
+        "law_regulation",
+        "citation_pack"
+      ],
+      "user_segments": [
+        "agent_builder",
+        "tax_advisor",
+        "compliance_team"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "foreign-investor-japan-public-entry-brief",
+      "display_name": "Foreign investor Japan public entry brief",
+      "estimated_price_jpy": 900,
+      "evidence_dependency_types": [
+        "official_disclosure",
+        "official_law_regulation",
+        "official_public_notice"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "foreign_investor_japan_public_entry_brief",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_premium",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_disclosure",
+          "source_family_id": "edinet",
+          "source_role": "disclosure context",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_law_regulation",
+          "source_family_id": "egov_law",
+          "source_role": "legal baseline",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "meti_notice",
+          "source_role": "investment policy context",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "foreign_investment",
+        "public_disclosure",
+        "law_regulation"
+      ],
+      "user_segments": [
+        "foreign_investor",
+        "financial_institution",
+        "agent_builder"
+      ]
+    },
+    {
+      "agent_facing": true,
+      "api_wiring_required": false,
+      "billing_posture": "billable_after_user_accepts_artifact",
+      "cached_official_public_sources_sufficient": true,
+      "deliverable_slug": "healthcare-regulatory-public-check",
+      "display_name": "Healthcare regulatory public check",
+      "estimated_price_jpy": 600,
+      "evidence_dependency_types": [
+        "official_public_notice",
+        "official_law_regulation"
+      ],
+      "high_value": true,
+      "input_requirement": "cached_official_public_only",
+      "live_aws_dependency": false,
+      "live_network_dependency": false,
+      "no_hit_semantics": "no_hit_not_absence",
+      "outcome_contract_id": "healthcare_regulatory_public_check",
+      "precomputed_output": true,
+      "pricing_posture": "accepted_artifact_standard",
+      "request_time_llm_dependency": false,
+      "requires_user_csv": false,
+      "source_dependencies": [
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "mhlw_notice",
+          "source_role": "healthcare notices",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_law_regulation",
+          "source_family_id": "egov_law",
+          "source_role": "statutory baseline",
+          "user_csv": false
+        },
+        {
+          "cached_official_or_public": true,
+          "dependency_type": "official_public_notice",
+          "source_family_id": "local_government_notice",
+          "source_role": "local notices",
+          "user_csv": false
+        }
+      ],
+      "use_case_tags": [
+        "japanese_public_official_info",
+        "healthcare_regulation",
+        "law_regulation",
+        "local_government"
+      ],
+      "user_segments": [
+        "healthcare_operator",
+        "compliance_team",
+        "agent_builder"
+      ]
+    }
+  ],
+  "live_aws_dependency": false,
+  "live_network_dependency": false,
+  "no_hit_semantics": "no_hit_not_absence",
+  "request_time_llm_dependency": false,
+  "schema_version": "jpcite.outcome_catalog.p0.v1"
+}

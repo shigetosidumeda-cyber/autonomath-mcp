@@ -1,0 +1,35 @@
+{
+  "aws_runtime_dependency_allowed": false,
+  "billing_invariant": "charge_only_after_accepted_artifact",
+  "capsule_id": "rc1-p0-bootstrap-2026-05-15",
+  "default_visibility": "p0_facade_only",
+  "full_catalog_visible_by_default": false,
+  "request_time_llm_fact_generation_enabled": false,
+  "schema_version": "jpcite.agent_facade.p0.v1",
+  "tools": [
+    {
+      "billable": false,
+      "name": "jpcite_route",
+      "purpose": "Choose the cheapest sufficient route and return whether a paid packet is justified.",
+      "requires_user_consent": false
+    },
+    {
+      "billable": false,
+      "name": "jpcite_preview_cost",
+      "purpose": "Return max price, likely coverage, known gaps, and no-hit caveat before purchase.",
+      "requires_user_consent": false
+    },
+    {
+      "billable": true,
+      "name": "jpcite_execute_packet",
+      "purpose": "Create an accepted artifact only with a scoped cap token and idempotency key.",
+      "requires_user_consent": true
+    },
+    {
+      "billable": false,
+      "name": "jpcite_get_packet",
+      "purpose": "Retrieve an already-created packet, source receipts, and known gaps.",
+      "requires_user_consent": false
+    }
+  ]
+}

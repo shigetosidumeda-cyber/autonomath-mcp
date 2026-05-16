@@ -1,0 +1,23 @@
+{
+  "amount_only_token": false,
+  "consent_id": "rc1-p0-bootstrap-2026-05-15:example-consent",
+  "expires_at": "2026-05-16T00:00:00+09:00",
+  "idempotency_key_required": true,
+  "input_hash": "sha256:example-input-hash",
+  "max_price_jpy": 300,
+  "outcome_contract_id": "company_public_baseline",
+  "packet_types": [
+    "company_profile",
+    "source_receipts",
+    "known_gaps"
+  ],
+  "source_families": [
+    "gBizINFO",
+    "nta_invoice",
+    "edinet",
+    "egov"
+  ],
+  "token_id": "rc1-p0-bootstrap-2026-05-15:example-scoped-cap-token",
+  "token_kind": "scoped_cap_token",
+  "version": "p0.v1"
+}

@@ -1,0 +1,51 @@
+{
+  "agent_recommendation_card": "Preview first. Execute a paid packet only after the user accepts the outcome, max price, source families, and no-hit caveat.",
+  "anti_upsell_gate_passed": true,
+  "billable": false,
+  "cheapest_sufficient_route": "jpcite_preview_cost",
+  "coverage_roi_curve": [
+    {
+      "coverage": 0.35,
+      "decision": "use_free_guidance",
+      "price_jpy": 0
+    },
+    {
+      "coverage": 0.72,
+      "decision": "buy_if_time_sensitive",
+      "price_jpy": 300
+    },
+    {
+      "coverage": 0.9,
+      "decision": "buy",
+      "price_jpy": 900
+    }
+  ],
+  "decision_id": "rc1-p0-bootstrap-2026-05-15:free-preview-decision",
+  "expected_output_skeleton": {
+    "artifact_id": "string",
+    "claims": [
+      {
+        "claim_ref_id": "string",
+        "text": "string"
+      }
+    ],
+    "known_gaps": [
+      "gap_id"
+    ],
+    "no_hit_lease": "no_hit_not_absence",
+    "outcome_contract_id": "string",
+    "source_receipts": [
+      "receipt_id"
+    ]
+  },
+  "known_gaps_before_purchase": [
+    "source_freshness_not_live_until_capsule_activation"
+  ],
+  "max_price_jpy": 0,
+  "no_hit_caveat": "no_hit_not_absence",
+  "reason_not_to_buy": "Do not buy if free guidance is enough or the source coverage is below the accepted-artifact threshold.",
+  "reason_to_buy": "Buy only when the requested artifact needs cited public-source evidence or private CSV overlay checks.",
+  "recommended_action": "ask_followup",
+  "request_time_llm_call_performed": false,
+  "scoped_cap_token_required": true
+}

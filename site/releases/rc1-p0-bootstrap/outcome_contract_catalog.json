@@ -1,0 +1,217 @@
+[
+  {
+    "billable": false,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Agent routing decision",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "agent_routing_decision",
+    "packet_ids": [
+      "route_decision"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": false,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Cost preview before purchase",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cost_preview",
+    "packet_ids": [
+      "cost_preview"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Company public baseline",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "company_public_baseline",
+    "packet_ids": [
+      "company_profile",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Invoice registrant public check",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "invoice_registrant_public_check",
+    "packet_ids": [
+      "invoice_registration_status",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Subsidy and grant candidate pack",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "application_strategy",
+    "packet_ids": [
+      "normalized_applicant_profile",
+      "ranked_candidates",
+      "fit_signals",
+      "questions_for_professional",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Law and regulation change watch",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regulation_change_watch",
+    "packet_ids": [
+      "change_diff",
+      "affected_workflows",
+      "source_receipts"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Local government permit and obligation map",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "local_government_permit_obligation_map",
+    "packet_ids": [
+      "jurisdiction_profile",
+      "permit_obligations",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Court and enforcement citation pack",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "court_enforcement_citation_pack",
+    "packet_ids": [
+      "court_citations",
+      "enforcement_notices",
+      "claim_refs",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Public statistics market context",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "public_statistics_market_context",
+    "packet_ids": [
+      "statistics_snapshot",
+      "market_context",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Client monthly public watchlist",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "client_monthly_review",
+    "packet_ids": [
+      "client_priority_queue",
+      "this_month_watch_items",
+      "deadline_risks",
+      "questions_for_client",
+      "office_tasks"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Accounting CSV public counterparty check",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "csv_overlay_public_check",
+    "packet_ids": [
+      "csv_summary",
+      "public_checks",
+      "redacted_findings"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Cashbook CSV subsidy fit screen",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "cashbook_csv_subsidy_fit_screen",
+    "packet_ids": [
+      "cashbook_summary",
+      "program_fit_signals",
+      "questions_for_professional",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Source receipt ledger",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "source_receipt_ledger",
+    "packet_ids": [
+      "receipt_ledger",
+      "claim_graph",
+      "coverage_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Evidence answer citation pack",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "evidence_answer",
+    "packet_ids": [
+      "answer",
+      "claim_refs",
+      "no_hit_lease",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Foreign investor Japan public entry brief",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "foreign_investor_japan_public_entry_brief",
+    "packet_ids": [
+      "entry_brief",
+      "disclosure_context",
+      "regulatory_baseline",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "Healthcare regulatory public check",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "healthcare_regulatory_public_check",
+    "packet_ids": [
+      "healthcare_notice_check",
+      "regulatory_baseline",
+      "local_requirements",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "all_resources_have_delete_recipe": true,
+  "assertions_to_pass_state_true": [
+    "simulation_id_present",
+    "external_export_required_before_delete",
+    "post_teardown_attestation_non_aws_triggered",
+    "all_resources_have_delete_recipe",
+    "delete_recipe_coverage_matches_resource_classes",
+    "teardown_recipes_min_count",
+    "teardown_attestation_artifacts_listed",
+    "delete_recipe_dry_run_default",
+    "post_teardown_inventory_required",
+    "every_resource_class_has_delete_recipe_flag",
+    "teardown_shell_scripts_present",
+    "teardown_shell_run_all_present",
+    "teardown_shell_verify_zero_aws_present",
+    "noop_plan_requires_teardown_recipe",
+    "spend_program_attestation_post_teardown_cost_review",
+    "canary_post_flip_attestation_outputs_listed"
+  ],
+  "external_export_required_before_delete": true,
+  "live_phase_only_assertion_ids": [
+    "operator_signed_unlock_present",
+    "run_id_tag_inventory_empty"
+  ],
+  "pass_state": true,
+  "pass_state_flip_authority": "preflight_runner",
+  "post_teardown_attestation_non_aws_triggered": true,
+  "simulation_id": "rc1-p0-bootstrap-2026-05-15:teardown-simulation"
+}

@@ -1,0 +1,2738 @@
+{
+  "budget_guard_template_ids": [
+    "budget_credit_gross_burn_guard",
+    "budget_paid_cash_exposure_backstop",
+    "budget_action_operator_stopline",
+    "cost_anomaly_monitor_guard"
+  ],
+  "budget_guard_templates": [
+    {
+      "category": "budget_guard",
+      "data_only": true,
+      "display_name": "Gross credit burn budget guard",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "required_tag_policy_template"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_budget_template",
+          "operation_template": "aws budgets create-budget --account-id ${aws_account_id} --budget file://${gross_burn_budget_spec_path} --notifications-with-subscribers file://${budget_alerts_path} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "gross_burn_budget_spec_path",
+            "budget_alerts_path",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "budget_credit_gross_burn_guard_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "budget-gross-burn"
+      },
+      "resource_class": "aws_budget",
+      "service_family": "aws-budgets",
+      "template_id": "budget_credit_gross_burn_guard",
+      "unlock_required": true
+    },
+    {
+      "category": "budget_guard",
+      "data_only": true,
+      "display_name": "Paid cash exposure backstop budget",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "required_tag_policy_template"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_budget_template",
+          "operation_template": "aws budgets create-budget --account-id ${aws_account_id} --budget file://${paid_exposure_budget_spec_path} --notifications-with-subscribers file://${paid_exposure_alerts_path} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "paid_exposure_budget_spec_path",
+            "paid_exposure_alerts_path",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "budget_paid_cash_exposure_backstop_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "budget-paid-cash-backstop"
+      },
+      "resource_class": "aws_budget",
+      "service_family": "aws-budgets",
+      "template_id": "budget_paid_cash_exposure_backstop",
+      "unlock_required": true
+    },
+    {
+      "category": "budget_guard",
+      "data_only": true,
+      "display_name": "Budget action operator stopline",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "required_tag_policy_template"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_budget_action_template",
+          "operation_template": "aws budgets create-budget-action --account-id ${aws_account_id} --budget-name ${gross_burn_budget_name} --notification-type ACTUAL --action-threshold file://${action_threshold_path} --definition file://${budget_action_definition_path} --approval-model MANUAL --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "gross_burn_budget_name",
+            "action_threshold_path",
+            "budget_action_definition_path",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "budget_action_operator_stopline_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "budget-action-stopline"
+      },
+      "resource_class": "budget_action",
+      "service_family": "aws-budgets",
+      "template_id": "budget_action_operator_stopline",
+      "unlock_required": true
+    },
+    {
+      "category": "budget_guard",
+      "data_only": true,
+      "display_name": "Cost anomaly monitor guard",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "required_tag_policy_template"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_anomaly_monitor_template",
+          "operation_template": "aws ce create-anomaly-monitor --anomaly-monitor file://${cost_anomaly_monitor_spec_path} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "cost_anomaly_monitor_spec_path",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "cost_anomaly_monitor_guard_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "cost-anomaly-monitor"
+      },
+      "resource_class": "cost_anomaly_monitor",
+      "service_family": "aws-ce",
+      "template_id": "cost_anomaly_monitor_guard",
+      "unlock_required": true
+    }
+  ],
+  "catalog_id": "jpcite-aws-execution-template-catalog-2026-05-15",
+  "data_only": true,
+  "execution_mode": "offline_template_catalog",
+  "execution_templates": [
+    {
+      "category": "budget_guard",
+      "data_only": true,
+      "display_name": "Gross credit burn budget guard",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "required_tag_policy_template"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_budget_template",
+          "operation_template": "aws budgets create-budget --account-id ${aws_account_id} --budget file://${gross_burn_budget_spec_path} --notifications-with-subscribers file://${budget_alerts_path} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "gross_burn_budget_spec_path",
+            "budget_alerts_path",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "budget_credit_gross_burn_guard_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "budget-gross-burn"
+      },
+      "resource_class": "aws_budget",
+      "service_family": "aws-budgets",
+      "template_id": "budget_credit_gross_burn_guard",
+      "unlock_required": true
+    },
+    {
+      "category": "budget_guard",
+      "data_only": true,
+      "display_name": "Paid cash exposure backstop budget",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "required_tag_policy_template"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_budget_template",
+          "operation_template": "aws budgets create-budget --account-id ${aws_account_id} --budget file://${paid_exposure_budget_spec_path} --notifications-with-subscribers file://${paid_exposure_alerts_path} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "paid_exposure_budget_spec_path",
+            "paid_exposure_alerts_path",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "budget_paid_cash_exposure_backstop_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "budget-paid-cash-backstop"
+      },
+      "resource_class": "aws_budget",
+      "service_family": "aws-budgets",
+      "template_id": "budget_paid_cash_exposure_backstop",
+      "unlock_required": true
+    },
+    {
+      "category": "budget_guard",
+      "data_only": true,
+      "display_name": "Budget action operator stopline",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "required_tag_policy_template"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_budget_action_template",
+          "operation_template": "aws budgets create-budget-action --account-id ${aws_account_id} --budget-name ${gross_burn_budget_name} --notification-type ACTUAL --action-threshold file://${action_threshold_path} --definition file://${budget_action_definition_path} --approval-model MANUAL --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "gross_burn_budget_name",
+            "action_threshold_path",
+            "budget_action_definition_path",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "budget_action_operator_stopline_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "budget-action-stopline"
+      },
+      "resource_class": "budget_action",
+      "service_family": "aws-budgets",
+      "template_id": "budget_action_operator_stopline",
+      "unlock_required": true
+    },
+    {
+      "category": "budget_guard",
+      "data_only": true,
+      "display_name": "Cost anomaly monitor guard",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "required_tag_policy_template"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_anomaly_monitor_template",
+          "operation_template": "aws ce create-anomaly-monitor --anomaly-monitor file://${cost_anomaly_monitor_spec_path} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "cost_anomaly_monitor_spec_path",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "cost_anomaly_monitor_guard_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "cost-anomaly-monitor"
+      },
+      "resource_class": "cost_anomaly_monitor",
+      "service_family": "aws-ce",
+      "template_id": "cost_anomaly_monitor_guard",
+      "unlock_required": true
+    },
+    {
+      "category": "tag_policy",
+      "data_only": true,
+      "display_name": "Required tag policy enforcement",
+      "guard_refs": [
+        "operator_unlock_manifest",
+        "budget_credit_gross_burn_guard"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_tag_policy_template",
+          "operation_template": "aws organizations create-policy --name ${tag_policy_name} --type TAG_POLICY --content file://${tag_policy_document_path} --profile ${aws_profile}",
+          "placeholders": [
+            "tag_policy_name",
+            "tag_policy_document_path",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "required_tag_policy_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "required-tag-policy"
+      },
+      "resource_class": "tag_policy",
+      "service_family": "aws-organizations",
+      "template_id": "required_tag_policy_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Execution role for batch workers",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_role_template",
+          "operation_template": "aws iam create-role --role-name ${execution_role_name} --assume-role-policy-document file://${assume_role_policy_path} --tags file://${required_tags_path} --profile ${aws_profile}",
+          "placeholders": [
+            "execution_role_name",
+            "assume_role_policy_path",
+            "required_tags_path",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "iam_execution_role_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "batch-execution-role"
+      },
+      "resource_class": "iam_role",
+      "service_family": "aws-iam",
+      "template_id": "iam_execution_role_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Least privilege policy for public-source pipeline",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_policy_template",
+          "operation_template": "aws iam create-policy --policy-name ${policy_name} --policy-document file://${policy_document_path} --tags file://${required_tags_path} --profile ${aws_profile}",
+          "placeholders": [
+            "policy_name",
+            "policy_document_path",
+            "required_tags_path",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "iam_least_privilege_policy_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "least-privilege-policy"
+      },
+      "resource_class": "iam_policy",
+      "service_family": "aws-iam",
+      "template_id": "iam_least_privilege_policy_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Artifact lake bucket",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_bucket_template",
+          "operation_template": "aws s3api create-bucket --bucket ${artifact_bucket_name} --create-bucket-configuration LocationConstraint=${aws_region} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "artifact_bucket_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "artifact_lake_bucket_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "artifact-lake"
+      },
+      "resource_class": "s3_bucket",
+      "service_family": "aws-s3",
+      "template_id": "artifact_lake_bucket_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Source capture SQS queue",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_queue_template",
+          "operation_template": "aws sqs create-queue --queue-name ${source_capture_queue_name} --attributes file://${source_capture_queue_attributes_path} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "source_capture_queue_name",
+            "source_capture_queue_attributes_path",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "source_capture_queue_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "source-capture-queue"
+      },
+      "resource_class": "sqs_queue",
+      "service_family": "aws-sqs",
+      "template_id": "source_capture_queue_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Batch compute environment",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_compute_environment_template",
+          "operation_template": "aws batch create-compute-environment --compute-environment-name ${compute_environment_name} --type MANAGED --compute-resources file://${compute_resources_path} --service-role ${batch_service_role_arn} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "compute_environment_name",
+            "compute_resources_path",
+            "batch_service_role_arn",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "batch_compute_environment_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "batch-compute-environment"
+      },
+      "resource_class": "batch_compute_environment",
+      "service_family": "aws-batch",
+      "template_id": "batch_compute_environment_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Batch job queue",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_job_queue_template",
+          "operation_template": "aws batch create-job-queue --job-queue-name ${job_queue_name} --priority ${job_queue_priority} --compute-environment-order file://${compute_environment_order_path} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "job_queue_name",
+            "job_queue_priority",
+            "compute_environment_order_path",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "batch_job_queue_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "batch-job-queue"
+      },
+      "resource_class": "batch_job_queue",
+      "service_family": "aws-batch",
+      "template_id": "batch_job_queue_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Batch job definition",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "register_job_definition_template",
+          "operation_template": "aws batch register-job-definition --job-definition-name ${job_definition_name} --type container --container-properties file://${container_properties_path} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "job_definition_name",
+            "container_properties_path",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "batch_job_definition_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "batch-job-definition"
+      },
+      "resource_class": "batch_job_definition",
+      "service_family": "aws-batch",
+      "template_id": "batch_job_definition_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Step Functions orchestrator",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_state_machine_template",
+          "operation_template": "aws stepfunctions create-state-machine --name ${state_machine_name} --definition file://${state_machine_definition_path} --role-arn ${state_machine_role_arn} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "state_machine_name",
+            "state_machine_definition_path",
+            "state_machine_role_arn",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "step_function_orchestrator_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "pipeline-orchestrator"
+      },
+      "resource_class": "stepfunctions_state_machine",
+      "service_family": "aws-stepfunctions",
+      "template_id": "step_function_orchestrator_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Public manifest DynamoDB table",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_table_template",
+          "operation_template": "aws dynamodb create-table --table-name ${manifest_table_name} --cli-input-json file://${manifest_table_spec_path} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "manifest_table_name",
+            "manifest_table_spec_path",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "public_manifest_table_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "public-manifest-table"
+      },
+      "resource_class": "dynamodb_table",
+      "service_family": "aws-dynamodb",
+      "template_id": "public_manifest_table_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Public search OpenSearch domain",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_domain_template",
+          "operation_template": "aws opensearch create-domain --domain-name ${search_domain_name} --cli-input-json file://${search_domain_spec_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "search_domain_name",
+            "search_domain_spec_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "public_search_domain_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "public-search-domain"
+      },
+      "resource_class": "opensearch_domain",
+      "service_family": "aws-opensearch",
+      "template_id": "public_search_domain_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Worker image ECR repository",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_repository_template",
+          "operation_template": "aws ecr create-repository --repository-name ${repository_name} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "repository_name",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "worker_image_repository_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "worker-image-repository"
+      },
+      "resource_class": "ecr_repository",
+      "service_family": "aws-ecr",
+      "template_id": "worker_image_repository_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Stage scheduler EventBridge rule",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "put_rule_template",
+          "operation_template": "aws events put-rule --name ${scheduler_rule_name} --schedule-expression ${schedule_expression} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "scheduler_rule_name",
+            "schedule_expression",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "stage_scheduler_rule_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "stage-scheduler-rule"
+      },
+      "resource_class": "eventbridge_rule",
+      "service_family": "aws-events",
+      "template_id": "stage_scheduler_rule_template",
+      "unlock_required": true
+    },
+    {
+      "category": "runtime_resource",
+      "data_only": true,
+      "display_name": "Pipeline CloudWatch log group",
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "live_execution_allowed": false,
+      "mutation_templates": [
+        {
+          "executable": false,
+          "operation_name": "create_log_group_template",
+          "operation_template": "aws logs create-log-group --log-group-name ${log_group_name} --tags file://${required_tags_path} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "log_group_name",
+            "required_tags_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "pipeline_log_group_template_mutation_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "pipeline-log-group"
+      },
+      "resource_class": "cloudwatch_log_group",
+      "service_family": "aws-logs",
+      "template_id": "pipeline_log_group_template",
+      "unlock_required": true
+    }
+  ],
+  "live_execution_allowed": false,
+  "live_execution_allowed_by_default": false,
+  "live_execution_gate_state": "AWS_TEMPLATE_CATALOG_BLOCKED",
+  "network_calls_allowed": false,
+  "no_aws_execution_performed": true,
+  "operator_unlock_manifest_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "approved_stage_ids": {
+        "items": {
+          "type": "string"
+        },
+        "minItems": 8,
+        "type": "array"
+      },
+      "approved_template_ids": {
+        "items": {
+          "type": "string"
+        },
+        "minItems": 18,
+        "type": "array"
+      },
+      "aws_account_id": {
+        "maxLength": 12,
+        "minLength": 12,
+        "type": "string"
+      },
+      "aws_profile": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "aws_region": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "billing_region": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "budget_guard_attestation": {
+        "required": [
+          "gross_burn_budget_created",
+          "paid_exposure_backstop_created",
+          "budget_action_stopline_created",
+          "cost_anomaly_monitor_created",
+          "alerts_subscribed",
+          "aws_credits_verified",
+          "cash_bill_alarm_enabled"
+        ],
+        "type": "object"
+      },
+      "created_at_utc": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "expires_at_utc": {
+        "format": "date-time",
+        "type": "string"
+      },
+      "operator_email": {
+        "minLength": 3,
+        "type": "string"
+      },
+      "operator_name": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "operator_signature_sha256": {
+        "pattern": "^sha256:[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "risk_acceptance": {
+        "required": [
+          "operator_accepts_live_aws_mutation_templates",
+          "target_19490_acknowledged",
+          "rollback_owner_named",
+          "live_run_window_utc"
+        ],
+        "type": "object"
+      },
+      "schema_version": {
+        "const": "jpcite.aws_operator_unlock_manifest.p0.v1"
+      },
+      "source_policy_attestation": {
+        "required": [
+          "official_public_sources_only",
+          "terms_receipts_required",
+          "private_data_blocked"
+        ],
+        "type": "object"
+      },
+      "tag_policy_attestation": {
+        "required": [
+          "required_tags_enforced",
+          "tag_on_create_controls_enabled",
+          "untagged_exception_manifest_empty",
+          "data_class_values_restricted"
+        ],
+        "type": "object"
+      },
+      "target_credit_spend_usd": {
+        "const": 19490
+      },
+      "teardown_recipe_attestation": {
+        "required": [
+          "every_resource_class_has_delete_recipe",
+          "delete_recipe_dry_run_reviewed",
+          "post_teardown_inventory_required"
+        ],
+        "type": "object"
+      },
+      "unlock_id": {
+        "minLength": 8,
+        "type": "string"
+      }
+    },
+    "required": [
+      "schema_version",
+      "unlock_id",
+      "created_at_utc",
+      "expires_at_utc",
+      "operator_name",
+      "operator_email",
+      "aws_account_id",
+      "aws_profile",
+      "aws_region",
+      "billing_region",
+      "target_credit_spend_usd",
+      "approved_stage_ids",
+      "approved_template_ids",
+      "budget_guard_attestation",
+      "tag_policy_attestation",
+      "teardown_recipe_attestation",
+      "source_policy_attestation",
+      "risk_acceptance",
+      "operator_signature_sha256"
+    ],
+    "schema_version": "jpcite.aws_operator_unlock_manifest.p0.v1",
+    "type": "object"
+  },
+  "operator_unlock_template": {
+    "approved_stage_ids": [],
+    "approved_template_ids": [],
+    "aws_account_id": "",
+    "aws_profile": "",
+    "aws_region": "",
+    "billing_region": "",
+    "budget_guard_attestation": {
+      "alerts_subscribed": false,
+      "aws_credits_verified": false,
+      "budget_action_stopline_created": false,
+      "cash_bill_alarm_enabled": false,
+      "cost_anomaly_monitor_created": false,
+      "gross_burn_budget_created": false,
+      "paid_exposure_backstop_created": false
+    },
+    "created_at_utc": "",
+    "expires_at_utc": "",
+    "operator_email": "",
+    "operator_name": "",
+    "operator_signature_sha256": "",
+    "risk_acceptance": {
+      "live_run_window_utc": "",
+      "operator_accepts_live_aws_mutation_templates": false,
+      "rollback_owner_named": false,
+      "target_19490_acknowledged": false
+    },
+    "schema_version": "jpcite.aws_operator_unlock_manifest.p0.v1",
+    "source_policy_attestation": {
+      "official_public_sources_only": false,
+      "private_data_blocked": false,
+      "terms_receipts_required": false
+    },
+    "tag_policy_attestation": {
+      "data_class_values_restricted": false,
+      "required_tags_enforced": false,
+      "tag_on_create_controls_enabled": false,
+      "untagged_exception_manifest_empty": false
+    },
+    "target_credit_spend_usd": 19490,
+    "teardown_recipe_attestation": {
+      "delete_recipe_dry_run_reviewed": false,
+      "every_resource_class_has_delete_recipe": false,
+      "post_teardown_inventory_required": false
+    },
+    "unlock_id": ""
+  },
+  "operator_unlock_validation": {
+    "attestation_failures": {
+      "budget_guard_attestation": [
+        "gross_burn_budget_created",
+        "paid_exposure_backstop_created",
+        "budget_action_stopline_created",
+        "cost_anomaly_monitor_created",
+        "alerts_subscribed",
+        "aws_credits_verified",
+        "cash_bill_alarm_enabled"
+      ],
+      "source_policy_attestation": [
+        "official_public_sources_only",
+        "terms_receipts_required",
+        "private_data_blocked"
+      ],
+      "tag_policy_attestation": [
+        "required_tags_enforced",
+        "tag_on_create_controls_enabled",
+        "untagged_exception_manifest_empty",
+        "data_class_values_restricted"
+      ],
+      "teardown_recipe_attestation": [
+        "every_resource_class_has_delete_recipe",
+        "delete_recipe_dry_run_reviewed",
+        "post_teardown_inventory_required"
+      ]
+    },
+    "complete": false,
+    "extra_stage_ids": [],
+    "extra_template_ids": [],
+    "incorrect_values": [
+      "schema_version",
+      "target_credit_spend_usd",
+      "operator_signature_sha256"
+    ],
+    "live_execution_allowed_after_validation": false,
+    "missing_stage_ids": [
+      "stage_00_preflight_evidence_lock",
+      "stage_01_official_source_inventory",
+      "stage_02_public_collection_capture",
+      "stage_03_ocr_normalization_search_build",
+      "stage_04_claim_graph_packet_factory",
+      "stage_05_quality_eval_gap_review",
+      "stage_06_release_artifact_packaging",
+      "stage_07_teardown_attestation"
+    ],
+    "missing_string_fields": [
+      "schema_version",
+      "unlock_id",
+      "created_at_utc",
+      "expires_at_utc",
+      "operator_name",
+      "operator_email",
+      "aws_account_id",
+      "aws_profile",
+      "aws_region",
+      "billing_region"
+    ],
+    "missing_teardown_recipe_resource_classes": [],
+    "missing_template_ids": [
+      "artifact_lake_bucket_template",
+      "batch_compute_environment_template",
+      "batch_job_definition_template",
+      "batch_job_queue_template",
+      "budget_action_operator_stopline",
+      "budget_credit_gross_burn_guard",
+      "budget_paid_cash_exposure_backstop",
+      "cost_anomaly_monitor_guard",
+      "iam_execution_role_template",
+      "iam_least_privilege_policy_template",
+      "pipeline_log_group_template",
+      "public_manifest_table_template",
+      "public_search_domain_template",
+      "required_tag_policy_template",
+      "source_capture_queue_template",
+      "stage_scheduler_rule_template",
+      "step_function_orchestrator_template",
+      "worker_image_repository_template"
+    ],
+    "missing_top_level_fields": [
+      "schema_version",
+      "unlock_id",
+      "created_at_utc",
+      "expires_at_utc",
+      "operator_name",
+      "operator_email",
+      "aws_account_id",
+      "aws_profile",
+      "aws_region",
+      "billing_region",
+      "target_credit_spend_usd",
+      "approved_stage_ids",
+      "approved_template_ids",
+      "budget_guard_attestation",
+      "tag_policy_attestation",
+      "teardown_recipe_attestation",
+      "source_policy_attestation",
+      "risk_acceptance",
+      "operator_signature_sha256"
+    ],
+    "risk_acceptance_failures": [
+      "operator_accepts_live_aws_mutation_templates",
+      "target_19490_acknowledged",
+      "rollback_owner_named",
+      "live_run_window_utc"
+    ]
+  },
+  "planned_target_sum_usd": 19490,
+  "required_tag_keys": [
+    "Project",
+    "SpendProgram",
+    "CreditRun",
+    "Owner",
+    "Environment",
+    "Purpose",
+    "AutoStop",
+    "DataClass",
+    "Workload"
+  ],
+  "safety_rules": [
+    "catalog_is_data_only",
+    "live_execution_disabled_by_default",
+    "mutating_aws_operations_are_templates_not_commands",
+    "operator_unlock_manifest_must_be_complete",
+    "every_template_requires_required_tags",
+    "every_resource_class_requires_delete_recipe",
+    "staged_queue_target_sum_must_equal_19490"
+  ],
+  "schema_version": "jpcite.aws_execution_templates.p0.v1",
+  "staged_queue_manifests": [
+    {
+      "cumulative_planned_usd": 0,
+      "data_only": true,
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "cost_anomaly_monitor_guard",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "hard_stop_usd": 0,
+      "live_execution_allowed": false,
+      "manifest_path": "aws_execution_templates/queues/stage_00_preflight_evidence_lock.manifest.json",
+      "planned_usd": 0,
+      "queue_items": [
+        {
+          "item_id": "budget_guard_review",
+          "max_items": 1,
+          "max_parallel": 1,
+          "resource_class": "aws_budget",
+          "template_ref": "budget_credit_gross_burn_guard",
+          "unit_budget_ceiling_usd": 0
+        },
+        {
+          "item_id": "tag_policy_review",
+          "max_items": 1,
+          "max_parallel": 1,
+          "resource_class": "tag_policy",
+          "template_ref": "required_tag_policy_template",
+          "unit_budget_ceiling_usd": 0
+        }
+      ],
+      "remaining_target_after_stage_usd": 19490,
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "preflight-evidence-lock"
+      },
+      "soft_stop_usd": 0,
+      "stage_id": "stage_00_preflight_evidence_lock",
+      "stage_name": "Preflight evidence lock",
+      "unlock_required": true
+    },
+    {
+      "cumulative_planned_usd": 2140,
+      "data_only": true,
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "cost_anomaly_monitor_guard",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "hard_stop_usd": 2140,
+      "live_execution_allowed": false,
+      "manifest_path": "aws_execution_templates/queues/stage_01_official_source_inventory.manifest.json",
+      "planned_usd": 2140,
+      "queue_items": [
+        {
+          "item_id": "source_registry_manifest",
+          "max_items": 180,
+          "max_parallel": 12,
+          "resource_class": "s3_bucket",
+          "template_ref": "artifact_lake_bucket_template",
+          "unit_budget_ceiling_usd": 12
+        },
+        {
+          "item_id": "terms_receipt_manifest",
+          "max_items": 180,
+          "max_parallel": 8,
+          "resource_class": "dynamodb_table",
+          "template_ref": "public_manifest_table_template",
+          "unit_budget_ceiling_usd": 12
+        }
+      ],
+      "remaining_target_after_stage_usd": 17350,
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "official-source-inventory"
+      },
+      "soft_stop_usd": 1925,
+      "stage_id": "stage_01_official_source_inventory",
+      "stage_name": "Official source inventory",
+      "unlock_required": true
+    },
+    {
+      "cumulative_planned_usd": 6500,
+      "data_only": true,
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "cost_anomaly_monitor_guard",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "hard_stop_usd": 4360,
+      "live_execution_allowed": false,
+      "manifest_path": "aws_execution_templates/queues/stage_02_public_collection_capture.manifest.json",
+      "planned_usd": 4360,
+      "queue_items": [
+        {
+          "item_id": "public_capture_jobs",
+          "max_items": 240,
+          "max_parallel": 24,
+          "resource_class": "batch_job_queue",
+          "template_ref": "batch_job_queue_template",
+          "unit_budget_ceiling_usd": 18
+        },
+        {
+          "item_id": "source_capture_messages",
+          "max_items": 240,
+          "max_parallel": 24,
+          "resource_class": "sqs_queue",
+          "template_ref": "source_capture_queue_template",
+          "unit_budget_ceiling_usd": 18
+        }
+      ],
+      "remaining_target_after_stage_usd": 12990,
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "public-collection-capture"
+      },
+      "soft_stop_usd": 3920,
+      "stage_id": "stage_02_public_collection_capture",
+      "stage_name": "Public collection capture",
+      "unlock_required": true
+    },
+    {
+      "cumulative_planned_usd": 11680,
+      "data_only": true,
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "cost_anomaly_monitor_guard",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "hard_stop_usd": 5180,
+      "live_execution_allowed": false,
+      "manifest_path": "aws_execution_templates/queues/stage_03_ocr_normalization_search_build.manifest.json",
+      "planned_usd": 5180,
+      "queue_items": [
+        {
+          "item_id": "ocr_normalization_jobs",
+          "max_items": 260,
+          "max_parallel": 20,
+          "resource_class": "batch_job_definition",
+          "template_ref": "batch_job_definition_template",
+          "unit_budget_ceiling_usd": 20
+        },
+        {
+          "item_id": "public_search_index_build",
+          "max_items": 1,
+          "max_parallel": 1,
+          "resource_class": "opensearch_domain",
+          "template_ref": "public_search_domain_template",
+          "unit_budget_ceiling_usd": 5180
+        }
+      ],
+      "remaining_target_after_stage_usd": 7810,
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "ocr-normalization-search"
+      },
+      "soft_stop_usd": 4660,
+      "stage_id": "stage_03_ocr_normalization_search_build",
+      "stage_name": "OCR normalization and search build",
+      "unlock_required": true
+    },
+    {
+      "cumulative_planned_usd": 15400,
+      "data_only": true,
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "cost_anomaly_monitor_guard",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "hard_stop_usd": 3720,
+      "live_execution_allowed": false,
+      "manifest_path": "aws_execution_templates/queues/stage_04_claim_graph_packet_factory.manifest.json",
+      "planned_usd": 3720,
+      "queue_items": [
+        {
+          "item_id": "packet_orchestration_runs",
+          "max_items": 120,
+          "max_parallel": 10,
+          "resource_class": "stepfunctions_state_machine",
+          "template_ref": "step_function_orchestrator_template",
+          "unit_budget_ceiling_usd": 31
+        },
+        {
+          "item_id": "packet_manifest_writes",
+          "max_items": 120,
+          "max_parallel": 10,
+          "resource_class": "dynamodb_table",
+          "template_ref": "public_manifest_table_template",
+          "unit_budget_ceiling_usd": 31
+        }
+      ],
+      "remaining_target_after_stage_usd": 4090,
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "claim-graph-packet-factory"
+      },
+      "soft_stop_usd": 3345,
+      "stage_id": "stage_04_claim_graph_packet_factory",
+      "stage_name": "Claim graph and packet factory",
+      "unlock_required": true
+    },
+    {
+      "cumulative_planned_usd": 17590,
+      "data_only": true,
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "cost_anomaly_monitor_guard",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "hard_stop_usd": 2190,
+      "live_execution_allowed": false,
+      "manifest_path": "aws_execution_templates/queues/stage_05_quality_eval_gap_review.manifest.json",
+      "planned_usd": 2190,
+      "queue_items": [
+        {
+          "item_id": "quality_eval_jobs",
+          "max_items": 90,
+          "max_parallel": 8,
+          "resource_class": "batch_compute_environment",
+          "template_ref": "batch_compute_environment_template",
+          "unit_budget_ceiling_usd": 24
+        },
+        {
+          "item_id": "quality_log_streams",
+          "max_items": 90,
+          "max_parallel": 8,
+          "resource_class": "cloudwatch_log_group",
+          "template_ref": "pipeline_log_group_template",
+          "unit_budget_ceiling_usd": 24
+        }
+      ],
+      "remaining_target_after_stage_usd": 1900,
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "quality-eval-gap-review"
+      },
+      "soft_stop_usd": 1970,
+      "stage_id": "stage_05_quality_eval_gap_review",
+      "stage_name": "Quality evaluation and gap review",
+      "unlock_required": true
+    },
+    {
+      "cumulative_planned_usd": 18990,
+      "data_only": true,
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "cost_anomaly_monitor_guard",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "hard_stop_usd": 1400,
+      "live_execution_allowed": false,
+      "manifest_path": "aws_execution_templates/queues/stage_06_release_artifact_packaging.manifest.json",
+      "planned_usd": 1400,
+      "queue_items": [
+        {
+          "item_id": "release_image_publish",
+          "max_items": 8,
+          "max_parallel": 2,
+          "resource_class": "ecr_repository",
+          "template_ref": "worker_image_repository_template",
+          "unit_budget_ceiling_usd": 175
+        },
+        {
+          "item_id": "release_scheduler_rule",
+          "max_items": 1,
+          "max_parallel": 1,
+          "resource_class": "eventbridge_rule",
+          "template_ref": "stage_scheduler_rule_template",
+          "unit_budget_ceiling_usd": 1400
+        }
+      ],
+      "remaining_target_after_stage_usd": 500,
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "release-artifact-packaging"
+      },
+      "soft_stop_usd": 1260,
+      "stage_id": "stage_06_release_artifact_packaging",
+      "stage_name": "Release artifact packaging",
+      "unlock_required": true
+    },
+    {
+      "cumulative_planned_usd": 19490,
+      "data_only": true,
+      "guard_refs": [
+        "budget_credit_gross_burn_guard",
+        "budget_paid_cash_exposure_backstop",
+        "cost_anomaly_monitor_guard",
+        "required_tag_policy_template",
+        "operator_unlock_manifest"
+      ],
+      "hard_stop_usd": 500,
+      "live_execution_allowed": false,
+      "manifest_path": "aws_execution_templates/queues/stage_07_teardown_attestation.manifest.json",
+      "planned_usd": 500,
+      "queue_items": [
+        {
+          "item_id": "teardown_role_review",
+          "max_items": 4,
+          "max_parallel": 1,
+          "resource_class": "iam_role",
+          "template_ref": "iam_execution_role_template",
+          "unit_budget_ceiling_usd": 125
+        },
+        {
+          "item_id": "teardown_policy_review",
+          "max_items": 4,
+          "max_parallel": 1,
+          "resource_class": "iam_policy",
+          "template_ref": "iam_least_privilege_policy_template",
+          "unit_budget_ceiling_usd": 125
+        }
+      ],
+      "remaining_target_after_stage_usd": 0,
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-attestation"
+      },
+      "soft_stop_usd": 450,
+      "stage_id": "stage_07_teardown_attestation",
+      "stage_name": "Teardown attestation",
+      "unlock_required": true
+    }
+  ],
+  "subprocess_allowed": false,
+  "tag_policy_requirements": [
+    {
+      "allowed_values": [
+        "jpcite"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "Project"
+    },
+    {
+      "allowed_values": [
+        "aws-credit-19490"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "SpendProgram"
+    },
+    {
+      "allowed_values": [
+        "2026-05"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "CreditRun"
+    },
+    {
+      "allowed_values": [
+        "bookyou-operator"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "Owner"
+    },
+    {
+      "allowed_values": [
+        "future-live-run"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "Environment"
+    },
+    {
+      "allowed_values": [
+        "official-public-data-artifact-build"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "Purpose"
+    },
+    {
+      "allowed_values": [
+        "required"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "AutoStop"
+    },
+    {
+      "allowed_values": [
+        "public-only",
+        "synthetic-only",
+        "derived-aggregate-only"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "DataClass"
+    },
+    {
+      "allowed_values": [
+        "stage-specific-nonempty"
+      ],
+      "enforcement": "tag_on_create_and_periodic_inventory",
+      "required": true,
+      "tag_key": "Workload"
+    }
+  ],
+  "target_credit_spend_usd": 19490,
+  "teardown_recipes": [
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_eventbridge_rule",
+          "operation_template": "aws events remove-targets --rule ${rule_name} --ids ${target_ids} --region ${aws_region} --profile ${aws_profile} && aws events delete-rule --name ${rule_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "rule_name",
+            "target_ids",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_eventbridge_rule_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 10,
+      "evidence_artifacts": [
+        "teardown/eventbridge_rule/pre_delete_inventory.json",
+        "teardown/eventbridge_rule/delete_recipe_review.json",
+        "teardown/eventbridge_rule/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_eventbridge_rule_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-eventbridge-rule"
+      },
+      "resource_class": "eventbridge_rule",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_eventbridge_rule_deleted",
+          "operation_template": "aws events list-rules --name-prefix ${rule_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "rule_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_eventbridge_rule_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_stepfunctions_state_machine",
+          "operation_template": "aws stepfunctions delete-state-machine --state-machine-arn ${state_machine_arn} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "state_machine_arn",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_stepfunctions_state_machine_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 20,
+      "evidence_artifacts": [
+        "teardown/stepfunctions_state_machine/pre_delete_inventory.json",
+        "teardown/stepfunctions_state_machine/delete_recipe_review.json",
+        "teardown/stepfunctions_state_machine/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_stepfunctions_state_machine_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-stepfunctions"
+      },
+      "resource_class": "stepfunctions_state_machine",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_stepfunctions_state_machine_deleted",
+          "operation_template": "aws stepfunctions describe-state-machine --state-machine-arn ${state_machine_arn} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "state_machine_arn",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_stepfunctions_state_machine_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_batch_job_queue",
+          "operation_template": "aws batch update-job-queue --job-queue ${job_queue_name} --state DISABLED --region ${aws_region} --profile ${aws_profile} && aws batch delete-job-queue --job-queue ${job_queue_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "job_queue_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_batch_job_queue_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 30,
+      "evidence_artifacts": [
+        "teardown/batch_job_queue/pre_delete_inventory.json",
+        "teardown/batch_job_queue/delete_recipe_review.json",
+        "teardown/batch_job_queue/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_batch_job_queue_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-batch-job-queue"
+      },
+      "resource_class": "batch_job_queue",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_batch_job_queue_deleted",
+          "operation_template": "aws batch describe-job-queues --job-queues ${job_queue_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "job_queue_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_batch_job_queue_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_batch_compute_environment",
+          "operation_template": "aws batch update-compute-environment --compute-environment ${compute_environment_name} --state DISABLED --region ${aws_region} --profile ${aws_profile} && aws batch delete-compute-environment --compute-environment ${compute_environment_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "compute_environment_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_batch_compute_environment_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 40,
+      "evidence_artifacts": [
+        "teardown/batch_compute_environment/pre_delete_inventory.json",
+        "teardown/batch_compute_environment/delete_recipe_review.json",
+        "teardown/batch_compute_environment/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_batch_compute_environment_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-batch-compute-environment"
+      },
+      "resource_class": "batch_compute_environment",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_batch_compute_environment_deleted",
+          "operation_template": "aws batch describe-compute-environments --compute-environments ${compute_environment_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "compute_environment_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_batch_compute_environment_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_batch_job_definition",
+          "operation_template": "aws batch deregister-job-definition --job-definition ${job_definition_arn} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "job_definition_arn",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_batch_job_definition_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 50,
+      "evidence_artifacts": [
+        "teardown/batch_job_definition/pre_delete_inventory.json",
+        "teardown/batch_job_definition/delete_recipe_review.json",
+        "teardown/batch_job_definition/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_batch_job_definition_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-batch-job-definition"
+      },
+      "resource_class": "batch_job_definition",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_batch_job_definition_deleted",
+          "operation_template": "aws batch describe-job-definitions --job-definitions ${job_definition_arn} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "job_definition_arn",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_batch_job_definition_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_sqs_queue",
+          "operation_template": "aws sqs delete-queue --queue-url ${queue_url} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "queue_url",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_sqs_queue_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 60,
+      "evidence_artifacts": [
+        "teardown/sqs_queue/pre_delete_inventory.json",
+        "teardown/sqs_queue/delete_recipe_review.json",
+        "teardown/sqs_queue/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_sqs_queue_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-sqs-queue"
+      },
+      "resource_class": "sqs_queue",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_sqs_queue_deleted",
+          "operation_template": "aws sqs get-queue-url --queue-name ${queue_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "queue_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_sqs_queue_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_opensearch_domain",
+          "operation_template": "aws opensearch delete-domain --domain-name ${domain_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "domain_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_opensearch_domain_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 70,
+      "evidence_artifacts": [
+        "teardown/opensearch_domain/pre_delete_inventory.json",
+        "teardown/opensearch_domain/delete_recipe_review.json",
+        "teardown/opensearch_domain/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_opensearch_domain_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-opensearch-domain"
+      },
+      "resource_class": "opensearch_domain",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_opensearch_domain_deleted",
+          "operation_template": "aws opensearch describe-domain --domain-name ${domain_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "domain_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_opensearch_domain_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_dynamodb_table",
+          "operation_template": "aws dynamodb delete-table --table-name ${table_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "table_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_dynamodb_table_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 80,
+      "evidence_artifacts": [
+        "teardown/dynamodb_table/pre_delete_inventory.json",
+        "teardown/dynamodb_table/delete_recipe_review.json",
+        "teardown/dynamodb_table/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_dynamodb_table_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-dynamodb-table"
+      },
+      "resource_class": "dynamodb_table",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_dynamodb_table_deleted",
+          "operation_template": "aws dynamodb describe-table --table-name ${table_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "table_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_dynamodb_table_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_cloudwatch_log_group",
+          "operation_template": "aws logs delete-log-group --log-group-name ${log_group_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "log_group_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_cloudwatch_log_group_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 90,
+      "evidence_artifacts": [
+        "teardown/cloudwatch_log_group/pre_delete_inventory.json",
+        "teardown/cloudwatch_log_group/delete_recipe_review.json",
+        "teardown/cloudwatch_log_group/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_cloudwatch_log_group_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-cloudwatch-log-group"
+      },
+      "resource_class": "cloudwatch_log_group",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_cloudwatch_log_group_deleted",
+          "operation_template": "aws logs describe-log-groups --log-group-name-prefix ${log_group_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "log_group_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_cloudwatch_log_group_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_ecr_repository",
+          "operation_template": "aws ecr delete-repository --repository-name ${repository_name} --force --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "repository_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_ecr_repository_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 100,
+      "evidence_artifacts": [
+        "teardown/ecr_repository/pre_delete_inventory.json",
+        "teardown/ecr_repository/delete_recipe_review.json",
+        "teardown/ecr_repository/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_ecr_repository_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-ecr-repository"
+      },
+      "resource_class": "ecr_repository",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_ecr_repository_deleted",
+          "operation_template": "aws ecr describe-repositories --repository-names ${repository_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "repository_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_ecr_repository_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_s3_bucket",
+          "operation_template": "aws s3api delete-objects --bucket ${bucket_name} --delete file://${delete_manifest_path} --region ${aws_region} --profile ${aws_profile} && aws s3api delete-bucket --bucket ${bucket_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "bucket_name",
+            "delete_manifest_path",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_s3_bucket_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 110,
+      "evidence_artifacts": [
+        "teardown/s3_bucket/pre_delete_inventory.json",
+        "teardown/s3_bucket/delete_recipe_review.json",
+        "teardown/s3_bucket/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_s3_bucket_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-s3-bucket"
+      },
+      "resource_class": "s3_bucket",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_s3_bucket_deleted",
+          "operation_template": "aws s3api head-bucket --bucket ${bucket_name} --region ${aws_region} --profile ${aws_profile}",
+          "placeholders": [
+            "bucket_name",
+            "aws_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_s3_bucket_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_tag_policy",
+          "operation_template": "aws organizations detach-policy --policy-id ${tag_policy_id} --target-id ${target_id} --profile ${aws_profile} && aws organizations delete-policy --policy-id ${tag_policy_id} --profile ${aws_profile}",
+          "placeholders": [
+            "tag_policy_id",
+            "target_id",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_tag_policy_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 120,
+      "evidence_artifacts": [
+        "teardown/tag_policy/pre_delete_inventory.json",
+        "teardown/tag_policy/delete_recipe_review.json",
+        "teardown/tag_policy/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_tag_policy_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-tag-policy"
+      },
+      "resource_class": "tag_policy",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_tag_policy_deleted",
+          "operation_template": "aws organizations describe-policy --policy-id ${tag_policy_id} --profile ${aws_profile}",
+          "placeholders": [
+            "tag_policy_id",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_tag_policy_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_budget_action",
+          "operation_template": "aws budgets delete-budget-action --account-id ${aws_account_id} --budget-name ${budget_name} --action-id ${action_id} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "budget_name",
+            "action_id",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_budget_action_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 130,
+      "evidence_artifacts": [
+        "teardown/budget_action/pre_delete_inventory.json",
+        "teardown/budget_action/delete_recipe_review.json",
+        "teardown/budget_action/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_budget_action_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-budget-action"
+      },
+      "resource_class": "budget_action",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_budget_action_deleted",
+          "operation_template": "aws budgets describe-budget-actions-for-budget --account-id ${aws_account_id} --budget-name ${budget_name} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "budget_name",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_budget_action_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_cost_anomaly_monitor",
+          "operation_template": "aws ce delete-anomaly-monitor --monitor-arn ${monitor_arn} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "monitor_arn",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_cost_anomaly_monitor_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 140,
+      "evidence_artifacts": [
+        "teardown/cost_anomaly_monitor/pre_delete_inventory.json",
+        "teardown/cost_anomaly_monitor/delete_recipe_review.json",
+        "teardown/cost_anomaly_monitor/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_cost_anomaly_monitor_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-cost-anomaly-monitor"
+      },
+      "resource_class": "cost_anomaly_monitor",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_cost_anomaly_monitor_deleted",
+          "operation_template": "aws ce get-anomaly-monitors --monitor-arn-list ${monitor_arn} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "monitor_arn",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_cost_anomaly_monitor_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_aws_budget",
+          "operation_template": "aws budgets delete-budget --account-id ${aws_account_id} --budget-name ${budget_name} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "budget_name",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_aws_budget_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 150,
+      "evidence_artifacts": [
+        "teardown/aws_budget/pre_delete_inventory.json",
+        "teardown/aws_budget/delete_recipe_review.json",
+        "teardown/aws_budget/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_aws_budget_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-aws-budget"
+      },
+      "resource_class": "aws_budget",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_aws_budget_deleted",
+          "operation_template": "aws budgets describe-budget --account-id ${aws_account_id} --budget-name ${budget_name} --region ${billing_region} --profile ${aws_profile}",
+          "placeholders": [
+            "aws_account_id",
+            "budget_name",
+            "billing_region",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_aws_budget_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_iam_policy",
+          "operation_template": "aws iam delete-policy-version --policy-arn ${policy_arn} --version-id ${non_default_version_id} --profile ${aws_profile} && aws iam delete-policy --policy-arn ${policy_arn} --profile ${aws_profile}",
+          "placeholders": [
+            "policy_arn",
+            "non_default_version_id",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_iam_policy_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 160,
+      "evidence_artifacts": [
+        "teardown/iam_policy/pre_delete_inventory.json",
+        "teardown/iam_policy/delete_recipe_review.json",
+        "teardown/iam_policy/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_iam_policy_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-iam-policy"
+      },
+      "resource_class": "iam_policy",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_iam_policy_deleted",
+          "operation_template": "aws iam get-policy --policy-arn ${policy_arn} --profile ${aws_profile}",
+          "placeholders": [
+            "policy_arn",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_iam_policy_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    },
+    {
+      "data_only": true,
+      "delete_step_templates": [
+        {
+          "executable": false,
+          "operation_name": "delete_iam_role",
+          "operation_template": "aws iam detach-role-policy --role-name ${role_name} --policy-arn ${policy_arn} --profile ${aws_profile} && aws iam delete-role --role-name ${role_name} --profile ${aws_profile}",
+          "placeholders": [
+            "role_name",
+            "policy_arn",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "delete_iam_role_template",
+          "would_mutate_live_aws": true
+        }
+      ],
+      "deletion_order": 170,
+      "evidence_artifacts": [
+        "teardown/iam_role/pre_delete_inventory.json",
+        "teardown/iam_role/delete_recipe_review.json",
+        "teardown/iam_role/post_delete_inventory.json"
+      ],
+      "live_execution_allowed": false,
+      "preconditions": [
+        "operator_unlock_manifest_complete",
+        "resource_inventory_scoped_to_required_tags",
+        "artifact_export_and_checksums_confirmed"
+      ],
+      "recipe_id": "delete_iam_role_recipe",
+      "required_tags": {
+        "AutoStop": "required",
+        "CreditRun": "2026-05",
+        "DataClass": "public-only",
+        "Environment": "future-live-run",
+        "Owner": "bookyou-operator",
+        "Project": "jpcite",
+        "Purpose": "official-public-data-artifact-build",
+        "SpendProgram": "aws-credit-19490",
+        "Workload": "teardown-iam-role"
+      },
+      "resource_class": "iam_role",
+      "verification_templates": [
+        {
+          "executable": false,
+          "operation_name": "verify_iam_role_deleted",
+          "operation_template": "aws iam get-role --role-name ${role_name} --profile ${aws_profile}",
+          "placeholders": [
+            "role_name",
+            "aws_profile"
+          ],
+          "rendered_command": null,
+          "template_id": "verify_iam_role_deleted_template",
+          "would_mutate_live_aws": false
+        }
+      ]
+    }
+  ]
+}

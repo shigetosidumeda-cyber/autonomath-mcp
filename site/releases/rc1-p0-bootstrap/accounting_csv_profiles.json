@@ -1,0 +1,1316 @@
+{
+  "allowed_downstream_outputs": [
+    "tenant_private_fact_capsule",
+    "tenant_private_enrichment_summary",
+    "redacted_internal_gap_report",
+    "tenant_private_program_match_prefill"
+  ],
+  "blocked_downstream_outputs": [
+    "public_packet_claim",
+    "public_source_receipt",
+    "absence_or_completeness_claim",
+    "certified_accounting_import_file",
+    "row_level_export_without_consent"
+  ],
+  "certification_notice": "Schema-level compatibility profile only; no official certification, endorsement, or vendor import guarantee is asserted.",
+  "grounding_rules": [
+    "emit_only_observed_normalized_fields",
+    "mark_missing_fields_as_limitations",
+    "do_not_infer_full_period_coverage",
+    "do_not_infer_account_categories",
+    "do_not_create_public_source_receipts_from_private_csv"
+  ],
+  "profiles": [
+    {
+      "account_category_policy": {
+        "account_label_field_keys": [
+          "account",
+          "debit_account",
+          "credit_account"
+        ],
+        "category_field_key": "account_category",
+        "derived_category_allowed": false,
+        "missing_category_limitation": "Account category remains unknown unless the CSV supplies an explicit category/classification column."
+      },
+      "allowed_downstream_outputs": [
+        "tenant_private_fact_capsule",
+        "tenant_private_enrichment_summary",
+        "redacted_internal_gap_report",
+        "tenant_private_program_match_prefill"
+      ],
+      "blocked_downstream_outputs": [
+        "public_packet_claim",
+        "public_source_receipt",
+        "absence_or_completeness_claim",
+        "certified_accounting_import_file",
+        "row_level_export_without_consent"
+      ],
+      "certification_notice": "Schema-level compatibility profile only; no official certification, endorsement, or vendor import guarantee is asserted.",
+      "detection_signals": [
+        {
+          "all_of": [],
+          "any_of": [
+            "発生日"
+          ],
+          "description": "freee-compatible layouts commonly use 発生日 for the transaction date.",
+          "required": true,
+          "signal_key": "freee_transaction_date"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "管理番号",
+            "メモタグ",
+            "決済期日",
+            "収支区分",
+            "セグメント1"
+          ],
+          "description": "Provider-specific shape hints avoid classifying generic ledgers as freee.",
+          "required": true,
+          "signal_key": "freee_provider_hint"
+        },
+        {
+          "all_of": [
+            "勘定科目",
+            "金額"
+          ],
+          "any_of": [],
+          "description": "Single-entry/detail shape has account plus amount columns.",
+          "required": true,
+          "signal_key": "freee_single_amount_shape"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "税区分",
+            "税額"
+          ],
+          "description": "Tax-detail columns strengthen the match.",
+          "required": false,
+          "signal_key": "freee_tax_detail"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "取引先",
+            "品目",
+            "部門"
+          ],
+          "description": "Dimension columns strengthen the match.",
+          "required": false,
+          "signal_key": "freee_dimension_detail"
+        }
+      ],
+      "display_name": "freee-compatible transaction layout",
+      "grounding_rules": [
+        "emit_only_observed_normalized_fields",
+        "mark_missing_fields_as_limitations",
+        "do_not_infer_full_period_coverage",
+        "do_not_infer_account_categories",
+        "do_not_create_public_source_receipts_from_private_csv"
+      ],
+      "minimum_matched_signals": 4,
+      "normalized_fields": [
+        {
+          "aliases": [
+            "発生日"
+          ],
+          "field_key": "transaction_date",
+          "limitation_if_missing": "Transaction date is unavailable, so period coverage cannot be observed.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "date"
+        },
+        {
+          "aliases": [
+            "管理番号",
+            "取引ID",
+            "取引番号"
+          ],
+          "field_key": "entry_id",
+          "limitation_if_missing": "Stable row identity is unavailable; deduplication must remain best effort.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "identifier"
+        },
+        {
+          "aliases": [
+            "勘定科目"
+          ],
+          "field_key": "account",
+          "limitation_if_missing": "Account label is unavailable, so account-based enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "勘定科目分類",
+            "科目区分",
+            "決算書科目",
+            "account_category"
+          ],
+          "field_key": "account_category",
+          "limitation_if_missing": "Account category cannot be populated or inferred; downstream outputs must use account labels only.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "account_category"
+        },
+        {
+          "aliases": [
+            "金額"
+          ],
+          "field_key": "amount",
+          "limitation_if_missing": "Amount is unavailable, so financial magnitude cannot be summarized.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "税区分"
+          ],
+          "field_key": "tax_code",
+          "limitation_if_missing": "Tax code is unavailable; tax treatment must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_code"
+        },
+        {
+          "aliases": [
+            "税額"
+          ],
+          "field_key": "tax_amount",
+          "limitation_if_missing": "Tax amount is unavailable; gross/net/tax splits must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_amount"
+        },
+        {
+          "aliases": [
+            "取引先"
+          ],
+          "field_key": "counterparty",
+          "limitation_if_missing": "Counterparty is unavailable; vendor/customer enrichment must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        },
+        {
+          "aliases": [
+            "部門"
+          ],
+          "field_key": "department",
+          "limitation_if_missing": "Department is unavailable; department-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "品目"
+          ],
+          "field_key": "item",
+          "limitation_if_missing": "Item/project dimension is unavailable; item-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "備考",
+            "メモタグ",
+            "摘要"
+          ],
+          "field_key": "description",
+          "limitation_if_missing": "Description is unavailable; narrative enrichment must stay blank.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        }
+      ],
+      "official_certification_claimed": false,
+      "period_coverage_policy": {
+        "date_field_keys": [
+          "transaction_date"
+        ],
+        "explicit_period_end_aliases": [
+          "期間終了",
+          "対象期間終了",
+          "終了日"
+        ],
+        "explicit_period_start_aliases": [
+          "期間開始",
+          "対象期間開始",
+          "開始日"
+        ],
+        "header_only_limitation": "Headers alone can identify date columns, but cannot prove full fiscal or monthly period coverage.",
+        "row_range_limitation": "Observed row date min/max are coverage evidence for supplied rows only; they are not a completeness claim."
+      },
+      "profile_key": "freee_transaction_rows",
+      "profile_scope": "Schema-level private-overlay profile for freee-compatible transaction/detail layouts; not an official freee specification.",
+      "provider_family": "freee"
+    },
+    {
+      "account_category_policy": {
+        "account_label_field_keys": [
+          "account",
+          "debit_account",
+          "credit_account"
+        ],
+        "category_field_key": "account_category",
+        "derived_category_allowed": false,
+        "missing_category_limitation": "Account category remains unknown unless the CSV supplies an explicit category/classification column."
+      },
+      "allowed_downstream_outputs": [
+        "tenant_private_fact_capsule",
+        "tenant_private_enrichment_summary",
+        "redacted_internal_gap_report",
+        "tenant_private_program_match_prefill"
+      ],
+      "blocked_downstream_outputs": [
+        "public_packet_claim",
+        "public_source_receipt",
+        "absence_or_completeness_claim",
+        "certified_accounting_import_file",
+        "row_level_export_without_consent"
+      ],
+      "certification_notice": "Schema-level compatibility profile only; no official certification, endorsement, or vendor import guarantee is asserted.",
+      "detection_signals": [
+        {
+          "all_of": [],
+          "any_of": [
+            "発生日",
+            "取引日"
+          ],
+          "description": "freee-compatible journal layouts may use 発生日 or 取引日 for journal dates.",
+          "required": true,
+          "signal_key": "freee_journal_date"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "管理番号",
+            "メモタグ",
+            "借方メモタグ",
+            "貸方メモタグ",
+            "freee取引ID",
+            "セグメント1",
+            "借方品目",
+            "貸方品目",
+            "伝票番号"
+          ],
+          "description": "Provider-specific shape hints avoid classifying generic journals as freee.",
+          "required": true,
+          "signal_key": "freee_journal_provider_hint"
+        },
+        {
+          "all_of": [
+            "借方勘定科目",
+            "貸方勘定科目"
+          ],
+          "any_of": [],
+          "description": "Debit and credit account columns are present.",
+          "required": true,
+          "signal_key": "double_entry_accounts"
+        },
+        {
+          "all_of": [
+            "借方金額",
+            "貸方金額"
+          ],
+          "any_of": [],
+          "description": "Debit and credit amount columns are present.",
+          "required": true,
+          "signal_key": "double_entry_amounts"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "借方税区分",
+            "貸方税区分"
+          ],
+          "description": "Debit/credit tax columns strengthen the match.",
+          "required": false,
+          "signal_key": "journal_tax_detail"
+        }
+      ],
+      "display_name": "freee-compatible journal layout",
+      "grounding_rules": [
+        "emit_only_observed_normalized_fields",
+        "mark_missing_fields_as_limitations",
+        "do_not_infer_full_period_coverage",
+        "do_not_infer_account_categories",
+        "do_not_create_public_source_receipts_from_private_csv"
+      ],
+      "minimum_matched_signals": 4,
+      "normalized_fields": [
+        {
+          "aliases": [
+            "取引日",
+            "取引日付",
+            "発生日",
+            "日付"
+          ],
+          "field_key": "transaction_date",
+          "limitation_if_missing": "Transaction date is unavailable, so period coverage cannot be observed.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "date"
+        },
+        {
+          "aliases": [
+            "取引No",
+            "伝票No.",
+            "伝票No",
+            "伝票番号",
+            "仕訳番号",
+            "管理番号",
+            "取引番号"
+          ],
+          "field_key": "entry_id",
+          "limitation_if_missing": "Stable journal identity is unavailable; deduplication must remain best effort.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "identifier"
+        },
+        {
+          "aliases": [
+            "借方勘定科目"
+          ],
+          "field_key": "debit_account",
+          "limitation_if_missing": "Debit account is unavailable, so double-entry enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "貸方勘定科目"
+          ],
+          "field_key": "credit_account",
+          "limitation_if_missing": "Credit account is unavailable, so double-entry enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "勘定科目分類",
+            "科目区分",
+            "決算書科目",
+            "account_category"
+          ],
+          "field_key": "account_category",
+          "limitation_if_missing": "Account category cannot be populated or inferred; downstream outputs must use account labels only.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "account_category"
+        },
+        {
+          "aliases": [
+            "借方金額",
+            "借方金額(円)"
+          ],
+          "field_key": "debit_amount",
+          "limitation_if_missing": "Debit amount is unavailable, so balanced journal summaries are blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "貸方金額",
+            "貸方金額(円)"
+          ],
+          "field_key": "credit_amount",
+          "limitation_if_missing": "Credit amount is unavailable, so balanced journal summaries are blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "借方税区分",
+            "貸方税区分",
+            "税区分"
+          ],
+          "field_key": "tax_code",
+          "limitation_if_missing": "Tax code is unavailable; tax treatment must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_code"
+        },
+        {
+          "aliases": [
+            "借方税額",
+            "貸方税額",
+            "税額"
+          ],
+          "field_key": "tax_amount",
+          "limitation_if_missing": "Tax amount is unavailable; gross/net/tax splits must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_amount"
+        },
+        {
+          "aliases": [
+            "借方部門",
+            "貸方部門",
+            "部門"
+          ],
+          "field_key": "department",
+          "limitation_if_missing": "Department is unavailable; department-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "借方品目",
+            "貸方品目",
+            "品目"
+          ],
+          "field_key": "item",
+          "limitation_if_missing": "Item/project dimension is unavailable; item-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "取引先",
+            "相手先",
+            "借方取引先",
+            "貸方取引先"
+          ],
+          "field_key": "counterparty",
+          "limitation_if_missing": "Counterparty is unavailable; vendor/customer enrichment must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        },
+        {
+          "aliases": [
+            "摘要",
+            "仕訳メモ",
+            "メモタグ",
+            "備考"
+          ],
+          "field_key": "description",
+          "limitation_if_missing": "Description is unavailable; narrative enrichment must stay blank.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        }
+      ],
+      "official_certification_claimed": false,
+      "period_coverage_policy": {
+        "date_field_keys": [
+          "transaction_date"
+        ],
+        "explicit_period_end_aliases": [
+          "期間終了",
+          "対象期間終了",
+          "終了日"
+        ],
+        "explicit_period_start_aliases": [
+          "期間開始",
+          "対象期間開始",
+          "開始日"
+        ],
+        "header_only_limitation": "Headers alone can identify date columns, but cannot prove full fiscal or monthly period coverage.",
+        "row_range_limitation": "Observed row date min/max are coverage evidence for supplied rows only; they are not a completeness claim."
+      },
+      "profile_key": "freee_journal_rows",
+      "profile_scope": "Schema-level private-overlay profile for freee-compatible debit/credit journal layouts; not an official freee specification.",
+      "provider_family": "freee"
+    },
+    {
+      "account_category_policy": {
+        "account_label_field_keys": [
+          "account",
+          "debit_account",
+          "credit_account"
+        ],
+        "category_field_key": "account_category",
+        "derived_category_allowed": false,
+        "missing_category_limitation": "Account category remains unknown unless the CSV supplies an explicit category/classification column."
+      },
+      "allowed_downstream_outputs": [
+        "tenant_private_fact_capsule",
+        "tenant_private_enrichment_summary",
+        "redacted_internal_gap_report",
+        "tenant_private_program_match_prefill"
+      ],
+      "blocked_downstream_outputs": [
+        "public_packet_claim",
+        "public_source_receipt",
+        "absence_or_completeness_claim",
+        "certified_accounting_import_file",
+        "row_level_export_without_consent"
+      ],
+      "certification_notice": "Schema-level compatibility profile only; no official certification, endorsement, or vendor import guarantee is asserted.",
+      "detection_signals": [
+        {
+          "all_of": [],
+          "any_of": [
+            "取引日"
+          ],
+          "description": "Money Forward-compatible journal layouts commonly use 取引日.",
+          "required": true,
+          "signal_key": "money_forward_date"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "MF仕訳タイプ",
+            "MF仕訳ID",
+            "マネーフォワード仕訳ID"
+          ],
+          "description": "MF-specific columns are required before assigning this profile.",
+          "required": true,
+          "signal_key": "money_forward_provider_hint"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "取引No",
+            "取引番号"
+          ],
+          "description": "Transaction number is a common journal export identifier.",
+          "required": true,
+          "signal_key": "money_forward_transaction_number"
+        },
+        {
+          "all_of": [
+            "借方勘定科目",
+            "貸方勘定科目"
+          ],
+          "any_of": [],
+          "description": "Debit and credit account columns are present.",
+          "required": true,
+          "signal_key": "money_forward_accounts"
+        },
+        {
+          "all_of": [
+            "借方金額(円)",
+            "貸方金額(円)"
+          ],
+          "any_of": [],
+          "description": "Yen-denominated debit and credit amount columns are present.",
+          "required": true,
+          "signal_key": "money_forward_yen_amounts"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "借方税区分",
+            "貸方税区分"
+          ],
+          "description": "Debit/credit tax columns strengthen the match.",
+          "required": false,
+          "signal_key": "money_forward_tax_detail"
+        }
+      ],
+      "display_name": "Money Forward-compatible journal layout",
+      "grounding_rules": [
+        "emit_only_observed_normalized_fields",
+        "mark_missing_fields_as_limitations",
+        "do_not_infer_full_period_coverage",
+        "do_not_infer_account_categories",
+        "do_not_create_public_source_receipts_from_private_csv"
+      ],
+      "minimum_matched_signals": 5,
+      "normalized_fields": [
+        {
+          "aliases": [
+            "取引日",
+            "取引日付",
+            "発生日",
+            "日付"
+          ],
+          "field_key": "transaction_date",
+          "limitation_if_missing": "Transaction date is unavailable, so period coverage cannot be observed.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "date"
+        },
+        {
+          "aliases": [
+            "取引No",
+            "伝票No.",
+            "伝票No",
+            "伝票番号",
+            "仕訳番号",
+            "管理番号",
+            "取引番号"
+          ],
+          "field_key": "entry_id",
+          "limitation_if_missing": "Stable journal identity is unavailable; deduplication must remain best effort.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "identifier"
+        },
+        {
+          "aliases": [
+            "借方勘定科目"
+          ],
+          "field_key": "debit_account",
+          "limitation_if_missing": "Debit account is unavailable, so double-entry enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "貸方勘定科目"
+          ],
+          "field_key": "credit_account",
+          "limitation_if_missing": "Credit account is unavailable, so double-entry enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "勘定科目分類",
+            "科目区分",
+            "決算書科目",
+            "account_category"
+          ],
+          "field_key": "account_category",
+          "limitation_if_missing": "Account category cannot be populated or inferred; downstream outputs must use account labels only.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "account_category"
+        },
+        {
+          "aliases": [
+            "借方金額",
+            "借方金額(円)"
+          ],
+          "field_key": "debit_amount",
+          "limitation_if_missing": "Debit amount is unavailable, so balanced journal summaries are blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "貸方金額",
+            "貸方金額(円)"
+          ],
+          "field_key": "credit_amount",
+          "limitation_if_missing": "Credit amount is unavailable, so balanced journal summaries are blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "借方税区分",
+            "貸方税区分",
+            "税区分"
+          ],
+          "field_key": "tax_code",
+          "limitation_if_missing": "Tax code is unavailable; tax treatment must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_code"
+        },
+        {
+          "aliases": [
+            "借方税額",
+            "貸方税額",
+            "税額"
+          ],
+          "field_key": "tax_amount",
+          "limitation_if_missing": "Tax amount is unavailable; gross/net/tax splits must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_amount"
+        },
+        {
+          "aliases": [
+            "借方部門",
+            "貸方部門",
+            "部門"
+          ],
+          "field_key": "department",
+          "limitation_if_missing": "Department is unavailable; department-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "借方品目",
+            "貸方品目",
+            "品目"
+          ],
+          "field_key": "item",
+          "limitation_if_missing": "Item/project dimension is unavailable; item-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "取引先",
+            "相手先",
+            "借方取引先",
+            "貸方取引先"
+          ],
+          "field_key": "counterparty",
+          "limitation_if_missing": "Counterparty is unavailable; vendor/customer enrichment must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        },
+        {
+          "aliases": [
+            "摘要",
+            "仕訳メモ",
+            "メモタグ",
+            "備考"
+          ],
+          "field_key": "description",
+          "limitation_if_missing": "Description is unavailable; narrative enrichment must stay blank.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        }
+      ],
+      "official_certification_claimed": false,
+      "period_coverage_policy": {
+        "date_field_keys": [
+          "transaction_date"
+        ],
+        "explicit_period_end_aliases": [
+          "期間終了",
+          "対象期間終了",
+          "終了日"
+        ],
+        "explicit_period_start_aliases": [
+          "期間開始",
+          "対象期間開始",
+          "開始日"
+        ],
+        "header_only_limitation": "Headers alone can identify date columns, but cannot prove full fiscal or monthly period coverage.",
+        "row_range_limitation": "Observed row date min/max are coverage evidence for supplied rows only; they are not a completeness claim."
+      },
+      "profile_key": "money_forward_journal_rows",
+      "profile_scope": "Schema-level private-overlay profile for Money Forward-compatible debit/credit journal layouts; not an official Money Forward specification.",
+      "provider_family": "money_forward"
+    },
+    {
+      "account_category_policy": {
+        "account_label_field_keys": [
+          "account",
+          "debit_account",
+          "credit_account"
+        ],
+        "category_field_key": "account_category",
+        "derived_category_allowed": false,
+        "missing_category_limitation": "Account category remains unknown unless the CSV supplies an explicit category/classification column."
+      },
+      "allowed_downstream_outputs": [
+        "tenant_private_fact_capsule",
+        "tenant_private_enrichment_summary",
+        "redacted_internal_gap_report",
+        "tenant_private_program_match_prefill"
+      ],
+      "blocked_downstream_outputs": [
+        "public_packet_claim",
+        "public_source_receipt",
+        "absence_or_completeness_claim",
+        "certified_accounting_import_file",
+        "row_level_export_without_consent"
+      ],
+      "certification_notice": "Schema-level compatibility profile only; no official certification, endorsement, or vendor import guarantee is asserted.",
+      "detection_signals": [
+        {
+          "all_of": [
+            "識別フラグ"
+          ],
+          "any_of": [],
+          "description": "Yayoi-compatible layouts commonly include an import identification flag.",
+          "required": true,
+          "signal_key": "yayoi_identification_flag"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "伝票No.",
+            "伝票No"
+          ],
+          "description": "Yayoi-compatible layouts commonly include a voucher number column.",
+          "required": true,
+          "signal_key": "yayoi_voucher_number"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "取引日付"
+          ],
+          "description": "Yayoi-compatible journal layouts commonly use 取引日付.",
+          "required": true,
+          "signal_key": "yayoi_date"
+        },
+        {
+          "all_of": [
+            "借方勘定科目",
+            "貸方勘定科目"
+          ],
+          "any_of": [],
+          "description": "Debit and credit account columns are present.",
+          "required": true,
+          "signal_key": "yayoi_accounts"
+        },
+        {
+          "all_of": [
+            "借方金額",
+            "貸方金額"
+          ],
+          "any_of": [],
+          "description": "Debit and credit amount columns are present.",
+          "required": true,
+          "signal_key": "yayoi_amounts"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "借方税区分",
+            "貸方税区分"
+          ],
+          "description": "Debit/credit tax columns strengthen the match.",
+          "required": false,
+          "signal_key": "yayoi_tax_detail"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "付箋1",
+            "付箋2",
+            "調整"
+          ],
+          "description": "Memo/control columns strengthen the match.",
+          "required": false,
+          "signal_key": "yayoi_memo_columns"
+        }
+      ],
+      "display_name": "Yayoi-compatible journal layout",
+      "grounding_rules": [
+        "emit_only_observed_normalized_fields",
+        "mark_missing_fields_as_limitations",
+        "do_not_infer_full_period_coverage",
+        "do_not_infer_account_categories",
+        "do_not_create_public_source_receipts_from_private_csv"
+      ],
+      "minimum_matched_signals": 5,
+      "normalized_fields": [
+        {
+          "aliases": [
+            "取引日",
+            "取引日付",
+            "発生日",
+            "日付"
+          ],
+          "field_key": "transaction_date",
+          "limitation_if_missing": "Transaction date is unavailable, so period coverage cannot be observed.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "date"
+        },
+        {
+          "aliases": [
+            "取引No",
+            "伝票No.",
+            "伝票No",
+            "伝票番号",
+            "仕訳番号",
+            "管理番号",
+            "取引番号"
+          ],
+          "field_key": "entry_id",
+          "limitation_if_missing": "Stable journal identity is unavailable; deduplication must remain best effort.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "identifier"
+        },
+        {
+          "aliases": [
+            "借方勘定科目"
+          ],
+          "field_key": "debit_account",
+          "limitation_if_missing": "Debit account is unavailable, so double-entry enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "貸方勘定科目"
+          ],
+          "field_key": "credit_account",
+          "limitation_if_missing": "Credit account is unavailable, so double-entry enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "勘定科目分類",
+            "科目区分",
+            "決算書科目",
+            "account_category"
+          ],
+          "field_key": "account_category",
+          "limitation_if_missing": "Account category cannot be populated or inferred; downstream outputs must use account labels only.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "account_category"
+        },
+        {
+          "aliases": [
+            "借方金額",
+            "借方金額(円)"
+          ],
+          "field_key": "debit_amount",
+          "limitation_if_missing": "Debit amount is unavailable, so balanced journal summaries are blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "貸方金額",
+            "貸方金額(円)"
+          ],
+          "field_key": "credit_amount",
+          "limitation_if_missing": "Credit amount is unavailable, so balanced journal summaries are blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "借方税区分",
+            "貸方税区分",
+            "税区分"
+          ],
+          "field_key": "tax_code",
+          "limitation_if_missing": "Tax code is unavailable; tax treatment must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_code"
+        },
+        {
+          "aliases": [
+            "借方税額",
+            "貸方税額",
+            "税額"
+          ],
+          "field_key": "tax_amount",
+          "limitation_if_missing": "Tax amount is unavailable; gross/net/tax splits must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_amount"
+        },
+        {
+          "aliases": [
+            "借方部門",
+            "貸方部門",
+            "部門"
+          ],
+          "field_key": "department",
+          "limitation_if_missing": "Department is unavailable; department-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "借方品目",
+            "貸方品目",
+            "品目"
+          ],
+          "field_key": "item",
+          "limitation_if_missing": "Item/project dimension is unavailable; item-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "取引先",
+            "相手先",
+            "借方取引先",
+            "貸方取引先"
+          ],
+          "field_key": "counterparty",
+          "limitation_if_missing": "Counterparty is unavailable; vendor/customer enrichment must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        },
+        {
+          "aliases": [
+            "摘要",
+            "仕訳メモ",
+            "メモタグ",
+            "備考"
+          ],
+          "field_key": "description",
+          "limitation_if_missing": "Description is unavailable; narrative enrichment must stay blank.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        }
+      ],
+      "official_certification_claimed": false,
+      "period_coverage_policy": {
+        "date_field_keys": [
+          "transaction_date"
+        ],
+        "explicit_period_end_aliases": [
+          "期間終了",
+          "対象期間終了",
+          "終了日"
+        ],
+        "explicit_period_start_aliases": [
+          "期間開始",
+          "対象期間開始",
+          "開始日"
+        ],
+        "header_only_limitation": "Headers alone can identify date columns, but cannot prove full fiscal or monthly period coverage.",
+        "row_range_limitation": "Observed row date min/max are coverage evidence for supplied rows only; they are not a completeness claim."
+      },
+      "profile_key": "yayoi_journal_rows",
+      "profile_scope": "Schema-level private-overlay profile for Yayoi-compatible journal layouts; not an official Yayoi specification.",
+      "provider_family": "yayoi"
+    },
+    {
+      "account_category_policy": {
+        "account_label_field_keys": [
+          "account",
+          "debit_account",
+          "credit_account"
+        ],
+        "category_field_key": "account_category",
+        "derived_category_allowed": false,
+        "missing_category_limitation": "Account category remains unknown unless the CSV supplies an explicit category/classification column."
+      },
+      "allowed_downstream_outputs": [
+        "tenant_private_fact_capsule",
+        "tenant_private_enrichment_summary",
+        "redacted_internal_gap_report",
+        "tenant_private_program_match_prefill"
+      ],
+      "blocked_downstream_outputs": [
+        "public_packet_claim",
+        "public_source_receipt",
+        "absence_or_completeness_claim",
+        "certified_accounting_import_file",
+        "row_level_export_without_consent"
+      ],
+      "certification_notice": "Schema-level compatibility profile only; no official certification, endorsement, or vendor import guarantee is asserted.",
+      "detection_signals": [
+        {
+          "all_of": [],
+          "any_of": [
+            "伝票日付"
+          ],
+          "description": "TKC FX general-journal layouts commonly use 伝票日付 for the journal date.",
+          "required": true,
+          "signal_key": "tkc_voucher_date"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "仕訳No",
+            "仕訳番号",
+            "伝票番号",
+            "伝票No"
+          ],
+          "description": "TKC FX layouts commonly include a 仕訳No / 伝票番号 entry identifier.",
+          "required": true,
+          "signal_key": "tkc_entry_number"
+        },
+        {
+          "all_of": [
+            "借方科目",
+            "貸方科目"
+          ],
+          "any_of": [],
+          "description": "TKC FX layouts use 借方科目 / 貸方科目 debit/credit account columns.",
+          "required": true,
+          "signal_key": "tkc_double_entry_accounts"
+        },
+        {
+          "all_of": [
+            "借方金額",
+            "貸方金額"
+          ],
+          "any_of": [],
+          "description": "TKC FX layouts use 借方金額 / 貸方金額 debit/credit amount columns.",
+          "required": true,
+          "signal_key": "tkc_double_entry_amounts"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "摘要",
+            "摘要文"
+          ],
+          "description": "TKC FX layouts include 摘要 as the narrative column.",
+          "required": true,
+          "signal_key": "tkc_description"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "借方消費税区分",
+            "貸方消費税区分",
+            "借方消費税額",
+            "貸方消費税額"
+          ],
+          "description": "TKC FX 消費税 columns strengthen the match.",
+          "required": false,
+          "signal_key": "tkc_consumption_tax_detail"
+        },
+        {
+          "all_of": [],
+          "any_of": [
+            "部門",
+            "部門コード",
+            "会計年度",
+            "会計期間"
+          ],
+          "description": "TKC FX 部門 / 会計年度 dimension columns strengthen the match.",
+          "required": false,
+          "signal_key": "tkc_fiscal_dimension"
+        }
+      ],
+      "display_name": "TKC FX-compatible general journal layout",
+      "grounding_rules": [
+        "emit_only_observed_normalized_fields",
+        "mark_missing_fields_as_limitations",
+        "do_not_infer_full_period_coverage",
+        "do_not_infer_account_categories",
+        "do_not_create_public_source_receipts_from_private_csv"
+      ],
+      "minimum_matched_signals": 5,
+      "normalized_fields": [
+        {
+          "aliases": [
+            "伝票日付",
+            "取引日",
+            "取引日付",
+            "日付"
+          ],
+          "field_key": "transaction_date",
+          "limitation_if_missing": "Transaction date is unavailable, so period coverage cannot be observed.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "date"
+        },
+        {
+          "aliases": [
+            "仕訳No",
+            "仕訳番号",
+            "伝票番号",
+            "伝票No"
+          ],
+          "field_key": "entry_id",
+          "limitation_if_missing": "Stable journal identity is unavailable; deduplication must remain best effort.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "identifier"
+        },
+        {
+          "aliases": [
+            "借方科目",
+            "借方勘定科目",
+            "借方科目コード"
+          ],
+          "field_key": "debit_account",
+          "limitation_if_missing": "Debit account is unavailable, so double-entry enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "貸方科目",
+            "貸方勘定科目",
+            "貸方科目コード"
+          ],
+          "field_key": "credit_account",
+          "limitation_if_missing": "Credit account is unavailable, so double-entry enrichment is blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "account_label"
+        },
+        {
+          "aliases": [
+            "勘定科目分類",
+            "科目区分",
+            "決算書科目",
+            "account_category"
+          ],
+          "field_key": "account_category",
+          "limitation_if_missing": "Account category cannot be populated or inferred; downstream outputs must use account labels only.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "account_category"
+        },
+        {
+          "aliases": [
+            "借方金額"
+          ],
+          "field_key": "debit_amount",
+          "limitation_if_missing": "Debit amount is unavailable, so balanced journal summaries are blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "貸方金額"
+          ],
+          "field_key": "credit_amount",
+          "limitation_if_missing": "Credit amount is unavailable, so balanced journal summaries are blocked.",
+          "required_for_minimal_enrichment": true,
+          "value_kind": "amount"
+        },
+        {
+          "aliases": [
+            "借方消費税区分",
+            "貸方消費税区分",
+            "消費税区分",
+            "税区分"
+          ],
+          "field_key": "tax_code",
+          "limitation_if_missing": "Tax code is unavailable; tax treatment must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_code"
+        },
+        {
+          "aliases": [
+            "借方消費税額",
+            "貸方消費税額",
+            "消費税額",
+            "税額"
+          ],
+          "field_key": "tax_amount",
+          "limitation_if_missing": "Tax amount is unavailable; gross/net/tax splits must not be inferred.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "tax_amount"
+        },
+        {
+          "aliases": [
+            "部門",
+            "部門コード",
+            "借方部門",
+            "貸方部門"
+          ],
+          "field_key": "department",
+          "limitation_if_missing": "Department is unavailable; department-level summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "会計年度",
+            "会計期間",
+            "事業年度"
+          ],
+          "field_key": "fiscal_year",
+          "limitation_if_missing": "Fiscal year is unavailable; period-anchored summaries must be omitted.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "dimension"
+        },
+        {
+          "aliases": [
+            "摘要",
+            "摘要文",
+            "メモ",
+            "備考"
+          ],
+          "field_key": "description",
+          "limitation_if_missing": "Description is unavailable; narrative enrichment must stay blank.",
+          "required_for_minimal_enrichment": false,
+          "value_kind": "text"
+        }
+      ],
+      "official_certification_claimed": false,
+      "period_coverage_policy": {
+        "date_field_keys": [
+          "transaction_date"
+        ],
+        "explicit_period_end_aliases": [
+          "期間終了",
+          "対象期間終了",
+          "終了日"
+        ],
+        "explicit_period_start_aliases": [
+          "期間開始",
+          "対象期間開始",
+          "開始日"
+        ],
+        "header_only_limitation": "Headers alone can identify date columns, but cannot prove full fiscal or monthly period coverage.",
+        "row_range_limitation": "Observed row date min/max are coverage evidence for supplied rows only; they are not a completeness claim."
+      },
+      "profile_key": "tkc_general_journal_layout_v1",
+      "profile_scope": "Schema-level private-overlay profile for TKC FX-series general-journal layouts; not an official TKC specification and not a TKC certified import format.",
+      "provider_family": "tkc"
+    }
+  ],
+  "schema_version": "jpcite.accounting_csv_profiles.p0.v1"
+}

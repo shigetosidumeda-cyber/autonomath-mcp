@@ -1,0 +1,8 @@
+{
+  "created_at": "2026-05-15T00:00:00+09:00",
+  "object_id": "rc1-p0-bootstrap-2026-05-15",
+  "object_type": "release_capsule",
+  "producer": "jpcite-ai-execution-control-plane",
+  "request_time_llm_call_performed": false,
+  "schema_version": "jpcir.p0.v1"
+}

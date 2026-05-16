@@ -1,0 +1,488 @@
+{
+  "batches": [
+    {
+      "aws_calls_allowed": false,
+      "cumulative_planned_usd": 0,
+      "data_asset_outputs": [
+        {
+          "artifact_kind": "gate_scorecard",
+          "asset_id": "preflight_evidence_scorecard",
+          "collection_mode": "offline_manifest_only",
+          "connection": "quality_release_evidence",
+          "path": "aws_spend_program/preflight/evidence_scorecard.json",
+          "source_scope": "official_public_sources_only"
+        }
+      ],
+      "execution_mode": "offline_non_mutating_blueprint",
+      "mutates_live_aws": false,
+      "network_calls_allowed": false,
+      "remaining_target_after_stage_usd": 19490,
+      "spend_envelope": {
+        "hard_stop_usd": 0,
+        "max_single_work_item_usd": 0,
+        "planned_usd": 0,
+        "soft_stop_usd": 0
+      },
+      "stage_id": "stage_00_preflight_evidence_lock",
+      "stage_name": "Preflight evidence lock",
+      "stop_conditions": [
+        "preflight_evidence_missing",
+        "live_execution_unlock_missing",
+        "budget_cash_guard_missing",
+        "credit_eligibility_or_service_sku_uncertain"
+      ],
+      "subprocess_allowed": false,
+      "teardown_attestations": [
+        "delete_recipe_present_for_every_resource_class"
+      ]
+    },
+    {
+      "aws_calls_allowed": false,
+      "cumulative_planned_usd": 2140,
+      "data_asset_outputs": [
+        {
+          "artifact_kind": "source_registry",
+          "asset_id": "official_source_registry",
+          "collection_mode": "offline_manifest_only",
+          "connection": "official_public_data_collection",
+          "path": "data/public_sources/official_source_registry.json",
+          "source_scope": "official_public_sources_only"
+        },
+        {
+          "artifact_kind": "policy_receipt_ledger",
+          "asset_id": "source_terms_receipt_register",
+          "collection_mode": "offline_manifest_only",
+          "connection": "official_public_data_collection",
+          "path": "data/public_sources/source_terms_receipts.jsonl",
+          "source_scope": "official_public_sources_only"
+        }
+      ],
+      "execution_mode": "offline_non_mutating_blueprint",
+      "mutates_live_aws": false,
+      "network_calls_allowed": false,
+      "remaining_target_after_stage_usd": 17350,
+      "spend_envelope": {
+        "hard_stop_usd": 2140,
+        "max_single_work_item_usd": 120,
+        "planned_usd": 2140,
+        "soft_stop_usd": 1925
+      },
+      "stage_id": "stage_01_official_source_inventory",
+      "stage_name": "Official source inventory",
+      "stop_conditions": [
+        "source_terms_or_robots_unknown",
+        "private_or_nonpublic_data_detected",
+        "stage_hard_stop_would_exceed_target"
+      ],
+      "subprocess_allowed": false,
+      "teardown_attestations": [
+        "delete_recipe_present_for_every_resource_class"
+      ]
+    },
+    {
+      "aws_calls_allowed": false,
+      "cumulative_planned_usd": 6500,
+      "data_asset_outputs": [
+        {
+          "artifact_kind": "collection_queue",
+          "asset_id": "public_collection_queue",
+          "collection_mode": "offline_plan_for_public_capture",
+          "connection": "official_public_data_collection",
+          "path": "data/public_sources/public_collection_queue.jsonl",
+          "source_scope": "official_public_sources_only"
+        },
+        {
+          "artifact_kind": "source_receipt_ledger",
+          "asset_id": "source_receipt_ledger",
+          "collection_mode": "offline_manifest_only",
+          "connection": "artifact_generation",
+          "path": "artifacts/source_receipts/source_receipt_ledger.jsonl",
+          "source_scope": "official_public_sources_only"
+        }
+      ],
+      "execution_mode": "offline_non_mutating_blueprint",
+      "mutates_live_aws": false,
+      "network_calls_allowed": false,
+      "remaining_target_after_stage_usd": 12990,
+      "spend_envelope": {
+        "hard_stop_usd": 4360,
+        "max_single_work_item_usd": 160,
+        "planned_usd": 4360,
+        "soft_stop_usd": 3920
+      },
+      "stage_id": "stage_02_public_collection_capture",
+      "stage_name": "Public collection capture",
+      "stop_conditions": [
+        "public_source_receipts_missing",
+        "private_or_nonpublic_data_detected",
+        "stage_hard_stop_would_exceed_target"
+      ],
+      "subprocess_allowed": false,
+      "teardown_attestations": [
+        "delete_recipe_present_for_every_resource_class"
+      ]
+    },
+    {
+      "aws_calls_allowed": false,
+      "cumulative_planned_usd": 11680,
+      "data_asset_outputs": [
+        {
+          "artifact_kind": "normalized_text_manifest",
+          "asset_id": "normalized_public_text_shards",
+          "collection_mode": "offline_manifest_only",
+          "connection": "artifact_generation",
+          "path": "artifacts/normalized_public_text/shards.manifest.json",
+          "source_scope": "official_public_sources_only"
+        },
+        {
+          "artifact_kind": "index_manifest",
+          "asset_id": "public_search_index_manifest",
+          "collection_mode": "offline_manifest_only",
+          "connection": "artifact_generation",
+          "path": "artifacts/search/public_search_index_manifest.json",
+          "source_scope": "official_public_sources_only"
+        }
+      ],
+      "execution_mode": "offline_non_mutating_blueprint",
+      "mutates_live_aws": false,
+      "network_calls_allowed": false,
+      "remaining_target_after_stage_usd": 7810,
+      "spend_envelope": {
+        "hard_stop_usd": 5180,
+        "max_single_work_item_usd": 220,
+        "planned_usd": 5180,
+        "soft_stop_usd": 4660
+      },
+      "stage_id": "stage_03_ocr_normalization_search_build",
+      "stage_name": "OCR normalization and search build",
+      "stop_conditions": [
+        "credit_eligibility_or_service_sku_uncertain",
+        "private_or_nonpublic_data_detected",
+        "stage_hard_stop_would_exceed_target"
+      ],
+      "subprocess_allowed": false,
+      "teardown_attestations": [
+        "delete_recipe_present_for_every_resource_class"
+      ]
+    },
+    {
+      "aws_calls_allowed": false,
+      "cumulative_planned_usd": 15400,
+      "data_asset_outputs": [
+        {
+          "artifact_kind": "claim_graph",
+          "asset_id": "claim_graph",
+          "collection_mode": "offline_manifest_only",
+          "connection": "artifact_generation",
+          "path": "artifacts/claim_graph/claim_graph.jsonl",
+          "source_scope": "official_public_sources_only"
+        },
+        {
+          "artifact_kind": "accepted_artifact_manifest",
+          "asset_id": "evidence_packet_manifest",
+          "collection_mode": "offline_manifest_only",
+          "connection": "artifact_generation",
+          "path": "artifacts/evidence_packets/packet_manifest.json",
+          "source_scope": "official_public_sources_only"
+        }
+      ],
+      "execution_mode": "offline_non_mutating_blueprint",
+      "mutates_live_aws": false,
+      "network_calls_allowed": false,
+      "remaining_target_after_stage_usd": 4090,
+      "spend_envelope": {
+        "hard_stop_usd": 3720,
+        "max_single_work_item_usd": 180,
+        "planned_usd": 3720,
+        "soft_stop_usd": 3345
+      },
+      "stage_id": "stage_04_claim_graph_packet_factory",
+      "stage_name": "Claim graph and packet factory",
+      "stop_conditions": [
+        "claim_without_source_receipt",
+        "artifact_manifest_missing_or_unverifiable",
+        "stage_hard_stop_would_exceed_target"
+      ],
+      "subprocess_allowed": false,
+      "teardown_attestations": [
+        "delete_recipe_present_for_every_resource_class"
+      ]
+    },
+    {
+      "aws_calls_allowed": false,
+      "cumulative_planned_usd": 17590,
+      "data_asset_outputs": [
+        {
+          "artifact_kind": "quality_report",
+          "asset_id": "geo_eval_report",
+          "collection_mode": "offline_manifest_only",
+          "connection": "quality_release_evidence",
+          "path": "artifacts/eval/geo_eval_report.json",
+          "source_scope": "official_public_sources_only"
+        },
+        {
+          "artifact_kind": "known_gap_register",
+          "asset_id": "known_gap_register",
+          "collection_mode": "offline_manifest_only",
+          "connection": "artifact_generation",
+          "path": "artifacts/evidence_packets/known_gap_register.json",
+          "source_scope": "official_public_sources_only"
+        }
+      ],
+      "execution_mode": "offline_non_mutating_blueprint",
+      "mutates_live_aws": false,
+      "network_calls_allowed": false,
+      "remaining_target_after_stage_usd": 1900,
+      "spend_envelope": {
+        "hard_stop_usd": 2190,
+        "max_single_work_item_usd": 90,
+        "planned_usd": 2190,
+        "soft_stop_usd": 1970
+      },
+      "stage_id": "stage_05_quality_eval_gap_review",
+      "stage_name": "Quality evaluation and gap review",
+      "stop_conditions": [
+        "planned_target_sum_not_19490",
+        "artifact_manifest_missing_or_unverifiable",
+        "claim_without_source_receipt",
+        "stage_hard_stop_would_exceed_target"
+      ],
+      "subprocess_allowed": false,
+      "teardown_attestations": [
+        "delete_recipe_present_for_every_resource_class"
+      ]
+    },
+    {
+      "aws_calls_allowed": false,
+      "cumulative_planned_usd": 18990,
+      "data_asset_outputs": [
+        {
+          "artifact_kind": "public_page_manifest",
+          "asset_id": "public_packet_pages",
+          "collection_mode": "offline_manifest_only",
+          "connection": "artifact_generation",
+          "path": "site/releases/aws_spend_program/public_packets_manifest.json",
+          "source_scope": "official_public_sources_only"
+        },
+        {
+          "artifact_kind": "checksum_manifest",
+          "asset_id": "release_checksums",
+          "collection_mode": "offline_manifest_only",
+          "connection": "quality_release_evidence",
+          "path": "site/releases/aws_spend_program/checksums.sha256",
+          "source_scope": "official_public_sources_only"
+        }
+      ],
+      "execution_mode": "offline_non_mutating_blueprint",
+      "mutates_live_aws": false,
+      "network_calls_allowed": false,
+      "remaining_target_after_stage_usd": 500,
+      "spend_envelope": {
+        "hard_stop_usd": 1400,
+        "max_single_work_item_usd": 70,
+        "planned_usd": 1400,
+        "soft_stop_usd": 1260
+      },
+      "stage_id": "stage_06_release_artifact_packaging",
+      "stage_name": "Release artifact packaging",
+      "stop_conditions": [
+        "artifact_manifest_missing_or_unverifiable",
+        "public_source_receipts_missing",
+        "stage_hard_stop_would_exceed_target"
+      ],
+      "subprocess_allowed": false,
+      "teardown_attestations": [
+        "delete_recipe_present_for_every_resource_class"
+      ]
+    },
+    {
+      "aws_calls_allowed": false,
+      "cumulative_planned_usd": 19490,
+      "data_asset_outputs": [
+        {
+          "artifact_kind": "teardown_evidence_bundle",
+          "asset_id": "teardown_attestation_bundle",
+          "collection_mode": "offline_manifest_only",
+          "connection": "teardown_attestation",
+          "path": "teardown/teardown_attestation_bundle.json",
+          "source_scope": "official_public_sources_only"
+        },
+        {
+          "artifact_kind": "cost_review",
+          "asset_id": "post_teardown_cost_review",
+          "collection_mode": "offline_manifest_only",
+          "connection": "teardown_attestation",
+          "path": "teardown/post_teardown_cost_meter_review.json",
+          "source_scope": "official_public_sources_only"
+        }
+      ],
+      "execution_mode": "offline_non_mutating_blueprint",
+      "mutates_live_aws": false,
+      "network_calls_allowed": false,
+      "remaining_target_after_stage_usd": 0,
+      "spend_envelope": {
+        "hard_stop_usd": 500,
+        "max_single_work_item_usd": 50,
+        "planned_usd": 500,
+        "soft_stop_usd": 450
+      },
+      "stage_id": "stage_07_teardown_attestation",
+      "stage_name": "Teardown attestation",
+      "stop_conditions": [
+        "missing_teardown_recipe_or_attestation",
+        "stage_hard_stop_would_exceed_target",
+        "budget_cash_guard_missing"
+      ],
+      "subprocess_allowed": false,
+      "teardown_attestations": [
+        "delete_recipe_present_for_every_resource_class",
+        "tagged_resource_inventory_empty_or_explained",
+        "post_teardown_cost_meter_reviewed"
+      ]
+    }
+  ],
+  "data_asset_output_connections": [
+    "quality_release_evidence",
+    "official_public_data_collection",
+    "artifact_generation",
+    "teardown_attestation"
+  ],
+  "execution_mode": "offline_non_mutating_blueprint",
+  "hard_stop_rules": [
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "preflight_evidence_missing",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "live_execution_unlock_missing",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "budget_cash_guard_missing",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "credit_eligibility_or_service_sku_uncertain",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "stage_hard_stop_would_exceed_target",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "planned_target_sum_not_19490",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "source_terms_or_robots_unknown",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "private_or_nonpublic_data_detected",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "public_source_receipts_missing",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "claim_without_source_receipt",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "artifact_manifest_missing_or_unverifiable",
+      "severity": "block"
+    },
+    {
+      "action": "stop_before_live_execution_or_next_batch",
+      "rule_id": "missing_teardown_recipe_or_attestation",
+      "severity": "block"
+    }
+  ],
+  "live_execution_allowed": false,
+  "live_execution_gate_state": "AWS_BLOCKED_PRE_FLIGHT",
+  "live_execution_rule": "live execution remains blocked until every required preflight evidence item passes and a separate operator unlock is recorded outside this offline blueprint",
+  "no_overrun_rule": "stop before a batch when cumulative hard_stop_usd would exceed 19490",
+  "official_public_source_families": [
+    "gBizINFO",
+    "NTA invoice publication site",
+    "e-Gov laws and public notices",
+    "jGrants",
+    "e-Stat",
+    "EDINET",
+    "courts.go.jp",
+    "prefecture and municipality public pages"
+  ],
+  "planned_target_sum_usd": 19490,
+  "preflight_evidence": {
+    "missing": [
+      "aws_account_identity_read_only_report",
+      "credit_balance_and_expiration_report",
+      "budget_cash_bill_guard_report",
+      "service_quota_and_credit_eligibility_report",
+      "tagging_policy_and_resource_inventory_report",
+      "source_terms_public_access_report",
+      "teardown_recipe_review_report",
+      "artifact_manifest_schema_report"
+    ],
+    "observed": {
+      "artifact_manifest_schema_report": false,
+      "aws_account_identity_read_only_report": false,
+      "budget_cash_bill_guard_report": false,
+      "credit_balance_and_expiration_report": false,
+      "service_quota_and_credit_eligibility_report": false,
+      "source_terms_public_access_report": false,
+      "tagging_policy_and_resource_inventory_report": false,
+      "teardown_recipe_review_report": false
+    },
+    "required": [
+      "aws_account_identity_read_only_report",
+      "credit_balance_and_expiration_report",
+      "budget_cash_bill_guard_report",
+      "service_quota_and_credit_eligibility_report",
+      "tagging_policy_and_resource_inventory_report",
+      "source_terms_public_access_report",
+      "teardown_recipe_review_report",
+      "artifact_manifest_schema_report"
+    ]
+  },
+  "preflight_evidence_passed": false,
+  "program_id": "jpcite-aws-credit-spend-program-2026-05-15",
+  "required_output_connections": [
+    "official_public_data_collection",
+    "artifact_generation"
+  ],
+  "schema_version": "jpcite.aws_spend_program.p0.v1",
+  "target_credit_conversion_usd": 19490,
+  "target_credit_spend_usd": 19490,
+  "target_sum_rule": "sum(batch.spend_envelope.planned_usd) == 19490",
+  "teardown_attestations": [
+    {
+      "attestation_id": "delete_recipe_present_for_every_resource_class",
+      "required_artifact": "teardown/delete_recipe_matrix.json",
+      "required_before_stage": "stage_01_official_source_inventory"
+    },
+    {
+      "attestation_id": "tagged_resource_inventory_empty_or_explained",
+      "required_artifact": "teardown/tagged_resource_inventory_after_run.json",
+      "required_before_stage": "stage_07_teardown_attestation"
+    },
+    {
+      "attestation_id": "post_teardown_cost_meter_reviewed",
+      "required_artifact": "teardown/post_teardown_cost_meter_review.json",
+      "required_before_stage": "program_closeout"
+    }
+  ],
+  "total_hard_stop_usd": 19490
+}

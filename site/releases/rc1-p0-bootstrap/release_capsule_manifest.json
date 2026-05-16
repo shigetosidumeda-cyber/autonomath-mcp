@@ -1,0 +1,30 @@
+{
+  "aws_runtime_dependency_allowed": false,
+  "capability_matrix_path": "/releases/rc1-p0-bootstrap/capability_matrix.json",
+  "capsule_id": "rc1-p0-bootstrap-2026-05-15",
+  "capsule_state": "candidate",
+  "created_at": "2026-05-15T00:00:00+09:00",
+  "generated_surfaces": [
+    "/.well-known/jpcite-release.json",
+    "/releases/current/runtime_pointer.json",
+    "/releases/rc1-p0-bootstrap/agent_surface/p0_facade.json",
+    "/releases/rc1-p0-bootstrap/release_capsule_manifest.json",
+    "/releases/rc1-p0-bootstrap/accounting_csv_profiles.json",
+    "/releases/rc1-p0-bootstrap/algorithm_blueprints.json",
+    "/releases/rc1-p0-bootstrap/aws_execution_templates.json",
+    "/releases/rc1-p0-bootstrap/aws_spend_program.json",
+    "/releases/rc1-p0-bootstrap/execution_graph.json",
+    "/releases/rc1-p0-bootstrap/execution_state.json",
+    "/releases/rc1-p0-bootstrap/inline_packets.json",
+    "/releases/rc1-p0-bootstrap/noop_aws_command_plan.json",
+    "/releases/rc1-p0-bootstrap/outcome_catalog.json",
+    "/releases/rc1-p0-bootstrap/outcome_source_crosswalk.json",
+    "/releases/rc1-p0-bootstrap/packet_skeletons.json",
+    "/releases/rc1-p0-bootstrap/preflight_scorecard.json",
+    "/releases/rc1-p0-bootstrap/public_source_domains.json"
+  ],
+  "no_hit_absence_claim_enabled": false,
+  "outcome_contract_catalog_path": "/releases/rc1-p0-bootstrap/outcome_contract_catalog.json",
+  "real_csv_runtime_enabled": false,
+  "request_time_llm_fact_generation_enabled": false
+}

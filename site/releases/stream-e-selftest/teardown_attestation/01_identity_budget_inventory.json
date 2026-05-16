@@ -1,0 +1,9 @@
+{
+  "step": "01_identity_budget_inventory",
+  "run_id": "stream-e-selftest",
+  "profile": "bookyou-recovery",
+  "region": "us-east-1",
+  "dry_run": true,
+  "completed_at": "2026-05-15T15:44:22Z",
+  "next_step": "02_artifact_lake_export.sh"
+}

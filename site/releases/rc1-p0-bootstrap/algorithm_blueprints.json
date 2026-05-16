@@ -1,0 +1,861 @@
+{
+  "absence_claim_enabled": false,
+  "algorithm_ids": [
+    "evidence_join",
+    "time_window_coverage_scoring",
+    "source_freshness_scoring",
+    "csv_to_public_counterparty_matching",
+    "subsidy_regulation_eligibility_triage_without_verdict",
+    "deadline_risk_ranking",
+    "no_hit_semantics"
+  ],
+  "blueprints": [
+    {
+      "advice_boundary": {
+        "allowed_conclusion_states": [
+          "supported_claim_ref",
+          "candidate_claim_ref",
+          "known_gap"
+        ],
+        "asserts_legal_or_accounting_advice": false,
+        "forbidden_assertions": [
+          "legal_advice",
+          "accounting_advice",
+          "tax_advice",
+          "application_eligibility_verdict",
+          "regulatory_compliance_verdict",
+          "grant_award_prediction",
+          "audit_opinion"
+        ],
+        "professional_review_required": false
+      },
+      "algorithm_id": "evidence_join",
+      "deterministic_steps": [
+        "Sort receipts by source_family_id, canonical_subject_id, observed_at, and receipt_id.",
+        "Join by explicit receipt_id and fragment_id first; fall back only to exact canonical subject and section keys.",
+        "Emit supported claim refs only when every required claim field has a receipt-backed fragment.",
+        "Emit candidate or gap states for partial joins; never synthesize missing claim text."
+      ],
+      "display_name": "Evidence Join",
+      "gap_handling": {
+        "absence_claim_enabled": false,
+        "gap_outputs": [
+          "known_gaps",
+          "blocked_items",
+          "no_hit_lease"
+        ],
+        "no_hit_semantics": "no_hit_not_absence",
+        "rules": [
+          "unjoined_claim_candidates_emit_known_gap",
+          "ambiguous_subject_join_emits_gap_instead_of_best_guess",
+          "blocked_source_receipts_emit_blocked_item"
+        ]
+      },
+      "inputs": [
+        {
+          "description": "First-party source receipts with receipt_id, source_family_id, observed_at, and support_state.",
+          "name": "source_receipts",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "first_party_evidence"
+        },
+        {
+          "description": "Extracted text or metadata fragments already tied to source_receipt IDs and stable section keys.",
+          "name": "evidence_fragments",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "first_party_evidence"
+        },
+        {
+          "description": "Structured candidate claims generated from deterministic packet templates, not free-form inference.",
+          "name": "claim_candidates",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "derived_public_fact"
+        }
+      ],
+      "llm_allowed": false,
+      "network_allowed": false,
+      "numerical_method": {
+        "applies": false,
+        "formula": "not_applicable",
+        "method_id": "exact_key_join_no_score",
+        "rounding": "not_applicable",
+        "score_range": null,
+        "tie_breakers": []
+      },
+      "outputs": [
+        {
+          "description": "Claim references that carry the exact receipt IDs and fragment IDs used as proof.",
+          "name": "joined_claim_refs",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Candidates that could not be joined to proof and therefore cannot become public claims.",
+          "name": "rejected_claim_candidates",
+          "proof_required": false,
+          "visibility": "internal"
+        },
+        {
+          "description": "Known gaps for missing receipts, missing sections, ambiguous subjects, or blocked sources.",
+          "name": "coverage_gaps",
+          "proof_required": true,
+          "visibility": "public"
+        }
+      ],
+      "proof_handling": {
+        "private_csv_can_support_public_claims": false,
+        "required_reference_fields": [
+          "receipt_ids",
+          "claim_ref_ids",
+          "gap_ids"
+        ],
+        "rules": [
+          "public_claims_must_reference_source_receipt_ids",
+          "joined_claim_refs_must_include_fragment_ids",
+          "candidate_claims_without_required_receipts_are_not_public_claims"
+        ],
+        "support_states": [
+          "supported",
+          "candidate",
+          "gap",
+          "blocked"
+        ]
+      },
+      "purpose": "Join artifact claim candidates to first-party evidence fragments using explicit receipt and subject keys before any public claim can be emitted."
+    },
+    {
+      "advice_boundary": {
+        "allowed_conclusion_states": [
+          "coverage_score",
+          "covered_segment",
+          "known_gap"
+        ],
+        "asserts_legal_or_accounting_advice": false,
+        "forbidden_assertions": [
+          "legal_advice",
+          "accounting_advice",
+          "tax_advice",
+          "application_eligibility_verdict",
+          "regulatory_compliance_verdict",
+          "grant_award_prediction",
+          "audit_opinion"
+        ],
+        "professional_review_required": false
+      },
+      "algorithm_id": "time_window_coverage_scoring",
+      "deterministic_steps": [
+        "Normalize dates to local calendar days and half-open intervals [start, end).",
+        "Union overlapping observed windows per source family after sorting by start date, end date, and receipt_id.",
+        "Intersect observed windows with required windows and sum covered weighted days.",
+        "Emit missing or stale intervals as known gaps; no uncovered interval becomes an absence claim."
+      ],
+      "display_name": "Time-Window Coverage Scoring",
+      "gap_handling": {
+        "absence_claim_enabled": false,
+        "gap_outputs": [
+          "known_gaps",
+          "blocked_items",
+          "no_hit_lease"
+        ],
+        "no_hit_semantics": "no_hit_not_absence",
+        "rules": [
+          "uncovered_required_windows_emit_known_gap",
+          "stale_observed_windows_emit_stale_gap",
+          "coverage_below_threshold_blocks_final_artifact_or_marks_gap"
+        ]
+      },
+      "inputs": [
+        {
+          "description": "Requested half-open date windows with source_family_id and required coverage weight.",
+          "name": "required_windows",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "configuration"
+        },
+        {
+          "description": "Receipt-backed half-open date windows with valid_from, valid_to, and receipt IDs.",
+          "name": "observed_windows",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "first_party_evidence"
+        },
+        {
+          "description": "Deterministic evaluation date supplied by the caller or release capsule.",
+          "name": "as_of_date",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "clock_parameter"
+        }
+      ],
+      "llm_allowed": false,
+      "network_allowed": false,
+      "numerical_method": {
+        "applies": true,
+        "formula": "score = sum(covered_days_i * weight_i) / sum(required_days_i * weight_i)",
+        "method_id": "weighted_interval_coverage_ratio_v1",
+        "rounding": "round_half_up_to_4_decimal_places_after_clamp_0_1",
+        "score_range": [
+          0.0,
+          1.0
+        ],
+        "tie_breakers": [
+          "earlier_required_window_start",
+          "source_family_id",
+          "receipt_id"
+        ]
+      },
+      "outputs": [
+        {
+          "description": "Weighted coverage ratio from 0.0 to 1.0 with formula ID and input window IDs.",
+          "name": "coverage_score",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Receipt-backed covered date segments after deterministic interval union.",
+          "name": "covered_segments",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Known gaps for uncovered, stale, or blocked date segments.",
+          "name": "missing_or_stale_segments",
+          "proof_required": true,
+          "visibility": "public"
+        }
+      ],
+      "proof_handling": {
+        "private_csv_can_support_public_claims": false,
+        "required_reference_fields": [
+          "receipt_ids",
+          "claim_ref_ids",
+          "gap_ids"
+        ],
+        "rules": [
+          "each_covered_segment_must_reference_receipt_ids",
+          "coverage_score_must_include_window_ids_and_formula_id",
+          "score_inputs_are_date_ranges_not_free_text"
+        ],
+        "support_states": [
+          "supported",
+          "candidate",
+          "gap",
+          "blocked"
+        ]
+      },
+      "purpose": "Score how much of a requested period is covered by first-party evidence without treating uncovered time as proof that no event occurred."
+    },
+    {
+      "advice_boundary": {
+        "allowed_conclusion_states": [
+          "freshness_score",
+          "fresh_receipt",
+          "stale_gap"
+        ],
+        "asserts_legal_or_accounting_advice": false,
+        "forbidden_assertions": [
+          "legal_advice",
+          "accounting_advice",
+          "tax_advice",
+          "application_eligibility_verdict",
+          "regulatory_compliance_verdict",
+          "grant_award_prediction",
+          "audit_opinion"
+        ],
+        "professional_review_required": false
+      },
+      "algorithm_id": "source_freshness_scoring",
+      "deterministic_steps": [
+        "Compute non-negative age_days from as_of_date minus observed_at date.",
+        "Look up source_family freshness_sla_days; unknown SLA emits a freshness gap.",
+        "Score each receipt by linear decay and weighted mean by source family.",
+        "Sort stale receipts by oldest observed_at, source_family_id, and receipt_id."
+      ],
+      "display_name": "Source Freshness Scoring",
+      "gap_handling": {
+        "absence_claim_enabled": false,
+        "gap_outputs": [
+          "known_gaps",
+          "blocked_items",
+          "no_hit_lease"
+        ],
+        "no_hit_semantics": "no_hit_not_absence",
+        "rules": [
+          "unknown_sla_emits_known_gap",
+          "missing_observed_at_emits_known_gap",
+          "stale_receipt_blocks_fresh_claim_wording"
+        ]
+      },
+      "inputs": [
+        {
+          "description": "First-party receipts with observed_at timestamps and source family IDs.",
+          "name": "source_receipts",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "first_party_evidence"
+        },
+        {
+          "description": "Configured maximum age per source family before a receipt is stale.",
+          "name": "freshness_sla_days",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "configuration"
+        },
+        {
+          "description": "Deterministic evaluation timestamp supplied by the caller or release capsule.",
+          "name": "as_of_date",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "clock_parameter"
+        }
+      ],
+      "llm_allowed": false,
+      "network_allowed": false,
+      "numerical_method": {
+        "applies": true,
+        "formula": "receipt_score = max(0, 1 - age_days / freshness_sla_days); score = weighted_mean(receipt_score)",
+        "method_id": "linear_age_decay_weighted_mean_v1",
+        "rounding": "round_half_up_to_4_decimal_places_after_clamp_0_1",
+        "score_range": [
+          0.0,
+          1.0
+        ],
+        "tie_breakers": [
+          "older_observed_at_first",
+          "source_family_id",
+          "receipt_id"
+        ]
+      },
+      "outputs": [
+        {
+          "description": "Weighted score from 0.0 to 1.0 with age days, SLA days, and receipt IDs.",
+          "name": "freshness_score",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Receipts inside the configured freshness window.",
+          "name": "fresh_receipts",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Receipts outside the configured freshness window, emitted as gaps before final use.",
+          "name": "stale_receipts",
+          "proof_required": true,
+          "visibility": "public"
+        }
+      ],
+      "proof_handling": {
+        "private_csv_can_support_public_claims": false,
+        "required_reference_fields": [
+          "receipt_ids",
+          "claim_ref_ids",
+          "gap_ids"
+        ],
+        "rules": [
+          "freshness_scores_must_reference_receipt_ids",
+          "stale_receipt_findings_must_keep_original_observed_at",
+          "unknown_observed_at_is_gap_not_estimate"
+        ],
+        "support_states": [
+          "supported",
+          "candidate",
+          "gap",
+          "blocked"
+        ]
+      },
+      "purpose": "Score receipt freshness against configured source-family service windows using only supplied observed_at metadata."
+    },
+    {
+      "advice_boundary": {
+        "allowed_conclusion_states": [
+          "candidate_match",
+          "unmatched_private_fact",
+          "public_record_check"
+        ],
+        "asserts_legal_or_accounting_advice": false,
+        "forbidden_assertions": [
+          "legal_advice",
+          "accounting_advice",
+          "tax_advice",
+          "application_eligibility_verdict",
+          "regulatory_compliance_verdict",
+          "grant_award_prediction",
+          "audit_opinion"
+        ],
+        "professional_review_required": true
+      },
+      "algorithm_id": "csv_to_public_counterparty_matching",
+      "deterministic_steps": [
+        "Normalize supplied public names and identifiers with configured exact rules before scoring.",
+        "Score exact registration-number matches above corporate-number matches, name matches, and alias matches.",
+        "Emit candidate matches only when public record receipts exist and private raw values remain absent.",
+        "Keep unmatched CSV-derived facts tenant-private and hash-only; never export raw rows."
+      ],
+      "display_name": "CSV-To-Public Counterparty Matching",
+      "gap_handling": {
+        "absence_claim_enabled": false,
+        "gap_outputs": [
+          "known_gaps",
+          "blocked_items",
+          "no_hit_lease"
+        ],
+        "no_hit_semantics": "no_hit_not_absence",
+        "rules": [
+          "missing_public_receipt_emits_gap_not_match",
+          "below_threshold_match_emits_unmatched_private_fact",
+          "conflicting_public_records_emit_ambiguous_counterparty_gap"
+        ]
+      },
+      "inputs": [
+        {
+          "description": "Minimized tenant-private facts such as hashed counterparty keys, amount buckets, and provider family.",
+          "name": "private_counterparty_fingerprints",
+          "privacy_handling": "tenant_private_minimized",
+          "required": true,
+          "source_scope": "tenant_private_csv_fact"
+        },
+        {
+          "description": "Receipt-backed public records such as invoice registry or company profile rows already supplied.",
+          "name": "public_counterparty_records",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "first_party_evidence"
+        },
+        {
+          "description": "Deterministic alias keys from first-party or tenant-approved configuration.",
+          "name": "allowed_alias_table",
+          "privacy_handling": "tenant_private_minimized",
+          "required": false,
+          "source_scope": "configuration"
+        }
+      ],
+      "llm_allowed": false,
+      "network_allowed": false,
+      "numerical_method": {
+        "applies": true,
+        "formula": "score = max(exact_invoice_number*1.0, exact_corporate_number*0.95, exact_normalized_name*0.85, configured_alias*0.75)",
+        "method_id": "deterministic_counterparty_match_score_v1",
+        "rounding": "round_half_up_to_4_decimal_places_after_clamp_0_1",
+        "score_range": [
+          0.0,
+          1.0
+        ],
+        "tie_breakers": [
+          "higher_score",
+          "public_receipt_observed_at_desc",
+          "source_family_id",
+          "receipt_id"
+        ]
+      },
+      "outputs": [
+        {
+          "description": "Candidate public-record matches with score, reason code, receipt IDs, and private value fingerprints only.",
+          "name": "counterparty_match_candidates",
+          "proof_required": true,
+          "visibility": "tenant_private"
+        },
+        {
+          "description": "Private fact fingerprints that did not reach candidate threshold.",
+          "name": "unmatched_private_facts",
+          "proof_required": false,
+          "visibility": "tenant_private"
+        },
+        {
+          "description": "Public source checks that can be cited independently of private CSV content.",
+          "name": "public_record_checks",
+          "proof_required": true,
+          "visibility": "public"
+        }
+      ],
+      "proof_handling": {
+        "private_csv_can_support_public_claims": false,
+        "required_reference_fields": [
+          "receipt_ids",
+          "claim_ref_ids",
+          "gap_ids"
+        ],
+        "rules": [
+          "public_record_checks_must_reference_public_receipt_ids",
+          "private_csv_facts_may_rank_or_filter_but_never_support_public_claim_text",
+          "match_candidates_must_include_private_fingerprint_not_raw_value"
+        ],
+        "support_states": [
+          "supported",
+          "candidate",
+          "gap",
+          "blocked"
+        ]
+      },
+      "purpose": "Match minimized tenant-private accounting CSV-derived counterparty facts to supplied public records as candidate checks, while preventing private facts from becoming public proof."
+    },
+    {
+      "advice_boundary": {
+        "allowed_conclusion_states": [
+          "candidate_for_review",
+          "triage_signal",
+          "question_for_professional"
+        ],
+        "asserts_legal_or_accounting_advice": false,
+        "forbidden_assertions": [
+          "legal_advice",
+          "accounting_advice",
+          "tax_advice",
+          "application_eligibility_verdict",
+          "regulatory_compliance_verdict",
+          "grant_award_prediction",
+          "audit_opinion"
+        ],
+        "professional_review_required": true
+      },
+      "algorithm_id": "subsidy_regulation_eligibility_triage_without_verdict",
+      "deterministic_steps": [
+        "Map applicant facts to requirement keys only when both sides have explicit normalized keys.",
+        "Classify each requirement signal as matched, missing, unknown, conflict, or professional_review_required.",
+        "Unknown and conflict signals reduce triage confidence but never become negative verdicts.",
+        "Emit candidate_for_review and questions_for_professional instead of eligibility or compliance conclusions."
+      ],
+      "display_name": "Subsidy/Regulation Eligibility Triage Without Verdict",
+      "gap_handling": {
+        "absence_claim_enabled": false,
+        "gap_outputs": [
+          "known_gaps",
+          "blocked_items",
+          "no_hit_lease"
+        ],
+        "no_hit_semantics": "no_hit_not_absence",
+        "rules": [
+          "unknown_requirement_signal_emits_known_gap",
+          "missing_applicant_fact_emits_question_not_negative_verdict",
+          "conflicting_source_requirements_emit_professional_review_gap"
+        ]
+      },
+      "inputs": [
+        {
+          "description": "Minimized applicant facts supplied by the user or derived from tenant-private CSV buckets.",
+          "name": "applicant_profile_facts",
+          "privacy_handling": "tenant_private_minimized",
+          "required": false,
+          "source_scope": "tenant_private_csv_fact"
+        },
+        {
+          "description": "Receipt-backed requirement, exclusion, deadline, and document rules from first-party evidence.",
+          "name": "program_or_regulation_requirements",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "first_party_evidence"
+        },
+        {
+          "description": "Configured signal weights and mandatory review gates for candidate ranking.",
+          "name": "triage_policy",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "configuration"
+        }
+      ],
+      "llm_allowed": false,
+      "network_allowed": false,
+      "numerical_method": {
+        "applies": true,
+        "formula": "score = sum(matched_signal_weight) / sum(known_required_signal_weight); unknown and conflict signals are reported separately",
+        "method_id": "known_signal_triage_ratio_v1",
+        "rounding": "round_half_up_to_4_decimal_places_after_clamp_0_1",
+        "score_range": [
+          0.0,
+          1.0
+        ],
+        "tie_breakers": [
+          "higher_score",
+          "earlier_deadline",
+          "fresher_requirement_receipt",
+          "program_id"
+        ]
+      },
+      "outputs": [
+        {
+          "description": "Requirement signals marked matched, missing, unknown, conflict, or professional_review_required.",
+          "name": "triage_signals",
+          "proof_required": true,
+          "visibility": "tenant_private"
+        },
+        {
+          "description": "Ranked candidate item for human review; explicitly not an eligibility or compliance verdict.",
+          "name": "candidate_for_review",
+          "proof_required": true,
+          "visibility": "tenant_private"
+        },
+        {
+          "description": "Deterministic questions generated from missing, unknown, or conflicting source-backed signals.",
+          "name": "questions_for_professional",
+          "proof_required": true,
+          "visibility": "tenant_private"
+        }
+      ],
+      "proof_handling": {
+        "private_csv_can_support_public_claims": false,
+        "required_reference_fields": [
+          "receipt_ids",
+          "claim_ref_ids",
+          "gap_ids"
+        ],
+        "rules": [
+          "every_requirement_signal_must_reference_requirement_receipt_ids",
+          "private_applicant_facts_must_remain_minimized_and_tenant_private",
+          "candidate_for_review_must_include_do_not_claim_verdict_boundary"
+        ],
+        "support_states": [
+          "supported",
+          "candidate",
+          "gap",
+          "blocked"
+        ]
+      },
+      "purpose": "Rank source-backed requirement signals for professional review without asserting subsidy eligibility, regulatory compliance, or accounting treatment."
+    },
+    {
+      "advice_boundary": {
+        "allowed_conclusion_states": [
+          "deadline_risk_rank",
+          "review_priority",
+          "known_gap"
+        ],
+        "asserts_legal_or_accounting_advice": false,
+        "forbidden_assertions": [
+          "legal_advice",
+          "accounting_advice",
+          "tax_advice",
+          "application_eligibility_verdict",
+          "regulatory_compliance_verdict",
+          "grant_award_prediction",
+          "audit_opinion"
+        ],
+        "professional_review_required": true
+      },
+      "algorithm_id": "deadline_risk_ranking",
+      "deterministic_steps": [
+        "Compute days_until_due from as_of_date and due_at using local calendar days.",
+        "Compute buffer_ratio from preparation_days_by_action divided by max(days_until_due, 1).",
+        "Add freshness penalty from source freshness state and missing-date penalty from gap state.",
+        "Sort by descending risk score, then earliest due_at, then source_family_id and receipt_id."
+      ],
+      "display_name": "Deadline Risk Ranking",
+      "gap_handling": {
+        "absence_claim_enabled": false,
+        "gap_outputs": [
+          "known_gaps",
+          "blocked_items",
+          "no_hit_lease"
+        ],
+        "no_hit_semantics": "no_hit_not_absence",
+        "rules": [
+          "missing_due_at_emits_known_gap",
+          "overdue_deadline_emits_overdue_gap_not_outcome_statement",
+          "stale_deadline_source_emits_refresh_required_gap"
+        ]
+      },
+      "inputs": [
+        {
+          "description": "Receipt-backed deadlines with due_at, source_family_id, and required action labels.",
+          "name": "deadline_records",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "first_party_evidence"
+        },
+        {
+          "description": "Configured minimum preparation days per action type.",
+          "name": "preparation_days_by_action",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "configuration"
+        },
+        {
+          "description": "Deterministic evaluation date supplied by the caller or release capsule.",
+          "name": "as_of_date",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "clock_parameter"
+        }
+      ],
+      "llm_allowed": false,
+      "network_allowed": false,
+      "numerical_method": {
+        "applies": true,
+        "formula": "risk_score = clamp(0, 100, urgency_points + buffer_pressure_points + freshness_penalty_points + missing_data_penalty_points)",
+        "method_id": "deadline_urgency_buffer_freshness_score_v1",
+        "rounding": "round_half_up_to_2_decimal_places_after_clamp_0_100",
+        "score_range": [
+          0.0,
+          100.0
+        ],
+        "tie_breakers": [
+          "higher_risk_score",
+          "earlier_due_at",
+          "source_family_id",
+          "receipt_id"
+        ]
+      },
+      "outputs": [
+        {
+          "description": "Deadline records sorted by risk score with formula ID, receipt IDs, and tie-break trace.",
+          "name": "ranked_deadline_risks",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Known gaps or warnings when a due date is missing, stale, overdue, or inside prep buffer.",
+          "name": "overdue_or_imminent_gaps",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Non-advisory internal scheduling suggestions keyed to source-backed due dates.",
+          "name": "calendar_hold_suggestions",
+          "proof_required": true,
+          "visibility": "internal"
+        }
+      ],
+      "proof_handling": {
+        "private_csv_can_support_public_claims": false,
+        "required_reference_fields": [
+          "receipt_ids",
+          "claim_ref_ids",
+          "gap_ids"
+        ],
+        "rules": [
+          "ranked_deadlines_must_reference_deadline_receipt_ids",
+          "calendar_suggestions_must_reference_same_due_at_source",
+          "missing_due_at_cannot_be_ranked_as_if_known"
+        ],
+        "support_states": [
+          "supported",
+          "candidate",
+          "gap",
+          "blocked"
+        ]
+      },
+      "purpose": "Rank receipt-backed deadlines by deterministic urgency, preparation buffer, and source freshness so artifacts can prioritize review work without promising outcomes."
+    },
+    {
+      "advice_boundary": {
+        "allowed_conclusion_states": [
+          "no_hit_observed",
+          "unchecked_scope_gap",
+          "refresh_required"
+        ],
+        "asserts_legal_or_accounting_advice": false,
+        "forbidden_assertions": [
+          "legal_advice",
+          "accounting_advice",
+          "tax_advice",
+          "application_eligibility_verdict",
+          "regulatory_compliance_verdict",
+          "grant_award_prediction",
+          "audit_opinion"
+        ],
+        "professional_review_required": false
+      },
+      "algorithm_id": "no_hit_semantics",
+      "deterministic_steps": [
+        "Compare checked_scope to required_scope by exact source family, filter, and time-window keys.",
+        "Emit a no_hit_lease only for the checked scope and configured expiry window.",
+        "Emit unchecked_scope_gaps for any required scope outside the observed no-hit query.",
+        "Disable absence claims in every public and internal no-hit output."
+      ],
+      "display_name": "No-Hit Semantics",
+      "gap_handling": {
+        "absence_claim_enabled": false,
+        "gap_outputs": [
+          "known_gaps",
+          "blocked_items",
+          "no_hit_lease"
+        ],
+        "no_hit_semantics": "no_hit_not_absence",
+        "rules": [
+          "no_hit_not_absence",
+          "unchecked_scope_emits_known_gap",
+          "expired_no_hit_lease_emits_refresh_required_gap"
+        ]
+      },
+      "inputs": [
+        {
+          "description": "Exact query scope, source families, filters, and observed_at timestamp that produced no hit.",
+          "name": "checked_scope",
+          "privacy_handling": "public",
+          "required": true,
+          "source_scope": "first_party_evidence"
+        },
+        {
+          "description": "Configured source families and filters expected for the requested artifact.",
+          "name": "required_scope",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "configuration"
+        },
+        {
+          "description": "Configured expiry duration for reusing a no-hit observation.",
+          "name": "lease_policy",
+          "privacy_handling": "none",
+          "required": true,
+          "source_scope": "configuration"
+        }
+      ],
+      "llm_allowed": false,
+      "network_allowed": false,
+      "numerical_method": {
+        "applies": false,
+        "formula": "not_applicable",
+        "method_id": "scope_contract_no_score",
+        "rounding": "not_applicable",
+        "score_range": null,
+        "tie_breakers": []
+      },
+      "outputs": [
+        {
+          "description": "Scoped lease stating what was checked, when it expires, and that absence claims are disabled.",
+          "name": "no_hit_lease",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Known gaps for source families, filters, or periods outside the checked scope.",
+          "name": "unchecked_scope_gaps",
+          "proof_required": true,
+          "visibility": "public"
+        },
+        {
+          "description": "Deterministic follow-up source families or filters needed before artifact completion.",
+          "name": "next_checks",
+          "proof_required": true,
+          "visibility": "internal"
+        }
+      ],
+      "proof_handling": {
+        "private_csv_can_support_public_claims": false,
+        "required_reference_fields": [
+          "receipt_ids",
+          "claim_ref_ids",
+          "gap_ids"
+        ],
+        "rules": [
+          "no_hit_lease_must_reference_checked_scope_and_observed_at",
+          "no_hit_wording_must_say_observed_search_result_only",
+          "unchecked_scope_gaps_must_list_missing_source_families_or_filters"
+        ],
+        "support_states": [
+          "supported",
+          "candidate",
+          "gap",
+          "blocked"
+        ]
+      },
+      "purpose": "Represent no-hit observations as scoped search results with leases and gaps, never as proof that a record, program, obligation, or event does not exist."
+    }
+  ],
+  "llm_allowed": false,
+  "network_allowed": false,
+  "no_hit_semantics": "no_hit_not_absence",
+  "schema_version": "jpcite.algorithm_blueprints.p0.v1"
+}

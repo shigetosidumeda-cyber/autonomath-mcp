@@ -1,0 +1,536 @@
+{
+  "allowed_collection_methods": [
+    "http_fetch",
+    "sitemap",
+    "playwright_screenshot",
+    "pdf_text_extraction"
+  ],
+  "aws_collection_scope": "future_public_aws_collection_candidate",
+  "catalog": [
+    {
+      "allowed_collection_methods": [
+        "http_fetch",
+        "sitemap",
+        "playwright_screenshot",
+        "pdf_text_extraction"
+      ],
+      "artifact_use_cases": [
+        "law_article_source_receipts",
+        "amendment_change_diff",
+        "regulatory_context_packets"
+      ],
+      "aws_collection_scope": "future_public_aws_collection_candidate",
+      "bulk_resale_or_redistribution_allowed": false,
+      "canonical_entrypoints": [
+        "https://elaws.e-gov.go.jp/",
+        "https://public-comment.e-gov.go.jp/"
+      ],
+      "collection_enabled_initially": false,
+      "display_name": "e-Gov laws, regulations, and public comment sources",
+      "domain_patterns": [
+        "elaws.e-gov.go.jp",
+        "www.e-gov.go.jp",
+        "public-comment.e-gov.go.jp",
+        "japaneselawtranslation.go.jp"
+      ],
+      "excluded_pii_subjects": [
+        "natural_person_names",
+        "home_addresses",
+        "phone_numbers",
+        "email_addresses",
+        "individual_taxpayer_identifiers"
+      ],
+      "first_party_official_source": true,
+      "official_owner_category": "national_government",
+      "pii_collection_allowed": false,
+      "pii_exclusion_policy": "Exclude direct personal identifiers, raw personal-case facts, and individual proprietor details from public artifacts.",
+      "playwright_screenshot_policy": {
+        "enabled": true,
+        "full_page_capture_allowed": false,
+        "human_review_required_before_public_use": true,
+        "max_bitmap_long_edge_px": 1600,
+        "max_viewport_width_px": 1600,
+        "pii_redaction_required": true
+      },
+      "publisher_name": "Digital Agency and responsible ministries",
+      "resale_redistribution_caution": "Use as source receipts, metadata, short excerpts, and derived analysis only; do not resell or bulk-redistribute mirrored source content.",
+      "robots_posture": "check_and_obey_before_collection",
+      "robots_terms_posture": {
+        "robots_txt_must_be_checked": true,
+        "robots_txt_must_be_obeyed": true,
+        "stop_on_disallow_or_terms_conflict": true,
+        "terms_must_be_reviewed": true,
+        "user_agent_contact_required": true
+      },
+      "source_category": "laws_regulations",
+      "source_family_id": "egov_laws_regulations",
+      "terms_posture": "review_and_block_on_conflict"
+    },
+    {
+      "allowed_collection_methods": [
+        "http_fetch",
+        "sitemap",
+        "playwright_screenshot",
+        "pdf_text_extraction"
+      ],
+      "artifact_use_cases": [
+        "tax_rule_source_receipts",
+        "invoice_system_status_checks",
+        "tax_measure_sunset_watch"
+      ],
+      "aws_collection_scope": "future_public_aws_collection_candidate",
+      "bulk_resale_or_redistribution_allowed": false,
+      "canonical_entrypoints": [
+        "https://www.nta.go.jp/",
+        "https://invoice-kohyo.nta.go.jp/",
+        "https://www.eltax.lta.go.jp/"
+      ],
+      "collection_enabled_initially": false,
+      "display_name": "National and local tax agency guidance",
+      "domain_patterns": [
+        "nta.go.jp",
+        "www.nta.go.jp",
+        "invoice-kohyo.nta.go.jp",
+        "eltax.lta.go.jp"
+      ],
+      "excluded_pii_subjects": [
+        "natural_person_names",
+        "home_addresses",
+        "phone_numbers",
+        "email_addresses",
+        "individual_taxpayer_identifiers"
+      ],
+      "first_party_official_source": true,
+      "official_owner_category": "national_government",
+      "pii_collection_allowed": false,
+      "pii_exclusion_policy": "Exclude direct personal identifiers, raw personal-case facts, and individual proprietor details from public artifacts.",
+      "playwright_screenshot_policy": {
+        "enabled": true,
+        "full_page_capture_allowed": false,
+        "human_review_required_before_public_use": true,
+        "max_bitmap_long_edge_px": 1600,
+        "max_viewport_width_px": 1600,
+        "pii_redaction_required": true
+      },
+      "publisher_name": "National Tax Agency and local tax authorities",
+      "resale_redistribution_caution": "Use as source receipts, metadata, short excerpts, and derived analysis only; do not resell or bulk-redistribute mirrored source content.",
+      "robots_posture": "check_and_obey_before_collection",
+      "robots_terms_posture": {
+        "robots_txt_must_be_checked": true,
+        "robots_txt_must_be_obeyed": true,
+        "stop_on_disallow_or_terms_conflict": true,
+        "terms_must_be_reviewed": true,
+        "user_agent_contact_required": true
+      },
+      "source_category": "tax",
+      "source_family_id": "tax_agency_guidance",
+      "terms_posture": "review_and_block_on_conflict"
+    },
+    {
+      "allowed_collection_methods": [
+        "http_fetch",
+        "sitemap",
+        "playwright_screenshot",
+        "pdf_text_extraction"
+      ],
+      "artifact_use_cases": [
+        "grant_eligibility_packets",
+        "deadline_document_checklists",
+        "program_successor_revision_watch"
+      ],
+      "aws_collection_scope": "future_public_aws_collection_candidate",
+      "bulk_resale_or_redistribution_allowed": false,
+      "canonical_entrypoints": [
+        "https://www.jgrants-portal.go.jp/",
+        "https://www.hojyokin-portal.go.jp/",
+        "https://mirasapo-plus.go.jp/"
+      ],
+      "collection_enabled_initially": false,
+      "display_name": "Official subsidy and grant program portals",
+      "domain_patterns": [
+        "jgrants-portal.go.jp",
+        "www.jgrants-portal.go.jp",
+        "hojyokin-portal.go.jp",
+        "www.hojyokin-portal.go.jp",
+        "mirasapo-plus.go.jp",
+        "j-net21.smrj.go.jp"
+      ],
+      "excluded_pii_subjects": [
+        "natural_person_names",
+        "home_addresses",
+        "phone_numbers",
+        "email_addresses",
+        "individual_taxpayer_identifiers"
+      ],
+      "first_party_official_source": true,
+      "official_owner_category": "incorporated_admin_agency",
+      "pii_collection_allowed": false,
+      "pii_exclusion_policy": "Exclude direct personal identifiers, raw personal-case facts, and individual proprietor details from public artifacts.",
+      "playwright_screenshot_policy": {
+        "enabled": true,
+        "full_page_capture_allowed": false,
+        "human_review_required_before_public_use": true,
+        "max_bitmap_long_edge_px": 1600,
+        "max_viewport_width_px": 1600,
+        "pii_redaction_required": true
+      },
+      "publisher_name": "Government grant portals and SME support bodies",
+      "resale_redistribution_caution": "Use as source receipts, metadata, short excerpts, and derived analysis only; do not resell or bulk-redistribute mirrored source content.",
+      "robots_posture": "check_and_obey_before_collection",
+      "robots_terms_posture": {
+        "robots_txt_must_be_checked": true,
+        "robots_txt_must_be_obeyed": true,
+        "stop_on_disallow_or_terms_conflict": true,
+        "terms_must_be_reviewed": true,
+        "user_agent_contact_required": true
+      },
+      "source_category": "subsidies",
+      "source_family_id": "subsidy_program_portals",
+      "terms_posture": "review_and_block_on_conflict"
+    },
+    {
+      "allowed_collection_methods": [
+        "http_fetch",
+        "sitemap",
+        "playwright_screenshot",
+        "pdf_text_extraction"
+      ],
+      "artifact_use_cases": [
+        "local_subsidy_source_receipts",
+        "permit_requirement_packets",
+        "regional_deadline_watch"
+      ],
+      "aws_collection_scope": "future_public_aws_collection_candidate",
+      "bulk_resale_or_redistribution_allowed": false,
+      "canonical_entrypoints": [
+        "https://www.metro.tokyo.lg.jp/",
+        "https://www.city.yokohama.lg.jp/",
+        "https://www.city.osaka.lg.jp/"
+      ],
+      "collection_enabled_initially": false,
+      "display_name": "Prefecture and municipality official domains",
+      "domain_patterns": [
+        "*.lg.jp",
+        "www.metro.tokyo.lg.jp",
+        "www.city.yokohama.lg.jp",
+        "www.city.osaka.lg.jp"
+      ],
+      "excluded_pii_subjects": [
+        "natural_person_names",
+        "home_addresses",
+        "phone_numbers",
+        "email_addresses",
+        "individual_taxpayer_identifiers"
+      ],
+      "first_party_official_source": true,
+      "official_owner_category": "local_government",
+      "pii_collection_allowed": false,
+      "pii_exclusion_policy": "Exclude direct personal identifiers, raw personal-case facts, and individual proprietor details from public artifacts.",
+      "playwright_screenshot_policy": {
+        "enabled": true,
+        "full_page_capture_allowed": false,
+        "human_review_required_before_public_use": true,
+        "max_bitmap_long_edge_px": 1600,
+        "max_viewport_width_px": 1600,
+        "pii_redaction_required": true
+      },
+      "publisher_name": "Japanese prefectures and municipalities",
+      "resale_redistribution_caution": "Use as source receipts, metadata, short excerpts, and derived analysis only; do not resell or bulk-redistribute mirrored source content.",
+      "robots_posture": "check_and_obey_before_collection",
+      "robots_terms_posture": {
+        "robots_txt_must_be_checked": true,
+        "robots_txt_must_be_obeyed": true,
+        "stop_on_disallow_or_terms_conflict": true,
+        "terms_must_be_reviewed": true,
+        "user_agent_contact_required": true
+      },
+      "source_category": "local_governments",
+      "source_family_id": "local_government_public_sources",
+      "terms_posture": "review_and_block_on_conflict"
+    },
+    {
+      "allowed_collection_methods": [
+        "http_fetch",
+        "sitemap",
+        "playwright_screenshot",
+        "pdf_text_extraction"
+      ],
+      "artifact_use_cases": [
+        "regional_statistics_receipts",
+        "market_size_baselines",
+        "geo_comparison_packets"
+      ],
+      "aws_collection_scope": "future_public_aws_collection_candidate",
+      "bulk_resale_or_redistribution_allowed": false,
+      "canonical_entrypoints": [
+        "https://www.e-stat.go.jp/",
+        "https://www.stat.go.jp/",
+        "https://www.data.e-gov.go.jp/"
+      ],
+      "collection_enabled_initially": false,
+      "display_name": "Official statistics and open-data portals",
+      "domain_patterns": [
+        "e-stat.go.jp",
+        "www.e-stat.go.jp",
+        "stat.go.jp",
+        "www.stat.go.jp",
+        "data.e-gov.go.jp",
+        "resas.go.jp"
+      ],
+      "excluded_pii_subjects": [
+        "natural_person_names",
+        "home_addresses",
+        "phone_numbers",
+        "email_addresses",
+        "individual_taxpayer_identifiers"
+      ],
+      "first_party_official_source": true,
+      "official_owner_category": "national_government",
+      "pii_collection_allowed": false,
+      "pii_exclusion_policy": "Exclude direct personal identifiers, raw personal-case facts, and individual proprietor details from public artifacts.",
+      "playwright_screenshot_policy": {
+        "enabled": true,
+        "full_page_capture_allowed": false,
+        "human_review_required_before_public_use": true,
+        "max_bitmap_long_edge_px": 1600,
+        "max_viewport_width_px": 1600,
+        "pii_redaction_required": true
+      },
+      "publisher_name": "Statistics Bureau and government open-data programs",
+      "resale_redistribution_caution": "Use as source receipts, metadata, short excerpts, and derived analysis only; do not resell or bulk-redistribute mirrored source content.",
+      "robots_posture": "check_and_obey_before_collection",
+      "robots_terms_posture": {
+        "robots_txt_must_be_checked": true,
+        "robots_txt_must_be_obeyed": true,
+        "stop_on_disallow_or_terms_conflict": true,
+        "terms_must_be_reviewed": true,
+        "user_agent_contact_required": true
+      },
+      "source_category": "statistics",
+      "source_family_id": "statistics_open_data",
+      "terms_posture": "review_and_block_on_conflict"
+    },
+    {
+      "allowed_collection_methods": [
+        "http_fetch",
+        "sitemap",
+        "playwright_screenshot",
+        "pdf_text_extraction"
+      ],
+      "artifact_use_cases": [
+        "procurement_notice_receipts",
+        "vendor_opportunity_packets",
+        "bid_deadline_watch"
+      ],
+      "aws_collection_scope": "future_public_aws_collection_candidate",
+      "bulk_resale_or_redistribution_allowed": false,
+      "canonical_entrypoints": [
+        "https://www.p-portal.go.jp/",
+        "https://www.geps.go.jp/",
+        "https://www.chotatujoho.geps.go.jp/"
+      ],
+      "collection_enabled_initially": false,
+      "display_name": "Government procurement and tender notice sources",
+      "domain_patterns": [
+        "p-portal.go.jp",
+        "www.p-portal.go.jp",
+        "geps.go.jp",
+        "www.geps.go.jp",
+        "www.chotatujoho.geps.go.jp"
+      ],
+      "excluded_pii_subjects": [
+        "natural_person_names",
+        "home_addresses",
+        "phone_numbers",
+        "email_addresses",
+        "individual_taxpayer_identifiers"
+      ],
+      "first_party_official_source": true,
+      "official_owner_category": "national_government",
+      "pii_collection_allowed": false,
+      "pii_exclusion_policy": "Exclude direct personal identifiers, raw personal-case facts, and individual proprietor details from public artifacts.",
+      "playwright_screenshot_policy": {
+        "enabled": true,
+        "full_page_capture_allowed": false,
+        "human_review_required_before_public_use": true,
+        "max_bitmap_long_edge_px": 1600,
+        "max_viewport_width_px": 1600,
+        "pii_redaction_required": true
+      },
+      "publisher_name": "Government procurement systems",
+      "resale_redistribution_caution": "Use as source receipts, metadata, short excerpts, and derived analysis only; do not resell or bulk-redistribute mirrored source content.",
+      "robots_posture": "check_and_obey_before_collection",
+      "robots_terms_posture": {
+        "robots_txt_must_be_checked": true,
+        "robots_txt_must_be_obeyed": true,
+        "stop_on_disallow_or_terms_conflict": true,
+        "terms_must_be_reviewed": true,
+        "user_agent_contact_required": true
+      },
+      "source_category": "procurement",
+      "source_family_id": "government_procurement",
+      "terms_posture": "review_and_block_on_conflict"
+    },
+    {
+      "allowed_collection_methods": [
+        "http_fetch",
+        "sitemap",
+        "playwright_screenshot",
+        "pdf_text_extraction"
+      ],
+      "artifact_use_cases": [
+        "court_decision_source_receipts",
+        "dispute_context_packets",
+        "court_notice_watch"
+      ],
+      "aws_collection_scope": "future_public_aws_collection_candidate",
+      "bulk_resale_or_redistribution_allowed": false,
+      "canonical_entrypoints": [
+        "https://www.courts.go.jp/"
+      ],
+      "collection_enabled_initially": false,
+      "display_name": "Court decisions and court notices",
+      "domain_patterns": [
+        "courts.go.jp",
+        "www.courts.go.jp"
+      ],
+      "excluded_pii_subjects": [
+        "natural_person_names",
+        "home_addresses",
+        "phone_numbers",
+        "email_addresses",
+        "individual_taxpayer_identifiers"
+      ],
+      "first_party_official_source": true,
+      "official_owner_category": "court",
+      "pii_collection_allowed": false,
+      "pii_exclusion_policy": "Exclude direct personal identifiers, raw personal-case facts, and individual proprietor details from public artifacts.",
+      "playwright_screenshot_policy": {
+        "enabled": true,
+        "full_page_capture_allowed": false,
+        "human_review_required_before_public_use": true,
+        "max_bitmap_long_edge_px": 1600,
+        "max_viewport_width_px": 1600,
+        "pii_redaction_required": true
+      },
+      "publisher_name": "Courts in Japan",
+      "resale_redistribution_caution": "Use as source receipts, metadata, short excerpts, and derived analysis only; do not resell or bulk-redistribute mirrored source content.",
+      "robots_posture": "check_and_obey_before_collection",
+      "robots_terms_posture": {
+        "robots_txt_must_be_checked": true,
+        "robots_txt_must_be_obeyed": true,
+        "stop_on_disallow_or_terms_conflict": true,
+        "terms_must_be_reviewed": true,
+        "user_agent_contact_required": true
+      },
+      "source_category": "court_admin_guidance",
+      "source_family_id": "court_decisions",
+      "terms_posture": "review_and_block_on_conflict"
+    },
+    {
+      "allowed_collection_methods": [
+        "http_fetch",
+        "sitemap",
+        "playwright_screenshot",
+        "pdf_text_extraction"
+      ],
+      "artifact_use_cases": [
+        "administrative_guidance_packets",
+        "regulatory_faq_source_receipts",
+        "enforcement_context_watch"
+      ],
+      "aws_collection_scope": "future_public_aws_collection_candidate",
+      "bulk_resale_or_redistribution_allowed": false,
+      "canonical_entrypoints": [
+        "https://www.moj.go.jp/",
+        "https://www.meti.go.jp/",
+        "https://www.mhlw.go.jp/",
+        "https://www.fsa.go.jp/"
+      ],
+      "collection_enabled_initially": false,
+      "display_name": "Ministry administrative guidance and enforcement notices",
+      "domain_patterns": [
+        "moj.go.jp",
+        "www.moj.go.jp",
+        "meti.go.jp",
+        "www.meti.go.jp",
+        "mhlw.go.jp",
+        "www.mhlw.go.jp",
+        "fsa.go.jp",
+        "www.fsa.go.jp"
+      ],
+      "excluded_pii_subjects": [
+        "natural_person_names",
+        "home_addresses",
+        "phone_numbers",
+        "email_addresses",
+        "individual_taxpayer_identifiers"
+      ],
+      "first_party_official_source": true,
+      "official_owner_category": "national_government",
+      "pii_collection_allowed": false,
+      "pii_exclusion_policy": "Exclude direct personal identifiers, raw personal-case facts, and individual proprietor details from public artifacts.",
+      "playwright_screenshot_policy": {
+        "enabled": true,
+        "full_page_capture_allowed": false,
+        "human_review_required_before_public_use": true,
+        "max_bitmap_long_edge_px": 1600,
+        "max_viewport_width_px": 1600,
+        "pii_redaction_required": true
+      },
+      "publisher_name": "Ministry administrative guidance publishers",
+      "resale_redistribution_caution": "Use as source receipts, metadata, short excerpts, and derived analysis only; do not resell or bulk-redistribute mirrored source content.",
+      "robots_posture": "check_and_obey_before_collection",
+      "robots_terms_posture": {
+        "robots_txt_must_be_checked": true,
+        "robots_txt_must_be_obeyed": true,
+        "stop_on_disallow_or_terms_conflict": true,
+        "terms_must_be_reviewed": true,
+        "user_agent_contact_required": true
+      },
+      "source_category": "court_admin_guidance",
+      "source_family_id": "ministry_admin_guidance",
+      "terms_posture": "review_and_block_on_conflict"
+    }
+  ],
+  "category_index": {
+    "court_admin_guidance": [
+      "court_decisions",
+      "ministry_admin_guidance"
+    ],
+    "laws_regulations": [
+      "egov_laws_regulations"
+    ],
+    "local_governments": [
+      "local_government_public_sources"
+    ],
+    "procurement": [
+      "government_procurement"
+    ],
+    "statistics": [
+      "statistics_open_data"
+    ],
+    "subsidies": [
+      "subsidy_program_portals"
+    ],
+    "tax": [
+      "tax_agency_guidance"
+    ]
+  },
+  "collection_enabled_initially": false,
+  "official_domain_suffixes": [
+    ".go.jp",
+    ".lg.jp"
+  ],
+  "playwright_screenshot_max_px": 1600,
+  "required_source_categories": [
+    "laws_regulations",
+    "tax",
+    "subsidies",
+    "local_governments",
+    "statistics",
+    "procurement",
+    "court_admin_guidance"
+  ],
+  "schema_version": "jpcite.public_source_domains.p0.v1"
+}

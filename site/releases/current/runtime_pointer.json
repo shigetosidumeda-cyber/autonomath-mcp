@@ -1,0 +1,9 @@
+{
+  "active_capsule_id": "rc1-p0-bootstrap-2026-05-15",
+  "active_capsule_manifest": "/releases/rc1-p0-bootstrap/release_capsule_manifest.json",
+  "aws_runtime_dependency_allowed": false,
+  "capsule_state": "candidate",
+  "live_aws_commands_allowed": false,
+  "next_resume_doc": "docs/_internal/execution/rc1-p0-bootstrap/README.md",
+  "schema_version": "jpcite.runtime_pointer.p0.v1"
+}

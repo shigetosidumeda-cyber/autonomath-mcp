@@ -1,0 +1,191 @@
+{
+  "contract_id": "rc1-p0-bootstrap-2026-05-15:csv-private-overlay-contract",
+  "schema_version": "jpcite.csv_private_overlay_contract.p0.v1",
+  "global_contract": {
+    "raw_csv_retained": false,
+    "raw_csv_logged": false,
+    "raw_csv_sent_to_aws": false,
+    "public_surface_export_allowed": false,
+    "row_level_retention_enabled": false,
+    "free_text_values_retained": false,
+    "counterparty_values_retained": false,
+    "aws_upload_performed": false,
+    "request_body_logging_enabled": false,
+    "response_body_logging_enabled": false,
+    "anonymous_csv_upload_allowed": false,
+    "idempotency_key_required": true,
+    "scoped_cap_token_required_for_paid_broad_work": true,
+    "formula_injection_scan_performed": true,
+    "leak_scan_required_before_release": true,
+    "suppression_policy": "p0_k5_k10_reject_sensitive",
+    "synthetic_only_in_openapi_mcp_examples": true,
+    "synthetic_only_in_public_proof_pages": true,
+    "rejected_request_charge_status": "no_charge",
+    "validation_cap_conflict_charge_status": "no_charge"
+  },
+  "per_provider_rules": [
+    {
+      "provider_family": "freee",
+      "profile_ids": [
+        "freee_transaction_layout_v1",
+        "freee_journal_layout_v1"
+      ],
+      "constraints": [
+        {
+          "constraint_id": "freee_no_payroll_headers",
+          "rule": "reject if header set matches payroll signature (給与/賞与/扶養/源泉徴収/年末調整)",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        },
+        {
+          "constraint_id": "freee_no_bank_card_identifiers",
+          "rule": "reject if 銀行口座番号/カード番号/口座振替依頼 columns detected",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        },
+        {
+          "constraint_id": "freee_account_category_not_inferred",
+          "rule": "account_category must be sourced from explicit 勘定科目区分 column, never inferred from 勘定科目 string",
+          "action_on_violation": "emit_limitation_note_account_category_unknown"
+        },
+        {
+          "constraint_id": "freee_memo_formula_redact",
+          "rule": "redact cells in 摘要/メモタグ where leading char is = or + or - or @ (Excel/CSV formula injection)",
+          "action_on_violation": "redact_emit_reason_code_only"
+        },
+        {
+          "constraint_id": "freee_counterparty_k10_suppression",
+          "rule": "counterparty (取引先) aggregation must apply k<10 suppression before tenant_private packet emission",
+          "action_on_violation": "suppress_counterparty_emit_bucket_count"
+        }
+      ]
+    },
+    {
+      "provider_family": "money_forward",
+      "profile_ids": [
+        "money_forward_journal_layout_v1"
+      ],
+      "constraints": [
+        {
+          "constraint_id": "mf_no_payroll_headers",
+          "rule": "reject if 給与/賞与/手当/扶養/源泉徴収/社会保険 columns present",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        },
+        {
+          "constraint_id": "mf_no_bank_card_identifiers",
+          "rule": "reject if 口座番号/銀行コード/支店コード/カード番号/IBAN columns present",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        },
+        {
+          "constraint_id": "mf_account_category_not_inferred",
+          "rule": "account_category sourced only from explicit 勘定科目区分 column; missing category emits limitation note",
+          "action_on_violation": "emit_limitation_note_account_category_unknown"
+        },
+        {
+          "constraint_id": "mf_memo_formula_redact",
+          "rule": "redact cells in 摘要 starting with = or + or - or @ before any downstream emission",
+          "action_on_violation": "redact_emit_reason_code_only"
+        },
+        {
+          "constraint_id": "mf_complementary_suppression",
+          "rule": "k<5 monthly account cell and complementary parent/child differences must be jointly suppressed so single cell cannot be reconstructed",
+          "action_on_violation": "joint_suppress_emit_bucket_count_only"
+        }
+      ]
+    },
+    {
+      "provider_family": "yayoi",
+      "profile_ids": [
+        "yayoi_journal_layout_v1"
+      ],
+      "constraints": [
+        {
+          "constraint_id": "yayoi_no_payroll_headers",
+          "rule": "reject if header set matches 弥生給与/弥生会計給与/賞与/扶養 patterns",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        },
+        {
+          "constraint_id": "yayoi_no_personal_identifiers",
+          "rule": "reject if マイナンバー/個人番号/住民票コード columns detected",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        },
+        {
+          "constraint_id": "yayoi_shift_jis_decode_safe",
+          "rule": "decode CP932/Shift_JIS via iconv pipeline; never apply UTF-8 edit/write on raw CSV bytes",
+          "action_on_violation": "fail_closed_no_raw_retain"
+        },
+        {
+          "constraint_id": "yayoi_memo_formula_redact",
+          "rule": "redact cells in 摘要/補助 starting with = or + or - or @ before downstream emission",
+          "action_on_violation": "redact_emit_reason_code_only"
+        },
+        {
+          "constraint_id": "yayoi_counterparty_k10_suppression",
+          "rule": "取引先 frequency aggregation must apply k<10 suppression; dominant contributor >80% triggers additional suppression",
+          "action_on_violation": "suppress_counterparty_emit_bucket_count"
+        }
+      ]
+    },
+    {
+      "provider_family": "tkc",
+      "profile_ids": [
+        "tkc_general_journal_layout_v1"
+      ],
+      "constraints": [
+        {
+          "constraint_id": "tkc_no_payroll_headers",
+          "rule": "reject if TKC PX2/給与計算 column signatures appear (給与額/扶養数/社保等級)",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        },
+        {
+          "constraint_id": "tkc_no_client_personal_master",
+          "rule": "reject if 関与先個人マスター rows present (代表者個人住所/個人電話/個人メール)",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        },
+        {
+          "constraint_id": "tkc_account_code_dictionary_required",
+          "rule": "TKC 勘定科目コードは内部辞書経由でのみ canonical account label に解決、derived 推論禁止",
+          "action_on_violation": "emit_limitation_note_account_category_unknown"
+        },
+        {
+          "constraint_id": "tkc_memo_formula_redact",
+          "rule": "redact cells in 摘要 starting with = or + or - or @ before downstream emission",
+          "action_on_violation": "redact_emit_reason_code_only"
+        },
+        {
+          "constraint_id": "tkc_audit_trail_isolation",
+          "rule": "TKC FX/モニタリング監査ログは取り込まない、取り込み試行時は full request reject",
+          "action_on_violation": "reject_no_charge_no_raw_retain"
+        }
+      ]
+    }
+  ],
+  "downstream_emission_policy": {
+    "allowed_downstream_outputs": [
+      "tenant_private_fact_capsule",
+      "tenant_private_enrichment_summary",
+      "redacted_internal_gap_report",
+      "tenant_private_program_match_prefill"
+    ],
+    "blocked_downstream_outputs": [
+      "public_packet_claim",
+      "public_source_receipt",
+      "absence_or_completeness_claim",
+      "certified_accounting_import_file",
+      "row_level_export_without_consent"
+    ]
+  },
+  "test_matrix_links": [
+    "CSV-P0-01",
+    "CSV-P0-03",
+    "CSV-P0-04",
+    "CSV-P0-05",
+    "CSV-P0-06",
+    "CSV-P0-07",
+    "CSV-P0-08",
+    "CSV-P0-09",
+    "CSV-P0-10",
+    "CSV-P0-12"
+  ],
+  "live_aws_command_unlock": false,
+  "no_aws_runtime_dependency": true,
+  "created_at": "2026-05-15T00:00:00+09:00"
+}

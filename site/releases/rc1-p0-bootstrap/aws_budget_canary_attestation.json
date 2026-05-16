@@ -1,0 +1,108 @@
+{
+  "attestation_id": "rc1-p0-bootstrap-2026-05-15:aws-budget-canary-attestation",
+  "schema_version": "jpcite.aws_budget_canary_attestation.p0.v1",
+  "gate_id": "aws_budget_cash_guard_canary",
+  "program_id": "jpcite-aws-credit-spend-program-2026-05-15",
+  "canary_flip_allowed": true,
+  "live_aws_command_unlock": false,
+  "no_aws_runtime_dependency": true,
+  "target_credit_conversion_usd": 19490,
+  "currency": "USD",
+  "guards": [
+    {
+      "guard_id": "gross_burn_guard",
+      "display_name": "Gross burn guard (24h rolling AWS spend)",
+      "hard_stop_usd": 500,
+      "watch_threshold_usd": 250,
+      "soft_stop_usd": 400,
+      "window": "rolling_24h",
+      "metric_source": "aws_cost_explorer_blended_cost",
+      "evaluation_cadence": "every_60_minutes",
+      "canary_state": "armed_pending_canary_flip",
+      "operator_attestation_required": true,
+      "escalation_chain": [
+        "auto_pause_next_batch_in_aws_spend_program",
+        "notify_operator_email_info_bookyou_net",
+        "post_to_release_capsule_status_topic",
+        "freeze_aws_canary_until_operator_ack"
+      ],
+      "live_flip_command_template": "aws budgets create-budget --account-id <ACCT_ID> --budget file://budgets/gross_burn_guard.json --notifications-with-subscribers file://budgets/gross_burn_guard_notifications.json"
+    },
+    {
+      "guard_id": "cash_exposure_backstop",
+      "display_name": "Cash exposure backstop (post-credit-exhaustion)",
+      "hard_stop_usd": 100,
+      "watch_threshold_usd": 25,
+      "soft_stop_usd": 50,
+      "window": "since_credit_exhaustion_event",
+      "metric_source": "aws_cost_explorer_unblended_minus_credits",
+      "evaluation_cadence": "every_15_minutes",
+      "canary_state": "armed_pending_canary_flip",
+      "operator_attestation_required": true,
+      "escalation_chain": [
+        "auto_pause_all_batches_in_aws_spend_program",
+        "trigger_teardown_attestation_dry_run",
+        "notify_operator_email_info_bookyou_net",
+        "freeze_aws_canary_until_operator_ack"
+      ],
+      "live_flip_command_template": "aws budgets create-budget --account-id <ACCT_ID> --budget file://budgets/cash_exposure_backstop.json --notifications-with-subscribers file://budgets/cash_exposure_backstop_notifications.json"
+    },
+    {
+      "guard_id": "operator_stopline",
+      "display_name": "Operator stopline (program total ceiling)",
+      "hard_stop_usd": 19490,
+      "watch_threshold_usd": 17500,
+      "soft_stop_usd": 18500,
+      "window": "program_lifetime",
+      "metric_source": "aws_cost_explorer_blended_cost_plus_credit_applied",
+      "evaluation_cadence": "every_15_minutes",
+      "canary_state": "armed_pending_canary_flip",
+      "operator_attestation_required": true,
+      "escalation_chain": [
+        "auto_pause_all_batches_in_aws_spend_program",
+        "execute_teardown_attestation_bundle",
+        "notify_operator_email_info_bookyou_net",
+        "freeze_aws_canary_until_operator_ack"
+      ],
+      "live_flip_command_template": "aws budgets create-budget --account-id <ACCT_ID> --budget file://budgets/operator_stopline.json --notifications-with-subscribers file://budgets/operator_stopline_notifications.json"
+    },
+    {
+      "guard_id": "anomaly_monitor",
+      "display_name": "Anomaly monitor (service-tail / off-policy SKU)",
+      "hard_stop_usd": 200,
+      "watch_threshold_usd": 50,
+      "soft_stop_usd": 120,
+      "window": "rolling_6h",
+      "metric_source": "aws_cost_anomaly_detection_monitor",
+      "evaluation_cadence": "every_60_minutes",
+      "canary_state": "armed_pending_canary_flip",
+      "operator_attestation_required": true,
+      "escalation_chain": [
+        "auto_pause_next_batch_in_aws_spend_program",
+        "tag_anomaly_event_in_release_capsule_status_topic",
+        "notify_operator_email_info_bookyou_net",
+        "freeze_aws_canary_until_operator_ack"
+      ],
+      "live_flip_command_template": "aws ce create-anomaly-monitor --anomaly-monitor file://budgets/anomaly_monitor.json"
+    }
+  ],
+  "canary_flip_preconditions": [
+    "preflight_scorecard.state == AWS_CANARY_READY",
+    "policy_decision_catalog.live_aws_command_unlock == false during canary",
+    "csv_private_overlay_contract.global_contract.raw_csv_sent_to_aws == false",
+    "billing_event_ledger_schema.append_only == true",
+    "spend_simulation.pass_state == true",
+    "teardown_simulation.pass_state == true",
+    "operator_attestation_signed_by sss_at_bookyou_net within 24h before canary flip"
+  ],
+  "post_flip_attestation_outputs": [
+    "aws_budget_canary_flip_evidence.json",
+    "aws_anomaly_monitor_arn_record.json",
+    "aws_subscriber_notification_topic_arn_record.json"
+  ],
+  "guard_sum_invariants": {
+    "hard_stop_usd_total_lt_program_target": "sum(gross_burn + cash_exposure + anomaly) <= operator_stopline.hard_stop_usd",
+    "operator_stopline_eq_program_target": "operator_stopline.hard_stop_usd == 19490"
+  },
+  "created_at": "2026-05-15T00:00:00+09:00"
+}

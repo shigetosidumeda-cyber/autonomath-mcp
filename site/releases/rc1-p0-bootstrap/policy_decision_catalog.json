@@ -1,0 +1,215 @@
+{
+  "catalog_id": "rc1-p0-bootstrap-2026-05-15:policy-decision-catalog",
+  "schema_version": "jpcite.policy_decision_catalog.p0.v1",
+  "policy_state_enum": [
+    "draft",
+    "under_review",
+    "terms_unreviewed",
+    "terms_reviewed_allowed",
+    "terms_reviewed_blocked",
+    "robots_disallow",
+    "robots_unknown",
+    "first_party_official_active",
+    "first_party_official_paused",
+    "redistribution_allowed_with_attribution",
+    "redistribution_blocked",
+    "pii_minimization_required",
+    "pii_redaction_required",
+    "human_review_required",
+    "synthetic_only",
+    "frozen_for_release",
+    "revoked"
+  ],
+  "administrative_info_class_enum": [
+    "public_law_text",
+    "public_policy_guidance",
+    "public_business_registry",
+    "public_business_event",
+    "public_person_related",
+    "public_sensitive_context",
+    "public_judicial_admin",
+    "public_aggregate_stats",
+    "third_party_embedded_content",
+    "tenant_private_overlay"
+  ],
+  "privacy_taint_level_enum": [
+    "public_law_structural",
+    "public_official_business_metadata",
+    "public_official_business_event",
+    "public_official_person_related",
+    "public_sensitive_administrative_context",
+    "tenant_private_aggregate",
+    "tenant_private_relationship",
+    "tenant_private_row_or_raw"
+  ],
+  "allowed_surfaces_enum": [
+    "internal_evidence_store",
+    "aws_accepted_public_bundle",
+    "public_proof_page",
+    "openapi_mcp_examples",
+    "well_known_llms_txt",
+    "paid_packet_response",
+    "geo_proof_page",
+    "csv_overlay_response_tenant_private"
+  ],
+  "blocked_reason_code_enum": [
+    "terms_block",
+    "robots_disallow",
+    "pii_exposure_risk",
+    "sensitive_event_exposure_risk",
+    "redistribution_restricted",
+    "no_first_party_attribution",
+    "third_party_rights_unknown",
+    "synthetic_only_required",
+    "human_review_required",
+    "tenant_private_only"
+  ],
+  "entries": [
+    {
+      "source_family_id": "egov_laws_regulations",
+      "source_terms_contract_id": "rc1-p0-bootstrap-2026-05-15:egov-laws-terms-contract",
+      "policy_state": "first_party_official_active",
+      "administrative_info_class": "public_law_text",
+      "privacy_taint_level": "public_law_structural",
+      "allowed_surfaces": [
+        "internal_evidence_store",
+        "aws_accepted_public_bundle",
+        "public_proof_page",
+        "paid_packet_response",
+        "geo_proof_page",
+        "openapi_mcp_examples",
+        "well_known_llms_txt"
+      ],
+      "blocked_surfaces": [
+        "csv_overlay_response_tenant_private"
+      ],
+      "blocked_reason_codes": [
+        "tenant_private_only"
+      ],
+      "first_party_official_source": true,
+      "robots_posture": "check_and_obey_before_collection",
+      "redistribution_allowed_with_attribution": true,
+      "attribution_required_text": "Source: e-Gov 法令検索 / 国民へのお知らせ — Digital Agency"
+    },
+    {
+      "source_family_id": "nta_invoice_publication",
+      "source_terms_contract_id": "rc1-p0-bootstrap-2026-05-15:nta-invoice-terms-contract",
+      "policy_state": "redistribution_allowed_with_attribution",
+      "administrative_info_class": "public_business_registry",
+      "privacy_taint_level": "public_official_business_metadata",
+      "allowed_surfaces": [
+        "internal_evidence_store",
+        "aws_accepted_public_bundle",
+        "paid_packet_response",
+        "public_proof_page",
+        "geo_proof_page"
+      ],
+      "blocked_surfaces": [
+        "csv_overlay_response_tenant_private",
+        "openapi_mcp_examples",
+        "well_known_llms_txt"
+      ],
+      "blocked_reason_codes": [
+        "tenant_private_only",
+        "synthetic_only_required"
+      ],
+      "first_party_official_source": true,
+      "robots_posture": "check_and_obey_before_collection",
+      "redistribution_allowed_with_attribution": true,
+      "attribution_required_text": "Source: 国税庁 適格請求書発行事業者公表サイト (PDL v1.0)",
+      "redistribution_license": "pdl_v1_0",
+      "person_related_handling": "minimize_individual_proprietor_natural_person_fields"
+    },
+    {
+      "source_family_id": "gbizinfo_houjin",
+      "source_terms_contract_id": "rc1-p0-bootstrap-2026-05-15:gbizinfo-terms-contract",
+      "policy_state": "redistribution_allowed_with_attribution",
+      "administrative_info_class": "public_business_registry",
+      "privacy_taint_level": "public_official_business_metadata",
+      "allowed_surfaces": [
+        "internal_evidence_store",
+        "aws_accepted_public_bundle",
+        "paid_packet_response",
+        "public_proof_page",
+        "geo_proof_page",
+        "openapi_mcp_examples"
+      ],
+      "blocked_surfaces": [
+        "csv_overlay_response_tenant_private"
+      ],
+      "blocked_reason_codes": [
+        "tenant_private_only"
+      ],
+      "first_party_official_source": true,
+      "robots_posture": "check_and_obey_before_collection",
+      "redistribution_allowed_with_attribution": true,
+      "attribution_required_text": "Source: gBizINFO / METI (Government of Japan)"
+    },
+    {
+      "source_family_id": "edinet_disclosure",
+      "source_terms_contract_id": "rc1-p0-bootstrap-2026-05-15:edinet-terms-contract",
+      "policy_state": "first_party_official_active",
+      "administrative_info_class": "public_business_event",
+      "privacy_taint_level": "public_official_business_event",
+      "allowed_surfaces": [
+        "internal_evidence_store",
+        "aws_accepted_public_bundle",
+        "paid_packet_response",
+        "public_proof_page"
+      ],
+      "blocked_surfaces": [
+        "csv_overlay_response_tenant_private",
+        "geo_proof_page",
+        "well_known_llms_txt"
+      ],
+      "blocked_reason_codes": [
+        "tenant_private_only",
+        "sensitive_event_exposure_risk"
+      ],
+      "first_party_official_source": true,
+      "robots_posture": "check_and_obey_before_collection",
+      "redistribution_allowed_with_attribution": true,
+      "attribution_required_text": "Source: EDINET / 金融庁",
+      "current_status_inference_allowed": false,
+      "evaluation_wording_allowed": false
+    },
+    {
+      "source_family_id": "jgrants_subsidy_portal",
+      "source_terms_contract_id": "rc1-p0-bootstrap-2026-05-15:jgrants-terms-contract",
+      "policy_state": "terms_reviewed_allowed",
+      "administrative_info_class": "public_policy_guidance",
+      "privacy_taint_level": "public_official_business_metadata",
+      "allowed_surfaces": [
+        "internal_evidence_store",
+        "aws_accepted_public_bundle",
+        "paid_packet_response",
+        "public_proof_page",
+        "openapi_mcp_examples"
+      ],
+      "blocked_surfaces": [
+        "csv_overlay_response_tenant_private"
+      ],
+      "blocked_reason_codes": [
+        "tenant_private_only"
+      ],
+      "first_party_official_source": true,
+      "robots_posture": "check_and_obey_before_collection",
+      "redistribution_allowed_with_attribution": true,
+      "attribution_required_text": "Source: jGrants (Digital Agency / 中小企業庁)",
+      "legal_conclusion_allowed": false
+    }
+  ],
+  "decision_rules": [
+    "every_entry_must_have_first_party_official_source_or_synthetic_only_state",
+    "blocked_surfaces_union_allowed_surfaces_must_cover_full_surface_enum",
+    "policy_state_revoked_implies_all_surfaces_blocked",
+    "tenant_private_overlay_class_blocks_all_public_surfaces",
+    "pii_minimization_required_state_forbids_natural_person_name_emission",
+    "public_judicial_admin_class_blocks_current_status_inference",
+    "evaluation_wording_allowed_must_be_false_for_public_business_event_and_judicial_admin"
+  ],
+  "decision_outcome": "decision_recorded",
+  "live_aws_command_unlock": false,
+  "no_aws_runtime_dependency": true,
+  "created_at": "2026-05-15T00:00:00+09:00"
+}

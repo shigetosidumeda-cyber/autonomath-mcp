@@ -1,0 +1,107 @@
+{
+  "billing_event_ledger_append_only": true,
+  "charge_basis": "accepted_artifact",
+  "deliverable_pricing_rules": [
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "company-public-baseline",
+      "estimated_price_jpy": 600,
+      "outcome_contract_id": "company_public_baseline",
+      "pricing_posture": "accepted_artifact_standard"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "invoice-registrant-public-check",
+      "estimated_price_jpy": 300,
+      "outcome_contract_id": "invoice_registrant_public_check",
+      "pricing_posture": "accepted_artifact_low"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "subsidy-grant-candidate-pack",
+      "estimated_price_jpy": 900,
+      "outcome_contract_id": "application_strategy",
+      "pricing_posture": "accepted_artifact_premium"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "law-regulation-change-watch",
+      "estimated_price_jpy": 600,
+      "outcome_contract_id": "regulation_change_watch",
+      "pricing_posture": "accepted_artifact_standard"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "local-government-permit-obligation-map",
+      "estimated_price_jpy": 900,
+      "outcome_contract_id": "local_government_permit_obligation_map",
+      "pricing_posture": "accepted_artifact_premium"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "court-enforcement-citation-pack",
+      "estimated_price_jpy": 600,
+      "outcome_contract_id": "court_enforcement_citation_pack",
+      "pricing_posture": "accepted_artifact_standard"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "public-statistics-market-context",
+      "estimated_price_jpy": 600,
+      "outcome_contract_id": "public_statistics_market_context",
+      "pricing_posture": "accepted_artifact_standard"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "client-monthly-public-watchlist",
+      "estimated_price_jpy": 900,
+      "outcome_contract_id": "client_monthly_review",
+      "pricing_posture": "accepted_artifact_premium"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "accounting-csv-public-counterparty-check",
+      "estimated_price_jpy": 900,
+      "outcome_contract_id": "csv_overlay_public_check",
+      "pricing_posture": "accepted_artifact_csv_overlay"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "cashbook-csv-subsidy-fit-screen",
+      "estimated_price_jpy": 900,
+      "outcome_contract_id": "cashbook_csv_subsidy_fit_screen",
+      "pricing_posture": "accepted_artifact_csv_overlay"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "source-receipt-ledger",
+      "estimated_price_jpy": 600,
+      "outcome_contract_id": "source_receipt_ledger",
+      "pricing_posture": "accepted_artifact_standard"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "evidence-answer-citation-pack",
+      "estimated_price_jpy": 600,
+      "outcome_contract_id": "evidence_answer",
+      "pricing_posture": "accepted_artifact_standard"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "foreign-investor-japan-public-entry-brief",
+      "estimated_price_jpy": 900,
+      "outcome_contract_id": "foreign_investor_japan_public_entry_brief",
+      "pricing_posture": "accepted_artifact_premium"
+    },
+    {
+      "billable_only_after_accepted_artifact": true,
+      "deliverable_slug": "healthcare-regulatory-public-check",
+      "estimated_price_jpy": 600,
+      "outcome_contract_id": "healthcare_regulatory_public_check",
+      "pricing_posture": "accepted_artifact_standard"
+    }
+  ],
+  "no_accepted_artifact_decision": "no_charge_or_void",
+  "no_hit_billable_only_if_scoped_and_consented": true,
+  "pricing_contract_id": "rc1-p0-bootstrap-2026-05-15:accepted-artifact-pricing"
+}

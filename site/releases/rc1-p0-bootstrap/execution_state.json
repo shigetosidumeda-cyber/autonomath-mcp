@@ -1,0 +1,35 @@
+{
+  "aws_account_id": "993693061769",
+  "aws_profile": "bookyou-recovery",
+  "aws_region": "us-east-1",
+  "capsule_id": "rc1-p0-bootstrap-2026-05-15",
+  "current_phase": "pre_live_aws_readiness",
+  "hard_stop_conditions": [
+    "preflight_scorecard.state != AWS_CANARY_READY",
+    "preflight_scorecard.live_aws_commands_allowed is not true",
+    "spend_simulation.pass_state is not true",
+    "teardown_simulation.pass_state is not true",
+    "cash_bill_guard_enabled is not true"
+  ],
+  "last_validated_commands": [
+    "scripts/check_agent_runtime_contracts.py",
+    "scripts/ops/validate_release_capsule.py",
+    "scripts/ops/check_jpcir_schema_fixtures.py",
+    "scripts/ops/aws_credit_local_preflight.py --warn-only",
+    "scripts/check_openapi_drift.py",
+    "scripts/check_mcp_drift.py",
+    "scripts/probe_runtime_distribution.py"
+  ],
+  "live_aws_commands_allowed": false,
+  "loop_mode": "continuous_until_plan_complete",
+  "next_resume_actions": [
+    "complete read-only AWS identity/budget/inventory inspection gate",
+    "prove budget and cash-bill guards before any resource creation",
+    "prove every planned AWS resource type has a delete recipe",
+    "keep P0 facade and accepted-artifact billing gates green"
+  ],
+  "schema_version": "jpcite.execution_state.p0.v1",
+  "state": "AWS_BLOCKED_PRE_FLIGHT",
+  "target_credit_conversion_usd": 19490,
+  "updated_at": "2026-05-15T00:00:00+09:00"
+}

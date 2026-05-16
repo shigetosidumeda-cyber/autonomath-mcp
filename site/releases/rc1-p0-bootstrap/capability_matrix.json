@@ -1,0 +1,45 @@
+{
+  "capabilities": [
+    {
+      "billable": false,
+      "blocked": false,
+      "capability_id": "jpcite_route",
+      "executable": true,
+      "previewable": false,
+      "recommendable": true
+    },
+    {
+      "billable": false,
+      "blocked": false,
+      "capability_id": "jpcite_preview_cost",
+      "executable": true,
+      "previewable": true,
+      "recommendable": true
+    },
+    {
+      "billable": true,
+      "blocked": false,
+      "capability_id": "jpcite_execute_packet",
+      "executable": true,
+      "previewable": false,
+      "recommendable": true
+    },
+    {
+      "billable": false,
+      "blocked": false,
+      "capability_id": "jpcite_get_packet",
+      "executable": true,
+      "previewable": false,
+      "recommendable": true
+    }
+  ],
+  "full_catalog_default_visible": false,
+  "generated_from_capsule_id": "rc1-p0-bootstrap-2026-05-15",
+  "matrix_id": "rc1-p0-bootstrap-2026-05-15:capability-matrix",
+  "p0_facade_tools": [
+    "jpcite_route",
+    "jpcite_preview_cost",
+    "jpcite_execute_packet",
+    "jpcite_get_packet"
+  ]
+}

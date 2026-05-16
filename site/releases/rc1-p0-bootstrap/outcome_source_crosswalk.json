@@ -1,0 +1,633 @@
+{
+  "accounting_csv_profile_keys": [
+    "freee_transaction_rows",
+    "freee_journal_rows",
+    "money_forward_journal_rows",
+    "yayoi_journal_rows",
+    "tkc_general_journal_layout_v1"
+  ],
+  "algorithm_blueprint_ids": [
+    "evidence_join",
+    "time_window_coverage_scoring",
+    "source_freshness_scoring",
+    "csv_to_public_counterparty_matching",
+    "subsidy_regulation_eligibility_triage_without_verdict",
+    "deadline_risk_ranking",
+    "no_hit_semantics"
+  ],
+  "aws_stage_ids": [
+    "stage_00_preflight_evidence_lock",
+    "stage_01_official_source_inventory",
+    "stage_02_public_collection_capture",
+    "stage_03_ocr_normalization_search_build",
+    "stage_04_claim_graph_packet_factory",
+    "stage_05_quality_eval_gap_review",
+    "stage_06_release_artifact_packaging",
+    "stage_07_teardown_attestation"
+  ],
+  "covered_deliverable_slugs": [
+    "company-public-baseline",
+    "invoice-registrant-public-check",
+    "subsidy-grant-candidate-pack",
+    "law-regulation-change-watch",
+    "local-government-permit-obligation-map",
+    "court-enforcement-citation-pack",
+    "public-statistics-market-context",
+    "client-monthly-public-watchlist",
+    "accounting-csv-public-counterparty-check",
+    "cashbook-csv-subsidy-fit-screen",
+    "source-receipt-ledger",
+    "evidence-answer-citation-pack",
+    "foreign-investor-japan-public-entry-brief",
+    "healthcare-regulatory-public-check"
+  ],
+  "crosswalk": [
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "company-public-baseline",
+      "public_source_categories": [
+        "court_admin_guidance",
+        "tax"
+      ],
+      "public_source_family_ids": [
+        "gBizINFO",
+        "edinet",
+        "nta_invoice"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "gBizINFO",
+            "edinet"
+          ]
+        },
+        {
+          "source_category": "tax",
+          "source_family_ids": [
+            "nta_invoice"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "invoice-registrant-public-check",
+      "public_source_categories": [
+        "tax"
+      ],
+      "public_source_family_ids": [
+        "nta_invoice"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "tax",
+          "source_family_ids": [
+            "nta_invoice"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "subsidy_regulation_eligibility_triage_without_verdict",
+        "deadline_risk_ranking",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "subsidy-grant-candidate-pack",
+      "public_source_categories": [
+        "subsidies",
+        "local_governments"
+      ],
+      "public_source_family_ids": [
+        "jgrants",
+        "sme_agency",
+        "local_government_notice"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "subsidies",
+          "source_family_ids": [
+            "jgrants",
+            "sme_agency"
+          ]
+        },
+        {
+          "source_category": "local_governments",
+          "source_family_ids": [
+            "local_government_notice"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "time_window_coverage_scoring",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "law-regulation-change-watch",
+      "public_source_categories": [
+        "laws_regulations",
+        "court_admin_guidance"
+      ],
+      "public_source_family_ids": [
+        "egov_law",
+        "meti_notice",
+        "mhlw_notice"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "laws_regulations",
+          "source_family_ids": [
+            "egov_law"
+          ]
+        },
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "meti_notice",
+            "mhlw_notice"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "subsidy_regulation_eligibility_triage_without_verdict",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "local-government-permit-obligation-map",
+      "public_source_categories": [
+        "local_governments",
+        "laws_regulations"
+      ],
+      "public_source_family_ids": [
+        "local_government_notice",
+        "egov_law"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "local_governments",
+          "source_family_ids": [
+            "local_government_notice"
+          ]
+        },
+        {
+          "source_category": "laws_regulations",
+          "source_family_ids": [
+            "egov_law"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "court-enforcement-citation-pack",
+      "public_source_categories": [
+        "court_admin_guidance"
+      ],
+      "public_source_family_ids": [
+        "courts_jp",
+        "meti_enforcement",
+        "maff_enforcement"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "courts_jp",
+            "meti_enforcement",
+            "maff_enforcement"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "time_window_coverage_scoring",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "public-statistics-market-context",
+      "public_source_categories": [
+        "statistics"
+      ],
+      "public_source_family_ids": [
+        "estat",
+        "prefecture_statistics"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "statistics",
+          "source_family_ids": [
+            "estat",
+            "prefecture_statistics"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "deadline_risk_ranking",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "client-monthly-public-watchlist",
+      "public_source_categories": [
+        "court_admin_guidance",
+        "tax",
+        "subsidies",
+        "laws_regulations"
+      ],
+      "public_source_family_ids": [
+        "gBizINFO",
+        "nta_invoice",
+        "jgrants",
+        "egov_law"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "gBizINFO"
+          ]
+        },
+        {
+          "source_category": "tax",
+          "source_family_ids": [
+            "nta_invoice"
+          ]
+        },
+        {
+          "source_category": "subsidies",
+          "source_family_ids": [
+            "jgrants"
+          ]
+        },
+        {
+          "source_category": "laws_regulations",
+          "source_family_ids": [
+            "egov_law"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [
+        "freee_transaction_rows",
+        "freee_journal_rows",
+        "money_forward_journal_rows",
+        "yayoi_journal_rows",
+        "tkc_general_journal_layout_v1"
+      ],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "csv_to_public_counterparty_matching",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "accounting-csv-public-counterparty-check",
+      "public_source_categories": [
+        "tax",
+        "court_admin_guidance"
+      ],
+      "public_source_family_ids": [
+        "nta_invoice",
+        "gBizINFO"
+      ],
+      "requires_csv_overlay": true,
+      "source_category_links": [
+        {
+          "source_category": "tax",
+          "source_family_ids": [
+            "nta_invoice"
+          ]
+        },
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "gBizINFO"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [
+        "freee_transaction_rows",
+        "freee_journal_rows",
+        "money_forward_journal_rows",
+        "yayoi_journal_rows",
+        "tkc_general_journal_layout_v1"
+      ],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "subsidy_regulation_eligibility_triage_without_verdict",
+        "deadline_risk_ranking",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "cashbook-csv-subsidy-fit-screen",
+      "public_source_categories": [
+        "subsidies"
+      ],
+      "public_source_family_ids": [
+        "jgrants",
+        "sme_agency"
+      ],
+      "requires_csv_overlay": true,
+      "source_category_links": [
+        {
+          "source_category": "subsidies",
+          "source_family_ids": [
+            "jgrants",
+            "sme_agency"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "source-receipt-ledger",
+      "public_source_categories": [
+        "court_admin_guidance",
+        "laws_regulations"
+      ],
+      "public_source_family_ids": [
+        "gBizINFO",
+        "egov_law"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "gBizINFO"
+          ]
+        },
+        {
+          "source_category": "laws_regulations",
+          "source_family_ids": [
+            "egov_law"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "evidence-answer-citation-pack",
+      "public_source_categories": [
+        "laws_regulations",
+        "court_admin_guidance"
+      ],
+      "public_source_family_ids": [
+        "egov_law",
+        "official_notice"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "laws_regulations",
+          "source_family_ids": [
+            "egov_law"
+          ]
+        },
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "official_notice"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "foreign-investor-japan-public-entry-brief",
+      "public_source_categories": [
+        "court_admin_guidance",
+        "laws_regulations"
+      ],
+      "public_source_family_ids": [
+        "edinet",
+        "meti_notice",
+        "egov_law"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "edinet",
+            "meti_notice"
+          ]
+        },
+        {
+          "source_category": "laws_regulations",
+          "source_family_ids": [
+            "egov_law"
+          ]
+        }
+      ]
+    },
+    {
+      "accounting_csv_profile_keys": [],
+      "algorithm_blueprint_ids": [
+        "evidence_join",
+        "source_freshness_scoring",
+        "subsidy_regulation_eligibility_triage_without_verdict",
+        "no_hit_semantics"
+      ],
+      "aws_stage_ids": [
+        "stage_01_official_source_inventory",
+        "stage_02_public_collection_capture",
+        "stage_03_ocr_normalization_search_build",
+        "stage_04_claim_graph_packet_factory",
+        "stage_05_quality_eval_gap_review",
+        "stage_06_release_artifact_packaging"
+      ],
+      "deliverable_slug": "healthcare-regulatory-public-check",
+      "public_source_categories": [
+        "court_admin_guidance",
+        "laws_regulations",
+        "local_governments"
+      ],
+      "public_source_family_ids": [
+        "mhlw_notice",
+        "egov_law",
+        "local_government_notice"
+      ],
+      "requires_csv_overlay": false,
+      "source_category_links": [
+        {
+          "source_category": "court_admin_guidance",
+          "source_family_ids": [
+            "mhlw_notice"
+          ]
+        },
+        {
+          "source_category": "laws_regulations",
+          "source_family_ids": [
+            "egov_law"
+          ]
+        },
+        {
+          "source_category": "local_governments",
+          "source_family_ids": [
+            "local_government_notice"
+          ]
+        }
+      ]
+    }
+  ],
+  "schema_version": "jpcite.outcome_source_crosswalk.p0.v1"
+}

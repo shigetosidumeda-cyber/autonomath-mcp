@@ -1,0 +1,951 @@
+{
+  "accepted_artifact_created": false,
+  "alias_ids": [
+    "evidence_answer",
+    "outcome_catalog_summary",
+    "p0_evidence_answer",
+    "p0_outcome_catalog_summary",
+    "p0_source_receipt_ledger",
+    "source_receipt_ledger"
+  ],
+  "available": true,
+  "billable": false,
+  "catalog_kind": "free_inline_static_packets",
+  "charge_status": "not_charged",
+  "live_aws_dependency_used": false,
+  "live_source_fetch_performed": false,
+  "packet_ids": [
+    "outcome_catalog_summary",
+    "source_receipt_ledger",
+    "evidence_answer"
+  ],
+  "packets": {
+    "evidence_answer": {
+      "accepted_artifact_created": false,
+      "answer": {
+        "text": "Deterministic answer placeholder; claims carry receipt references."
+      },
+      "billable": false,
+      "charge_status": "not_charged",
+      "claims": [
+        {
+          "claim_id": "claim_answer_core",
+          "receipt_ids": [
+            "sr_evidence_primary"
+          ],
+          "support_state": "supported",
+          "text": "Answer claim placeholder tied to official evidence.",
+          "visibility": "public"
+        },
+        {
+          "claim_id": "claim_notice_context",
+          "receipt_ids": [
+            "sr_evidence_notice"
+          ],
+          "support_state": "supported",
+          "text": "Context claim placeholder from an official notice.",
+          "visibility": "public"
+        },
+        {
+          "claim_id": "claim_receipt_context",
+          "receipt_ids": [
+            "sr_evidence_receipt_graph"
+          ],
+          "support_state": "supported",
+          "text": "Receipt graph context placeholder.",
+          "visibility": "public"
+        }
+      ],
+      "known_gaps": [
+        {
+          "explanation": "Non-official commentary is outside this P0 skeleton.",
+          "gap_id": "gap_nonofficial_commentary",
+          "gap_status": "known_gap",
+          "gap_type": "coverage"
+        }
+      ],
+      "live_aws_dependency_used": false,
+      "live_source_fetch_performed": false,
+      "no_hit_semantics": {
+        "absence_claim_enabled": false,
+        "rule": "no_hit_not_absence",
+        "wording": "No hit is reported as an observed search result only, not as proof of absence."
+      },
+      "outcome_contract_id": "evidence_answer",
+      "packet_kind": "evidence_answer",
+      "paid_packet_body_materialized": false,
+      "question": null,
+      "receipt_ledger": {
+        "claim_count": 3,
+        "claim_graph": [
+          {
+            "claim_id": "claim_answer_core",
+            "gap_statement_allowed": false,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": true,
+            "receipt_ids": [
+              "sr_evidence_primary"
+            ],
+            "support_state": "supported",
+            "visibility": "public"
+          },
+          {
+            "claim_id": "claim_notice_context",
+            "gap_statement_allowed": false,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": true,
+            "receipt_ids": [
+              "sr_evidence_notice"
+            ],
+            "support_state": "supported",
+            "visibility": "public"
+          },
+          {
+            "claim_id": "claim_receipt_context",
+            "gap_statement_allowed": false,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": true,
+            "receipt_ids": [
+              "sr_evidence_receipt_graph"
+            ],
+            "support_state": "supported",
+            "visibility": "public"
+          }
+        ],
+        "issues": [],
+        "known_gap_count": 1,
+        "known_gap_ids": [
+          "gap_nonofficial_commentary"
+        ],
+        "no_hit_semantics": {
+          "absence_claim_enabled": false,
+          "rule": "no_hit_not_absence",
+          "wording": "No hit is reported as an observed search result only, not as proof of absence."
+        },
+        "outcome_contract_id": "evidence_answer",
+        "public_claims_release_allowed": true,
+        "receipt_inventory": [
+          {
+            "claim_ids": [
+              "claim_answer_core"
+            ],
+            "receipt_id": "sr_evidence_primary",
+            "source_family_id": "egov_law",
+            "source_url": "https://elaws.e-gov.go.jp/",
+            "support_state": "direct"
+          },
+          {
+            "claim_ids": [
+              "claim_notice_context"
+            ],
+            "receipt_id": "sr_evidence_notice",
+            "source_family_id": "official_notice",
+            "source_url": "metadata:official-notice",
+            "support_state": "direct"
+          },
+          {
+            "claim_ids": [
+              "claim_receipt_context"
+            ],
+            "receipt_id": "sr_evidence_receipt_graph",
+            "source_family_id": "source_receipt_ledger",
+            "source_url": "metadata:receipt-graph",
+            "support_state": "direct"
+          }
+        ],
+        "schema_version": "jpcite.source_receipt_ledger.p0.v1",
+        "source_receipt_count": 3
+      },
+      "request_time_llm_call_performed": false,
+      "schema_version": "jpcite.p0.packet.evidence_answer.v1",
+      "skeleton_packet": true,
+      "source_receipts": [
+        {
+          "access_method": "metadata_only",
+          "observed_at": "2026-05-15T00:00:00+09:00",
+          "receipt_id": "sr_evidence_primary",
+          "source_family_id": "egov_law",
+          "source_url": "https://elaws.e-gov.go.jp/",
+          "support_state": "direct"
+        },
+        {
+          "access_method": "metadata_only",
+          "observed_at": "2026-05-15T00:00:00+09:00",
+          "receipt_id": "sr_evidence_notice",
+          "source_family_id": "official_notice",
+          "source_url": "metadata:official-notice",
+          "support_state": "direct"
+        },
+        {
+          "access_method": "metadata_only",
+          "observed_at": "2026-05-15T00:00:00+09:00",
+          "receipt_id": "sr_evidence_receipt_graph",
+          "source_family_id": "source_receipt_ledger",
+          "source_url": "metadata:receipt-graph",
+          "support_state": "direct"
+        }
+      ]
+    },
+    "outcome_catalog_summary": {
+      "accepted_artifact_created": false,
+      "agent_guidance": {
+        "must_preserve_fields": [
+          "outcome_contract_id",
+          "estimated_price_jpy",
+          "requires_user_csv",
+          "source_receipts",
+          "known_gaps",
+          "no_hit_semantics"
+        ],
+        "recommended_first_action": "Use jpcite_route or jpcite_preview_cost before asking the user to accept a paid artifact."
+      },
+      "billable": false,
+      "catalog_schema_version": "jpcite.outcome_catalog.p0.v1",
+      "charge_status": "not_charged",
+      "claims": [
+        {
+          "claim_id": "claim_outcome_catalog_count",
+          "receipt_ids": [
+            "src_static_outcome_catalog_p0"
+          ],
+          "support_state": "supported",
+          "text": "The P0 outcome catalog exposes 14 agent-facing deliverables.",
+          "visibility": "public"
+        },
+        {
+          "claim_id": "claim_outcome_catalog_no_live_runtime",
+          "receipt_ids": [
+            "src_static_outcome_catalog_p0"
+          ],
+          "support_state": "supported",
+          "text": "The outcome catalog is static and does not require request-time LLM, network, or AWS execution.",
+          "visibility": "public"
+        }
+      ],
+      "deliverable_count": 14,
+      "deliverables": [
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "company-public-baseline",
+          "display_name": "Company public baseline",
+          "estimated_price_jpy": 600,
+          "evidence_dependency_types": [
+            "official_public_registry",
+            "official_disclosure"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "company_public_baseline",
+          "packet_ids": [
+            "company-public-baseline",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_standard",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "company_registry",
+            "invoice_registry",
+            "public_disclosure"
+          ],
+          "user_segments": [
+            "agent_builder",
+            "tax_advisor",
+            "financial_institution",
+            "foreign_investor"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "invoice-registrant-public-check",
+          "display_name": "Invoice registrant public check",
+          "estimated_price_jpy": 300,
+          "evidence_dependency_types": [
+            "official_public_registry"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "invoice_registrant_public_check",
+          "packet_ids": [
+            "invoice-registrant-public-check",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_low",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "invoice_registry",
+            "tax_compliance"
+          ],
+          "user_segments": [
+            "tax_advisor",
+            "accounting_firm",
+            "sme_operator"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "subsidy-grant-candidate-pack",
+          "display_name": "Subsidy and grant candidate pack",
+          "estimated_price_jpy": 900,
+          "evidence_dependency_types": [
+            "official_program_guideline",
+            "official_public_notice"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "application_strategy",
+          "packet_ids": [
+            "subsidy-grant-candidate-pack",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_premium",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "subsidy_grants",
+            "application_strategy",
+            "deadline_watch"
+          ],
+          "user_segments": [
+            "tax_advisor",
+            "accounting_firm",
+            "sme_operator",
+            "financial_institution"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "law-regulation-change-watch",
+          "display_name": "Law and regulation change watch",
+          "estimated_price_jpy": 600,
+          "evidence_dependency_types": [
+            "official_law_regulation",
+            "official_public_notice"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "regulation_change_watch",
+          "packet_ids": [
+            "law-regulation-change-watch",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_standard",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "law_regulation",
+            "change_watch",
+            "public_comment"
+          ],
+          "user_segments": [
+            "agent_builder",
+            "tax_advisor",
+            "compliance_team"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "local-government-permit-obligation-map",
+          "display_name": "Local government permit and obligation map",
+          "estimated_price_jpy": 900,
+          "evidence_dependency_types": [
+            "official_public_notice",
+            "official_law_regulation"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "local_government_permit_obligation_map",
+          "packet_ids": [
+            "local-government-permit-obligation-map",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_premium",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "local_government",
+            "permits",
+            "law_regulation"
+          ],
+          "user_segments": [
+            "sme_operator",
+            "tax_advisor",
+            "local_government_vendor",
+            "compliance_team"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "court-enforcement-citation-pack",
+          "display_name": "Court and enforcement citation pack",
+          "estimated_price_jpy": 600,
+          "evidence_dependency_types": [
+            "official_court_record",
+            "official_public_notice"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "court_enforcement_citation_pack",
+          "packet_ids": [
+            "court-enforcement-citation-pack",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_standard",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "court_enforcement",
+            "citation_pack"
+          ],
+          "user_segments": [
+            "judicial_scrivener",
+            "compliance_team",
+            "agent_builder"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "public-statistics-market-context",
+          "display_name": "Public statistics market context",
+          "estimated_price_jpy": 600,
+          "evidence_dependency_types": [
+            "official_public_statistics"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "public_statistics_market_context",
+          "packet_ids": [
+            "public-statistics-market-context",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_standard",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "public_statistics",
+            "market_context"
+          ],
+          "user_segments": [
+            "foreign_investor",
+            "financial_institution",
+            "sme_operator",
+            "agent_builder"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "client-monthly-public-watchlist",
+          "display_name": "Client monthly public watchlist",
+          "estimated_price_jpy": 900,
+          "evidence_dependency_types": [
+            "official_public_registry",
+            "official_program_guideline",
+            "official_law_regulation"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "client_monthly_review",
+          "packet_ids": [
+            "client-monthly-public-watchlist",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_premium",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "monthly_review",
+            "invoice_registry",
+            "subsidy_grants",
+            "law_regulation"
+          ],
+          "user_segments": [
+            "tax_advisor",
+            "accounting_firm"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_csv_consent_and_artifact_acceptance",
+          "cached_official_public_sources_sufficient": false,
+          "deliverable_slug": "accounting-csv-public-counterparty-check",
+          "display_name": "Accounting CSV public counterparty check",
+          "estimated_price_jpy": 900,
+          "evidence_dependency_types": [
+            "tenant_private_csv_overlay",
+            "official_public_registry"
+          ],
+          "input_requirement": "cached_public_plus_user_csv",
+          "outcome_contract_id": "csv_overlay_public_check",
+          "packet_ids": [
+            "accounting-csv-public-counterparty-check",
+            "redacted_csv_overlay",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_csv_overlay",
+          "requires_user_csv": true,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "tax_accounting_csv_overlay",
+            "invoice_registry",
+            "company_registry"
+          ],
+          "user_segments": [
+            "tax_advisor",
+            "accounting_firm",
+            "sme_operator"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_csv_consent_and_artifact_acceptance",
+          "cached_official_public_sources_sufficient": false,
+          "deliverable_slug": "cashbook-csv-subsidy-fit-screen",
+          "display_name": "Cashbook CSV subsidy fit screen",
+          "estimated_price_jpy": 900,
+          "evidence_dependency_types": [
+            "tenant_private_csv_overlay",
+            "official_program_guideline"
+          ],
+          "input_requirement": "cached_public_plus_user_csv",
+          "outcome_contract_id": "cashbook_csv_subsidy_fit_screen",
+          "packet_ids": [
+            "cashbook-csv-subsidy-fit-screen",
+            "redacted_csv_overlay",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_csv_overlay",
+          "requires_user_csv": true,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "tax_accounting_csv_overlay",
+            "subsidy_grants",
+            "application_strategy"
+          ],
+          "user_segments": [
+            "tax_advisor",
+            "accounting_firm",
+            "sme_operator"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "source-receipt-ledger",
+          "display_name": "Source receipt ledger",
+          "estimated_price_jpy": 600,
+          "evidence_dependency_types": [
+            "public_source_receipt_graph",
+            "official_public_registry",
+            "official_law_regulation"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "source_receipt_ledger",
+          "packet_ids": [
+            "source-receipt-ledger",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_standard",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "source_receipts",
+            "claim_graph"
+          ],
+          "user_segments": [
+            "agent_builder",
+            "compliance_team",
+            "financial_institution"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "evidence-answer-citation-pack",
+          "display_name": "Evidence answer citation pack",
+          "estimated_price_jpy": 600,
+          "evidence_dependency_types": [
+            "official_law_regulation",
+            "official_public_notice",
+            "public_source_receipt_graph"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "evidence_answer",
+          "packet_ids": [
+            "evidence-answer-citation-pack",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_standard",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "evidence_answer",
+            "law_regulation",
+            "citation_pack"
+          ],
+          "user_segments": [
+            "agent_builder",
+            "tax_advisor",
+            "compliance_team"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "foreign-investor-japan-public-entry-brief",
+          "display_name": "Foreign investor Japan public entry brief",
+          "estimated_price_jpy": 900,
+          "evidence_dependency_types": [
+            "official_disclosure",
+            "official_law_regulation",
+            "official_public_notice"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "foreign_investor_japan_public_entry_brief",
+          "packet_ids": [
+            "foreign-investor-japan-public-entry-brief",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_premium",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "foreign_investment",
+            "public_disclosure",
+            "law_regulation"
+          ],
+          "user_segments": [
+            "foreign_investor",
+            "financial_institution",
+            "agent_builder"
+          ]
+        },
+        {
+          "billing_posture": "billable_after_user_accepts_artifact",
+          "cached_official_public_sources_sufficient": true,
+          "deliverable_slug": "healthcare-regulatory-public-check",
+          "display_name": "Healthcare regulatory public check",
+          "estimated_price_jpy": 600,
+          "evidence_dependency_types": [
+            "official_public_notice",
+            "official_law_regulation"
+          ],
+          "input_requirement": "cached_official_public_only",
+          "outcome_contract_id": "healthcare_regulatory_public_check",
+          "packet_ids": [
+            "healthcare-regulatory-public-check",
+            "source_receipts",
+            "known_gaps"
+          ],
+          "pricing_posture": "accepted_artifact_standard",
+          "requires_user_csv": false,
+          "use_case_tags": [
+            "japanese_public_official_info",
+            "healthcare_regulation",
+            "law_regulation",
+            "local_government"
+          ],
+          "user_segments": [
+            "healthcare_operator",
+            "compliance_team",
+            "agent_builder"
+          ]
+        }
+      ],
+      "known_gaps": [
+        {
+          "explanation": "This free catalog packet describes purchasable outcomes; it does not materialize paid artifacts.",
+          "gap_id": "gap_paid_artifact_execution_not_wired",
+          "gap_status": "known_gap",
+          "gap_type": "accepted_artifact_execution_not_wired"
+        }
+      ],
+      "live_aws_dependency_used": false,
+      "live_source_fetch_performed": false,
+      "no_hit_semantics": {
+        "absence_claim_enabled": false,
+        "mode": "no_hit_not_absence"
+      },
+      "outcome_contract_id": "outcome_catalog_summary",
+      "packet_kind": "outcome_catalog_summary",
+      "paid_packet_body_materialized": false,
+      "receipt_ledger": {
+        "claim_count": 2,
+        "claim_graph": [
+          {
+            "claim_id": "claim_outcome_catalog_count",
+            "gap_statement_allowed": false,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": true,
+            "receipt_ids": [
+              "src_static_outcome_catalog_p0"
+            ],
+            "support_state": "supported",
+            "visibility": "public"
+          },
+          {
+            "claim_id": "claim_outcome_catalog_no_live_runtime",
+            "gap_statement_allowed": false,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": true,
+            "receipt_ids": [
+              "src_static_outcome_catalog_p0"
+            ],
+            "support_state": "supported",
+            "visibility": "public"
+          }
+        ],
+        "issues": [],
+        "known_gap_count": 1,
+        "known_gap_ids": [
+          "gap_paid_artifact_execution_not_wired"
+        ],
+        "no_hit_semantics": {
+          "absence_claim_enabled": false,
+          "mode": "no_hit_not_absence"
+        },
+        "outcome_contract_id": "outcome_catalog_summary",
+        "public_claims_release_allowed": true,
+        "receipt_inventory": [
+          {
+            "claim_ids": [
+              "claim_outcome_catalog_count",
+              "claim_outcome_catalog_no_live_runtime"
+            ],
+            "receipt_id": "src_static_outcome_catalog_p0",
+            "source_family_id": "jpcite_outcome_catalog",
+            "source_url": "metadata:site/releases/rc1-p0-bootstrap/outcome_catalog.json",
+            "support_state": "direct"
+          }
+        ],
+        "schema_version": "jpcite.source_receipt_ledger.p0.v1",
+        "source_receipt_count": 1
+      },
+      "request_time_llm_call_performed": false,
+      "schema_version": "jpcite.p0.packet.outcome_catalog_summary.v1",
+      "source_receipts": [
+        {
+          "access_method": "static_registry",
+          "observed_at": "2026-05-15T00:00:00+09:00",
+          "receipt_id": "src_static_outcome_catalog_p0",
+          "source_family_id": "jpcite_outcome_catalog",
+          "source_url": "metadata:site/releases/rc1-p0-bootstrap/outcome_catalog.json",
+          "support_state": "direct"
+        }
+      ]
+    },
+    "source_receipt_ledger": {
+      "accepted_artifact_created": false,
+      "billable": false,
+      "charge_status": "not_charged",
+      "claims": [
+        {
+          "claim_id": "claim_receipt_inventory",
+          "receipt_ids": [
+            "sr_ledger_receipt_graph"
+          ],
+          "support_state": "supported",
+          "text": "Receipt graph inventory placeholder.",
+          "visibility": "public"
+        },
+        {
+          "claim_id": "claim_registry_receipt",
+          "receipt_ids": [
+            "sr_ledger_gbizinfo"
+          ],
+          "support_state": "supported",
+          "text": "Registry receipt placeholder.",
+          "visibility": "public"
+        },
+        {
+          "claim_id": "claim_law_receipt",
+          "receipt_ids": [
+            "sr_ledger_egov_law"
+          ],
+          "support_state": "supported",
+          "text": "Law receipt placeholder.",
+          "visibility": "public"
+        },
+        {
+          "claim_id": "claim_registry_gap",
+          "receipt_ids": [
+            "sr_ledger_registry_gap"
+          ],
+          "support_state": "gap",
+          "text": "Registry coverage gap placeholder.",
+          "visibility": "public"
+        }
+      ],
+      "known_gaps": [
+        {
+          "explanation": "Commercial registry receipt is represented only as a gap.",
+          "gap_id": "gap_commercial_registry_receipt",
+          "gap_status": "known_gap",
+          "gap_type": "source_access"
+        }
+      ],
+      "live_aws_dependency_used": false,
+      "live_source_fetch_performed": false,
+      "no_hit_semantics": {
+        "absence_claim_enabled": false,
+        "rule": "no_hit_not_absence",
+        "wording": "No hit is reported as an observed search result only, not as proof of absence."
+      },
+      "outcome_contract_id": "source_receipt_ledger",
+      "packet_kind": "source_receipt_ledger",
+      "paid_packet_body_materialized": false,
+      "receipt_ledger": {
+        "claim_count": 4,
+        "claim_graph": [
+          {
+            "claim_id": "claim_receipt_inventory",
+            "gap_statement_allowed": false,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": true,
+            "receipt_ids": [
+              "sr_ledger_receipt_graph"
+            ],
+            "support_state": "supported",
+            "visibility": "public"
+          },
+          {
+            "claim_id": "claim_registry_receipt",
+            "gap_statement_allowed": false,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": true,
+            "receipt_ids": [
+              "sr_ledger_gbizinfo"
+            ],
+            "support_state": "supported",
+            "visibility": "public"
+          },
+          {
+            "claim_id": "claim_law_receipt",
+            "gap_statement_allowed": false,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": true,
+            "receipt_ids": [
+              "sr_ledger_egov_law"
+            ],
+            "support_state": "supported",
+            "visibility": "public"
+          },
+          {
+            "claim_id": "claim_registry_gap",
+            "gap_statement_allowed": true,
+            "missing_receipt_ids": [],
+            "public_claim_export_allowed": false,
+            "receipt_ids": [
+              "sr_ledger_registry_gap"
+            ],
+            "support_state": "gap",
+            "visibility": "public"
+          }
+        ],
+        "issues": [],
+        "known_gap_count": 1,
+        "known_gap_ids": [
+          "gap_commercial_registry_receipt"
+        ],
+        "no_hit_semantics": {
+          "absence_claim_enabled": false,
+          "rule": "no_hit_not_absence",
+          "wording": "No hit is reported as an observed search result only, not as proof of absence."
+        },
+        "outcome_contract_id": "source_receipt_ledger",
+        "public_claims_release_allowed": true,
+        "receipt_inventory": [
+          {
+            "claim_ids": [
+              "claim_receipt_inventory"
+            ],
+            "receipt_id": "sr_ledger_receipt_graph",
+            "source_family_id": "source_receipt_ledger",
+            "source_url": "metadata:receipt-graph",
+            "support_state": "direct"
+          },
+          {
+            "claim_ids": [
+              "claim_registry_receipt"
+            ],
+            "receipt_id": "sr_ledger_gbizinfo",
+            "source_family_id": "gBizINFO",
+            "source_url": "https://info.gbiz.go.jp/",
+            "support_state": "direct"
+          },
+          {
+            "claim_ids": [
+              "claim_law_receipt"
+            ],
+            "receipt_id": "sr_ledger_egov_law",
+            "source_family_id": "egov_law",
+            "source_url": "https://elaws.e-gov.go.jp/",
+            "support_state": "direct"
+          },
+          {
+            "claim_ids": [
+              "claim_registry_gap"
+            ],
+            "receipt_id": "sr_ledger_registry_gap",
+            "source_family_id": "commercial_registry",
+            "source_url": "metadata:registry-gap",
+            "support_state": "gap"
+          }
+        ],
+        "schema_version": "jpcite.source_receipt_ledger.p0.v1",
+        "source_receipt_count": 4
+      },
+      "request_time_llm_call_performed": false,
+      "schema_version": "jpcite.p0.packet.source_receipt_ledger.v1",
+      "skeleton_packet": true,
+      "source_receipts": [
+        {
+          "access_method": "metadata_only",
+          "observed_at": "2026-05-15T00:00:00+09:00",
+          "receipt_id": "sr_ledger_receipt_graph",
+          "source_family_id": "source_receipt_ledger",
+          "source_url": "metadata:receipt-graph",
+          "support_state": "direct"
+        },
+        {
+          "access_method": "metadata_only",
+          "observed_at": "2026-05-15T00:00:00+09:00",
+          "receipt_id": "sr_ledger_gbizinfo",
+          "source_family_id": "gBizINFO",
+          "source_url": "https://info.gbiz.go.jp/",
+          "support_state": "direct"
+        },
+        {
+          "access_method": "metadata_only",
+          "observed_at": "2026-05-15T00:00:00+09:00",
+          "receipt_id": "sr_ledger_egov_law",
+          "source_family_id": "egov_law",
+          "source_url": "https://elaws.e-gov.go.jp/",
+          "support_state": "direct"
+        },
+        {
+          "access_method": "metadata_only",
+          "observed_at": "2026-05-15T00:00:00+09:00",
+          "receipt_id": "sr_ledger_registry_gap",
+          "source_family_id": "commercial_registry",
+          "source_url": "metadata:registry-gap",
+          "support_state": "gap"
+        }
+      ]
+    }
+  },
+  "paid_packet_body_materialized": false,
+  "request_time_llm_call_performed": false,
+  "schema_version": "jpcite.inline_packet_catalog.p0.v1"
+}

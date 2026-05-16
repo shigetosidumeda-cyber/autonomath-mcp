@@ -1,0 +1,12 @@
+{
+  "step": "emergency_kill_switch",
+  "run_id": "rc1-p0-bootstrap",
+  "mode": "aws",
+  "dry_run": true,
+  "completed_at": "2026-05-15T16:36:09Z",
+  "token_gate": "JPCITE_EMERGENCY_TOKEN",
+  "aws_exit_code": "0",
+  "cf_exit_code": "skipped",
+  "aws_child": "/Users/shigetoumeda/jpcite/scripts/teardown/00_emergency_stop.sh",
+  "cf_child": "/Users/shigetoumeda/jpcite/scripts/ops/cf_pages_emergency_rollback.sh"
+}

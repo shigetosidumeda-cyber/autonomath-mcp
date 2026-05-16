@@ -1,0 +1,8 @@
+{
+  "accepted_artifact_required_for_charge": true,
+  "consent_id": "rc1-p0-bootstrap-2026-05-15:example-consent",
+  "input_hash": "sha256:example-input-hash",
+  "max_price_jpy": 300,
+  "outcome_contract_id": "company_public_baseline",
+  "preview_decision_id": "rc1-p0-bootstrap-2026-05-15:free-preview-decision"
+}

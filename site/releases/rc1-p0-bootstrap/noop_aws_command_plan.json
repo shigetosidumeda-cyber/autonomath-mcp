@@ -1,0 +1,61 @@
+{
+  "account_id": "993693061769",
+  "aws_profile": "bookyou-recovery",
+  "cash_bill_guard_enabled": true,
+  "commands": [
+    {
+      "command_id": "aws_identity_budget_inventory",
+      "intent": "Verify account, credit/budget visibility, and cash-bill guard before any resource creation.",
+      "live_allowed": false,
+      "live_command_preview": "aws sts get-caller-identity --profile bookyou-recovery && aws budgets describe-budgets --profile bookyou-recovery",
+      "required_preflight_state": "AWS_CANARY_READY",
+      "requires_teardown_recipe": false,
+      "service": "sts/budgets/ce",
+      "teardown_recipe_path_template": null
+    },
+    {
+      "command_id": "artifact_lake_dry_run",
+      "intent": "Plan immutable source receipt storage and query catalog without creating buckets or tables.",
+      "live_allowed": false,
+      "live_command_preview": "aws s3api create-bucket --bucket jpcite-source-receipts-<run-id> --region us-east-1 --profile bookyou-recovery",
+      "required_preflight_state": "AWS_CANARY_READY",
+      "requires_teardown_recipe": false,
+      "service": "s3/glue/athena",
+      "teardown_recipe_path_template": null
+    },
+    {
+      "command_id": "batch_playwright_dry_run",
+      "intent": "Plan browser capture workers for official public sources with terms gates and capped queues.",
+      "live_allowed": false,
+      "live_command_preview": "aws batch submit-job --job-name jpcite-playwright-<run-id> --profile bookyou-recovery",
+      "required_preflight_state": "AWS_CANARY_READY",
+      "requires_teardown_recipe": false,
+      "service": "batch/ecs/ecr/cloudwatch",
+      "teardown_recipe_path_template": null
+    },
+    {
+      "command_id": "bedrock_ocr_embedding_dry_run",
+      "intent": "Plan extraction, OCR, embeddings, and search indexing only after cost eligibility is proven.",
+      "live_allowed": false,
+      "live_command_preview": "aws bedrock-runtime invoke-model --model-id <eligible-model> --profile bookyou-recovery",
+      "required_preflight_state": "AWS_CANARY_READY",
+      "requires_teardown_recipe": false,
+      "service": "bedrock/textract/opensearch",
+      "teardown_recipe_path_template": null
+    },
+    {
+      "command_id": "teardown_attestation_dry_run",
+      "intent": "Plan deletion, export, and post-teardown attestation before live jobs can start.",
+      "live_allowed": false,
+      "live_command_preview": "aws resourcegroupstaggingapi get-resources --tag-filters Key=jpcite-run-id,Values=<run-id> --profile bookyou-recovery",
+      "required_preflight_state": "AWS_CANARY_READY",
+      "requires_teardown_recipe": false,
+      "service": "resource-groups-tagging-api/cloudwatch/logs",
+      "teardown_recipe_path_template": null
+    }
+  ],
+  "live_aws_commands_allowed": false,
+  "plan_id": "rc1-p0-bootstrap-2026-05-15:aws-noop-command-plan",
+  "region": "us-east-1",
+  "target_credit_conversion_usd": 19490
+}

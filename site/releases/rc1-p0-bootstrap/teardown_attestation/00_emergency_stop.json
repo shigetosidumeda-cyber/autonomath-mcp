@@ -1,0 +1,16 @@
+{
+  "step": "00_emergency_stop",
+  "run_id": "rc1-p0-bootstrap",
+  "profile": "bookyou-recovery",
+  "region": "us-east-1",
+  "dry_run": true,
+  "completed_at": "2026-05-15T16:36:09Z",
+  "token_gate": "JPCITE_EMERGENCY_TOKEN",
+  "services_swept": [
+    "batch", "ecs", "bedrock", "opensearch", "s3", "ec2"
+  ],
+  "step_results": [
+    {"service": "batch", "outcome": "terminate-jobs-fanout-issued"},    {"service": "ecs", "outcome": "desired-count-0-then-force-delete"},    {"service": "bedrock", "outcome": "delete-provisioned-throughput-fanout-issued"},    {"service": "opensearch", "outcome": "delete-domain-issued"},    {"service": "s3", "outcome": "versioning-suspend-and-deny-all-policy"},    {"service": "ec2", "outcome": "terminate-instances-fanout-issued"}
+  ],
+  "next_step": "verify_zero_aws.sh"
+}
