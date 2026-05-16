@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-05-16T20:12:22.777934+00:00",
+  "wave": "49-G1",
+  "stages": [
+    "landing",
+    "free",
+    "signup",
+    "topup",
+    "calc_engaged"
+  ],
+  "window_days": 14,
+  "daily": [
+    {
+      "conversion_rate": {
+        "calc_engaged": null,
+        "free": null,
+        "landing": null,
+        "signup": null,
+        "topup": null
+      },
+      "date": "2026-05-15",
+      "generated_at": "2026-05-16T20:12:22.777934+00:00",
+      "n_objects": 0,
+      "stage_event_counts": {
+        "calc_engaged": 0,
+        "free": 0,
+        "landing": 0,
+        "signup": 0,
+        "topup": 0
+      },
+      "stage_uniq_sessions": {
+        "calc_engaged": 0,
+        "free": 0,
+        "landing": 0,
+        "signup": 0,
+        "topup": 0
+      },
+      "stage_uniq_view": {
+        "calc_engaged": 0,
+        "free": 0,
+        "landing": 0,
+        "signup": 0,
+        "topup": 0
+      },
+      "total_events": 0,
+      "uniq_visitor": 0
+    }
+  ],
+  "g1_state": {
+    "threshold_uniq": 10,
+    "threshold_consecutive_days": 3,
+    "current_consecutive_days": 0,
+    "longest_consecutive_days": 0,
+    "current_streak_started_on": null,
+    "achieved": false,
+    "achieved_on": null,
+    "evaluated_at": "2026-05-16T20:12:22.777934+00:00"
+  },
+  "achievement_transition_this_run": false
+}
