@@ -101,6 +101,7 @@ import logging
 import re
 import sys
 from collections.abc import Mapping  # noqa: TC003 -- runtime use by Pydantic
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, Literal
 
@@ -138,6 +139,15 @@ DEFAULT_CE_REGION: Final[str] = "us-east-1"
 
 #: Default credit-run start timestamp (master plan window opens 2026-05-15).
 DEFAULT_RUN_START: Final[str] = "2026-05-15T00:00:00Z"
+
+#: Default per-job-prefix ThreadPool fan-out for :func:`build_ledger`.
+#: Mirrors the PERF-18 ETL rollout (``etl_raw_to_derived.DEFAULT_ETL_MAX_WORKERS``):
+#: per-job artifact assembly (6 sequential ``get_object`` calls + parse + hash) is
+#: independent across the 7 canonical J0X prefixes, so collapsing the sequential
+#: walk into a 4-way fan-out preserves the S3 GET semantics while overlapping
+#: TCP round-trips. Set to 1 to restore the legacy sequential walk for tests
+#: that share boto3-stub state across prefixes.
+DEFAULT_LEDGER_MAX_WORKERS: Final[int] = 4
 
 #: Canonical seven job_ids (mirrors ``ALL_JOB_IDS`` in
 #: ``src/jpintel_mcp/aws_credit_ops/source_to_job_map.py``).
@@ -839,15 +849,41 @@ def build_ledger(
     reports_bucket: str,
     run_start_at: str,
     now: dt.datetime | None = None,
+    max_workers: int = DEFAULT_LEDGER_MAX_WORKERS,
 ) -> RunLedger:
-    """Assemble the full :class:`RunLedger` from S3 + Cost Explorer."""
+    """Assemble the full :class:`RunLedger` from S3 + Cost Explorer.
+
+    ``max_workers`` controls the per-job-prefix ThreadPool fan-out for the
+    sequential :func:`aggregate_for_job` walk. Per-prefix artifact assembly
+    (6 ``get_object`` calls + parse + hash) is independent across the 7
+    canonical J0X prefixes; the PERF-18 baseline showed S3 GET dominates
+    ≥85% of wall time so a 4-way fan-out collapses the sequential 7-RTT
+    walk into an effectively 2-RTT parallel walk. Set ``max_workers=1`` to
+    restore the legacy sequential behaviour (useful for boto3-stub based
+    unit tests that share state across prefixes).
+    """
 
     if now is None:
         now = dt.datetime.now(dt.UTC)
     discovered = list_job_prefixes(s3_client, raw_bucket=raw_bucket)
-    per_job: list[PerJobLedger] = []
-    for prefix in discovered:
-        per_job.append(aggregate_for_job(s3_client, raw_bucket=raw_bucket, job_prefix=prefix))
+
+    def _aggregate_one(prefix: str) -> PerJobLedger:
+        return aggregate_for_job(s3_client, raw_bucket=raw_bucket, job_prefix=prefix)
+
+    per_job: list[PerJobLedger]
+    effective_workers = max(1, min(max_workers, len(discovered)))
+    if effective_workers <= 1 or len(discovered) <= 1:
+        per_job = [_aggregate_one(p) for p in discovered]
+    else:
+        # ThreadPoolExecutor.map preserves input order regardless of
+        # completion order, so the resulting per_job list keeps the
+        # canonical J01..J07 ordering — JSON output stays byte-stable
+        # across sequential and parallel modes.
+        with ThreadPoolExecutor(
+            max_workers=effective_workers,
+            thread_name_prefix="ledger-job",
+        ) as pool:
+            per_job = list(pool.map(_aggregate_one, discovered))
 
     total_credit = fetch_cost_explorer_total(ce_client, run_start_at=run_start_at, now=now)
 
@@ -973,6 +1009,16 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         default=DEFAULT_DERIVED_BUCKET,
         help=f"Derived bucket name (default: {DEFAULT_DERIVED_BUCKET})",
     )
+    p.add_argument(
+        "--max-workers",
+        type=int,
+        default=DEFAULT_LEDGER_MAX_WORKERS,
+        help=(
+            "ThreadPool fan-out for the per-job-prefix aggregation loop "
+            f"(default: {DEFAULT_LEDGER_MAX_WORKERS}; set to 1 to force "
+            "the legacy sequential walk)."
+        ),
+    )
     return p.parse_args(list(argv))
 
 
@@ -1006,6 +1052,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         raw_bucket=args.raw_bucket,
         reports_bucket=args.reports_bucket,
         run_start_at=args.run_start,
+        max_workers=args.max_workers,
     )
     out_path = Path(args.out)
     write_local_ledger(ledger, out_path=out_path)

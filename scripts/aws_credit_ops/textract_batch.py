@@ -86,6 +86,7 @@ import json
 import logging
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, Final
@@ -128,6 +129,16 @@ DEFAULT_WARN_THRESHOLD: Final[float] = 0.8
 #: operator-visible default so a misconfigured listing cannot fire 10K
 #: Textract calls.
 DEFAULT_MAX_PDFS: Final[int] = 800
+
+#: Default per-object ThreadPool fan-out for :func:`audit_magic_bytes`. The
+#: PERF-18 ETL rollout pattern (``etl_raw_to_derived.DEFAULT_ETL_MAX_WORKERS``)
+#: collapses the sequential N-object ranged-``GetObject`` walk into a 4-way
+#: parallel fan-out. Each call is an 8-byte ranged read so the per-call wall
+#: time is dominated by S3 TCP round-trip, not payload; the fan-out preserves
+#: the AWS API contract (one ranged GetObject per object) and only overlaps
+#: the network waits. Set to 1 to force the legacy sequential walk for unit
+#: tests that share a stateful boto3 stub.
+DEFAULT_AUDIT_MAX_WORKERS: Final[int] = 4
 
 #: Pseudo page-count used by DRY_RUN to simulate a typical ministry PDF
 #: (10 pages is the median for the 20 J06 target index pages). The dry
@@ -307,6 +318,7 @@ def audit_magic_bytes(
     s3_client: Any | None = None,
     max_objects: int = DEFAULT_MAX_PDFS,
     scan_len: int = MAGIC_BYTES_SCAN_LEN,
+    max_workers: int = DEFAULT_AUDIT_MAX_WORKERS,
 ) -> list[dict[str, Any]]:
     """List every object under ``input_uri`` and classify the first bytes.
 
@@ -316,6 +328,13 @@ def audit_magic_bytes(
     object with ``key`` / ``size_bytes`` / ``magic_prefix_hex`` /
     ``inferred_content_type``. Caller is responsible for emitting the
     audit report (CLI does this via :func:`write_jsonl`).
+
+    ``max_workers`` controls the per-object ThreadPool fan-out for the
+    ranged-``GetObject`` byte sniff (PERF-18 rollout pattern). Listing
+    pagination stays sequential because ``ContinuationToken`` semantics
+    chain; only the per-object 8-byte sniff is parallelised. Set to 1 to
+    restore the legacy sequential walk for unit tests that share a
+    stateful boto3 stub.
     """
 
     if s3_client is None:
@@ -330,22 +349,50 @@ def audit_magic_bytes(
         if continuation is not None:
             kwargs["ContinuationToken"] = continuation
         page = s3_client.list_objects_v2(**kwargs)
+
+        # Materialise the page's candidate (key, size) tuples first so the
+        # fan-out has a stable ordered input. ``max_objects`` is honoured
+        # per-page so the running totals still cap correctly across paged
+        # listings.
+        page_candidates: list[tuple[str, int]] = []
         for obj in page.get("Contents", []) or []:
             key = obj.get("Key")
             size = int(obj.get("Size", 0) or 0)
             if not isinstance(key, str):
                 continue
-            prefix_bytes = _fetch_object_prefix(s3_client, input_uri.bucket, key, scan_len=scan_len)
-            rows.append(
-                {
-                    "key": key,
-                    "size_bytes": size,
+            page_candidates.append((key, size))
+            if len(rows) + len(page_candidates) >= max_objects:
+                break
+
+        if page_candidates:
+
+            def _sniff(item: tuple[str, int]) -> dict[str, Any]:
+                k, sz = item
+                prefix_bytes = _fetch_object_prefix(
+                    s3_client, input_uri.bucket, k, scan_len=scan_len
+                )
+                return {
+                    "key": k,
+                    "size_bytes": sz,
                     "magic_prefix_hex": prefix_bytes.hex(),
                     "inferred_content_type": classify_magic_bytes(prefix_bytes),
                 }
-            )
-            if len(rows) >= max_objects:
-                return rows
+
+            effective_workers = max(1, min(max_workers, len(page_candidates)))
+            if effective_workers <= 1:
+                rows.extend(_sniff(item) for item in page_candidates)
+            else:
+                # ThreadPoolExecutor.map preserves input order regardless of
+                # completion order, so audit row order matches the S3
+                # listing order (matches the legacy sequential behaviour).
+                with ThreadPoolExecutor(
+                    max_workers=effective_workers,
+                    thread_name_prefix="audit-sniff",
+                ) as pool:
+                    rows.extend(pool.map(_sniff, page_candidates))
+
+        if len(rows) >= max_objects:
+            return rows[:max_objects]
         if not page.get("IsTruncated"):
             break
         continuation = page.get("NextContinuationToken")
@@ -848,6 +895,16 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
             "paying for a Textract batch."
         ),
     )
+    parser.add_argument(
+        "--max-workers",
+        type=int,
+        default=DEFAULT_AUDIT_MAX_WORKERS,
+        help=(
+            "ThreadPool fan-out for the per-object ranged-GetObject sniff "
+            f"in --audit-magic-bytes (default: {DEFAULT_AUDIT_MAX_WORKERS}; "
+            "set to 1 to force the legacy sequential walk)."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -870,6 +927,7 @@ def _run_audit_magic_bytes(
         input_uri,
         s3_client=s3_client,
         max_objects=args.max_pdfs,
+        max_workers=args.max_workers,
     )
     histogram: dict[str, int] = {}
     for row in rows:

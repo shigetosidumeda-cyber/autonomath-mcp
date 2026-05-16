@@ -87,6 +87,7 @@ import hashlib
 import json
 import logging
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
@@ -127,6 +128,30 @@ KNOWN_GAP_CODES: Final[frozenset[str]] = frozenset(
 
 #: Default per-source-family staleness TTL (days). Overridable via CLI flag.
 DEFAULT_STALENESS_TTL_DAYS: Final[int] = 30
+
+#: Default per-artifact ThreadPool fan-out for the validator's bulk-read of
+#: the 7 standard artifact files (PERF-18 rollout pattern). Each ``source
+#: .read(...)`` call is an independent ``get_object`` on the S3 prefix (or
+#: a Path read on a local prefix); fan-out only overlaps the network /
+#: filesystem wait, the parsed-rows transforms still happen on the main
+#: thread. Set to 1 to restore the legacy sequential walk for unit tests
+#: that share a stateful boto3 stub.
+DEFAULT_VALIDATOR_MAX_WORKERS: Final[int] = 4
+
+#: The 7 artifact filenames the validator bulk-reads up front. The 6
+#: standard contract files plus the optional ``license_boundary.json``
+#: sidecar (which falls back to ``source_licenses.json`` when absent). The
+#: tuple is bulk-read in parallel via ``DEFAULT_VALIDATOR_MAX_WORKERS``.
+_VALIDATOR_BULK_READ_FILES: Final[tuple[str, ...]] = (
+    "run_manifest.json",
+    "object_manifest.jsonl",
+    "source_receipts.jsonl",
+    "claim_refs.jsonl",
+    "known_gaps.jsonl",
+    "quarantine.jsonl",
+    "license_boundary.json",
+    "source_licenses.json",
+)
 
 #: Per-family override (in days). Keep this aligned with
 #: ``docs/_internal/aws_credit_data_acquisition_jobs_agent.md`` §1.4.
@@ -292,7 +317,7 @@ class S3PrefixSource(ArtifactSource):
         if self._s3 is not None:
             return self._s3
         try:
-            import boto3  # type: ignore[import-not-found]
+            import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
         except ImportError as exc:
             msg = (
                 "boto3 is not installed. Install in the operator environment "
@@ -895,17 +920,42 @@ def validate_run_artifacts(
     schemas: dict[str, Draft202012Validator],
     license_map: dict[str, str] | None = None,
     staleness_ttl_days: int = DEFAULT_STALENESS_TTL_DAYS,
+    max_workers: int = DEFAULT_VALIDATOR_MAX_WORKERS,
 ) -> ValidationReport:
-    """Run all 8 invariants and return a :class:`ValidationReport`."""
+    """Run all 8 invariants and return a :class:`ValidationReport`.
+
+    ``max_workers`` controls the per-artifact ThreadPool fan-out for the
+    bulk read of the 7 standard artifact files (PERF-18 rollout pattern).
+    Each ``source.read(...)`` call is an independent S3 ``get_object`` (or
+    local-filesystem read); the fan-out only overlaps the network /
+    filesystem wait. Parsing + invariant checks stay on the main thread so
+    the ``ValidationReport`` state mutations remain single-threaded. Set
+    ``max_workers=1`` to restore the legacy sequential walk for unit tests
+    that share a stateful boto3 stub.
+    """
     report = ValidationReport(prefix=source.display_prefix)
     # Initialize every invariant to PASS; checks downgrade to FAIL as they
     # find violations.
     for inv in INVARIANT_IDS:
         report.record(inv, passed=True)
 
-    # ---- Load primary artifact files (best-effort; missing files become
-    # violations on the relevant invariant).
-    run_manifest_payload = source.read("run_manifest.json")
+    # ---- Bulk-load primary artifact files (best-effort; missing files
+    # become violations on the relevant invariant). The reads are
+    # independent so they fan-out across ``max_workers`` threads — only
+    # the network wait overlaps, parsing happens on the main thread below.
+    bulk_payloads: dict[str, bytes | None]
+    effective_workers = max(1, min(max_workers, len(_VALIDATOR_BULK_READ_FILES)))
+    if effective_workers <= 1:
+        bulk_payloads = {name: source.read(name) for name in _VALIDATOR_BULK_READ_FILES}
+    else:
+        with ThreadPoolExecutor(
+            max_workers=effective_workers,
+            thread_name_prefix="validator-read",
+        ) as pool:
+            payloads_list = list(pool.map(source.read, _VALIDATOR_BULK_READ_FILES))
+        bulk_payloads = dict(zip(_VALIDATOR_BULK_READ_FILES, payloads_list, strict=True))
+
+    run_manifest_payload = bulk_payloads["run_manifest.json"]
     try:
         run_manifest = parse_json_object(run_manifest_payload or b"")
     except (json.JSONDecodeError, ValueError) as exc:
@@ -919,11 +969,11 @@ def validate_run_artifacts(
         )
         run_manifest = {}
 
-    object_manifest_rows = parse_jsonl(source.read("object_manifest.jsonl") or b"")
-    source_receipts = parse_jsonl(source.read("source_receipts.jsonl") or b"")
-    claim_refs = parse_jsonl(source.read("claim_refs.jsonl") or b"")
-    known_gaps = parse_jsonl(source.read("known_gaps.jsonl") or b"")
-    quarantine_rows = parse_jsonl(source.read("quarantine.jsonl") or b"")
+    object_manifest_rows = parse_jsonl(bulk_payloads["object_manifest.jsonl"] or b"")
+    source_receipts = parse_jsonl(bulk_payloads["source_receipts.jsonl"] or b"")
+    claim_refs = parse_jsonl(bulk_payloads["claim_refs.jsonl"] or b"")
+    known_gaps = parse_jsonl(bulk_payloads["known_gaps.jsonl"] or b"")
+    quarantine_rows = parse_jsonl(bulk_payloads["quarantine.jsonl"] or b"")
 
     file_rows: dict[str, list[dict[str, Any]]] = {
         "source_receipts.jsonl": source_receipts,
@@ -974,7 +1024,12 @@ def validate_run_artifacts(
         report.add_violation(v)
 
     # ---- Invariant 5: license_boundary_defined
-    sidecar_payload = source.read("license_boundary.json") or source.read("source_licenses.json")
+    # Reuse the prefetched bulk_payloads (both sidecar names were fanned
+    # out alongside the 6 standard artifact files above) so we do not pay
+    # for two more sequential S3 round-trips here.
+    sidecar_payload = (
+        bulk_payloads["license_boundary.json"] or bulk_payloads["source_licenses.json"]
+    )
     sidecar: dict[str, str] = dict(license_map or {})
     if sidecar_payload:
         try:
@@ -1092,6 +1147,16 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         action="store_true",
         help="Print the report as JSON (single line per invariant) instead of text.",
     )
+    p.add_argument(
+        "--max-workers",
+        type=int,
+        default=DEFAULT_VALIDATOR_MAX_WORKERS,
+        help=(
+            "ThreadPool fan-out for the per-artifact bulk-read at the top "
+            f"of validate_run_artifacts (default: {DEFAULT_VALIDATOR_MAX_WORKERS}; "
+            "set to 1 to force the legacy sequential walk)."
+        ),
+    )
     return p.parse_args(list(argv))
 
 
@@ -1128,6 +1193,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             schemas=schemas,
             license_map=license_map,
             staleness_ttl_days=args.staleness_ttl_days,
+            max_workers=args.max_workers,
         )
     except (jsonschema.exceptions.SchemaError, OSError) as exc:
         logger.error("validation aborted: %s", exc)
