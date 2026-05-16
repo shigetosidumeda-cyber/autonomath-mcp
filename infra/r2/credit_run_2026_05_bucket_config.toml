@@ -1,0 +1,92 @@
+# ------------------------------------------------------------------
+# Cloudflare R2 bucket config — jpcite credit-run artifact backup.
+#
+# Purpose
+# -------
+# Destination bucket for `scripts/aws_credit_ops/export_to_r2.sh`. The
+# three AWS S3 buckets created by the 2026-05 credit run (raw / derived
+# / reports) are mirrored here BEFORE `teardown_credit_run.sh` deletes
+# them, so the durable artifacts survive AWS account teardown.
+#
+# Per AWS canary plan §1: "AWS must produce durable assets, not
+# permanent runtime. Export valuable artifacts outside AWS before
+# teardown." This file is the wrangler-side counterpart to that step.
+#
+# This file is NOT a wrangler.toml that wrangler reads directly — it
+# is a project-local declaration of the R2 bucket the export script
+# targets, kept under `infra/r2/` so the bucket layout is in source
+# control (not just imperative `wrangler r2 bucket create`).
+#
+# To apply this config (one-time, before first live export):
+#   wrangler r2 bucket create jpcite-credit-artifacts
+#   wrangler r2 bucket cors put jpcite-credit-artifacts --rules '[]'
+#
+# Verify:
+#   wrangler r2 bucket list | grep jpcite-credit-artifacts
+# ------------------------------------------------------------------
+
+[bucket]
+name = "jpcite-credit-artifacts"
+# R2 buckets are region-less from the wrangler view; the underlying
+# placement is "auto" (Cloudflare picks the closest data center).
+# We pin the logical region label to apnortheast for documentation;
+# wrangler ignores this field.
+logical_region = "apnortheast"
+
+# jurisdiction = "default" (no EU-jurisdiction restriction). The AWS
+# source buckets live in ap-northeast-1; mirroring under the default
+# jurisdiction keeps the data on the same side of the Pacific without
+# the EU-data-residency surcharge.
+jurisdiction = "default"
+
+[bucket.lifecycle]
+# Lifecycle policy: keep all mirrored credit-run artifacts indefinitely.
+# This is a one-shot pre-teardown snapshot, NOT a rolling backup — there
+# is no auto-expiry. If a future cleanup is needed, run it manually via
+# `wrangler r2 object delete` after operator review.
+expire_days = 0  # 0 = never expire
+storage_class = "Standard"
+
+[bucket.access]
+# Bucket is private by default. The export script uses an R2 API token
+# with object-level access scoped to this bucket only (see Fly secrets:
+# R2_ENDPOINT / R2_ACCESS_KEY_ID / R2_SECRET_KEY).
+public_access = false
+# Allow only IAM-equivalent API token access; no presigned-URL based
+# public sharing. If a researcher needs read access, mint a per-key
+# presigned URL via the export script's verify path, never flip this.
+presigned_urls_allowed = false
+
+[bucket.layout]
+# Key layout inside the R2 bucket:
+#   <source-bucket-name>/<original-s3-key>
+#
+# Example: an S3 object at
+#   s3://jpcite-credit-993693061769-202605-raw/maff/2026/01/output.jsonl
+# lands in R2 at
+#   r2://jpcite-credit-artifacts/jpcite-credit-993693061769-202605-raw/maff/2026/01/output.jsonl
+#
+# This preserves the source-bucket distinction so a future re-hydrate
+# can round-trip without ambiguity. See export_to_r2.sh `R2_KEY` line.
+key_layout = "{source_bucket}/{s3_key}"
+
+[bucket.manifest]
+# After every export run, a `r2_export_manifest.json` is written to the
+# stage dir (default /tmp/jpcite_r2_export/r2_export_manifest.json) AND
+# uploaded to R2 at this key. The export script does NOT do the upload
+# step yet — that's a TODO for a follow-up commit. For now, the manifest
+# lives on the operator machine + can be uploaded manually with:
+#   aws --endpoint-url $R2_ENDPOINT s3 cp \
+#     /tmp/jpcite_r2_export/r2_export_manifest.json \
+#     s3://jpcite-credit-artifacts/_manifests/r2_export_manifest_2026-05.json
+manifest_key = "_manifests/r2_export_manifest_2026-05.json"
+
+[bucket.sources]
+# The 3 S3 source buckets this R2 bucket mirrors. Keep in sync with
+# `scripts/aws_credit_ops/export_to_r2.sh::SOURCE_BUCKETS` and with
+# `scripts/aws_credit_ops/teardown_credit_run.sh::BUCKETS_TO_DELETE`.
+buckets = [
+  "jpcite-credit-993693061769-202605-raw",
+  "jpcite-credit-993693061769-202605-derived",
+  "jpcite-credit-993693061769-202605-reports",
+]
