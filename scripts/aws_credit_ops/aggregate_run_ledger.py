@@ -388,25 +388,17 @@ def compute_coverage_breakdown(
     # source_url linkage.
     claim_count = max(len(claim_refs), 1)
     linked_claims = sum(
-        1
-        for row in claim_refs
-        if row.get("source_receipt_id") or row.get("source_url")
+        1 for row in claim_refs if row.get("source_receipt_id") or row.get("source_url")
     )
     claim_coverage = linked_claims / claim_count
 
     # citation_coverage uses §2.1 weighted sum:
     # (verified + 0.7*inferred + 0.3*stale + 0*unknown) / max(citation_count, 1)
     citation_total = max(len(source_receipts), 1)
-    verified = sum(
-        1 for r in source_receipts if r.get("verification_status") == "verified"
-    )
-    inferred = sum(
-        1 for r in source_receipts if r.get("verification_status") == "inferred"
-    )
+    verified = sum(1 for r in source_receipts if r.get("verification_status") == "verified")
+    inferred = sum(1 for r in source_receipts if r.get("verification_status") == "inferred")
     stale = sum(1 for r in source_receipts if r.get("verification_status") == "stale")
-    citation_coverage = (
-        verified + 0.7 * inferred + 0.3 * stale + 0.0 * 0
-    ) / citation_total
+    citation_coverage = (verified + 0.7 * inferred + 0.3 * stale + 0.0 * 0) / citation_total
 
     # fact_coverage_mean: per-receipt fact_coverage_r =
     # sourced_fact_count / max(required, observed, 1).
@@ -417,9 +409,7 @@ def compute_coverage_breakdown(
         observed = float(receipt.get("observed_fact_count", 0) or 0)
         denom = max(required, observed, 1.0)
         fact_coverages.append(min(1.0, sourced / denom))
-    fact_coverage_mean = (
-        sum(fact_coverages) / len(fact_coverages) if fact_coverages else 0.0
-    )
+    fact_coverage_mean = sum(fact_coverages) / len(fact_coverages) if fact_coverages else 0.0
 
     # freshness_coverage: average across receipts using exp(-age_days/half).
     half_life = 180.0
@@ -434,11 +424,7 @@ def compute_coverage_breakdown(
             continue
         # math.exp inlined as 2.71828^(-x) using pow to avoid import bloat
         freshness_values.append(pow(2.718281828459045, -age_days / half_life))
-    freshness_coverage = (
-        sum(freshness_values) / len(freshness_values)
-        if freshness_values
-        else 0.0
-    )
+    freshness_coverage = sum(freshness_values) / len(freshness_values) if freshness_values else 0.0
 
     # receipt_completion: fraction of run_manifest accepted artifacts.
     accepted = int(run_manifest.get("accepted_artifact_count", 0) or 0)
@@ -464,8 +450,7 @@ def compute_coverage_breakdown(
     # Clamp into [-0.30, 1.0] then we let the grade fall through.
     score = max(-0.30, min(1.0, score))
     critical_unknown_count = sum(
-        gap_counts[code]
-        for code in ("source_receipt_incomplete", "identity_ambiguity_unresolved")
+        gap_counts[code] for code in ("source_receipt_incomplete", "identity_ambiguity_unresolved")
     )
     grade = grade_coverage(score, critical_unknown_count)
 
@@ -576,7 +561,13 @@ def known_gaps_histogram(rows: Iterable[Mapping[str, Any]]) -> dict[str, int]:
 
 
 def _import_boto3() -> Any:  # pragma: no cover - trivial import shim
-    """Lazy boto3 import to keep this module importable without the SDK."""
+    """Lazy boto3 import to keep this module importable without the SDK.
+
+    The result is **not** memoised here so unit tests can swap this
+    function out via :class:`pytest.MonkeyPatch` to inject a fake boto3
+    surface. For live runs the actual ``boto3.client(...)`` calls are
+    pooled by :mod:`scripts.aws_credit_ops._aws`.
+    """
 
     try:
         import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
@@ -858,9 +849,7 @@ def build_ledger(
     for prefix in discovered:
         per_job.append(aggregate_for_job(s3_client, raw_bucket=raw_bucket, job_prefix=prefix))
 
-    total_credit = fetch_cost_explorer_total(
-        ce_client, run_start_at=run_start_at, now=now
-    )
+    total_credit = fetch_cost_explorer_total(ce_client, run_start_at=run_start_at, now=now)
 
     total_source = sum(j.total_source_count for j in per_job)
     total_claim = sum(j.total_claim_refs for j in per_job)
@@ -869,11 +858,7 @@ def build_ledger(
         for code, count in j.total_known_gaps_by_code.items():
             total_gaps[code] = total_gaps.get(code, 0) + count
 
-    avg_accepted = (
-        sum(j.accepted_artifact_rate for j in per_job) / len(per_job)
-        if per_job
-        else 0.0
-    )
+    avg_accepted = sum(j.accepted_artifact_rate for j in per_job) / len(per_job) if per_job else 0.0
 
     return RunLedger(
         generated_at=now.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -915,9 +900,7 @@ def print_summary(
     write(f"total_credit_usd       : {ledger.total_credit_consumed_usd:,.2f}\n")
     write(f"total_source_count     : {ledger.total_source_count_account_wide}\n")
     write(f"total_claim_refs       : {ledger.total_claim_refs_account_wide}\n")
-    write(
-        f"avg_accepted_artifact  : {ledger.accepted_artifact_rate_account_wide:.4f}\n"
-    )
+    write(f"avg_accepted_artifact  : {ledger.accepted_artifact_rate_account_wide:.4f}\n")
     write("known_gaps_by_code (account-wide):\n")
     for code, count in sorted(ledger.total_known_gaps_by_code_account_wide.items()):
         write(f"  {code:<35} {count}\n")
@@ -936,10 +919,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     """Parse CLI arguments."""
 
     p = argparse.ArgumentParser(
-        description=(
-            "Aggregate J01-J07 credit-run artifacts into "
-            "credit_run_ledger_2026_05.json"
-        ),
+        description=("Aggregate J01-J07 credit-run artifacts into credit_run_ledger_2026_05.json"),
     )
     p.add_argument(
         "--upload",
@@ -1012,6 +992,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     args = parse_args(argv if argv is not None else sys.argv[1:])
 
+    # Pool clients via the shared cache when running live; honour
+    # ``_import_boto3`` monkeypatches so unit tests can inject fakes
+    # without rebuilding the module-level pool. The 200-500 ms boto3
+    # cold-start tax is paid once per (service, region) tuple.
     boto3 = _import_boto3()
     s3 = boto3.client("s3", region_name=args.region)
     ce = boto3.client("ce", region_name=args.cost_explorer_region)
@@ -1049,13 +1033,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             # discovery can pick it up. A real Parquet write would require
             # pyarrow which is intentionally not a runtime dep.
             derived_key = "derived/credit_run_ledger_2026_05_per_job.jsonl"
-            lines = b"\n".join(
-                json.dumps(
-                    j.model_dump(),
-                    ensure_ascii=False,
-                ).encode("utf-8")
-                for j in ledger.jobs
-            ) + b"\n"
+            lines = (
+                b"\n".join(
+                    json.dumps(
+                        j.model_dump(),
+                        ensure_ascii=False,
+                    ).encode("utf-8")
+                    for j in ledger.jobs
+                )
+                + b"\n"
+            )
             s3.put_object(
                 Bucket=args.derived_bucket,
                 Key=derived_key,

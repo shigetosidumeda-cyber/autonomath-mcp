@@ -159,9 +159,7 @@ ARTIFACT_FILENAMES: Final[dict[str, str]] = {
 #: (``{"version": "jpcir.p0.v1"}``) when no claim rows are produced;
 #: :func:`read_jsonl_from_s3` drops the header line below so an empty
 #: claim-refs job still materialises a valid (empty) Parquet partition.
-REQUIRED_ARTIFACTS: Final[frozenset[str]] = frozenset(
-    {"object_manifest", "claim_refs"}
-)
+REQUIRED_ARTIFACTS: Final[frozenset[str]] = frozenset({"object_manifest", "claim_refs"})
 
 #: Header sentinel emitted by the crawler when no claim refs were
 #: extracted. The ETL drops rows that match this sentinel so the
@@ -507,7 +505,10 @@ def trigger_glue_crawler(
     try:
         glue_client.start_crawler(Name=crawler_name)
     except Exception as exc:  # noqa: BLE001 — boto3 ClientError subclass
-        if "CrawlerRunningException" in str(type(exc).__name__) or "already running" in str(exc).lower():
+        if (
+            "CrawlerRunningException" in str(type(exc).__name__)
+            or "already running" in str(exc).lower()
+        ):
             return "already_running"
         raise
     return "started"
@@ -547,15 +548,12 @@ def etl_one_artifact(
     raw_uri = f"s3://{raw_bucket}/{raw_key}"
     report = ArtifactReport(artifact_kind=artifact_kind, status="written", raw_uri=raw_uri)
     derived_key = (
-        f"{artifact_kind}/job_prefix={job_prefix.rstrip('/')}"
-        f"/run_id={run_id}/data.parquet"
+        f"{artifact_kind}/job_prefix={job_prefix.rstrip('/')}/run_id={run_id}/data.parquet"
     )
 
     raw_missing = False
     try:
-        rows, malformed = read_jsonl_from_s3(
-            bucket=raw_bucket, key=raw_key, s3_client=s3_client
-        )
+        rows, malformed = read_jsonl_from_s3(bucket=raw_bucket, key=raw_key, s3_client=s3_client)
     except Exception as exc:  # noqa: BLE001 — boto3 NoSuchKey path
         # Differentiate "not found" from genuine failure for the operator.
         msg_lower = str(exc).lower()
@@ -679,10 +677,7 @@ def run_etl(
             s3_client=s3_client,
         )
         report.artifacts.append(artifact_report)
-        if (
-            artifact_kind in REQUIRED_ARTIFACTS
-            and artifact_report.status == "missing_in_raw"
-        ):
+        if artifact_kind in REQUIRED_ARTIFACTS and artifact_report.status == "missing_in_raw":
             logger.error(
                 "etl: required artifact %s missing under s3://%s/%s/",
                 artifact_kind,
@@ -694,9 +689,7 @@ def run_etl(
         if glue_client is None:
             glue_client = _boto3_client("glue")
         try:
-            state = trigger_glue_crawler(
-                crawler_name=crawler_name, glue_client=glue_client
-            )
+            state = trigger_glue_crawler(crawler_name=crawler_name, glue_client=glue_client)
             report.crawler_triggered = True
             report.crawler_name = crawler_name
             report.crawler_status = state
@@ -718,15 +711,20 @@ def _utc_now() -> datetime:
 
 
 def _boto3_client(service: str) -> Any:  # pragma: no cover - trivial shim
+    """Return a cached boto3 client (200-500 ms saved on repeat calls).
+
+    Delegates to :mod:`scripts.aws_credit_ops._aws` so repeated
+    invocations within a process reuse the same underlying client.
+    """
     try:
-        import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
+        from scripts.aws_credit_ops._aws import get_client
     except ImportError as exc:
         msg = (
             "boto3 is not installed. Install it in the operator environment "
             "(pip install boto3) before running etl_raw_to_derived."
         )
         raise RuntimeError(msg) from exc
-    return boto3.client(service, region_name=DEFAULT_REGION)
+    return get_client(service, region_name=DEFAULT_REGION)
 
 
 # ---------------------------------------------------------------------------
@@ -814,18 +812,14 @@ def main(argv: list[str] | None = None) -> int:
     # partition; the only path that lands here today is the optional
     # artifact branch, but the guard stays explicit for safety).
     for art in report.artifacts:
-        if (
-            art.artifact_kind in REQUIRED_ARTIFACTS
-            and art.status == "missing_in_raw"
-        ):
+        if art.artifact_kind in REQUIRED_ARTIFACTS and art.status == "missing_in_raw":
             return 2
     return 0
 
 
 def _print_human_report(report: RunReport) -> None:
     sys.stdout.write(
-        f"[etl] job_prefix={report.job_prefix} run_id={report.run_id} "
-        f"dry_run={report.dry_run}\n"
+        f"[etl] job_prefix={report.job_prefix} run_id={report.run_id} dry_run={report.dry_run}\n"
     )
     for art in report.artifacts:
         sys.stdout.write(

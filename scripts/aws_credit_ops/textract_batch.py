@@ -179,7 +179,7 @@ class S3Uri:
         if not uri.startswith("s3://"):
             msg = f"expected s3://... URI, got {uri!r}"
             raise ValueError(msg)
-        rest = uri[len("s3://"):]
+        rest = uri[len("s3://") :]
         if "/" not in rest:
             return cls(bucket=rest, key_prefix="")
         bucket, _, key = rest.partition("/")
@@ -335,9 +335,7 @@ def audit_magic_bytes(
             size = int(obj.get("Size", 0) or 0)
             if not isinstance(key, str):
                 continue
-            prefix_bytes = _fetch_object_prefix(
-                s3_client, input_uri.bucket, key, scan_len=scan_len
-            )
+            prefix_bytes = _fetch_object_prefix(s3_client, input_uri.bucket, key, scan_len=scan_len)
             rows.append(
                 {
                     "key": key,
@@ -665,15 +663,19 @@ def write_run_manifest(
 
 
 def _boto3_client(service: str) -> Any:  # pragma: no cover - trivial shim
+    """Return a pooled boto3 client (200-500 ms saved on repeat calls).
+
+    Delegates to :mod:`scripts.aws_credit_ops._aws`.
+    """
     try:
-        import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
+        from scripts.aws_credit_ops._aws import get_client
     except ImportError as exc:
         msg = (
             "boto3 is not installed. Install it in the operator environment "
             "(pip install boto3) before running textract_batch."
         )
         raise TextractClientError(msg) from exc
-    return boto3.client(service, region_name="ap-northeast-1")
+    return get_client(service, region_name="ap-northeast-1")
 
 
 def run_batch(
@@ -710,9 +712,7 @@ def run_batch(
         dry_run=dry_run,
     )
 
-    listing = (listing_fn or list_pdfs)(
-        input_uri, s3_client=s3_client, max_pdfs=max_pdfs
-    )
+    listing = (listing_fn or list_pdfs)(input_uri, s3_client=s3_client, max_pdfs=max_pdfs)
     report.pdf_count_listed = len(listing)
 
     summary_rows: list[dict[str, Any]] = []
@@ -726,9 +726,7 @@ def run_batch(
             if entry.estimated_page_count is not None
             else DRY_RUN_SIMULATED_PAGE_COUNT
         )
-        projected = projected_spend_after(
-            report.page_count_total, per_page_usd, pessimistic_pages
-        )
+        projected = projected_spend_after(report.page_count_total, per_page_usd, pessimistic_pages)
         if should_stop(projected, budget_usd):
             report.stopped_at_pdf = idx
             report.stop_reason = (
@@ -741,9 +739,8 @@ def run_batch(
                 idx,
             )
             break
-        if (
-            report.warn_emitted_at_pdf is None
-            and should_warn(projected, budget_usd, warn_threshold)
+        if report.warn_emitted_at_pdf is None and should_warn(
+            projected, budget_usd, warn_threshold
         ):
             report.warn_emitted_at_pdf = idx
             logger.warning(
@@ -762,22 +759,16 @@ def run_batch(
             )
         except TextractClientError as exc:
             report.pdf_count_skipped += 1
-            report.skipped_entries.append(
-                {"key": entry.key, "reason": f"textract_error: {exc}"}
-            )
+            report.skipped_entries.append({"key": entry.key, "reason": f"textract_error: {exc}"})
             continue
 
         report.pdf_count_analyzed += 1
         report.page_count_total += result.page_count
-        report.projected_spend_usd = projected_spend_after(
-            report.page_count_total, per_page_usd, 0
-        )
+        report.projected_spend_usd = projected_spend_after(report.page_count_total, per_page_usd, 0)
 
         per_page_rows = build_per_page_jsonl(result)
         if not dry_run and per_page_rows:
-            jsonl_key = (
-                f"jsonl/{run_id}/{entry.key.replace('/', '_')}.jsonl"
-            )
+            jsonl_key = f"jsonl/{run_id}/{entry.key.replace('/', '_')}.jsonl"
             write_jsonl(
                 per_page_rows,
                 output_uri=output_uri,
@@ -828,9 +819,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--output-prefix", required=True)
     parser.add_argument("--budget-usd", type=float, default=DEFAULT_BUDGET_USD)
     parser.add_argument("--per-page-usd", type=float, default=DEFAULT_PER_PAGE_USD)
-    parser.add_argument(
-        "--warn-threshold", type=float, default=DEFAULT_WARN_THRESHOLD
-    )
+    parser.add_argument("--warn-threshold", type=float, default=DEFAULT_WARN_THRESHOLD)
     parser.add_argument("--max-pdfs", type=int, default=DEFAULT_MAX_PDFS)
     parser.add_argument("--job-run-id", default=None)
     parser.add_argument(
@@ -908,11 +897,7 @@ def _run_audit_magic_bytes(
             s3_client=s3_client,
         )
     if args.json:
-        print(
-            json.dumps(
-                {**summary, "rows": rows}, ensure_ascii=False, sort_keys=True, indent=2
-            )
-        )
+        print(json.dumps({**summary, "rows": rows}, ensure_ascii=False, sort_keys=True, indent=2))
     else:
         print(
             f"[textract_batch] audit: objects={len(rows)} real_pdfs={pdf_count} "
@@ -952,10 +937,7 @@ def main(argv: list[str] | None = None) -> int:
             f"projected_usd={report.projected_spend_usd:.2f} budget_usd={report.budget_usd:.2f}"
         )
         if report.stopped_at_pdf is not None:
-            print(
-                f"[textract_batch] STOPPED at pdf #{report.stopped_at_pdf}: "
-                f"{report.stop_reason}"
-            )
+            print(f"[textract_batch] STOPPED at pdf #{report.stopped_at_pdf}: {report.stop_reason}")
         if report.warn_emitted_at_pdf is not None:
             print(
                 f"[textract_batch] WARN at pdf #{report.warn_emitted_at_pdf}: "

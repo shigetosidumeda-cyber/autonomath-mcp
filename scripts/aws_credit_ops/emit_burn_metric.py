@@ -89,9 +89,7 @@ DEFAULT_HOURLY_ALERT_USD: Final[float] = 500.0
 DEFAULT_NAMESPACE: Final[str] = "jpcite/credit"
 DEFAULT_METRIC_REGION: Final[str] = "ap-northeast-1"
 DEFAULT_CE_REGION: Final[str] = "us-east-1"
-DEFAULT_SNS_TOPIC_ARN: Final[str] = (
-    "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts"
-)
+DEFAULT_SNS_TOPIC_ARN: Final[str] = "arn:aws:sns:us-east-1:993693061769:jpcite-credit-cost-alerts"
 
 SLOWDOWN_RATIO: Final[float] = 0.85
 STOP_RATIO: Final[float] = 0.95
@@ -290,11 +288,21 @@ def emit(
     if live and cw_client is not None:
         cw_client.put_metric_data(Namespace=emission.namespace, MetricData=payloads)
         actions.append(
-            {"action": "put_metric_data", "namespace": emission.namespace, "count": len(payloads), "live": True}
+            {
+                "action": "put_metric_data",
+                "namespace": emission.namespace,
+                "count": len(payloads),
+                "live": True,
+            }
         )
     else:
         actions.append(
-            {"action": "put_metric_data", "namespace": emission.namespace, "count": len(payloads), "live": False}
+            {
+                "action": "put_metric_data",
+                "namespace": emission.namespace,
+                "count": len(payloads),
+                "live": False,
+            }
         )
 
     if emission.breached_hourly_alert and sns_topic_arn:
@@ -353,13 +361,16 @@ def _env_float(name: str, default: float) -> float:
 def _build_boto3_clients(
     metric_region: str, ce_region: str
 ) -> tuple[_CloudWatchLike, _CostExplorerLike, _SNSLike]:
-    """Import boto3 lazily — keeps unit tests cheap."""
+    """Import boto3 lazily and reuse pooled clients across invocations.
 
-    import boto3  # type: ignore[import-not-found]
+    Cached via :mod:`scripts.aws_credit_ops._aws` so Lambda warm starts
+    skip the 200-500 ms boto3 client construction cost.
+    """
+    from scripts.aws_credit_ops._aws import get_client
 
-    cw = cast("CloudWatchClient", boto3.client("cloudwatch", region_name=metric_region))
-    ce = cast("CostExplorerClient", boto3.client("ce", region_name=ce_region))
-    sns = cast("SNSClient", boto3.client("sns", region_name=ce_region))
+    cw = cast("CloudWatchClient", get_client("cloudwatch", region_name=metric_region))
+    ce = cast("CostExplorerClient", get_client("ce", region_name=ce_region))
+    sns = cast("SNSClient", get_client("sns", region_name=ce_region))
     return cw, ce, sns
 
 
@@ -367,7 +378,9 @@ def run_once(argv: list[str] | None = None) -> dict[str, Any]:
     """End-to-end one-shot. Used by both the CLI and the Lambda handler."""
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--target", type=float, default=_env_float("JPCITE_CREDIT_TARGET_USD", DEFAULT_TARGET_USD))
+    parser.add_argument(
+        "--target", type=float, default=_env_float("JPCITE_CREDIT_TARGET_USD", DEFAULT_TARGET_USD)
+    )
     parser.add_argument(
         "--hourly-stop",
         type=float,

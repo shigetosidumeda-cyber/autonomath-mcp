@@ -249,9 +249,7 @@ def poll_batch_jobs(
             failed += count
         elif status in GROUP_RUNNING:
             running += count
-    return BatchJobsRollup(
-        succeeded=succeeded, failed=failed, running=running, by_status=by_status
-    )
+    return BatchJobsRollup(succeeded=succeeded, failed=failed, running=running, by_status=by_status)
 
 
 def poll_cost_explorer(
@@ -274,7 +272,7 @@ def poll_cost_explorer(
     results = response.get("ResultsByTime") or []
     if not results:
         return (0.0, start_iso, end_iso)
-    total = (results[0].get("Total") or {})
+    total = results[0].get("Total") or {}
     metric = total.get("UnblendedCost") or total.get("BlendedCost") or {}
     amount_raw = metric.get("Amount", "0")
     try:
@@ -401,9 +399,7 @@ def attestation_filename(run_id: str) -> str:
     return f"aws_canary_attestation_{safe}.json"
 
 
-def write_attestation(
-    attestation: CanaryAttestation, *, output_dir: Path, commit: bool
-) -> Path:
+def write_attestation(attestation: CanaryAttestation, *, output_dir: Path, commit: bool) -> Path:
     """Render JSON. Writes to disk only when ``commit=True``."""
 
     target = output_dir / attestation_filename(attestation.run_id)
@@ -458,21 +454,23 @@ def upload_attestation(
 
 
 def _enabled() -> bool:
-    return (
-        os.environ.get("JPCITE_CANARY_ATTESTATION_ENABLED", "false").strip().lower() == "true"
-    )
+    return os.environ.get("JPCITE_CANARY_ATTESTATION_ENABLED", "false").strip().lower() == "true"
 
 
 def _build_boto3_clients(
     *, batch_region: str, s3_region: str, ce_region: str
 ) -> tuple[_BatchLike, _CostExplorerLike, _S3Like]:
-    """Lazy boto3 import — keeps unit tests free of network deps."""
+    """Lazy boto3 import — keeps unit tests free of network deps.
 
-    import boto3
+    Clients are pooled via :mod:`scripts.aws_credit_ops._aws` so the
+    200-500 ms cold-start tax is only paid on the first call per
+    ``(service, region)`` tuple.
+    """
+    from scripts.aws_credit_ops._aws import get_client
 
-    batch = cast("BatchClient", boto3.client("batch", region_name=batch_region))
-    ce = cast("CostExplorerClient", boto3.client("ce", region_name=ce_region))
-    s3 = cast("S3Client", boto3.client("s3", region_name=s3_region))
+    batch = cast("BatchClient", get_client("batch", region_name=batch_region))
+    ce = cast("CostExplorerClient", get_client("ce", region_name=ce_region))
+    s3 = cast("S3Client", get_client("s3", region_name=s3_region))
     return batch, ce, s3
 
 
@@ -581,9 +579,7 @@ def run_once(argv: list[str] | None = None) -> dict[str, Any]:
     # commit gates LOCAL write; live_upload gates S3 upload. Concern separation
     # mirrors Stream W Wave 50 tick 8 (scorecard promote vs live_aws unlock).
     commit_local = args.commit and env_enabled and not args.dry_run
-    live_upload = (
-        commit_local and args.unlock_live_aws_commands
-    )
+    live_upload = commit_local and args.unlock_live_aws_commands
 
     started_at_str: str = args.started_at
     if started_at_str:

@@ -189,7 +189,7 @@ class S3Uri:
         if not uri.startswith("s3://"):
             msg = f"expected s3://... URI, got {uri!r}"
             raise ValueError(msg)
-        rest = uri[len("s3://"):]
+        rest = uri[len("s3://") :]
         if "/" not in rest:
             return cls(bucket=rest, key_prefix="")
         bucket, _, key = rest.partition("/")
@@ -267,10 +267,7 @@ def validate_model(model: str) -> dict[str, Any]:
 
     meta = ALLOWED_MODELS.get(model)
     if meta is None:
-        msg = (
-            f"model {model!r} is not in the allow-list. Allowed: "
-            f"{sorted(ALLOWED_MODELS)}"
-        )
+        msg = f"model {model!r} is not in the allow-list. Allowed: {sorted(ALLOWED_MODELS)}"
         raise SagemakerEmbedBatchError(msg)
     return meta
 
@@ -291,10 +288,7 @@ def validate_model_name(model_name: str) -> str:
     """Sanity-check the SageMaker ``ModelName`` (CreateModel field)."""
 
     if not _MODEL_NAME_RE.match(model_name):
-        msg = (
-            f"sagemaker_model_name must match {_MODEL_NAME_RE.pattern!r}, "
-            f"got {model_name!r}"
-        )
+        msg = f"sagemaker_model_name must match {_MODEL_NAME_RE.pattern!r}, got {model_name!r}"
         raise SagemakerEmbedBatchError(msg)
     return model_name
 
@@ -432,8 +426,13 @@ def write_run_manifest(
 
 
 def _boto3_client(service: str) -> Any:  # pragma: no cover - trivial shim
+    """Return a pooled boto3 client for ``service`` in ap-northeast-1.
+
+    Backed by :mod:`scripts.aws_credit_ops._aws` so the second-and-later
+    construction skips boto3's 200-500 ms warm-up.
+    """
     try:
-        import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
+        from scripts.aws_credit_ops._aws import get_client
     except ImportError as exc:
         msg = (
             "boto3 is not installed. Install it in the operator environment "
@@ -441,7 +440,7 @@ def _boto3_client(service: str) -> Any:  # pragma: no cover - trivial shim
             "--commit."
         )
         raise SagemakerEmbedBatchError(msg) from exc
-    return boto3.client(service, region_name="ap-northeast-1")
+    return get_client(service, region_name="ap-northeast-1")
 
 
 def run_batch(
@@ -510,9 +509,7 @@ def run_batch(
 
     if should_stop(projected, budget_usd):
         report.stopped = True
-        report.stop_reason = (
-            f"projected spend USD {projected:.2f} >= budget USD {budget_usd:.2f}"
-        )
+        report.stop_reason = f"projected spend USD {projected:.2f} >= budget USD {budget_usd:.2f}"
         logger.error(
             "sagemaker_embed_batch stop: projected=%.2f budget=%.2f",
             projected,
@@ -573,8 +570,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--model",
         default="sentence-transformers/all-MiniLM-L6-v2",
         help=(
-            "sentence-transformers model id. Must be one of: "
-            + ", ".join(sorted(ALLOWED_MODELS))
+            "sentence-transformers model id. Must be one of: " + ", ".join(sorted(ALLOWED_MODELS))
         ),
     )
     parser.add_argument(
@@ -600,17 +596,12 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--instance-count", type=int, default=1)
     parser.add_argument("--budget-usd", type=float, default=DEFAULT_BUDGET_USD)
     parser.add_argument("--per-row-usd", type=float, default=DEFAULT_PER_ROW_USD)
-    parser.add_argument(
-        "--warn-threshold", type=float, default=DEFAULT_WARN_THRESHOLD
-    )
+    parser.add_argument("--warn-threshold", type=float, default=DEFAULT_WARN_THRESHOLD)
     parser.add_argument("--job-run-id", default=None)
     parser.add_argument(
         "--commit",
         action="store_true",
-        help=(
-            "Lift the DRY_RUN guard. Without --commit the script does not "
-            "call SageMaker."
-        ),
+        help=("Lift the DRY_RUN guard. Without --commit the script does not call SageMaker."),
     )
     parser.add_argument(
         "--json",
