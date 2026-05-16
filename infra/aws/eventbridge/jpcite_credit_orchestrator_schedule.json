@@ -1,0 +1,47 @@
+{
+  "rule": {
+    "name": "jpcite-credit-orchestrator-schedule",
+    "description": "Triggers jpcite-credit-orchestrator Step Functions state machine on a fixed cadence for continuous credit burn. DISABLED by default — operator must explicitly enable to start the burn window.",
+    "region": "ap-northeast-1",
+    "account_id": "993693061769",
+    "schedule_expression": "rate(10 minutes)",
+    "state": "DISABLED",
+    "event_bus_name": "default",
+    "tags": [
+      {"Key": "Project", "Value": "jpcite"},
+      {"Key": "CreditRun", "Value": "2026-05"},
+      {"Key": "AutoStop", "Value": "2026-05-29"}
+    ]
+  },
+  "target": {
+    "id": "jpcite-credit-orchestrator-target",
+    "arn": "arn:aws:states:ap-northeast-1:993693061769:stateMachine:jpcite-credit-orchestrator",
+    "role_arn": "arn:aws:iam::993693061769:role/jpcite-credit-orchestrator-schedule-role",
+    "input": "{\"trigger\": \"eventbridge-schedule\", \"source\": \"jpcite-credit-orchestrator-schedule\"}"
+  },
+  "iam_role": {
+    "name": "jpcite-credit-orchestrator-schedule-role",
+    "policy_name": "jpcite-credit-orchestrator-schedule-policy",
+    "trust_doc": "infra/aws/iam/jpcite_credit_orchestrator_schedule_trust.json",
+    "policy_doc": "infra/aws/iam/jpcite_credit_orchestrator_schedule_policy.json",
+    "description": "Role assumed by EventBridge events.amazonaws.com to call states:StartExecution on jpcite-credit-orchestrator."
+  },
+  "cadence_economics": {
+    "default_rate_minutes": 10,
+    "executions_per_day_at_10min": 144,
+    "burn_window_days": 14,
+    "burn_window_start": "2026-05-16",
+    "burn_window_stop": "2026-05-29",
+    "iterations_over_window": 2016,
+    "per_execution_cost_usd_estimate": "1-2",
+    "total_cadence_burn_usd_estimate": "2000-4000",
+    "notes": "Per-execution cost is the J01-J07 Batch fan-out (~$1-2 at current corpus). Operator can tune --rate to compress/extend burn. Default DISABLED so cadence does not fire until explicit --enable."
+  },
+  "operator_notes": {
+    "enable_command": "scripts/aws_credit_ops/enable_burn_schedule.sh --enable --commit",
+    "disable_command": "scripts/aws_credit_ops/enable_burn_schedule.sh --disable --commit",
+    "tune_rate_command": "scripts/aws_credit_ops/enable_burn_schedule.sh --rate 5 --commit",
+    "default_mode": "DRY_RUN (use --commit to apply)",
+    "auto_stop": "2026-05-29 — the auto-stop Lambda + CloudWatch alarm should disable this rule when the credit budget is exhausted; this rule does NOT self-disable on a deadline."
+  }
+}
