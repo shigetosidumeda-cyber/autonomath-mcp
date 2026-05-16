@@ -1,14 +1,14 @@
 {
-  "snapshot_at": "2026-05-16T23:46:45+09:00",
+  "snapshot_at": "2026-05-17T00:43:15+09:00",
   "components": {
     "api": {
       "status": "ok",
-      "latency_ms": 966,
+      "latency_ms": 720,
       "error_category": null
     },
     "mcp": {
       "status": "degraded",
-      "latency_ms": 440,
+      "latency_ms": 1175,
       "error_category": "external_dependency_unavailable"
     },
     "billing": {
@@ -25,7 +25,7 @@
     },
     "dashboard": {
       "status": "ok",
-      "latency_ms": 197,
+      "latency_ms": 141,
       "error_category": null
     }
   },
