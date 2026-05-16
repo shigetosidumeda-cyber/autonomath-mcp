@@ -1,0 +1,84 @@
+{
+  "jobDefinitionName": "jpcite-cohort-render",
+  "type": "container",
+  "platformCapabilities": ["FARGATE"],
+  "propagateTags": true,
+  "tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "Workload": "cohort_render",
+    "AutoStop": "2026-05-29"
+  },
+  "containerProperties": {
+    "image": "993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:latest",
+    "command": [
+      "python",
+      "/opt/jpcite/scripts/aws_credit_ops/generate_acceptance_probability_packets.py",
+      "--db",
+      "/data/autonomath.db",
+      "--jpintel-db",
+      "/data/jpintel.db",
+      "--batch-start",
+      "Ref::batch_start",
+      "--batch-end",
+      "Ref::batch_end",
+      "--s3-prefix",
+      "Ref::s3_prefix",
+      "--run-id",
+      "Ref::run_id",
+      "--commit"
+    ],
+    "jobRoleArn": "arn:aws:iam::993693061769:role/jpcite-batch-job-role",
+    "executionRoleArn": "arn:aws:iam::993693061769:role/ecsTaskExecutionRole",
+    "resourceRequirements": [
+      {"type": "VCPU", "value": "4"},
+      {"type": "MEMORY", "value": "8192"}
+    ],
+    "networkConfiguration": {
+      "assignPublicIp": "ENABLED"
+    },
+    "runtimePlatform": {
+      "operatingSystemFamily": "LINUX",
+      "cpuArchitecture": "X86_64"
+    },
+    "environment": [
+      {"name": "AWS_DEFAULT_REGION", "value": "ap-northeast-1"},
+      {"name": "DERIVED_BUCKET", "value": "jpcite-credit-993693061769-202605-derived"}
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/batch/jpcite-credit-2026-05",
+        "awslogs-region": "ap-northeast-1",
+        "awslogs-stream-prefix": "jpcite-cohort-render"
+      }
+    }
+  },
+  "parameters": {
+    "batch_start": "0",
+    "batch_end": "1000",
+    "s3_prefix": "s3://jpcite-credit-993693061769-202605-derived/acceptance_probability/",
+    "run_id": "full_20260516_batch_000"
+  },
+  "timeout": {
+    "attemptDurationSeconds": 1800
+  },
+  "retryStrategy": {
+    "attempts": 2,
+    "evaluateOnExit": [
+      {"onExitCode": "2", "action": "EXIT"},
+      {"onExitCode": "64", "action": "EXIT"},
+      {"onReason": "Host*", "action": "RETRY"}
+    ]
+  },
+  "_notes": {
+    "purpose": "Render acceptance_probability_cohort_v1 packets for a 1000-cell slice of the 225,600-cell deterministic grid (47 pref × 20 JSIC × 4 scale × 12 program_kind × 5 FY). Each shard PUTs ~1000 JSON packets (avg ~2 KB) to s3://jpcite-credit-993693061769-202605-derived/acceptance_probability/<cohort_id>.json. NO LLM API calls — pure SQLite + Python statistics.",
+    "register_cmd": "aws batch register-job-definition --cli-input-json file://infra/aws/batch/jpcite_cohort_render_job_definition.json --profile bookyou-recovery --region ap-northeast-1",
+    "submit_example": "aws batch submit-job --job-name jpcite-cohort-render-000 --job-queue jpcite-credit-fargate-spot-short-queue --job-definition jpcite-cohort-render --parameters batch_start=0,batch_end=1000,run_id=full_20260516_batch_000 --profile bookyou-recovery --region ap-northeast-1",
+    "exit_codes": {
+      "0": "shard rendered + uploaded to S3",
+      "2": "packet upload failed (size ceiling / S3 error)",
+      "64": "argument error (e.g. --batch-start without --batch-end)"
+    }
+  }
+}

@@ -229,3 +229,10 @@ site/status/coverage.json
 
 # AWS canary build artifacts (embeddings.db etc. — 1.1 GiB scale, kept in S3 + R2)
 out/
+
+# Wave 83 packet generator output dirs (non-_v1 naming):
+/coastal_inundation_signal/
+/drought_water_supply_risk/
+/earthquake_hazard_overlay/
+/flood_zone_exposure/
+/heat_stress_economic_impact/
