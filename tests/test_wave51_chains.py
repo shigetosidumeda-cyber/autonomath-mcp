@@ -167,10 +167,19 @@ def _diff_rule_tree() -> RuleTree:
 # ---------------------------------------------------------------------------
 
 
-def test_register_wave51_chains_returns_canonical_4_tuple() -> None:
+def test_register_wave51_chains_returns_canonical_9_tuple() -> None:
+    """Wave 51 chain B (2026-05-16) lifted the tuple from 4 -> 9 entries.
+
+    Original 4 cross-dim composition chains (evidence_with_provenance /
+    session_aware_eligibility_check / federated_handoff_with_audit /
+    temporal_compliance_audit) + 5 per-dim primitive composition chains
+    (predictive_subscriber_fanout / session_multi_step_eligibility /
+    rule_tree_batch_eval / anonymized_cohort_query_with_redact /
+    time_machine_snapshot_walk).
+    """
     chains = register_wave51_chains()
     assert tuple(c.composed_tool_name for c in chains) == WAVE51_CHAIN_TOOLS
-    assert len(chains) == 4
+    assert len(chains) == 9
 
 
 def test_wave51_chains_are_composable_tool_subclasses() -> None:
@@ -653,10 +662,22 @@ def test_every_chain_yields_jpcir_envelope_shape(tmp_path: Path) -> None:
 
 
 def test_wave51_chain_tools_tuple_is_canonical_and_immutable() -> None:
+    """Wave 51 chain B (2026-05-16) lifted the tuple from 4 -> 9.
+
+    Updated assertion to mirror the Wave 51 chain B addition: 5 per-dim
+    primitive composition chains landed alongside the original 4
+    cross-dim chains.
+    """
     assert WAVE51_CHAIN_TOOLS == (
         "evidence_with_provenance",
         "session_aware_eligibility_check",
         "federated_handoff_with_audit",
         "temporal_compliance_audit",
+        # Wave 51 chain B (179 -> 184) additions.
+        "predictive_subscriber_fanout",
+        "session_multi_step_eligibility",
+        "rule_tree_batch_eval",
+        "anonymized_cohort_query_with_redact",
+        "time_machine_snapshot_walk",
     )
     assert isinstance(WAVE51_CHAIN_TOOLS, tuple)

@@ -1051,7 +1051,7 @@
   ],
   "_meta": {
     "io.modelcontextprotocol.registry/publisher-provided": {
-      "tool_count": 179,
+      "tool_count": 184,
       "transports": [
         "stdio",
         "sse",
@@ -1081,7 +1081,7 @@
         }
       }
     },
-    "tool_count": 179,
+    "tool_count": 184,
     "transports": [
       "stdio",
       "sse",

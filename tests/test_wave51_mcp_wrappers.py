@@ -314,7 +314,10 @@ def test_mcp_tool_count_is_169() -> None:
     }
     missing = expected_new - names
     assert not missing, f"Wave 51 tools not registered: {sorted(missing)}"
-    assert len(tools) == 169, f"Expected 169 tools, got {len(tools)}"
+    # Wave 51 chain B (2026-05-16) lifted from 169 -> 184 by adding
+    # 5 per-dim primitive composition chain MCP wrappers + Wave 59
+    # Stream B 10 outcome wrappers (already in the manifest cohort).
+    assert len(tools) == 184, f"Expected 184 tools, got {len(tools)}"
 
 
 if __name__ == "__main__":  # pragma: no cover

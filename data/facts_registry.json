@@ -174,10 +174,10 @@
     },
     {
       "key": "mcp_tools",
-      "value": 179,
+      "value": 184,
       "unit": "tools",
       "as_of": "2026-05-16",
-      "source": "site/.well-known/jpintel-tool-list.json:.tool_count (Wave 59 Stream B added 10 outcome wrappers, 169 -> 179; band [130,200] intact)",
+      "source": "site/.well-known/jpintel-tool-list.json:.tool_count (Wave 51 chain B added 5 per-dim primitive composition wrappers, 179 -> 184; band [130,200] intact)",
       "category": "product",
       "publishable": true,
       "expires_at": "2026-07-10"

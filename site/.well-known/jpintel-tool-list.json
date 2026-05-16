@@ -1,8 +1,8 @@
 {
   "schema_version": "jpcite.tool_list.v1",
   "as_of": "2026-05-16",
-  "tool_count": 179,
-  "note": "Public MCP manifest tool count, lifted from 169 to 179 by Wave 59 Stream B top-10 outcome wrappers. The 169 manifest cohort covers Wave 51 dim K-S 9/9 + L1+L2 + Wave 51 chains + every pre-Wave 51 default-gate tool surface; the 10 additions below wrap the highest-value outcomes from the 92-row outcome_catalog (Wave 53-58 packet pipelines) as first-class FastMCP tools. Each wrapper reads the precomputed S3 derived packet skeleton (s3://jpcite-credit-993693061769-202605-derived/) and emits the canonical JPCIR Evidence + OutcomeContract + citations + known_gaps envelope. Cost band 1=¥300 light / 2=¥600 mid / 3=¥900 heavy.",
+  "tool_count": 184,
+  "note": "Public MCP manifest tool count, lifted from 179 to 184 by Wave 51 chain B per-dim primitive composition wrappers (predictive_subscriber_fanout / session_multi_step_eligibility / rule_tree_batch_eval / anonymized_cohort_query_with_redact / time_machine_snapshot_walk). The 179 cohort covered Wave 51 dim K-S 9/9 + L1+L2 + Wave 51 cross-dim chains + Wave 59 Stream B top-10 outcome wrappers + every pre-Wave 51 default-gate tool surface. The 5 chain B additions thread multiple atomic primitives within a single dim K-S module into one composed call (3 ¥3 units / 税込 ¥9.90 per call, heavy compound tier). Wave 59 Stream B outcome wrappers below remain unchanged. Cost band 1=¥300 light / 2=¥600 mid / 3=¥900 heavy.",
   "wave59_stream_b_additions": [
     {
       "tool_name": "outcome_houjin_360",

@@ -95,6 +95,7 @@ from jpintel_mcp.agent_runtime.contracts import (
 from jpintel_mcp.anonymized_query import (
     REDACT_POLICY_VERSION,
     check_k_anonymity,
+    redact_pii_fields,
 )
 from jpintel_mcp.anonymized_query.audit_log import (
     cohort_hash,
@@ -116,7 +117,10 @@ from jpintel_mcp.federated_mcp import (
 )
 from jpintel_mcp.predictive_service import (
     PredictionEvent,
+    Subscription,
+    due_events_for_subscriber,
     enqueue_event,
+    register_subscription,
 )
 from jpintel_mcp.rule_tree import (
     EvalResult,
@@ -1137,6 +1141,844 @@ class TemporalComplianceAudit(ComposableTool):
 
 
 # ---------------------------------------------------------------------------
+# 5. predictive_subscriber_fanout — dim K (3 atomic primitives in 1 call)
+# ---------------------------------------------------------------------------
+
+
+class PredictiveSubscriberFanout(ComposableTool):
+    """Chain — predictive_service.register + enqueue + due_for fanout.
+
+    Compound flow over the dim K predictive_service module's 3 atomic
+    primitives that an agent would otherwise call separately at 3 ¥3
+    units:
+
+    1. :func:`register_subscription` for the caller's
+       :class:`Subscription` (subscriber_id + watch_targets +
+       channel + created_at).
+    2. :func:`enqueue_event` for the caller's pre-built
+       :class:`PredictionEvent` so the next ``due_events_for_subscriber``
+       call surfaces it.
+    3. :func:`due_events_for_subscriber` for the subscriber_id at
+       wall-clock now (override via ``now``) to confirm the event lands
+       inside the 24h KPI window.
+
+    Required ``kwargs``: ``subscription`` (:class:`Subscription`),
+    ``event`` (:class:`PredictionEvent`).
+    Optional: ``event_log_path`` (Path-like) / ``subscription_log_path``
+    (Path-like) — JSONL log overrides for tests / per-tenant isolation.
+    ``now`` (:class:`datetime`) — pin wall-clock for deterministic
+    test windowing.
+    """
+
+    @property
+    def composed_tool_name(self) -> str:
+        return "predictive_subscriber_fanout"
+
+    @property
+    def atomic_dependencies(self) -> tuple[str, ...]:
+        return ()
+
+    @property
+    def outcome_contract(self) -> OutcomeContract:
+        return _build_outcome_contract(
+            self.composed_tool_name,
+            display_name=(
+                "Predictive subscriber fan-out (register + enqueue + due-window "
+                "filter, composed)"
+            ),
+            packet_ids=("packet_predictive_subscriber_fanout",),
+        )
+
+    def compose(
+        self,
+        registry: AtomicRegistry,
+        /,
+        **kwargs: Any,
+    ) -> ComposedEnvelope:
+        _ = registry  # contract — registry parameter required by ABC.
+
+        subscription = kwargs.get("subscription")
+        event = kwargs.get("event")
+        now = kwargs.get("now")
+        event_log_path = kwargs.get("event_log_path")
+        subscription_log_path = kwargs.get("subscription_log_path")
+
+        warnings: list[str] = []
+
+        if not isinstance(subscription, Subscription):
+            raise ValueError(
+                "predictive_subscriber_fanout requires kwargs['subscription'] "
+                "to be a predictive_service.Subscription instance."
+            )
+        if not isinstance(event, PredictionEvent):
+            raise ValueError(
+                "predictive_subscriber_fanout requires kwargs['event'] to be "
+                "a predictive_service.PredictionEvent instance."
+            )
+
+        # Step 1: register the subscription.
+        try:
+            register_subscription(subscription, path=subscription_log_path)
+        except Exception as exc:  # noqa: BLE001 — surface in warnings.
+            warnings.append(
+                f"predictive_subscriber_fanout: register_subscription failed "
+                f"({type(exc).__name__}: {exc})"
+            )
+
+        # Step 2: enqueue the event.
+        try:
+            enqueue_event(event, path=event_log_path)
+        except Exception as exc:  # noqa: BLE001 — surface in warnings.
+            warnings.append(
+                f"predictive_subscriber_fanout: enqueue_event failed "
+                f"({type(exc).__name__}: {exc})"
+            )
+
+        # Step 3: due_for to confirm 24h KPI lands the event.
+        due_events: list[PredictionEvent] = []
+        try:
+            due_events = due_events_for_subscriber(
+                subscription.subscriber_id,
+                now=now if isinstance(now, datetime) else None,
+                event_path=event_log_path,
+                subscription_path=subscription_log_path,
+            )
+        except Exception as exc:  # noqa: BLE001 — surface in warnings.
+            warnings.append(
+                f"predictive_subscriber_fanout: due_events_for_subscriber "
+                f"failed ({type(exc).__name__}: {exc})"
+            )
+
+        target_in_due = any(e.event_id == event.event_id for e in due_events)
+        # ``supported`` when the event is registered AND lands in the
+        # 24h due window for the subscriber; ``partial`` otherwise.
+        support_state = "supported" if target_in_due else "partial"
+
+        primary: dict[str, Any] = {
+            "subscription_id": subscription.subscription_id,
+            "subscriber_id": subscription.subscriber_id,
+            "watch_targets": list(subscription.watch_targets),
+            "channel": subscription.channel,
+            "event_id": event.event_id,
+            "event_type": event.event_type,
+            "target_id": event.target_id,
+            "scheduled_at": event.scheduled_at,
+            "due_event_count": len(due_events),
+            "due_event_ids": [e.event_id for e in due_events],
+            "target_event_in_due_window": target_in_due,
+        }
+        receipt_ids = (
+            f"chain_receipt_{self.composed_tool_name}_register_subscription",
+            f"chain_receipt_{self.composed_tool_name}_enqueue_event",
+            f"chain_receipt_{self.composed_tool_name}_due_for",
+        )
+        evidence = _build_evidence(
+            self.composed_tool_name,
+            receipt_ids=receipt_ids,
+            support_state=support_state,
+            temporal_envelope="24h_predictive_window/observed",
+        )
+        composed_steps = (
+            "predictive_service.register_subscription",
+            "predictive_service.enqueue_event",
+            "predictive_service.due_events_for_subscriber",
+        )
+        return ComposedEnvelope(
+            composed_tool_name=self.composed_tool_name,
+            evidence=evidence,
+            outcome_contract=self.outcome_contract,
+            composed_steps=composed_steps,
+            primary_result=primary,
+            citations=(),
+            warnings=tuple(warnings),
+            compression_ratio=len(composed_steps),
+        )
+
+
+# ---------------------------------------------------------------------------
+# 6. session_multi_step_eligibility — dim L (open + N step + close)
+# ---------------------------------------------------------------------------
+
+
+class SessionMultiStepEligibility(ComposableTool):
+    """Chain — session_context.open + N step + close in 1 call.
+
+    Compound flow that converts an N-turn agent loop (N+2 atomic calls)
+    into a single composed call. Useful when the agent already knows the
+    sequence of actions it needs to record (e.g. a 3-step subsidy
+    eligibility walk: ``narrow_industry`` -> ``check_capital_band`` ->
+    ``confirm_region``) and wants to persist all of them under one
+    session_token.
+
+    1. :meth:`SessionRegistry.open_session` issues a fresh 24h token
+       and persists the supplied ``initial_state`` as
+       :attr:`SavedContext.current_state`.
+    2. For each entry in ``steps`` (a sequence of
+       ``{action: str, payload: dict}`` mappings), call
+       :meth:`SessionRegistry.step_session`. The chain tolerates a
+       partial sequence (one step failing) by surfacing the failure
+       index in ``warnings`` and continuing.
+    3. :meth:`SessionRegistry.close_session` returns the terminal
+       :class:`SavedContext`.
+
+    Required ``kwargs``: ``subject_id`` (str), ``steps``
+    (list of ``{action: str, payload: dict | None}``).
+    Optional: ``initial_state`` (dict), ``session_registry``
+    (:class:`SessionRegistry`).
+    """
+
+    @property
+    def composed_tool_name(self) -> str:
+        return "session_multi_step_eligibility"
+
+    @property
+    def atomic_dependencies(self) -> tuple[str, ...]:
+        return ()
+
+    @property
+    def outcome_contract(self) -> OutcomeContract:
+        return _build_outcome_contract(
+            self.composed_tool_name,
+            display_name=(
+                "Session multi-step eligibility persist (open + N step + "
+                "close, composed)"
+            ),
+            packet_ids=("packet_session_multi_step_eligibility",),
+        )
+
+    def compose(
+        self,
+        registry: AtomicRegistry,
+        /,
+        **kwargs: Any,
+    ) -> ComposedEnvelope:
+        _ = registry  # contract — registry parameter required by ABC.
+
+        subject_id = _coerce_str(kwargs.get("subject_id"), "subject_unknown")
+        steps_raw = kwargs.get("steps")
+        initial_state_raw = kwargs.get("initial_state")
+        initial_state: dict[str, Any] = (
+            dict(initial_state_raw) if isinstance(initial_state_raw, dict) else {}
+        )
+        session_registry = kwargs.get("session_registry")
+
+        if not isinstance(session_registry, SessionRegistry):
+            raise ValueError(
+                "session_multi_step_eligibility requires "
+                "kwargs['session_registry'] to be a SessionRegistry instance."
+            )
+        if not isinstance(steps_raw, list | tuple):
+            raise ValueError(
+                "session_multi_step_eligibility requires kwargs['steps'] to be "
+                "a list / tuple of {action, payload} mappings."
+            )
+
+        warnings: list[str] = []
+
+        # Step 1: open session.
+        token = session_registry.open_session(
+            subject_id=subject_id,
+            current_state=initial_state,
+        )
+
+        # Step 2: persist each step.
+        step_results: list[dict[str, Any]] = []
+        steps_persisted = 0
+        for idx, raw_step in enumerate(steps_raw):
+            if not isinstance(raw_step, dict):
+                warnings.append(
+                    f"session_multi_step_eligibility: step[{idx}] not a dict — "
+                    "skipping"
+                )
+                continue
+            action = _coerce_str(raw_step.get("action"), "")
+            payload_raw = raw_step.get("payload")
+            payload: dict[str, Any] = (
+                dict(payload_raw) if isinstance(payload_raw, dict) else {}
+            )
+            if not action:
+                warnings.append(
+                    f"session_multi_step_eligibility: step[{idx}] missing "
+                    "'action' — skipping"
+                )
+                continue
+            try:
+                session_registry.step_session(
+                    token.token_id, action=action, payload=payload
+                )
+                steps_persisted += 1
+                step_results.append(
+                    {"index": idx, "action": action, "status": "persisted"}
+                )
+            except Exception as exc:  # noqa: BLE001 — surface in warnings.
+                warnings.append(
+                    f"session_multi_step_eligibility: step[{idx}] "
+                    f"action={action!r} failed "
+                    f"({type(exc).__name__}: {exc})"
+                )
+                step_results.append(
+                    {
+                        "index": idx,
+                        "action": action,
+                        "status": "failed",
+                        "error": f"{type(exc).__name__}: {exc}",
+                    }
+                )
+
+        # Step 3: close session.
+        final_ctx: SavedContext = session_registry.close_session(token.token_id)
+
+        # Compose support_state — ``supported`` only when every supplied
+        # step landed; ``partial`` if any failed; ``absent`` if the input
+        # list was empty (no work done).
+        if not steps_raw:
+            support_state = "absent"
+        elif steps_persisted == len(steps_raw):
+            support_state = "supported"
+        else:
+            support_state = "partial"
+        evidence_type = (
+            "absence_observation" if support_state == "absent" else "derived_inference"
+        )
+
+        primary: dict[str, Any] = {
+            "subject_id": subject_id,
+            "session_token_id": token.token_id,
+            "session_expires_at": token.expires_at,
+            "initial_state": initial_state,
+            "steps_supplied": len(steps_raw),
+            "steps_persisted": steps_persisted,
+            "step_results": step_results,
+            "final_steps_count": final_ctx.steps_count(),
+        }
+        receipt_ids = (
+            f"chain_receipt_{self.composed_tool_name}_session_open",
+            f"chain_receipt_{self.composed_tool_name}_session_steps",
+            f"chain_receipt_{self.composed_tool_name}_session_close",
+        )
+        evidence = _build_evidence(
+            self.composed_tool_name,
+            receipt_ids=receipt_ids,
+            support_state=support_state,
+            temporal_envelope="24h_session/observed",
+            evidence_type=evidence_type,
+        )
+        composed_steps = (
+            "session_context.open_session",
+            "session_context.step_session_batch",
+            "session_context.close_session",
+        )
+        return ComposedEnvelope(
+            composed_tool_name=self.composed_tool_name,
+            evidence=evidence,
+            outcome_contract=self.outcome_contract,
+            composed_steps=composed_steps,
+            primary_result=primary,
+            citations=(),
+            warnings=tuple(warnings),
+            compression_ratio=len(composed_steps),
+        )
+
+
+# ---------------------------------------------------------------------------
+# 7. rule_tree_batch_eval — dim M (evaluate N trees over 1 context)
+# ---------------------------------------------------------------------------
+
+
+class RuleTreeBatchEval(ComposableTool):
+    """Chain — evaluate N rule trees over a single context in 1 call.
+
+    Compound flow that lets an agent ask "given this subject context,
+    walk each of these N rule trees and return every verdict +
+    rationale path". Replaces N atomic ``rule_engine_check`` round
+    trips with a single composed call.
+
+    Required ``kwargs``: ``trees`` (sequence of :class:`RuleTree`),
+    ``context`` (dict).
+    Returns a ``results`` list parallel to ``trees`` — each entry
+    carries ``tree_id`` / ``verdict`` / ``rationale_path`` /
+    ``rationale_text`` so the agent can quote *why* each tree reached
+    its verdict.
+    """
+
+    @property
+    def composed_tool_name(self) -> str:
+        return "rule_tree_batch_eval"
+
+    @property
+    def atomic_dependencies(self) -> tuple[str, ...]:
+        return ()
+
+    @property
+    def outcome_contract(self) -> OutcomeContract:
+        return _build_outcome_contract(
+            self.composed_tool_name,
+            display_name=(
+                "Rule tree batch evaluation (N trees x 1 context, composed)"
+            ),
+            packet_ids=("packet_rule_tree_batch_eval",),
+        )
+
+    def compose(
+        self,
+        registry: AtomicRegistry,
+        /,
+        **kwargs: Any,
+    ) -> ComposedEnvelope:
+        _ = registry  # contract — registry parameter required by ABC.
+
+        trees_raw = kwargs.get("trees")
+        context_raw = kwargs.get("context")
+        context: dict[str, Any] = (
+            dict(context_raw) if isinstance(context_raw, dict) else {}
+        )
+
+        if not isinstance(trees_raw, list | tuple):
+            raise ValueError(
+                "rule_tree_batch_eval requires kwargs['trees'] to be a "
+                "list / tuple of RuleTree instances."
+            )
+
+        warnings: list[str] = []
+        results: list[dict[str, Any]] = []
+        successful_evals = 0
+
+        for idx, tree in enumerate(trees_raw):
+            if not isinstance(tree, RuleTree):
+                warnings.append(
+                    f"rule_tree_batch_eval: trees[{idx}] not a RuleTree — "
+                    "skipping"
+                )
+                results.append(
+                    {
+                        "index": idx,
+                        "tree_id": None,
+                        "status": "skipped",
+                        "error": "not a RuleTree instance",
+                    }
+                )
+                continue
+            try:
+                eval_result: EvalResult = evaluate_tree(tree, context)
+                successful_evals += 1
+                results.append(
+                    {
+                        "index": idx,
+                        "tree_id": tree.tree_id,
+                        "tree_name": tree.name,
+                        "tree_version": tree.version,
+                        "status": "ok",
+                        "verdict": _verdict_for(eval_result),
+                        "action": eval_result.action,
+                        "rationale_path": list(eval_result.rationale_path),
+                        "rationale_text": list(eval_result.rationale_text),
+                        "source_doc_ids": list(eval_result.source_doc_ids),
+                    }
+                )
+            except Exception as exc:  # noqa: BLE001 — surface in warnings.
+                warnings.append(
+                    f"rule_tree_batch_eval: trees[{idx}] id={tree.tree_id!r} "
+                    f"failed ({type(exc).__name__}: {exc})"
+                )
+                results.append(
+                    {
+                        "index": idx,
+                        "tree_id": tree.tree_id,
+                        "status": "failed",
+                        "error": f"{type(exc).__name__}: {exc}",
+                    }
+                )
+
+        if not trees_raw:
+            support_state = "absent"
+        elif successful_evals == len(trees_raw):
+            support_state = "supported"
+        else:
+            support_state = "partial"
+        evidence_type = (
+            "absence_observation" if support_state == "absent" else "derived_inference"
+        )
+
+        primary: dict[str, Any] = {
+            "tree_count": len(trees_raw),
+            "successful_evals": successful_evals,
+            "context_keys": sorted(context.keys()),
+            "results": results,
+        }
+        receipt_ids = (
+            f"chain_receipt_{self.composed_tool_name}_rule_tree_batch",
+        )
+        evidence = _build_evidence(
+            self.composed_tool_name,
+            receipt_ids=receipt_ids,
+            support_state=support_state,
+            temporal_envelope="rolling/observed",
+            evidence_type=evidence_type,
+        )
+        composed_steps = (
+            "rule_tree.evaluate_tree:batch",
+        )
+        return ComposedEnvelope(
+            composed_tool_name=self.composed_tool_name,
+            evidence=evidence,
+            outcome_contract=self.outcome_contract,
+            composed_steps=composed_steps,
+            primary_result=primary,
+            citations=(),
+            warnings=tuple(warnings),
+            compression_ratio=max(len(trees_raw), 1),
+        )
+
+
+# ---------------------------------------------------------------------------
+# 8. anonymized_cohort_query_with_redact — dim N (redact + k-check + audit)
+# ---------------------------------------------------------------------------
+
+
+class AnonymizedCohortQueryWithRedact(ComposableTool):
+    """Chain — pii_redact + k_anonymity + audit_log in 1 call.
+
+    Compound flow that fuses the three dim N primitives an agent would
+    otherwise call separately:
+
+    1. :func:`redact_pii_fields` over the caller-supplied ``sample``
+       row, returning a copy with PII columns stripped and embedded
+       PII text scrubbed.
+    2. :func:`check_k_anonymity` against ``cohort_size`` to enforce the
+       k>=5 floor. Below the floor, ``support_state`` downgrades to
+       ``partial`` and the audit reason becomes ``cohort_too_small``.
+    3. :func:`write_audit_entry` appends one APPI-grade audit row with
+       the cohort_hash + redact_policy_version + final cohort_size +
+       outcome reason + PII pattern ids hit during redact.
+
+    Required ``kwargs``: ``sample`` (dict), ``cohort_size`` (int).
+    Optional: ``industry`` / ``region`` / ``size`` (str — cohort
+    filter axes for :func:`cohort_hash`),
+    ``audit_log_path`` (Path-like) — JSONL override for tests.
+    """
+
+    @property
+    def composed_tool_name(self) -> str:
+        return "anonymized_cohort_query_with_redact"
+
+    @property
+    def atomic_dependencies(self) -> tuple[str, ...]:
+        return ()
+
+    @property
+    def outcome_contract(self) -> OutcomeContract:
+        return _build_outcome_contract(
+            self.composed_tool_name,
+            display_name=(
+                "Anonymized cohort query (redact + k-anonymity + APPI audit, "
+                "composed)"
+            ),
+            packet_ids=("packet_anonymized_cohort_query_with_redact",),
+        )
+
+    def compose(
+        self,
+        registry: AtomicRegistry,
+        /,
+        **kwargs: Any,
+    ) -> ComposedEnvelope:
+        _ = registry  # contract — registry parameter required by ABC.
+
+        sample_raw = kwargs.get("sample")
+        sample: dict[str, Any] = (
+            dict(sample_raw) if isinstance(sample_raw, dict) else {}
+        )
+        cohort_size = _coerce_int(kwargs.get("cohort_size"), 0)
+        industry = _maybe_str(kwargs.get("industry"))
+        region = _maybe_str(kwargs.get("region"))
+        size = _maybe_str(kwargs.get("size"))
+        audit_path = kwargs.get("audit_log_path")
+
+        warnings: list[str] = []
+
+        # Step 1: PII redact of the sample row.
+        redacted = redact_pii_fields(sample)
+        # Heuristic — flag the PII keys that were stripped so the
+        # downstream auditor can see what shape was scrubbed.
+        stripped_keys = sorted(set(sample.keys()) - set(redacted.keys()))
+        # Approximate pii_hits via the keys we know are gone (the
+        # redact_pii_fields function strips named PII fields outright;
+        # in-line text PII hits are not surfaced by the API so we
+        # synthesise a marker list with the stripped key names).
+        pii_hits = stripped_keys
+
+        # Step 2: k-anonymity floor.
+        k_result = check_k_anonymity(cohort_size)
+        if not k_result.ok:
+            warnings.append(
+                "anonymized_cohort_query_with_redact: k-anonymity check failed "
+                f"(cohort_size={cohort_size}, reason={k_result.reason!r}); "
+                "support_state downgraded to 'partial'."
+            )
+
+        # Step 3: APPI audit row.
+        cohort_hash_hex = cohort_hash(industry, region, size)
+        audit_reason = "ok" if k_result.ok else k_result.reason
+        audit_entry = write_audit_entry(
+            cohort_hash_hex=cohort_hash_hex,
+            redact_policy_version=REDACT_POLICY_VERSION,
+            cohort_size=cohort_size,
+            reason=audit_reason,
+            pii_hits=pii_hits,
+            path=audit_path,
+        )
+
+        # Compose support_state.
+        if not sample:
+            support_state = "absent"
+        elif k_result.ok:
+            support_state = "supported"
+        else:
+            support_state = "partial"
+        evidence_type = (
+            "absence_observation" if support_state == "absent" else "derived_inference"
+        )
+
+        primary: dict[str, Any] = {
+            "sample_keys_in": sorted(sample.keys()),
+            "sample_keys_out": sorted(redacted.keys()),
+            "stripped_keys": stripped_keys,
+            "redacted_sample": redacted,
+            "redact_policy_version": REDACT_POLICY_VERSION,
+            "k_anonymity": {
+                "ok": k_result.ok,
+                "reason": k_result.reason,
+                "cohort_size": k_result.cohort_size,
+                "floor": 5,
+            },
+            "audit_entry": {
+                "cohort_hash": audit_entry.cohort_hash,
+                "redact_policy_version": audit_entry.redact_policy_version,
+                "cohort_size": audit_entry.cohort_size,
+                "reason": audit_entry.reason,
+                "pii_hits": list(audit_entry.pii_hits),
+                "ts": audit_entry.ts,
+            },
+        }
+        receipt_ids = (
+            f"chain_receipt_{self.composed_tool_name}_pii_redact",
+            f"chain_receipt_{self.composed_tool_name}_k_anonymity",
+            f"chain_receipt_{self.composed_tool_name}_audit_log",
+        )
+        evidence = _build_evidence(
+            self.composed_tool_name,
+            receipt_ids=receipt_ids,
+            support_state=support_state,
+            temporal_envelope="rolling/observed",
+            evidence_type=evidence_type,
+        )
+        composed_steps = (
+            "anonymized_query.redact_pii_fields",
+            "anonymized_query.check_k_anonymity",
+            "anonymized_query.write_audit_entry",
+        )
+        return ComposedEnvelope(
+            composed_tool_name=self.composed_tool_name,
+            evidence=evidence,
+            outcome_contract=self.outcome_contract,
+            composed_steps=composed_steps,
+            primary_result=primary,
+            citations=(),
+            warnings=tuple(warnings),
+            compression_ratio=len(composed_steps),
+        )
+
+
+# ---------------------------------------------------------------------------
+# 9. time_machine_snapshot_walk — dim Q (N consecutive monthly diffs)
+# ---------------------------------------------------------------------------
+
+
+class TimeMachineSnapshotWalk(ComposableTool):
+    """Chain — walk N consecutive monthly snapshots + cumulative diffs.
+
+    Compound flow that pulls each snapshot for a dataset between
+    ``start_as_of_date`` and ``end_as_of_date`` (one bucket per month)
+    and emits an ordered list of pairwise :func:`counterfactual_diff`
+    results so the agent can trace "how did this dataset evolve over
+    the window?" in a single ¥9.90 call rather than N pairwise atomic
+    calls.
+
+    Required ``kwargs``: ``dataset_id`` (str),
+    ``start_as_of_date`` (date), ``end_as_of_date`` (date),
+    ``snapshot_registry`` (:class:`SnapshotRegistry`).
+    Optional: ``month_count_cap`` (int, default 12, max 60) — bounds
+    the walk so a pathological window does not iterate the full 5-year
+    retention.
+    """
+
+    @property
+    def composed_tool_name(self) -> str:
+        return "time_machine_snapshot_walk"
+
+    @property
+    def atomic_dependencies(self) -> tuple[str, ...]:
+        return ()
+
+    @property
+    def outcome_contract(self) -> OutcomeContract:
+        return _build_outcome_contract(
+            self.composed_tool_name,
+            display_name=(
+                "Time-machine snapshot walk (N consecutive monthly diffs, "
+                "composed)"
+            ),
+            packet_ids=("packet_time_machine_snapshot_walk",),
+        )
+
+    def compose(
+        self,
+        registry: AtomicRegistry,
+        /,
+        **kwargs: Any,
+    ) -> ComposedEnvelope:
+        _ = registry  # contract — registry parameter required by ABC.
+
+        dataset_id = _coerce_str(kwargs.get("dataset_id"), "programs")
+        start_value = kwargs.get("start_as_of_date")
+        end_value = kwargs.get("end_as_of_date")
+        snapshot_registry = kwargs.get("snapshot_registry")
+        month_count_cap = _coerce_int(kwargs.get("month_count_cap"), 12)
+        if month_count_cap < 1:
+            month_count_cap = 1
+        if month_count_cap > 60:
+            month_count_cap = 60
+
+        if not isinstance(snapshot_registry, SnapshotRegistry):
+            raise ValueError(
+                "time_machine_snapshot_walk requires kwargs['snapshot_registry'] "
+                "to be a SnapshotRegistry instance."
+            )
+        start_date = _to_date(start_value)
+        end_date = _to_date(end_value)
+        if start_date is None or end_date is None:
+            raise ValueError(
+                "time_machine_snapshot_walk requires both start_as_of_date and "
+                "end_as_of_date to be coercible to a date."
+            )
+        if end_date < start_date:
+            raise ValueError(
+                "time_machine_snapshot_walk: end_as_of_date must be >= "
+                "start_as_of_date."
+            )
+
+        warnings: list[str] = []
+
+        # Walk one bucket per month — first day of the month within the
+        # closed [start, end] interval. We cap iterations at
+        # ``month_count_cap`` so a pathological 60-month window does not
+        # absorb the full retention budget in one call.
+        month_dates: list[date] = []
+        cursor = date(start_date.year, start_date.month, 1)
+        end_marker = date(end_date.year, end_date.month, 1)
+        while cursor <= end_marker and len(month_dates) < month_count_cap:
+            month_dates.append(cursor)
+            year = cursor.year + (1 if cursor.month == 12 else 0)
+            month = 1 if cursor.month == 12 else cursor.month + 1
+            cursor = date(year, month, 1)
+        if (
+            cursor <= end_marker
+            and len(month_dates) == month_count_cap
+        ):
+            warnings.append(
+                "time_machine_snapshot_walk: month_count_cap="
+                f"{month_count_cap} reached before end_as_of_date="
+                f"{end_date.isoformat()}; walk truncated."
+            )
+
+        # Resolve nearest snapshot for each month — same query as
+        # :class:`TemporalComplianceAudit` but iterated.
+        resolved_snaps: list[Snapshot | None] = []
+        resolved_reasons: list[str] = []
+        for month_date in month_dates:
+            result: SnapshotResult = query_as_of(
+                snapshot_registry, dataset_id, month_date
+            )
+            resolved_snaps.append(result.nearest)
+            resolved_reasons.append(result.reason)
+            if result.nearest is None:
+                warnings.append(
+                    "time_machine_snapshot_walk: no snapshot for "
+                    f"dataset={dataset_id!r} at month "
+                    f"{month_date.isoformat()} (reason={result.reason!r})."
+                )
+
+        # Build pairwise diffs across consecutive non-null snapshots.
+        diffs: list[DiffResult] = []
+        diff_pairs: list[tuple[int, int]] = []
+        for i in range(len(resolved_snaps) - 1):
+            a_snap = resolved_snaps[i]
+            b_snap = resolved_snaps[i + 1]
+            if a_snap is None or b_snap is None:
+                continue
+            diffs.append(counterfactual_diff(a_snap, b_snap))
+            diff_pairs.append((i, i + 1))
+
+        # Compose support_state — ``supported`` when every monthly
+        # bucket resolved AND at least one diff was computable;
+        # ``partial`` otherwise; ``absent`` when no snapshots at all.
+        non_null = sum(1 for s in resolved_snaps if s is not None)
+        if non_null == 0:
+            support_state = "absent"
+        elif non_null == len(month_dates) and diffs:
+            support_state = "supported"
+        else:
+            support_state = "partial"
+        evidence_type = (
+            "absence_observation" if support_state == "absent" else "derived_inference"
+        )
+
+        primary: dict[str, Any] = {
+            "dataset_id": dataset_id,
+            "start_as_of_date": start_date.isoformat(),
+            "end_as_of_date": end_date.isoformat(),
+            "month_count_cap": month_count_cap,
+            "months_walked": len(month_dates),
+            "non_null_snapshots": non_null,
+            "month_dates": [d.isoformat() for d in month_dates],
+            "snapshot_reasons": resolved_reasons,
+            "resolved_snapshot_ids": [
+                s.snapshot_id if s is not None else None for s in resolved_snaps
+            ],
+            "diff_count": len(diffs),
+            "diffs": [d.model_dump(mode="json") for d in diffs],
+            "diff_pair_indices": diff_pairs,
+        }
+        receipt_ids = (
+            f"chain_receipt_{self.composed_tool_name}_query_as_of_walk",
+            f"chain_receipt_{self.composed_tool_name}_counterfactual_diff_pairs",
+        )
+        evidence = _build_evidence(
+            self.composed_tool_name,
+            receipt_ids=receipt_ids,
+            support_state=support_state,
+            temporal_envelope=(
+                f"{start_date.isoformat()}/{end_date.isoformat()}"
+            ),
+            evidence_type=evidence_type,
+        )
+        composed_steps = (
+            "time_machine.query_as_of:walk",
+            "time_machine.counterfactual_diff:pairs",
+        )
+        return ComposedEnvelope(
+            composed_tool_name=self.composed_tool_name,
+            evidence=evidence,
+            outcome_contract=self.outcome_contract,
+            composed_steps=composed_steps,
+            primary_result=primary,
+            citations=(),
+            warnings=tuple(warnings),
+            compression_ratio=max(len(month_dates), 1),
+        )
+
+
+# ---------------------------------------------------------------------------
 # date coercion + canonical chain index
 # ---------------------------------------------------------------------------
 
@@ -1157,35 +1999,57 @@ def _to_date(value: object) -> date | None:
     return None
 
 
-#: Canonical 4-tuple of Wave 51 chain names. Pinned for wire-shape
+#: Canonical 9-tuple of Wave 51 chain names. Pinned for wire-shape
 #: regression tests; bumping requires a coordinated manifest bump.
+#:
+#: First 4 = original cross-dim composition chains (evidence /
+#: session-aware / federated / temporal).
+#: Last 5 = Wave 51 chain B — per-dim primitive composition chains
+#: that thread multiple atomic primitives within a single dim K-S
+#: module into one composed call (predictive / session / rule_tree /
+#: anonymized / time_machine).
 WAVE51_CHAIN_TOOLS: Final[tuple[str, ...]] = (
     "evidence_with_provenance",
     "session_aware_eligibility_check",
     "federated_handoff_with_audit",
     "temporal_compliance_audit",
+    "predictive_subscriber_fanout",
+    "session_multi_step_eligibility",
+    "rule_tree_batch_eval",
+    "anonymized_cohort_query_with_redact",
+    "time_machine_snapshot_walk",
 )
 
 
 def register_wave51_chains() -> tuple[ComposableTool, ...]:
-    """Return fresh instances of the 4 Wave 51 service composition chains.
+    """Return fresh instances of the 9 Wave 51 service composition chains.
 
     A new instance per call so callers can mutate / subclass without
-    sharing state.
+    sharing state. 4 cross-dim chains + 5 per-dim primitive chains.
     """
     return (
         EvidenceWithProvenance(),
         SessionAwareEligibilityCheck(),
         FederatedHandoffWithAudit(),
         TemporalComplianceAudit(),
+        PredictiveSubscriberFanout(),
+        SessionMultiStepEligibility(),
+        RuleTreeBatchEval(),
+        AnonymizedCohortQueryWithRedact(),
+        TimeMachineSnapshotWalk(),
     )
 
 
 __all__ = [
     "WAVE51_CHAIN_TOOLS",
+    "AnonymizedCohortQueryWithRedact",
     "EvidenceWithProvenance",
     "FederatedHandoffWithAudit",
+    "PredictiveSubscriberFanout",
+    "RuleTreeBatchEval",
     "SessionAwareEligibilityCheck",
+    "SessionMultiStepEligibility",
     "TemporalComplianceAudit",
+    "TimeMachineSnapshotWalk",
     "register_wave51_chains",
 ]

@@ -211,8 +211,16 @@ def test_temporal_compliance_audit_chain_missing_dates_returns_error() -> None:
     assert out["error"]["code"] == "missing_required_arg"
 
 
-def test_mcp_tool_count_is_169_with_chain_wrappers_registered() -> None:
-    """End-to-end: every Wave 51 chain wrapper registers and total == 169."""
+def test_mcp_tool_count_is_184_with_chain_wrappers_registered() -> None:
+    """End-to-end: every Wave 51 chain wrapper registers and total == 184.
+
+    Updated from 169 -> 184 by Wave 51 chain B (2026-05-16): 5 per-dim
+    primitive composition chains added under
+    ``mcp/autonomath_tools/chain_wave51_b.py``
+    (predictive_subscriber_fanout / session_multi_step_eligibility /
+    rule_tree_batch_eval / anonymized_cohort_query_with_redact /
+    time_machine_snapshot_walk).
+    """
     import jpintel_mcp.mcp.autonomath_tools  # noqa: F401  — triggers @mcp.tool
     from jpintel_mcp.mcp.server import mcp
 
@@ -223,10 +231,16 @@ def test_mcp_tool_count_is_169_with_chain_wrappers_registered() -> None:
         "session_aware_eligibility_check_chain",
         "federated_handoff_with_audit_chain",
         "temporal_compliance_audit_chain",
+        # Wave 51 chain B additions (179 -> 184).
+        "predictive_subscriber_fanout_chain",
+        "session_multi_step_eligibility_chain",
+        "rule_tree_batch_eval_chain",
+        "anonymized_cohort_query_with_redact_chain",
+        "time_machine_snapshot_walk_chain",
     }
     missing = expected_chain_tools - names
     assert not missing, f"Wave 51 chain wrappers not registered: {sorted(missing)}"
-    assert len(tools) == 169, f"Expected 169 tools after chain wrappers, got {len(tools)}"
+    assert len(tools) == 184, f"Expected 184 tools after chain wrappers, got {len(tools)}"
 
 
 def test_wave51_chains_wrapper_has_no_llm_sdk_import() -> None:
