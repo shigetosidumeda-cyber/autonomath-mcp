@@ -1,0 +1,26 @@
+{
+  "capsule_id": "pfc_fixture_public_surface_export_disallowed",
+  "tenant_scope": "tenant_private",
+  "provider_family": "freee",
+  "period_start": "2026-01-01",
+  "period_end": "2026-03-31",
+  "row_count_bucket": "100-999",
+  "column_fingerprint_hash": "sha256:columns_fixture",
+  "records": [
+    {
+      "record_id": "pfc_record_fixture_1",
+      "derived_fact_type": "expense_bucket",
+      "value_fingerprint_hash": "sha256:value_fixture",
+      "confidence_bucket": "high",
+      "public_claim_support": false,
+      "source_receipt_compatible": false,
+      "raw_value_retained": false
+    }
+  ],
+  "raw_csv_retained": false,
+  "raw_csv_logged": false,
+  "raw_csv_sent_to_aws": false,
+  "row_level_retention_enabled": false,
+  "public_surface_export_allowed": true,
+  "source_receipt_compatible": false
+}

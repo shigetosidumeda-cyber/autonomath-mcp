@@ -1,0 +1,87 @@
+{
+  "$defs": {
+    "Capability": {
+      "additionalProperties": false,
+      "properties": {
+        "billable": {
+          "title": "Billable",
+          "type": "boolean"
+        },
+        "blocked": {
+          "default": false,
+          "title": "Blocked",
+          "type": "boolean"
+        },
+        "capability_id": {
+          "minLength": 1,
+          "title": "Capability Id",
+          "type": "string"
+        },
+        "executable": {
+          "title": "Executable",
+          "type": "boolean"
+        },
+        "previewable": {
+          "title": "Previewable",
+          "type": "boolean"
+        },
+        "recommendable": {
+          "title": "Recommendable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "capability_id",
+        "recommendable",
+        "previewable",
+        "executable",
+        "billable"
+      ],
+      "title": "Capability",
+      "type": "object"
+    }
+  },
+  "$id": "https://jpcite.com/schemas/jpcir/capability_matrix.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "capabilities": {
+      "items": {
+        "$ref": "#/$defs/Capability"
+      },
+      "title": "Capabilities",
+      "type": "array"
+    },
+    "full_catalog_default_visible": {
+      "const": false,
+      "default": false,
+      "title": "Full Catalog Default Visible",
+      "type": "boolean"
+    },
+    "generated_from_capsule_id": {
+      "minLength": 1,
+      "title": "Generated From Capsule Id",
+      "type": "string"
+    },
+    "matrix_id": {
+      "minLength": 1,
+      "title": "Matrix Id",
+      "type": "string"
+    },
+    "p0_facade_tools": {
+      "items": {
+        "type": "string"
+      },
+      "title": "P0 Facade Tools",
+      "type": "array"
+    }
+  },
+  "required": [
+    "matrix_id",
+    "generated_from_capsule_id",
+    "p0_facade_tools",
+    "capabilities"
+  ],
+  "title": "CapabilityMatrix",
+  "type": "object"
+}

@@ -1,0 +1,77 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/evidence.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claim_ref_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Claim Ref Ids",
+      "type": "array"
+    },
+    "evidence_id": {
+      "minLength": 1,
+      "title": "Evidence Id",
+      "type": "string"
+    },
+    "evidence_type": {
+      "enum": [
+        "direct_quote",
+        "structured_record",
+        "metadata_only",
+        "screenshot",
+        "derived_inference",
+        "absence_observation"
+      ],
+      "title": "Evidence Type",
+      "type": "string"
+    },
+    "observed_at": {
+      "minLength": 1,
+      "title": "Observed At",
+      "type": "string"
+    },
+    "receipt_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Receipt Ids",
+      "type": "array"
+    },
+    "request_time_llm_call_performed": {
+      "const": false,
+      "default": false,
+      "title": "Request Time Llm Call Performed",
+      "type": "boolean"
+    },
+    "support_state": {
+      "enum": [
+        "supported",
+        "partial",
+        "contested",
+        "absent"
+      ],
+      "title": "Support State",
+      "type": "string"
+    },
+    "temporal_envelope": {
+      "minLength": 1,
+      "title": "Temporal Envelope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_id",
+    "claim_ref_ids",
+    "receipt_ids",
+    "evidence_type",
+    "support_state",
+    "temporal_envelope",
+    "observed_at"
+  ],
+  "title": "Evidence",
+  "type": "object"
+}

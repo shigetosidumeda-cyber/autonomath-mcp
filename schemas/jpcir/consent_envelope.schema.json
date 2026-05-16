@@ -1,0 +1,47 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/consent_envelope.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "accepted_artifact_required_for_charge": {
+      "const": true,
+      "default": true,
+      "title": "Accepted Artifact Required For Charge",
+      "type": "boolean"
+    },
+    "consent_id": {
+      "minLength": 1,
+      "title": "Consent Id",
+      "type": "string"
+    },
+    "input_hash": {
+      "minLength": 1,
+      "title": "Input Hash",
+      "type": "string"
+    },
+    "max_price_jpy": {
+      "minimum": 0,
+      "title": "Max Price Jpy",
+      "type": "integer"
+    },
+    "outcome_contract_id": {
+      "minLength": 1,
+      "title": "Outcome Contract Id",
+      "type": "string"
+    },
+    "preview_decision_id": {
+      "minLength": 1,
+      "title": "Preview Decision Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "consent_id",
+    "preview_decision_id",
+    "input_hash",
+    "outcome_contract_id",
+    "max_price_jpy"
+  ],
+  "title": "ConsentEnvelope",
+  "type": "object"
+}

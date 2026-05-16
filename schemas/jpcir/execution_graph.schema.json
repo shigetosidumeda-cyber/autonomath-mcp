@@ -1,0 +1,79 @@
+{
+  "$defs": {
+    "ExecutionPhase": {
+      "additionalProperties": false,
+      "properties": {
+        "outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Outputs",
+          "type": "array"
+        },
+        "phase_id": {
+          "minLength": 1,
+          "title": "Phase Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "ready",
+            "blocked",
+            "complete"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "phase_id",
+        "status",
+        "outputs"
+      ],
+      "title": "ExecutionPhase",
+      "type": "object"
+    }
+  },
+  "$id": "https://jpcite.com/schemas/jpcir/execution_graph.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "aws_commands_allowed_initially": {
+      "const": false,
+      "default": false,
+      "title": "Aws Commands Allowed Initially",
+      "type": "boolean"
+    },
+    "executor": {
+      "const": "ai_only",
+      "default": "ai_only",
+      "title": "Executor",
+      "type": "string"
+    },
+    "graph_id": {
+      "minLength": 1,
+      "title": "Graph Id",
+      "type": "string"
+    },
+    "live_aws_phase_required": {
+      "const": true,
+      "default": true,
+      "title": "Live Aws Phase Required",
+      "type": "boolean"
+    },
+    "phases": {
+      "items": {
+        "$ref": "#/$defs/ExecutionPhase"
+      },
+      "title": "Phases",
+      "type": "array"
+    }
+  },
+  "required": [
+    "graph_id",
+    "phases"
+  ],
+  "title": "ExecutionGraph",
+  "type": "object"
+}

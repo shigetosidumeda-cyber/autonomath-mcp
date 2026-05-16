@@ -1,0 +1,83 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/spend_simulation.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "assertions_to_pass_state_true": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Assertions To Pass State True",
+      "type": "array"
+    },
+    "cash_bill_guard_enabled": {
+      "const": true,
+      "default": true,
+      "title": "Cash Bill Guard Enabled",
+      "type": "boolean"
+    },
+    "control_spend_usd": {
+      "maximum": 19490,
+      "minimum": 0,
+      "title": "Control Spend Usd",
+      "type": "number"
+    },
+    "ineligible_charge_uncertainty_reserve_usd": {
+      "minimum": 0,
+      "title": "Ineligible Charge Uncertainty Reserve Usd",
+      "type": "number"
+    },
+    "pass_state": {
+      "title": "Pass State",
+      "type": "boolean"
+    },
+    "pass_state_flip_authority": {
+      "default": "separate_task_not_this_artifact",
+      "enum": [
+        "separate_task_not_this_artifact",
+        "preflight_runner",
+        "operator"
+      ],
+      "title": "Pass State Flip Authority",
+      "type": "string"
+    },
+    "queue_exposure_usd": {
+      "minimum": 0,
+      "title": "Queue Exposure Usd",
+      "type": "number"
+    },
+    "service_tail_risk_usd": {
+      "minimum": 0,
+      "title": "Service Tail Risk Usd",
+      "type": "number"
+    },
+    "simulation_id": {
+      "minLength": 1,
+      "title": "Simulation Id",
+      "type": "string"
+    },
+    "target_credit_conversion_usd": {
+      "const": 19490,
+      "default": 19490,
+      "title": "Target Credit Conversion Usd",
+      "type": "integer"
+    },
+    "teardown_debt_usd": {
+      "minimum": 0,
+      "title": "Teardown Debt Usd",
+      "type": "number"
+    }
+  },
+  "required": [
+    "simulation_id",
+    "control_spend_usd",
+    "queue_exposure_usd",
+    "service_tail_risk_usd",
+    "teardown_debt_usd",
+    "ineligible_charge_uncertainty_reserve_usd",
+    "pass_state"
+  ],
+  "title": "SpendSimulation",
+  "type": "object"
+}

@@ -1,0 +1,13 @@
+{
+  "Budgets": [
+    {
+      "BudgetName": "jpcite-credit-gross-burn-2026-05"
+    },
+    {
+      "BudgetName": "jpcite-credit-paid-exposure-2026-05"
+    },
+    {
+      "BudgetName": "jpcite-credit-account-backstop-2026-05"
+    }
+  ]
+}

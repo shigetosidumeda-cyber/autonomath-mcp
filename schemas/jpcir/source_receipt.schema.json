@@ -1,0 +1,59 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/source_receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "access_method": {
+      "enum": [
+        "api",
+        "bulk",
+        "html",
+        "playwright",
+        "ocr",
+        "metadata_only"
+      ],
+      "title": "Access Method",
+      "type": "string"
+    },
+    "observed_at": {
+      "minLength": 1,
+      "title": "Observed At",
+      "type": "string"
+    },
+    "receipt_id": {
+      "minLength": 1,
+      "title": "Receipt Id",
+      "type": "string"
+    },
+    "source_family_id": {
+      "minLength": 1,
+      "title": "Source Family Id",
+      "type": "string"
+    },
+    "source_url": {
+      "minLength": 1,
+      "title": "Source Url",
+      "type": "string"
+    },
+    "support_state": {
+      "enum": [
+        "direct",
+        "indirect",
+        "candidate",
+        "gap"
+      ],
+      "title": "Support State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt_id",
+    "source_family_id",
+    "source_url",
+    "observed_at",
+    "access_method",
+    "support_state"
+  ],
+  "title": "SourceReceipt",
+  "type": "object"
+}

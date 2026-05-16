@@ -1,0 +1,40 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/known_gap.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "explanation": {
+      "minLength": 1,
+      "title": "Explanation",
+      "type": "string"
+    },
+    "gap_id": {
+      "minLength": 1,
+      "title": "Gap Id",
+      "type": "string"
+    },
+    "gap_status": {
+      "enum": [
+        "known_gap",
+        "blocked",
+        "deferred_p1",
+        "metadata_only"
+      ],
+      "title": "Gap Status",
+      "type": "string"
+    },
+    "gap_type": {
+      "minLength": 1,
+      "title": "Gap Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "gap_id",
+    "gap_type",
+    "gap_status",
+    "explanation"
+  ],
+  "title": "KnownGap",
+  "type": "object"
+}

@@ -1,0 +1,47 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/jpcir_header.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "minLength": 1,
+      "title": "Created At",
+      "type": "string"
+    },
+    "object_id": {
+      "minLength": 1,
+      "title": "Object Id",
+      "type": "string"
+    },
+    "object_type": {
+      "minLength": 1,
+      "title": "Object Type",
+      "type": "string"
+    },
+    "producer": {
+      "const": "jpcite-ai-execution-control-plane",
+      "default": "jpcite-ai-execution-control-plane",
+      "title": "Producer",
+      "type": "string"
+    },
+    "request_time_llm_call_performed": {
+      "const": false,
+      "default": false,
+      "title": "Request Time Llm Call Performed",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "jpcir.p0.v1",
+      "default": "jpcir.p0.v1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "object_id",
+    "object_type",
+    "created_at"
+  ],
+  "title": "JpcirHeader",
+  "type": "object"
+}

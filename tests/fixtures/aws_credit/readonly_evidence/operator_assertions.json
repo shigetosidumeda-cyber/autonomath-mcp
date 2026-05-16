@@ -1,0 +1,57 @@
+{
+  "canary_conditions": {
+    "account_identity_confirmed": true,
+    "budget_guard_confirmed": true,
+    "credit_eligibility_confirmed": true,
+    "cash_bill_guard_confirmed": true,
+    "queue_caps_confirmed": true,
+    "teardown_recipes_confirmed": true,
+    "tagging_controls_confirmed": true,
+    "stale_resource_scan_confirmed": true
+  },
+  "budget_guard": {
+    "alerts_confirmed": true,
+    "actions_reviewed": true
+  },
+  "tagging_policy": {
+    "tag_on_create_enforced": true,
+    "untagged_exception_manifest_present": true,
+    "required_tags": [
+      "Project",
+      "SpendProgram",
+      "CreditRun",
+      "Owner",
+      "Environment",
+      "Purpose",
+      "AutoStop",
+      "DataClass",
+      "Workload"
+    ],
+    "allowed_data_class_values": [
+      "public-only",
+      "synthetic-only",
+      "derived-aggregate-only"
+    ]
+  },
+  "exposure_inputs": {
+    "control_spend_usd": 1000,
+    "queue_items": [
+      {
+        "name": "source_receipt_capture_queue",
+        "count": 10,
+        "unit_exposure_usd": 5
+      }
+    ],
+    "teardown_items": [
+      {
+        "name": "artifact_lake",
+        "delete_recipe": true,
+        "recipe_ref": "docs/_internal/aws_credit_review_02_zero_bill_cleanup.md#artifact_lake",
+        "debt_usd": 20
+      }
+    ],
+    "untagged_resource_count": 0,
+    "stale_resource_count": 0,
+    "reserve_ratio": 0.05
+  }
+}

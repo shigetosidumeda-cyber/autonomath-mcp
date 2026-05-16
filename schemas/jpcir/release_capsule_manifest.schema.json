@@ -1,0 +1,78 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/release_capsule_manifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "aws_runtime_dependency_allowed": {
+      "const": false,
+      "default": false,
+      "title": "Aws Runtime Dependency Allowed",
+      "type": "boolean"
+    },
+    "capability_matrix_path": {
+      "minLength": 1,
+      "title": "Capability Matrix Path",
+      "type": "string"
+    },
+    "capsule_id": {
+      "minLength": 1,
+      "title": "Capsule Id",
+      "type": "string"
+    },
+    "capsule_state": {
+      "enum": [
+        "candidate",
+        "active",
+        "previous",
+        "quarantined"
+      ],
+      "title": "Capsule State",
+      "type": "string"
+    },
+    "created_at": {
+      "minLength": 1,
+      "title": "Created At",
+      "type": "string"
+    },
+    "generated_surfaces": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Generated Surfaces",
+      "type": "array"
+    },
+    "no_hit_absence_claim_enabled": {
+      "const": false,
+      "default": false,
+      "title": "No Hit Absence Claim Enabled",
+      "type": "boolean"
+    },
+    "outcome_contract_catalog_path": {
+      "minLength": 1,
+      "title": "Outcome Contract Catalog Path",
+      "type": "string"
+    },
+    "real_csv_runtime_enabled": {
+      "const": false,
+      "default": false,
+      "title": "Real Csv Runtime Enabled",
+      "type": "boolean"
+    },
+    "request_time_llm_fact_generation_enabled": {
+      "const": false,
+      "default": false,
+      "title": "Request Time Llm Fact Generation Enabled",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "capsule_id",
+    "capsule_state",
+    "created_at",
+    "outcome_contract_catalog_path",
+    "capability_matrix_path",
+    "generated_surfaces"
+  ],
+  "title": "ReleaseCapsuleManifest",
+  "type": "object"
+}

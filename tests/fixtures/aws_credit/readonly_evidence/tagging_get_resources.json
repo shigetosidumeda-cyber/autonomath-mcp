@@ -1,0 +1,45 @@
+{
+  "ResourceTagMappingList": [
+    {
+      "ResourceARN": "arn:aws:s3:::jpcite-credit-artifacts-2026-05",
+      "Tags": [
+        {
+          "Key": "Project",
+          "Value": "jpcite"
+        },
+        {
+          "Key": "SpendProgram",
+          "Value": "aws-credit-2026-05"
+        },
+        {
+          "Key": "CreditRun",
+          "Value": "2026-05"
+        },
+        {
+          "Key": "Owner",
+          "Value": "ops"
+        },
+        {
+          "Key": "Environment",
+          "Value": "canary"
+        },
+        {
+          "Key": "Purpose",
+          "Value": "credit-preflight-evidence"
+        },
+        {
+          "Key": "AutoStop",
+          "Value": "required"
+        },
+        {
+          "Key": "DataClass",
+          "Value": "public-only"
+        },
+        {
+          "Key": "Workload",
+          "Value": "evidence-capture"
+        }
+      ]
+    }
+  ]
+}

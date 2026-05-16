@@ -1,0 +1,97 @@
+{
+  "$defs": {
+    "DeliverablePricingRule": {
+      "additionalProperties": false,
+      "description": "Per-deliverable accepted-artifact pricing rule.\n\nPinned to the JPY price emitted by ``price_for_pricing_posture`` so that\nthe public JSON capsule, the Python catalog, and the billing ledger all\nagree on the same number for one ``outcome_contract_id``.",
+      "properties": {
+        "billable_only_after_accepted_artifact": {
+          "const": true,
+          "default": true,
+          "title": "Billable Only After Accepted Artifact",
+          "type": "boolean"
+        },
+        "deliverable_slug": {
+          "minLength": 1,
+          "title": "Deliverable Slug",
+          "type": "string"
+        },
+        "estimated_price_jpy": {
+          "minimum": 0,
+          "title": "Estimated Price Jpy",
+          "type": "integer"
+        },
+        "outcome_contract_id": {
+          "minLength": 1,
+          "title": "Outcome Contract Id",
+          "type": "string"
+        },
+        "pricing_posture": {
+          "enum": [
+            "free_preview",
+            "accepted_artifact_low",
+            "accepted_artifact_standard",
+            "accepted_artifact_premium",
+            "accepted_artifact_csv_overlay"
+          ],
+          "title": "Pricing Posture",
+          "type": "string"
+        }
+      },
+      "required": [
+        "outcome_contract_id",
+        "deliverable_slug",
+        "pricing_posture",
+        "estimated_price_jpy"
+      ],
+      "title": "DeliverablePricingRule",
+      "type": "object"
+    }
+  },
+  "$id": "https://jpcite.com/schemas/jpcir/accepted_artifact_pricing.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "billing_event_ledger_append_only": {
+      "const": true,
+      "default": true,
+      "title": "Billing Event Ledger Append Only",
+      "type": "boolean"
+    },
+    "charge_basis": {
+      "const": "accepted_artifact",
+      "default": "accepted_artifact",
+      "title": "Charge Basis",
+      "type": "string"
+    },
+    "deliverable_pricing_rules": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DeliverablePricingRule"
+      },
+      "title": "Deliverable Pricing Rules",
+      "type": "array"
+    },
+    "no_accepted_artifact_decision": {
+      "const": "no_charge_or_void",
+      "default": "no_charge_or_void",
+      "title": "No Accepted Artifact Decision",
+      "type": "string"
+    },
+    "no_hit_billable_only_if_scoped_and_consented": {
+      "const": true,
+      "default": true,
+      "title": "No Hit Billable Only If Scoped And Consented",
+      "type": "boolean"
+    },
+    "pricing_contract_id": {
+      "minLength": 1,
+      "title": "Pricing Contract Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pricing_contract_id"
+  ],
+  "title": "AcceptedArtifactPricing",
+  "type": "object"
+}

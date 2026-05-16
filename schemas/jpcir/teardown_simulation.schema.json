@@ -1,0 +1,65 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/teardown_simulation.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "all_resources_have_delete_recipe": {
+      "title": "All Resources Have Delete Recipe",
+      "type": "boolean"
+    },
+    "assertions_to_pass_state_true": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Assertions To Pass State True",
+      "type": "array"
+    },
+    "external_export_required_before_delete": {
+      "const": true,
+      "default": true,
+      "title": "External Export Required Before Delete",
+      "type": "boolean"
+    },
+    "live_phase_only_assertion_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Live Phase Only Assertion Ids",
+      "type": "array"
+    },
+    "pass_state": {
+      "title": "Pass State",
+      "type": "boolean"
+    },
+    "pass_state_flip_authority": {
+      "default": "separate_task_not_this_artifact",
+      "enum": [
+        "separate_task_not_this_artifact",
+        "preflight_runner",
+        "operator"
+      ],
+      "title": "Pass State Flip Authority",
+      "type": "string"
+    },
+    "post_teardown_attestation_non_aws_triggered": {
+      "const": true,
+      "default": true,
+      "title": "Post Teardown Attestation Non Aws Triggered",
+      "type": "boolean"
+    },
+    "simulation_id": {
+      "minLength": 1,
+      "title": "Simulation Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "simulation_id",
+    "all_resources_have_delete_recipe",
+    "pass_state"
+  ],
+  "title": "TeardownSimulation",
+  "type": "object"
+}

@@ -1,0 +1,125 @@
+{
+  "$defs": {
+    "AwsNoopCommand": {
+      "additionalProperties": false,
+      "properties": {
+        "command_id": {
+          "minLength": 1,
+          "title": "Command Id",
+          "type": "string"
+        },
+        "intent": {
+          "minLength": 1,
+          "title": "Intent",
+          "type": "string"
+        },
+        "live_allowed": {
+          "const": false,
+          "default": false,
+          "title": "Live Allowed",
+          "type": "boolean"
+        },
+        "live_command_preview": {
+          "minLength": 1,
+          "title": "Live Command Preview",
+          "type": "string"
+        },
+        "required_preflight_state": {
+          "const": "AWS_CANARY_READY",
+          "default": "AWS_CANARY_READY",
+          "title": "Required Preflight State",
+          "type": "string"
+        },
+        "requires_teardown_recipe": {
+          "default": false,
+          "title": "Requires Teardown Recipe",
+          "type": "boolean"
+        },
+        "service": {
+          "minLength": 1,
+          "title": "Service",
+          "type": "string"
+        },
+        "teardown_recipe_path_template": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Teardown Recipe Path Template"
+        }
+      },
+      "required": [
+        "command_id",
+        "service",
+        "intent",
+        "live_command_preview"
+      ],
+      "title": "AwsNoopCommand",
+      "type": "object"
+    }
+  },
+  "$id": "https://jpcite.com/schemas/jpcir/aws_noop_command_plan.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "account_id": {
+      "const": "993693061769",
+      "default": "993693061769",
+      "title": "Account Id",
+      "type": "string"
+    },
+    "aws_profile": {
+      "const": "bookyou-recovery",
+      "default": "bookyou-recovery",
+      "title": "Aws Profile",
+      "type": "string"
+    },
+    "cash_bill_guard_enabled": {
+      "const": true,
+      "default": true,
+      "title": "Cash Bill Guard Enabled",
+      "type": "boolean"
+    },
+    "commands": {
+      "items": {
+        "$ref": "#/$defs/AwsNoopCommand"
+      },
+      "title": "Commands",
+      "type": "array"
+    },
+    "live_aws_commands_allowed": {
+      "const": false,
+      "default": false,
+      "title": "Live Aws Commands Allowed",
+      "type": "boolean"
+    },
+    "plan_id": {
+      "minLength": 1,
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "region": {
+      "const": "us-east-1",
+      "default": "us-east-1",
+      "title": "Region",
+      "type": "string"
+    },
+    "target_credit_conversion_usd": {
+      "const": 19490,
+      "default": 19490,
+      "title": "Target Credit Conversion Usd",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "plan_id",
+    "commands"
+  ],
+  "title": "AwsNoopCommandPlan",
+  "type": "object"
+}

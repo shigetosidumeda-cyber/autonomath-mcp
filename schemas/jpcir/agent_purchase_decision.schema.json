@@ -1,0 +1,108 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/agent_purchase_decision.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "agent_recommendation_card": {
+      "minLength": 1,
+      "title": "Agent Recommendation Card",
+      "type": "string"
+    },
+    "anti_upsell_gate_passed": {
+      "const": true,
+      "default": true,
+      "title": "Anti Upsell Gate Passed",
+      "type": "boolean"
+    },
+    "billable": {
+      "const": false,
+      "default": false,
+      "title": "Billable",
+      "type": "boolean"
+    },
+    "cheapest_sufficient_route": {
+      "minLength": 1,
+      "title": "Cheapest Sufficient Route",
+      "type": "string"
+    },
+    "coverage_roi_curve": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Coverage Roi Curve",
+      "type": "array"
+    },
+    "decision_id": {
+      "minLength": 1,
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "expected_output_skeleton": {
+      "additionalProperties": true,
+      "title": "Expected Output Skeleton",
+      "type": "object"
+    },
+    "known_gaps_before_purchase": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Known Gaps Before Purchase",
+      "type": "array"
+    },
+    "max_price_jpy": {
+      "minimum": 0,
+      "title": "Max Price Jpy",
+      "type": "integer"
+    },
+    "no_hit_caveat": {
+      "const": "no_hit_not_absence",
+      "default": "no_hit_not_absence",
+      "title": "No Hit Caveat",
+      "type": "string"
+    },
+    "reason_not_to_buy": {
+      "title": "Reason Not To Buy",
+      "type": "string"
+    },
+    "reason_to_buy": {
+      "title": "Reason To Buy",
+      "type": "string"
+    },
+    "recommended_action": {
+      "enum": [
+        "buy",
+        "ask_followup",
+        "use_free_guidance",
+        "skip"
+      ],
+      "title": "Recommended Action",
+      "type": "string"
+    },
+    "request_time_llm_call_performed": {
+      "const": false,
+      "default": false,
+      "title": "Request Time Llm Call Performed",
+      "type": "boolean"
+    },
+    "scoped_cap_token_required": {
+      "title": "Scoped Cap Token Required",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "decision_id",
+    "recommended_action",
+    "cheapest_sufficient_route",
+    "coverage_roi_curve",
+    "reason_to_buy",
+    "reason_not_to_buy",
+    "known_gaps_before_purchase",
+    "expected_output_skeleton",
+    "max_price_jpy",
+    "scoped_cap_token_required",
+    "agent_recommendation_card"
+  ],
+  "title": "AgentPurchaseDecision",
+  "type": "object"
+}

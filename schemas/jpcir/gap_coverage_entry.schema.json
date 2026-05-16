@@ -1,0 +1,37 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/gap_coverage_entry.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "coverage_state": {
+      "enum": [
+        "covered",
+        "missing",
+        "stale",
+        "blocked",
+        "deferred"
+      ],
+      "title": "Coverage State",
+      "type": "string"
+    },
+    "gap_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Gap Ids",
+      "type": "array"
+    },
+    "source_family_id": {
+      "minLength": 1,
+      "title": "Source Family Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_family_id",
+    "coverage_state"
+  ],
+  "title": "GapCoverageEntry",
+  "type": "object"
+}

@@ -1,0 +1,160 @@
+{
+  "$defs": {
+    "PrivateFactCapsuleRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence_bucket": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Confidence Bucket",
+          "type": "string"
+        },
+        "derived_fact_type": {
+          "minLength": 1,
+          "title": "Derived Fact Type",
+          "type": "string"
+        },
+        "public_claim_support": {
+          "const": false,
+          "default": false,
+          "title": "Public Claim Support",
+          "type": "boolean"
+        },
+        "raw_value_retained": {
+          "const": false,
+          "default": false,
+          "title": "Raw Value Retained",
+          "type": "boolean"
+        },
+        "record_id": {
+          "minLength": 1,
+          "title": "Record Id",
+          "type": "string"
+        },
+        "source_receipt_compatible": {
+          "const": false,
+          "default": false,
+          "title": "Source Receipt Compatible",
+          "type": "boolean"
+        },
+        "value_fingerprint_hash": {
+          "minLength": 1,
+          "title": "Value Fingerprint Hash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "derived_fact_type",
+        "value_fingerprint_hash",
+        "confidence_bucket"
+      ],
+      "title": "PrivateFactCapsuleRecord",
+      "type": "object"
+    }
+  },
+  "$id": "https://jpcite.com/schemas/jpcir/private_fact_capsule.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "capsule_id": {
+      "minLength": 1,
+      "title": "Capsule Id",
+      "type": "string"
+    },
+    "column_fingerprint_hash": {
+      "minLength": 1,
+      "title": "Column Fingerprint Hash",
+      "type": "string"
+    },
+    "period_end": {
+      "minLength": 1,
+      "title": "Period End",
+      "type": "string"
+    },
+    "period_start": {
+      "minLength": 1,
+      "title": "Period Start",
+      "type": "string"
+    },
+    "provider_family": {
+      "enum": [
+        "freee",
+        "money_forward",
+        "yayoi",
+        "tkc",
+        "unknown"
+      ],
+      "title": "Provider Family",
+      "type": "string"
+    },
+    "public_surface_export_allowed": {
+      "const": false,
+      "default": false,
+      "title": "Public Surface Export Allowed",
+      "type": "boolean"
+    },
+    "raw_csv_logged": {
+      "const": false,
+      "default": false,
+      "title": "Raw Csv Logged",
+      "type": "boolean"
+    },
+    "raw_csv_retained": {
+      "const": false,
+      "default": false,
+      "title": "Raw Csv Retained",
+      "type": "boolean"
+    },
+    "raw_csv_sent_to_aws": {
+      "const": false,
+      "default": false,
+      "title": "Raw Csv Sent To Aws",
+      "type": "boolean"
+    },
+    "records": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/PrivateFactCapsuleRecord"
+      },
+      "title": "Records",
+      "type": "array"
+    },
+    "row_count_bucket": {
+      "minLength": 1,
+      "title": "Row Count Bucket",
+      "type": "string"
+    },
+    "row_level_retention_enabled": {
+      "const": false,
+      "default": false,
+      "title": "Row Level Retention Enabled",
+      "type": "boolean"
+    },
+    "source_receipt_compatible": {
+      "const": false,
+      "default": false,
+      "title": "Source Receipt Compatible",
+      "type": "boolean"
+    },
+    "tenant_scope": {
+      "const": "tenant_private",
+      "default": "tenant_private",
+      "title": "Tenant Scope",
+      "type": "string"
+    }
+  },
+  "required": [
+    "capsule_id",
+    "provider_family",
+    "period_start",
+    "period_end",
+    "row_count_bucket",
+    "column_fingerprint_hash"
+  ],
+  "title": "PrivateFactCapsule",
+  "type": "object"
+}

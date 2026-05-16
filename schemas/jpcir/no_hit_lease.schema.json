@@ -1,0 +1,47 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/no_hit_lease.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "absence_claim_enabled": {
+      "const": false,
+      "default": false,
+      "title": "Absence Claim Enabled",
+      "type": "boolean"
+    },
+    "checked_scope": {
+      "minLength": 1,
+      "title": "Checked Scope",
+      "type": "string"
+    },
+    "expires_at": {
+      "minLength": 1,
+      "title": "Expires At",
+      "type": "string"
+    },
+    "lease_id": {
+      "minLength": 1,
+      "title": "Lease Id",
+      "type": "string"
+    },
+    "no_hit_semantics": {
+      "const": "no_hit_not_absence",
+      "default": "no_hit_not_absence",
+      "title": "No Hit Semantics",
+      "type": "string"
+    },
+    "observed_at": {
+      "minLength": 1,
+      "title": "Observed At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "lease_id",
+    "checked_scope",
+    "observed_at",
+    "expires_at"
+  ],
+  "title": "NoHitLease",
+  "type": "object"
+}

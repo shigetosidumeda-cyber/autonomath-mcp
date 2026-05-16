@@ -1,0 +1,87 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/scoped_cap_token.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "amount_only_token": {
+      "const": false,
+      "default": false,
+      "title": "Amount Only Token",
+      "type": "boolean"
+    },
+    "consent_id": {
+      "minLength": 1,
+      "title": "Consent Id",
+      "type": "string"
+    },
+    "expires_at": {
+      "minLength": 1,
+      "title": "Expires At",
+      "type": "string"
+    },
+    "idempotency_key_required": {
+      "const": true,
+      "default": true,
+      "title": "Idempotency Key Required",
+      "type": "boolean"
+    },
+    "input_hash": {
+      "minLength": 1,
+      "title": "Input Hash",
+      "type": "string"
+    },
+    "max_price_jpy": {
+      "minimum": 0,
+      "title": "Max Price Jpy",
+      "type": "integer"
+    },
+    "outcome_contract_id": {
+      "minLength": 1,
+      "title": "Outcome Contract Id",
+      "type": "string"
+    },
+    "packet_types": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Packet Types",
+      "type": "array"
+    },
+    "source_families": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Families",
+      "type": "array"
+    },
+    "token_id": {
+      "minLength": 1,
+      "title": "Token Id",
+      "type": "string"
+    },
+    "token_kind": {
+      "const": "scoped_cap_token",
+      "default": "scoped_cap_token",
+      "title": "Token Kind",
+      "type": "string"
+    },
+    "version": {
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "token_id",
+    "version",
+    "consent_id",
+    "input_hash",
+    "outcome_contract_id",
+    "packet_types",
+    "source_families",
+    "max_price_jpy",
+    "expires_at"
+  ],
+  "title": "ScopedCapToken",
+  "type": "object"
+}

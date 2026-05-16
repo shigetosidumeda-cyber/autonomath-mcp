@@ -1,0 +1,94 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/policy_decision.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "administrative_info_class": {
+      "minLength": 1,
+      "title": "Administrative Info Class",
+      "type": "string"
+    },
+    "allowed_surfaces": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Allowed Surfaces",
+      "type": "array"
+    },
+    "blocked_reason_codes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Blocked Reason Codes",
+      "type": "array"
+    },
+    "blocked_surfaces": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Blocked Surfaces",
+      "type": "array"
+    },
+    "policy_decision_id": {
+      "minLength": 1,
+      "title": "Policy Decision Id",
+      "type": "string"
+    },
+    "policy_state": {
+      "enum": [
+        "allow",
+        "allow_with_minimization",
+        "allow_internal_only",
+        "allow_paid_tenant_only",
+        "gap_artifact_only",
+        "blocked_policy_unknown",
+        "blocked_terms_unknown",
+        "blocked_terms_changed",
+        "blocked_access_method",
+        "blocked_privacy_taint",
+        "blocked_sensitive_context",
+        "blocked_mosaic_risk",
+        "blocked_wording",
+        "blocked_paid_leakage",
+        "blocked_no_hit_overclaim",
+        "quarantine",
+        "deny"
+      ],
+      "title": "Policy State",
+      "type": "string"
+    },
+    "privacy_taint_level": {
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "tenant_private"
+      ],
+      "title": "Privacy Taint Level",
+      "type": "string"
+    },
+    "public_compile_allowed": {
+      "title": "Public Compile Allowed",
+      "type": "boolean"
+    },
+    "source_terms_contract_id": {
+      "minLength": 1,
+      "title": "Source Terms Contract Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_decision_id",
+    "policy_state",
+    "source_terms_contract_id",
+    "administrative_info_class",
+    "privacy_taint_level",
+    "public_compile_allowed"
+  ],
+  "title": "PolicyDecision",
+  "type": "object"
+}

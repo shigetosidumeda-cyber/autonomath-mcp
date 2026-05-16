@@ -1,0 +1,42 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/claim_ref.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claim_ref_id": {
+      "minLength": 1,
+      "title": "Claim Ref Id",
+      "type": "string"
+    },
+    "claim_type": {
+      "minLength": 1,
+      "title": "Claim Type",
+      "type": "string"
+    },
+    "receipt_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Receipt Ids",
+      "type": "array"
+    },
+    "support_state": {
+      "enum": [
+        "supported",
+        "candidate",
+        "gap",
+        "blocked"
+      ],
+      "title": "Support State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_ref_id",
+    "receipt_ids",
+    "claim_type",
+    "support_state"
+  ],
+  "title": "ClaimRef",
+  "type": "object"
+}

@@ -1,0 +1,106 @@
+{
+  "capsule_id": "rc1-p0-bootstrap-2026-05-15",
+  "schema_version": "jpcite.jpcir_schema_registry.p0.v1",
+  "schemas": [
+    {
+      "name": "accepted_artifact_pricing",
+      "path": "schemas/jpcir/accepted_artifact_pricing.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/accepted_artifact_pricing.schema.json"
+    },
+    {
+      "name": "agent_purchase_decision",
+      "path": "schemas/jpcir/agent_purchase_decision.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/agent_purchase_decision.schema.json"
+    },
+    {
+      "name": "aws_noop_command_plan",
+      "path": "schemas/jpcir/aws_noop_command_plan.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/aws_noop_command_plan.schema.json"
+    },
+    {
+      "name": "capability_matrix",
+      "path": "schemas/jpcir/capability_matrix.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/capability_matrix.schema.json"
+    },
+    {
+      "name": "claim_ref",
+      "path": "schemas/jpcir/claim_ref.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/claim_ref.schema.json"
+    },
+    {
+      "name": "consent_envelope",
+      "path": "schemas/jpcir/consent_envelope.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/consent_envelope.schema.json"
+    },
+    {
+      "name": "evidence",
+      "path": "schemas/jpcir/evidence.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/evidence.schema.json"
+    },
+    {
+      "name": "execution_graph",
+      "path": "schemas/jpcir/execution_graph.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/execution_graph.schema.json"
+    },
+    {
+      "name": "gap_coverage_entry",
+      "path": "schemas/jpcir/gap_coverage_entry.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/gap_coverage_entry.schema.json"
+    },
+    {
+      "name": "jpcir_header",
+      "path": "schemas/jpcir/jpcir_header.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/jpcir_header.schema.json"
+    },
+    {
+      "name": "known_gap",
+      "path": "schemas/jpcir/known_gap.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/known_gap.schema.json"
+    },
+    {
+      "name": "no_hit_lease",
+      "path": "schemas/jpcir/no_hit_lease.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/no_hit_lease.schema.json"
+    },
+    {
+      "name": "outcome_contract",
+      "path": "schemas/jpcir/outcome_contract.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/outcome_contract.schema.json"
+    },
+    {
+      "name": "policy_decision",
+      "path": "schemas/jpcir/policy_decision.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/policy_decision.schema.json"
+    },
+    {
+      "name": "private_fact_capsule",
+      "path": "schemas/jpcir/private_fact_capsule.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/private_fact_capsule.schema.json"
+    },
+    {
+      "name": "release_capsule_manifest",
+      "path": "schemas/jpcir/release_capsule_manifest.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/release_capsule_manifest.schema.json"
+    },
+    {
+      "name": "scoped_cap_token",
+      "path": "schemas/jpcir/scoped_cap_token.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/scoped_cap_token.schema.json"
+    },
+    {
+      "name": "source_receipt",
+      "path": "schemas/jpcir/source_receipt.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/source_receipt.schema.json"
+    },
+    {
+      "name": "spend_simulation",
+      "path": "schemas/jpcir/spend_simulation.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/spend_simulation.schema.json"
+    },
+    {
+      "name": "teardown_simulation",
+      "path": "schemas/jpcir/teardown_simulation.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/teardown_simulation.schema.json"
+    }
+  ]
+}
