@@ -1,0 +1,2 @@
+{"gap_id": "no_hit_not_absence", "gap_type": "no_hit_not_absence", "gap_status": "known_gap", "explanation": "no_hit packets pair this gap to express the structural no-hit semantics"}
+{"gap_id": "professional_review_required", "gap_type": "professional_review_required", "gap_status": "metadata_only", "explanation": "downstream surfaces require human review for sensitive cohorts"}

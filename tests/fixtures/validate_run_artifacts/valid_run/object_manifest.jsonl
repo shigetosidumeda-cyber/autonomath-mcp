@@ -1,0 +1,4 @@
+{"filename": "source_receipts.jsonl", "sha256": "7258b7994755f3a2c003efac7ebda72226e05d592da21393004fb4b5045c079f", "size_bytes": 425}
+{"filename": "claim_refs.jsonl", "sha256": "48479bc49872d322cff9582cb20a74668d8dbe09c9f623a43c6e667a1f6ea748", "size_bytes": 245}
+{"filename": "known_gaps.jsonl", "sha256": "53cd9d9a4be678d80c18b64d0463bb24d14301ee19cbb43dc2c8219322005210", "size_bytes": 383}
+{"filename": "quarantine.jsonl", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "size_bytes": 0}

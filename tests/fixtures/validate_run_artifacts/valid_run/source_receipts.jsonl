@@ -1,0 +1,2 @@
+{"receipt_id": "rcpt-001", "source_family_id": "egov_law", "source_url": "https://elaws.e-gov.go.jp/document?lawid=001", "observed_at": "2026-05-10T00:00:00Z", "access_method": "html", "support_state": "direct"}
+{"receipt_id": "rcpt-002", "source_family_id": "nta_houjin", "source_url": "https://www.houjin-bangou.nta.go.jp/path/002", "observed_at": "2026-05-12T00:00:00Z", "access_method": "api", "support_state": "direct"}

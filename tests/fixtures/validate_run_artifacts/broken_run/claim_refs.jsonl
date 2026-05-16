@@ -1,0 +1,2 @@
+{"claim_ref_id": "claim-broken-001", "claim_type": "program_id_resolved", "receipt_ids": ["rcpt-DANGLING-XYZ"], "support_state": "supported"}
+{"claim_ref_id": "claim-broken-002", "claim_type": "houjin_match", "receipt_ids": ["rcpt-broken-001"], "support_state": "supported", "narrative": "this program is eligible for the subsidy", "note": "問題ありません"}

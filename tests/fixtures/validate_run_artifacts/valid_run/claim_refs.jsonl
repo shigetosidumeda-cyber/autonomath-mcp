@@ -1,0 +1,2 @@
+{"claim_ref_id": "claim-001", "claim_type": "program_id_resolved", "receipt_ids": ["rcpt-001"], "support_state": "supported"}
+{"claim_ref_id": "claim-002", "claim_type": "houjin_match", "receipt_ids": ["rcpt-002"], "support_state": "supported"}

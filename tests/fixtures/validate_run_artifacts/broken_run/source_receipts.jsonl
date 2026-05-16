@@ -1,0 +1,2 @@
+{"receipt_id": "rcpt-broken-001", "source_family_id": "unknown_family_without_license", "source_url": "https://example.com/broken", "observed_at": "2025-01-01T00:00:00Z", "access_method": "html", "support_state": "direct"}
+{"receipt_id": "rcpt-broken-002", "source_family_id": "egov_law", "source_url": "https://elaws.e-gov.go.jp/document?lawid=broken"}

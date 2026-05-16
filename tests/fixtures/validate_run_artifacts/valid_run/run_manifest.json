@@ -1,0 +1,13 @@
+{
+  "run_id": "J01-2026-05-15-valid",
+  "job_id": "J01_source_profile",
+  "run_started_at": "2026-05-15T00:00:00Z",
+  "run_completed_at": "2026-05-15T00:30:00Z",
+  "accepted_artifact_count": 4,
+  "total_artifact_count": 4,
+  "jpcir_header": {
+    "object_id": "J01-2026-05-15-valid-header",
+    "object_type": "run_manifest",
+    "created_at": "2026-05-15T00:30:00Z"
+  }
+}
