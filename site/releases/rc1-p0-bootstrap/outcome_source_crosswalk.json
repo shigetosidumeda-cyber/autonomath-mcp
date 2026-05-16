@@ -39,27 +39,7 @@
     "source-receipt-ledger",
     "evidence-answer-citation-pack",
     "foreign-investor-japan-public-entry-brief",
-    "healthcare-regulatory-public-check",
-    "funding-to-revenue-ratio",
-    "debt-subsidy-stack",
-    "cash-runway-estimate",
-    "m-and-a-event-signals",
-    "cross-border-remittance",
-    "trade-finance-eligibility",
-    "angel-tax-uptake",
-    "revenue-volatility-subsidy-offset",
-    "payroll-subsidy-intensity",
-    "invoice-payment-velocity",
-    "listed_company_disclosure_pulse_packet",
-    "ipo_pipeline_signal_packet",
-    "bond_issuance_pattern_packet",
-    "dividend_policy_stability_packet",
-    "shareholder_return_intensity_packet",
-    "capital_raising_history_packet",
-    "executive_compensation_disclosure_packet",
-    "audit_firm_rotation_packet",
-    "tax_haven_subsidiary_packet",
-    "fpd_etf_holdings_packet"
+    "healthcare-regulatory-public-check"
   ],
   "crosswalk": [
     {
