@@ -160,6 +160,72 @@ removed. Document them so future PERF iterations don't re-introduce.
    Don't quote subset numbers as if they were project-wide. Sets
    the wrong gate for any "coverage 90 %" perf-related claim.
 
+## 6. Regression gates landed (CI-opt-in)
+
+These tests live under `tests/perf/` and are skipped by default. Opt in
+with either `JPCITE_RUN_PERF_GATES=1` or `pytest --runperf` (see
+`tests/perf/conftest.py`).
+
+| Gate | File | Budget | Measured (median, dev box) | PERF ticket |
+|---|---|---:|---:|---|
+| API hot-path p95 | `tests/perf/test_api_p95_budget.py` | 50-120 ms / endpoint | n=100 in-process | PERF-7 |
+| Packet generator throughput | `tests/perf/test_packet_gen_perf.py` | 1.4 s / 5K packets | ~1.05 s | PERF-11 |
+| **MCP cold import** | `tests/perf/test_import_time_gate.py` (new) | **2.5 s wall** | **~1.55 s** | **PERF-27** |
+| **API cold import** | `tests/perf/test_import_time_gate.py` (new) | **4.5 s wall** | **~2.55 s** | **PERF-27** |
+
+PERF-27 baseline (2026-05-17, M-series macOS, `.venv` Python 3.12):
+
+```
+MCP  median over 3 runs: 1.55 s  (range 1.53-1.61 s)
+API  median over 3 runs: 2.57 s  (range 2.41-2.60 s)
+```
+
+Top-10 self-time imports (from `python -X importtime`):
+
+**MCP `from jpintel_mcp.mcp import server`**
+
+| rank | self_ms | cum_ms | package |
+|---:|---:|---:|---|
+| 1 | 104.49 | 109.16 | `jpintel_mcp.utils.slug` |
+| 2 | 84.00 | 109.93 | `fastapi.openapi.models` |
+| 3 | 76.63 | 1291.50 | `jpintel_mcp.mcp.server` |
+| 4 | 73.12 | 73.12 | `jpintel_mcp.mcp.autonomath_tools.tax_chain_tools` |
+| 5 | 51.92 | 59.32 | `mcp.types` |
+| 6 | 36.27 | 36.27 | `stripe._subscription` |
+| 7 | 24.75 | 633.42 | `jpintel_mcp.mcp.autonomath_tools.annotation_tools` |
+| 8 | 23.29 | 23.29 | `stripe._charge` |
+| 9 | 17.00 | 17.00 | `jpintel_mcp.agent_runtime.contracts` |
+| 10 | 14.01 | 608.33 | `jpintel_mcp.mcp.autonomath_tools.tools` |
+
+**API `from jpintel_mcp.api.main import create_app`**
+
+| rank | self_ms | cum_ms | package |
+|---:|---:|---:|---|
+| 1 | 307.69 | 2000.16 | `jpintel_mcp.api.main` |
+| 2 | 106.92 | 112.37 | `jpintel_mcp.utils.slug` |
+| 3 | 77.85 | 215.42 | `jpintel_mcp.mcp.server` |
+| 4 | 70.94 | 70.94 | `jpintel_mcp.agent_runtime.outcome_catalog` |
+| 5 | 50.09 | 122.93 | `fastapi.openapi.models` |
+| 6 | 43.80 | 43.80 | `mcp.types` |
+| 7 | 38.06 | 494.00 | `jpintel_mcp.mcp.autonomath_tools.tools` |
+| 8 | 36.97 | 36.97 | `stripe._quote` |
+| 9 | 30.58 | 30.58 | `jpintel_mcp.api._response_models` |
+| 10 | 28.39 | 28.91 | `jpintel_mcp.api.autonomath` |
+
+Notable hot spots worth a future PERF tick: `jpintel_mcp.utils.slug`
+self-time (~105 ms) shows up on both entry points — likely a heavy
+constant-table import (pykakasi load) that could be made lazy. The
+`stripe._*` self-times confirm PERF-7's lazy-stripe ratchet held.
+The `autonomath_tools.tax_chain_tools` + `annotation_tools` + `tools`
+chain cumulatively accounts for ~1.2 s of MCP cumulative time and is
+the next obvious lazy-load target.
+
+Budgets are deliberately set at ~1.6-2x above measured median to
+absorb CI runner variance + cold pip caches without false positives.
+A real regression (eager `scipy.stats` ~1.0 s, eager `pandas` ~0.7 s,
+eager FAISS ~0.5 s, eager `stripe` subtree ~0.4 s) trips the gate
+cleanly.
+
 ## Appendix A — Artifact paths referenced
 
 - `/Users/shigetoumeda/jpcite/pyproject.toml` — pytest + mypy config
@@ -171,5 +237,7 @@ removed. Document them so future PERF iterations don't re-introduce.
 - `/Users/shigetoumeda/jpcite/docs/_internal/athena_real_burn_2026_05_16.md`
 - `/Users/shigetoumeda/jpcite/docs/_internal/AWS_CANARY_RUN_2026_05_16.md`
 - `/Users/shigetoumeda/jpcite/docs/_internal/aws_armed_state_pm4_2026_05_16.md`
+- `/Users/shigetoumeda/jpcite/tests/perf/test_import_time_gate.py` (PERF-27 cold-import regression gate)
+- `/Users/shigetoumeda/jpcite/tests/perf/conftest.py` (--runperf opt-in)
 
-last_updated: 2026-05-16
+last_updated: 2026-05-17
