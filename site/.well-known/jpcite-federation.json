@@ -14,8 +14,8 @@
     "sampling": true,
     "resources": true,
     "prompts": true,
-    "tool_count_runtime": 155,
-    "tool_count_manifest": 155
+    "tool_count_runtime": 179,
+    "tool_count_manifest": 179
   },
   "jpcite_compatible_tools": [
     {

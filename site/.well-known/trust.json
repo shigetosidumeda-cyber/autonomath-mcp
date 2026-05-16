@@ -192,7 +192,7 @@
     "training_data_use": "prohibited",
     "ai_response_disclaimer_recommended": true,
     "ai_response_disclaimer_reference": "https://jpcite.com/legal-fence",
-    "tool_count_default_gates": 155,
+    "tool_count_default_gates": 179,
     "mcp_protocol_version": "2025-06-18"
   },
   "related_laws_compliance": {
