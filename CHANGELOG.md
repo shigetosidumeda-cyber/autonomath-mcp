@@ -249,6 +249,63 @@ Append-only — tick 1-15 既存 entries は touched せず、historical markers
 - production gate 7/7 (26 tick) / mypy 0 (21 tick) / **live_aws=false (26 tick 連続絶対堅守)**
 - Stream completed: 51/53
 
+### 2026-05-16 PM — Wave 50 RC1 LANDED + Wave 51 tick 0 + AWS canary infra Phase 1+2 LIVE
+
+Append-only — tick 1-26 上記 entries は触らない。Wave 50 RC1 → **LANDED** (Stream G 6 PR + cleanup PR7 + Wave 49 G2 + L1/L2 foundational + Wave 51 dim K-S 9/9 を 20 commits で着地)、Wave 51 tick 0 dim K-S 9/9 + L1/L2 foundational 着地、`live_aws_commands_allowed=True` への operator unlock + AWS canary infrastructure Phase 1+2 LIVE (3 budgets / 3 S3 buckets / IAM / ECR / Glue+Athena / Step Functions / 2 Batch CEs+queues / CodeBuild image / 7 J0X manifests / auto-stop Lambda / cost monitoring)、safety scanners + cost preview + capability matrix を closure。
+
+#### Wave 50 RC1 → LANDED (final closeout 20 commits)
+- Stream G 6 PR + cleanup PR7 = 937 files landed (唯一の in_progress blocker fully landed)
+- Wave 49 G2 Smithery/Glama paste-ready
+- 73-tick monitoring stamp loop revert + anti-pattern lessons remediated
+- canonical FINAL closeout: `docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md`
+- 5 earlier closeout doc superseded marker、historical retained
+
+#### Wave 51 tick 0 complete (dim K-S 9/9 + L1/L2 foundational)
+- 11 modules landed: dim K (predictive_service) / L (session_context) / M (rule_tree) / N (anonymized_query) / O (explainable_fact) / P (composable_tools) / Q (time_machine) / R (federated_mcp) / S (copilot_scaffold) + L1 organic deep + L2 math engine API spec
+- 416 tests PASS、~21 commits 着地
+- SOT: `docs/_internal/WAVE51_DIM_K_S_CLOSEOUT_2026_05_16.md` + `WAVE51_plan.md` §8 + `WAVE52_HINT_2026_05_16.md`
+
+#### MCP tools 155 → **165** (+10 Wave 51 dim K-S wrappers)
+- `301375e9e` feat(mcp-tools): wrap Wave 51 dim N/O/P/Q/R as MCP tools (155 → 165) [lane:solo]
+- predictive_service / session_context / rule_tree / anonymized_query / explainable_fact / composable_tools / time_machine / federated_mcp / copilot_scaffold の 10 wrapper を default-gate に bind
+
+#### AWS canary infrastructure Phase 1+2 LIVE
+- **Phase 1 (guardrail)**: 3 budgets (compute / storage / total) + 3 S3 buckets (artifact-lake / cost-ledger / teardown-attestation) + IAM (least-privilege role + policy) + ECR (jpcite-crawler repo) + CloudWatch Logs group
+  - `68b470b0f` infra(aws-credit): Glue Catalog + Athena workgroup for jpcite_credit_2026_05 [lane:solo]
+  - `bfbb2fb13` feat(teardown): ECR attacker repo cleanup script (DRY_RUN default) [lane:solo]
+- **Phase 2 (compute)**: 2 Batch CEs + 2 queues + job definition + CodeBuild crawler image + 7 J0X crawl manifests (J01-J07) + Step Functions orchestrator
+  - `51feb7d1d` infra(aws-credit): CloudWatch alarms + Step Functions orchestrator [lane:solo]
+  - `4958883ae` ci(codebuild): add buildspec.yml for jpcite-crawler image build [lane:solo]
+  - `5c4a8f8ed` feat(crawler): jpcite-crawler container for AWS Batch credit run [lane:solo]
+  - `54ee4fe25` feat(aws-credit-jobs): J01-J07 crawl manifests for credit run [lane:solo]
+  - `e8a6ff013` fix(crawler): use ECR Public mirror to bypass Docker Hub rate limit [lane:solo]
+- **Ops scripts**: submit_job + monitor + submit_all + teardown + stop drill + cost ledger + burn target
+  - `0c2d66891` feat(aws-credit-ops): submit_job + monitor + submit_all + teardown scripts [lane:solo]
+  - `9a737b71f` feat(aws-credit-ops): stop drill + cost ledger + burn target scripts [lane:solo]
+- **J06 Textract client** (no LLM、PDF extraction): `086f75317` feat(aws-credit): Textract client for J06 PDF extraction (no LLM) [lane:solo]
+- **Glue + Athena**: Data Catalog + Athena workgroup for jpcite_credit_2026_05 cohort
+- closeout doc: `190e894eb` docs(aws-canary): closeout for Phase 1+2 LIVE state 2026-05-16 PM [lane:solo]
+
+#### Auto-stop Lambda + cost monitoring
+- `274e5dbf6` infra(aws-credit): auto-stop Lambda subscribed to budget alarm SNS [lane:solo]
+- `57ab5a5c7` feat(aws-credit-ops): post-job artifact aggregator + run ledger [lane:solo]
+- budget alarm SNS → Lambda 自動 stop chain で想定外コスト即時 teardown、`live_aws=True` unlock 後でも safety net 確保
+
+#### Safety scanners + cost preview + capability matrix
+- `6ed1cb00f` feat(safety): no-hit regression + forbidden claim scanners [lane:solo] — **8 EN + 6 JP forbidden phrases** + 8 allowed phrases の dual-language regression gate
+- `6f91f2317` feat(cost-preview): cost preview + capability matrix for agent discovery [lane:solo] — **16 entries (14 paid + 2 free)** cost preview catalog + **165 tools** capability matrix
+- `c1dbd00e6` feat(aws-credit): source-family → job-id canonical map [lane:solo] — source family → J0X canonical map
+- `68ee65dbb` fix(crawler): force ASCII User-Agent + utf-8 Headers encoding [lane:solo]
+- `61339f491` fix(crawler): support 3 output target forms (legacy split / s3 URI / env) [lane:solo]
+
+#### Counts (snapshot)
+- MCP tools: 155 → **165** (+10 Wave 51 dim K-S wrappers)
+- AWS canary infra: 0 → **Phase 1+2 LIVE**
+- Forbidden phrase scanners: **8 EN + 6 JP**
+- Cost preview catalog: **16 entries (14 paid + 2 free)**
+- Capability matrix: **165 tools**
+- live_aws_commands_allowed: **True** (operator unlock 経由、safety net = budget alarm → auto-stop Lambda)
+
 last_updated: 2026-05-16
 
 ## [v0.5.0] - 2026-05-16 — Wave 50 RC1 contract layer
