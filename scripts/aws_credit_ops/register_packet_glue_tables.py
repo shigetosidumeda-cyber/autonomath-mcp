@@ -1345,6 +1345,37 @@ for _name, _prefix in _WAVE_73_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 74 — fintech / digital assets cross packets (catalog 222 → 232). All 10
+# share the jsic_major industry cohort with descriptive adoption_n proxy
+# covering Fintech license inventory / crypto asset disclosure / 資金決済法
+# compliance / stablecoin issuer signal / DeFi platform disclosure / 中央銀行
+# デジタル通貨 (デジタル円) pilot / Fintech regulatory sandbox participation
+# / API banking compliance / mobile payment intensity / fraud alert
+# disclosure. Reuse the shared super-set columns; topic-specific fields land
+# in raw_json.
+_WAVE_74_TABLES: list[tuple[str, str]] = [
+    ("packet_fintech_license_inventory_v1", "fintech_license_inventory_v1/"),
+    ("packet_crypto_asset_disclosure_v1", "crypto_asset_disclosure_v1/"),
+    (
+        "packet_payment_service_act_compliance_v1",
+        "payment_service_act_compliance_v1/",
+    ),
+    ("packet_stablecoin_issuer_signal_v1", "stablecoin_issuer_signal_v1/"),
+    ("packet_defi_platform_disclosure_v1", "defi_platform_disclosure_v1/"),
+    ("packet_digital_yen_pilot_v1", "digital_yen_pilot_v1/"),
+    (
+        "packet_fintech_sandbox_participation_v1",
+        "fintech_sandbox_participation_v1/",
+    ),
+    ("packet_api_banking_compliance_v1", "api_banking_compliance_v1/"),
+    ("packet_mobile_payment_intensity_v1", "mobile_payment_intensity_v1/"),
+    ("packet_fraud_alert_disclosure_v1", "fraud_alert_disclosure_v1/"),
+]
+
+for _name, _prefix in _WAVE_74_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 # Wave 70 — industry x geographic intersection houjin universal key packets
 # (catalog 192 -> 202). All 10 share the **houjin** subject cohort with
 # (houjin_bangou, industry_jsic_medium, prefecture or municipality) intersection
@@ -1395,6 +1426,30 @@ _WAVE_70_TABLES: list[tuple[str, str]] = [
 ]
 
 for _name, _prefix in _WAVE_70_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
+# Wave 69 — entity_360 cross-source houjin-cohort packets (catalog 182 -> 192).
+# All 10 share the **houjin** subject cohort with houjin_bangou as canonical
+# universal key. Each axis (summary / compliance / subsidy / court / invoice /
+# certification / succession / partner / temporal / risk) bundles a single
+# cohort packet per houjin, so AI agents only need 1 fetch instead of 6+
+# separate registry calls. Reuse the shared super-set columns; axis-specific
+# fields land in raw_json. subject_kind = houjin.
+_WAVE_69_TABLES: list[tuple[str, str]] = [
+    ("packet_entity_360_summary_v1", "entity_360_summary_v1/"),
+    ("packet_entity_compliance_360_v1", "entity_compliance_360_v1/"),
+    ("packet_entity_subsidy_360_v1", "entity_subsidy_360_v1/"),
+    ("packet_entity_court_360_v1", "entity_court_360_v1/"),
+    ("packet_entity_invoice_360_v1", "entity_invoice_360_v1/"),
+    ("packet_entity_certification_360_v1", "entity_certification_360_v1/"),
+    ("packet_entity_succession_360_v1", "entity_succession_360_v1/"),
+    ("packet_entity_partner_360_v1", "entity_partner_360_v1/"),
+    ("packet_entity_temporal_pulse_v1", "entity_temporal_pulse_v1/"),
+    ("packet_entity_risk_360_v1", "entity_risk_360_v1/"),
+]
+
+for _name, _prefix in _WAVE_69_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
