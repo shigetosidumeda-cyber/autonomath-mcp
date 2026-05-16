@@ -1,0 +1,77 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/federated_partner.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "title": "PartnerMcp",
+  "description": "Curated federated MCP partner row (Wave 51 dim R). jpcite acts as hub and recommends one of these partners when an agent query falls outside jpcite's Japanese-public-program scope. NO LLM inference involved — partner selection is deterministic keyword/capability match. NO HTTP call at recommendation time — the agent client calls the partner directly.",
+  "properties": {
+    "partner_id": {
+      "description": "Stable short slug for the partner (lowercase, ascii, no spaces). Used as the canonical join key with am_federated_mcp_partner.partner_id (migration 278).",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "title": "Partner Id",
+      "type": "string"
+    },
+    "name": {
+      "description": "Display name (may contain Japanese / English / spaces). Surfaced verbatim to agents in recommendation envelopes.",
+      "minLength": 1,
+      "maxLength": 128,
+      "title": "Name",
+      "type": "string"
+    },
+    "official_url": {
+      "description": "Canonical first-party developer-portal / product URL for the partner. ALWAYS https. Used for human verification of the recommendation surface.",
+      "format": "uri",
+      "minLength": 1,
+      "pattern": "^https://",
+      "title": "Official Url",
+      "type": "string"
+    },
+    "mcp_endpoint": {
+      "description": "Official partner-operated MCP server endpoint when one exists, otherwise null. NEVER a third-party aggregator endpoint — only first-party-confirmed MCP URLs.",
+      "anyOf": [
+        {"type": "string", "format": "uri", "pattern": "^https://", "minLength": 1},
+        {"type": "null"}
+      ],
+      "title": "Mcp Endpoint"
+    },
+    "mcp_endpoint_status": {
+      "description": "Disposition of mcp_endpoint. official = first-party hosted MCP confirmed via partner docs. none_official = partner has no public MCP yet, fall back to REST/GraphQL via official_url.",
+      "enum": ["official", "none_official"],
+      "title": "Mcp Endpoint Status",
+      "type": "string"
+    },
+    "capabilities": {
+      "description": "Capability tags describing what the partner MCP / API can do. Used by gap-matching keyword lookup. Lowercase ascii tokens.",
+      "items": {
+        "minLength": 1,
+        "maxLength": 32,
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "maxItems": 16,
+      "title": "Capabilities",
+      "type": "array",
+      "uniqueItems": true
+    },
+    "use_when": {
+      "description": "One-sentence guidance (English) telling an agent when to hand off to this partner. Shown verbatim in recommendation envelopes.",
+      "minLength": 1,
+      "maxLength": 280,
+      "title": "Use When",
+      "type": "string"
+    }
+  },
+  "required": [
+    "partner_id",
+    "name",
+    "official_url",
+    "mcp_endpoint",
+    "mcp_endpoint_status",
+    "capabilities",
+    "use_when"
+  ],
+  "type": "object"
+}

@@ -1,0 +1,100 @@
+{
+  "schema_version": "jpcite.federated_partner.v1",
+  "schema_ref": "schemas/jpcir/federated_partner.schema.json",
+  "description": "Wave 51 dim R curated federated MCP partner shortlist. jpcite acts as hub; when an agent query falls outside the Japanese-public-program scope, jpcite recommends one of these 6 partners. Partners listed alphabetically by partner_id. Endpoints verified 2026-05-16. Do NOT add self-reference (jpcite) to this list — federation must be to peers only.",
+  "verified_at": "2026-05-16",
+  "partners": [
+    {
+      "partner_id": "freee",
+      "name": "freee 会計",
+      "official_url": "https://developer.freee.co.jp/",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": [
+        "accounting",
+        "invoice",
+        "expense",
+        "tax_filing",
+        "payroll",
+        "japan"
+      ],
+      "use_when": "Query needs the user's private accounting ledger, draft invoices, or 確定申告 working data — freee owns the user's books, jpcite does not."
+    },
+    {
+      "partner_id": "github",
+      "name": "GitHub",
+      "official_url": "https://github.com/github/github-mcp-server",
+      "mcp_endpoint": "https://api.githubcopilot.com/mcp/",
+      "mcp_endpoint_status": "official",
+      "capabilities": [
+        "code",
+        "repository",
+        "issue",
+        "pull_request",
+        "review",
+        "actions"
+      ],
+      "use_when": "Query references source code, repositories, pull requests, issues, or CI workflows — GitHub hosts the canonical repo state, jpcite does not."
+    },
+    {
+      "partner_id": "linear",
+      "name": "Linear",
+      "official_url": "https://linear.app/developers",
+      "mcp_endpoint": "https://mcp.linear.app/sse",
+      "mcp_endpoint_status": "official",
+      "capabilities": [
+        "issue",
+        "project",
+        "cycle",
+        "roadmap",
+        "product"
+      ],
+      "use_when": "Query needs product issues, cycles, projects, or roadmap items — Linear owns the team's product tracker, jpcite does not."
+    },
+    {
+      "partner_id": "mf",
+      "name": "マネーフォワード クラウド",
+      "official_url": "https://biz.moneyforward.com/",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": [
+        "accounting",
+        "invoice",
+        "expense",
+        "payroll",
+        "japan"
+      ],
+      "use_when": "Query needs the user's private accounting ledger or 給与計算 data and the user is on MoneyForward Cloud — MF owns the user's books, jpcite does not."
+    },
+    {
+      "partner_id": "notion",
+      "name": "Notion",
+      "official_url": "https://developers.notion.com/",
+      "mcp_endpoint": "https://mcp.notion.com/mcp",
+      "mcp_endpoint_status": "official",
+      "capabilities": [
+        "doc",
+        "knowledge_base",
+        "wiki",
+        "database",
+        "collab"
+      ],
+      "use_when": "Query needs internal documents, wiki pages, or knowledge-base entries — Notion owns the team's doc graph, jpcite does not."
+    },
+    {
+      "partner_id": "slack",
+      "name": "Slack",
+      "official_url": "https://api.slack.com/",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": [
+        "chat",
+        "message",
+        "channel",
+        "notify",
+        "workflow"
+      ],
+      "use_when": "Query needs to read team chat history or send a notification message — Slack owns the team's chat state, jpcite does not."
+    }
+  ]
+}
