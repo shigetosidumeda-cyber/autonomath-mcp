@@ -80,6 +80,7 @@ import json
 import logging
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, Final
@@ -165,6 +166,17 @@ REQUIRED_ARTIFACTS: Final[frozenset[str]] = frozenset({"object_manifest", "claim
 #: extracted. The ETL drops rows that match this sentinel so the
 #: contract-version envelope never lands as a Parquet row.
 _CLAIM_REFS_HEADER_VERSION: Final[str] = "jpcir.p0.v1"
+
+#: Default ThreadPool fan-out for the per-artifact ETL loop. Each worker
+#: drives one artifact's full S3-GET → normalise → Parquet → S3-PUT
+#: pipeline. The 4 canonical artifacts (object_manifest / source_receipts
+#: / claim_refs / known_gaps) saturate at 4 workers; bumping further has
+#: no benefit and risks botocore connection-pool exhaustion. The S3-GET
+#: phase is wall-time-dominant (≥85% of per-folder ms in PERF-18
+#: baseline), so parallelising it converts a 4-RTT sequential walk into
+#: an effectively 1-RTT parallel walk, observed 2.28x speedup on
+#: J02_deep_nta_houjin. boto3 clients are thread-safe per AWS docs.
+DEFAULT_ETL_MAX_WORKERS: Final[int] = 4
 
 #: Column-level type hints for pyarrow Parquet write. Mirrors the DDL:
 #: BIGINT -> int64, DOUBLE -> float64, ARRAY<STRING> -> list<string>,
@@ -638,6 +650,7 @@ def run_etl(
     s3_client: Any | None = None,
     glue_client: Any | None = None,
     clock: Callable[[], datetime] | None = None,
+    max_workers: int = DEFAULT_ETL_MAX_WORKERS,
 ) -> RunReport:
     """Drive the ETL for every artifact under ``job_prefix``.
 
@@ -645,6 +658,16 @@ def run_etl(
     without re-reading the run-manifest. Never raises on a missing
     optional artifact; ``object_manifest`` missing is also reported
     (not raised) so the operator can decide a follow-up.
+
+    ``max_workers`` controls the per-artifact ThreadPool fan-out. The
+    per-artifact step (S3 GET → normalise → Parquet → optional S3 PUT)
+    is independent across artifacts; PERF-18 baseline showed Phase 1
+    (S3 GET) dominates ≥85% of wall time so parallelising the 4
+    artifacts collapses a sequential 4-RTT walk into an effectively
+    1-RTT parallel walk (2.28x measured on J02_deep_nta_houjin).
+    Set ``max_workers=1`` to restore the legacy sequential behaviour
+    (useful for boto3 stub-based unit tests that share state across
+    artifacts).
     """
 
     now = (clock or _utc_now)()
@@ -666,8 +689,10 @@ def run_etl(
         started_at=now.strftime("%Y-%m-%dT%H:%M:%SZ"),
     )
 
-    for artifact_kind in ARTIFACT_SCHEMAS:
-        artifact_report = etl_one_artifact(
+    artifact_kinds = tuple(ARTIFACT_SCHEMAS.keys())
+
+    def _run_one(artifact_kind: str) -> ArtifactReport:
+        return etl_one_artifact(
             artifact_kind=artifact_kind,
             job_prefix=job_prefix,
             run_id=run_id,
@@ -676,6 +701,22 @@ def run_etl(
             dry_run=dry_run,
             s3_client=s3_client,
         )
+
+    effective_workers = max(1, min(max_workers, len(artifact_kinds)))
+    if effective_workers == 1:
+        artifact_reports = [_run_one(k) for k in artifact_kinds]
+    else:
+        # ThreadPoolExecutor.map preserves input order regardless of
+        # completion order, so the resulting `report.artifacts` list
+        # keeps the canonical ARTIFACT_SCHEMAS ordering — JSON output
+        # stays byte-stable across sequential and parallel modes.
+        with ThreadPoolExecutor(
+            max_workers=effective_workers,
+            thread_name_prefix="etl-artifact",
+        ) as pool:
+            artifact_reports = list(pool.map(_run_one, artifact_kinds))
+
+    for artifact_kind, artifact_report in zip(artifact_kinds, artifact_reports, strict=True):
         report.artifacts.append(artifact_report)
         if artifact_kind in REQUIRED_ARTIFACTS and artifact_report.status == "missing_in_raw":
             logger.error(
@@ -779,6 +820,16 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="emit the run report as JSON to stdout instead of human-readable",
     )
+    parser.add_argument(
+        "--max-workers",
+        type=int,
+        default=DEFAULT_ETL_MAX_WORKERS,
+        help=(
+            "ThreadPool fan-out for the per-artifact ETL loop "
+            f"(default: {DEFAULT_ETL_MAX_WORKERS}; set to 1 to force "
+            "the legacy sequential walk)."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -797,6 +848,7 @@ def main(argv: list[str] | None = None) -> int:
         trigger_crawler=args.trigger_crawler,
         crawler_name=args.crawler_name,
         dry_run=dry_run,
+        max_workers=args.max_workers,
     )
     if args.json:
         sys.stdout.write(json.dumps(report.to_json(), ensure_ascii=False, indent=2))
