@@ -48,7 +48,7 @@ jobs:
     timeout-minutes: 600  # 1st pass 67 seed は ~10 min、 1,741 拡張時は 6-8h
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v5
