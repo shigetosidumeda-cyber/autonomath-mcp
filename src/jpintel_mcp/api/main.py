@@ -13,12 +13,13 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any, cast
 
+import orjson
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, ORJSONResponse, RedirectResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.gzip import GZipMiddleware
@@ -2251,26 +2252,43 @@ def create_app() -> FastAPI:
     async def _openapi_legacy_redirect() -> RedirectResponse:
         return RedirectResponse(url="/v1/openapi.json", status_code=308)
 
+    # PERF-7 (2026-05-16): switch from stdlib JSON to ORJSONResponse — orjson
+    # encodes the ~300 KB agent schema ~10× faster than `json.encoder.iter
+    # encode` (cProfile self-time on /v1/openapi.json was ~5 ms / request
+    # against the same path).
     @app.get("/v1/openapi.agent.json", include_in_schema=False)
-    def _openapi_agent() -> JSONResponse:
-        return JSONResponse(content=build_agent_openapi_schema(app.openapi()))
+    def _openapi_agent() -> ORJSONResponse:
+        return ORJSONResponse(content=build_agent_openapi_schema(app.openapi()))
 
-    # R8 perf, 2026-05-07: Serve the MCP registry manifest (`mcp-server.json`)
-    # at /v1/mcp-server.json so the URL referenced by `manifest_url` in that
-    # very file resolves to a 200. Reads the file from the Docker runtime
-    # layout first (`/app/mcp-server.json`), then falls back to source-tree
-    # locations so local tests still work. Cache-Control header is added by
-    # StaticManifestCacheMiddleware (LIFO outer) so CF / browsers see the
-    # same `public, max-age=300, s-maxage=600` envelope as the OpenAPI
-    # manifests.
+    # R8 perf, 2026-05-07 + PERF-7 2026-05-16: Serve the MCP registry
+    # manifest (`mcp-server.json`) at /v1/mcp-server.json. PERF-7 pre-encodes
+    # the manifest once at boot via orjson and serves the raw bytes — the
+    # earlier per-request `read_text + json.loads + json.dumps` cycle was
+    # ~50 ms p95 in cProfile. Cache-Control is still added by
+    # StaticManifestCacheMiddleware so CF / browsers see the same envelope.
+    _mcp_server_manifest_bytes: bytes | None = None
+    _mcp_server_manifest_resolved = _resolve_mcp_server_manifest_path()
+    if _mcp_server_manifest_resolved is not None:
+        try:
+            _mcp_server_manifest_bytes = orjson.dumps(
+                json.loads(_mcp_server_manifest_resolved.read_text(encoding="utf-8"))
+            )
+        except Exception:  # noqa: BLE001 — fall back to per-request resolve
+            logger.exception("mcp_server_manifest_preencode_failed")
+            _mcp_server_manifest_bytes = None
 
     @app.get("/v1/mcp-server.json", include_in_schema=False)
-    def _mcp_server_manifest() -> JSONResponse:
+    def _mcp_server_manifest() -> Response:
+        if _mcp_server_manifest_bytes is not None:
+            return Response(
+                content=_mcp_server_manifest_bytes,
+                media_type="application/json",
+            )
         manifest_path = _resolve_mcp_server_manifest_path()
         if manifest_path is None:  # pragma: no cover — defensive
             raise HTTPException(status_code=404, detail="mcp-server.json not found")
         text = manifest_path.read_text(encoding="utf-8")
-        return JSONResponse(content=json.loads(text))
+        return ORJSONResponse(content=json.loads(text))
 
     # Router wiring. AnonIpLimitDep is attached only to routers whose
     # routes accept anonymous callers and should count toward the per-IP
@@ -3593,6 +3611,24 @@ def create_app() -> FastAPI:
         return schema
 
     app.openapi = custom_openapi  # type: ignore[method-assign]
+
+    # PERF-7 (2026-05-16): the FastAPI-default `/v1/openapi.json` route built
+    # by lazy `setup()` runs `json.dumps(app.openapi())` per request and
+    # consumed ~5 ms p95 of self-time in cProfile against the 800 KB schema.
+    # Iterating `app.routes` here forces `setup()` to run, then we swap the
+    # openapi-route endpoint to an ORJSON handler that re-uses the same
+    # `app.openapi_schema` cache. ~10× faster encoder for the same payload.
+    if app.openapi_url:
+        from starlette.routing import request_response as _starlette_request_response
+
+        async def _openapi_orjson(_req: Request) -> ORJSONResponse:
+            return ORJSONResponse(content=app.openapi())
+
+        for _route in app.routes:
+            if getattr(_route, "path", None) == app.openapi_url:
+                _route.endpoint = _openapi_orjson  # type: ignore[attr-defined]
+                _route.app = _starlette_request_response(_openapi_orjson)  # type: ignore[attr-defined]
+                break
 
     return app
 
