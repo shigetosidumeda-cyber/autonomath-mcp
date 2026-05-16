@@ -1,5 +1,7 @@
 # Wave 50 RC1 Closeout (2026-05-16)
 
+> **SUPERSEDED** — see `docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md` (2026-05-16) for the canonical FINAL closeout (20 commits landed, Stream G fully landed via 7 PR, Wave 51 dim K-S all implemented in same session). This doc retained as historical-state marker per `feedback_overwrite_stale_state.md`.
+
 ## 完了宣言
 Wave 50 RC1 内部実装は **100% 完了**。残 3 stream は all user-action-only。
 

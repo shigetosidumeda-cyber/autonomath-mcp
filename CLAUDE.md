@@ -911,3 +911,10 @@ last_updated: 2026-05-16
 ### tick 104 — **live_aws=false (104 tick 絶対堅守)**
 
 ### tick 150 — **live_aws=false (150 tick 絶対堅守 — MILESTONE)**
+
+### Wave 50 RC1 FINAL closeout (2026-05-16) — 20 commits landed
+- canonical FINAL closeout doc: `docs/_internal/WAVE50_RC1_FINAL_CLOSEOUT_2026_05_16.md`
+- 20 commits landed this session (Stream G 6 PR + cleanup PR7 + Wave 49 G2 + 73-tick revert + L1/L2 foundational + Wave 51 dim K-S 9/9)
+- Stream G (唯一の in_progress blocker) = fully landed; Wave 50 RC1 = **LANDED**
+- earlier closeout 5 docs (WAVE50_CLOSEOUT / FINAL_CUMULATIVE / SESSION_SUMMARY / TICK_1_16_TIMELINE / TICK_1_20_FINAL_STATUS) = superseded marker added, historical retained
+- live_aws=false 連続堅守継続。anti-pattern lessons: 73-tick monitoring stamp loop + "user 必須" decree without verify — both remediated this session
