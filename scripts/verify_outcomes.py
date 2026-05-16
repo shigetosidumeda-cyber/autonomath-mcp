@@ -126,14 +126,19 @@ def load_assertion_specs(directory: Path) -> list[AssertionSpec]:
 
 
 def _import_boto3_session(profile: str) -> Any:  # pragma: no cover - lazy
-    """Lazy boto3 session import (keeps the script importable test-side)."""
+    """Lazy boto3 session import (keeps the script importable test-side).
+
+    PERF-35: routed through the cached pool's ``get_session`` so the
+    Session construction cost (200-500 ms cold) is paid exactly once
+    per ``(region, profile)`` tuple in the verifier process.
+    """
 
     try:
-        import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
+        from scripts.aws_credit_ops._aws import get_session
     except ImportError as exc:
         msg = "boto3 is required for the verifier; pip install boto3"
         raise RuntimeError(msg) from exc
-    return boto3.Session(profile_name=profile)
+    return get_session(profile_name=profile)
 
 
 def iter_packet_keys(
@@ -213,9 +218,7 @@ def verify_outcome(
         )
 
     keys = list(
-        iter_packet_keys(
-            s3_client=s3_client, bucket=bucket, prefix=prefix, max_keys=list_cap
-        )
+        iter_packet_keys(s3_client=s3_client, bucket=bucket, prefix=prefix, max_keys=list_cap)
     )
     if not keys:
         return (
@@ -276,10 +279,7 @@ def write_ledger(
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with out_path.open("w", encoding="utf-8") as fh:
-        fh.write(
-            json.dumps({"row_kind": "metadata", **run_metadata}, ensure_ascii=False)
-            + "\n"
-        )
+        fh.write(json.dumps({"row_kind": "metadata", **run_metadata}, ensure_ascii=False) + "\n")
         for report in reports:
             fh.write(
                 json.dumps(
