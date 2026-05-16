@@ -1499,5 +1499,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 listed company disclosure pulse packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "listed_company_disclosure_pulse_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 IPO pipeline signal packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "ipo_pipeline_signal_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 bond issuance pattern packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "bond_issuance_pattern_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 dividend policy stability packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "dividend_policy_stability_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 shareholder return intensity packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "shareholder_return_intensity_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 capital raising history packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "capital_raising_history_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 executive compensation disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "executive_compensation_disclosure_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 audit firm rotation packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "audit_firm_rotation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 tax-haven subsidiary disclosure packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "tax_haven_subsidiary_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "業種別 institutional FPD / ETF holdings packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "fpd_etf_holdings_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]

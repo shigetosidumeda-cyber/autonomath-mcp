@@ -10,9 +10,9 @@
     "glue_database": "jpcite_credit_2026_05",
     "glue_region": "ap-northeast-1"
   },
-  "total_outcomes": 122,
+  "total_outcomes": 112,
   "wired_count": 69,
-  "pending_count": 33,
+  "pending_count": 43,
   "aws_constants": {
     "s3_derived_bucket": "jpcite-credit-993693061769-202605-derived",
     "glue_database": "jpcite_credit_2026_05",
@@ -2105,6 +2105,206 @@
       "estimated_rows": null,
       "athena_query_template": null,
       "status": "PENDING"
+    },
+    {
+      "outcome_id": "listed_company_disclosure_pulse_packet",
+      "display_name": "業種別 listed company disclosure pulse packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_listed_company_disclosure_pulse_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "ipo_pipeline_signal_packet",
+      "display_name": "業種別 IPO pipeline signal packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_ipo_pipeline_signal_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "bond_issuance_pattern_packet",
+      "display_name": "業種別 bond issuance pattern packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_bond_issuance_pattern_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "dividend_policy_stability_packet",
+      "display_name": "業種別 dividend policy stability packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_dividend_policy_stability_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "shareholder_return_intensity_packet",
+      "display_name": "業種別 shareholder return intensity packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_shareholder_return_intensity_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "capital_raising_history_packet",
+      "display_name": "業種別 capital raising history packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_capital_raising_history_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "executive_compensation_disclosure_packet",
+      "display_name": "業種別 executive compensation disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_executive_compensation_disclosure_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "audit_firm_rotation_packet",
+      "display_name": "業種別 audit firm rotation packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_audit_firm_rotation_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "tax_haven_subsidiary_packet",
+      "display_name": "業種別 tax-haven subsidiary disclosure packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_tax_haven_subsidiary_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
+    },
+    {
+      "outcome_id": "fpd_etf_holdings_packet",
+      "display_name": "業種別 institutional FPD / ETF holdings packet",
+      "billable": true,
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "packet_generator": "generate_fpd_etf_holdings_packets.py",
+      "s3_path": null,
+      "glue_database": null,
+      "glue_table": null,
+      "aws_region": "ap-northeast-1",
+      "estimated_rows": null,
+      "athena_query_template": null,
+      "status": "PENDING"
     }
   ],
   "gap_classification": {
@@ -2159,7 +2359,17 @@
       "retail_inbound_subsidy_packet",
       "education_research_grants_packet",
       "finance_fintech_regulation_packet",
-      "non_profit_program_overlay_packet"
+      "non_profit_program_overlay_packet",
+      "listed_company_disclosure_pulse_packet",
+      "ipo_pipeline_signal_packet",
+      "bond_issuance_pattern_packet",
+      "dividend_policy_stability_packet",
+      "shareholder_return_intensity_packet",
+      "capital_raising_history_packet",
+      "executive_compensation_disclosure_packet",
+      "audit_firm_rotation_packet",
+      "tax_haven_subsidiary_packet",
+      "fpd_etf_holdings_packet"
     ],
     "control_or_meta_outcome_no_packet_backing": [
       "agent_routing_decision",

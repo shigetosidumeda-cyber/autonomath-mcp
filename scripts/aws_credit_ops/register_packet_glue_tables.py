@@ -1025,6 +1025,27 @@ for _name, _prefix in _WAVE_62_TABLES:
     PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
 
 
+# Wave 65 — financial markets cross packets (catalog 142 → 152). All 10
+# share the jsic_major industry cohort with descriptive adoption_n + optional
+# amount_total_yen proxy. Reuse the shared super-set columns; specific
+# fields land in raw_json.
+_WAVE_65_TABLES: list[tuple[str, str]] = [
+    ("packet_listed_company_disclosure_pulse_v1", "listed_company_disclosure_pulse_v1/"),
+    ("packet_ipo_pipeline_signal_v1", "ipo_pipeline_signal_v1/"),
+    ("packet_bond_issuance_pattern_v1", "bond_issuance_pattern_v1/"),
+    ("packet_dividend_policy_stability_v1", "dividend_policy_stability_v1/"),
+    ("packet_shareholder_return_intensity_v1", "shareholder_return_intensity_v1/"),
+    ("packet_capital_raising_history_v1", "capital_raising_history_v1/"),
+    ("packet_executive_compensation_disclosure_v1", "executive_compensation_disclosure_v1/"),
+    ("packet_audit_firm_rotation_v1", "audit_firm_rotation_v1/"),
+    ("packet_tax_haven_subsidiary_v1", "tax_haven_subsidiary_v1/"),
+    ("packet_fpd_etf_holdings_v1", "fpd_etf_holdings_v1/"),
+]
+
+for _name, _prefix in _WAVE_65_TABLES:
+    PACKET_TABLES.append((_name, _prefix, _WAVE_56_58_COLUMNS))
+
+
 def render_ddl(table: str, prefix: str, columns: list[tuple[str, str]]) -> str:
     """Render a single ``CREATE EXTERNAL TABLE IF NOT EXISTS`` for a packet table."""
     col_block = ",\n  ".join(f"{name} {sql_type}" for name, sql_type in columns)

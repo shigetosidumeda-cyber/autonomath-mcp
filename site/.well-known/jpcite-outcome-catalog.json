@@ -3,7 +3,7 @@
   "catalog_id": "jpcite-outcome-catalog-2026-05-16",
   "generated_at": "2026-05-16T07:00:00+09:00",
   "source_capsule_id": "rc1-p0-bootstrap-2026-05-15",
-  "total_outcomes": 122,
+  "total_outcomes": 132,
   "price_bands": {
     "free": 0,
     "light": 300,
@@ -2464,7 +2464,11 @@
       "display_name": "業種別 healthcare compliance + subsidy packet",
       "description": "業種別 医療法人 × 厚労省補助 × 行政処分 proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2481,7 +2485,11 @@
       "display_name": "業種別 agriculture program intensity packet",
       "description": "業種別 農業法人 × MAFF + 公庫 + 共済 制度密度 proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2498,7 +2506,11 @@
       "display_name": "業種別 transport / logistics grant packet",
       "description": "業種別 運輸事業 × 国交省補助 + 物流効率化 proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2515,7 +2527,11 @@
       "display_name": "業種別 energy efficiency subsidy packet",
       "description": "業種別 省エネ補助 × 認定法人 × CO2 削減 proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2532,7 +2548,11 @@
       "display_name": "業種別 construction × public works packet",
       "description": "業種別 建設業 × 公共工事入札 + 業法認可 proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2549,7 +2569,11 @@
       "display_name": "業種別 manufacturing × DX grant packet",
       "description": "業種別 製造業 × DX補助 + ものづくり補助 proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2566,7 +2590,11 @@
       "display_name": "業種別 retail × inbound subsidy packet",
       "description": "業種別 小売業 × インバウンド対応補助 proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2583,7 +2611,11 @@
       "display_name": "業種別 education × research grant packet",
       "description": "業種別 教育法人 × 文科省 + JSPS grant proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2600,7 +2632,11 @@
       "display_name": "業種別 finance × fintech regulation packet",
       "description": "業種別 金融業 × FSA 認可 + Fintech 補助 proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
@@ -2617,12 +2653,226 @@
       "display_name": "業種別 non-profit program overlay packet",
       "description": "業種別 NPO法人 × 認定NPO + 助成金 overlay proxy",
       "billable": true,
-      "packet_ids": ["summary", "source_receipts", "known_gaps"],
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
       "cost_band": "mid",
       "estimated_price_jpy": 600,
       "package_kind": "evidence_packet",
       "preview_endpoint": "/v1/cost/preview",
       "subject_kind": "industry",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "listed_company_disclosure_pulse_packet",
+      "display_name": "業種別 listed company disclosure pulse packet",
+      "description": "業種別 上場法人 EDINET 開示頻度 pulse proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "ipo_pipeline_signal_packet",
+      "display_name": "業種別 IPO pipeline signal packet",
+      "description": "業種別 上場準備法人 IPO pipeline 兆候 proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "bond_issuance_pattern_packet",
+      "display_name": "業種別 bond issuance pattern packet",
+      "description": "業種別 社債発行 (普通 / 転換) パターン proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "dividend_policy_stability_packet",
+      "display_name": "業種別 dividend policy stability packet",
+      "description": "業種別 上場法人 配当方針 stability proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "shareholder_return_intensity_packet",
+      "display_name": "業種別 shareholder return intensity packet",
+      "description": "業種別 株主還元 (配当 + 自社株買い) 強度 proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "capital_raising_history_packet",
+      "display_name": "業種別 capital raising history packet",
+      "description": "業種別 増資 (公募 / 第三者割当) 履歴 + 制度連動 proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "executive_compensation_disclosure_packet",
+      "display_name": "業種別 executive compensation disclosure packet",
+      "description": "業種別 役員報酬 EDINET 開示 proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "audit_firm_rotation_packet",
+      "display_name": "業種別 audit firm rotation packet",
+      "description": "業種別 監査法人 rotation (4大 / 中小 / 個人) cadence proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "tax_haven_subsidiary_packet",
+      "display_name": "業種別 tax-haven subsidiary disclosure packet",
+      "description": "業種別 タックスヘイブン 子会社 disclosure proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
+      "subject_id_hint": "jsic_major",
+      "source_count": 2,
+      "estimated_tokens_saved": 9100,
+      "public_source_family_ids": [],
+      "sample_html_url": null
+    },
+    {
+      "outcome_contract_id": "fpd_etf_holdings_packet",
+      "display_name": "業種別 institutional FPD / ETF holdings packet",
+      "description": "業種別 機関投資家 (年金 / ETF / 信託銀行) 持株 disclosure proxy",
+      "billable": true,
+      "packet_ids": [
+        "summary",
+        "source_receipts",
+        "known_gaps"
+      ],
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "package_kind": "evidence_packet",
+      "preview_endpoint": "/v1/cost/preview",
+      "subject_kind": "jsic_major",
       "subject_id_hint": "jsic_major",
       "source_count": 2,
       "estimated_tokens_saved": 9100,
@@ -2716,7 +2966,17 @@
         "retail_inbound_subsidy_packet",
         "education_research_grants_packet",
         "finance_fintech_regulation_packet",
-        "non_profit_program_overlay_packet"
+        "non_profit_program_overlay_packet",
+        "listed_company_disclosure_pulse_packet",
+        "ipo_pipeline_signal_packet",
+        "bond_issuance_pattern_packet",
+        "dividend_policy_stability_packet",
+        "shareholder_return_intensity_packet",
+        "capital_raising_history_packet",
+        "executive_compensation_disclosure_packet",
+        "audit_firm_rotation_packet",
+        "tax_haven_subsidiary_packet",
+        "fpd_etf_holdings_packet"
       ],
       "heavy": [
         "application_strategy",
