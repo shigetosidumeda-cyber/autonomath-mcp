@@ -1,0 +1,83 @@
+{
+  "jobDefinitionName": "jpcite-houjin360-render",
+  "type": "container",
+  "platformCapabilities": ["FARGATE"],
+  "propagateTags": true,
+  "tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "Workload": "houjin360",
+    "AutoStop": "2026-05-29"
+  },
+  "containerProperties": {
+    "image": "993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:latest",
+    "command": [
+      "python",
+      "/opt/jpcite/scripts/aws_credit_ops/generate_houjin_360_packets.py",
+      "--output-prefix",
+      "s3://jpcite-credit-993693061769-202605-derived/houjin_360/",
+      "--db",
+      "/opt/jpcite/autonomath.db",
+      "--batch-size",
+      "1000",
+      "--batch-start",
+      "Ref::batch_start",
+      "--batch-end",
+      "Ref::batch_end",
+      "--commit"
+    ],
+    "jobRoleArn": "arn:aws:iam::993693061769:role/jpcite-batch-job-role",
+    "executionRoleArn": "arn:aws:iam::993693061769:role/ecsTaskExecutionRole",
+    "resourceRequirements": [
+      {"type": "VCPU", "value": "4"},
+      {"type": "MEMORY", "value": "8192"}
+    ],
+    "networkConfiguration": {
+      "assignPublicIp": "ENABLED"
+    },
+    "runtimePlatform": {
+      "operatingSystemFamily": "LINUX",
+      "cpuArchitecture": "X86_64"
+    },
+    "environment": [
+      {"name": "AWS_DEFAULT_REGION", "value": "ap-northeast-1"},
+      {"name": "RAW_BUCKET", "value": "jpcite-credit-993693061769-202605-raw"},
+      {"name": "DERIVED_BUCKET", "value": "jpcite-credit-993693061769-202605-derived"},
+      {"name": "DRY_RUN", "value": "0"}
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/batch/jpcite-credit-2026-05",
+        "awslogs-region": "ap-northeast-1",
+        "awslogs-stream-prefix": "jpcite-houjin360-render"
+      }
+    }
+  },
+  "parameters": {
+    "batch_start": "0",
+    "batch_end": "1000"
+  },
+  "timeout": {
+    "attemptDurationSeconds": 1800
+  },
+  "retryStrategy": {
+    "attempts": 2,
+    "evaluateOnExit": [
+      {"onExitCode": "2", "action": "EXIT"},
+      {"onReason": "Host*", "action": "RETRY"}
+    ]
+  },
+  "_notes": {
+    "purpose": "Cohort #1 of the prebuilt deliverable packet catalog — pre-generates 法人360 (`company_public_baseline`) JPCIR packets for every corporate_entity in autonomath.db (166,969 rows). Sharded into 167 batches of 1,000 rows each by passing --batch-start / --batch-end. Output: s3://jpcite-credit-993693061769-202605-derived/houjin_360/<houjin_bangou>.json (avg ~3 KB / packet, coverage_score ~0.47 from 999/1000 smoke).",
+    "register_cmd": "aws batch register-job-definition --cli-input-json file://infra/aws/batch/jpcite_houjin360_render_job_definition.json --profile bookyou-recovery --region ap-northeast-1",
+    "submit_example": "scripts/aws_credit_ops/submit_houjin360_batches.sh --commit",
+    "smoke_submit": "aws batch submit-job --job-name jpcite-houjin360-render-0-1000 --job-queue jpcite-credit-fargate-spot-short-queue --job-definition jpcite-houjin360-render --parameters batch_start=0,batch_end=1000 --profile bookyou-recovery --region ap-northeast-1",
+    "cost_estimate": "Fargate Spot 4 vCPU x 8 GB x ~5 min ≈ $0.05/batch x 167 batches ≈ $8.4 + S3 PUT ($0.005 x 167 = $0.84) + Athena scan estimate ~$0.08. Total < $10.",
+    "exit_codes": {
+      "0": "all packets written for the shard",
+      "1": "runtime error",
+      "2": "DB missing / empty (image build issue)"
+    }
+  }
+}

@@ -972,19 +972,43 @@ def enumerate_houjin(
     *,
     batch_size: int,
     max_batches: int | None,
+    batch_start: int = 0,
+    batch_end: int | None = None,
 ) -> Iterator[list[str]]:
     """Yield batches of houjin_bangou strings from am_entities.
 
     Falls back to ``houjin_master`` when am_entities is unavailable / schema
     drift hides ``record_kind = 'corporate_entity'`` — both shapes are
     documented in CLAUDE.md so we accept either.
+
+    Sharding
+    --------
+
+    ``batch_start`` / ``batch_end`` are **row** offsets, not batch indices —
+    they translate to ``OFFSET batch_start`` and ``LIMIT (batch_end - batch_start)``
+    so a Batch shard can claim ``[batch_start, batch_end)`` and the wrapper
+    submits 167 shards of 1,000 rows each (last shard = 166,000-166,969).
+    The yielded sub-batch size is still capped at ``batch_size`` so a 1,000-row
+    shard with ``batch_size=1000`` yields exactly one batch.
     """
 
+    span_rows: int | None = (
+        max(0, batch_end - batch_start) if batch_end is not None else None
+    )
+
     if _table_exists(conn, "am_entities"):
-        offset = 0
+        offset = batch_start
         batches_emitted = 0
+        rows_emitted = 0
         while True:
-            rows = conn.execute(SQL_ENUMERATE_HOUJIN, (batch_size, offset)).fetchall()
+            if span_rows is not None:
+                remaining = span_rows - rows_emitted
+                if remaining <= 0:
+                    return
+                step = min(batch_size, remaining)
+            else:
+                step = batch_size
+            rows = conn.execute(SQL_ENUMERATE_HOUJIN, (step, offset)).fetchall()
             if not rows:
                 break
             bangou_batch: list[str] = []
@@ -995,21 +1019,32 @@ def enumerate_houjin(
             if bangou_batch:
                 yield bangou_batch
                 batches_emitted += 1
+                rows_emitted += len(rows)
                 if max_batches is not None and batches_emitted >= max_batches:
                     return
-            offset += batch_size
+            else:
+                rows_emitted += len(rows)
+            offset += step
         return
 
     if _table_exists(conn, "houjin_master"):
-        offset = 0
+        offset = batch_start
         batches_emitted = 0
+        rows_emitted = 0
         while True:
+            if span_rows is not None:
+                remaining = span_rows - rows_emitted
+                if remaining <= 0:
+                    return
+                step = min(batch_size, remaining)
+            else:
+                step = batch_size
             rows = conn.execute(
                 "SELECT houjin_bangou FROM houjin_master "
                 " WHERE houjin_bangou IS NOT NULL "
                 " ORDER BY houjin_bangou "
                 " LIMIT ? OFFSET ?",
-                (batch_size, offset),
+                (step, offset),
             ).fetchall()
             if not rows:
                 break
@@ -1019,9 +1054,12 @@ def enumerate_houjin(
             if bangou_batch:
                 yield bangou_batch
                 batches_emitted += 1
+                rows_emitted += len(rows)
                 if max_batches is not None and batches_emitted >= max_batches:
                     return
-            offset += batch_size
+            else:
+                rows_emitted += len(rows)
+            offset += step
         return
 
 
@@ -1053,6 +1091,8 @@ def run(
     max_batches: int | None,
     dry_run: bool,
     local_out_dir: Path,
+    batch_start: int = 0,
+    batch_end: int | None = None,
 ) -> RunManifest:
     """Execute the full pipeline. Returns the run manifest."""
 
@@ -1073,7 +1113,11 @@ def run(
         running_coverage_total = 0.0
         running_coverage_n = 0
         for bangou_batch in enumerate_houjin(
-            conn, batch_size=batch_size, max_batches=max_batches
+            conn,
+            batch_size=batch_size,
+            max_batches=max_batches,
+            batch_start=batch_start,
+            batch_end=batch_end,
         ):
             manifest.total_houjin += len(bangou_batch)
             manifest.athena_bytes_scanned_estimate += ATHENA_ESTIMATE_BYTES_PER_BATCH
@@ -1193,6 +1237,25 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         help="Stop after N batches (for smoke runs). Default: all 166,969 corporates.",
     )
     p.add_argument(
+        "--batch-start",
+        type=int,
+        default=0,
+        help=(
+            "Row offset (inclusive) for sharded AWS Batch execution. "
+            "Default: 0 (start of corpus)."
+        ),
+    )
+    p.add_argument(
+        "--batch-end",
+        type=int,
+        default=None,
+        help=(
+            "Row offset (exclusive) for sharded AWS Batch execution. "
+            "Default: None (end of corpus). With --batch-start, the shard "
+            "covers rows [batch-start, batch-end)."
+        ),
+    )
+    p.add_argument(
         "--local-out-dir",
         default="out/houjin_360",
         help="Local output directory used in DRY_RUN and as the S3 mirror (default: out/houjin_360).",
@@ -1233,6 +1296,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             max_batches=int(args.max_batches) if args.max_batches is not None else None,
             dry_run=dry_run,
             local_out_dir=local_out_dir,
+            batch_start=int(args.batch_start),
+            batch_end=int(args.batch_end) if args.batch_end is not None else None,
         )
     except RuntimeError as exc:
         logger.error("run failed: %s", exc)
