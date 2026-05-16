@@ -1129,6 +1129,226 @@
       "known_gaps": [
         "coverage_thin"
       ]
+    },
+    {
+      "outcome_contract_id": "gov_spending_efficiency_packet",
+      "display_name": "政府支出 効率 (補助金 × EDINET × 業種) packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9200,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "regulatory_cluster_radar_packet",
+      "display_name": "規制クラスタ レーダー (処分 × 改正 × 業種) packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8800,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "succession_match_3axis_packet",
+      "display_name": "事業承継 3軸マッチ (候補 × 類似度 × 地域) packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "prefecture"
+      },
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 10400,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "inbound_tax_treaty_compliance_packet",
+      "display_name": "外資 税務条約 コンプライアンス (法人 × 条約 × インボイス) packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "country_iso"
+      },
+      "cost_band": "heavy",
+      "estimated_price_jpy": 900,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 500,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 11000,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "patent_subsidy_correlation_packet",
+      "display_name": "特許 × 補助金 相関 (J14 × J05 × 業種) packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8400,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "municipal_tax_subsidy_cohort_packet",
+      "display_name": "地方税 × 自治体補助金 × 産業 cohort packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "prefecture"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8600,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "regulatory_amendment_industry_radar_packet",
+      "display_name": "法令改正 × 業種影響 (snapshot cliffs) radar packet",
+      "package_kind": "watch_digest",
+      "subject": {
+        "kind": "cohort",
+        "id_hint": "jsic_major"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9000,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "bid_subsidy_substitution_packet",
+      "display_name": "入札 × 補助金 代替性 (発注機関 × 制度) packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "procuring_entity"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 7800,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "administrative_disposition_recovery_packet",
+      "display_name": "行政処分 後 復活率 (採択履歴 × 処分庁) packet",
+      "package_kind": "precomputed_intelligence",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "issuing_authority"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 8500,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
+    },
+    {
+      "outcome_contract_id": "environmental_certification_match_packet",
+      "display_name": "環境認証 × 補助金 × 制度 マッチ packet",
+      "package_kind": "evidence_packet",
+      "subject": {
+        "kind": "jurisdiction",
+        "id_hint": "prefecture"
+      },
+      "cost_band": "mid",
+      "estimated_price_jpy": 600,
+      "free_preview_available": true,
+      "preview_endpoint": "/v1/cost/preview",
+      "approval_token_required": false,
+      "cap_per_day": 1000,
+      "idempotency_window_seconds": 86400,
+      "jpcite_cost_jpy": 3,
+      "estimated_tokens_saved": 9100,
+      "source_count": 3,
+      "known_gaps": [
+        "coverage_thin"
+      ]
     }
   ]
 }

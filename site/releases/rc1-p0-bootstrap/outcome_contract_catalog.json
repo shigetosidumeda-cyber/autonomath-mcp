@@ -719,5 +719,135 @@
       "known_gaps"
     ],
     "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "政府支出 効率 (補助金 × EDINET × 業種) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "gov_spending_efficiency_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "規制クラスタ レーダー (処分 × 改正 × 業種) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regulatory_cluster_radar_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "事業承継 3軸マッチ (候補 × 類似度 × 地域) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "succession_match_3axis_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "外資 税務条約 コンプライアンス (法人 × 条約 × インボイス) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "inbound_tax_treaty_compliance_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "特許 × 補助金 相関 (J14 × J05 × 業種) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "patent_subsidy_correlation_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "地方税 × 自治体補助金 × 産業 cohort packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "municipal_tax_subsidy_cohort_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "法令改正 × 業種影響 (snapshot cliffs) radar packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "regulatory_amendment_industry_radar_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "入札 × 補助金 代替性 (発注機関 × 制度) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "bid_subsidy_substitution_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "行政処分 後 復活率 (採択履歴 × 処分庁) packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "administrative_disposition_recovery_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
+  },
+  {
+    "billable": true,
+    "cheapest_sufficient_route_required": true,
+    "display_name": "環境認証 × 補助金 × 制度 マッチ packet",
+    "no_hit_semantics": "no_hit_not_absence",
+    "outcome_contract_id": "environmental_certification_match_packet",
+    "packet_ids": [
+      "summary",
+      "source_receipts",
+      "known_gaps"
+    ],
+    "public_claims_require_receipts": true
   }
 ]
