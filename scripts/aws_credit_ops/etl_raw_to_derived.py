@@ -152,10 +152,21 @@ ARTIFACT_FILENAMES: Final[dict[str, str]] = {
     "known_gaps": "known_gaps.jsonl",
 }
 
-#: ``object_manifest`` is required; the other three are optional (a
-#: crawl-only job may not emit ``claim_refs`` and ``known_gaps`` until
-#: its receipt-assembly downstream lands).
-REQUIRED_ARTIFACTS: Final[frozenset[str]] = frozenset({"object_manifest"})
+#: ``object_manifest`` + ``claim_refs`` are required so the Glue
+#: ``claim_refs`` table is always registered (Athena cross-source big
+#: queries depend on the table existing even for jobs that extracted
+#: zero claim refs). The crawler emits a header-only ``claim_refs.jsonl``
+#: (``{"version": "jpcir.p0.v1"}``) when no claim rows are produced;
+#: :func:`read_jsonl_from_s3` drops the header line below so an empty
+#: claim-refs job still materialises a valid (empty) Parquet partition.
+REQUIRED_ARTIFACTS: Final[frozenset[str]] = frozenset(
+    {"object_manifest", "claim_refs"}
+)
+
+#: Header sentinel emitted by the crawler when no claim refs were
+#: extracted. The ETL drops rows that match this sentinel so the
+#: contract-version envelope never lands as a Parquet row.
+_CLAIM_REFS_HEADER_VERSION: Final[str] = "jpcir.p0.v1"
 
 #: Column-level type hints for pyarrow Parquet write. Mirrors the DDL:
 #: BIGINT -> int64, DOUBLE -> float64, ARRAY<STRING> -> list<string>,
@@ -265,6 +276,11 @@ def read_jsonl_from_s3(
     Each non-empty line is parsed as JSON; malformed lines are counted
     but otherwise dropped. ``NoSuchKey`` propagates so the orchestrator
     can surface ``status=missing_in_raw``.
+
+    The ``claim_refs`` header sentinel ``{"version": "jpcir.p0.v1"}``
+    (emitted by the crawler when no claim refs were produced) is dropped
+    here so it never lands as a Parquet row. Real claim rows always carry
+    a ``claim_id`` field and pass through unchanged.
     """
 
     obj = s3_client.get_object(Bucket=bucket, Key=key)
@@ -282,6 +298,15 @@ def read_jsonl_from_s3(
             malformed += 1
             continue
         if isinstance(parsed, dict):
+            # Skip claim_refs header sentinel — schema-registration row,
+            # not a real claim. Real rows carry claim_id (+ subject_kind
+            # / claim_kind), so testing ``version`` alone is sufficient
+            # without coupling to a specific artifact kind here.
+            if (
+                set(parsed.keys()) == {"version"}
+                and parsed.get("version") == _CLAIM_REFS_HEADER_VERSION
+            ):
+                continue
             rows.append(parsed)
         else:
             malformed += 1
@@ -508,13 +533,25 @@ def etl_one_artifact(
     Returns an :class:`ArtifactReport` with the per-artifact ledger.
     Never raises on a missing artifact — surfaces ``status=missing_in_raw``
     so the orchestrator can decide whether to fail the run.
+
+    For required artifacts (``REQUIRED_ARTIFACTS``), an empty or missing
+    JSONL still produces an empty Parquet partition with the pinned
+    schema so the Glue table can be registered and Athena cross-source
+    queries can execute. The empty partition reports ``status=empty``
+    (raw) or ``status=missing_in_raw_empty_partition_written`` (raw key
+    truly absent — common for older runs predating header emission).
     """
 
     filename = ARTIFACT_FILENAMES[artifact_kind]
     raw_key = f"{job_prefix.rstrip('/')}/{filename}"
     raw_uri = f"s3://{raw_bucket}/{raw_key}"
     report = ArtifactReport(artifact_kind=artifact_kind, status="written", raw_uri=raw_uri)
+    derived_key = (
+        f"{artifact_kind}/job_prefix={job_prefix.rstrip('/')}"
+        f"/run_id={run_id}/data.parquet"
+    )
 
+    raw_missing = False
     try:
         rows, malformed = read_jsonl_from_s3(
             bucket=raw_bucket, key=raw_key, s3_client=s3_client
@@ -523,23 +560,48 @@ def etl_one_artifact(
         # Differentiate "not found" from genuine failure for the operator.
         msg_lower = str(exc).lower()
         if "nosuchkey" in msg_lower or "not found" in msg_lower or "404" in msg_lower:
-            report.status = "missing_in_raw"
-            return report
-        raise
+            raw_missing = True
+            rows = []
+            malformed = 0
+        else:
+            raise
 
     report.raw_row_count = len(rows)
     report.malformed_row_count = malformed
+
+    if raw_missing and artifact_kind not in REQUIRED_ARTIFACTS:
+        # Optional artifact + the raw key is genuinely absent — surface
+        # missing_in_raw without forcing an empty Parquet partition.
+        report.status = "missing_in_raw"
+        return report
+
     if not rows:
+        # Required artifact (or optional with empty body): we still write
+        # an empty Parquet partition for required ones so the Glue table
+        # is registered.
+        if artifact_kind in REQUIRED_ARTIFACTS:
+            report.derived_uri = f"s3://{derived_bucket}/{derived_key}"
+            if dry_run:
+                report.status = "dry_run_empty_partition"
+                return report
+            empty_table = build_arrow_table([], artifact_kind=artifact_kind)
+            write_parquet_to_s3(
+                empty_table,
+                bucket=derived_bucket,
+                key=derived_key,
+                s3_client=s3_client,
+            )
+            report.status = (
+                "missing_in_raw_empty_partition_written"
+                if raw_missing
+                else "empty_partition_written"
+            )
+            return report
         report.status = "empty"
         return report
 
     normalised = [normalise_row(r, artifact_kind=artifact_kind) for r in normalise_iter(rows)]
     report.derived_row_count = len(normalised)
-
-    derived_key = (
-        f"{artifact_kind}/job_prefix={job_prefix.rstrip('/')}"
-        f"/run_id={run_id}/data.parquet"
-    )
     report.derived_uri = f"s3://{derived_bucket}/{derived_key}"
 
     if dry_run:
@@ -743,10 +805,19 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.write("\n")
     else:
         _print_human_report(report)
-    # Exit non-zero if any required artifact is missing in raw — that
-    # is an operational signal, not a transient transient error.
+    # Exit non-zero only if a required artifact's raw key is missing AND
+    # we did not (or could not) write an empty Parquet partition for it.
+    # ``missing_in_raw_empty_partition_written`` is success — the Glue
+    # table got its schema registration even though the source job
+    # emitted nothing. Plain ``missing_in_raw`` on a required artifact
+    # remains a hard failure (we should have written the empty
+    # partition; the only path that lands here today is the optional
+    # artifact branch, but the guard stays explicit for safety).
     for art in report.artifacts:
-        if art.artifact_kind in REQUIRED_ARTIFACTS and art.status == "missing_in_raw":
+        if (
+            art.artifact_kind in REQUIRED_ARTIFACTS
+            and art.status == "missing_in_raw"
+        ):
             return 2
     return 0
 

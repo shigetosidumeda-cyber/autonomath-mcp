@@ -75,6 +75,10 @@ def _load_manifest_from_s3(s3: Any, uri: str) -> dict[str, Any]:
 
 
 def _build_policy(spec: dict[str, Any]) -> crawl.SourcePolicy:
+    # follow_mode is opt-in per manifest; absent or typo'd values fall
+    # through _coerce_follow_mode to FollowMode.NONE so the existing
+    # 26 J01..J07 SUCCEEDED runs reproduce byte-for-byte.
+    follow_mode = crawl._coerce_follow_mode(spec.get("follow_mode"))
     return crawl.SourcePolicy(
         source_id=str(spec.get("source_id", "unknown")),
         publisher=str(spec.get("publisher", "")),
@@ -105,6 +109,10 @@ def _build_policy(spec: dict[str, Any]) -> crawl.SourcePolicy:
                 float(os.environ.get("JPCITE_DEFAULT_TIMEOUT_SECONDS", "30")),
             )
         ),
+        follow_mode=follow_mode,
+        follow_max_per_page=int(spec.get("follow_max_per_page", 50)),
+        follow_max_total=int(spec.get("follow_max_total", 5000)),
+        follow_max_depth=int(spec.get("follow_max_depth", 1)),
     )
 
 
@@ -197,9 +205,16 @@ def _emit_artifacts(
     out_dir: Path,
     malformed_targets: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Write the six standard JSONL artifacts + run_manifest.json.
+    """Write the seven standard JSONL artifacts + run_manifest.json.
 
     Returns a summary dict used to build the run_manifest envelope.
+
+    ``claim_refs.jsonl`` is always emitted (header-only when no claims
+    were extracted) so the Glue ``claim_refs`` table is registered and
+    Athena cross-source big queries can execute even when this job did
+    not extract claim references. The header line carries the contract
+    version ``jpcir.p0.v1``; downstream ETL skips it when materialising
+    the Parquet partition.
     """
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -210,6 +225,7 @@ def _emit_artifacts(
     gaps_path = out_dir / "known_gaps.jsonl"
     quarantine_path = out_dir / "quarantine.jsonl"
     profile_delta_path = out_dir / "source_profile_delta.jsonl"
+    claim_refs_path = out_dir / "claim_refs.jsonl"
 
     accepted = 0
     failed = 0
@@ -299,6 +315,19 @@ def _emit_artifacts(
             )
             receipts.write(receipt_row)
 
+            obj_extras: dict[str, Any] = {
+                "http_status": result.http_status,
+                "content_type": result.content_type or "",
+                "elapsed_ms": result.elapsed_ms,
+                "skipped_reason": result.skipped_reason,
+            }
+            # Follow-mode provenance: when a target was emitted by the
+            # link-follow queue, stamp the parent URL + depth so the
+            # auditor can trace a PDF back to the HTML index that linked
+            # to it. Empty for the original manifest entries.
+            if result.target.follow_parent_url:
+                obj_extras["follow_parent_url"] = result.target.follow_parent_url
+                obj_extras["follow_depth"] = result.target.follow_depth
             obj_row = manifest.build_object_manifest_row(
                 artifact_id=f"art_{uuid.uuid4().hex[:16]}",
                 ctx=ctx,
@@ -310,12 +339,7 @@ def _emit_artifacts(
                 byte_size=len(result.content_bytes),
                 sha256=result.content_sha256,
                 license_boundary=result.target.license_boundary,
-                extras={
-                    "http_status": result.http_status,
-                    "content_type": result.content_type or "",
-                    "elapsed_ms": result.elapsed_ms,
-                    "skipped_reason": result.skipped_reason,
-                },
+                extras=obj_extras,
             )
             objects.write(obj_row)
 
@@ -332,6 +356,15 @@ def _emit_artifacts(
                 "no_hit_policy": "no_hit_not_absence",
             }
         )
+
+    # Always emit claim_refs.jsonl so the Glue ``claim_refs`` table is
+    # registered (Athena cross-source big queries depend on the table
+    # existing even when this particular job extracted zero claim refs).
+    # The header line carries the contract version and is the only row
+    # an empty-claim job ever writes — downstream ETL drops the header
+    # before materialising the Parquet partition.
+    with manifest.JsonlWriter(claim_refs_path) as claim_refs:
+        claim_refs.write({"version": "jpcir.p0.v1"})
 
     # Best-effort parquet copy of object_manifest.
     parquet_path = out_dir / "object_manifest.parquet"
@@ -488,6 +521,20 @@ def run() -> int:
             sample=malformed_targets[:3],
         )
 
+    # Surface follow-mode posture on every boot so CloudWatch makes the
+    # opt-in visible without grepping the manifest. Default-NONE jobs
+    # log once + move on; PDF-only / same-domain jobs log the caps too.
+    _log(
+        "info",
+        "follow_mode_configured",
+        run_id=run_id,
+        job_id=job_id,
+        follow_mode=policy.follow_mode.value,
+        follow_max_per_page=policy.follow_max_per_page,
+        follow_max_total=policy.follow_max_total,
+        follow_max_depth=policy.follow_max_depth,
+    )
+
     status = "succeeded"
     stop_reason: str | None = None
     summary: dict[str, Any] = {
@@ -496,10 +543,12 @@ def run() -> int:
         "known_gap_count": 0,
     }
     results: list[crawl.FetchResult] = []
+    follow_emitted_total = 0
 
     try:
         with crawl.Fetcher(policy) as fetcher:
             results = fetcher.fetch_many(targets)
+            follow_emitted_total = fetcher.follow_emitted_total
     except KeyboardInterrupt:
         status = "interrupted"
         stop_reason = "sigterm_or_spot_interrupt"
@@ -553,6 +602,17 @@ def run() -> int:
                 "respect_robots": policy.respect_robots,
                 "request_delay_seconds": policy.request_delay_seconds,
                 "max_retries": policy.max_retries,
+                "follow_mode": policy.follow_mode.value,
+                "follow_max_per_page": policy.follow_max_per_page,
+                "follow_max_total": policy.follow_max_total,
+                "follow_max_depth": policy.follow_max_depth,
+            },
+            "follow_stats": {
+                "follow_mode": policy.follow_mode.value,
+                "follow_emitted_total": follow_emitted_total,
+                # output_count includes both originals + followed children;
+                # follow_emitted_total tells the auditor how much of the
+                # output_count came from link-following.
             },
         },
     )
