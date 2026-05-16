@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to ECR
+      - aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin 993693061769.dkr.ecr.ap-northeast-1.amazonaws.com
+  build:
+    commands:
+      - cd docker/jpcite-crawler
+      - docker build -t jpcite-crawler:0.1.0 .
+      - docker tag jpcite-crawler:0.1.0 993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:0.1.0
+      - docker tag jpcite-crawler:0.1.0 993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:latest
+  post_build:
+    commands:
+      - docker push 993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:0.1.0
+      - docker push 993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:latest
