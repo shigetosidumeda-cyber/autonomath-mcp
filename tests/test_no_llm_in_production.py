@@ -10,11 +10,16 @@ Any `import anthropic`, `import openai`, `import google.generativeai`,
 `import claude_agent_sdk`, `import langchain[._*]`, `import mistralai`,
 `import cohere`, `import groq`, `import replicate`, `import together`,
 `import vertexai`, or `import bedrock_runtime` under `src/`, `scripts/`,
-or `tests/` is a regression that fails CI. The `boto3.client(
-"bedrock-runtime")` factory call is also flagged because AWS Bedrock is
-the canonical "import an LLM by stealth via boto3" footgun. Operator-
-only offline scripts that legitimately call LLM APIs live under
-`tools/offline/` (which is NOT scanned here). See
+or `tests/` is a regression that fails CI. **`scripts/` is scanned
+recursively**, which covers `scripts/cron/`, `scripts/etl/`,
+`scripts/ops/`, `scripts/migrations/`, `scripts/audits/`, and the
+Wave 60+ AWS canary tree `scripts/aws_credit_ops/` (309+ packet
+generators + Lambda burn metric emitter + canary attestation +
+Step Functions orchestrator + ETL pipelines + Athena query helpers).
+The `boto3.client("bedrock-runtime")` factory call is also flagged
+because AWS Bedrock is the canonical "import an LLM by stealth via
+boto3" footgun. Operator-only offline scripts that legitimately call
+LLM APIs live under `tools/offline/` (which is NOT scanned here). See
 `tools/offline/README.md`.
 
 Six-axis detection strategy (all axes must stay green):
@@ -132,10 +137,18 @@ FORBIDDEN_ENV = (
 )
 # Production python scan scope. Note: full `scripts/` is now scanned,
 # which subsumes `scripts/cron` + `scripts/etl` + `scripts/ops` +
-# `scripts/migrations` + `scripts/audits` + every `scripts/ingest_*.py`.
-# `scripts/_archive/` is excluded by the loop below (legacy quarantine,
-# not deployed). `tools/offline/` is also excluded by name (operator-only
-# offline tools may legitimately import LLM SDKs per CLAUDE.md).
+# `scripts/migrations` + `scripts/audits` + every `scripts/ingest_*.py` +
+# `scripts/aws_credit_ops/` (Wave 60+ AWS canary burn ops, 309+ packet
+# generators + canary attestation + Lambda burn metric emitter + Step
+# Functions orchestrator + ETL raw→derived + 12 Athena query helpers +
+# 5 ops scripts [stop_drill / cost_ledger / burn_target / submit_job /
+# monitor_jobs]). `scripts/_archive/` is excluded by the loop below
+# (legacy quarantine, not deployed). `tools/offline/` is also excluded
+# by name (operator-only offline tools may legitimately import LLM SDKs
+# per CLAUDE.md). The PERF-26 audit (2026-05-16) confirmed all 365 .py
+# files under `scripts/aws_credit_ops/` are scanned via `rglob("*.py")`
+# from the `scripts` root — no path-fragment exclusion shrinks the
+# scope. New AWS canary code must keep this contract.
 PRODUCTION_DIRS = ("src", "scripts", "tests")
 EXCLUDED_PATH_FRAGMENTS = (
     "scripts/_archive/",
@@ -714,3 +727,63 @@ def test_scan_bedrock_client_calls_detects_synthesized_leaks(
         if not hits:
             misses.append(f"`{stmt}` not detected (no hits)")
     assert not misses, "Bedrock client factory call not flagged:\n  - " + "\n  - ".join(misses)
+
+
+# --- Scope guard: AWS canary tree (`scripts/aws_credit_ops/`) ----------
+# Wave 60+ post-Wave-50 ramp landed 309+ packet generators + canary
+# attestation + Lambda burn metric emitter + ETL + Athena helpers under
+# `scripts/aws_credit_ops/`. PERF-26 (2026-05-16) confirmed this tree is
+# scanned via the recursive `rglob("*.py")` from `scripts/`. This test
+# is a structural guard: if a future refactor narrows the scan scope
+# (e.g. switches `scripts/` to per-subdir allowlist), this test catches
+# the regression because `scripts/aws_credit_ops/` would silently fall
+# out of scope. We assert that (a) the directory exists, and (b) at
+# least one .py file under it is picked up by the same iteration logic
+# `test_no_llm_imports_in_production` uses.
+
+
+def test_aws_credit_ops_tree_is_in_scope() -> None:
+    """Scope guard: `scripts/aws_credit_ops/` (Wave 60+ AWS canary tree)
+    must be inside `PRODUCTION_DIRS` scan scope. If a future refactor
+    excludes it, this test fails fast — the AWS canary tree is exactly
+    where an operator might be tempted to slip a `bedrock-runtime`
+    client or an LLM SDK call to "enrich" a packet generator, and the
+    No-LLM invariant must hold there as much as anywhere else under
+    `scripts/`.
+    """
+    aws_credit_ops = REPO_ROOT / "scripts" / "aws_credit_ops"
+    if not aws_credit_ops.exists():
+        # Tree doesn't exist in this checkout — nothing to guard. This
+        # branch keeps the test resilient on fresh clones / branches
+        # that pre-date Wave 60.
+        return
+
+    # Reproduce the iteration logic from `test_no_llm_imports_in_production`
+    # and verify at least one file under `scripts/aws_credit_ops/` is
+    # picked up. We do NOT scan for violations here — that's axis 1's
+    # job. We only assert the scope itself.
+    scanned: list[str] = []
+    for prod_dir in PRODUCTION_DIRS:
+        base = REPO_ROOT / prod_dir
+        if not base.exists():
+            continue
+        for py_file in base.rglob("*.py"):
+            rel = py_file.relative_to(REPO_ROOT).as_posix()
+            if _is_excluded(rel):
+                continue
+            if rel.startswith("scripts/aws_credit_ops/"):
+                scanned.append(rel)
+                if len(scanned) >= 5:
+                    # Sample is enough; full recursion is verified.
+                    break
+        if len(scanned) >= 5:
+            break
+
+    assert scanned, (
+        "scripts/aws_credit_ops/ exists but is NOT scanned by the No-LLM"
+        " production audit. The Wave 60+ AWS canary tree (309+ packet"
+        " generators + Lambda burn emitter + canary attestation +"
+        " Athena helpers) must remain in scope. Check PRODUCTION_DIRS"
+        " and EXCLUDED_PATH_FRAGMENTS — one of them was changed to"
+        " silently drop scripts/aws_credit_ops/ from coverage."
+    )
