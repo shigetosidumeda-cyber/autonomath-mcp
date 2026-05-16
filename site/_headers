@@ -142,6 +142,18 @@
   Access-Control-Allow-Origin: *
   Cross-Origin-Resource-Policy: cross-origin
 
+# Pages-side /healthz probe (Wave 50 follow-up, 2026-05-16). The Fly.io API
+# health endpoint lives at https://api.jpcite.com/healthz; this static probe
+# exists so that monitors / smoke scripts hitting the apex (jpcite.com/healthz,
+# e.g. scripts/ops/cf_pages_emergency_rollback.sh) get a deterministic 200
+# instead of 404. Cache short so a Pages outage surfaces quickly.
+/healthz
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=30, s-maxage=30
+  CDN-Cache-Control: public, max-age=30
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+
 /v1/openapi*.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300, s-maxage=600

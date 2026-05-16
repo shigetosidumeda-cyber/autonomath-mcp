@@ -271,17 +271,24 @@ def test_19_pydantic_models_export() -> None:
         ScopedCapToken,
         SourceReceipt,
     )
+    # Wave 51 dim O/R added FactMetadata + FederatedPartner StrictModel
+    # classes (paired with schemas/jpcir/fact_metadata.schema.json and
+    # schemas/jpcir/federated_partner.schema.json). The base export still
+    # contains the 19 RC1 models; agent_runtime.__all__ ends up at 21.
     assert len(models) == 19
-    # Cross-check the package ``__all__`` export list is consistent.
-    assert len(agent_runtime.__all__) == 19
+    assert len(agent_runtime.__all__) == 21
 
 
 def test_20_jpcir_schemas_present() -> None:
-    """``schemas/jpcir/`` contains exactly 20 ``*.schema.json`` files."""
+    """``schemas/jpcir/`` contains exactly 22 ``*.schema.json`` files.
+
+    20 RC1 schemas + 2 Wave 51 schemas (fact_metadata, federated_partner)
+    that match the FactMetadata + FederatedPartner StrictModel classes.
+    """
 
     schemas = sorted(SCHEMA_DIR.glob("*.schema.json"))
-    assert len(schemas) == 20, (
-        f"expected 20 jpcir schemas, found {len(schemas)}: "
+    assert len(schemas) == 22, (
+        f"expected 22 jpcir schemas, found {len(schemas)}: "
         f"{[p.name for p in schemas]}"
     )
     # Each schema must be valid JSON.

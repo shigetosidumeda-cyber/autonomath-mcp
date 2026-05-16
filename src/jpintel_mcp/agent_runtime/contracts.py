@@ -354,3 +354,37 @@ class TeardownSimulation(StrictModel):
         "preflight_runner",
         "operator",
     ] = "separate_task_not_this_artifact"
+
+
+class FactMetadata(StrictModel):
+    """Per-fact provenance envelope (Wave 51 dim O — explainable knowledge graph).
+
+    Every am_entity_facts row carries this metadata so agents can verify the
+    source-doc / extracted-at / verified-by / confidence axes. The schema
+    parity gate (scripts/ops/validate_release_capsule.py) requires that this
+    Pydantic class exist alongside schemas/jpcir/fact_metadata.schema.json.
+    """
+
+    source_doc: str = Field(min_length=1)
+    extracted_at: str = Field(min_length=1)
+    verified_by: Literal["manual", "cron_etl_v3", "ed25519_sig"]
+    confidence: float = Field(ge=0.0, le=1.0)
+
+
+class FederatedPartner(StrictModel):
+    """Curated federated MCP partner row (Wave 51 dim R — recommendation hub).
+
+    jpcite acts as the hub and deterministically recommends one of these
+    partners when an agent query falls outside Japanese-public-program scope.
+    Selection is keyword/capability match — NO LLM inference. Class name maps
+    via snake_case to schemas/jpcir/federated_partner.schema.json so the
+    release-capsule parity gate passes.
+    """
+
+    partner_id: str = Field(min_length=1, max_length=32, pattern=r"^[a-z][a-z0-9_]*$")
+    name: str = Field(min_length=1, max_length=128)
+    official_url: str = Field(min_length=1, pattern=r"^https://")
+    mcp_endpoint: str | None = None
+    mcp_endpoint_status: Literal["official", "none_official"]
+    capabilities: tuple[str, ...] = Field(min_length=1, max_length=16)
+    use_when: str = Field(min_length=1, max_length=280)
