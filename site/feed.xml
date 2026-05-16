@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>jpcite — release milestone feed</title>
+    <link>https://jpcite.com/releases/</link>
+    <description>jpcite Wave 50-58 release milestones — RC1 contract layer, Wave 51 dim K-S, AWS canary infra, packet catalog growth (14 → 92 outcomes).</description>
+    <language>ja</language>
+    <atom:link href="https://jpcite.com/feed.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>Sat, 16 May 2026 00:00:00 +0900</lastBuildDate>
+    <generator>jpcite static site generator</generator>
+    <docs>https://www.rssboard.org/rss-specification</docs>
+
+    <item>
+      <title>Wave 58 — 10 relationship packets (catalog 82 → 92)</title>
+      <link>https://jpcite.com/releases/#wave-58</link>
+      <guid isPermaLink="false">jpcite-wave-58-relationship-packets-2026-05-16</guid>
+      <pubDate>Sat, 16 May 2026 21:00:00 +0900</pubDate>
+      <description>10 relationship-class packet generators landed; outcome catalog grew to 92 entries across 4 public surfaces (site/.well-known/openapi/MCP).</description>
+    </item>
+
+    <item>
+      <title>Wave 57 — 10 geographic packets (catalog 72 → 82)</title>
+      <link>https://jpcite.com/releases/#wave-57</link>
+      <guid isPermaLink="false">jpcite-wave-57-geographic-packets-2026-05-16</guid>
+      <pubDate>Sat, 16 May 2026 20:00:00 +0900</pubDate>
+      <description>10 geographic-cohort packet generators (prefecture / municipality / region cross-source) added to the outcome catalog.</description>
+    </item>
+
+    <item>
+      <title>Wave 56 — 10 time-series packets (catalog 62 → 72)</title>
+      <link>https://jpcite.com/releases/#wave-56</link>
+      <guid isPermaLink="false">jpcite-wave-56-time-series-packets-2026-05-16</guid>
+      <pubDate>Sat, 16 May 2026 19:00:00 +0900</pubDate>
+      <description>10 time-series packet generators (program amendment lineage / acceptance cohort over time / enforcement trend) landed.</description>
+    </item>
+
+    <item>
+      <title>Wave 55 — 10 cross-3-source analytics packets (catalog 52 → 62)</title>
+      <link>https://jpcite.com/releases/#wave-55</link>
+      <guid isPermaLink="false">jpcite-wave-55-cross-3-source-packets-2026-05-16</guid>
+      <pubDate>Sat, 16 May 2026 18:00:00 +0900</pubDate>
+      <description>10 cross-3-source analytics packets join programs × adoptions × enforcement to produce composed evidence packets.</description>
+    </item>
+
+    <item>
+      <title>Wave 54 — 10 additional cross-source packets (catalog 42 → 52)</title>
+      <link>https://jpcite.com/releases/#wave-54</link>
+      <guid isPermaLink="false">jpcite-wave-54-cross-source-packets-2026-05-16</guid>
+      <pubDate>Sat, 16 May 2026 17:00:00 +0900</pubDate>
+      <description>10 additional cross-source packet generators landed; AWS canary Phase 6 cost burn ramp armed alongside.</description>
+    </item>
+
+    <item>
+      <title>Wave 53 — 16 packet generators (cross-source deep analysis)</title>
+      <link>https://jpcite.com/releases/#wave-53</link>
+      <guid isPermaLink="false">jpcite-wave-53-packet-generators-2026-05-16</guid>
+      <pubDate>Sat, 16 May 2026 16:00:00 +0900</pubDate>
+      <description>Wave 53 / 53.2 / 53.3 — 16 packet generators total (enforcement / invoice / vendor / radar / timeline + 11 remaining + 10 deep cross-source) uploaded full-scale to S3.</description>
+    </item>
+
+    <item>
+      <title>Wave 51 — dim K-S 9/9 + L1+L2 landed</title>
+      <link>https://jpcite.com/releases/#wave-51</link>
+      <guid isPermaLink="false">jpcite-wave-51-dim-ks-2026-05-16</guid>
+      <pubDate>Sat, 16 May 2026 12:00:00 +0900</pubDate>
+      <description>Wave 51 tick 0: predictive / session / rule_tree / anonymized / explainable / composable / time_machine / federated_mcp / copilot_scaffold (9 modules) + L1 source family + L2 math sweep. 11 modules, ~360 tests added, mypy strict 0.</description>
+    </item>
+
+    <item>
+      <title>Wave 50 — RC1 contract layer LANDED (7/7 production gate)</title>
+      <link>https://jpcite.com/releases/rc1-p0-bootstrap/</link>
+      <guid isPermaLink="false">jpcite-wave-50-rc1-landed-2026-05-16</guid>
+      <pubDate>Sat, 16 May 2026 09:00:00 +0900</pubDate>
+      <description>Wave 50 RC1 LANDED: agent_runtime/contracts.py 19 Pydantic models + 20 JPCIR JSON schemas + 14 outcome contracts (¥300-¥900 band) + 5 preflight gate artifacts + AWS teardown 7 scripts (30 tests PASS) + Cloudflare Pages rollback 5 scripts (11 tests PASS). Production deploy readiness gate 7/7, mypy strict 0, pytest 9300+ PASS, acceptance 15/15 PASS.</description>
+    </item>
+
+    <item>
+      <title>RC1 release capsule — rc1-p0-bootstrap-2026-05-15</title>
+      <link>https://jpcite.com/releases/rc1-p0-bootstrap/</link>
+      <guid isPermaLink="false">jpcite-rc1-p0-bootstrap-2026-05-15</guid>
+      <pubDate>Fri, 15 May 2026 00:00:00 +0900</pubDate>
+      <description>RC1 P0 bootstrap capsule published: release_capsule_manifest.json SHA256 78b24c633b06660acc3ca1200084ab0c88769498fdfd3961d91d97029e36871c. 14 outcome contracts + JPCIR contracts + algorithm blueprints + spend simulation + teardown simulation. live_aws_commands_allowed=false (absolute).</description>
+    </item>
+  </channel>
+</rss>

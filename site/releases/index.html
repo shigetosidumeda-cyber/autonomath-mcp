@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow">
+<meta name="description" content="jpcite release index. Each release capsule lists version, date, SHA256, and links to the artifact bundle (release_capsule_manifest.json + JPCIR contracts + outcome catalog + algorithm blueprints).">
+<meta property="og:title" content="jpcite — release index">
+<meta property="og:description" content="jpcite release capsules — version, date, SHA256, artifact bundle (manifest + JPCIR contracts + outcome catalog).">
+<title>jpcite — release index</title>
+<link rel="alternate" type="application/rss+xml" title="jpcite release milestone feed" href="/feed.xml">
+<link rel="alternate" type="application/json" href="/.well-known/jpcite-release.json">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/releases/">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/releases/">
+<link rel="canonical" href="https://jpcite.com/releases/">
+<style>
+body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:1100px;margin:1.75rem auto;padding:0 1rem;color:#222;line-height:1.55}
+header h1{margin:.25rem 0 .35rem;font-size:1.9rem}
+header p.lede{color:#555;font-size:1rem;margin:0 0 1rem;max-width:760px}
+.cta{display:inline-block;background:#0061ff;color:#fff;padding:.45rem .85rem;border-radius:6px;text-decoration:none;font-weight:600;margin:.25rem .5rem .8rem 0}
+.cta.secondary{background:#eef1f5;color:#0050d0}
+table.releases{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem;font-size:.92rem}
+table.releases caption{caption-side:top;text-align:left;font-weight:600;color:#444;margin-bottom:.4rem}
+table.releases th,table.releases td{border:1px solid #e0e3e8;padding:.45rem .6rem;vertical-align:top;text-align:left}
+table.releases thead th{background:#f4f5f7;color:#333;font-weight:600}
+table.releases tbody tr:nth-child(odd){background:#fafbfc}
+table.releases code{background:#f4f5f7;padding:0 .25rem;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85rem;word-break:break-all}
+table.releases .state{display:inline-block;padding:.05rem .4rem;border-radius:999px;font-size:.72rem;font-weight:600;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+table.releases .state-candidate{background:#fff3cd;color:#8a5a00}
+table.releases .state-landed{background:#e3f5e8;color:#1a7f37}
+table.releases .state-active{background:#e7eefe;color:#0050d0}
+section.release{border:1px solid #e0e3e8;border-radius:8px;padding:.85rem 1.1rem;margin:0 0 1rem;background:#fff}
+section.release h2{margin:0 0 .35rem;font-size:1.15rem}
+section.release p.summary{margin:.1rem 0 .55rem;color:#444;font-size:.92rem}
+section.release dl{display:grid;grid-template-columns:max-content 1fr;column-gap:.7rem;row-gap:.25rem;margin:.25rem 0 .5rem;font-size:.88rem}
+section.release dt{color:#666;font-weight:600}
+section.release dd{margin:0;color:#222}
+section.release dd code{background:#f4f5f7;padding:0 .25rem;border-radius:3px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.82rem;word-break:break-all}
+section.release ul.artifacts{margin:.25rem 0 0;padding:0 0 0 1.1rem;font-size:.85rem;columns:2;column-gap:1.4rem}
+section.release ul.artifacts li{margin:.05rem 0;break-inside:avoid}
+section.release ul.artifacts a{color:#0050d0;text-decoration:none}
+section.release ul.artifacts a:hover{text-decoration:underline}
+section.release .detail-link{display:inline-block;margin-top:.35rem;font-weight:600;color:#0050d0;text-decoration:none}
+section.release .detail-link:hover{text-decoration:underline}
+footer.page{margin-top:1.5rem;padding-top:.75rem;border-top:1px solid #ddd;color:#555;font-size:.85rem}
+footer.page a{color:#0050d0}
+</style>
+</head>
+<body>
+<header>
+<p class="eyebrow"><a href="/">jpcite.com</a> &raquo; releases</p>
+<h1>jpcite — release index</h1>
+<p class="lede">All published jpcite release capsules. Each entry lists version, capsule state, ISO 8601 date, SHA256 of <code>release_capsule_manifest.json</code>, and direct links to the contract / outcome / algorithm artifacts that make up the capsule.</p>
+<a class="cta" href="/.well-known/jpcite-release.json">機械可読 JSON</a>
+<a class="cta secondary" href="/feed.xml">RSS feed</a>
+<a class="cta secondary" href="/sitemap.xml">sitemap.xml</a>
+</header>
+
+<table class="releases">
+<caption>1 release capsule (oldest → newest by capsule_id)</caption>
+<thead>
+<tr>
+<th scope="col">Capsule ID</th>
+<th scope="col">Version</th>
+<th scope="col">Date</th>
+<th scope="col">State</th>
+<th scope="col">SHA256 of release_capsule_manifest.json</th>
+<th scope="col">Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rc1-p0-bootstrap-2026-05-15</code></td>
+<td>RC1 P0 bootstrap</td>
+<td>2026-05-15</td>
+<td><span class="state state-candidate">candidate</span></td>
+<td><code>78b24c633b06660acc3ca1200084ab0c88769498fdfd3961d91d97029e36871c</code></td>
+<td><a href="/releases/rc1-p0-bootstrap/">/releases/rc1-p0-bootstrap/</a></td>
+</tr>
+</tbody>
+</table>
+
+<section class="release" id="rc1-p0-bootstrap">
+<h2>RC1 P0 bootstrap (<code>rc1-p0-bootstrap-2026-05-15</code>)</h2>
+<p class="summary">Wave 50 RC1 contract layer + 5 preflight gate artifacts + 14 outcome contracts (¥300–¥900 band) + AWS budget canary attestation substrate. No live AWS runtime dependency, no LLM at request time, no real CSV runtime, no no-hit absence claim — all four runtime hard-stops set to <code>false</code>.</p>
+<dl>
+<dt>capsule_id</dt><dd><code>rc1-p0-bootstrap-2026-05-15</code></dd>
+<dt>created_at</dt><dd>2026-05-15T00:00:00+09:00</dd>
+<dt>capsule_state</dt><dd><span class="state state-candidate">candidate</span></dd>
+<dt>SHA256 (release_capsule_manifest.json)</dt><dd><code>78b24c633b06660acc3ca1200084ab0c88769498fdfd3961d91d97029e36871c</code></dd>
+<dt>manifest</dt><dd><a href="/releases/rc1-p0-bootstrap/release_capsule_manifest.json">/releases/rc1-p0-bootstrap/release_capsule_manifest.json</a></dd>
+<dt>runtime pointer</dt><dd><a href="/releases/current/runtime_pointer.json">/releases/current/runtime_pointer.json</a></dd>
+<dt>well-known release</dt><dd><a href="/.well-known/jpcite-release.json">/.well-known/jpcite-release.json</a></dd>
+</dl>
+<ul class="artifacts">
+<li><a href="/releases/rc1-p0-bootstrap/agent_surface/p0_facade.json">agent_surface/p0_facade.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/accepted_artifact_pricing.json">accepted_artifact_pricing.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/accounting_csv_profiles.json">accounting_csv_profiles.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/algorithm_blueprints.json">algorithm_blueprints.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/aws_budget_canary_attestation.json">aws_budget_canary_attestation.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/aws_execution_templates.json">aws_execution_templates.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/aws_spend_program.json">aws_spend_program.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/billing_event_ledger_schema.json">billing_event_ledger_schema.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/capability_matrix.json">capability_matrix.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/consent_envelope.example.json">consent_envelope.example.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/cost_preview_catalog.json">cost_preview_catalog.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/csv_private_overlay_contract.json">csv_private_overlay_contract.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/execution_graph.json">execution_graph.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/execution_state.json">execution_state.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/inline_packets.json">inline_packets.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/jpcir_header.json">jpcir_header.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/noop_aws_command_plan.json">noop_aws_command_plan.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/outcome_catalog.json">outcome_catalog.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/outcome_contract_catalog.json">outcome_contract_catalog.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/outcome_source_crosswalk.json">outcome_source_crosswalk.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/packet_skeletons.json">packet_skeletons.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/policy_decision_catalog.json">policy_decision_catalog.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/preflight_scorecard.json">preflight_scorecard.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/public_source_domains.json">public_source_domains.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/release_capsule_manifest.json">release_capsule_manifest.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/scoped_cap_token.example.json">scoped_cap_token.example.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/spend_simulation.json">spend_simulation.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/teardown_simulation.json">teardown_simulation.json</a></li>
+<li><a href="/releases/rc1-p0-bootstrap/agent_purchase_decision.example.json">agent_purchase_decision.example.json</a></li>
+</ul>
+<a class="detail-link" href="/releases/rc1-p0-bootstrap/">Open capsule directory &rarr;</a>
+</section>
+
+<footer class="page">
+<p>関連: <a href="/outcomes/">/outcomes/</a> (outcome catalog) &middot; <a href="/packets/">/packets/</a> (packet samples) &middot; <a href="/feed.xml">/feed.xml</a> (release milestone RSS) &middot; <a href="/sitemap.xml">/sitemap.xml</a> &middot; <a href="/.well-known/jpcite-release.json">/.well-known/jpcite-release.json</a> &middot; <a href="/">jpcite ホーム</a></p>
+<p>Operator: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708). 一次資料 (公開ソース) のみ・¥3/req 完全従量・100% organic.</p>
+</footer>
+</body>
+</html>

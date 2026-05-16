@@ -693,4 +693,71 @@
     <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/transparency"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/transparency"/>
   </url>
+  <!--
+    Wave 50-58 surfaces: release capsule index + outcome catalog + packet
+    showcase + .well-known agent discovery JSON (sitemap supplements
+    2026-05-16). lastmod sourced from git log of the corresponding directory.
+  -->
+  <url>
+    <loc>https://jpcite.com/releases/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/releases/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/releases/"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/releases/rc1-p0-bootstrap/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/releases/rc1-p0-bootstrap/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/releases/rc1-p0-bootstrap/"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/outcomes/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/outcomes/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/outcomes/"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/packets/</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://jpcite.com/packets/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://jpcite.com/packets/"/>
+  </url>
+  <url>
+    <loc>https://jpcite.com/.well-known/jpcite-release.json</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://jpcite.com/.well-known/jpcite-outcome-catalog.json</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://jpcite.com/.well-known/jpcite-packet-samples.json</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://jpcite.com/.well-known/jpcite-federation.json</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://jpcite.com/.well-known/mcp.json</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>
