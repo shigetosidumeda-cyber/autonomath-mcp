@@ -174,10 +174,10 @@
     },
     {
       "key": "mcp_tools",
-      "value": 139,
+      "value": 179,
       "unit": "tools",
-      "as_of": "2026-05-11",
-      "source": "site/.well-known/mcp.json:.tools|length",
+      "as_of": "2026-05-16",
+      "source": "site/.well-known/jpintel-tool-list.json:.tool_count (Wave 59 Stream B added 10 outcome wrappers, 169 -> 179; band [130,200] intact)",
       "category": "product",
       "publishable": true,
       "expires_at": "2026-07-10"

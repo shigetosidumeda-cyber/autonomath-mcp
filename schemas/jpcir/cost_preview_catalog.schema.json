@@ -122,7 +122,17 @@
                 "court",
                 "statistic",
                 "csv",
-                "control"
+                "control",
+                "industry",
+                "certification",
+                "entity",
+                "global",
+                "ministry",
+                "name_prefix",
+                "quarter",
+                "subject_area",
+                "tax_category",
+                "vendor"
               ],
               "title": "Kind",
               "type": "string"

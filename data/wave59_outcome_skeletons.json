@@ -1,0 +1,98 @@
+{
+  "schema_version": "wave59.outcome_b.skeleton_index.v1",
+  "snapshot_at": "2026-05-16T00:00:00Z",
+  "s3_bucket": "jpcite-credit-993693061769-202605-derived",
+  "note": "Skeleton index for Wave 59 Stream B outcome MCP wrappers. Each key is the outcome_id referenced from src/jpintel_mcp/mcp/autonomath_tools/outcome_wave59_b.py; values describe the precomputed packet artifact stamp. packet_count > 0 means S3 packets are populated; ==0 means absence_observation; null means partial / derived inference. receipt_id pins the canonical source_receipt linking the packet to its JPCIR provenance graph.",
+  "skeletons": {
+    "houjin_360": {
+      "outcome_id": "houjin_360",
+      "display_name": "法人 due diligence 360 — 12 軽 rollup",
+      "price_band_jpy": 900,
+      "packet_count": 166969,
+      "receipt_id": "receipt_houjin_360_wave53_full",
+      "s3_prefix": "packets/houjin_360/",
+      "wave": "wave53"
+    },
+    "program_lineage": {
+      "outcome_id": "program_lineage",
+      "display_name": "制度系譜 — amendment lineage + predecessor / successor chain",
+      "price_band_jpy": 600,
+      "packet_count": 11601,
+      "receipt_id": "receipt_program_lineage_wave53_full",
+      "s3_prefix": "packets/program_lineage/",
+      "wave": "wave53"
+    },
+    "acceptance_probability": {
+      "outcome_id": "acceptance_probability",
+      "display_name": "採択確率 cohort — 制度 × 業種 × 地域 の採択率推定",
+      "price_band_jpy": 600,
+      "packet_count": 225000,
+      "receipt_id": "receipt_acceptance_probability_wave53_full",
+      "s3_prefix": "packets/acceptance_probability/",
+      "wave": "wave53"
+    },
+    "tax_ruleset_phase_change": {
+      "outcome_id": "tax_ruleset_phase_change",
+      "display_name": "税制段階変更 — 税制 + 通達 + 改正履歴 chain",
+      "price_band_jpy": 600,
+      "packet_count": 50,
+      "receipt_id": "receipt_tax_ruleset_phase_change_wave53",
+      "s3_prefix": "packets/tax_ruleset_phase_change/",
+      "wave": "wave53"
+    },
+    "regulatory_q_over_q_diff": {
+      "outcome_id": "regulatory_q_over_q_diff",
+      "display_name": "法令改正 Q-over-Q — 法令 diff per 四半期",
+      "price_band_jpy": 900,
+      "packet_count": 6493,
+      "receipt_id": "receipt_regulatory_q_over_q_wave54",
+      "s3_prefix": "packets/regulatory_q_over_q_diff/",
+      "wave": "wave54"
+    },
+    "enforcement_seasonal_trend": {
+      "outcome_id": "enforcement_seasonal_trend",
+      "display_name": "行政処分季節性 — 月次 trend by JSIC major industry",
+      "price_band_jpy": 300,
+      "packet_count": 20,
+      "receipt_id": "receipt_enforcement_seasonal_trend_wave56",
+      "s3_prefix": "packets/enforcement_seasonal_trend/",
+      "wave": "wave56"
+    },
+    "bid_announcement_seasonality": {
+      "outcome_id": "bid_announcement_seasonality",
+      "display_name": "入札季節性 — 月次 trend by ministry/agency",
+      "price_band_jpy": 300,
+      "packet_count": 18,
+      "receipt_id": "receipt_bid_announcement_seasonality_wave56",
+      "s3_prefix": "packets/bid_announcement_seasonality/",
+      "wave": "wave56"
+    },
+    "succession_event_pulse": {
+      "outcome_id": "succession_event_pulse",
+      "display_name": "事業承継 — 承継 event 検知 + 制度 matcher",
+      "price_band_jpy": 600,
+      "packet_count": 8203,
+      "receipt_id": "receipt_succession_event_pulse_wave58",
+      "s3_prefix": "packets/succession_event_pulse/",
+      "wave": "wave58"
+    },
+    "prefecture_program_heatmap": {
+      "outcome_id": "prefecture_program_heatmap",
+      "display_name": "47 都道府県 × 制度 — heatmap rollup",
+      "price_band_jpy": 600,
+      "packet_count": 47,
+      "receipt_id": "receipt_prefecture_program_heatmap_wave57",
+      "s3_prefix": "packets/prefecture_program_heatmap/",
+      "wave": "wave57"
+    },
+    "cross_prefecture_arbitrage": {
+      "outcome_id": "cross_prefecture_arbitrage",
+      "display_name": "都道府県間アービトラージ — 制度 gap + 移転メリット rollup",
+      "price_band_jpy": 900,
+      "packet_count": 1081,
+      "receipt_id": "receipt_cross_prefecture_arbitrage_wave57",
+      "s3_prefix": "packets/cross_prefecture_arbitrage/",
+      "wave": "wave57"
+    }
+  }
+}

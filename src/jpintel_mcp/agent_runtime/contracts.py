@@ -467,6 +467,28 @@ class CostPreviewSubject(StrictModel):
         "statistic",
         "csv",
         "control",
+        # Wave 56-58 additions (time-series / geographic / relationship packets).
+        # Each value is HONESTLY distinct from the original 12 canonical kinds:
+        #   - industry      : JSIC industry-axis subject (distinct from cohort multi-axis profile).
+        #   - certification : certification corpus subject (distinct from houjin reg-bound entity).
+        #   - entity        : generic business-partner subject (no houjin reg number bound).
+        #   - global        : 官報-scope, no jurisdiction or program pin.
+        #   - ministry      : 省庁-pinned (distinct from prefecture/municipality jurisdiction).
+        #   - name_prefix   : parent/subsidiary detection via name-prefix heuristic.
+        #   - quarter       : quarter-over-quarter diff subject (time-axis only).
+        #   - subject_area  : court-decision domain area (distinct from `court` venue).
+        #   - tax_category  : tax_ruleset category subject (distinct from `rule_change` events).
+        #   - vendor        : invoice-payment counterparty (distinct from `invoice` registrant subject).
+        "industry",
+        "certification",
+        "entity",
+        "global",
+        "ministry",
+        "name_prefix",
+        "quarter",
+        "subject_area",
+        "tax_category",
+        "vendor",
     ]
     id_hint: str | None = None
 

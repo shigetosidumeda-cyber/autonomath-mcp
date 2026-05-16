@@ -304,6 +304,19 @@ def test_subject_kind_is_canonical() -> None:
         "statistic",
         "csv",
         "control",
+        # Wave 56-58 additions (mirrors CostPreviewSubject.kind Literal in
+        # src/jpintel_mcp/agent_runtime/contracts.py + the JSON-schema enum
+        # in schemas/jpcir/cost_preview_catalog.schema.json).
+        "industry",
+        "certification",
+        "entity",
+        "global",
+        "ministry",
+        "name_prefix",
+        "quarter",
+        "subject_area",
+        "tax_category",
+        "vendor",
     }
     for entry in preview["entries"]:
         assert entry["subject"]["kind"] in allowed_kinds, (
