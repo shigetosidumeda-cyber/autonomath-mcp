@@ -444,5 +444,9 @@
     "AutoStop": "2026-05-29"
   },
   "parent_job_id": "J06_ministry_municipality_pdf_extraction",
-  "max_pdfs": 2400
+  "max_pdfs": 2400,
+  "follow_mode": "pdf_only",
+  "follow_max_per_page": 30,
+  "follow_max_total": 8000,
+  "follow_max_depth": 1
 }

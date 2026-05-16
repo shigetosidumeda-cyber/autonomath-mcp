@@ -8,17 +8,24 @@ Responsibilities:
     * Per-host token-bucket rate limiting (default 1 req/sec).
     * Retry with exponential backoff on 5xx / network errors.
     * Use ETag / Last-Modified conditional GET when callers cache hints.
+    * Optionally follow ``<a href>`` from HTML responses according to
+      :class:`FollowMode` so HTML index pages can be expanded into actual
+      PDF / sibling-page artifacts (needed for J06 ministry PDF index sweep
+      where the manifest carries 100+ HTML index URLs but Textract needs
+      the linked ``*.pdf`` siblings).
     * Emit ``FetchResult`` rows that ``entrypoint.py`` writes into
       ``source_receipts.jsonl`` / ``object_manifest.jsonl`` /
       ``known_gaps.jsonl``.
 
 NO LLM API calls. NO outbound traffic beyond the manifest URLs +
-their ``robots.txt`` siblings.
+their ``robots.txt`` siblings + (when ``follow_mode`` is enabled) the
+``<a href>`` URLs extracted from already-fetched HTML bodies.
 """
 
 from __future__ import annotations
 
 import contextlib
+import enum
 import time
 import urllib.parse
 from dataclasses import dataclass, field
@@ -36,6 +43,30 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 
+class FollowMode(str, enum.Enum):  # noqa: UP042 — container is 3.12 but local devbox often 3.9
+    """Link-following policy applied after fetching an HTML body.
+
+    Values match the manifest string surface so a JSON entry like
+    ``"follow_mode": "pdf_only"`` deserializes directly.
+
+    * ``none`` — never follow ``<a href>``. Legacy behaviour for J01..J05/J07.
+    * ``pdf_only`` — follow only links whose URL path ends in ``.pdf``
+      (case-insensitive). J06 ministry PDF index sweep is the canonical
+      consumer: the manifest lists HTML index pages, each linking to many
+      ``*.pdf`` siblings that Textract then OCRs.
+    * ``same_domain`` — follow any ``<a href>`` whose netloc matches the
+      parent page's netloc. Useful for self-hosted hubs.
+    * ``all_anchors`` — follow every absolute ``<a href>`` regardless of
+      domain. Use sparingly — combined with naive seed lists this can
+      explode into an open-internet crawl.
+    """
+
+    NONE = "none"
+    PDF_ONLY = "pdf_only"
+    SAME_DOMAIN = "same_domain"
+    ALL_ANCHORS = "all_anchors"
+
+
 @dataclass
 class TargetSpec:
     """One ``target_urls[]`` entry from the job manifest."""
@@ -47,6 +78,10 @@ class TargetSpec:
     etag: str | None = None
     last_modified: str | None = None
     extras: Mapping[str, Any] = field(default_factory=dict)
+    # Provenance for follow-mode emitted targets so downstream auditors
+    # can trace a PDF back to the HTML index that linked it.
+    follow_parent_url: str | None = None
+    follow_depth: int = 0
 
 
 @dataclass
@@ -61,6 +96,15 @@ class SourcePolicy:
     request_delay_seconds: float = 1.0
     max_retries: int = 3
     timeout_seconds: float = 30.0
+
+    # ---- follow-mode policy ----
+    # Default = legacy behaviour (no following). Manifest authors must
+    # opt in explicitly so existing J01..J07 SUCCEEDED runs reproduce
+    # byte-for-byte.
+    follow_mode: FollowMode = FollowMode.NONE
+    follow_max_per_page: int = 50
+    follow_max_total: int = 5000
+    follow_max_depth: int = 1
 
 
 @dataclass
@@ -163,6 +207,138 @@ class HostRateLimiter:
 
 
 # ---------------------------------------------------------------------------
+# HTML link extractor (follow-mode helper)
+# ---------------------------------------------------------------------------
+
+
+def _looks_like_html(content_type: str | None) -> bool:
+    """True iff ``content_type`` smells like an HTML body.
+
+    Empty / None content-types fall through to a permissive True so a
+    misconfigured upstream still gets its links walked. The lxml parser
+    itself filters non-HTML safely (returns 0 anchors).
+    """
+
+    if not content_type:
+        return True
+    ct = content_type.split(";", 1)[0].strip().lower()
+    return ct in {"text/html", "application/xhtml+xml", ""} or ct.startswith("text/html")
+
+
+def extract_followable_links(
+    *,
+    body: bytes,
+    base_url: str,
+    follow_mode: FollowMode,
+    max_links: int,
+    content_type: str | None = None,
+) -> list[str]:
+    """Parse ``body`` and return follow-eligible absolute URLs.
+
+    Returns up to ``max_links`` unique absolute URLs. Filtering rules
+    follow :class:`FollowMode`. Non-HTML bodies return ``[]``.
+
+    The parser uses ``lxml.html`` (fast, lenient) because the J06 corpus
+    is ministry/municipality HTML that is occasionally malformed (legacy
+    Shift_JIS pages declared as UTF-8, unclosed ``<a>`` tags, etc.). lxml
+    tolerates this; html.parser would raise.
+    """
+
+    if follow_mode is FollowMode.NONE:
+        return []
+    if not body:
+        return []
+    if not _looks_like_html(content_type):
+        return []
+
+    try:
+        # local import keeps module-load fast in tests; lxml ships
+        # without type stubs (lxml-stubs is third-party) so we silence the
+        # missing-stub error with type: ignore — the parser API surface
+        # we touch (fromstring + iterlinks) is stable and well-known.
+        import lxml.html  # type: ignore[import-untyped]
+    except Exception:
+        return []
+
+    try:
+        # lxml.html.fromstring is forgiving about declared encodings; the
+        # bytes path lets it sniff a meta tag / BOM when present.
+        doc = lxml.html.fromstring(body)
+    except Exception:
+        return []
+
+    base_parsed = urllib.parse.urlsplit(base_url)
+    base_host = base_parsed.netloc.lower()
+
+    seen: set[str] = set()
+    out: list[str] = []
+    # `make_links_absolute` is more robust than iterating manually because
+    # it honors a `<base href>` element when one is present. Even with
+    # resolve_base_href off we still get usable anchors back from
+    # .iterlinks() so any failure here is non-fatal.
+    with contextlib.suppress(Exception):
+        doc.make_links_absolute(base_url, resolve_base_href=True)
+
+    for element, attribute, link, _pos in doc.iterlinks():
+        if attribute != "href":
+            continue
+        if element.tag != "a":
+            continue
+        if not link:
+            continue
+        absolute = link.strip()
+        # Drop fragments + javascript: / mailto: / tel: / data: schemes.
+        parsed = urllib.parse.urlsplit(absolute)
+        if parsed.scheme not in {"http", "https"}:
+            continue
+        # Strip trailing fragment so two #anchor variants of the same URL
+        # don't bloat the follow queue.
+        absolute = urllib.parse.urlunsplit(
+            (parsed.scheme, parsed.netloc, parsed.path, parsed.query, "")
+        )
+        if not absolute or absolute in seen:
+            continue
+
+        path_lower = parsed.path.lower()
+        if follow_mode is FollowMode.PDF_ONLY:
+            if not path_lower.endswith(".pdf"):
+                continue
+        elif follow_mode is FollowMode.SAME_DOMAIN:
+            if parsed.netloc.lower() != base_host:
+                continue
+        elif follow_mode is FollowMode.ALL_ANCHORS:
+            # No filter beyond scheme.
+            pass
+
+        seen.add(absolute)
+        out.append(absolute)
+        if len(out) >= max_links:
+            break
+
+    return out
+
+
+def _coerce_follow_mode(value: Any) -> FollowMode:
+    """Map manifest input (string / FollowMode / None) onto FollowMode.
+
+    Unknown strings fall back to :data:`FollowMode.NONE` rather than
+    raising — manifest typos must not crash a live Batch job. The
+    entrypoint will log the coerced value for auditability.
+    """
+
+    if value is None or value == "":
+        return FollowMode.NONE
+    if isinstance(value, FollowMode):
+        return value
+    if isinstance(value, str):
+        try:
+            return FollowMode(value.strip().lower())
+        except ValueError:
+            return FollowMode.NONE
+    return FollowMode.NONE
+
+
+# ---------------------------------------------------------------------------
 # Fetcher
 # ---------------------------------------------------------------------------
 
@@ -197,13 +373,78 @@ class Fetcher:
         )
         self._robots = RobotsCache(self._client, ua)
         self._limiter = HostRateLimiter()
+        # Track follow-mode bookkeeping so we honor follow_max_total + dedupe.
+        self._follow_seen: set[str] = set()
+        self._follow_emitted_total: int = 0
 
     # ---- public API ----
 
     def fetch_many(self, targets: Iterable[TargetSpec]) -> list[FetchResult]:
+        """Fetch ``targets`` plus any follow-queue extensions.
+
+        Follow extensions (when ``follow_mode != NONE``) inherit the
+        parent target's ``license_boundary`` so a metadata-only manifest
+        doesn't accidentally upgrade itself to derived_fact via a
+        followed PDF. ``follow_parent_url`` + ``follow_depth`` are
+        stamped onto the child :class:`TargetSpec` for provenance.
+        """
+
         results: list[FetchResult] = []
+        # Seed the queue with originals; mark them as already seen so a
+        # self-link from the page doesn't loop.
+        queue: list[TargetSpec] = []
         for target in targets:
-            results.append(self.fetch_one(target))
+            if target.url not in self._follow_seen:
+                self._follow_seen.add(target.url)
+                queue.append(target)
+
+        while queue:
+            target = queue.pop(0)
+            result = self.fetch_one(target)
+            results.append(result)
+
+            # Only follow successful HTML bodies and only when the policy
+            # asks us to. Children must respect follow_max_depth so a
+            # ministry index that links to another index doesn't recurse
+            # forever.
+            if (
+                self.policy.follow_mode is not FollowMode.NONE
+                and result.ok
+                and result.content_bytes
+                and target.follow_depth < self.policy.follow_max_depth
+                and self._follow_emitted_total < self.policy.follow_max_total
+            ):
+                child_urls = extract_followable_links(
+                    body=result.content_bytes,
+                    base_url=target.url,
+                    follow_mode=self.policy.follow_mode,
+                    max_links=self.policy.follow_max_per_page,
+                    content_type=result.content_type,
+                )
+                added = 0
+                for child_url in child_urls:
+                    if child_url in self._follow_seen:
+                        continue
+                    if self._follow_emitted_total >= self.policy.follow_max_total:
+                        break
+                    self._follow_seen.add(child_url)
+                    self._follow_emitted_total += 1
+                    added += 1
+                    queue.append(
+                        TargetSpec(
+                            url=child_url,
+                            target_id=f"follow_{target.target_id or 'root'}_{added:04d}",
+                            parser=(
+                                "pdf"
+                                if child_url.lower().endswith(".pdf")
+                                else target.parser
+                            ),
+                            license_boundary=target.license_boundary,
+                            follow_parent_url=target.url,
+                            follow_depth=target.follow_depth + 1,
+                        )
+                    )
+
         return results
 
     def fetch_one(self, target: TargetSpec) -> FetchResult:
@@ -211,13 +452,15 @@ class Fetcher:
         if target.license_boundary == "no_collect":
             return self._skipped(target, "license_boundary_blocks_collection")
 
-        # 2. robots.txt
+        # 2. robots.txt — applied to followed URLs too. The policy bit
+        # is shared so a manifest that opts into respect_robots gets
+        # follow-queue protection automatically.
         if self.policy.respect_robots:
             allowed, reason = self._robots.allowed(target.url)
             if not allowed:
                 return self._skipped(target, reason or "robots_disallow")
 
-        # 3. rate limit
+        # 3. rate limit (per-host; same gate for parents + children).
         parsed = urllib.parse.urlsplit(target.url)
         host = parsed.netloc
         self._limiter.wait(host, self.policy.request_delay_seconds)
@@ -234,6 +477,14 @@ class Fetcher:
 
     def __exit__(self, *_exc: object) -> None:
         self.close()
+
+    # ---- diagnostics ----
+
+    @property
+    def follow_emitted_total(self) -> int:
+        """How many child URLs were appended to the follow queue."""
+
+        return self._follow_emitted_total
 
     # ---- internal ----
 
