@@ -96,6 +96,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+# PERF-23: orjson + os.write per-packet hot path. Note ``_digest_envelope``
+# (SHA fingerprint, sort_keys=True) and manifest writes stay on stdlib
+# ``json`` — they need deterministic ordering or one-shot indented JSON
+# and are not on the per-packet loop.
+from scripts.aws_credit_ops._packet_base import (
+    _dumps_compact,
+    _write_bytes_fast,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
@@ -231,9 +240,7 @@ class RunManifest:
             "athena_workgroup_bytes_cap": ATHENA_WORKGROUP_BYTES_CAP,
             "s3_put_cost_usd_estimate": round(self.s3_put_cost_usd_estimate, 4),
             "coverage_score_mean": round(self.coverage_score_mean, 4),
-            "packet_results_sample": [
-                dataclasses.asdict(r) for r in self.packet_results[:50]
-            ],
+            "packet_results_sample": [dataclasses.asdict(r) for r in self.packet_results[:50]],
         }
 
 
@@ -600,9 +607,7 @@ def fetch_batch_axes(
     # Bids aggregate
     bids_table = _pick_bids_table(conn)
     if bids_table is not None:
-        sql_agg = SQL_BATCH_BIDS_AGG_TEMPLATE.format(
-            table=bids_table, placeholders=placeholders
-        )
+        sql_agg = SQL_BATCH_BIDS_AGG_TEMPLATE.format(table=bids_table, placeholders=placeholders)
         with contextlib.suppress(sqlite3.Error):
             for row in conn.execute(sql_agg, params).fetchall():
                 bangou = row["houjin_bangou"]
@@ -731,9 +736,11 @@ def render_packet(  # noqa: PLR0912 - one branch per axis is intentional
                 "description": "invoice_registrants row missing — T 番号 unresolved.",
             }
         )
-    if adoption.get("total", 0) == 0 and enforcement.get("total", 0) == 0 and bids.get(
-        "total", 0
-    ) == 0:
+    if (
+        adoption.get("total", 0) == 0
+        and enforcement.get("total", 0) == 0
+        and bids.get("total", 0) == 0
+    ):
         known_gaps.append(
             {
                 "code": "no_hit_not_absence",
@@ -816,9 +823,9 @@ def render_packet(  # noqa: PLR0912 - one branch per axis is intentional
             "title": "評判 signal (公開コーパス由来のみ)",
             "body": (
                 f"**入札除外**: "
-                f"{ '有' if any(r.get('enforcement_kind') == 'subsidy_exclude' for r in enforcement.get('records', [])) else '無' }\n"
+                f"{'有' if any(r.get('enforcement_kind') == 'subsidy_exclude' for r in enforcement.get('records', [])) else '無'}\n"
                 f"**罰金処分**: "
-                f"{ '有' if any(r.get('enforcement_kind') == 'fine' for r in enforcement.get('records', [])) else '無' }\n"
+                f"{'有' if any(r.get('enforcement_kind') == 'fine' for r in enforcement.get('records', [])) else '無'}\n"
             ),
         }
     )
@@ -934,8 +941,11 @@ def upload_packet(
     DRY_RUN we always write locally regardless so the operator can inspect.
     """
 
+    # PERF-23 hot path: orjson + os.write, 1 packet/file Athena contract
+    # preserved. ``_digest_envelope`` still uses sort_keys=True via stdlib
+    # json because the SHA fingerprint requires deterministic ordering.
     bangou = envelope["subject"]["id"]
-    body = json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    body = _dumps_compact(envelope)
     bytes_written = len(body)
 
     if output_prefix.startswith("s3://"):
@@ -945,7 +955,7 @@ def upload_packet(
             # Mirror to local for inspection (key path retained).
             local_path = local_out_dir / f"{bangou}.json"
             local_path.parent.mkdir(parents=True, exist_ok=True)
-            local_path.write_bytes(body)
+            _write_bytes_fast(local_path, body)
             return key, bytes_written
         s3_client.put_object(
             Bucket=bucket,
@@ -958,7 +968,7 @@ def upload_packet(
 
     local_path = Path(output_prefix).expanduser() / f"{bangou}.json"
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    local_path.write_bytes(body)
+    _write_bytes_fast(local_path, body)
     return str(local_path), bytes_written
 
 
@@ -992,9 +1002,7 @@ def enumerate_houjin(
     shard with ``batch_size=1000`` yields exactly one batch.
     """
 
-    span_rows: int | None = (
-        max(0, batch_end - batch_start) if batch_end is not None else None
-    )
+    span_rows: int | None = max(0, batch_end - batch_start) if batch_end is not None else None
 
     if _table_exists(conn, "am_entities"):
         offset = batch_start
@@ -1048,9 +1056,7 @@ def enumerate_houjin(
             ).fetchall()
             if not rows:
                 break
-            bangou_batch = [
-                b for b in (_normalize_bangou(r["houjin_bangou"]) for r in rows) if b
-            ]
+            bangou_batch = [b for b in (_normalize_bangou(r["houjin_bangou"]) for r in rows) if b]
             if bangou_batch:
                 yield bangou_batch
                 batches_emitted += 1
@@ -1129,9 +1135,7 @@ def run(
                 ok, errors = validate_jpcir_header(envelope)
                 if not ok:
                     manifest.packets_schema_errors += 1
-                    logger.warning(
-                        "schema validation failed for %s: %s", bangou, "; ".join(errors)
-                    )
+                    logger.warning("schema validation failed for %s: %s", bangou, "; ".join(errors))
                     manifest.packet_results.append(
                         PacketResult(
                             houjin_bangou=bangou,
@@ -1192,9 +1196,7 @@ def run(
         with contextlib.suppress(sqlite3.Error):
             conn.close()
 
-    manifest.s3_put_cost_usd_estimate = (
-        manifest.packets_written / 1000.0
-    ) * S3_PUT_USD_PER_1K
+    manifest.s3_put_cost_usd_estimate = (manifest.packets_written / 1000.0) * S3_PUT_USD_PER_1K
     manifest.finished_at = _now_utc_iso()
     return manifest
 
@@ -1241,8 +1243,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         type=int,
         default=0,
         help=(
-            "Row offset (inclusive) for sharded AWS Batch execution. "
-            "Default: 0 (start of corpus)."
+            "Row offset (inclusive) for sharded AWS Batch execution. Default: 0 (start of corpus)."
         ),
     )
     p.add_argument(

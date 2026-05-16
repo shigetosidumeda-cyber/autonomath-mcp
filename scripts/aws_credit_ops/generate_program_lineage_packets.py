@@ -95,6 +95,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+# PERF-23: orjson (via ``_dumps_compact``) on the per-packet hot path —
+# both the truncation-loop size probes and the final encode. The
+# ``upload_packet`` callee here takes ``payload: bytes`` so we encode
+# the truncated payload once and pass it in. ``report.to_json`` stdout
+# write (indented, one-shot) stays on stdlib ``json``.
+from scripts.aws_credit_ops._packet_base import _dumps_compact, _write_bytes_fast
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
@@ -261,8 +268,7 @@ def _table_exists(conn: sqlite3.Connection | None, name: str) -> bool:
         return False
     try:
         row = conn.execute(
-            "SELECT 1 FROM sqlite_master "
-            "WHERE type IN ('table','view') AND name = ? LIMIT 1",
+            "SELECT 1 FROM sqlite_master WHERE type IN ('table','view') AND name = ? LIMIT 1",
             (name,),
         ).fetchone()
     except sqlite3.Error:
@@ -412,11 +418,7 @@ def _fetch_notice_chain(
     """
     if autonomath is None or not _table_exists(autonomath, "nta_tsutatsu_index"):
         return []
-    law_ids = [
-        item["law_unified_id"]
-        for item in legal_basis_chain
-        if item.get("law_unified_id")
-    ]
+    law_ids = [item["law_unified_id"] for item in legal_basis_chain if item.get("law_unified_id")]
     if not law_ids:
         return []
     placeholders = ",".join("?" * len(law_ids))
@@ -506,11 +508,7 @@ def _fetch_precedent_chain(
     """Build ``precedent_chain[]`` — court_decisions joined on law id OR name."""
     if not _table_exists(jpintel, "court_decisions"):
         return []
-    law_ids = [
-        item["law_unified_id"]
-        for item in legal_basis_chain
-        if item.get("law_unified_id")
-    ]
+    law_ids = [item["law_unified_id"] for item in legal_basis_chain if item.get("law_unified_id")]
     where: list[str] = []
     params: list[Any] = []
     if law_ids:
@@ -751,25 +749,24 @@ def _enforce_size_budget(packet: dict[str, Any]) -> tuple[dict[str, Any], bool]:
     legal_basis_chain is preserved — it is the lineage's anchor.
     Returns ``(packet, truncated_flag)``.
     """
+    # PERF-23: orjson size probes via ``_dumps_compact``. ``_dumps_compact``
+    # already returns ``bytes`` so the ``.encode("utf-8")`` step is gone.
     truncated = False
-    encoded = json.dumps(packet, ensure_ascii=False, sort_keys=False)
-    if len(encoded.encode("utf-8")) <= MAX_PACKET_BYTES:
+    if len(_dumps_compact(packet)) <= MAX_PACKET_BYTES:
         return packet, truncated
     if packet.get("amendment_timeline"):
         packet["amendment_timeline"] = []
         truncated = True
     for chain_key in ("precedent_chain", "notice_chain", "saiketsu_chain"):
         while True:
-            encoded = json.dumps(packet, ensure_ascii=False, sort_keys=False)
-            if len(encoded.encode("utf-8")) <= MAX_PACKET_BYTES:
+            if len(_dumps_compact(packet)) <= MAX_PACKET_BYTES:
                 break
             chain = packet.get(chain_key)
             if not chain:
                 break
             chain.pop()
             truncated = True
-        encoded = json.dumps(packet, ensure_ascii=False, sort_keys=False)
-        if len(encoded.encode("utf-8")) <= MAX_PACKET_BYTES:
+        if len(_dumps_compact(packet)) <= MAX_PACKET_BYTES:
             break
     # refresh chain_counts after any truncation
     packet["chain_counts"] = {
@@ -903,7 +900,8 @@ def upload_packet(
     out_dir = Path(output_prefix).expanduser().resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / object_name
-    out_path.write_bytes(payload)
+    # PERF-23: single-syscall ``os.open`` + ``os.write`` + ``os.close``.
+    _write_bytes_fast(out_path, payload)
     return str(out_path)
 
 
@@ -998,16 +996,14 @@ def run(
                     pr.claim_coverage = float(cov["claim_coverage"])
                     pr.freshness_coverage = float(cov["freshness_coverage"])
                     pr.chain_counts = dict(packet["chain_counts"])
-                    payload = json.dumps(
-                        packet, ensure_ascii=False, sort_keys=False
-                    ).encode("utf-8")
+                    # PERF-23: orjson + bytes-out path; 1 packet/file Athena
+                    # contract preserved.
+                    payload = _dumps_compact(packet)
                     pr.bytes_written = len(payload)
                     if truncated:
                         pr.status = "oversize_truncated"
                     if dry_run:
-                        pr.output_uri = (
-                            f"{output_prefix.rstrip('/')}/{program_id}.json [dry_run]"
-                        )
+                        pr.output_uri = f"{output_prefix.rstrip('/')}/{program_id}.json [dry_run]"
                         if pr.status == "written":
                             pr.status = "dry_run"
                     else:

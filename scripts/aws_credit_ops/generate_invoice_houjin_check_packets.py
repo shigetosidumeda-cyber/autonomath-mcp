@@ -45,6 +45,16 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+# PERF-23: roll out the PERF-11 orjson + os.write hot-path pattern. Per
+# packet serialize + write goes through ``_packet_base._dumps_compact``
+# (orjson) + ``_write_bytes_fast`` (single-syscall write). Manifest and
+# ledger writes stay on stdlib ``json`` — those are one-shot, indented,
+# and not on the hot path.
+from scripts.aws_credit_ops._packet_base import (
+    _dumps_compact,
+    _write_bytes_fast,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
@@ -203,9 +213,7 @@ def compute_agreement(
 
     # close_date consistency — invoice cannot be active if houjin is closed.
     invoice_active = invoice.revoked_date is None and invoice.expired_date is None
-    close_consistency = (
-        "inconsistent" if houjin.close_date and invoice_active else "consistent"
-    )
+    close_consistency = "inconsistent" if houjin.close_date and invoice_active else "consistent"
 
     agreement: dict[str, str | bool] = {
         "houjin_master_present": True,
@@ -291,9 +299,7 @@ def enumerate_invoices(
             return
 
 
-def fetch_houjin(
-    conn: sqlite3.Connection, houjin_bangou: str
-) -> HoujinRow | None:
+def fetch_houjin(conn: sqlite3.Connection, houjin_bangou: str) -> HoujinRow | None:
     if not _table_exists(conn, "houjin_master"):
         return None
     row = conn.execute(
@@ -340,8 +346,7 @@ def render_packet(
             {
                 "code": "identity_ambiguity_unresolved",
                 "description": (
-                    "対応する houjin_master row 不在 — sole_proprietor or NTA "
-                    "bulk pending"
+                    "対応する houjin_master row 不在 — sole_proprietor or NTA bulk pending"
                 ),
             }
         )
@@ -355,8 +360,7 @@ def render_packet(
 
     sources = [
         {
-            "source_url": invoice.source_url
-            or "https://www.invoice-kohyo.nta.go.jp/",
+            "source_url": invoice.source_url or "https://www.invoice-kohyo.nta.go.jp/",
             "source_fetched_at": invoice.last_updated_nta,
             "publisher": "NTA invoice registry",
             "license": "pdl_v1.0",
@@ -369,17 +373,13 @@ def render_packet(
                     "https://www.houjin-bangou.nta.go.jp/henkorireki-johoto?id="
                     + str(invoice.houjin_bangou)
                 ),
-                "source_fetched_at": (
-                    houjin.last_updated_nta if houjin is not None else None
-                ),
+                "source_fetched_at": (houjin.last_updated_nta if houjin is not None else None),
                 "publisher": "NTA 法人番号公表サイト",
                 "license": "pdl_v1.0",
             }
         )
 
-    package_id = (
-        f"invoice_houjin_cross_check_v1:{invoice.invoice_registration_number}"
-    )
+    package_id = f"invoice_houjin_cross_check_v1:{invoice.invoice_registration_number}"
     envelope: dict[str, Any] = {
         "object_id": package_id,
         "object_type": "packet",
@@ -467,10 +467,10 @@ def upload_packet(
     s3_client: Any | None,
     local_out_dir: Path,
 ) -> tuple[str, int]:
+    # PERF-23 hot path: orjson + os.write, 1 packet/file Athena contract
+    # preserved.
     subject_id = envelope["subject"]["id"]
-    body = json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    body = _dumps_compact(envelope)
     bytes_written = len(body)
     if bytes_written > MAX_PACKET_BYTES:
         msg = f"packet {subject_id} exceeds {MAX_PACKET_BYTES}: {bytes_written}"
@@ -481,15 +481,13 @@ def upload_packet(
         if dry_run or s3_client is None:
             local_path = local_out_dir / f"{subject_id}.json"
             local_path.parent.mkdir(parents=True, exist_ok=True)
-            local_path.write_bytes(body)
+            _write_bytes_fast(local_path, body)
             return key, bytes_written
-        s3_client.put_object(
-            Bucket=bucket, Key=key, Body=body, ContentType="application/json"
-        )
+        s3_client.put_object(Bucket=bucket, Key=key, Body=body, ContentType="application/json")
         return key, bytes_written
     local_path = Path(output_prefix).expanduser() / f"{subject_id}.json"
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    local_path.write_bytes(body)
+    _write_bytes_fast(local_path, body)
     return str(local_path), bytes_written
 
 
@@ -514,9 +512,7 @@ def run(
     dry_run: bool,
     local_out_dir: Path,
 ) -> RunManifest:
-    manifest = RunManifest(
-        started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run
-    )
+    manifest = RunManifest(started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run)
     s3_client: Any | None = None
     if output_prefix.startswith("s3://") and not dry_run:
         s3_client = _import_boto3().client("s3")
@@ -525,11 +521,7 @@ def run(
     try:
         for invoice in enumerate_invoices(conn, limit=limit):
             manifest.total_invoices += 1
-            houjin = (
-                fetch_houjin(conn, invoice.houjin_bangou)
-                if invoice.houjin_bangou
-                else None
-            )
+            houjin = fetch_houjin(conn, invoice.houjin_bangou) if invoice.houjin_bangou else None
             generated_at = _now_utc_iso()
             envelope = render_packet(invoice, houjin, generated_at=generated_at)
             ok, errors = validate_jpcir_header(envelope)
@@ -566,9 +558,7 @@ def run(
         with contextlib.suppress(sqlite3.Error):
             conn.close()
 
-    manifest.s3_put_cost_usd_estimate = (
-        manifest.packets_written / 1000.0
-    ) * S3_PUT_USD_PER_1K
+    manifest.s3_put_cost_usd_estimate = (manifest.packets_written / 1000.0) * S3_PUT_USD_PER_1K
     manifest.finished_at = _now_utc_iso()
     return manifest
 

@@ -48,6 +48,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+# PERF-23: orjson + os.write per-packet hot path; manifest writes stay
+# on stdlib ``json`` because they are one-shot + indented.
+from scripts.aws_credit_ops._packet_base import (
+    _dumps_compact,
+    _write_bytes_fast,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
@@ -254,9 +261,7 @@ def aggregate_cohorts(
         bucket["entities"].add(entity_id)
         detected = row["detected_at"]
         cur_freshest = bucket["freshest"]
-        if isinstance(detected, str) and (
-            cur_freshest is None or detected > str(cur_freshest)
-        ):
+        if isinstance(detected, str) and (cur_freshest is None or detected > str(cur_freshest)):
             bucket["freshest"] = detected
         if len(bucket["samples"]) < PER_AXIS_RECORD_CAP and impact != "low":
             bucket["samples"].append(
@@ -266,14 +271,10 @@ def aggregate_cohorts(
                     "impact": impact,
                     "detected_at": detected,
                     "prev_value": (
-                        str(row["prev_value"])[:200]
-                        if row["prev_value"] is not None
-                        else None
+                        str(row["prev_value"])[:200] if row["prev_value"] is not None else None
                     ),
                     "new_value": (
-                        str(row["new_value"])[:200]
-                        if row["new_value"] is not None
-                        else None
+                        str(row["new_value"])[:200] if row["new_value"] is not None else None
                     ),
                     "source_url": row["source_url"],
                 }
@@ -414,10 +415,10 @@ def upload_packet(
     s3_client: Any | None,
     local_out_dir: Path,
 ) -> tuple[str, int]:
+    # PERF-23 hot path: orjson + os.write, 1 packet/file Athena contract
+    # preserved.
     cohort_id = envelope["cohort_definition"]["cohort_id"]
-    body = json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    body = _dumps_compact(envelope)
     bytes_written = len(body)
     if bytes_written > MAX_PACKET_BYTES:
         msg = f"packet {cohort_id} exceeds {MAX_PACKET_BYTES}: {bytes_written}"
@@ -428,15 +429,13 @@ def upload_packet(
         if dry_run or s3_client is None:
             local_path = local_out_dir / f"{cohort_id}.json"
             local_path.parent.mkdir(parents=True, exist_ok=True)
-            local_path.write_bytes(body)
+            _write_bytes_fast(local_path, body)
             return key, bytes_written
-        s3_client.put_object(
-            Bucket=bucket, Key=key, Body=body, ContentType="application/json"
-        )
+        s3_client.put_object(Bucket=bucket, Key=key, Body=body, ContentType="application/json")
         return key, bytes_written
     local_path = Path(output_prefix).expanduser() / f"{cohort_id}.json"
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    local_path.write_bytes(body)
+    _write_bytes_fast(local_path, body)
     return str(local_path), bytes_written
 
 
@@ -461,9 +460,7 @@ def run(
     dry_run: bool,
     local_out_dir: Path,
 ) -> RunManifest:
-    manifest = RunManifest(
-        started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run
-    )
+    manifest = RunManifest(started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run)
     s3_client: Any | None = None
     if output_prefix.startswith("s3://") and not dry_run:
         s3_client = _import_boto3().client("s3")
@@ -506,9 +503,7 @@ def run(
         with contextlib.suppress(sqlite3.Error):
             conn.close()
 
-    manifest.s3_put_cost_usd_estimate = (
-        manifest.packets_written / 1000.0
-    ) * S3_PUT_USD_PER_1K
+    manifest.s3_put_cost_usd_estimate = (manifest.packets_written / 1000.0) * S3_PUT_USD_PER_1K
     manifest.finished_at = _now_utc_iso()
     return manifest
 

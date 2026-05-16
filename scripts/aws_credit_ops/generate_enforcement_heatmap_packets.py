@@ -56,6 +56,17 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+# PERF-23: roll out the PERF-11 orjson + os.write hot-path pattern. The
+# per-packet serialize + write goes through ``_packet_base._dumps_compact``
+# (orjson under the hood with a stdlib fallback) and ``_write_bytes_fast``
+# (single-syscall ``os.open`` + ``os.write`` + ``os.close``). Manifest /
+# ledger writes stay on stdlib ``json`` — those are one-shot, indented,
+# and not on the hot path.
+from scripts.aws_credit_ops._packet_base import (
+    _dumps_compact,
+    _write_bytes_fast,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
@@ -70,12 +81,8 @@ DEFAULT_DB_PATH: Final[str] = "autonomath.db"
 DEFAULT_DERIVED_BUCKET: Final[str] = "jpcite-credit-993693061769-202605-derived"
 S3_PUT_USD_PER_1K: Final[float] = 0.005
 
-_SEVERITY_HIGH: Final[frozenset[str]] = frozenset(
-    {"license_revoke", "fine", "grant_refund"}
-)
-_SEVERITY_MEDIUM: Final[frozenset[str]] = frozenset(
-    {"subsidy_exclude", "contract_suspend"}
-)
+_SEVERITY_HIGH: Final[frozenset[str]] = frozenset({"license_revoke", "fine", "grant_refund"})
+_SEVERITY_MEDIUM: Final[frozenset[str]] = frozenset({"subsidy_exclude", "contract_suspend"})
 
 KNOWN_GAP_CODES: Final[frozenset[str]] = frozenset(
     {
@@ -193,9 +200,7 @@ def aggregate_cohorts(
     if not _table_exists(conn, "am_enforcement_detail"):
         return
     if not _table_exists(conn, "houjin_master"):
-        logger.warning(
-            "houjin_master missing — cohort packet quality will be degraded."
-        )
+        logger.warning("houjin_master missing — cohort packet quality will be degraded.")
 
     agg: dict[
         tuple[str, str],
@@ -257,17 +262,12 @@ def aggregate_cohorts(
             bucket["authorities"].add(authority.strip())
         issuance = row["issuance_date"]
         cur_freshest = bucket["freshest"]
-        if isinstance(issuance, str) and (
-            cur_freshest is None or issuance > str(cur_freshest)
-        ):
+        if isinstance(issuance, str) and (cur_freshest is None or issuance > str(cur_freshest)):
             bucket["freshest"] = issuance
 
     for emitted, ((pref, jsic), bucket) in enumerate(sorted(agg.items())):
         houjin_top = sorted(
-            (
-                {"houjin_bangou": b, **v}
-                for b, v in bucket["houjin_counts"].items()
-            ),
+            ({"houjin_bangou": b, **v} for b, v in bucket["houjin_counts"].items()),
             key=lambda d: int(d["count"]),
             reverse=True,
         )[:PER_AXIS_RECORD_CAP]
@@ -291,8 +291,7 @@ def render_packet(cohort: CohortRow, *, generated_at: str) -> dict[str, Any]:
         {
             "code": "professional_review_required",
             "description": (
-                "業種別集計は標本効果あり。個別与信判断は税理士・弁護士・"
-                "金融機関の一次確認が必須。"
+                "業種別集計は標本効果あり。個別与信判断は税理士・弁護士・金融機関の一次確認が必須。"
             ),
         }
     ]
@@ -316,7 +315,7 @@ def render_packet(cohort: CohortRow, *, generated_at: str) -> dict[str, Any]:
 
     sources = [
         {
-            "source_url": "https://www.maff.go.jp/j/keiei/", # MAFF enforcement listings
+            "source_url": "https://www.maff.go.jp/j/keiei/",  # MAFF enforcement listings
             "source_fetched_at": None,
             "publisher": "am_enforcement_detail (jpcite corpus)",
             "license": "gov_standard",
@@ -381,10 +380,7 @@ def _import_boto3() -> Any:  # pragma: no cover
     try:
         import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
     except ImportError as exc:
-        msg = (
-            "boto3 is not installed. Install boto3 before running with "
-            "--commit on s3:// targets."
-        )
+        msg = "boto3 is not installed. Install boto3 before running with --commit on s3:// targets."
         raise RuntimeError(msg) from exc
     return boto3
 
@@ -406,10 +402,11 @@ def upload_packet(
     s3_client: Any | None,
     local_out_dir: Path,
 ) -> tuple[str, int]:
+    # PERF-23 hot path: ``_dumps_compact`` (orjson, 5-10x stdlib json)
+    # + ``_write_bytes_fast`` (single-syscall O_WRONLY|O_CREAT|O_TRUNC),
+    # 1 packet/file Athena contract preserved.
     cohort_id = envelope["cohort_definition"]["cohort_id"]
-    body = json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    body = _dumps_compact(envelope)
     bytes_written = len(body)
     if bytes_written > MAX_PACKET_BYTES:
         msg = f"packet {cohort_id} exceeds {MAX_PACKET_BYTES}: {bytes_written}"
@@ -421,16 +418,14 @@ def upload_packet(
         if dry_run or s3_client is None:
             local_path = local_out_dir / f"{cohort_id}.json"
             local_path.parent.mkdir(parents=True, exist_ok=True)
-            local_path.write_bytes(body)
+            _write_bytes_fast(local_path, body)
             return key, bytes_written
-        s3_client.put_object(
-            Bucket=bucket, Key=key, Body=body, ContentType="application/json"
-        )
+        s3_client.put_object(Bucket=bucket, Key=key, Body=body, ContentType="application/json")
         return key, bytes_written
 
     local_path = Path(output_prefix).expanduser() / f"{cohort_id}.json"
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    local_path.write_bytes(body)
+    _write_bytes_fast(local_path, body)
     return str(local_path), bytes_written
 
 
@@ -455,9 +450,7 @@ def run(
     dry_run: bool,
     local_out_dir: Path,
 ) -> RunManifest:
-    manifest = RunManifest(
-        started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run
-    )
+    manifest = RunManifest(started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run)
     s3_client: Any | None = None
     if output_prefix.startswith("s3://") and not dry_run:
         s3_client = _import_boto3().client("s3")
@@ -501,9 +494,7 @@ def run(
         with contextlib.suppress(sqlite3.Error):
             conn.close()
 
-    manifest.s3_put_cost_usd_estimate = (
-        manifest.packets_written / 1000.0
-    ) * S3_PUT_USD_PER_1K
+    manifest.s3_put_cost_usd_estimate = (manifest.packets_written / 1000.0) * S3_PUT_USD_PER_1K
     manifest.finished_at = _now_utc_iso()
     return manifest
 

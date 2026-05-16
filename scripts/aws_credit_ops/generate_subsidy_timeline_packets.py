@@ -52,6 +52,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+# PERF-23: orjson + os.write per-packet hot path. The
+# entity_to_program lookup table and manifest writes stay on stdlib
+# ``json`` because they are not on the per-packet loop.
+from scripts.aws_credit_ops._packet_base import (
+    _dumps_compact,
+    _write_bytes_fast,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
@@ -243,9 +251,7 @@ def enumerate_rounds(
         program_name = str(program.get("primary_name") or "")
         prefecture = _normalise(program.get("prefecture") or None)
         # Use announced_date or application_open_date for fiscal_year derivation.
-        fy = _fiscal_year_from_iso(
-            row["announced_date"] or row["application_open_date"]
-        )
+        fy = _fiscal_year_from_iso(row["announced_date"] or row["application_open_date"])
         if not fy:
             fy = "UNKNOWN_FY"
         yield RoundRow(
@@ -259,11 +265,7 @@ def enumerate_rounds(
             application_open_date=row["application_open_date"],
             application_close_date=row["application_close_date"],
             announced_date=row["announced_date"],
-            budget_yen=(
-                int(row["budget_yen"])
-                if row["budget_yen"] is not None
-                else None
-            ),
+            budget_yen=(int(row["budget_yen"]) if row["budget_yen"] is not None else None),
             source_url=row["source_url"],
         )
 
@@ -321,9 +323,7 @@ def aggregate_cohorts(
 
     for emitted, ((jsic, pref, fy), bucket) in enumerate(sorted(agg.items())):
         rounds_list = bucket["rounds"]
-        rounds_list.sort(
-            key=lambda d: (d.get("application_close_date") or "9999-12-31")
-        )
+        rounds_list.sort(key=lambda d: d.get("application_close_date") or "9999-12-31")
         bucket["rounds"] = rounds_list[:PER_AXIS_RECORD_CAP]
         bucket["distinct_programs"] = len(bucket["distinct_programs"])
         bucket["jsic_major"] = jsic
@@ -458,10 +458,10 @@ def upload_packet(
     s3_client: Any | None,
     local_out_dir: Path,
 ) -> tuple[str, int]:
+    # PERF-23 hot path: orjson + os.write, 1 packet/file Athena contract
+    # preserved.
     cohort_id = envelope["cohort_definition"]["cohort_id"]
-    body = json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    body = _dumps_compact(envelope)
     bytes_written = len(body)
     if bytes_written > MAX_PACKET_BYTES:
         msg = f"packet {cohort_id} exceeds {MAX_PACKET_BYTES}: {bytes_written}"
@@ -472,15 +472,13 @@ def upload_packet(
         if dry_run or s3_client is None:
             local_path = local_out_dir / f"{cohort_id}.json"
             local_path.parent.mkdir(parents=True, exist_ok=True)
-            local_path.write_bytes(body)
+            _write_bytes_fast(local_path, body)
             return key, bytes_written
-        s3_client.put_object(
-            Bucket=bucket, Key=key, Body=body, ContentType="application/json"
-        )
+        s3_client.put_object(Bucket=bucket, Key=key, Body=body, ContentType="application/json")
         return key, bytes_written
     local_path = Path(output_prefix).expanduser() / f"{cohort_id}.json"
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    local_path.write_bytes(body)
+    _write_bytes_fast(local_path, body)
     return str(local_path), bytes_written
 
 
@@ -506,9 +504,7 @@ def run(
     dry_run: bool,
     local_out_dir: Path,
 ) -> RunManifest:
-    manifest = RunManifest(
-        started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run
-    )
+    manifest = RunManifest(started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run)
     s3_client: Any | None = None
     if output_prefix.startswith("s3://") and not dry_run:
         s3_client = _import_boto3().client("s3")
@@ -557,9 +553,7 @@ def run(
         with contextlib.suppress(sqlite3.Error):
             jpintel_conn.close()
 
-    manifest.s3_put_cost_usd_estimate = (
-        manifest.packets_written / 1000.0
-    ) * S3_PUT_USD_PER_1K
+    manifest.s3_put_cost_usd_estimate = (manifest.packets_written / 1000.0) * S3_PUT_USD_PER_1K
     manifest.finished_at = _now_utc_iso()
     return manifest
 
@@ -575,9 +569,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     p.add_argument("--db", default=DEFAULT_DB_PATH)
     p.add_argument("--jpintel-db", default=DEFAULT_JPINTEL_DB_PATH)
     p.add_argument("--limit", type=int, default=None)
-    p.add_argument(
-        "--local-out-dir", default="out/subsidy_application_timeline_v1"
-    )
+    p.add_argument("--local-out-dir", default="out/subsidy_application_timeline_v1")
     p.add_argument("--commit", action="store_true")
     p.add_argument("--manifest-out", default=None)
     return p.parse_args(list(argv))

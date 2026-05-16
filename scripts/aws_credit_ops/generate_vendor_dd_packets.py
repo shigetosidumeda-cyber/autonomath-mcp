@@ -52,6 +52,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+# PERF-23: orjson + os.write per-packet hot path; manifest writes stay
+# on stdlib ``json`` because they are one-shot + indented.
+from scripts.aws_credit_ops._packet_base import (
+    _dumps_compact,
+    _write_bytes_fast,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Iterator, Sequence
 
@@ -164,8 +171,10 @@ def compute_risk_score(summary: HoujinSummary) -> tuple[float, dict[str, float]]
     severity_rank = {"low": 0.10, "medium": 0.35, "high": 0.70}
     if summary.enforcement_records:
         max_sev = max(
-            (severity_rank.get(r.get("severity", "low") or "low", 0.10)
-             for r in summary.enforcement_records),
+            (
+                severity_rank.get(r.get("severity", "low") or "low", 0.10)
+                for r in summary.enforcement_records
+            ),
             default=0.0,
         )
         components["enforcement_severity"] = float(max_sev)
@@ -244,9 +253,7 @@ def enumerate_houjin(
             return
 
 
-def fetch_enforcement(
-    conn: sqlite3.Connection, houjin_bangou: str
-) -> list[dict[str, Any]]:
+def fetch_enforcement(conn: sqlite3.Connection, houjin_bangou: str) -> list[dict[str, Any]]:
     if not _table_exists(conn, "am_enforcement_detail"):
         return []
     rows = conn.execute(
@@ -267,9 +274,7 @@ def fetch_enforcement(
                 "enforcement_kind": kind,
                 "severity": _ENFORCEMENT_SEVERITY.get(kind, "low"),
                 "reason_summary": r["reason_summary"],
-                "amount_yen": (
-                    int(r["amount_yen"]) if r["amount_yen"] is not None else None
-                ),
+                "amount_yen": (int(r["amount_yen"]) if r["amount_yen"] is not None else None),
                 "issuing_authority": r["issuing_authority"],
                 "related_law_ref": r["related_law_ref"],
                 "source_url": r["source_url"],
@@ -278,9 +283,7 @@ def fetch_enforcement(
     return out
 
 
-def fetch_invoice_status(
-    conn: sqlite3.Connection, houjin_bangou: str
-) -> str:
+def fetch_invoice_status(conn: sqlite3.Connection, houjin_bangou: str) -> str:
     if not _table_exists(conn, "jpi_invoice_registrants"):
         return "not_found"
     row = conn.execute(
@@ -323,8 +326,7 @@ def render_packet(
             {
                 "code": "no_hit_not_absence",
                 "description": (
-                    "公開コーパス内で処分・インボイス登録ヒットなし — "
-                    "「ノーリスク」を意味しません"
+                    "公開コーパス内で処分・インボイス登録ヒットなし — 「ノーリスク」を意味しません"
                 ),
             }
         )
@@ -339,8 +341,7 @@ def render_packet(
     sources = [
         {
             "source_url": (
-                f"https://www.houjin-bangou.nta.go.jp/henkorireki-johoto?id="
-                f"{summary.houjin_bangou}"
+                f"https://www.houjin-bangou.nta.go.jp/henkorireki-johoto?id={summary.houjin_bangou}"
             ),
             "source_fetched_at": summary.last_updated_nta,
             "publisher": "NTA 法人番号公表サイト",
@@ -387,7 +388,7 @@ def render_packet(
             "components": components,
         },
         "enforcement_records": summary.enforcement_records,
-        "sources": sources[:PER_AXIS_RECORD_CAP * 2],
+        "sources": sources[: PER_AXIS_RECORD_CAP * 2],
         "known_gaps": known_gaps,
         "jpcite_cost_jpy": 0,
         "disclaimer": DEFAULT_DISCLAIMER,
@@ -433,10 +434,10 @@ def upload_packet(
     s3_client: Any | None,
     local_out_dir: Path,
 ) -> tuple[str, int]:
+    # PERF-23 hot path: orjson + os.write, 1 packet/file Athena contract
+    # preserved.
     subject_id = envelope["subject"]["id"]
-    body = json.dumps(envelope, ensure_ascii=False, separators=(",", ":")).encode(
-        "utf-8"
-    )
+    body = _dumps_compact(envelope)
     bytes_written = len(body)
     if bytes_written > MAX_PACKET_BYTES:
         msg = f"packet {subject_id} exceeds {MAX_PACKET_BYTES}: {bytes_written}"
@@ -447,15 +448,13 @@ def upload_packet(
         if dry_run or s3_client is None:
             local_path = local_out_dir / f"{subject_id}.json"
             local_path.parent.mkdir(parents=True, exist_ok=True)
-            local_path.write_bytes(body)
+            _write_bytes_fast(local_path, body)
             return key, bytes_written
-        s3_client.put_object(
-            Bucket=bucket, Key=key, Body=body, ContentType="application/json"
-        )
+        s3_client.put_object(Bucket=bucket, Key=key, Body=body, ContentType="application/json")
         return key, bytes_written
     local_path = Path(output_prefix).expanduser() / f"{subject_id}.json"
     local_path.parent.mkdir(parents=True, exist_ok=True)
-    local_path.write_bytes(body)
+    _write_bytes_fast(local_path, body)
     return str(local_path), bytes_written
 
 
@@ -480,9 +479,7 @@ def run(
     dry_run: bool,
     local_out_dir: Path,
 ) -> RunManifest:
-    manifest = RunManifest(
-        started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run
-    )
+    manifest = RunManifest(started_at=_now_utc_iso(), output_prefix=output_prefix, dry_run=dry_run)
     s3_client: Any | None = None
     if output_prefix.startswith("s3://") and not dry_run:
         s3_client = _import_boto3().client("s3")
@@ -512,9 +509,7 @@ def run(
             manifest.bytes_total += written
             score = float(envelope["risk"]["risk_score"])
             grade = str(envelope["risk"]["risk_grade"])
-            manifest.risk_grade_counts[grade] = (
-                manifest.risk_grade_counts.get(grade, 0) + 1
-            )
+            manifest.risk_grade_counts[grade] = manifest.risk_grade_counts.get(grade, 0) + 1
             manifest.results.append(
                 PacketResult(
                     houjin_bangou=summary.houjin_bangou,
@@ -529,9 +524,7 @@ def run(
         with contextlib.suppress(sqlite3.Error):
             conn.close()
 
-    manifest.s3_put_cost_usd_estimate = (
-        manifest.packets_written / 1000.0
-    ) * S3_PUT_USD_PER_1K
+    manifest.s3_put_cost_usd_estimate = (manifest.packets_written / 1000.0) * S3_PUT_USD_PER_1K
     manifest.finished_at = _now_utc_iso()
     return manifest
 
