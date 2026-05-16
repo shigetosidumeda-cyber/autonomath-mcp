@@ -108,8 +108,7 @@ def _aggregate(
                 }
             )
 
-    emitted = 0
-    for segment_id, hint in _SEGMENT_HINTS.items():
+    for emitted, (segment_id, hint) in enumerate(_SEGMENT_HINTS.items()):
         entry_points: list[dict[str, Any]] = []
         primary_domain = str(hint.get("primary_domain") or "")
         preferred_domains = list(hint.get("preferred_domains") or [])
@@ -125,8 +124,7 @@ def _aggregate(
             "entry_point_n": len(entry_points),
         }
         yield record
-        emitted += 1
-        if limit is not None and emitted >= limit:
+        if limit is not None and (emitted + 1) >= limit:
             return
 
 

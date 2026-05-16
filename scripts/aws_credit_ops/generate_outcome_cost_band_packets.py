@@ -92,8 +92,7 @@ def _aggregate(
             }
         )
 
-    emitted = 0
-    for band, hints in _BAND_LABEL.items():
+    for emitted, (band, hints) in enumerate(_BAND_LABEL.items()):
         items = by_band.get(band, [])
         record = {
             "cost_band": band,
@@ -103,8 +102,7 @@ def _aggregate(
             "outcome_n": len(items),
         }
         yield record
-        emitted += 1
-        if limit is not None and emitted >= limit:
+        if limit is not None and (emitted + 1) >= limit:
             return
     _ = contextlib  # keep import linked
 
