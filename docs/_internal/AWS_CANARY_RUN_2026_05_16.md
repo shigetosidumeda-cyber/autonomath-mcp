@@ -305,6 +305,18 @@ memory `project_jpcite_smart_analysis_pipeline_2026_05_16` に集約、
    `am_amendment_snapshot` × `case_studies` を 1 packet/法人 で pre-compute,
    Stripe metered ¥3/req per call、`estimated_price_jpy` ¥900-¥1,500。
    est. cost **~$300-500**。
+   - **LANDED 2026-05-16** — full local generation + S3 sync 完了。
+     `am_entities.record_kind='corporate_entity'` は 166,969 行だが、
+     `json_extract(raw_json,'$.houjin_bangou') IS NOT NULL` は 87,093 行
+     (残 79,876 行は raw_json に houjin_bangou 欠落、houjin_master ingest
+     遅延と整合)。total_houjin=87,093 / packets_written=**86,849** /
+     skipped_empty=244 / schema_errors=0 / coverage_score_mean=0.4714、
+     bytes_total=**252,463,349 (~241 MB)**、S3 PUT cost~$0.43、
+     elapsed=local 31s + S3 sync ~9m (64 並列)。S3 verify =
+     `aws s3 ls s3://jpcite-credit-993693061769-202605-derived/houjin_360/`
+     → 86,849 objects, 252,463,349 bytes。AWS Batch shard 化 (167 shard ×
+     1,000 row) は不要、local single-host で完走可と確定。run manifest +
+     credit_run_ledger は `out/houjin_360_full_run/` (gitignore) に保存。
 2. **制度 lineage packet pipeline (11,601 programs)** —
    `programs` × `am_amendment_diff` × `am_amendment_snapshot` ×
    `program_law_refs` × `am_law_article` で各制度 5 年系譜を 1 packet 化,
