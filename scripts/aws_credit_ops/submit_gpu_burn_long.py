@@ -57,7 +57,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 try:
-    import boto3
+    from scripts.aws_credit_ops._aws import get_session
 except ImportError:  # pragma: no cover - boto3 always present in our venv
     sys.stderr.write("boto3 not installed; pip install boto3\n")
     sys.exit(2)
@@ -164,7 +164,7 @@ def submit_all(
     dry_run: bool,
     only: Sequence[str] | None = None,
 ) -> list[dict[str, Any]]:
-    session = boto3.Session(profile_name=profile, region_name=REGION)
+    session = get_session(region_name=REGION, profile_name=profile)
     batch = session.client("batch")
     stamp = _ts()
     submitted: list[dict[str, Any]] = []
