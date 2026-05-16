@@ -1,0 +1,146 @@
+{
+  "$id": "https://jpcite.com/schemas/jpcir/acceptance_probability_cohort.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AcceptanceProbabilityCohortV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "header",
+    "package_kind",
+    "cohort_definition",
+    "probability_estimate",
+    "confidence_interval",
+    "n_sample",
+    "n_eligible_programs",
+    "known_gaps",
+    "disclaimer"
+  ],
+  "properties": {
+    "header": {
+      "$ref": "https://jpcite.com/schemas/jpcir/jpcir_header.schema.json"
+    },
+    "package_kind": {
+      "const": "acceptance_probability_cohort_v1",
+      "type": "string",
+      "title": "Package Kind"
+    },
+    "cohort_definition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cohort_id",
+        "prefecture",
+        "jsic_major",
+        "scale_band",
+        "program_kind",
+        "fiscal_year"
+      ],
+      "properties": {
+        "cohort_id": {
+          "type": "string",
+          "minLength": 1,
+          "title": "Stable cohort id (5-axis join key)"
+        },
+        "prefecture": {
+          "type": "string",
+          "minLength": 1
+        },
+        "jsic_major": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8
+        },
+        "scale_band": {
+          "type": "string",
+          "enum": ["micro", "small", "mid", "large", "unknown"]
+        },
+        "program_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fiscal_year": {
+          "type": "string",
+          "pattern": "^[0-9]{4}$"
+        }
+      }
+    },
+    "probability_estimate": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "title": "Point estimate (n_sample / max(n_eligible_programs, 1))"
+    },
+    "confidence_interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "level", "low", "high"],
+      "properties": {
+        "method": {
+          "const": "wilson_score"
+        },
+        "level": {
+          "type": "number",
+          "const": 0.95
+        },
+        "low": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "high": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      }
+    },
+    "n_sample": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "Approved adoption row count for this cohort"
+    },
+    "n_eligible_programs": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "Distinct programs targeting this cohort"
+    },
+    "freshest_announced_at": {
+      "type": ["string", "null"],
+      "title": "Most-recent adoption announcement date observed in cohort"
+    },
+    "adjacency_suggestions": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cohort_id", "probability_estimate", "delta"],
+        "properties": {
+          "cohort_id": {
+            "type": "string"
+          },
+          "probability_estimate": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "delta": {
+            "type": "number",
+            "title": "probability_estimate - parent.probability_estimate"
+          }
+        }
+      }
+    },
+    "known_gaps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "https://jpcite.com/schemas/jpcir/known_gap.schema.json"
+      }
+    },
+    "disclaimer": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

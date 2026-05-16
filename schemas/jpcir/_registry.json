@@ -3,6 +3,11 @@
   "schema_version": "jpcite.jpcir_schema_registry.p0.v1",
   "schemas": [
     {
+      "name": "acceptance_probability_cohort",
+      "path": "schemas/jpcir/acceptance_probability_cohort.schema.json",
+      "public_id": "https://jpcite.com/schemas/jpcir/acceptance_probability_cohort.schema.json"
+    },
+    {
       "name": "accepted_artifact_pricing",
       "path": "schemas/jpcir/accepted_artifact_pricing.schema.json",
       "public_id": "https://jpcite.com/schemas/jpcir/accepted_artifact_pricing.schema.json"
