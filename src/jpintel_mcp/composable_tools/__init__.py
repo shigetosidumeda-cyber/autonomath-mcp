@@ -81,17 +81,31 @@ from jpintel_mcp.composable_tools.tools import (
     MaDueDiligencePack,
     SubsidyEligibilityFull,
 )
+from jpintel_mcp.composable_tools.wave51_chains import (
+    WAVE51_CHAIN_TOOLS,
+    EvidenceWithProvenance,
+    FederatedHandoffWithAudit,
+    SessionAwareEligibilityCheck,
+    TemporalComplianceAudit,
+    register_wave51_chains,
+)
 
 __all__ = [
     "DEFAULT_COMPOSED_TOOLS",
+    "WAVE51_CHAIN_TOOLS",
     "AtomicCallResult",
     "AtomicRegistry",
     "ComposableTool",
     "ComposedEnvelope",
     "ComposedToolError",
     "EligibilityAuditWorkpaper",
+    "EvidenceWithProvenance",
+    "FederatedHandoffWithAudit",
     "InvoiceCompatibilityCheck",
     "MaDueDiligencePack",
+    "SessionAwareEligibilityCheck",
     "SubsidyEligibilityFull",
+    "TemporalComplianceAudit",
     "register_default_tools",
+    "register_wave51_chains",
 ]
