@@ -1,0 +1,19 @@
+{
+  "as_of_date": "2025-12-31",
+  "content_hash": "78e44fa95634ac779397ebe723652b95a378d46baf57182a8f3eb4ea51f094e1",
+  "payload": {
+    "captured_dataset_id": "programs_sample",
+    "program_001": {
+      "amount_max_yen": 20000000,
+      "eligibility": {
+        "max_employees": 500,
+        "min_employees": 1
+      },
+      "name": "ものづくり補助金",
+      "rate_max": 0.6
+    },
+    "program_count": 1
+  },
+  "snapshot_id": "programs@2025_12",
+  "source_dataset_id": "programs"
+}

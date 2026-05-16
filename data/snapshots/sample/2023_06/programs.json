@@ -1,0 +1,19 @@
+{
+  "as_of_date": "2023-06-30",
+  "content_hash": "84ec9f3f7143b6c8db28373c95ec99fa7d92e905f477ab4c2d3edbec1c4b12ae",
+  "payload": {
+    "captured_dataset_id": "programs_sample",
+    "program_001": {
+      "amount_max_yen": 10000000,
+      "eligibility": {
+        "max_employees": 300,
+        "min_employees": 1
+      },
+      "name": "ものづくり補助金",
+      "rate_max": 0.5
+    },
+    "program_count": 1
+  },
+  "snapshot_id": "programs@2023_06",
+  "source_dataset_id": "programs"
+}
