@@ -453,3 +453,62 @@ def test_no_llm_import_in_module() -> None:
         text = py.read_text(encoding="utf-8")
         for marker in forbidden:
             assert marker not in text, f"{py.name} contains forbidden marker: {marker}"
+
+
+# ---------------------------------------------------------------------------
+# Bundle 6: CLI (python -m jpintel_mcp.federated_mcp ...)
+# ---------------------------------------------------------------------------
+
+
+def test_cli_list_returns_six_partner_rows(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`list` sub-command dumps the 6 curated partners as JSON."""
+    from jpintel_mcp.federated_mcp.__main__ import main
+
+    rc = main(["list"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    rows = json.loads(out)
+    assert isinstance(rows, list)
+    assert len(rows) == 6
+    assert [r["partner_id"] for r in rows] == list(PARTNER_IDS)
+
+
+def test_cli_recommend_freee_query(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`recommend` returns at least one partner for an obvious gap."""
+    from jpintel_mcp.federated_mcp.__main__ import main
+
+    rc = main(["recommend", "I need a freee invoice for the client"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    rows = json.loads(out)
+    assert rows
+    assert rows[0]["partner_id"] == "freee"
+
+
+def test_cli_recommend_max_cap(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`--max 1` caps the recommendation count."""
+    from jpintel_mcp.federated_mcp.__main__ import main
+
+    rc = main(["recommend", "invoice github notion slack linear accounting", "--max", "1"])
+    assert rc == 0
+    out = capsys.readouterr().out
+    rows = json.loads(out)
+    assert len(rows) <= 1
+
+
+def test_cli_recommend_max_rejects_zero(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`--max 0` exits non-zero with a message on stderr."""
+    from jpintel_mcp.federated_mcp.__main__ import main
+
+    rc = main(["recommend", "anything", "--max", "0"])
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert ">= 1" in err
