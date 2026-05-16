@@ -137,7 +137,7 @@ dev = [
     "build>=1.2",
     "pre-commit>=4.0",
     "duckdb>=1.1",                  # weekly_digest.py + analyze_telemetry.py
-    "pyarrow>=18,<25",              # parquet writer for scripts/hf_dataset_export.py
+    "pyarrow>=24.0.0,<25",              # parquet writer for scripts/hf_dataset_export.py
     "huggingface_hub>=0.25,<1",     # HF dataset publish CLI; see docs/_internal/hf_publish_runbook.md
     # beautifulsoup4 lifted into main `dependencies` (production Fly cron uses it).
     "pandas>=2.2",                  # HF/e-Stat export safety tests/scripts
