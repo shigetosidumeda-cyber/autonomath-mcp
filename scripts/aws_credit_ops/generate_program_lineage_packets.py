@@ -792,14 +792,38 @@ def iter_program_ids(
     *,
     batch_size: int,
     limit: int | None,
+    batch_start: int | None = None,
+    batch_end: int | None = None,
 ) -> Iterator[list[str]]:
-    """Yield batches of program unified_ids; honour ``--limit`` cap."""
+    """Yield batches of program unified_ids; honour ``--limit`` cap.
+
+    ``batch_start`` / ``batch_end`` shard the canonical 11,601-program
+    cohort across N AWS Batch shards. The contract: the canonical full
+    sweep ordered by ``unified_id ASC`` is sliced by ``LIMIT (end-start)
+    OFFSET start``. So the 24-shard plan submits the same script with
+    ``--batch-start 0 --batch-end 500`` … ``--batch-start 11500
+    --batch-end 12100`` (the last shard runs 11,000-11,601 == 601 rows,
+    so caller passes ``--batch-end 11601`` or a sentinel ≥ 11,601).
+    Shard bounds are program-row positions, not SQL ``LIMIT``-style
+    counts, so the math is the same for every shard.
+    """
     sql = (
         "SELECT unified_id FROM programs "
         "WHERE excluded = 0 AND tier IN ('S','A','B','C') "
         "ORDER BY unified_id ASC"
     )
-    if limit is not None and limit > 0:
+    shard_limit: int | None = None
+    shard_offset = 0
+    if batch_start is not None or batch_end is not None:
+        start = int(batch_start) if batch_start is not None else 0
+        end = int(batch_end) if batch_end is not None else 10**9
+        if start < 0 or end < start:
+            logger.error("invalid shard bounds: start=%d end=%d", start, end)
+            return
+        shard_offset = start
+        shard_limit = end - start
+        sql += f" LIMIT {shard_limit} OFFSET {shard_offset}"
+    elif limit is not None and limit > 0:
         sql += f" LIMIT {int(limit)}"
     try:
         cursor = jpintel.execute(sql)
@@ -807,8 +831,13 @@ def iter_program_ids(
         logger.error("program id sweep failed: %s", exc)
         return
     batch: list[str] = []
+    cap = shard_limit if shard_limit is not None else limit
+    emitted_rows = 0
     for row in cursor:
+        if cap is not None and emitted_rows >= cap:
+            break
         batch.append(str(row["unified_id"]))
+        emitted_rows += 1  # noqa: SIM113 - cap-guarded early break; enumerate cannot replace
         if len(batch) >= batch_size:
             yield batch
             batch = []
@@ -925,6 +954,8 @@ def run(
     autonomath_db: Path = AUTONOMATH_DB,
     s3_client: Any | None = None,
     now_utc: datetime | None = None,
+    batch_start: int | None = None,
+    batch_end: int | None = None,
 ) -> RunReport:
     """Sweep every program and emit a lineage packet."""
     now = now_utc or datetime.now(UTC)
@@ -942,7 +973,13 @@ def run(
         raise FileNotFoundError(msg)
     autonomath = _open_ro(autonomath_db)
     try:
-        for batch in iter_program_ids(jpintel, batch_size=batch_size, limit=limit):
+        for batch in iter_program_ids(
+            jpintel,
+            batch_size=batch_size,
+            limit=limit,
+            batch_start=batch_start,
+            batch_end=batch_end,
+        ):
             for program_id in batch:
                 pr = PacketReport(program_id=program_id, status="written")
                 try:
@@ -1026,7 +1063,29 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help=(
             "Optional cap on programs processed — useful for smoke runs "
-            "(e.g. --limit 100). Default: process every searchable program."
+            "(e.g. --limit 100). Default: process every searchable program. "
+            "Ignored when --batch-start / --batch-end shard bounds are set."
+        ),
+    )
+    parser.add_argument(
+        "--batch-start",
+        type=int,
+        default=None,
+        help=(
+            "Shard start offset (row position in the canonical "
+            "unified_id-ordered sweep). Pair with --batch-end to slice "
+            "the 11,601-program cohort across AWS Batch shards. "
+            "Example: --batch-start 0 --batch-end 500 (first shard)."
+        ),
+    )
+    parser.add_argument(
+        "--batch-end",
+        type=int,
+        default=None,
+        help=(
+            "Shard end offset (exclusive — half-open [start, end) slice). "
+            "Pair with --batch-start. Example: 24 shards of 500 programs "
+            "with the last shard ending at 11601 (= 601 programs)."
         ),
     )
     parser.add_argument(
@@ -1055,6 +1114,8 @@ def main(argv: list[str] | None = None) -> int:
         batch_size=args.batch_size,
         limit=args.limit,
         dry_run=dry_run,
+        batch_start=args.batch_start,
+        batch_end=args.batch_end,
     )
     elapsed = time.perf_counter() - t0
     if args.json:

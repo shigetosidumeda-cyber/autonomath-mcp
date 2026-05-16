@@ -1,0 +1,103 @@
+{
+  "jobDefinitionName": "jpcite-program-lineage-render",
+  "type": "container",
+  "platformCapabilities": ["FARGATE"],
+  "propagateTags": true,
+  "tags": {
+    "Project": "jpcite",
+    "CreditRun": "2026-05",
+    "Workload": "program-lineage",
+    "AutoStop": "2026-05-29"
+  },
+  "containerProperties": {
+    "image": "993693061769.dkr.ecr.ap-northeast-1.amazonaws.com/jpcite-crawler:latest",
+    "command": [
+      "python",
+      "/opt/jpcite/scripts/aws_credit_ops/generate_program_lineage_packets.py",
+      "--output-prefix",
+      "s3://jpcite-credit-993693061769-202605-derived/program_lineage/",
+      "--batch-start",
+      "Ref::batch_start",
+      "--batch-end",
+      "Ref::batch_end",
+      "--commit"
+    ],
+    "jobRoleArn": "arn:aws:iam::993693061769:role/jpcite-batch-etl-job-role",
+    "executionRoleArn": "arn:aws:iam::993693061769:role/jpcite-batch-execution-role",
+    "resourceRequirements": [
+      {"type": "VCPU", "value": "4"},
+      {"type": "MEMORY", "value": "8192"}
+    ],
+    "networkConfiguration": {
+      "assignPublicIp": "ENABLED"
+    },
+    "runtimePlatform": {
+      "operatingSystemFamily": "LINUX",
+      "cpuArchitecture": "X86_64"
+    },
+    "environment": [
+      {"name": "AWS_DEFAULT_REGION", "value": "ap-northeast-1"},
+      {"name": "DERIVED_BUCKET", "value": "jpcite-credit-993693061769-202605-derived"},
+      {"name": "ATHENA_WORKGROUP", "value": "jpcite-credit-2026-05"}
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/aws/batch/jpcite-credit-2026-05",
+        "awslogs-region": "ap-northeast-1",
+        "awslogs-stream-prefix": "jpcite-program-lineage-render"
+      }
+    }
+  },
+  "parameters": {
+    "batch_start": "0",
+    "batch_end": "500"
+  },
+  "timeout": {
+    "attemptDurationSeconds": 1800
+  },
+  "retryStrategy": {
+    "attempts": 2,
+    "evaluateOnExit": [
+      {"onExitCode": "0", "action": "EXIT"},
+      {"onReason": "Host*", "action": "RETRY"},
+      {"onReason": "Spot*", "action": "RETRY"}
+    ]
+  },
+  "_notes": {
+    "purpose": "Pre-renders the JPCIR program_lineage_v1 packet for every searchable program (11,601 tier S/A/B/C rows, excluded=0) via N shards of the canonical unified_id-ordered cohort. Each shard slices [batch_start, batch_end) and uploads <program_unified_id>.json packets to s3://jpcite-credit-993693061769-202605-derived/program_lineage/. The 24-shard plan (500 rows each, last shard 601 rows) takes 24 × ~10-25s wall clock based on the smoke run (100 rows → 0.2s local SQLite read).",
+    "register_cmd": "aws batch register-job-definition --cli-input-json file://infra/aws/batch/jpcite_program_lineage_render_job_definition.json --profile bookyou-recovery --region ap-northeast-1",
+    "submit_example": "aws batch submit-job --job-name jpcite-program-lineage-shard00-$(date -u +%Y%m%dT%H%M%SZ) --job-queue jpcite-credit-fargate-spot-short-queue --job-definition jpcite-program-lineage-render --parameters batch_start=0,batch_end=500 --profile bookyou-recovery --region ap-northeast-1",
+    "shard_plan_24": [
+      {"batch_id": 0, "batch_start": 0, "batch_end": 500, "row_count": 500},
+      {"batch_id": 1, "batch_start": 500, "batch_end": 1000, "row_count": 500},
+      {"batch_id": 2, "batch_start": 1000, "batch_end": 1500, "row_count": 500},
+      {"batch_id": 3, "batch_start": 1500, "batch_end": 2000, "row_count": 500},
+      {"batch_id": 4, "batch_start": 2000, "batch_end": 2500, "row_count": 500},
+      {"batch_id": 5, "batch_start": 2500, "batch_end": 3000, "row_count": 500},
+      {"batch_id": 6, "batch_start": 3000, "batch_end": 3500, "row_count": 500},
+      {"batch_id": 7, "batch_start": 3500, "batch_end": 4000, "row_count": 500},
+      {"batch_id": 8, "batch_start": 4000, "batch_end": 4500, "row_count": 500},
+      {"batch_id": 9, "batch_start": 4500, "batch_end": 5000, "row_count": 500},
+      {"batch_id": 10, "batch_start": 5000, "batch_end": 5500, "row_count": 500},
+      {"batch_id": 11, "batch_start": 5500, "batch_end": 6000, "row_count": 500},
+      {"batch_id": 12, "batch_start": 6000, "batch_end": 6500, "row_count": 500},
+      {"batch_id": 13, "batch_start": 6500, "batch_end": 7000, "row_count": 500},
+      {"batch_id": 14, "batch_start": 7000, "batch_end": 7500, "row_count": 500},
+      {"batch_id": 15, "batch_start": 7500, "batch_end": 8000, "row_count": 500},
+      {"batch_id": 16, "batch_start": 8000, "batch_end": 8500, "row_count": 500},
+      {"batch_id": 17, "batch_start": 8500, "batch_end": 9000, "row_count": 500},
+      {"batch_id": 18, "batch_start": 9000, "batch_end": 9500, "row_count": 500},
+      {"batch_id": 19, "batch_start": 9500, "batch_end": 10000, "row_count": 500},
+      {"batch_id": 20, "batch_start": 10000, "batch_end": 10500, "row_count": 500},
+      {"batch_id": 21, "batch_start": 10500, "batch_end": 11000, "row_count": 500},
+      {"batch_id": 22, "batch_start": 11000, "batch_end": 11500, "row_count": 500},
+      {"batch_id": 23, "batch_start": 11500, "batch_end": 11601, "row_count": 101}
+    ],
+    "cost_estimate": "24 × $0.05 = $1.20 Fargate Spot + Athena bytes-scan estimate (no Athena call made from the script; the corpus join is pure SQLite read-only).",
+    "exit_codes": {
+      "0": "shard wrote every packet to S3 (no missing programs)",
+      "2": "no packets assembled — likely batch_start beyond cohort end"
+    }
+  }
+}

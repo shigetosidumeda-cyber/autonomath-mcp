@@ -1,5 +1,6 @@
 {
   "anonymous_quota_per_day": 3,
+  "aws_canary_phase": "1+2 LIVE",
   "bids_total": 362,
   "case_studies_total": 2286,
   "corporate_records_total": 166969,
@@ -15,11 +16,9 @@
   "laws_total": 9484,
   "loan_programs_total": 108,
   "mcp_tools_total": 169,
-  "mcp_tools_wave51_dim_k_s_wrappers": 10,
   "mcp_tools_wave51_chain_wrappers": 4,
-  "wave50_rc1_status": "LANDED",
-  "wave51_tick0_status": "complete",
-  "aws_canary_phase": "1+2 LIVE",
+  "mcp_tools_wave51_dim_k_s_wrappers": 10,
+  "packet_samples_total": 30,
   "price_per_req": 3,
   "price_per_req_inc_tax": 3.3,
   "searchable_programs_total": 11601,
@@ -29,5 +28,7 @@
   "tier_b_count": 4186,
   "tier_c_count": 5961,
   "tier_s_count": 114,
-  "total_programs": 14472
+  "total_programs": 14472,
+  "wave50_rc1_status": "LANDED",
+  "wave51_tick0_status": "complete"
 }
