@@ -65,7 +65,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import boto3
+from scripts.aws_credit_ops._aws import get_session
 
 DATABASE = "jpcite_credit_2026_05"
 WORKGROUP = "jpcite-credit-2026-05"
@@ -439,7 +439,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    session = boto3.Session(profile_name=PROFILE, region_name=REGION)
+    session = get_session(region_name=REGION, profile_name=PROFILE)
     athena = session.client("athena")
 
     if args.tables:
