@@ -1,0 +1,49 @@
+{
+  "lane": "M5",
+  "wave": "AWS-MOAT",
+  "submitted_at_utc": "2026-05-17T02:25:01Z",
+  "job_name": "jpcite-bert-simcse-finetune-20260517T022501Z",
+  "job_arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:training-job/jpcite-bert-simcse-finetune-20260517T022501Z",
+  "status_at_submit": "InProgress / Pending",
+  "image": "763104351884.dkr.ecr.ap-northeast-1.amazonaws.com/huggingface-pytorch-training:2.1.0-transformers4.36.0-gpu-py310-cu121-ubuntu20.04",
+  "prior_attempt": {
+    "submitted_at_utc": "2026-05-17T02:22:13Z",
+    "job_name": "jpcite-bert-simcse-finetune-20260517T022213Z",
+    "status": "Failed",
+    "failure_reason": "ClientError: API error (404): manifest for ...:2.1.0-transformers4.36.0-gpu-py310-cu118-ubuntu20.04 not found",
+    "remediation": "ap-northeast-1 mirror only carries the cu121 build of the 2.1.0-transformers4.36.0 line; switched TRAINING_IMAGE to cu121-ubuntu20.04 and re-submitted in <3min"
+  },
+  "instance_type": "ml.g4dn.12xlarge",
+  "instance_count": 1,
+  "volume_gb": 200,
+  "max_runtime_seconds": 43200,
+  "role_arn": "arn:aws:iam::993693061769:role/jpcite-sagemaker-execution-role",
+  "region": "ap-northeast-1",
+  "profile": "bookyou-recovery",
+  "model_output_s3": "s3://jpcite-credit-993693061769-202605-derived/models/jpcite-bert-v1/",
+  "source_tar_s3": "s3://jpcite-credit-993693061769-202605-derived/finetune_corpus/source/sourcedir-jpcite-bert-simcse-finetune-20260517T022213Z.tar.gz",
+  "train_uri": "s3://jpcite-credit-993693061769-202605-derived/finetune_corpus/train.jsonl",
+  "val_uri": "s3://jpcite-credit-993693061769-202605-derived/finetune_corpus/val.jsonl",
+  "train_rows": 516946,
+  "val_rows": 27208,
+  "train_sha256": "f5ee5f7682050d7796d4c57b9cde5a85706c7dade681395b5ea5a27eebee6531",
+  "val_sha256": "b45ca11b074179543f4d0f00759e530938132af2f4e8f9e0bacec7655331038d",
+  "hyperparameters": {
+    "model_name": "cl-tohoku/bert-base-japanese-v3",
+    "epochs": 3,
+    "batch_size": 64,
+    "lr": 3e-05,
+    "max_length": 128,
+    "temperature": 0.05,
+    "seed": 42
+  },
+  "preflight_mtd_usd": 2.086e-07,
+  "hard_stop_usd": 18000.0,
+  "estimated_cost_usd": "10-15 (1h runtime @ $3.91/h × g4dn.12xlarge)",
+  "absolute_cap_usd": 46.92,
+  "tags": [
+    {"Key": "lane", "Value": "solo"},
+    {"Key": "wave", "Value": "M5"},
+    {"Key": "purpose", "Value": "jpcite-bert-v1-simcse-finetune"}
+  ]
+}
