@@ -117,7 +117,15 @@ export async function fetchSMEOwnerPacket(houjinBangou: string) {
   }
 }</code></pre>
 
-  <h2>jpcite ¥300 / 月 vs LLM API replacement</h2>
+
+  <section class="cost-saving-card" data-cost-saving-card="FF2" style="margin:18px 0;padding:16px 18px;border:1px solid #e5e7eb;border-radius:10px;background:#fafaf9;">
+    <h2 style="margin:0 0 8px;font-size:18px;">SME 補助金 候補 — 削減 (FF1 SOT §4)</h2>
+    <p style="margin:0 0 6px;font-size:14px;line-height:1.7;"><strong>Tier C</strong> (¥12/req): 5 候補 / 案件 を 1 cron で集約。</p>
+    <p style="margin:0 0 6px;font-size:14px;line-height:1.7;">Opus 4.7 同等深さ: 7-turn Opus 4.7 deep chain (候補 1 件) ≈ ¥347 / 1 chain (FX ¥150/USD anchor; FF1 SOT §2)。</p>
+    <p style="margin:0 0 6px;font-size:15px;line-height:1.7;"><strong>削減</strong>: 候補 5 件 × Opus ¥347 = ¥1,735 vs jpcite ¥60 (5 × ¥12) → <strong>28.9x</strong> / ¥1,675 削減</p>
+    <p style="margin:0;font-size:12px;color:#666;">数値検証: <a href="/docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md">FF1 SOT</a> §3 / §4 ・ <a href="/.well-known/agents.json">agents.json</a> <code>cost_efficiency_claim</code> ・ MCP tool description footer。3 store 一致は <code>scripts/validate_cost_saving_claims_consistency.py</code> で CI gate。</p>
+  </section>
+<h2>jpcite ¥300 / 月 vs LLM API replacement</h2>
   <table class="comparison">
     <thead><tr><th>路線</th><th>1 packet</th><th>100 packet / 月</th></tr></thead>
     <tbody>

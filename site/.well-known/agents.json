@@ -116,6 +116,83 @@
     "currency": "JPY",
     "tier": "completely_metered"
   },
+  "cost_efficiency_claim": {
+    "vs_baseline": "Claude Opus 4.7 / 7-turn evidence-gathering chain",
+    "baseline_yen_per_query": 500,
+    "jpcite_yen_per_query_range": [
+      3,
+      30
+    ],
+    "saving_ratio_min": 17,
+    "saving_ratio_max": 167,
+    "tiers": {
+      "A": {
+        "jpcite_yen": 3,
+        "opus_equiv_turns": 3,
+        "opus_equiv_yen": 54,
+        "saving_pct": 94.4,
+        "saving_yen": 51,
+        "default_for": [
+          "search_*",
+          "list_*",
+          "get_simple_*",
+          "enum_*"
+        ]
+      },
+      "B": {
+        "jpcite_yen": 6,
+        "opus_equiv_turns": 5,
+        "opus_equiv_yen": 170,
+        "saving_pct": 96.5,
+        "saving_yen": 164,
+        "default_for": [
+          "search_v2_*",
+          "expand_*",
+          "get_with_relations_*",
+          "batch_get_*"
+        ]
+      },
+      "C": {
+        "jpcite_yen": 12,
+        "opus_equiv_turns": 7,
+        "opus_equiv_yen": 347,
+        "saving_pct": 96.5,
+        "saving_yen": 335,
+        "default_for": [
+          "HE-1",
+          "HE-3",
+          "precomputed_answer",
+          "agent_briefing",
+          "cohort_*",
+          "jpcite_route",
+          "jpcite_preview_cost",
+          "jpcite_execute_packet"
+        ]
+      },
+      "D": {
+        "jpcite_yen": 30,
+        "opus_equiv_turns": 7,
+        "opus_equiv_yen": 500,
+        "saving_pct": 94.0,
+        "saving_yen": 470,
+        "default_for": [
+          "HE-1_full",
+          "evidence_packet_full",
+          "portfolio_analysis",
+          "regulatory_impact_chain"
+        ]
+      }
+    },
+    "anchor": {
+      "scenario": "Opus 4.7 7-turn Deep++ tool-calling at FX 150 JPY/USD (high-end)",
+      "anchor_opus_47_7turn_jpy": 500,
+      "anchor_fx_usd_jpy": 150
+    },
+    "verifiable_at": "https://jpcite.com/cost-roi-sot",
+    "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md",
+    "validator": "scripts/validate_cost_saving_claims_consistency.py",
+    "narrative_invariant": "Narrative depth labels (A/B/C/D) advertise bundle cost vs depth-equivalent Opus chain. Billing remains flat 3 JPY / billable unit; tier labels are not a commercial-tier change."
+  },
   "contact_email": "info@bookyou.net",
   "support_sla_hours": 24,
   "geo_eligibility": "Japan-only (Stripe customer billing_address_country=JP required)",
