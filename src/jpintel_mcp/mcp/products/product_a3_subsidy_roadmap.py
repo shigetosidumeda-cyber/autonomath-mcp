@@ -1,4 +1,4 @@
-"""A3 — 補助金活用ロードマップ Pack (¥500 / req).
+"""A3 — 補助金活用ロードマップ Pack (Pricing V3: Deep ¥30 / Lite ¥12).
 
 One MCP call assembles a 12-month subsidy-activation roadmap for a houjin
 by composing four upstream moat lanes:
@@ -20,13 +20,19 @@ Hard constraints
 * §52 / §47条の2 / §72 / §1 / §3 disclaimer envelope on every response.
 * Scaffold-only — the roadmap never asserts adoption / 採択 / 交付決定.
 * Read-only SQLite (URI ``ro``).
-* ``_billing_unit = 167`` so the host MCP server bills ``167 × ¥3 = ¥501``
-  (≈ ¥500 product tier, rounded up to the nearest ¥3 metered increment).
+* ``_BILLING_UNITS = 10`` (Deep, Tier D) so the host MCP server bills
+  ``10 × ¥3 = ¥30`` per call (Pricing V3 — Agent-Economy First, 2026-05-17).
+  A lighter variant at Tier C (``_BILLING_UNITS_LITE = 4`` → ¥12) is also
+  exposed by the same envelope when ``mode='lite'`` is requested.
+
+V3 replaces F4 / V2's ¥500 single-shot price because the agent-economy
+skip-threshold sits at Sonnet 8-turn self-compose ≒ ¥30 (Deep) /
+Sonnet 4-turn ¥15 (Lite). V3 ¥30 / ¥12 stays inside that envelope.
 
 Tool
 ----
 
-* ``product_subsidy_roadmap_12month(houjin_bangou, scope_year=12)`` —
+* ``product_subsidy_roadmap_12month(houjin_bangou, scope_year=12, mode='deep'|'lite')`` —
   single heavy-output composition. ``scope_year`` is the rolling-month
   horizon (1-24, default 12); the parameter name mirrors the spec.
 """
@@ -53,8 +59,21 @@ _PRODUCT_ID = "A3"
 _SCHEMA_VERSION = "products.a3.v1"
 _UPSTREAM_MODULE = "jpintel_mcp.mcp.products.product_a3_subsidy_roadmap"
 
-# A3 sells at ¥500 / call; the ¥3 metered ledger maps that to 167 units.
-_BILLING_UNITS = 167
+# A3 Pricing V3 — Agent-Economy First (2026-05-17). V2 used 167 units / ¥500;
+# V3 collapses Deep to 10 units / ¥30 (Tier D = workflow) and adds a Lite
+# variant at 4 units / ¥12 (Tier C = heavy_endpoint). Unit price stays ¥3.
+_PRICING_VERSION = "v3"
+_TIER_LETTER_DEEP = "D"
+_TIER_LETTER_LITE = "C"
+_BILLING_UNITS = 10  # Deep, ¥30
+_BILLING_UNITS_LITE = 4  # Lite, ¥12
+_PRICE_DEEP_JPY = _BILLING_UNITS * 3
+_PRICE_LITE_JPY = _BILLING_UNITS_LITE * 3
+# value_proxy vs 3 model baseline.
+_VALUE_PROXY_OPUS_JPY_DEEP = 75  # Opus 8-turn
+_VALUE_PROXY_SONNET_JPY_DEEP = 30  # Sonnet 8-turn (parity)
+_VALUE_PROXY_HAIKU_JPY_DEEP = 12  # Haiku 8-turn
+_VALUE_PROXY_SONNET_JPY_LITE = 15  # Sonnet 4-turn
 
 _RELATED_SHIHOU = ("税理士", "会計士", "行政書士", "司法書士", "社労士")
 
@@ -508,7 +527,13 @@ def _empty_envelope(
         "amendment_alerts": [],
         "portfolio_top": [],
         "agent_next_actions": [],
-        "billing": {"unit": _BILLING_UNITS, "yen": _BILLING_UNITS * 3, "product_id": _PRODUCT_ID},
+        "billing": {
+            "unit": _BILLING_UNITS,
+            "yen": _BILLING_UNITS * 3,
+            "product_id": _PRODUCT_ID,
+            "tier": _TIER_LETTER_DEEP,
+            "pricing_version": _PRICING_VERSION,
+        },
         "results": [],
         "total": 0,
         "limit": 0,
@@ -600,7 +625,7 @@ def product_subsidy_roadmap_12month(
     probability, expected subsidy yen, competitor density.
 
     Output is scaffold-only — 採択 / 交付決定 / 申請代理 are out of
-    scope. 1 billable call counts as 167 units (167 × ¥3 ≈ ¥500).
+    scope. 1 billable Deep call counts as 10 units (10 × ¥3 = ¥30, Tier D under Pricing V3); ``mode='lite'`` returns the same envelope skeleton billed at 4 units (¥12, Tier C).
     NO LLM inference — pure SQLite + dict composition.
     """
     primary_input = {"houjin_bangou": houjin_bangou, "scope_year": int(scope_year)}
@@ -689,7 +714,13 @@ def product_subsidy_roadmap_12month(
         "amendment_alerts": amendment_alerts,
         "portfolio_top": portfolio[:10],
         "agent_next_actions": next_actions,
-        "billing": {"unit": _BILLING_UNITS, "yen": _BILLING_UNITS * 3, "product_id": _PRODUCT_ID},
+        "billing": {
+            "unit": _BILLING_UNITS,
+            "yen": _BILLING_UNITS * 3,
+            "product_id": _PRODUCT_ID,
+            "tier": _TIER_LETTER_DEEP,
+            "pricing_version": _PRICING_VERSION,
+        },
         "results": buckets,
         "total": len(buckets),
         "limit": len(buckets),
