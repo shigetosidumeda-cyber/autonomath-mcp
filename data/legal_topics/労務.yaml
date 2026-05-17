@@ -1,0 +1,205 @@
+# Legal-reasoning-chain topic taxonomy — labor (労務)
+# generated_at: 2026-05-17
+# source: scripts/build_legal_reasoning_chain.py :: all_topics()
+# total_topics: 20 (each emits 5 viewpoint slices)
+
+topics:
+  - topic_id: labor:rodo_jikan
+    label: "労働時間の上限規制"
+    tax_category: labor
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["32", "36"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["労働時間", "36協定"]
+    conclusion_text: "労働時間は労基法32条で原則週40時間・1日8時間。36協定締結・届出により時間外労働が可能。上限は原則月45時間・年360時間、特別条項で年720時間まで。"
+
+  - topic_id: labor:saburoku_kyotei
+    label: "36協定の締結要件"
+    tax_category: labor
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["36"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["36協定", "労使協定"]
+    conclusion_text: "36協定は労基法36条により事業場ごとに労働者の過半数代表との書面協定が必要。労基署届出で時間外労働の上限規制を緩和。"
+
+  - topic_id: labor:kaiko_yokoku
+    label: "解雇予告"
+    tax_category: labor
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["20"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["解雇", "予告"]
+    conclusion_text: "解雇は労基法20条により30日前予告または30日分以上の予告手当の支払が必要。天災事変等のやむを得ない事由+労基署認定で適用除外。"
+
+  - topic_id: labor:nenji_kyuka
+    label: "年次有給休暇"
+    tax_category: labor
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["39"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["年次有給休暇", "有給"]
+    conclusion_text: "年次有給休暇は労基法39条により6ヶ月継続勤務+8割出勤で10日付与。勤続年数で最大20日。5日の時季指定義務(年5日以上の取得義務)が使用者に課される。"
+
+  - topic_id: labor:warimasi_chingin
+    label: "割増賃金の計算"
+    tax_category: labor
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["37"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["割増賃金", "残業代"]
+    conclusion_text: "割増賃金は労基法37条により時間外25%以上、深夜25%以上、休日35%以上。月60時間超の時間外は50%以上(中小企業は令和5年4月から)。"
+
+  - topic_id: labor:saiyou_keiyaku
+    label: "労働契約の締結"
+    tax_category: labor
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["15"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["労働契約", "労働条件通知書"]
+    conclusion_text: "労働契約締結時は労基法15条により労働条件の明示が義務。書面交付事項(賃金・労働時間・契約期間等)+任意事項(退職手当・賞与等)に区分。"
+
+  - topic_id: labor:kaiko_seitou
+    label: "解雇の正当事由"
+    tax_category: labor
+    law_canonical_id: "law:roudou-keiyaku"
+    article_numbers: ["16"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["解雇", "正当事由"]
+    conclusion_text: "解雇は労働契約法16条により客観的合理的理由+社会通念上の相当性が必要(解雇権濫用法理)。判例で4要件(整理解雇)・能力不足・規律違反等の類型化。"
+
+  - topic_id: labor:seikishichi_kintou
+    label: "正規・非正規均等待遇"
+    tax_category: labor
+    law_canonical_id: "law:pertime-hou"
+    article_numbers: ["8", "9"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["均等待遇", "非正規"]
+    conclusion_text: "パートタイム・有期雇用労働法8-9条により正規・非正規労働者の不合理な待遇差禁止。同一労働同一賃金ガイドラインで具体的指針。"
+
+  - topic_id: labor:haken_keiyaku
+    label: "労働者派遣の規制"
+    tax_category: labor
+    law_canonical_id: "law:roudousha-haken"
+    article_numbers: ["26"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["派遣", "労働者派遣"]
+    conclusion_text: "労働者派遣は労働者派遣法26条以下により派遣禁止業務(建設・警備・港湾運送・医療等)+期間制限(原則3年)+均等待遇義務。"
+
+  - topic_id: labor:kosheo_kyoutei
+    label: "就業規則の作成義務"
+    tax_category: labor
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["89", "90"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["就業規則"]
+    conclusion_text: "常時10人以上の労働者を使用する事業場は労基法89条により就業規則作成+労基署届出義務。労基法90条により過半数代表の意見聴取必須。"
+
+  - topic_id: labor:tobasokuchin
+    label: "最低賃金"
+    tax_category: labor
+    law_canonical_id: "law:saitei-chingin"
+    article_numbers: ["4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["最低賃金"]
+    conclusion_text: "最低賃金は最低賃金法4条により都道府県別+産業別。地域別最低賃金は毎年10月改定。違反は罰金50万円以下。"
+
+  - topic_id: labor:rourei_juujitsu
+    label: "高齢者雇用確保措置"
+    tax_category: labor
+    law_canonical_id: "law:koureisha-koyou"
+    article_numbers: ["9"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["高齢者雇用", "70歳"]
+    conclusion_text: "高年齢者雇用安定法9条により65歳までの雇用確保措置義務。令和3年4月から70歳までの就業確保措置努力義務追加。"
+
+  - topic_id: labor:ikuji_kaigo
+    label: "育児・介護休業"
+    tax_category: labor
+    law_canonical_id: "law:ikuji-kaigo"
+    article_numbers: ["5", "11"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["育児休業", "介護休業"]
+    conclusion_text: "育児・介護休業法5・11条により1歳まで(最長2歳)育児休業+93日通算介護休業の権利。雇用保険から育児休業給付金・介護休業給付金。"
+
+  - topic_id: labor:kintou_seibetsu
+    label: "男女雇用機会均等"
+    tax_category: labor
+    law_canonical_id: "law:kintou-hou"
+    article_numbers: ["5", "6"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["均等法", "性別"]
+    conclusion_text: "男女雇用機会均等法5-6条により採用・配置・昇進・賃金等での性別差別禁止。妊娠出産関連の不利益取扱いも禁止。"
+
+  - topic_id: labor:kanshi_gimu
+    label: "安全配慮義務"
+    tax_category: labor
+    law_canonical_id: "law:roudou-keiyaku"
+    article_numbers: ["5"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["安全配慮", "労災"]
+    conclusion_text: "労働契約法5条により使用者は労働者の生命・身体等の安全配慮義務。違反は債務不履行・不法行為責任(電通事件等で確立)。"
+
+  - topic_id: labor:pawahara
+    label: "ハラスメント防止措置"
+    tax_category: labor
+    law_canonical_id: "law:roudou-shisaku"
+    article_numbers: ["30-2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["パワハラ", "ハラスメント"]
+    conclusion_text: "労働施策総合推進法30条の2(令和4年4月中小企業適用)によりパワーハラスメント防止措置義務。事業主の方針明示+相談体制整備+発生時対応。"
+
+  - topic_id: labor:rousai_hoken
+    label: "労災保険の適用"
+    tax_category: labor
+    law_canonical_id: "law:rousai-hoken"
+    article_numbers: ["3"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["労災保険"]
+    conclusion_text: "労災保険は労災保険法3条により全労働者強制適用(役員等を除く)。業務上負傷・疾病・障害・死亡が給付対象。"
+
+  - topic_id: labor:koyou_hoken
+    label: "雇用保険の被保険者"
+    tax_category: labor
+    law_canonical_id: "law:koyou-hoken"
+    article_numbers: ["4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["雇用保険"]
+    conclusion_text: "雇用保険は週20時間以上+31日以上雇用見込みで強制加入(雇用保険法4条)。65歳以上は高年齢被保険者、短時間労働者は短時間被保険者。"
+
+  - topic_id: labor:syakaihouken
+    label: "社会保険の適用基準"
+    tax_category: labor
+    law_canonical_id: "law:kenkou-hoken"
+    article_numbers: ["3"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["社会保険", "適用拡大"]
+    conclusion_text: "社会保険(健保・厚生年金)は健康保険法3条+厚生年金保険法9条により法人事業所は強制適用。短時間労働者は週20時間以上+月8.8万円以上+2か月超雇用見込で適用拡大。"
+
+  - topic_id: labor:tenkin_haichi
+    label: "配置転換・出向"
+    tax_category: labor
+    law_canonical_id: "law:roudou-keiyaku"
+    article_numbers: ["3"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["配置転換", "出向"]
+    conclusion_text: "配置転換は労働契約法3条+判例(東亜ペイント事件)により業務上必要性+不当な動機・目的なし+労働者の通常甘受すべき程度の不利益で適法。"

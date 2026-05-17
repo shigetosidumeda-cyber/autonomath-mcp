@@ -1,0 +1,510 @@
+# Legal-reasoning-chain topic taxonomy — corporate_tax (税法)
+# generated_at: 2026-05-17
+# source: scripts/build_legal_reasoning_chain.py :: all_topics()
+# total_topics: 50 (each emits 5 viewpoint slices)
+
+topics:
+  - topic_id: corporate_tax:yakuin_hosyu
+    label: "役員報酬の損金算入"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["34"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["役員報酬", "役員給与", "損金"]
+    conclusion_text: "役員給与の損金算入は法人税法34条が定型給与・事前確定届出給与・業績連動給与の3類型に限定。届出要件・支給基準の客観性が損金算入の可否を分ける。"
+    opposing_view_text: "形式要件を満たさない場合でも、税務上の合理性が認められれば損金算入を主張する余地ありとの見解もあるが、判例は形式要件を厳格に解する傾向。"
+
+  - topic_id: corporate_tax:kifukin
+    label: "寄附金の損金算入"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["37"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-4"]
+    keywords: ["寄附金", "損金"]
+    conclusion_text: "寄附金の損金算入は法人税法37条で資本金等の額・所得金額に応じた損金算入限度額が定められる。国・地方公共団体への寄附および指定寄附金は全額損金算入、特定公益増進法人への寄附は別枠の限度額。"
+    opposing_view_text: "事業関連性の認定に争いが残る場合、対価性ある支出として全額損金算入を主張する立場も存在するが、対価性の立証責任は納税者側にある。"
+
+  - topic_id: corporate_tax:kosaihi
+    label: "交際費の損金不算入"
+    tax_category: corporate_tax
+    law_canonical_id: "law:sozei-tokubetsu"
+    article_numbers: ["61-4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-4"]
+    keywords: ["交際費", "接待"]
+    conclusion_text: "交際費は租税特別措置法61条の4により原則損金不算入。中小法人は800万円までの定額控除、または接待飲食費の50%損金算入の選択適用が可能。"
+    opposing_view_text: "情報提供料・販売促進費との区分について争いがあり、実態判定で交際費から除外できる主張も認められる場合がある。"
+
+  - topic_id: corporate_tax:genka_shoukyaku
+    label: "減価償却資産の取得価額"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["31"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["7-3"]
+    keywords: ["減価償却", "取得価額"]
+    conclusion_text: "減価償却資産の取得価額は法人税法施行令54条により購入代価+付随費用が原則。事業供用日から法定耐用年数で償却。少額減価償却資産10万円未満は即時損金算入可能。"
+
+  - topic_id: corporate_tax:tokurei_souzoku
+    label: "同族会社の行為計算否認"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["132", "132-2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-1"]
+    keywords: ["同族会社", "行為計算否認", "不当に減少"]
+    conclusion_text: "同族会社の行為計算否認は法人税法132条・132条の2により、経済合理性を欠く取引で法人税負担を不当に減少させた場合に税務署長が否認できる。ヤフー事件・IBM事件で『不当に』の判断基準が確立。"
+    opposing_view_text: "経済合理性の解釈に争いがあり、組織再編税制適用後の合併・分割では事業上の必要性が認められれば132条の2の発動は限定的とする見解も有力。"
+
+  - topic_id: corporate_tax:kessonkin_kurikoshi
+    label: "欠損金の繰越控除"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["57"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["12-1"]
+    keywords: ["欠損金", "繰越"]
+    conclusion_text: "欠損金の繰越控除は法人税法57条により10年(2018年4月1日以後開始事業年度)。大法人は所得金額の50%まで、中小法人は100%まで控除可能。青色申告継続が要件。"
+
+  - topic_id: corporate_tax:hikiate_kin
+    label: "貸倒引当金の損金算入"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["52"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["11-2"]
+    keywords: ["貸倒", "引当金"]
+    conclusion_text: "貸倒引当金は法人税法52条により個別評価金銭債権・一括評価金銭債権の2種類。中小法人・銀行業・保険業のみに認められる(平成23年改正)。"
+
+  - topic_id: corporate_tax:zaiko_hyouka
+    label: "棚卸資産の評価"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["29"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["5-2"]
+    keywords: ["棚卸", "評価"]
+    conclusion_text: "棚卸資産の評価方法は法人税法29条で原価法と低価法を選択適用。評価方法の選定届出書を提出しない場合、最終仕入原価法が法定。"
+
+  - topic_id: corporate_tax:zougen_zei
+    label: "法人税の課税所得計算"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["2-1"]
+    keywords: ["課税所得", "益金", "損金"]
+    conclusion_text: "課税所得は法人税法22条で益金-損金で計算。公正処理基準により企業会計の益金・損金を尊重しつつ、別段の定めで税務調整。"
+
+  - topic_id: corporate_tax:soshiki_saihen
+    label: "組織再編税制の適格要件"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["62-2", "62-3"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["組織再編", "適格", "合併"]
+    conclusion_text: "適格組織再編の要件は法人税法2条12号の8〜2条12号の14、62条の2〜62条の3。完全支配関係/支配関係/共同事業の3類型ごとに移転資産・株式・従業者の継続要件が課される。"
+
+  - topic_id: corporate_tax:kabushiki_kosatsu
+    label: "株式交換・株式移転の課税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["62-7", "62-9"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["株式交換", "株式移転"]
+    conclusion_text: "適格株式交換・株式移転は法人税法62条の7・62条の9により完全親子関係の創設で簿価引継ぎ・課税繰延。非適格は時価評価課税。"
+
+  - topic_id: corporate_tax:bunkatsu
+    label: "会社分割の税務"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["62-3"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["会社分割", "分割"]
+    conclusion_text: "適格分割は法人税法62条の3により分社型・分割型ともに簿価引継ぎ。非適格は時価による譲渡損益認識。共同事業要件・按分要件で判定。"
+
+  - topic_id: corporate_tax:gensoku_seido
+    label: "原則課税と軽減税率"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["66"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["法人税率", "中小法人"]
+    conclusion_text: "法人税率は法人税法66条で原則23.2%。中小法人(資本金1億円以下)は所得800万円以下部分が15%軽減税率。"
+
+  - topic_id: corporate_tax:kenkyu_kaihatsu
+    label: "試験研究費の税額控除"
+    tax_category: corporate_tax
+    law_canonical_id: "law:sozei-tokubetsu"
+    article_numbers: ["42-4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["42-"]
+    keywords: ["研究開発", "税額控除"]
+    conclusion_text: "試験研究費の税額控除は租税特別措置法42条の4により総額型(6-14%)+OI型(20-30%)。法人税額の25%(中小法人35%)を上限。"
+
+  - topic_id: corporate_tax:chiho_zei
+    label: "地方法人税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:chiho-hojin-zei"
+    article_numbers: ["9", "10"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["地方法人税"]
+    conclusion_text: "地方法人税は地方法人税法により法人税額の10.3%。国税として徴収後、地方交付税の原資として地方公共団体に配分。"
+
+  - topic_id: corporate_tax:jigyou_zei
+    label: "法人事業税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:chihou-zei"
+    article_numbers: ["72"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["事業税", "外形標準"]
+    conclusion_text: "法人事業税は地方税法72条以下により、資本金1億円超の大法人は所得割+付加価値割+資本割の外形標準課税。中小法人は所得割のみ。"
+
+  - topic_id: corporate_tax:juumin_zei
+    label: "法人住民税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:chihou-zei"
+    article_numbers: ["23", "292"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["法人住民税", "均等割"]
+    conclusion_text: "法人住民税は法人税割+均等割。法人税割は法人税額ベース。均等割は資本金等+従業員数に応じた定額(年7万円~)。"
+
+  - topic_id: corporate_tax:taishoku_kyutsu
+    label: "退職給付引当金"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["54", "54-2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["11-"]
+    keywords: ["退職給付", "引当金"]
+    conclusion_text: "退職給付引当金は会計上は計上必須(退職給付会計)。税務上は法人税法54条により損金算入不可、中退共等の外部拠出のみ損金算入。"
+
+  - topic_id: corporate_tax:risoku_kazei
+    label: "過大支払利子税制"
+    tax_category: corporate_tax
+    law_canonical_id: "law:sozei-tokubetsu"
+    article_numbers: ["66-5"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-5"]
+    keywords: ["支払利息", "過大支払"]
+    conclusion_text: "国外関連者への支払利息は租税特別措置法66条の5の2により過大利子税制の対象。EBITDA基準(20%超は損金不算入)。過少資本税制との重複適用は調整。"
+
+  - topic_id: corporate_tax:gaikoku_zeigaku_kojo
+    label: "外国税額控除"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["69"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["外国税額控除"]
+    conclusion_text: "外国税額控除は法人税法69条により外国子会社配当益金不算入との選択適用。二重課税排除の手段。控除限度額は国外所得に対する法人税額。"
+
+  - topic_id: corporate_tax:taxhaven
+    label: "タックスヘイブン対策税制"
+    tax_category: corporate_tax
+    law_canonical_id: "law:sozei-tokubetsu"
+    article_numbers: ["66-6"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["66-6"]
+    keywords: ["タックスヘイブン", "外国子会社合算"]
+    conclusion_text: "タックスヘイブン対策税制(CFC税制)は租税特別措置法66条の6により実効税率20%未満の外国子会社の所得を内国法人に合算課税。経済活動基準で適用除外あり。"
+
+  - topic_id: corporate_tax:iten_kakaku
+    label: "移転価格税制"
+    tax_category: corporate_tax
+    law_canonical_id: "law:sozei-tokubetsu"
+    article_numbers: ["66-4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["66-4"]
+    keywords: ["移転価格", "独立企業間"]
+    conclusion_text: "移転価格税制は租税特別措置法66条の4により国外関連者取引について独立企業間価格(arm's length price)で課税。CUP法・RP法・CP法・TNMM・PS法から選択。"
+
+  - topic_id: corporate_tax:kashidaore
+    label: "貸倒損失の認定"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-6"]
+    keywords: ["貸倒損失", "債権放棄"]
+    conclusion_text: "貸倒損失は法人税基本通達9-6-1〜9-6-3により(1)法律上の貸倒れ、(2)事実上の貸倒れ、(3)形式上の貸倒れ(取引停止後1年経過等)の3類型。"
+    opposing_view_text: "債務者の支払能力認定に争いが残ることが多く、事実上の貸倒れは税務調査で否認されるケースが頻発。"
+
+  - topic_id: corporate_tax:bonus_kingaku
+    label: "使用人賞与の損金算入"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["36"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["賞与", "使用人賞与"]
+    conclusion_text: "使用人賞与は法人税法施行令72条の3により支給予定日到来+全使用人通知済+決算期末1月以内支払なら未払計上可。それ以外は支払時の損金算入。"
+
+  - topic_id: corporate_tax:syogaku_genka
+    label: "一括償却資産・少額減価償却"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["31"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["7-1"]
+    keywords: ["一括償却", "少額減価償却"]
+    conclusion_text: "20万円未満は施行令133条の2により一括償却資産(3年均等償却)。30万円未満は租税特別措置法67条の5により中小企業特例で即時損金算入(年300万円上限)。"
+
+  - topic_id: corporate_tax:assyuku
+    label: "圧縮記帳"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["42", "43", "44", "45"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["10-"]
+    keywords: ["圧縮記帳", "国庫補助"]
+    conclusion_text: "圧縮記帳は法人税法42条以下により国庫補助金・保険差益・交換・収用等で取得した固定資産の課税繰延。圧縮損計上で帳簿価額減額。"
+
+  - topic_id: corporate_tax:zaiko_genka
+    label: "棚卸資産の評価損"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["33"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-1"]
+    keywords: ["棚卸資産", "評価損"]
+    conclusion_text: "棚卸資産の評価損は法人税法33条により原則否認。災害・著しい陳腐化・破損等の事実発生時のみ計上可。単に時価下落では認められない。"
+
+  - topic_id: corporate_tax:kishou
+    label: "法人税の更正の請求"
+    tax_category: corporate_tax
+    law_canonical_id: "law:kokuzeitsusoku"
+    article_numbers: ["23"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["更正の請求"]
+    conclusion_text: "更正の請求は国税通則法23条により法定申告期限から5年以内。後発的事由による更正の請求は2月以内(同条2項)。"
+
+  - topic_id: corporate_tax:kasanzei
+    label: "加算税の課税要件"
+    tax_category: corporate_tax
+    law_canonical_id: "law:kokuzeitsusoku"
+    article_numbers: ["65", "66", "68"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["加算税", "重加算税"]
+    conclusion_text: "過少申告加算税は10-15%、無申告加算税は15-20%、重加算税は隠蔽仮装行為で35-40%。更正予知前の自主修正申告は加算税減免。"
+
+  - topic_id: corporate_tax:saigai_sonshitsu
+    label: "災害損失欠損金"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["58"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["12-"]
+    keywords: ["災害損失", "繰戻し"]
+    conclusion_text: "災害損失欠損金は法人税法58条により10年繰越控除可能。中小法人は1年繰戻し還付も選択可。災害損失の範囲は施行令115条で限定列挙。"
+
+  - topic_id: corporate_tax:jiko_kabu
+    label: "出資の払戻し・自己株式"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["24"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-3"]
+    keywords: ["自己株式", "みなし配当"]
+    conclusion_text: "自己株式取得・資本払戻しは法人税法24条によりみなし配当発生。資本剰余金からの払戻しは資本払戻し+利益配当の合成。"
+
+  - topic_id: corporate_tax:hoken_haitou
+    label: "保険金・損害賠償金"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["2-1"]
+    keywords: ["保険金", "損害賠償"]
+    conclusion_text: "受取保険金・損害賠償金は法人税法22条により原則益金算入。被害資産の帳簿価額損金算入で相殺。差益は圧縮記帳の対象(法人税法47条)。"
+
+  - topic_id: corporate_tax:gaika_kessan
+    label: "外貨建取引の換算"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["61-8"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["13-2"]
+    keywords: ["外貨建", "為替差損益"]
+    conclusion_text: "外貨建資産負債は法人税法61条の8により短期は期末時換算、長期は発生時換算。金銭債権債務は短期長期問わず期末時換算可選択。為替差損益は法人税法上益金損金。"
+
+  - topic_id: corporate_tax:lease
+    label: "リース取引の税務"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["64-2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["12-5"]
+    keywords: ["リース", "売買取引"]
+    conclusion_text: "ファイナンスリースは法人税法64条の2により売買取引として処理。リース資産は減価償却+リース債務として認識。"
+
+  - topic_id: corporate_tax:groupshogai
+    label: "グループ通算制度"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["64-9"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["12-6"]
+    keywords: ["グループ通算", "連結納税"]
+    conclusion_text: "グループ通算制度は法人税法64条の9以下により令和4年4月から開始。完全支配関係(100%親子)の法人グループで損益通算・税額計算を行う。"
+
+  - topic_id: corporate_tax:hyakuper
+    label: "100%グループ法人税制"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["61-13", "61-14"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["12-7"]
+    keywords: ["100%グループ", "完全支配"]
+    conclusion_text: "完全支配関係グループ法人の譲渡損益・寄附金・受取配当等は法人税法61条の13・25条の2等で課税繰延・益金不算入。"
+
+  - topic_id: corporate_tax:ryuho_kingaku
+    label: "特定同族会社の留保金課税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["67"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["特殊支配", "留保金課税"]
+    conclusion_text: "特定同族会社は法人税法67条により留保金課税(資本金1億円超)。中小法人は除外。配当による所得分散インセンティブを与える制度。"
+
+  - topic_id: corporate_tax:seimei_hoken
+    label: "生命保険料の損金算入"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-3"]
+    keywords: ["生命保険", "保険料"]
+    conclusion_text: "法人契約の生命保険料は法人税基本通達9-3-4〜9-3-7により解約返戻率に応じた損金算入割合。最高解約返戻率50%超の定期保険は資産計上が必要。"
+
+  - topic_id: corporate_tax:kenmu_yakuin
+    label: "使用人兼務役員の判定"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["34"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["使用人兼務役員", "役員"]
+    conclusion_text: "使用人兼務役員は法人税法施行令71条により副社長・専務・常務等の地位以外の取締役で部長等の使用人職制上の地位を有する者。役員給与の損金算入規制を受けない部分(使用人分賞与)あり。"
+
+  - topic_id: corporate_tax:miharai_keihi
+    label: "未払費用の損金算入"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["2-2"]
+    keywords: ["未払費用", "債務確定"]
+    conclusion_text: "未払費用は法人税法22条+法人税基本通達2-2-12により(1)期末までに債務成立、(2)具体的給付原因事実発生、(3)金額合理的算定可能の3要件で損金算入。"
+
+  - topic_id: corporate_tax:uketori_haitou
+    label: "受取配当等の益金不算入"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["23"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["3-1"]
+    keywords: ["受取配当", "益金不算入"]
+    conclusion_text: "受取配当等は法人税法23条により完全子法人株式100%・関連法人株式50%超・その他株式5%超-50%・非支配目的株式5%以下の4区分。益金不算入割合は100%/100%/50%/20%。"
+
+  - topic_id: corporate_tax:hojin_nari
+    label: "個人事業の法人成り"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-1"]
+    keywords: ["法人成り", "個人事業"]
+    conclusion_text: "個人事業の法人成りでは資産負債を法人へ譲渡または現物出資。個人側で譲渡所得課税、法人側で取得価額計上。賃借権引継ぎ・営業権評価が争点。"
+
+  - topic_id: corporate_tax:shoukei
+    label: "事業承継税制(特例措置)"
+    tax_category: corporate_tax
+    law_canonical_id: "law:sozei-tokubetsu"
+    article_numbers: ["70-7", "70-7-5"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["事業承継", "認定承継"]
+    conclusion_text: "事業承継税制(特例措置)は租税特別措置法70条の7の5以下により中小企業者の代表者が後継者に株式を贈与・相続した場合、対象株式の100%相当の納税猶予・免除。"
+
+  - topic_id: corporate_tax:shihai_kanken
+    label: "支配関係の判定"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-1"]
+    keywords: ["支配関係", "完全支配"]
+    conclusion_text: "支配関係は法人税法2条12号の7により直接または間接の発行済株式総数50%超保有。完全支配関係は100%。間接保有は連鎖ベースで計算。"
+
+  - topic_id: corporate_tax:fukutoku
+    label: "復興特別法人税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:chiho-hojin-zei"
+    article_numbers: ["9"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["復興特別"]
+    conclusion_text: "復興特別法人税は東日本大震災復興財源確保法により平成24-26年の3年間課税(現在廃止)。現行は地方法人税が法人税額の10.3%。"
+
+  - topic_id: corporate_tax:zoushi_genshi
+    label: "増資・減資の税務"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-3"]
+    keywords: ["増資", "減資"]
+    conclusion_text: "増資は資本金等の額の増加。減資のうち欠損補填・損失填補は資本金等減額のみで益金課税なし。有償減資は資本払戻しとしてみなし配当発生(法人税法24条)。"
+
+  - topic_id: corporate_tax:kurinobe
+    label: "繰延資産の償却"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["32"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["8-"]
+    keywords: ["繰延資産"]
+    conclusion_text: "繰延資産は法人税法32条+施行令14条で限定列挙(創立費・開業費・開発費等)。任意償却または5年・効用持続年数で均等償却。20万円未満は即時損金算入可。"
+
+  - topic_id: corporate_tax:zaiton_shisha
+    label: "在外子会社・支店の課税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["69", "69-3"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["在外子会社", "外国支店"]
+    conclusion_text: "在外子会社配当は法人税法23条の2により外国子会社配当益金不算入(95%)。外国支店は法人税法69条により外国税額控除との選択。"
+
+  - topic_id: corporate_tax:koueki_hojin
+    label: "公益法人等の課税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["公益法人", "非営利"]
+    conclusion_text: "公益法人等は法人税法4条により収益事業に対してのみ法人税課税。収益事業は施行令5条で34業種を限定列挙。認定NPO法人は寄附金優遇あり。"
+
+  - topic_id: corporate_tax:shisha_kazei
+    label: "外国法人の課税"
+    tax_category: corporate_tax
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["141"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["16-"]
+    keywords: ["外国法人", "恒久的施設"]
+    conclusion_text: "外国法人は法人税法141条により恒久的施設(PE)帰属所得+国内源泉所得が課税対象。PEの認定は租税条約優先。"

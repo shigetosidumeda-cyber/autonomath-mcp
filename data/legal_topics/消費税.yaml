@@ -1,0 +1,306 @@
+# Legal-reasoning-chain topic taxonomy — consumption_tax (消費税)
+# generated_at: 2026-05-17
+# source: scripts/build_legal_reasoning_chain.py :: all_topics()
+# total_topics: 30 (each emits 5 viewpoint slices)
+
+topics:
+  - topic_id: consumption_tax:shiire_kojo
+    label: "仕入税額控除の要件"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["30"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["11-1"]
+    keywords: ["仕入税額控除", "適格請求書"]
+    conclusion_text: "仕入税額控除は消費税法30条により課税仕入れに対応する消費税額の控除。令和5年10月のインボイス制度開始後は、適格請求書発行事業者からの仕入れに限定。"
+    opposing_view_text: "免税事業者からの仕入れについても、経過措置(80%控除・50%控除)期間中は一部控除が認められる。"
+
+  - topic_id: consumption_tax:menzei_jigyousha
+    label: "免税事業者の判定"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["9"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["免税事業者", "基準期間"]
+    conclusion_text: "免税事業者は消費税法9条により基準期間の課税売上高1000万円以下が要件。ただし特定期間(前事業年度上半期)の課税売上高1000万円超かつ給与等支払額1000万円超の場合は課税事業者。"
+
+  - topic_id: consumption_tax:invoice_seido
+    label: "インボイス制度の登録要件"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["57-2", "57-4"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-7"]
+    keywords: ["適格請求書発行事業者", "インボイス", "登録"]
+    conclusion_text: "適格請求書発行事業者は消費税法57条の2により登録申請。課税事業者であることが登録の前提。免税事業者は課税選択届出と同時または事前に登録申請が必要。"
+
+  - topic_id: consumption_tax:kansatsu_kazei
+    label: "簡易課税制度の適用要件"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["37"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["13-1"]
+    keywords: ["簡易課税", "みなし仕入率"]
+    conclusion_text: "簡易課税は消費税法37条により基準期間の課税売上高5000万円以下の事業者が選択可能。事業区分(1-6種)ごとのみなし仕入率(90%-40%)で仕入税額控除を算定。"
+
+  - topic_id: consumption_tax:hikazei_torihiki
+    label: "非課税取引の範囲"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["6"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["6-1"]
+    keywords: ["非課税", "土地", "金融"]
+    conclusion_text: "非課税取引は消費税法6条・別表第一により土地譲渡、有価証券譲渡、利子・保証料、社会保険診療、教育、住宅家賃等が列挙。"
+
+  - topic_id: consumption_tax:yushutsu_menzei
+    label: "輸出免税の要件"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["7"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["7-2"]
+    keywords: ["輸出", "免税"]
+    conclusion_text: "輸出取引は消費税法7条により0%課税(輸出免税)。輸出許可書等の証明書類保存が要件。仕入税額控除は適用可能で還付対象。"
+
+  - topic_id: consumption_tax:keigen_zeiritsu
+    label: "軽減税率(食料品等)"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["29"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["2-"]
+    keywords: ["軽減税率", "食料品"]
+    conclusion_text: "軽減税率8%は消費税法29条+別表第一の2により飲食料品(酒類・外食を除く)・新聞(週2回以上発行+定期購読)に適用。標準税率10%との区分が実務上の争点。"
+
+  - topic_id: consumption_tax:reverse_charge
+    label: "リバースチャージ方式"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["4-3"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["5-"]
+    keywords: ["リバースチャージ", "電気通信利用役務"]
+    conclusion_text: "国外事業者から事業者向け電気通信利用役務の提供を受けた場合、消費税法4条の3により役務受領側に消費税納税義務(リバースチャージ方式)。"
+
+  - topic_id: consumption_tax:kazei_uriagewariai
+    label: "課税売上割合の計算"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["30"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["11-"]
+    keywords: ["課税売上割合", "個別対応"]
+    conclusion_text: "課税売上割合は消費税法30条により分子=課税売上高、分母=課税+非課税+輸出免税。95%以上+課税売上5億円以下は全額控除、それ以外は個別対応または一括比例。"
+
+  - topic_id: consumption_tax:kazei_sentaku
+    label: "課税事業者選択届出"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["9-4"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["課税事業者選択"]
+    conclusion_text: "課税事業者選択届出書は消費税法9条4項により提出すると2年間継続適用が義務。高額特定資産取得時は3年継続。免税事業者復帰には選択不適用届出書が必要。"
+
+  - topic_id: consumption_tax:kojin_taiou
+    label: "個別対応方式と一括比例配分"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["30"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["11-2"]
+    keywords: ["個別対応", "一括比例"]
+    conclusion_text: "個別対応方式は課税仕入れを(1)課税売上対応、(2)非課税売上対応、(3)共通対応に区分し、(1)+(3)×課税売上割合を控除。一括比例配分は全仕入×課税売上割合。"
+
+  - topic_id: consumption_tax:setsugaku_chosei
+    label: "調整対象固定資産・棚卸資産"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["33", "34", "35"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["12-"]
+    keywords: ["調整対象", "固定資産"]
+    conclusion_text: "100万円以上の調整対象固定資産は消費税法33-35条により3年間の課税売上割合変動で調整。免税事業者になる場合の棚卸資産も調整対象。"
+
+  - topic_id: consumption_tax:tokutei_kikan
+    label: "特定期間の判定"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["9-2"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["特定期間"]
+    conclusion_text: "特定期間は消費税法9条の2により前事業年度の上半期。この期間の課税売上高1000万円超かつ給与等支払額1000万円超なら基準期間判定に関わらず課税事業者。"
+
+  - topic_id: consumption_tax:niwari_tokurei
+    label: "2割特例(インボイス開始事業者)"
+    tax_category: consumption_tax
+    law_canonical_id: "law:sozei-tokubetsu"
+    article_numbers: ["86-4"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["13-1"]
+    keywords: ["2割特例", "インボイス"]
+    conclusion_text: "免税事業者からインボイス登録した小規模事業者は租税特別措置法86条の4により令和5年10月-令和8年9月の間、納付税額を売上税額の2割とできる(2割特例)。"
+
+  - topic_id: consumption_tax:keiyou_sochi
+    label: "経過措置(80%控除・50%控除)"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["30"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["11-3"]
+    keywords: ["経過措置", "80%控除", "50%控除"]
+    conclusion_text: "免税事業者等からの仕入れは令和5年10月-令和8年9月は80%控除、令和8年10月-令和11年9月は50%控除の経過措置(平28年改正附則52条等)。"
+
+  - topic_id: consumption_tax:kazei_jiki
+    label: "資産の譲渡等の時期"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["17"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-"]
+    keywords: ["資産の譲渡", "課税時期"]
+    conclusion_text: "資産の譲渡等の時期は消費税法17条により資産引渡し時または役務提供完了時。前受金・前払金は対価収受・支払時点では認識しない。"
+
+  - topic_id: consumption_tax:yunyu_shouhi
+    label: "輸入消費税"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["47"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["8-"]
+    keywords: ["輸入消費税", "保税地域"]
+    conclusion_text: "保税地域から引取られる外国貨物には消費税法4条2項により輸入消費税課税。申告納税は税関で行い、課税仕入れとして仕入税額控除可能。"
+
+  - topic_id: consumption_tax:kakaku_hyouji
+    label: "価格表示(総額表示)"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["63"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["18-"]
+    keywords: ["総額表示", "価格表示"]
+    conclusion_text: "事業者が消費者に対して行う価格表示は消費税法63条により総額表示が義務(税込)。「消費税は別途」表示は不可。"
+
+  - topic_id: consumption_tax:shinsetsu_hojin
+    label: "新設法人・特定新規設立法人"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["12-2", "12-3"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["新設法人", "特定新規"]
+    conclusion_text: "資本金1000万円以上の新設法人は消費税法12条の2により設立から2年間は課税事業者。特定新規設立法人(特定要件該当)は資本金問わず12条の3により課税事業者。"
+
+  - topic_id: consumption_tax:kazei_kikan
+    label: "課税期間の短縮特例"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["19"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["8-"]
+    keywords: ["課税期間短縮"]
+    conclusion_text: "課税期間短縮特例は消費税法19条により1月または3月単位を選択。輸出免税で還付を受ける事業者が利用するケースが多い。"
+
+  - topic_id: consumption_tax:hojikin_zeimu
+    label: "補助金等の消費税課税関係"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["5-"]
+    keywords: ["補助金", "消費税"]
+    conclusion_text: "補助金は消費税法2条1項8号の対価性がないため不課税。ただし補助金で取得した課税仕入れに係る仕入税額控除には特定収入による調整がある(消費税法60条)。"
+
+  - topic_id: consumption_tax:digital_service
+    label: "電気通信利用役務の提供"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["2", "4-3"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["5-"]
+    keywords: ["電気通信利用役務", "デジタルサービス"]
+    conclusion_text: "国外事業者からの電気通信利用役務の提供は消費税法2条1項8号の3により事業者向け(リバースチャージ)と消費者向け(国外事業者納税)に区分される。"
+
+  - topic_id: consumption_tax:tochi_tatemono
+    label: "土地・建物の譲渡"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["6"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["6-"]
+    keywords: ["土地", "建物", "非課税"]
+    conclusion_text: "土地譲渡は消費税法6条+別表第一第1号により非課税。建物譲渡は課税。土地建物一括譲渡では時価按分または合理的方法で区分。"
+
+  - topic_id: consumption_tax:fudosan_chintai
+    label: "不動産の貸付"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["6"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["6-"]
+    keywords: ["家賃", "賃貸"]
+    conclusion_text: "住宅家賃は消費税法6条+別表第一第13号により非課税。事業用建物の家賃は課税。貸付契約書上の用途記載が判定の基本。"
+
+  - topic_id: consumption_tax:kanjou_kamoku
+    label: "勘定科目別の消費税区分"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["4"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["5-"]
+    keywords: ["勘定科目", "課税区分"]
+    conclusion_text: "課税仕入れの区分は消費税法4条等により売上・仕入・経費の各勘定科目ごとに(1)課税、(2)非課税、(3)免税、(4)不課税の4区分で判定。"
+
+  - topic_id: consumption_tax:zaiko_chousei
+    label: "棚卸資産の調整(免税⇔課税)"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["36"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["12-"]
+    keywords: ["棚卸資産", "免税"]
+    conclusion_text: "免税事業者から課税事業者になった場合、消費税法36条により期首在庫の課税仕入れ相当額を仕入税額控除の対象に追加。逆の場合は控除済税額を返戻。"
+
+  - topic_id: consumption_tax:kyojuu_chintai
+    label: "居住用賃貸建物の仕入税額控除"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["30"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["11-"]
+    keywords: ["居住用賃貸建物"]
+    conclusion_text: "令和2年10月以降、居住用賃貸建物の取得に係る消費税は消費税法30条10項により仕入税額控除不可。ただし3年以内に課税賃貸用転用・課税売上の場合は調整還付。"
+
+  - topic_id: consumption_tax:syuttyou_ryouhi
+    label: "出張旅費・通勤手当"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["30"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["11-2"]
+    keywords: ["出張旅費", "通勤手当"]
+    conclusion_text: "従業員に支払う出張旅費・通勤手当のうち通常必要と認められる範囲は消費税基本通達11-2-1により給与扱いではなく課税仕入れ。インボイス保存不要。"
+
+  - topic_id: consumption_tax:gakushi_haraikomi
+    label: "前払い消費税の控除時期"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["17"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-"]
+    keywords: ["前払", "控除時期"]
+    conclusion_text: "前払消費税は消費税法17条により役務提供完了時に課税仕入れとして認識。短期前払費用は法人税法上の特例適用でも消費税は役務提供完了時。"
+
+  - topic_id: consumption_tax:tokutei_shien
+    label: "特定資産の譲渡等"
+    tax_category: consumption_tax
+    law_canonical_id: "law:consumption-tax"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:shohi-zei-tsutatsu"
+    tsutatsu_article_prefix: ["5-"]
+    keywords: ["特定資産", "電気通信"]
+    conclusion_text: "特定資産の譲渡等は消費税法2条1項8号の2・3により電気通信利用役務+特定役務(芸能興行等)。役務受領者側に納税義務(リバースチャージ)。"

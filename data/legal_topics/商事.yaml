@@ -1,0 +1,305 @@
+# Legal-reasoning-chain topic taxonomy — commerce (商事)
+# generated_at: 2026-05-17
+# source: scripts/build_legal_reasoning_chain.py :: all_topics()
+# total_topics: 30 (each emits 5 viewpoint slices)
+
+topics:
+  - topic_id: commerce:yakuin_sennin
+    label: "役員の選任"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["329"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["役員選任", "取締役"]
+    conclusion_text: "役員の選任は会社法329条により株主総会の普通決議。取締役は最低1名(取締役会設置会社は3名以上)。監査役設置会社は監査役の選任も普通決議。"
+
+  - topic_id: commerce:setsuritsu_youken
+    label: "株式会社設立の要件"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["25", "26", "27"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-1"]
+    keywords: ["設立", "定款"]
+    conclusion_text: "株式会社設立は会社法25条以下により定款作成・公証人認証・出資履行・設立登記が要件。最低資本金規制廃止後は1円から設立可能。"
+
+  - topic_id: commerce:zoushi
+    label: "増資・募集株式の発行"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["199"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-2"]
+    keywords: ["増資", "募集株式"]
+    conclusion_text: "増資は会社法199条以下により募集事項決定(原則株主総会特別決議)→募集→引受→出資履行→変更登記。公開会社は取締役会決議で募集可能(199条2項)。"
+
+  - topic_id: commerce:gappei
+    label: "合併の手続"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["748", "783"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["合併", "吸収合併"]
+    conclusion_text: "合併は会社法748条以下により吸収合併と新設合併。合併契約締結→株主総会特別決議→債権者保護手続→合併登記の流れ。簡易合併・略式合併で総会省略可能な場合あり。"
+
+  - topic_id: commerce:kabu_joto_seigen
+    label: "株式譲渡制限"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["139"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-3"]
+    keywords: ["譲渡制限", "承認"]
+    conclusion_text: "譲渡制限株式の譲渡は会社法139条以下により承認機関(取締役会または株主総会)の承認が必要。不承認の場合は会社または指定買取人による買取請求が可能。"
+
+  - topic_id: commerce:torishimariyaku_meibo
+    label: "取締役の任期"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["332"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["取締役任期", "選任"]
+    conclusion_text: "取締役の任期は会社法332条により原則2年(選任後2年以内に終了する事業年度のうち最終のものに関する定時総会終結時まで)。非公開会社は定款で最長10年まで延長可能。"
+
+  - topic_id: commerce:bunkatsu_shori
+    label: "会社分割の手続"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["757", "762"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["会社分割", "分社"]
+    conclusion_text: "会社分割は会社法757条以下により吸収分割と新設分割。分割契約・計画書→株主総会特別決議→債権者保護手続→分割登記の流れ。労働契約の承継は労働契約承継法に基づく。"
+
+  - topic_id: commerce:teikan_henko
+    label: "定款変更の手続"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["466"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-1"]
+    keywords: ["定款変更"]
+    conclusion_text: "定款変更は会社法466条により株主総会の特別決議(議決権の過半数+出席株主議決権の2/3以上)。発行可能株式総数等の重要事項変更を含む。"
+
+  - topic_id: commerce:torishimariyaku_kaigi
+    label: "取締役会の決議"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["369"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["取締役会"]
+    conclusion_text: "取締役会決議は会社法369条により取締役の過半数出席+出席取締役の過半数で成立。特別利害関係取締役は議決権行使不可。"
+
+  - topic_id: commerce:kanshakuyaku
+    label: "監査役の権限・職務"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["381", "382"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["監査役"]
+    conclusion_text: "監査役は会社法381条以下により取締役の職務執行を監査(業務監査+会計監査)。違法行為差止請求権(385条)+取締役会への報告義務(382条)。"
+
+  - topic_id: commerce:dairi_kosin
+    label: "代表取締役の選定"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["362"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["代表取締役"]
+    conclusion_text: "代表取締役は会社法362条により取締役会設置会社では取締役会が選定。非取締役会設置会社は定款・株主総会・取締役の互選から選定可能(会社法349条)。"
+
+  - topic_id: commerce:kabu_haitouki
+    label: "剰余金の配当"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["454", "461"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-3"]
+    keywords: ["剰余金配当"]
+    conclusion_text: "剰余金配当は会社法454条により株主総会決議(または取締役会)で実施。会社法461条の分配可能額の範囲内に限られる(債権者保護)。"
+
+  - topic_id: commerce:kaikei_kansa
+    label: "会計監査人の設置"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["327", "337"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["会計監査人"]
+    conclusion_text: "大会社(資本金5億円以上または負債200億円以上)は会社法328条により会計監査人設置義務。公認会計士または監査法人が務める。"
+
+  - topic_id: commerce:syadan_houjin
+    label: "持分会社の設立"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["575", "576"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-1"]
+    keywords: ["合同会社", "持分会社"]
+    conclusion_text: "合同会社・合名会社・合資会社の持分会社は会社法575条以下により定款作成+設立登記で成立。出資・損益分配・業務執行が自由設計可能。"
+
+  - topic_id: commerce:torishimariyaku_kaisan
+    label: "取締役の解任"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["339"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["取締役解任"]
+    conclusion_text: "取締役解任は会社法339条により株主総会の普通決議でいつでも可能。正当事由なき解任は損害賠償請求の対象(同条2項)。"
+
+  - topic_id: commerce:kaisan_seisan
+    label: "解散・清算"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["471", "475"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-5"]
+    keywords: ["解散", "清算"]
+    conclusion_text: "解散事由は会社法471条で限定列挙(株主総会の決議・合併・破産等)。清算は475条以下により清算人選任→残余財産処分→清算結了登記の流れ。"
+
+  - topic_id: commerce:soshou_dairininni
+    label: "株主代表訴訟"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["847"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["株主代表訴訟"]
+    conclusion_text: "株主代表訴訟は会社法847条により6か月以上引き続き株式を有する株主が役員の責任追及のため会社に代わって提訴可能。提訴前60日の請求要件。"
+
+  - topic_id: commerce:torishimariyaku_zeninn
+    label: "取締役の責任"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["423", "428"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["取締役責任"]
+    conclusion_text: "取締役は会社法423条により任務懈怠で会社に対し損害賠償責任。経営判断原則で過失認定は限定的。総株主の同意で免除可能(424条)。"
+
+  - topic_id: commerce:tokubetsu_riyousha
+    label: "特別利害関係取締役"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["369"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["特別利害関係"]
+    conclusion_text: "特別利害関係を有する取締役は会社法369条2項により取締役会で議決権行使不可。取引相手方・直接的個人利害関係者が該当。"
+
+  - topic_id: commerce:rishiyaku_kaiseki
+    label: "利益相反取引"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["356"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["利益相反", "競業避止"]
+    conclusion_text: "利益相反取引・競業取引は会社法356条により取締役会承認(非取締役会設置会社は株主総会承認)+事後報告が必要。"
+
+  - topic_id: commerce:kabu_buntou
+    label: "株式の併合・分割"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["180", "183"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-3"]
+    keywords: ["株式分割", "株式併合"]
+    conclusion_text: "株式分割は会社法183条により取締役会決議(非取締役会設置会社は株主総会普通決議)。株式併合は180条により株主総会特別決議+発行可能株式総数変更が必要。"
+
+  - topic_id: commerce:syokuyou_kabushiki
+    label: "種類株式の発行"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["108"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-3"]
+    keywords: ["種類株式"]
+    conclusion_text: "種類株式は会社法108条により(1)剰余金配当(2)残余財産分配(3)議決権制限(4)譲渡制限(5)取得請求権(6)取得条項(7)全部取得条項(8)拒否権(9)役員選任権の9類型。"
+
+  - topic_id: commerce:atojiban
+    label: "事業譲渡"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["467"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-4"]
+    keywords: ["事業譲渡"]
+    conclusion_text: "事業の全部または重要部分の譲渡は会社法467条により株主総会特別決議が必要。反対株主は株式買取請求権(469条)。"
+
+  - topic_id: commerce:nin_i_kanko
+    label: "任意買取請求"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["116", "469"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-3"]
+    keywords: ["買取請求"]
+    conclusion_text: "株式買取請求は反対株主の組織再編・事業譲渡・定款変更時の救済措置(会社法116・469条)。公正な価格で会社が買取り。"
+
+  - topic_id: commerce:joushou_houkoku
+    label: "事業報告書の作成"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["435", "438"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["事業報告書"]
+    conclusion_text: "事業報告は会社法435条により計算書類とともに作成・取締役会承認・定時株主総会報告(438条)が必要。"
+
+  - topic_id: commerce:kessan_koukoku
+    label: "決算公告"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["440"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["決算公告"]
+    conclusion_text: "株式会社は会社法440条により定時株主総会後遅滞なく貸借対照表の公告義務。官報・日刊新聞・電子公告から選択。"
+
+  - topic_id: commerce:kabu_meibo
+    label: "株主名簿の備置"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["125"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["株主名簿"]
+    conclusion_text: "株主名簿は会社法125条により本店に備置義務。株主・債権者の閲覧・謄写請求権あり(同条2項)。"
+
+  - topic_id: commerce:teisoku_souren
+    label: "定時株主総会の招集"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["296"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["株主総会", "招集"]
+    conclusion_text: "定時株主総会は会社法296条により毎事業年度終了後一定の時期に招集。臨時総会は必要に応じて招集(同条2項)。"
+
+  - topic_id: commerce:gizoku_kabu
+    label: "議決権の代理行使"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["310"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["9-2"]
+    keywords: ["議決権代理"]
+    conclusion_text: "議決権は会社法310条により代理人を通じて行使可能。委任状の提出が必要。書面・電磁的記録による議決権行使も可能(298条)。"
+
+  - topic_id: commerce:kabu_jouto
+    label: "株式譲渡の効力"
+    tax_category: commerce
+    law_canonical_id: "law:kaisha"
+    article_numbers: ["128", "130"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["1-3"]
+    keywords: ["株式譲渡"]
+    conclusion_text: "株式譲渡は会社法128条により株券発行会社では株券交付で効力発生。株主名簿名義書換が会社・第三者対抗要件(130条)。"

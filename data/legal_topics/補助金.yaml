@@ -1,0 +1,305 @@
+# Legal-reasoning-chain topic taxonomy — subsidy (補助金)
+# generated_at: 2026-05-17
+# source: scripts/build_legal_reasoning_chain.py :: all_topics()
+# total_topics: 30 (each emits 5 viewpoint slices)
+
+topics:
+  - topic_id: subsidy:keizai_gouriseii
+    label: "補助金交付の経済的合理性"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2", "3"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-1"]
+    keywords: ["補助金", "適正化", "経済合理性"]
+    conclusion_text: "補助金交付の経済合理性は補助金等適正化法・各省告示に基づき、事業計画の実現可能性・費用対効果・公共性が審査対象。"
+
+  - topic_id: subsidy:taisho_keihi
+    label: "補助対象経費の範囲"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2", "4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-2"]
+    keywords: ["補助対象経費", "対象外"]
+    conclusion_text: "補助対象経費は公募要領で限定列挙。原則として事業に直接必要な経費(設備費・原材料費・委託費・専門家経費)に限る。経常的経費(人件費・賃料)は除外が一般的。"
+
+  - topic_id: subsidy:hojo_ritsu
+    label: "補助率と補助上限"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-3"]
+    keywords: ["補助率", "補助上限"]
+    conclusion_text: "補助率は中小企業1/2-2/3、小規模事業者2/3が標準。補助上限は事業類型・従業員規模により50万円-1億円の幅。"
+
+  - topic_id: subsidy:syuekikin_henkan
+    label: "収益納付・返還"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["7"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-4"]
+    keywords: ["収益納付", "返還"]
+    conclusion_text: "補助金により取得した財産の処分・収益は5年間の制限。事業終了後5年以内に収益が発生した場合、収益納付が必要(補助金等適正化法22条)。"
+
+  - topic_id: subsidy:fusei_jukyu
+    label: "不正受給と返還命令"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["18"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-5"]
+    keywords: ["不正受給", "返還"]
+    conclusion_text: "不正受給は補助金等適正化法29条で交付決定取消・返還命令。加算金10.95%/年と、不正利得罪(3年以下懲役)の刑事罰の併科。"
+
+  - topic_id: subsidy:zeimu_shori
+    label: "補助金の税務処理"
+    tax_category: subsidy
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["42"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["10-1"]
+    keywords: ["補助金", "圧縮記帳"]
+    conclusion_text: "補助金により取得した固定資産は法人税法42条の圧縮記帳の対象。圧縮損計上で課税繰延が可能。直接減額方式または積立金方式を選択。"
+
+  - topic_id: subsidy:monodukuri
+    label: "ものづくり補助金"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-1"]
+    keywords: ["ものづくり", "革新"]
+    conclusion_text: "ものづくり補助金は中小企業庁実施で革新的サービス開発・試作品開発・生産プロセス改善が対象。補助上限750-5000万円、補助率1/2-2/3。"
+
+  - topic_id: subsidy:itdounyu
+    label: "IT導入補助金"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-2"]
+    keywords: ["IT導入", "DX"]
+    conclusion_text: "IT導入補助金は中小企業庁実施で業務効率化IT・インボイス対応・セキュリティ対策・複数社連携IT等の枠あり。補助率1/2-3/4。"
+
+  - topic_id: subsidy:jizoku_ka
+    label: "持続化補助金"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-3"]
+    keywords: ["持続化", "小規模事業者"]
+    conclusion_text: "持続化補助金は商工会議所・商工会経由で小規模事業者の販路開拓・生産性向上が対象。補助上限50-200万円、補助率2/3。"
+
+  - topic_id: subsidy:saikouchiku
+    label: "事業再構築補助金"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-4"]
+    keywords: ["事業再構築", "新分野"]
+    conclusion_text: "事業再構築補助金は中小企業庁実施で新分野展開・事業転換・業種転換・業態転換・事業再編が対象。補助上限100-1.5億円、補助率1/2-3/4。"
+
+  - topic_id: subsidy:gx
+    label: "GX関連補助金"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-5"]
+    keywords: ["GX", "脱炭素"]
+    conclusion_text: "GX関連補助金は環境省・経産省で省エネ設備導入・再エネ導入・燃料転換等が対象。CO2削減量に応じた補助率設定が一般的。"
+
+  - topic_id: subsidy:saiyou_shien
+    label: "雇用調整助成金"
+    tax_category: subsidy
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["62"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-1"]
+    keywords: ["雇用調整", "助成金"]
+    conclusion_text: "雇用調整助成金は経済上の理由による事業活動縮小時の休業手当の一部助成。中小企業は4/5、大企業は2/3。日額上限あり。"
+
+  - topic_id: subsidy:tokutei_kunren
+    label: "人材開発支援助成金"
+    tax_category: subsidy
+    law_canonical_id: "law:rodokijun"
+    article_numbers: ["63"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-2"]
+    keywords: ["人材開発", "教育訓練"]
+    conclusion_text: "人材開発支援助成金は労働者の教育訓練に係る経費+賃金の一部助成。特定訓練コース・一般訓練コース等で助成率45-75%。"
+
+  - topic_id: subsidy:kibo_setsubi
+    label: "省力化投資補助金"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-3"]
+    keywords: ["省力化", "設備投資"]
+    conclusion_text: "省力化投資補助金は中小企業庁実施でロボット・IoT・AI等の省力化設備導入が対象。補助上限200-1000万円、補助率1/2。"
+
+  - topic_id: subsidy:jigyo_keizoku
+    label: "事業継続力強化計画"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["50"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-4"]
+    keywords: ["事業継続", "BCP"]
+    conclusion_text: "事業継続力強化計画認定で防災・減災設備の特別償却(20%)+税額控除+補助金加点が得られる(中小企業強化法50条)。"
+
+  - topic_id: subsidy:keiei_kakushin
+    label: "経営革新計画"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["9"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-1"]
+    keywords: ["経営革新", "新商品"]
+    conclusion_text: "経営革新計画承認で政府系金融機関の低利融資・信用保証枠拡大・補助金加点が得られる(中小企業等経営強化法9条)。"
+
+  - topic_id: subsidy:shoukei_keikaku
+    label: "経営承継円滑化計画"
+    tax_category: subsidy
+    law_canonical_id: "law:engyou-shouzoku"
+    article_numbers: ["12"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-2"]
+    keywords: ["経営承継", "事業承継"]
+    conclusion_text: "経営承継円滑化法に基づく特例承継計画認定で事業承継税制(納税猶予)+遺留分特例+金融支援が利用可能。都道府県知事認定。"
+
+  - topic_id: subsidy:chiiki_keizai
+    label: "地域経済牽引事業"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["13"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-3"]
+    keywords: ["地域経済", "牽引事業"]
+    conclusion_text: "地域経済牽引事業計画承認で設備投資の特別償却40%・税額控除4%・地方税減免が利用可能(地域経済牽引事業促進法)。"
+
+  - topic_id: subsidy:kankoku_kankei
+    label: "補助金交付の関係法令"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["1"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-5"]
+    keywords: ["補助金等適正化"]
+    conclusion_text: "補助金交付は補助金等適正化法を基本法として各省告示・要綱で運用。交付決定・実績報告・確定検査・財産処分制限の流れ。"
+
+  - topic_id: subsidy:tokutei_shiryo
+    label: "事業計画書の作成要件"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["2"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-1"]
+    keywords: ["事業計画書"]
+    conclusion_text: "補助金事業計画書は公募要領で指定された様式・記載事項に従う。実現可能性・公益性・費用対効果・予算積算の合理性が審査対象。"
+
+  - topic_id: subsidy:hojokin_kazei
+    label: "補助金の益金算入時期"
+    tax_category: subsidy
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["10-"]
+    keywords: ["補助金", "益金算入"]
+    conclusion_text: "補助金は法人税法22条+法人税基本通達2-1-42により交付決定通知のあった日の属する事業年度の益金算入。圧縮記帳と組合せて課税繰延可能。"
+
+  - topic_id: subsidy:zaikoku_houjikin
+    label: "在国子会社への補助金"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-2"]
+    keywords: ["在国子会社", "外資"]
+    conclusion_text: "外資系子会社も国内法人として補助金受給可能(外資規制対象業種を除く)。外為法上の事前届出は補助金交付と別の手続。"
+
+  - topic_id: subsidy:sentaku_seido
+    label: "重複申請の禁止"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["4"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-3"]
+    keywords: ["重複申請", "排他"]
+    conclusion_text: "同一事業内容・同一経費に対する複数補助金の重複申請は補助金等適正化法・各公募要領により原則禁止。違反は不正受給扱い。"
+
+  - topic_id: subsidy:saitaku_kekka
+    label: "採択通知後の手続"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["6"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-4"]
+    keywords: ["採択", "交付申請"]
+    conclusion_text: "採択通知後は交付申請書を提出し、補助金等適正化法6条の交付決定を待つ。発注・契約は交付決定後でないと補助対象外となる。"
+
+  - topic_id: subsidy:jisseki_houkoku
+    label: "実績報告と確定検査"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["14"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-5"]
+    keywords: ["実績報告", "確定検査"]
+    conclusion_text: "事業終了後30日以内または翌年度4月10日いずれか早い日までに実績報告書提出。補助金等適正化法14条の確定検査で補助金額確定。"
+
+  - topic_id: subsidy:zaisan_shobun
+    label: "財産処分制限期間"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-1"]
+    keywords: ["財産処分"]
+    conclusion_text: "補助金で取得した50万円以上の財産は補助金等適正化法22条+耐用年数等を考慮した処分制限期間内は無断処分不可。"
+
+  - topic_id: subsidy:kasanetorikomi
+    label: "ローカルベンチマーク"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["13"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-2"]
+    keywords: ["ローカルベンチマーク"]
+    conclusion_text: "ローカルベンチマーク(ロカベン)は経産省が定める企業健全性評価指標。財務6指標+商流非財務20項目で構成、補助金加点対象。"
+
+  - topic_id: subsidy:tokutei_riyou
+    label: "補助金の使途制限"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["11"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-3"]
+    keywords: ["使途制限"]
+    conclusion_text: "補助金は補助金等適正化法11条により交付目的に従って使用。目的外使用は返還命令の対象。"
+
+  - topic_id: subsidy:zeimu_chosa
+    label: "補助金関連の税務調査"
+    tax_category: subsidy
+    law_canonical_id: "law:corporate-tax"
+    article_numbers: ["22"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["10-"]
+    keywords: ["税務調査", "補助金"]
+    conclusion_text: "補助金事業終了後の税務調査では補助金益金算入時期・圧縮記帳・補助対象経費の損金算入が論点。証憑保存7年間が前提。"
+
+  - topic_id: subsidy:hokoshou_kondan
+    label: "補助事業者の説明会"
+    tax_category: subsidy
+    law_canonical_id: "law:chusho-keiei-kyouka"
+    article_numbers: ["3"]
+    tsutatsu_law_id: "law:hojin-zei-tsutatsu"
+    tsutatsu_article_prefix: ["4-4"]
+    keywords: ["説明会", "事業者"]
+    conclusion_text: "補助金公募開始時の説明会出席で公募要領理解+質疑応答の機会。説明会資料は補助事業の解釈ガイダンスとして重要。"
