@@ -1,0 +1,57 @@
+{
+  "started_at": "2026-05-17T08:14:01.600060+00:00",
+  "config": {
+    "region": "ap-northeast-1",
+    "profile": "bookyou-recovery",
+    "poll_interval": 300,
+    "max_wait_per_job": 28800,
+    "commit": true
+  },
+  "chain": [
+    {
+      "wait_phase": true,
+      "predecessor_job": "jpcite-bert-lora-zeirishi-20260517T081240Z",
+      "next_cohort": "kaikeishi",
+      "predecessor_terminal_status": "Completed",
+      "waited_seconds": 2100,
+      "at": "2026-05-17T08:49:09.637002+00:00"
+    },
+    {
+      "submit_phase": true,
+      "cohort": "kaikeishi",
+      "rc": 0,
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:training-job/jpcite-bert-lora-kaikeishi-20260517T084909Z",
+      "at": "2026-05-17T08:49:11.722025+00:00"
+    },
+    {
+      "wait_phase": true,
+      "predecessor_job": "jpcite-bert-lora-kaikeishi-20260517T084909Z",
+      "next_cohort": "gyouseishoshi",
+      "predecessor_terminal_status": "Completed",
+      "waited_seconds": 1800,
+      "at": "2026-05-17T09:19:12.517448+00:00"
+    },
+    {
+      "submit_phase": true,
+      "cohort": "gyouseishoshi",
+      "rc": 0,
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:training-job/jpcite-bert-lora-gyouseishoshi-20260517T091912Z",
+      "at": "2026-05-17T09:19:14.820765+00:00"
+    },
+    {
+      "wait_phase": true,
+      "predecessor_job": "jpcite-bert-lora-gyouseishoshi-20260517T091912Z",
+      "next_cohort": "shihoshoshi",
+      "predecessor_terminal_status": "Completed",
+      "waited_seconds": 6000,
+      "at": "2026-05-17T10:59:28.024398+00:00"
+    },
+    {
+      "submit_phase": true,
+      "cohort": "shihoshoshi",
+      "rc": 0,
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:training-job/jpcite-bert-lora-shihoshoshi-20260517T105928Z",
+      "at": "2026-05-17T10:59:31.191940+00:00"
+    }
+  ]
+}
