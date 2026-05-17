@@ -25,6 +25,7 @@ from jpintel_mcp._jpcite_env_bridge import get_flag
 from jpintel_mcp.mcp.server import mcp as _mcp
 
 from . import (
+    adoption_narrative_tools,  # noqa: F401  — AA5 G6 (2026-05-17): search_adoption_narratives — FTS5 over am_adoption_narrative (201,845, wave24_215). NO LLM. ¥3. §52/§47条の2/§72/§1.
     annotation_tools,  # noqa: F401  — V4 Phase 4: get_annotations (am_entity_annotation, migration 046)
     audit_workpaper_v2,  # noqa: F401  — Wave 43.2.4 Dim D (2026-05-12): compose_audit_workpaper, 5-unit composition.
     autonomath_wrappers,  # noqa: F401  — decorator side-effect (5 wrappers; sib_tool intentionally skipped — am_sib_contract has 35 rows from Wave 19 backfill but tool not yet stabilized)
