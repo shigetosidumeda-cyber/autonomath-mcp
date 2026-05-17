@@ -61,6 +61,37 @@ TRAINING_IMAGE: Final[str] = (
 
 MODELS: Final[tuple[str, ...]] = ("TransE", "RotatE", "ComplEx", "ConvE")
 
+MODEL_PROFILES: Final[dict[str, dict[str, int | float]]] = {
+    "TransE": {
+        "embedding_dim": 500,
+        "epochs": 200,
+        "batch_size": 512,
+        "negative_samples": 256,
+        "learning_rate": 1e-3,
+    },
+    "RotatE": {
+        "embedding_dim": 500,
+        "epochs": 200,
+        "batch_size": 512,
+        "negative_samples": 256,
+        "learning_rate": 1e-3,
+    },
+    "ComplEx": {
+        "embedding_dim": 500,
+        "epochs": 200,
+        "batch_size": 512,
+        "negative_samples": 256,
+        "learning_rate": 1e-3,
+    },
+    "ConvE": {
+        "embedding_dim": 200,
+        "epochs": 200,
+        "batch_size": 256,
+        "negative_samples": 128,
+        "learning_rate": 1e-3,
+    },
+}
+
 
 def _boto3(service: str, region: str, profile: str) -> Any:
     import boto3  # type: ignore[import-not-found,import-untyped,unused-ignore]
@@ -194,6 +225,32 @@ def _spec(
     }
 
 
+def _profiled_hyperparameters(
+    *,
+    model: str,
+    embedding_dim: int,
+    epochs: int,
+    batch_size: int,
+    negative_samples: int,
+    learning_rate: float,
+) -> dict[str, int | float]:
+    """Apply conservative per-model caps before live submit."""
+
+    profile = MODEL_PROFILES.get(model, {})
+    dim_cap = int(profile.get("embedding_dim", embedding_dim))
+    epochs_cap = int(profile.get("epochs", epochs))
+    batch_cap = int(profile.get("batch_size", batch_size))
+    neg_cap = int(profile.get("negative_samples", negative_samples))
+    lr_cap = float(profile.get("learning_rate", learning_rate))
+    return {
+        "embedding_dim": min(embedding_dim, dim_cap),
+        "epochs": min(epochs, epochs_cap),
+        "batch_size": min(batch_size, batch_cap),
+        "negative_samples": min(negative_samples, neg_cap),
+        "learning_rate": min(learning_rate, lr_cap),
+    }
+
+
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--bucket", default=DEFAULT_BUCKET)
@@ -238,11 +295,21 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=",".join(MODELS),
         help=f"comma-separated subset of {MODELS}",
     )
-    p.add_argument("--embedding-dim", type=int, default=500)
+    p.add_argument(
+        "--embedding-dim", "--embedding_dim", dest="embedding_dim", type=int, default=500
+    )
     p.add_argument("--epochs", type=int, default=200)
-    p.add_argument("--batch-size", type=int, default=512)
-    p.add_argument("--negative-samples", type=int, default=256)
-    p.add_argument("--learning-rate", type=float, default=1e-3)
+    p.add_argument("--batch-size", "--batch_size", dest="batch_size", type=int, default=512)
+    p.add_argument(
+        "--negative-samples",
+        "--negative_samples",
+        dest="negative_samples",
+        type=int,
+        default=256,
+    )
+    p.add_argument(
+        "--learning-rate", "--learning_rate", dest="learning_rate", type=float, default=1e-3
+    )
     p.add_argument("--max-runtime", type=int, default=24 * 3600, help="seconds")
     p.add_argument("--instance-type", default="ml.g4dn.12xlarge")
     p.add_argument(
@@ -325,6 +392,14 @@ def main(argv: list[str] | None = None) -> int:
 
     for model in selected_models:
         job_name = f"jpcite-kg-{model.lower()}-{args.run_id}"
+        profiled = _profiled_hyperparameters(
+            model=model,
+            embedding_dim=args.embedding_dim,
+            epochs=args.epochs,
+            batch_size=args.batch_size,
+            negative_samples=args.negative_samples,
+            learning_rate=args.learning_rate,
+        )
         spec = _spec(
             job_name=job_name,
             bucket=args.bucket,
@@ -336,11 +411,11 @@ def main(argv: list[str] | None = None) -> int:
             output_prefix=f"{args.output_prefix}/{model.lower()}",
             source_uri=source_uri,
             model=model,
-            embedding_dim=args.embedding_dim,
-            epochs=args.epochs,
-            batch_size=args.batch_size,
-            negative_samples=args.negative_samples,
-            learning_rate=args.learning_rate,
+            embedding_dim=int(profiled["embedding_dim"]),
+            epochs=int(profiled["epochs"]),
+            batch_size=int(profiled["batch_size"]),
+            negative_samples=int(profiled["negative_samples"]),
+            learning_rate=float(profiled["learning_rate"]),
             max_runtime=args.max_runtime,
             instance_type=args.instance_type,
         )
@@ -352,6 +427,13 @@ def main(argv: list[str] | None = None) -> int:
                 "max_runtime_seconds": spec["StoppingCondition"]["MaxRuntimeInSeconds"],
                 "output": spec["OutputDataConfig"]["S3OutputPath"],
                 "training_image": spec["AlgorithmSpecification"]["TrainingImage"],
+                "hyperparameters": {
+                    "embedding_dim": int(profiled["embedding_dim"]),
+                    "epochs": int(profiled["epochs"]),
+                    "batch_size": int(profiled["batch_size"]),
+                    "negative_samples": int(profiled["negative_samples"]),
+                    "learning_rate": float(profiled["learning_rate"]),
+                },
             },
         }
         if dry_run:
@@ -397,6 +479,7 @@ def main(argv: list[str] | None = None) -> int:
             "max_runtime_seconds": args.max_runtime,
             "instance_type": args.instance_type,
         },
+        "model_profiles": MODEL_PROFILES,
     }
     out_path = Path(args.records_out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
