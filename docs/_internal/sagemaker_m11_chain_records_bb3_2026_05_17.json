@@ -6,5 +6,29 @@
     "prior_status": "Completed",
     "new_job": "jpcite-multitask-al-iter1-20260517T080401Z",
     "fired_at": "2026-05-17T08:04:02.876565Z"
+  },
+  {
+    "stage": "al",
+    "iter": 2,
+    "prior_job": "jpcite-multitask-al-iter1-20260517T080401Z",
+    "prior_status": "Failed",
+    "new_job": "jpcite-multitask-al-iter2-20260517T101210Z",
+    "fired_at": "2026-05-17T10:12:13.008240Z"
+  },
+  {
+    "stage": "al",
+    "iter": 3,
+    "prior_job": "jpcite-multitask-al-iter2-20260517T101210Z",
+    "prior_status": "Failed",
+    "new_job": "jpcite-multitask-al-iter3-20260517T102214Z",
+    "fired_at": "2026-05-17T10:22:15.945755Z"
+  },
+  {
+    "stage": "al",
+    "iter": 4,
+    "prior_job": "jpcite-multitask-al-iter3-20260517T102214Z",
+    "prior_status": "Failed",
+    "new_job": "jpcite-multitask-al-iter4-20260517T103217Z",
+    "fired_at": "2026-05-17T10:32:19.065738Z"
   }
 ]
