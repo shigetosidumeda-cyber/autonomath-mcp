@@ -137,11 +137,14 @@ def test_m3_embedder_pins_transformers_compatible_with_torch_2_0(
     assert "torchvision==0.15.2" in m3_module.EMBEDDER_SCRIPT
 
 
-def test_m3_embedder_uses_rinna_japanese_clip_loader(m3_module: types.ModuleType) -> None:
-    """The live embedder must avoid the failed AutoImageProcessor path."""
-    assert "import japanese_clip as ja_clip" in m3_module.EMBEDDER_SCRIPT
-    assert "ja_clip.load(" in m3_module.EMBEDDER_SCRIPT
+def test_m3_embedder_uses_manual_torchvision_pixel_values(m3_module: types.ModuleType) -> None:
+    """The live embedder must avoid unavailable processors or git packages."""
+    assert "from transformers import AutoModel" in m3_module.EMBEDDER_SCRIPT
+    assert "from torchvision import transforms" in m3_module.EMBEDDER_SCRIPT
+    assert "pixel_values=pixel_values" in m3_module.EMBEDDER_SCRIPT
     assert "AutoImageProcessor" not in m3_module.EMBEDDER_SCRIPT
+    assert "japanese_clip" not in m3_module.EMBEDDER_SCRIPT
+    assert "git+https://github.com" not in m3_module.EMBEDDER_SCRIPT
 
 
 # ---------- M7 fix gating ---------------------------------------------------
@@ -212,6 +215,24 @@ def test_m7_hardstop_under_never_reach(m7_module: types.ModuleType) -> None:
     """The 5-line preflight hard-stop must sit under the $19,490 Never-Reach."""
     assert m7_module.HARD_STOP_USD == 18000.0
     assert m7_module.HARD_STOP_USD < 19490.0
+
+
+def test_m7_live_gate_requires_flags_and_dry_run_zero(
+    m7_module: types.ModuleType,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Live M7 submit must stay dry-run unless flags and DRY_RUN=0 are present."""
+    args = m7_module._parse_args(["--commit", "--unlock-live-aws-commands"])
+    monkeypatch.delenv("DRY_RUN", raising=False)
+    assert m7_module._resolve_dry_run(args) is True
+    monkeypatch.setenv("DRY_RUN", "1")
+    assert m7_module._resolve_dry_run(args) is True
+    monkeypatch.setenv("DRY_RUN", "0")
+    assert m7_module._resolve_dry_run(args) is False
+    no_unlock = m7_module._parse_args(["--commit"])
+    assert m7_module._resolve_dry_run(no_unlock) is True
+    no_commit = m7_module._parse_args(["--unlock-live-aws-commands"])
+    assert m7_module._resolve_dry_run(no_commit) is True
 
 
 def test_m7_training_entry_accepts_dash_and_underscore_hyperparameters(

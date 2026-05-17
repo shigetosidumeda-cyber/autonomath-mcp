@@ -346,7 +346,7 @@ def _resolve_dry_run(args: argparse.Namespace) -> bool:
         return True
     if not args.unlock_live_aws_commands:
         return True
-    return env_dry_run is False  # both flags set + env not forcing dry-run
+    return env_dry_run
 
 
 def main(argv: list[str] | None = None) -> int:
