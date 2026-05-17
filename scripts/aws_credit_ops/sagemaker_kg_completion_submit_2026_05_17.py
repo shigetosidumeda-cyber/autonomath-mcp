@@ -20,12 +20,14 @@ Cost preflight
 
 Live-mode gate
 --------------
-Default is **DRY_RUN**. Live submission requires BOTH:
+Default is **DRY_RUN**. Live submission requires ALL THREE:
   1. ``--commit`` flag, AND
   2. ``--unlock-live-aws-commands`` flag (operator token gate per Stream W
-     concern-separation memory ``feedback_loop_promote_concern_separation``).
+     concern-separation memory ``feedback_loop_promote_concern_separation``),
+     AND
+  3. ``DRY_RUN=0`` in the environment.
 
-Without both flags the script prints the would-be spec without calling
+Without all three gates the script prints the would-be spec without calling
 ``create_training_job``.
 
 Constraints
