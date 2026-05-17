@@ -1,0 +1,35 @@
+name: cost-saving-consistency
+
+on:
+  pull_request:
+    paths:
+      - "mcp-server*.json"
+      - "site/openapi*.json"
+      - "site/openapi/**.json"
+      - "site/docs/openapi/**.json"
+      - "site/.well-known/agents.json"
+      - "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
+      - "scripts/ff2_embed_cost_saving_footer.py"
+      - "scripts/ff2_embed_openapi_cost_saving.py"
+      - "scripts/validate_cost_saving_claims_consistency.py"
+      - ".github/workflows/cost-saving-consistency.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cost-saving-consistency-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate cost-saving claim consistency
+        run: |
+          python scripts/validate_cost_saving_claims_consistency.py --verbose
