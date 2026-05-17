@@ -27,6 +27,7 @@ from jpintel_mcp.mcp.server import mcp as _mcp
 from . import (
     adoption_narrative_tools,  # noqa: F401  — AA5 G6 (2026-05-17): search_adoption_narratives — FTS5 over am_adoption_narrative (201,845, wave24_215). NO LLM. ¥3. §52/§47条の2/§72/§1.
     annotation_tools,  # noqa: F401  — V4 Phase 4: get_annotations (am_entity_annotation, migration 046)
+    answer_freshness_tool,  # noqa: F401  — P4 (2026-05-17): get_answer_freshness — am_precomputed_answer freshness check (NO LLM). Migration 291. ¥3. §52/§1.
     audit_workpaper_v2,  # noqa: F401  — Wave 43.2.4 Dim D (2026-05-12): compose_audit_workpaper, 5-unit composition.
     autonomath_wrappers,  # noqa: F401  — decorator side-effect (5 wrappers; sib_tool intentionally skipped — am_sib_contract has 35 rows from Wave 19 backfill but tool not yet stabilized)
     benchmark_tools,  # noqa: F401  — R8 (2026-05-07): benchmark_cohort_average_am — 業種 × 規模 × 地域 cohort average + outlier (top 10%) over case_studies + jpi_adoption_records.

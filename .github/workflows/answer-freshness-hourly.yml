@@ -1,0 +1,79 @@
+name: answer-freshness-hourly
+
+# P4 (2026-05-17): hourly EventBridge cron that sweeps am_amendment_diff
+# and re-composes any am_precomputed_answer whose lineage was invalidated.
+#
+# Constraints honoured:
+#   * NO LLM SDK invocation — pure SQLite + Python stdlib + json/sha256.
+#   * Cron is the ONLY automated trigger (workflow_dispatch retained for
+#     operator audit, but the cron rejects every invocation that does not
+#     pass through JPCITE_FRESHNESS_AUTOMATED=1 or a matching operator token).
+#   * Read-mostly on autonomath.db; writes only to am_precomputed_answer
+#     + am_answer_freshness_cursor.
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run with --dry-run (no DB writes)"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "true"
+          - "false"
+      since:
+        description: "Operator audit: override cursor to this ISO-8601 timestamp"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: answer-freshness-hourly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  freshness-sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Install flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # master
+
+      - name: Sweep am_precomputed_answer freshness
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          SINCE: ${{ inputs.since || '' }}
+        run: |
+          set -euo pipefail
+          FLAGS=""
+          if [ "${DRY_RUN}" = "true" ]; then FLAGS="${FLAGS} --dry-run"; fi
+          if [ -n "${SINCE}" ]; then FLAGS="${FLAGS} --since ${SINCE}"; fi
+          flyctl ssh console -a autonomath-api -C \
+            "env JPCITE_FRESHNESS_AUTOMATED=1 /opt/venv/bin/python /app/scripts/cron/answer_freshness_check_2026_05_17.py ${FLAGS}"
+
+      - name: Sentry alert on cron failure
+        if: failure()
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SENTRY_DSN:-}" ]; then
+            echo "::warning::SENTRY_DSN not set; skipping alert hop."
+            exit 0
+          fi
+          PROJECT_ID="$(echo "$SENTRY_DSN" | sed -E 's#.*/([0-9]+)$#\1#')"
+          PUBLIC_KEY="$(echo "$SENTRY_DSN" | sed -E 's#https://([^@]+)@.*#\1#')"
+          HOST="$(echo "$SENTRY_DSN" | sed -E 's#https://[^@]+@([^/]+)/.*#\1#')"
+          curl -fsS -X POST \
+            "https://${HOST}/api/${PROJECT_ID}/store/" \
+            -H "Content-Type: application/json" \
+            -H "X-Sentry-Auth: Sentry sentry_version=7,sentry_key=${PUBLIC_KEY},sentry_client=answer-freshness-hourly/1.0" \
+            -d "{\"level\":\"error\",\"logger\":\"github.actions.answer-freshness-hourly\",\"platform\":\"other\",\"message\":\"answer-freshness-hourly failed. Run ${GITHUB_RUN_ID}.\",\"tags\":{\"workflow\":\"answer-freshness-hourly\",\"run_id\":\"${GITHUB_RUN_ID}\"}}" \
+            || echo "::warning::Sentry alert POST failed; continuing."

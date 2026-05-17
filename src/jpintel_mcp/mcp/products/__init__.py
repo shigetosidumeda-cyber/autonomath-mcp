@@ -49,6 +49,7 @@ _SUBMODULES: tuple[str, ...] = (
     "product_a2_audit_workpaper",
     "product_a3_subsidy_roadmap",
     "product_a4_shuugyou_kisoku",
+    "product_a5_kaisha_setsuritsu",
 )
 
 for _name in _SUBMODULES:
