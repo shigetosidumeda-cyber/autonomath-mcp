@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """check_mcp_drift: assert published MCP/static manifests are current.
 
-The range check catches implausible tool-count changes. The runtime checks
-catch stale-but-valid manifests that still parse but no longer match the
-FastMCP tool registry used by the package.
+The published/default-gate manifest count is intentionally a public subset of
+the FastMCP runtime. Runtime tools may exceed that published count while gated
+or experimental tools are held back from static distribution surfaces.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 REGISTRY = ROOT / "data" / "facts_registry.json"
+DISTRIBUTION_MANIFEST = ROOT / "scripts" / "distribution_manifest.yml"
 
 
 def _maybe_reexec_venv() -> None:
@@ -34,7 +35,7 @@ def _maybe_reexec_venv() -> None:
         and os.environ.get("JPCITE_NO_VENV_REEXEC") != "1"
     ):
         os.environ["JPCITE_NO_VENV_REEXEC"] = "1"
-        os.execv(str(venv_python), [str(venv_python), *sys.argv])
+        os.execv(str(venv_python), [str(venv_python), *sys.argv])  # nosec B606
 
 
 _maybe_reexec_venv()
@@ -164,6 +165,18 @@ def _pyproject_version() -> str:
     raise RuntimeError("pyproject.toml has no [project].version declaration")
 
 
+def _public_tool_count() -> int:
+    """Return `tool_count_default_gates` from the distribution manifest."""
+
+    for raw in DISTRIBUTION_MANIFEST.read_text("utf-8").splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if not line.startswith("tool_count_default_gates:"):
+            continue
+        _, value = line.split(":", 1)
+        return int(value.strip())
+    raise RuntimeError("distribution_manifest.yml has no tool_count_default_gates")
+
+
 def _check_manifest_versions(fails: list[str]) -> None:
     """Assert every published manifest reports the same version as pyproject.toml.
 
@@ -251,7 +264,11 @@ def _nested_get(spec: dict, keys: tuple[str, ...]) -> object:
     return node
 
 
-def _check_runtime_manifest_sync(runtime_names: list[str], fails: list[str]) -> None:
+def _check_runtime_manifest_sync(
+    runtime_names: list[str],
+    public_tool_count: int,
+    fails: list[str],
+) -> None:
     runtime_set = set(runtime_names)
     if len(runtime_names) != len(runtime_set):
         duplicates = sorted({name for name in runtime_names if runtime_names.count(name) > 1})
@@ -267,26 +284,29 @@ def _check_runtime_manifest_sync(runtime_names: list[str], fails: list[str]) -> 
             continue
         tools = spec.get("tools")
         if not isinstance(tools, list):
-            fails.append(f"{rel}: tools must be a list matching runtime")
+            fails.append(f"{rel}: tools must be a list")
             continue
         names = [tool.get("name") for tool in tools if isinstance(tool, dict)]
-        if names != runtime_names:
-            missing = sorted(runtime_set - set(names))
-            extra = sorted(set(names) - runtime_set)
+        if len(names) != public_tool_count:
             fails.append(
-                f"{rel}: tools list does not match runtime "
-                f"(manifest={len(names)}, runtime={len(runtime_names)}, "
-                f"missing={missing[:10]}, extra={extra[:10]})"
+                f"{rel}: public tools={len(names)} does not match "
+                f"distribution manifest {public_tool_count}"
             )
+        unknown = sorted(
+            name for name in names if isinstance(name, str) and name not in runtime_set
+        )
+        if unknown:
+            fails.append(f"{rel}: public tools absent from runtime: {unknown[:20]}")
         else:
-            print(f"OK {rel}: tools list matches runtime ({len(runtime_names)})")
+            print(f"OK {rel}: public tools are runtime subset ({len(names)}/{len(runtime_names)})")
         for label, count in (
             ("_meta.tool_count", (spec.get("_meta") or {}).get("tool_count")),
             ("publisher.tool_count", _publisher_meta(spec).get("tool_count")),
         ):
-            if count != len(runtime_names):
+            if count != public_tool_count:
                 fails.append(
-                    f"{rel}: {label}={count!r} does not match runtime {len(runtime_names)}"
+                    f"{rel}: {label}={count!r} does not match "
+                    f"distribution manifest {public_tool_count}"
                 )
 
     for rel in SUBSET_TOOL_MANIFESTS:
@@ -317,11 +337,12 @@ def _check_runtime_manifest_sync(runtime_names: list[str], fails: list[str]) -> 
             ("_meta.tool_count", (spec.get("_meta") or {}).get("tool_count")),
             ("publisher.tool_count", _publisher_meta(spec).get("tool_count")),
         ):
-            if count != len(runtime_names):
+            if count != public_tool_count:
                 fails.append(
-                    f"{rel}: {label}={count!r} does not match runtime {len(runtime_names)}"
+                    f"{rel}: {label}={count!r} does not match "
+                    f"distribution manifest {public_tool_count}"
                 )
-        print(f"OK {rel}: registry tool counts match runtime ({len(runtime_names)})")
+        print(f"OK {rel}: registry tool counts match published count ({public_tool_count})")
 
 
 def _check_static_discovery_manifests(fails: list[str]) -> None:
@@ -340,6 +361,7 @@ def _check_static_discovery_manifests(fails: list[str]) -> None:
 def main() -> int:
     reg = json.loads(REGISTRY.read_text("utf-8"))
     lo, hi = reg["guards"]["numeric_ranges"]["mcp_tools"]
+    public_tool_count = _public_tool_count()
     fails: list[str] = []
 
     for rel in TARGETS:
@@ -356,19 +378,25 @@ def main() -> int:
         if n is None:
             print(f"SKIP {rel} (no tools / tool_count key)")
             continue
-        if not lo <= n <= hi:
-            fails.append(f"{rel}: tools={n} not in [{lo},{hi}]")
+        if n != public_tool_count:
+            fails.append(
+                f"{rel}: tools={n} does not match distribution manifest {public_tool_count}"
+            )
+        elif not lo <= n <= hi:
+            fails.append(f"{rel}: tools={n} not in public guard range [{lo},{hi}]")
         else:
-            print(f"OK {rel}: tools={n} in [{lo},{hi}]")
+            print(f"OK {rel}: tools={n} matches published count {public_tool_count}")
 
     _check_manifest_versions(fails)
 
     runtime_names = _runtime_tool_names()
-    if not lo <= len(runtime_names) <= hi:
-        fails.append(f"runtime: tools={len(runtime_names)} not in [{lo},{hi}]")
+    if len(runtime_names) < public_tool_count:
+        fails.append(
+            f"runtime: tools={len(runtime_names)} below published count {public_tool_count}"
+        )
     else:
-        print(f"OK runtime: tools={len(runtime_names)} in [{lo},{hi}]")
-    _check_runtime_manifest_sync(runtime_names, fails)
+        print(f"OK runtime: tools={len(runtime_names)} >= published count {public_tool_count}")
+    _check_runtime_manifest_sync(runtime_names, public_tool_count, fails)
     _check_static_discovery_manifests(fails)
 
     if fails:

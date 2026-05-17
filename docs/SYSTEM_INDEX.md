@@ -112,7 +112,7 @@ Run: `.venv/bin/python scripts/cron/precompute_refresh.py --only <name>` or `--a
 | Local MCP | `.venv/bin/autonomath-mcp` |
 | Tests | `.venv/bin/pytest` (unit+integ) / `.venv/bin/pytest tests/e2e/` |
 | Migration apply | `entrypoint.sh §4` (autonomath-target auto-discovered on boot, header `-- target_db: autonomath`); jpintel-target via `python scripts/migrate.py` |
-| MCP tool count probe | `len(await mcp.list_tools())` (must be 165 at default gates as of 2026-05-16 Wave 51 tick 0) |
+| MCP tool count probe | `len(await mcp.list_tools())` (must be 184 at default gates as of 2026-05-16 Wave 51 tick 0) |
 | Static pages regen | `.venv/bin/python scripts/generate_program_pages.py` |
 | Source liveness | `.venv/bin/python scripts/refresh_sources.py --tier S,A` |
 | OpenAPI export | `.venv/bin/python scripts/export_openapi.py --out docs/openapi/v1.json` |

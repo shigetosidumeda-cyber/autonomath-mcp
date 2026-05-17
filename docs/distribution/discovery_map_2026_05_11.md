@@ -9,7 +9,7 @@
 
 入力 SOT:
 - `site/.well-known/mcp.json` (schema_version=jpcite_ai_discovery_v1.0, ¥3/req, anonymous 3/day/IP)
-- `site/llms.txt` (canonical=https://jpcite.com、155 MCP tools)
+- `site/llms.txt` (canonical=https://jpcite.com、184 MCP tools)
 - `site/robots.txt` (GPTBot/ClaudeBot/PerplexityBot 等 Allow / + 10 sitemap-*.xml shard)
 - `site/sitemap-*.xml` (11 shard、64,870 lines `sitemap-programs.xml` が最大)
 - `CLAUDE.md` 8 cohort revenue model
@@ -240,7 +240,7 @@
 ### 5.1 HackerNews Show HN
 
 **登録/掲載手順**:
-1. Show HN タイトル: `Show HN: jpcite — 155 MCP tools for Japanese public-record evidence prefetch (¥3/req)`.
+1. Show HN タイトル: `Show HN: jpcite — 184 MCP tools for Japanese public-record evidence prefetch (¥3/req)`.
 2. 本文に 5 段落: (1) why we built it (LLM が日本制度を hallucinate する問題), (2) what's inside (11,601 programs / 13,801 invoice / 2,065 court / 2,286 adoption), (3) tech stack (FastAPI + SQLite FTS5 + sqlite-vec + MCP 2025-06-18), (4) pricing (¥3/req metered, 3 req/IP/day free anonymous), (5) how to try in 60 sec (`uvx autonomath-mcp` or import OpenAPI to ChatGPT Custom GPT).
 3. Hero link = https://jpcite.com/playground (interactive REST explorer, anon quota live).
 4. submit timing は HN 米国朝 (JST 22-24 時) で organic upvote velocity を確保.
@@ -257,7 +257,7 @@
 **登録/掲載手順**:
 1. Product Hunt launch (Maker = 梅田茂利 / Bookyou株式会社). category = 「Developer Tools」「Artificial Intelligence」「APIs」.
 2. Hero gallery 5 枚: Claude Desktop screen / Cursor MCP servers screen / ChatGPT Custom GPT Actions / Stripe Checkout 1-min flow / data-freshness dashboard.
-3. Tagline = `Evidence prefetch for Japanese public records. 155 MCP tools. ¥3/req.`
+3. Tagline = `Evidence prefetch for Japanese public records. 184 MCP tools. ¥3/req.`
 4. First comment (Maker) で why/what/how の 3 段落 + free 3 req/IP/day を明記.
 5. PH Hunter (Hunter 不在で self-hunt 可). organic upvote のため日本 dev / X コミュニティに 1 度だけ launch post.
 

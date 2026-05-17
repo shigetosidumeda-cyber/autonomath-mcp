@@ -37,7 +37,7 @@ Stack:
 - ¥3/req (~$0.02), 3 req/IP/day anonymous, no monthly fee, 1-click cancel
 
 What's interesting technically:
-- 306 REST/OpenAPI paths + 155 MCP tools + 5 GraphQL types under one
+- 306 REST/OpenAPI paths + 184 MCP tools + 5 GraphQL types under one
   evidence-packet contract; no service mesh, single binary, all on
   one 9.4GB SQLite blob baked into the Docker image.
 - Sub-API-key fan-out (parent issues child keys per 顧問先) lets a

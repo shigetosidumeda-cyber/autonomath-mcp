@@ -14,7 +14,7 @@ The existing access surface for this data is genuinely bad — government portal
 
 - SQLite 全文検索 (3-gram + unicode61 二重インデックスで CJK 対応) + ベクトル検索 で hybrid lexical/semantic search
 - FastAPI for the REST surface (`/v1/programs/*`, `/v1/laws/*`, `/v1/case-studies/*`, etc.)
-- FastMCP stdio server, MCP protocol 2025-06-18, 155 tools at default gates
+- FastMCP stdio server, MCP protocol 2025-06-18, 184 tools at default gates
 - 8.29 GB unified DB, 503,930 entities + 6.12M facts in EAV
 - Fly.io Tokyo single-region deploy, Cloudflare Pages for the static site, Stripe metered billing
 

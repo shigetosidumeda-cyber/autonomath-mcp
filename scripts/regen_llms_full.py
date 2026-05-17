@@ -232,7 +232,7 @@ def _sanitize_preserved_prefix(prefix: str) -> str:
             "jpcite は MCP (Model Context Protocol) サーバーとして "
             + "96"
             + " ツール を公開する。Claude Desktop / Cursor / ChatGPT (Plus 以降) / Gemini から直接呼び出せる。"
-        ): "jpcite は MCP (Model Context Protocol) サーバーとして 155 ツールを公開します。Claude Desktop / Cursor / Cline などの stdio MCP クライアントで使えます。ChatGPT Custom GPT は OpenAPI Actions を使います。",
+        ): "jpcite は MCP (Model Context Protocol) サーバーとして 184 ツールを公開します。Claude Desktop / Cursor / Cline などの stdio MCP クライアントで使えます。ChatGPT Custom GPT は OpenAPI Actions を使います。",
         "- **ChatGPT:** Plus 以降 (2025-10+) で MCP 対応": "- **ChatGPT:** Custom GPT は OpenAPI Actions (`/v1/openapi.agent.json`) 経由。ChatGPT Apps / Developer Mode の remote MCP は、この stdio MCP package とは別です。",
         '"args": ["<mcp-server-command>"]': '"args": ["autonomath-mcp"]',
         "curl https://api.jpcite.com/meta": "curl https://api.jpcite.com/v1/meta",

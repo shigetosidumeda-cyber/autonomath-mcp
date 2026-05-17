@@ -41,7 +41,7 @@ API key 不要 (anonymous IP-based 3 req/日 free)、有料化は本人が Strip
 ### Japanese (long, ≤500 chars)
 
 ```
-jpcite — 日本の制度情報 MCP サーバー (155 tools, protocol 2025-06-18)。
+jpcite — 日本の制度情報 MCP サーバー (184 tools, protocol 2025-06-18)。
 14,472 プログラム (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 融資 (担保 /
 個人保証人 / 第三者保証人 三軸分解) + 1,185 行政処分 + e-Gov 法令メタデータ・条文参照 (record により coverage は異なる) +
 税制 ruleset (インボイス / 電帳法) 50 行 + 適格請求書事業者 13,801 行 (PDL v1.0) +
@@ -55,7 +55,7 @@ key 不要)。Bookyou 株式会社 / info@bookyou.net。
 ### English (long, ≤500 chars)
 
 ```
-jpcite — MCP server (155 tools, protocol 2025-06-18) over Japanese public-program
+jpcite — MCP server (184 tools, protocol 2025-06-18) over Japanese public-program
 data: 14,472 programs (subsidy / loan / tax / certification) + 2,286 acceptance cases +
 108 loans (3-axis: collateral / individual guarantor / third-party guarantor) +
 1,185 enforcement actions + e-Gov law metadata and article references (coverage varies by record) + 50 tax rulesets

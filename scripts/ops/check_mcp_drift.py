@@ -5,7 +5,10 @@ Ground-truth source: ``server.json`` ``_meta.io.modelcontextprotocol.registry/
 publisher-provided.tool_count`` is the manifest pin. Every other discovery
 surface (agents.json, trust.json, jpcite-federation.json, dxt/manifest.json,
 mcp-server.json, mcp-server.full.json, llms-full.txt, llms-full.en.txt,
-CLAUDE.md) must align with this single number.
+) must align with this single number.
+
+Agent entry shims such as ``CLAUDE.md`` intentionally do not hardcode volatile
+counts; they point at ``AGENTS.md`` / ``scripts/distribution_manifest.yml``.
 
 This script is read-only. Use ``sync_mcp_counts.py`` to apply fixes.
 
@@ -129,7 +132,6 @@ JSON_SITES: list[tuple[Path, list[str]]] = [
 TEXT_SITES: list[tuple[Path, list[str]]] = [
     (REPO_ROOT / "site/llms-full.txt", [r"MCP\s*\(\s*(\d+)\s+tools"]),
     (REPO_ROOT / "site/llms-full.en.txt", [r"MCP exposes\s+(\d+)\s+tools"]),
-    (REPO_ROOT / "CLAUDE.md", [r"\*\*(\d+)\s+tools\*\*", r"=\s*(\d+)\s+tools"]),
 ]
 
 

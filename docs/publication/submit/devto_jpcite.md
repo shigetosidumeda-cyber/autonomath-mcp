@@ -7,7 +7,7 @@ canonical_url: https://jpcite.com
 
 ## TL;DR
 
-`uvx autonomath-mcp` is a one-line install MCP server that connects Claude Code / Cursor / ChatGPT Custom GPTs / OpenAI Agents SDK to a unified Japanese public-info corpus: **11,601+ subsidies**, **9,484+ law catalog stubs (e-Gov CC-BY-4.0)**, **1,185+ administrative-disposition cases**, **13,801+ invoice-eligible-issuer records (NTA PDL v1.0)**, **22,258+ enforcement details**, and **503,930+ corporate-entity rows** from gBizINFO. **155 MCP tools** at default gates. Every tool response carries an **Evidence Packet** (`source_url + fetched_at + content_hash`) so AI agents cannot fabricate provenance. Pricing is **fully metered ¥3 per request** (≈ USD 0.02) with **3 anonymous requests/IP/day free** — no API key needed to try it. Operator: **Bookyou Co., Ltd.** (qualified-invoice issuer T8010001213708).
+`uvx autonomath-mcp` is a one-line install MCP server that connects Claude Code / Cursor / ChatGPT Custom GPTs / OpenAI Agents SDK to a unified Japanese public-info corpus: **11,601+ subsidies**, **9,484+ law catalog stubs (e-Gov CC-BY-4.0)**, **1,185+ administrative-disposition cases**, **13,801+ invoice-eligible-issuer records (NTA PDL v1.0)**, **22,258+ enforcement details**, and **503,930+ corporate-entity rows** from gBizINFO. **184 MCP tools** at default gates. Every tool response carries an **Evidence Packet** (`source_url + fetched_at + content_hash`) so AI agents cannot fabricate provenance. Pricing is **fully metered ¥3 per request** (≈ USD 0.02) with **3 anonymous requests/IP/day free** — no API key needed to try it. Operator: **Bookyou Co., Ltd.** (qualified-invoice issuer T8010001213708).
 
 ## Why a Japan-specific Evidence Packet layer?
 

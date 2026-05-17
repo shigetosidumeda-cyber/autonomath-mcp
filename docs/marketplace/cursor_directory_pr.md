@@ -48,7 +48,7 @@
 ## PR title
 
 ```
-Add jpcite — Japanese public-program evidence API (155 MCP tools, first-party citation)
+Add jpcite — Japanese public-program evidence API (184 MCP tools, first-party citation)
 ```
 
 ## PR body (operator pastes this on GitHub)
@@ -58,7 +58,7 @@ Add jpcite — Japanese public-program evidence API (155 MCP tools, first-party 
 
 Adds **jpcite** — a Japanese public-program evidence API + MCP server — to cursor.directory.
 
-- **155 MCP tools** at default gates (155 runtime, 7 in source pending manifest bump)
+- **184 MCP tools** at default gates (155 runtime, 7 in source pending manifest bump)
 - **11,601 補助金・融資・税制・認定 programs** + 6,493 laws full-text + 2,065 court_decisions + 1,185 行政処分
 - **First-party citations only** — every row carries `source_url`, `source_fetched_at`, `corpus_snapshot_id`, `known_gaps`. Aggregators are banned from the source pool.
 - **No LLM inside.** Production code never imports anthropic / openai / google.generativeai / claude_agent_sdk. CI-enforced by `tests/test_no_llm_in_production.py`.

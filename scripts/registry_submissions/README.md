@@ -21,7 +21,7 @@ Drafted submission packets for the 7 MCP registries that require manual action (
 | MCP protocol | 2025-06-18 |
 | Transport | stdio |
 | Install | `uvx autonomath-mcp` (or `pip install autonomath-mcp`) |
-| Tool count | **155 at default gates** (3 additional gated off pending fix; 2 further behind `AUTONOMATH_36_KYOTEI_ENABLED`) |
+| Tool count | **184 at default gates** (3 additional gated off pending fix; 2 further behind `AUTONOMATH_36_KYOTEI_ENABLED`) |
 | Pricing | ¥3/billable unit tax-exclusive (¥3.30 tax-inclusive, fully metered) · 3 req/day per IP free (anonymous, JST next-day reset) · no tier SKUs |
 | Operator | Bookyou株式会社 (T8010001213708) — 代表 梅田茂利 — info@bookyou.net |
 

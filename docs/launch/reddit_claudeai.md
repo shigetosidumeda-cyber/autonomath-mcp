@@ -50,7 +50,7 @@ Now Claude Code can pull subsidy / law / court-decision data while you're coding
 
 ## What's exposed
 
-155 tools at default gates (MCP protocol 2025-06-18), grouped:
+184 tools at default gates (MCP protocol 2025-06-18), grouped:
 
 - **Programs** — `search_programs`, `get_program`, `program_lifecycle`, `program_abstract_structured`
 - **Laws** — `search_by_law`, `get_law_article_am`, `query_at_snapshot` (time-travel)

@@ -343,7 +343,7 @@ Headers: X-API-Key: jc_xxxxx, X-Client-Tag: customer_id_42
 - **vs web search**: jpcite は対応レコードで `source_url` + `source_fetched_at` + `corpus_snapshot_id` + `known_gaps` を返します。web search は出典が generic に劣化し、404 / 改訂前 cache / 同名法人混入のリスクがそのまま LLM に流れる場合があります。
 - **8 業法 fence**: 8 canonical fence (税理士法§52 / 弁護士法§72 / 公認会計士法§47条の2 / 行政書士法§1の2・§19 / 司法書士法§3 / 社会保険労務士法§27 / 弁理士法§75 / 労働基準法§36)。agent dev が「個別税額計算」「契約書 drafting」「登記代理」「監査意見」を踏まない安全装置として、sensitive surface では `_disclaimer` / fence note を同梱します。
 - **8 cohort revenue model** (M&A / 税理士 / 会計士 / FDI / 補助金 consultant / 中小企業 LINE / 信金商工会 / industry packs): agent dev が自分の bundling 先 user 群を 8 cohort のどれにマッピングするか即決可能、各 cohort に dedicated table / cron / route が存在 (CLAUDE.md `Cohort revenue model`)。
-- **155 MCP tools (default gate) + 306 REST paths**: MCP も REST も同 corpus に hit、Custom GPT 30-path 上限向けに `openapi.agent.gpt30.json` slim も別途配信 (34 paths は agent-safe subset)。
+- **184 MCP tools (default gate) + 306 REST paths**: MCP も REST も同 corpus に hit、Custom GPT 30-path 上限向けに `openapi.agent.gpt30.json` slim も別途配信 (34 paths は agent-safe subset)。
 - **数値の規模感**: 11,601 programs + 6,493 laws full-text (+ 9,484 catalog stubs) + 2,286 case studies + 1,185 enforcements + 13,801 invoice_registrants + 503,930 entities + 6.12M facts + 378,342 relations + 335,605 aliases + 181 排他/前提 rules + 33 tax treaty rows。
 - **Stripe metered, agent dev の credit flow-through**: agent dev の Stripe 残高に余剰を貯めず、user 単位で `X-Client-Tag` 付与 → user から SaaS / GPT subscription fee を取り、jpcite ¥3/req コストを SaaS side で hardcap (`X-Cost-Cap-JPY`) しつつ flow through 可能。SaaS 側で credit 余剰負担をしなくて良い設計。
 

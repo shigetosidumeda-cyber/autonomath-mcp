@@ -226,7 +226,7 @@
 
   <section>
     <h2>FAQ</h2>
-    <details><summary>なぜ 30 paths 上限なの?</summary><p>公開 REST は 306 paths、agent-safe OpenAPI は 34 paths、ChatGPT profile は Custom GPT Actions の 30 operations 制限に合わせた 30 paths です。155 MCP tools の全体は MCP 経由 (Claude Code / Cursor / Codex) で利用できます。</p></details>
+    <details><summary>なぜ 30 paths 上限なの?</summary><p>公開 REST は 306 paths、agent-safe OpenAPI は 34 paths、ChatGPT profile は Custom GPT Actions の 30 operations 制限に合わせた 30 paths です。184 MCP tools の全体は MCP 経由 (Claude Code / Cursor / Codex) で利用できます。</p></details>
     <details><summary>API key はどう発行する?</summary><p><a href="/pricing.html#api-paid">/pricing.html#api-paid</a> から Stripe Checkout (consent は <code>custom_text.submit.message</code>) で発行。直後にダッシュボードで <code>jc_...</code> を表示 (新規は <code>jc_</code> プレフィクス、既発行の <code>sk_</code> / <code>am_</code> も互換)。anon free でも試せますが 3 req/IP/日上限。</p></details>
     <details><summary>8 業法 fence とは?</summary><p>jpcite は税理士法§52・弁護士法§72 等の独占業務に抵触する個別助言を返しません。<a href="/legal-fence.html">/legal-fence.html</a> 参照。Instructions にこれを書くことで GPT 自体が独占業務に踏み込まないようにできます。</p></details>
   </section>

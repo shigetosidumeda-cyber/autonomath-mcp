@@ -158,7 +158,7 @@ const open = programs.results
 
 ## MCP usage
 
-MCP server (155 tools, protocol 2025-06-18) を Claude Desktop から起動する例です。
+MCP server (184 tools, protocol 2025-06-18) を Claude Desktop から起動する例です。
 
 For Claude Desktop, drop into `claude_desktop_config.json`:
 

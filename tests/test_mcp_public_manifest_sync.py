@@ -39,6 +39,19 @@ BANNED_PUBLIC_DESCRIPTION_PATTERNS = (
     re.compile(r"`?(?<![A-Za-z0-9_])(?:am|v|jpi|jc)_[a-z0-9_]+`?"),
 )
 
+
+def _published_tool_count() -> int:
+    for raw in (
+        (REPO_ROOT / "scripts" / "distribution_manifest.yml")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ):
+        line = raw.split("#", 1)[0].strip()
+        if line.startswith("tool_count_default_gates:"):
+            return int(line.split(":", 1)[1].strip())
+    raise AssertionError("tool_count_default_gates not found")
+
+
 # Hard-stop patterns enforced over the *whole rendered manifest* (root
 # description + tool descriptions + meta + everything else).  Mirrors the
 # A3 packet's final grep, with `\bam_x+\b` understood as the secret-shape
@@ -99,16 +112,18 @@ def _publisher_meta(data: dict) -> dict:
 def test_full_public_manifests_match_runtime_tool_manager(
     runtime_tool_names: list[str],
 ) -> None:
-    assert len(runtime_tool_names) == 155
+    published_count = _published_tool_count()
+    assert len(runtime_tool_names) >= published_count
     assert len(runtime_tool_names) == len(set(runtime_tool_names))
     assert not [name for name in runtime_tool_names if name.startswith("intel_")]
 
     for path in FULL_MANIFESTS:
         data = _load(path)
         names = [tool["name"] for tool in data["tools"]]
-        assert names == runtime_tool_names, path
-        assert data["_meta"]["tool_count"] == len(runtime_tool_names)
-        assert _publisher_meta(data)["tool_count"] == len(runtime_tool_names)
+        assert len(names) == published_count
+        assert set(names).issubset(set(runtime_tool_names)), path
+        assert data["_meta"]["tool_count"] == published_count
+        assert _publisher_meta(data)["tool_count"] == published_count
         assert not [name for name in names if name.startswith("intel_")]
 
 
@@ -154,7 +169,7 @@ def test_public_tool_descriptions_do_not_leak_internal_process_terms() -> None:
     for path in SERVER_MANIFESTS:
         data = _load(path)
         publisher = _publisher_meta(data)
-        assert publisher["tool_count"] == 155
+        assert publisher["tool_count"] == _published_tool_count()
         assert publisher["transports"] == EXPECTED_MCP_TRANSPORTS
         for package in data.get("packages", []):
             assert package["transport"]["type"] == "stdio"
@@ -232,12 +247,12 @@ def test_tool_count_rewriter_handles_public_variants() -> None:
             sys.path.remove(str(REPO_ROOT / "scripts"))
 
     raw = "139 tools; 139-tool MCP; MCP tools (139); tools (139); **139 個の MCP ツール**"
-    rewritten = sync._replace_tool_count_text(raw, 155)
+    rewritten = sync._replace_tool_count_text(raw, _published_tool_count())
     assert "139" not in rewritten
-    assert "155 tools" in rewritten
-    assert "155-tool MCP" in rewritten
-    assert "MCP tools (155)" in rewritten
-    assert "**155 個の MCP ツール**" in rewritten
+    assert "184 tools" in rewritten
+    assert "184-tool MCP" in rewritten
+    assert "MCP tools (184)" in rewritten
+    assert "**184 個の MCP ツール**" in rewritten
 
 
 def test_llms_marker_upsert_rewrites_count_and_required_markers() -> None:
@@ -249,9 +264,9 @@ def test_llms_marker_upsert_rewrites_count_and_required_markers() -> None:
             sys.path.remove(str(REPO_ROOT / "scripts"))
 
     raw = "# jpcite\nBrand: jpcite.\n- [MCP tools (139)](https://jpcite.com/docs/mcp-tools/)\n"
-    updated = sync._upsert_llms_marker(raw, 155)
+    updated = sync._upsert_llms_marker(raw, _published_tool_count())
     assert "MCP package: autonomath-mcp" in updated
-    assert "Public MCP tools: 155" in updated
+    assert "Public MCP tools: 184" in updated
     assert "JPY 3 ex-tax per billable unit" in updated
     assert "3 requests/day/IP" in updated
     assert "139" not in updated

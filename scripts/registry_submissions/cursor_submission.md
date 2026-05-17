@@ -63,13 +63,13 @@ https://jpcite.com/docs/
 ### Short description (~160 chars)
 
 ```
-Search 11,601 subsidies + 6,493 laws full-text indexed + 2,065 court decisions + 13,801 invoice registrants from Cursor. 155 MCP tools, primary-source URLs, ¥3/billable unit (¥3.30 tax-incl), 3/day free anon.
+Search 11,601 subsidies + 6,493 laws full-text indexed + 2,065 court decisions + 13,801 invoice registrants from Cursor. 184 MCP tools, primary-source URLs, ¥3/billable unit (¥3.30 tax-incl), 3/day free anon.
 ```
 
 ### Long description
 
 ```
-AutonoMath exposes Japanese institutional public data via 155 MCP tools at default gates (protocol 2025-06-18, stdio). Drop it into Cursor and ask: 「東京都の農業 DX 補助金を期日順に教えて」or「houjin_bangou=… の DD プロファイルと適格事業者登録を確認して」.
+AutonoMath exposes Japanese institutional public data via 184 MCP tools at default gates (protocol 2025-06-18, stdio). Drop it into Cursor and ask: 「東京都の農業 DX 補助金を期日順に教えて」or「houjin_bangou=… の DD プロファイルと適格事業者登録を確認して」.
 
 Coverage: 11,601 searchable programs (補助金 / 融資 / 税制 / 認定) + 2,286 採択事例 + 108 loan products with 3-axis guarantor decomposition (担保 / 個人保証人 / 第三者保証人) + 1,185 行政処分 + 6,493 laws full-text indexed + 9,484 law metadata records (e-Gov CC-BY) + 2,065 court decisions + 362 bids + 50 tax rulesets + 13,801 国税庁 qualified-invoice registrants (PDL v1.0) + 4,300 sourced compatibility pairs + 181 exclusion / prerequisite rules. Cross-dataset glue: trace_program_to_law / find_cases_by_law / combined_compliance_check.
 
@@ -139,7 +139,7 @@ stdio
 ### Tool count (if asked)
 
 ```
-155 at default gates. Source of truth: tools/list at runtime.
+184 at default gates. Source of truth: tools/list at runtime.
 ```
 
 ### Pricing
@@ -193,7 +193,7 @@ https://jpcite.com/tos
 
 ```
 - 79-query gold-standard public eval suite at evals/ runs in CI on every PR; per-tool precision in docs/per_tool_precision.md.
-- Honest tool count = 155 at default gates. Older snapshots ("55", "59", "66", "72") may appear in historical files and should be ignored.
+- Honest tool count = 184 at default gates. Older snapshots ("55", "59", "66", "72") may appear in historical files and should be ignored.
 - 4 broken tools are deliberately gated OFF (query_at_snapshot, intent_of, reason_answer, related_programs) — they remain in code so a fix re-enables them without a manifest bump.
 - Evidence Pre-fetch / precomputed intelligence prepares source URLs, fetched timestamps, exclusion-rule checks, and cross-dataset joins for retrieval; describe it as evidence packaging, not as model-cost savings.
 - major public rows include primary-source URL lineage; aggregator domains banned.
