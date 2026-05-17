@@ -7,11 +7,11 @@ Targets (one --target per run, or --target all):
   tsutatsu_idx — projection over am_law_article tsutatsu rows into nta_tsutatsu_index
 
 Usage:
-  python scripts/ingest/ingest_nta_corpus.py --target saiketsu --max-minutes 30
-  python scripts/ingest/ingest_nta_corpus.py --target shitsugi --max-minutes 30
-  python scripts/ingest/ingest_nta_corpus.py --target bunsho --max-minutes 30
-  python scripts/ingest/ingest_nta_corpus.py --target tsutatsu_idx
-  python scripts/ingest/ingest_nta_corpus.py --target all --max-minutes 30
+  python scripts/ingest/ingest_nta_corpus.py --target saiketsu --max-minutes 30 --commit
+  python scripts/ingest/ingest_nta_corpus.py --target shitsugi --max-minutes 30 --commit
+  python scripts/ingest/ingest_nta_corpus.py --target bunsho --max-minutes 30 --commit
+  python scripts/ingest/ingest_nta_corpus.py --target tsutatsu_idx --commit
+  python scripts/ingest/ingest_nta_corpus.py --target all --max-minutes 30 --commit
 
 Constraints:
   * 2 sec / req delay (政府サイトに優しく; robots.txt is permissive but we go slower).
@@ -50,7 +50,6 @@ except Exception:
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DB_PATH = REPO_ROOT / "autonomath.db"
 CURSOR_DIR = REPO_ROOT / "data" / "autonomath"
-CURSOR_DIR.mkdir(parents=True, exist_ok=True)
 
 KFS_BASE = "https://www.kfs.go.jp"
 NTA_BASE = "https://www.nta.go.jp"
@@ -175,28 +174,34 @@ def fetch(url: str, *, retries: int = 3) -> str:
     raise RuntimeError(f"fetch failed: {url}: {last_err}")
 
 
-def connect(db: Path) -> sqlite3.Connection:
-    conn = sqlite3.connect(str(db), timeout=300.0, isolation_level=None)
+def connect(db: Path, *, readonly: bool = False) -> sqlite3.Connection:
+    if readonly:
+        conn = sqlite3.connect(f"file:{db.resolve()}?mode=ro", timeout=300.0, uri=True)
+    else:
+        conn = sqlite3.connect(str(db), timeout=300.0, isolation_level=None)
     conn.execute("PRAGMA busy_timeout = 300000;")
-    conn.execute("PRAGMA journal_mode = WAL;")
+    if not readonly:
+        conn.execute("PRAGMA journal_mode = WAL;")
     conn.execute("PRAGMA foreign_keys = ON;")
     conn.row_factory = sqlite3.Row
     return conn
 
 
-def cursor_path(target: str) -> Path:
-    return CURSOR_DIR / f"_nta_{target}_cursor.txt"
+def cursor_path(target: str, *, cursor_dir: Path | None = None) -> Path:
+    return (cursor_dir or CURSOR_DIR) / f"_nta_{target}_cursor.txt"
 
 
-def read_cursor(target: str) -> str | None:
-    p = cursor_path(target)
+def read_cursor(target: str, *, cursor_dir: Path | None = None) -> str | None:
+    p = cursor_path(target, cursor_dir=cursor_dir)
     if p.exists():
         return p.read_text(encoding="utf-8").strip() or None
     return None
 
 
-def write_cursor(target: str, value: str) -> None:
-    cursor_path(target).write_text(value, encoding="utf-8")
+def write_cursor(target: str, value: str, *, cursor_dir: Path | None = None) -> None:
+    p = cursor_path(target, cursor_dir=cursor_dir)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(value, encoding="utf-8")
 
 
 def now_iso() -> str:
@@ -290,12 +295,17 @@ def parse_volume_period(volume_no: int) -> str:
 
 
 def ingest_saiketsu(
-    conn: sqlite3.Connection, *, max_seconds: float, recent_only_years: int = 5
+    conn: sqlite3.Connection,
+    *,
+    max_seconds: float,
+    recent_only_years: int = 5,
+    dry_run: bool = False,
+    cursor_dir: Path | None = None,
 ) -> dict[str, int]:
     """Ingest saiketsu volumes from newest to oldest. Cursor is the last-volume:case_no done."""
     t_start = time.time()
     counts = {"volumes_seen": 0, "decisions_seen": 0, "decisions_inserted": 0}
-    cursor = read_cursor("saiketsu")
+    cursor = read_cursor("saiketsu", cursor_dir=cursor_dir)
     last_vol, last_case = 0, ""
     if cursor:
         try:
@@ -341,7 +351,8 @@ def ingest_saiketsu(
                 continue
             if time.time() - t_start > max_seconds:
                 print(f"[saiketsu] time cap hit at vol={volume_no} case={case_no}", flush=True)
-                write_cursor("saiketsu", f"{volume_no}:{case_no}")
+                if not dry_run:
+                    write_cursor("saiketsu", f"{volume_no}:{case_no}", cursor_dir=cursor_dir)
                 return counts
             counts["decisions_seen"] += 1
             # Skip if already in DB
@@ -349,7 +360,8 @@ def ingest_saiketsu(
                 "SELECT 1 FROM nta_saiketsu WHERE source_url=?", (dec_url,)
             ).fetchone()
             if existing:
-                write_cursor("saiketsu", f"{volume_no}:{case_no}")
+                if not dry_run:
+                    write_cursor("saiketsu", f"{volume_no}:{case_no}", cursor_dir=cursor_dir)
                 continue
             try:
                 page_html = fetch(dec_url)
@@ -361,27 +373,31 @@ def ingest_saiketsu(
                 row = parse_saiketsu_decision(
                     volume_no, case_no, tax_type, dec_url, page_html, fiscal_period
                 )
-                conn.execute(
-                    """INSERT OR IGNORE INTO nta_saiketsu
-                       (volume_no, case_no, decision_date, fiscal_period, tax_type,
-                        title, decision_summary, fulltext, source_url, license, ingested_at)
-                       VALUES (?,?,?,?,?,?,?,?,?,'gov_standard',?)""",
-                    (
-                        row["volume_no"],
-                        row["case_no"],
-                        row["decision_date"],
-                        row["fiscal_period"],
-                        row["tax_type"],
-                        row["title"],
-                        row["decision_summary"],
-                        row["fulltext"],
-                        row["source_url"],
-                        now_iso(),
-                    ),
-                )
-                if conn.total_changes > 0:
+                if dry_run:
                     counts["decisions_inserted"] += 1
-                write_cursor("saiketsu", f"{volume_no}:{case_no}")
+                else:
+                    before_changes = conn.total_changes
+                    conn.execute(
+                        """INSERT OR IGNORE INTO nta_saiketsu
+                           (volume_no, case_no, decision_date, fiscal_period, tax_type,
+                            title, decision_summary, fulltext, source_url, license, ingested_at)
+                           VALUES (?,?,?,?,?,?,?,?,?,'gov_standard',?)""",
+                        (
+                            row["volume_no"],
+                            row["case_no"],
+                            row["decision_date"],
+                            row["fiscal_period"],
+                            row["tax_type"],
+                            row["title"],
+                            row["decision_summary"],
+                            row["fulltext"],
+                            row["source_url"],
+                            now_iso(),
+                        ),
+                    )
+                    if conn.total_changes > before_changes:
+                        counts["decisions_inserted"] += 1
+                    write_cursor("saiketsu", f"{volume_no}:{case_no}", cursor_dir=cursor_dir)
             except Exception as exc:
                 print(f"[saiketsu] vol={volume_no}/{case_no} parse failed: {exc}", flush=True)
             time.sleep(DELAY_SEC)
@@ -468,10 +484,16 @@ def parse_shitsugi_page(url: str, html: str, category: str) -> dict[str, Any] | 
     }
 
 
-def ingest_shitsugi(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str, int]:
+def ingest_shitsugi(
+    conn: sqlite3.Connection,
+    *,
+    max_seconds: float,
+    dry_run: bool = False,
+    cursor_dir: Path | None = None,
+) -> dict[str, int]:
     t_start = time.time()
     counts = {"pages_seen": 0, "pages_inserted": 0, "categories_done": 0}
-    cursor = read_cursor("shitsugi") or ""
+    cursor = read_cursor("shitsugi", cursor_dir=cursor_dir) or ""
 
     for category in SHITSUGI_CATEGORIES:
         if time.time() - t_start > max_seconds:
@@ -487,7 +509,8 @@ def ingest_shitsugi(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str
         print(f"[shitsugi] cat={category}: {len(page_urls)} pages discovered", flush=True)
         for url in page_urls:
             if time.time() - t_start > max_seconds:
-                write_cursor("shitsugi", f"partial:{category}:{url}")
+                if not dry_run:
+                    write_cursor("shitsugi", f"partial:{category}:{url}", cursor_dir=cursor_dir)
                 return counts
             counts["pages_seen"] += 1
             existing = conn.execute(
@@ -504,28 +527,33 @@ def ingest_shitsugi(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str
             try:
                 row = parse_shitsugi_page(url, page_html, category)
                 if row:
-                    conn.execute(
-                        """INSERT OR IGNORE INTO nta_shitsugi
-                           (slug, category, question, answer, related_law,
-                            source_url, license, ingested_at)
-                           VALUES (?,?,?,?,?,?,'gov_standard',?)""",
-                        (
-                            row["slug"],
-                            row["category"],
-                            row["question"],
-                            row["answer"],
-                            row["related_law"],
-                            row["source_url"],
-                            now_iso(),
-                        ),
-                    )
-                    if conn.total_changes > 0:
+                    if dry_run:
                         counts["pages_inserted"] += 1
+                    else:
+                        before_changes = conn.total_changes
+                        conn.execute(
+                            """INSERT OR IGNORE INTO nta_shitsugi
+                               (slug, category, question, answer, related_law,
+                                source_url, license, ingested_at)
+                               VALUES (?,?,?,?,?,?,'gov_standard',?)""",
+                            (
+                                row["slug"],
+                                row["category"],
+                                row["question"],
+                                row["answer"],
+                                row["related_law"],
+                                row["source_url"],
+                                now_iso(),
+                            ),
+                        )
+                        if conn.total_changes > before_changes:
+                            counts["pages_inserted"] += 1
             except Exception as exc:
                 print(f"[shitsugi] {url} parse failed: {exc}", flush=True)
             time.sleep(DELAY_SEC)
         counts["categories_done"] += 1
-        write_cursor("shitsugi", f"partial:done:{category}")
+        if not dry_run:
+            write_cursor("shitsugi", f"partial:done:{category}", cursor_dir=cursor_dir)
     return counts
 
 
@@ -618,10 +646,16 @@ def parse_bunsho_page(url: str, html: str, category: str) -> dict[str, Any] | No
     }
 
 
-def ingest_bunsho(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str, int]:
+def ingest_bunsho(
+    conn: sqlite3.Connection,
+    *,
+    max_seconds: float,
+    dry_run: bool = False,
+    cursor_dir: Path | None = None,
+) -> dict[str, int]:
     t_start = time.time()
     counts = {"pages_seen": 0, "pages_inserted": 0}
-    cursor = read_cursor("bunsho") or ""
+    cursor = read_cursor("bunsho", cursor_dir=cursor_dir) or ""
 
     for category, idx_no in BUNSHO_CATEGORIES:
         if time.time() - t_start > max_seconds:
@@ -638,7 +672,8 @@ def ingest_bunsho(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str, 
         time.sleep(DELAY_SEC)
         for url in entries:
             if time.time() - t_start > max_seconds:
-                write_cursor("bunsho", f"partial:{category}:{url}")
+                if not dry_run:
+                    write_cursor("bunsho", f"partial:{category}:{url}", cursor_dir=cursor_dir)
                 return counts
             counts["pages_seen"] += 1
             existing = conn.execute(
@@ -655,23 +690,27 @@ def ingest_bunsho(conn: sqlite3.Connection, *, max_seconds: float) -> dict[str, 
             try:
                 row = parse_bunsho_page(url, page_html, category)
                 if row and (row["request_summary"] or row["answer"]):
-                    conn.execute(
-                        """INSERT OR IGNORE INTO nta_bunsho_kaitou
-                           (slug, category, response_date, request_summary, answer,
-                            source_url, license, ingested_at)
-                           VALUES (?,?,?,?,?,?,'gov_standard',?)""",
-                        (
-                            row["slug"],
-                            row["category"],
-                            row["response_date"],
-                            row["request_summary"],
-                            row["answer"],
-                            row["source_url"],
-                            now_iso(),
-                        ),
-                    )
-                    if conn.total_changes > 0:
+                    if dry_run:
                         counts["pages_inserted"] += 1
+                    else:
+                        before_changes = conn.total_changes
+                        conn.execute(
+                            """INSERT OR IGNORE INTO nta_bunsho_kaitou
+                               (slug, category, response_date, request_summary, answer,
+                                source_url, license, ingested_at)
+                               VALUES (?,?,?,?,?,?,'gov_standard',?)""",
+                            (
+                                row["slug"],
+                                row["category"],
+                                row["response_date"],
+                                row["request_summary"],
+                                row["answer"],
+                                row["source_url"],
+                                now_iso(),
+                            ),
+                        )
+                        if conn.total_changes > before_changes:
+                            counts["pages_inserted"] += 1
             except Exception as exc:
                 print(f"[bunsho] {url} parse failed: {exc}", flush=True)
             time.sleep(DELAY_SEC)
@@ -691,7 +730,7 @@ LAW_PREFIX_MAP = {
 }
 
 
-def ingest_tsutatsu_idx(conn: sqlite3.Connection) -> dict[str, int]:
+def ingest_tsutatsu_idx(conn: sqlite3.Connection, *, dry_run: bool = False) -> dict[str, int]:
     counts = {"rows_indexed": 0}
     rows = conn.execute(
         """SELECT law_canonical_id, article_number, title, text_full,
@@ -709,6 +748,9 @@ def ingest_tsutatsu_idx(conn: sqlite3.Connection) -> dict[str, int]:
         code = f"{prefix}-{row['article_number']}"
         body_excerpt = (row["text_full"] or "")[:500]
         try:
+            counts["rows_indexed"] += 1
+            if dry_run:
+                continue
             conn.execute(
                 """INSERT INTO nta_tsutatsu_index
                    (code, law_canonical_id, article_number, title, body_excerpt,
@@ -730,7 +772,6 @@ def ingest_tsutatsu_idx(conn: sqlite3.Connection) -> dict[str, int]:
                     refreshed_at,
                 ),
             )
-            counts["rows_indexed"] += 1
         except Exception as exc:
             print(f"[tsutatsu_idx] {code} failed: {exc}", flush=True)
     return counts
@@ -754,9 +795,17 @@ def main() -> int:
         help="For saiketsu, restrict to most recent N years (0=all)",
     )
     ap.add_argument("--db", default=str(DB_PATH))
+    ap.add_argument(
+        "--cursor-dir",
+        type=Path,
+        default=CURSOR_DIR,
+        help="Directory for resumable cursor files; use a temp dir for canaries.",
+    )
+    ap.add_argument("--dry-run", action="store_true", default=True)
+    ap.add_argument("--commit", action="store_false", dest="dry_run")
     args = ap.parse_args()
 
-    conn = connect(Path(args.db))
+    conn = connect(Path(args.db), readonly=args.dry_run)
     max_sec = args.max_minutes * 60.0
 
     targets = (
@@ -776,14 +825,22 @@ def main() -> int:
         try:
             if target == "saiketsu":
                 overall[target] = ingest_saiketsu(
-                    conn, max_seconds=budget, recent_only_years=args.recent_years
+                    conn,
+                    max_seconds=budget,
+                    recent_only_years=args.recent_years,
+                    dry_run=args.dry_run,
+                    cursor_dir=args.cursor_dir,
                 )
             elif target == "shitsugi":
-                overall[target] = ingest_shitsugi(conn, max_seconds=budget)
+                overall[target] = ingest_shitsugi(
+                    conn, max_seconds=budget, dry_run=args.dry_run, cursor_dir=args.cursor_dir
+                )
             elif target == "bunsho":
-                overall[target] = ingest_bunsho(conn, max_seconds=budget)
+                overall[target] = ingest_bunsho(
+                    conn, max_seconds=budget, dry_run=args.dry_run, cursor_dir=args.cursor_dir
+                )
             elif target == "tsutatsu_idx":
-                overall[target] = ingest_tsutatsu_idx(conn)
+                overall[target] = ingest_tsutatsu_idx(conn, dry_run=args.dry_run)
         except Exception as exc:
             print(f"[{target}] FAILED: {exc}", flush=True)
             import traceback
