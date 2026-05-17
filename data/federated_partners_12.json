@@ -1,0 +1,119 @@
+{
+  "schema_version": "jpcite.federated_partner.v1",
+  "schema_ref": "schemas/jpcir/federated_partner.schema.json",
+  "description": "DD1 12-partner federated MCP roster (2026-05-17). Wave 51 dim R 6-partner curated set is preserved at data/federated_partners.json (legacy contract); this file is the additive DD1 expansion that broadens agent discovery surfaces across billing / CRM / enterprise messaging / document management / MCP federation hubs / cross-promotion. 6 base partners (freee / github / linear / mf / notion / slack) are augmented by 6 expansion partners (aws_bedrock / claude_ai / google_drive / ms_teams / salesforce / stripe). Partners listed alphabetically by partner_id. Endpoints verified 2026-05-17. Do NOT add self-reference (jpcite / jpintel / autonomath) to this list — federation must be to peers only. NO aggregator MCP endpoints — first-party only.",
+  "verified_at": "2026-05-17",
+  "partner_count": 12,
+  "supersedes_via_addition": "data/federated_partners.json",
+  "yaml_companion": "data/federated_mcp_partners.yaml",
+  "partners": [
+    {
+      "partner_id": "aws_bedrock",
+      "name": "AWS Bedrock Agents",
+      "official_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": ["agent_runtime", "bedrock", "foundation_model", "federation"],
+      "use_when": "Query needs to orchestrate or hand off to an AWS Bedrock managed agent (foundation-model-backed) — Bedrock owns the agent runtime, jpcite does not."
+    },
+    {
+      "partner_id": "claude_ai",
+      "name": "Anthropic Claude.ai",
+      "official_url": "https://docs.anthropic.com/en/docs/mcp",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": ["assistant", "mcp_client", "cross_promotion", "documentation"],
+      "use_when": "Query is about end-user Claude.ai workflows, MCP client wiring, or cross-promotion of jpcite to Claude.ai users — Anthropic owns the Claude.ai surface, jpcite does not."
+    },
+    {
+      "partner_id": "freee",
+      "name": "freee 会計",
+      "official_url": "https://developer.freee.co.jp/",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": ["accounting", "invoice", "expense", "tax_filing", "payroll", "japan"],
+      "use_when": "Query needs the user's private accounting ledger, draft invoices, or 確定申告 working data — freee owns the user's books, jpcite does not."
+    },
+    {
+      "partner_id": "github",
+      "name": "GitHub",
+      "official_url": "https://github.com/github/github-mcp-server",
+      "mcp_endpoint": "https://api.githubcopilot.com/mcp/",
+      "mcp_endpoint_status": "official",
+      "capabilities": ["code", "repository", "issue", "pull_request", "review", "actions"],
+      "use_when": "Query references source code, repositories, pull requests, issues, or CI workflows — GitHub hosts the canonical repo state, jpcite does not."
+    },
+    {
+      "partner_id": "google_drive",
+      "name": "Google Drive",
+      "official_url": "https://developers.google.com/drive",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": ["doc", "drive", "spreadsheet", "file_storage", "google"],
+      "use_when": "Query needs files, Google Sheets, or Google Docs stored in the user's Drive — Google Drive owns the file graph, jpcite does not."
+    },
+    {
+      "partner_id": "linear",
+      "name": "Linear",
+      "official_url": "https://linear.app/developers",
+      "mcp_endpoint": "https://mcp.linear.app/sse",
+      "mcp_endpoint_status": "official",
+      "capabilities": ["issue", "project", "cycle", "roadmap", "product"],
+      "use_when": "Query needs product issues, cycles, projects, or roadmap items — Linear owns the team's product tracker, jpcite does not."
+    },
+    {
+      "partner_id": "mf",
+      "name": "マネーフォワード クラウド",
+      "official_url": "https://biz.moneyforward.com/",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": ["accounting", "invoice", "expense", "payroll", "japan"],
+      "use_when": "Query needs the user's private accounting ledger or 給与計算 data and the user is on MoneyForward Cloud — MF owns the user's books, jpcite does not."
+    },
+    {
+      "partner_id": "ms_teams",
+      "name": "Microsoft Teams",
+      "official_url": "https://learn.microsoft.com/en-us/microsoftteams/platform/",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": ["chat", "message", "channel", "meeting", "enterprise", "microsoft"],
+      "use_when": "Query needs to read enterprise Teams chat, channel posts, or meeting metadata — Microsoft Teams owns the enterprise messaging state, jpcite does not."
+    },
+    {
+      "partner_id": "notion",
+      "name": "Notion",
+      "official_url": "https://developers.notion.com/",
+      "mcp_endpoint": "https://mcp.notion.com/mcp",
+      "mcp_endpoint_status": "official",
+      "capabilities": ["doc", "knowledge_base", "wiki", "database", "collab"],
+      "use_when": "Query needs internal documents, wiki pages, or knowledge-base entries — Notion owns the team's doc graph, jpcite does not."
+    },
+    {
+      "partner_id": "salesforce",
+      "name": "Salesforce",
+      "official_url": "https://developer.salesforce.com/",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": ["crm", "opportunity", "account", "contact", "lead", "pipeline"],
+      "use_when": "Query needs CRM account / opportunity / lead state from Salesforce — Salesforce owns the CRM record graph, jpcite does not."
+    },
+    {
+      "partner_id": "slack",
+      "name": "Slack",
+      "official_url": "https://api.slack.com/",
+      "mcp_endpoint": null,
+      "mcp_endpoint_status": "none_official",
+      "capabilities": ["chat", "message", "channel", "notify", "workflow"],
+      "use_when": "Query needs to read team chat history or send a notification message — Slack owns the team's chat state, jpcite does not."
+    },
+    {
+      "partner_id": "stripe",
+      "name": "Stripe",
+      "official_url": "https://docs.stripe.com/mcp",
+      "mcp_endpoint": "https://mcp.stripe.com",
+      "mcp_endpoint_status": "official",
+      "capabilities": ["billing", "payment", "invoice", "subscription", "reconciliation", "stripe"],
+      "use_when": "Query needs Stripe billing, payment, subscription, or invoice reconciliation data — Stripe owns the billing state, jpcite does not."
+    }
+  ]
+}

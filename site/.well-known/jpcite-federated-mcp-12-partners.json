@@ -1,0 +1,200 @@
+{
+  "schema_version": "jpcite.federated_mcp_discovery.v1",
+  "title": "jpcite Federated MCP 12-Partner Hub (DD1 expansion, 2026-05-17)",
+  "description": "Wave 51 dim R hub layer expanded from 6 to 12 partners. When an agent query falls outside jpcite's Japanese-public-program scope, the recommendation engine surfaces one of these 12 first-party partner MCP / API endpoints. NO aggregator endpoints, NO LLM inference at runtime, NO HTTP proxying — agents call partners directly.",
+  "operator": "Bookyou株式会社",
+  "operator_corporate_number": "8010001213708",
+  "canonical_site": "https://jpcite.com",
+  "partner_count": 12,
+  "verified_at": "2026-05-17",
+  "supersedes": {
+    "via": "addition_not_replacement",
+    "previous_partner_count": 6,
+    "previous_artifact": "/.well-known/jpcite-federation.json"
+  },
+  "discovery_priority_legend": {
+    "1": "Japan-specific accounting partners (freee / mf) — highest match for jpcite's domain.",
+    "2": "Developer / product / chat / knowledge-base infrastructure (github / linear / notion / slack).",
+    "3": "Enterprise commerce / CRM / messaging (stripe / salesforce / ms_teams).",
+    "4": "Document management / agent-runtime federation (google_drive / aws_bedrock).",
+    "5": "Cross-promotion surfaces (claude_ai)."
+  },
+  "tier_legend": {
+    "base": "Wave 51 dim R original cohort (landed 2026-05-16).",
+    "expansion": "DD1 expansion added 2026-05-17 to broaden agent-discovery surfaces."
+  },
+  "partners": [
+    {
+      "partner_id": "aws_bedrock",
+      "name": "AWS Bedrock Agents",
+      "category": "mcp_federation_hub",
+      "use_case_match": "agent_runtime_federation",
+      "official_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/agents.html",
+      "mcp_server_url": null,
+      "mcp_endpoint_status": "none_official",
+      "discovery_priority": 4,
+      "tier": "expansion",
+      "capabilities": ["agent_runtime", "bedrock", "foundation_model", "federation"],
+      "use_when": "Query needs to orchestrate or hand off to an AWS Bedrock managed agent (foundation-model-backed) — Bedrock owns the agent runtime, jpcite does not."
+    },
+    {
+      "partner_id": "claude_ai",
+      "name": "Anthropic Claude.ai",
+      "category": "cross_promotion",
+      "use_case_match": "assistant_cross_promotion",
+      "official_url": "https://docs.anthropic.com/en/docs/mcp",
+      "mcp_server_url": null,
+      "mcp_endpoint_status": "none_official",
+      "discovery_priority": 5,
+      "tier": "expansion",
+      "capabilities": ["assistant", "mcp_client", "cross_promotion", "documentation"],
+      "use_when": "Query is about end-user Claude.ai workflows, MCP client wiring, or cross-promotion of jpcite to Claude.ai users — Anthropic owns the Claude.ai surface, jpcite does not."
+    },
+    {
+      "partner_id": "freee",
+      "name": "freee 会計",
+      "category": "accounting",
+      "use_case_match": "jp_accounting_ledger",
+      "official_url": "https://developer.freee.co.jp/",
+      "mcp_server_url": null,
+      "mcp_endpoint_status": "none_official",
+      "discovery_priority": 1,
+      "tier": "base",
+      "capabilities": ["accounting", "invoice", "expense", "tax_filing", "payroll", "japan"],
+      "use_when": "Query needs the user's private accounting ledger, draft invoices, or 確定申告 working data — freee owns the user's books, jpcite does not."
+    },
+    {
+      "partner_id": "github",
+      "name": "GitHub",
+      "category": "developer",
+      "use_case_match": "source_code_state",
+      "official_url": "https://github.com/github/github-mcp-server",
+      "mcp_server_url": "https://api.githubcopilot.com/mcp/",
+      "mcp_endpoint_status": "official",
+      "discovery_priority": 2,
+      "tier": "base",
+      "capabilities": ["code", "repository", "issue", "pull_request", "review", "actions"],
+      "use_when": "Query references source code, repositories, pull requests, issues, or CI workflows — GitHub hosts the canonical repo state, jpcite does not."
+    },
+    {
+      "partner_id": "google_drive",
+      "name": "Google Drive",
+      "category": "document_management",
+      "use_case_match": "doc_management",
+      "official_url": "https://developers.google.com/drive",
+      "mcp_server_url": null,
+      "mcp_endpoint_status": "none_official",
+      "discovery_priority": 4,
+      "tier": "expansion",
+      "capabilities": ["doc", "drive", "spreadsheet", "file_storage", "google"],
+      "use_when": "Query needs files, Google Sheets, or Google Docs stored in the user's Drive — Google Drive owns the file graph, jpcite does not."
+    },
+    {
+      "partner_id": "linear",
+      "name": "Linear",
+      "category": "product",
+      "use_case_match": "product_tracker",
+      "official_url": "https://linear.app/developers",
+      "mcp_server_url": "https://mcp.linear.app/sse",
+      "mcp_endpoint_status": "official",
+      "discovery_priority": 2,
+      "tier": "base",
+      "capabilities": ["issue", "project", "cycle", "roadmap", "product"],
+      "use_when": "Query needs product issues, cycles, projects, or roadmap items — Linear owns the team's product tracker, jpcite does not."
+    },
+    {
+      "partner_id": "mf",
+      "name": "マネーフォワード クラウド",
+      "category": "accounting",
+      "use_case_match": "jp_accounting_ledger",
+      "official_url": "https://biz.moneyforward.com/",
+      "mcp_server_url": null,
+      "mcp_endpoint_status": "none_official",
+      "discovery_priority": 1,
+      "tier": "base",
+      "capabilities": ["accounting", "invoice", "expense", "payroll", "japan"],
+      "use_when": "Query needs the user's private accounting ledger or 給与計算 data and the user is on MoneyForward Cloud — MF owns the user's books, jpcite does not."
+    },
+    {
+      "partner_id": "ms_teams",
+      "name": "Microsoft Teams",
+      "category": "enterprise_messaging",
+      "use_case_match": "enterprise_chat",
+      "official_url": "https://learn.microsoft.com/en-us/microsoftteams/platform/",
+      "mcp_server_url": null,
+      "mcp_endpoint_status": "none_official",
+      "discovery_priority": 3,
+      "tier": "expansion",
+      "capabilities": ["chat", "message", "channel", "meeting", "enterprise", "microsoft"],
+      "use_when": "Query needs to read enterprise Teams chat, channel posts, or meeting metadata — Microsoft Teams owns the enterprise messaging state, jpcite does not."
+    },
+    {
+      "partner_id": "notion",
+      "name": "Notion",
+      "category": "knowledge_base",
+      "use_case_match": "team_doc_graph",
+      "official_url": "https://developers.notion.com/",
+      "mcp_server_url": "https://mcp.notion.com/mcp",
+      "mcp_endpoint_status": "official",
+      "discovery_priority": 2,
+      "tier": "base",
+      "capabilities": ["doc", "knowledge_base", "wiki", "database", "collab"],
+      "use_when": "Query needs internal documents, wiki pages, or knowledge-base entries — Notion owns the team's doc graph, jpcite does not."
+    },
+    {
+      "partner_id": "salesforce",
+      "name": "Salesforce",
+      "category": "crm",
+      "use_case_match": "crm_record_state",
+      "official_url": "https://developer.salesforce.com/",
+      "mcp_server_url": null,
+      "mcp_endpoint_status": "none_official",
+      "discovery_priority": 3,
+      "tier": "expansion",
+      "capabilities": ["crm", "opportunity", "account", "contact", "lead", "pipeline"],
+      "use_when": "Query needs CRM account / opportunity / lead state from Salesforce — Salesforce owns the CRM record graph, jpcite does not."
+    },
+    {
+      "partner_id": "slack",
+      "name": "Slack",
+      "category": "chat",
+      "use_case_match": "team_chat_state",
+      "official_url": "https://api.slack.com/",
+      "mcp_server_url": null,
+      "mcp_endpoint_status": "none_official",
+      "discovery_priority": 2,
+      "tier": "base",
+      "capabilities": ["chat", "message", "channel", "notify", "workflow"],
+      "use_when": "Query needs to read team chat history or send a notification message — Slack owns the team's chat state, jpcite does not."
+    },
+    {
+      "partner_id": "stripe",
+      "name": "Stripe",
+      "category": "billing",
+      "use_case_match": "billing_reconciliation",
+      "official_url": "https://docs.stripe.com/mcp",
+      "mcp_server_url": "https://mcp.stripe.com",
+      "mcp_endpoint_status": "official",
+      "discovery_priority": 3,
+      "tier": "expansion",
+      "capabilities": ["billing", "payment", "invoice", "subscription", "reconciliation", "stripe"],
+      "use_when": "Query needs Stripe billing, payment, subscription, or invoice reconciliation data — Stripe owns the billing state, jpcite does not."
+    }
+  ],
+  "interop_policy": {
+    "trust_default": "advisory",
+    "auto_discover": false,
+    "allowlist_only": true,
+    "operator_review_required": true,
+    "llm_inference_at_runtime": false,
+    "aggregator_endpoints_allowed": false,
+    "self_reference_allowed": false
+  },
+  "cross_references": {
+    "yaml_companion": "https://jpcite.com/data/federated_mcp_partners.yaml",
+    "canonical_json": "https://jpcite.com/data/federated_partners_12.json",
+    "legacy_federation_discovery": "https://jpcite.com/.well-known/jpcite-federation.json",
+    "schema": "https://jpcite.com/schemas/jpcir/federated_partner.schema.json",
+    "design_doc": "https://jpcite.com/docs/_internal/DD1_FEDERATED_MCP_12_PARTNER_2026_05_17.md"
+  }
+}
