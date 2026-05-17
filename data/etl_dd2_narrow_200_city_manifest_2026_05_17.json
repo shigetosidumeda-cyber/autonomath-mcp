@@ -1,0 +1,56 @@
+{
+  "manifest_id": "dd2_narrow_200_city_2026_05_17",
+  "version": "1.0",
+  "generated_at": "2026-05-17",
+  "supersedes": "etl_dd2_municipality_manifest_2026_05_17.json (legacy, 1718 full scope)",
+  "scope": "200 city high-density cover (gyousei + 補助金 cohort 95%+)",
+  "cost_estimate_usd": 750,
+  "cost_estimate_jpy": 112500,
+  "roi_target": 13.3,
+  "tier_breakdown": {
+    "seirei_shitei_toshi": {
+      "count": 20,
+      "rationale": "政令指定都市 — subsidy 公募回数 top-tier",
+      "cities": ["大阪市","横浜市","名古屋市","京都市","神戸市","福岡市","札幌市","仙台市","さいたま市","千葉市","川崎市","相模原市","新潟市","静岡市","浜松市","堺市","岡山市","広島市","北九州市","熊本市"]
+    },
+    "chuukaku_shi": {
+      "count": 62,
+      "rationale": "中核市 — 人口20万超、活発な独自subsidy"
+    },
+    "tokubetsu_ku_tokyo23": {
+      "count": 23,
+      "rationale": "東京23区 — 区独自補助金 (北区/世田谷区 等)",
+      "cities": ["千代田区","中央区","港区","新宿区","文京区","台東区","墨田区","江東区","品川区","目黒区","大田区","世田谷区","渋谷区","中野区","杉並区","豊島区","北区","荒川区","板橋区","練馬区","足立区","葛飾区","江戸川区"]
+    },
+    "jinkou_30man_super_non_chuukaku": {
+      "count": 25,
+      "rationale": "人口30万超非中核市 — subsidy 厚い"
+    },
+    "kencho_shozai_chi_dedupe": {
+      "count": 25,
+      "rationale": "県庁所在地 (上記tier重複除外残) — 全47都道府県cover"
+    },
+    "shoukou_jouwi_DID_density": {
+      "count": 45,
+      "rationale": "商工活動上位 (DID + 事業所密度) — industrial cluster"
+    }
+  },
+  "total_cities": 200,
+  "pdf_avg_per_city": 5,
+  "total_pdf_estimate": 1000,
+  "textract_cost_per_pdf_usd": 0.75,
+  "textract_layout_mode": "LAYOUT",
+  "smoke_subset_size": 20,
+  "smoke_cost_usd": 75,
+  "rollback_strategy": "delete manifest + restore legacy 1718 manifest",
+  "linked_docs": [
+    "docs/_internal/DD2_NARROW_200_CITY_2026_05_17.md",
+    "docs/_internal/FF4_LANE_ROI_AUDIT_2026_05_17.md"
+  ],
+  "linked_lanes": [
+    "DD2 (legacy 1718, scope reduce)",
+    "AA1 NTA (one-shot complete)",
+    "CC4 (narrow 6h cron sustained)"
+  ],
+  "note": "final city list to be expanded by ETL pipeline; tier counts and rationale are the contract. Build script: scripts/etl/build_dd2_municipality_manifest_2026_05_17.py (param: --scope=narrow_200)"
+}

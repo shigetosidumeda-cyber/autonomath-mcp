@@ -46,6 +46,7 @@ _SUBMODULES: tuple[str, ...] = (
     "he2_workpaper",
     "he3_briefing_pack",
     "he4_orchestrate",
+    "cohort_lora_router",
 )
 
 for _name in _SUBMODULES:
