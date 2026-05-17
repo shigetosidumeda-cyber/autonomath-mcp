@@ -56,7 +56,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 logger = logging.getLogger("kg_completion_train")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -70,10 +70,20 @@ def _load_hyperparameters() -> dict[str, Any]:
     hp_path = Path("/opt/ml/input/config/hyperparameters.json")
     if hp_path.exists():
         try:
-            return json.loads(hp_path.read_text())
+            return cast("dict[str, Any]", json.loads(hp_path.read_text()))
         except (OSError, json.JSONDecodeError):
             logger.warning("could not parse hyperparameters.json; using defaults")
     return {}
+
+
+def _hp_value(hp: dict[str, Any], dashed: str, underscored: str, default: Any) -> Any:
+    """Read SageMaker hyperparameters across CLI dash and JSON underscore forms."""
+
+    if dashed in hp:
+        return hp[dashed]
+    if underscored in hp:
+        return hp[underscored]
+    return default
 
 
 def _read_jsonl(path: Path) -> list[tuple[str, str, str]]:
@@ -109,8 +119,8 @@ def _train_pykeen(
     # inside the SageMaker container).
     import numpy as np  # noqa: PLC0415
     import torch  # noqa: PLC0415
-    from pykeen.pipeline import pipeline  # noqa: PLC0415
-    from pykeen.triples import TriplesFactory  # noqa: PLC0415
+    from pykeen.pipeline import pipeline  # type: ignore[import-not-found]  # noqa: PLC0415
+    from pykeen.triples import TriplesFactory  # type: ignore[import-not-found]  # noqa: PLC0415
 
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -234,18 +244,34 @@ def main(argv: list[str] | None = None) -> int:
 
     p = argparse.ArgumentParser()
     p.add_argument("--model", default=hp_file.get("model", "TransE"), choices=SUPPORTED_MODELS)
-    p.add_argument("--embedding-dim", type=int, default=int(hp_file.get("embedding_dim", 500)))
+    p.add_argument(
+        "--embedding-dim",
+        "--embedding_dim",
+        dest="embedding_dim",
+        type=int,
+        default=int(_hp_value(hp_file, "embedding-dim", "embedding_dim", 500)),
+    )
     p.add_argument("--epochs", type=int, default=int(hp_file.get("epochs", 200)))
-    p.add_argument("--batch-size", type=int, default=int(hp_file.get("batch_size", 512)))
+    p.add_argument(
+        "--batch-size",
+        "--batch_size",
+        dest="batch_size",
+        type=int,
+        default=int(_hp_value(hp_file, "batch-size", "batch_size", 512)),
+    )
     p.add_argument(
         "--negative-samples",
+        "--negative_samples",
+        dest="negative_samples",
         type=int,
-        default=int(hp_file.get("negative_samples", 256)),
+        default=int(_hp_value(hp_file, "negative-samples", "negative_samples", 256)),
     )
     p.add_argument(
         "--learning-rate",
+        "--learning_rate",
+        dest="learning_rate",
         type=float,
-        default=float(hp_file.get("learning_rate", 1e-3)),
+        default=float(_hp_value(hp_file, "learning-rate", "learning_rate", 1e-3)),
     )
     p.add_argument("--seed", type=int, default=int(hp_file.get("seed", 42)))
     p.add_argument(
