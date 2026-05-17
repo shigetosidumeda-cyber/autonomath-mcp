@@ -1,0 +1,119 @@
+name: etl-monthly-snapshot
+
+# Stage 1 AA4 — Dim Q monthly snapshot batch.
+#
+# Runs the deterministic monthly snapshot pipeline behind the Dim Q
+# "regulatory time-machine + counterfactual" surface (per
+# `feedback_time_machine_query_design`). It does NOT mutate any spine
+# tables — only writes to the audit log `am_monthly_snapshot_log`.
+#
+# Cadence: monthly, on the 1st at 21:00 UTC == 06:00 JST. The script
+# defaults `--as-of` to the first of the current UTC month, so cron-on-day-1
+# yields the canonical month snapshot every run. `--gc` enforces the
+# 5-year (60-month) rolling retention per spec.
+#
+# LLM call count: 0. Deterministic sha256 + sqlite3 only.
+
+on:
+  schedule:
+    - cron: "0 21 1 * *"
+  workflow_dispatch:
+    inputs:
+      as_of:
+        description: "Override as-of YYYY-MM-DD (default = 1st of current UTC month)"
+        required: false
+        default: ""
+      dry_run:
+        description: "If true, plan only (no DB writes)"
+        required: false
+        default: "false"
+
+concurrency:
+  group: etl-monthly-snapshot
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Build monthly snapshot + GC
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_AS_OF: ${{ github.event.inputs.as_of }}
+          INPUT_DRY: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          ARGS=()
+          if [ -n "${INPUT_AS_OF}" ]; then ARGS+=(--as-of "${INPUT_AS_OF}"); fi
+          if [ "${INPUT_DRY:-false}" = "true" ]; then ARGS+=(--dry-run); fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then ARGS+=(--dry-run); fi
+          python scripts/etl/build_monthly_snapshot.py "${ARGS[@]}"
+          python scripts/etl/build_monthly_snapshot.py --gc
+
+      - name: Backfill amendment_diff from snapshot pairs
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+        run: |
+          set -euo pipefail
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then
+            echo "DB missing — skipping backfill."
+            exit 0
+          fi
+          # Idempotent: only inserts NEW diffs (candidate_diffs_new > 0)
+          python scripts/etl/backfill_amendment_diff_from_snapshots.py --apply --json
+
+      - name: Snapshot summary
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+        run: |
+          python - <<'PY'
+          import sqlite3, os, pathlib
+          db = pathlib.Path(os.environ.get("AUTONOMATH_DB_PATH", "autonomath.db"))
+          if not db.exists():
+              print("DB missing — dry run only.")
+              raise SystemExit(0)
+          conn = sqlite3.connect(str(db))
+          c = conn.cursor()
+          c.execute("SELECT COUNT(DISTINCT as_of_date) FROM am_monthly_snapshot_log")
+          months = c.fetchone()[0]
+          c.execute("SELECT MIN(as_of_date), MAX(as_of_date) FROM am_monthly_snapshot_log")
+          mn, mx = c.fetchone()
+          c.execute("SELECT COUNT(*) FROM am_amendment_diff")
+          diffs = c.fetchone()[0]
+          print(f"::notice::distinct_months={months} range={mn}..{mx} amendment_diff_rows={diffs}")
+          conn.close()
+          PY
+
+      - name: Open issue on driver failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `etl-monthly-snapshot failed ${new Date().toISOString()}`,
+              body: `Run: ${runUrl}\n\nLikely causes: sqlite lock, spine view drift. See scripts/etl/build_monthly_snapshot.py docstring + scripts/migrations/277_time_machine.sql.`,
+              labels: ["ingest-failure", "automation", "stage1-aa4"],
+            });

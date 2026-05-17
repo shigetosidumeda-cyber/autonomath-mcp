@@ -1,0 +1,124 @@
+name: etl-fdi-incremental
+
+# Stage 1 AA3 — G7 FDI ETL incremental cadence.
+#
+# Sources (one-source-one-pull, no aggregator):
+# * 日本法令外国語訳 (JLT, www.japaneselawtranslation.go.jp) — CC-BY 4.0
+#   → populates am_law_article.body_en
+# * 財務省租税条約一覧 (www.mof.go.jp/tax_policy/summary/international/tax_convention/)
+#   → populates am_tax_treaty (per-country PDF parse, pypdf + regex)
+#
+# Cadence: monthly, on the 5th at 21:00 UTC == 06:00 JST 6 日. Monthly is
+# adequate because JLT publishes new translations on a slow rolling basis,
+# and MOF treaty rates do not change between formal amendments (typically
+# multi-year intervals).
+#
+# LLM call count: 0. pypdf + regex + sqlite3 only.
+
+on:
+  schedule:
+    - cron: "0 21 5 * *"
+  workflow_dispatch:
+    inputs:
+      jlt_max_view_id:
+        description: "JLT --max-view-id (default 6000 = full catalog)"
+        required: false
+        default: "6000"
+      treaty_limit:
+        description: "MOF treaty country cap (default 80 = full list)"
+        required: false
+        default: "80"
+      dry_run:
+        description: "If true, parse only (no DB writes)"
+        required: false
+        default: "false"
+
+concurrency:
+  group: etl-fdi-incremental
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  fdi-incremental:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install pypdf
+
+      - name: JLT incremental walk (resume from _progress.json)
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_JLT_MAX: ${{ github.event.inputs.jlt_max_view_id }}
+          INPUT_DRY: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          MAX="${INPUT_JLT_MAX:-6000}"
+          DRY=""
+          if [ "${INPUT_DRY:-false}" = "true" ]; then DRY="--dry-run"; fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then DRY="--dry-run"; fi
+          # --resume picks up where last run left off (_progress.json next_view_id)
+          python scripts/etl/ingest_egov_law_translation.py \
+            --resume --max-view-id "${MAX}" --sleep 1.0 --auto-resolve ${DRY}
+
+      - name: MOF tax treaty per-country PDF refresh
+        env:
+          AUTONOMATH_DB_PATH: ${{ github.workspace }}/autonomath.db
+          INPUT_TREATY_LIMIT: ${{ github.event.inputs.treaty_limit }}
+          INPUT_DRY: ${{ github.event.inputs.dry_run }}
+          JPCITE_PREFLIGHT_ALLOW_MISSING_DB: "1"
+        run: |
+          set -euo pipefail
+          LIMIT="${INPUT_TREATY_LIMIT:-80}"
+          DRY=""
+          if [ "${INPUT_DRY:-false}" = "true" ]; then DRY="--dry-run"; fi
+          if [ ! -f "${AUTONOMATH_DB_PATH}" ]; then DRY="--dry-run"; fi
+          python scripts/etl/ingest_mof_tax_treaty.py --limit "${LIMIT}" ${DRY}
+
+      - name: Snapshot summary
+        run: |
+          python - <<'PY'
+          import sqlite3, os, pathlib
+          db = pathlib.Path(os.environ.get("AUTONOMATH_DB_PATH", "autonomath.db"))
+          if not db.exists():
+              print("DB missing — dry run only.")
+              raise SystemExit(0)
+          conn = sqlite3.connect(str(db))
+          c = conn.cursor()
+          c.execute("SELECT COUNT(*) FROM am_law_article WHERE body_en IS NOT NULL AND body_en != ''")
+          body_en = c.fetchone()[0]
+          c.execute("SELECT COUNT(DISTINCT country_iso) FROM am_tax_treaty")
+          treaty = c.fetchone()[0]
+          print(f"::notice::body_en={body_en} treaty_countries={treaty}")
+          conn.close()
+          PY
+
+      - name: Open issue on driver failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `etl-fdi-incremental failed ${new Date().toISOString()}`,
+              body: `Run: ${runUrl}\n\nLikely causes: JLT 5xx, MOF index DOM drift, pypdf extract failure. See scripts/etl/ingest_egov_law_translation.py and ingest_mof_tax_treaty.py docstrings.`,
+              labels: ["ingest-failure", "automation", "stage1-aa3"],
+            });
