@@ -58,8 +58,7 @@ Constraints honoured
 * Region: ap-northeast-1.
 * NO LLM. CLIP is an encoder.
 * Code channel uploads a deterministic preprocessor + embedder; we
-  pin the model version with ``revision="main"`` and a frozen SHA in
-  the run manifest.
+  pin the model version to an immutable Hugging Face commit SHA.
 * mypy --strict + ruff 0.
 * ``[lane:solo]`` marker.
 
@@ -81,7 +80,7 @@ import os
 import sys
 import textwrap
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -118,7 +117,7 @@ PRICING_USD_PER_HOUR: dict[str, float] = {
 }
 PER_HOUR_USD = PRICING_USD_PER_HOUR[DEFAULT_INSTANCE]
 DEFAULT_MODEL = "rinna/japanese-clip-vit-b-16"
-DEFAULT_MODEL_REVISION = "main"
+DEFAULT_MODEL_REVISION = "ce22bc39e6f5dcb449e082954211acfb00c2227b"
 ALLOW_MODELS = {
     "rinna/japanese-clip-vit-b-16": {"dim": 512, "license": "Apache-2.0"},
     "rinna/japanese-cloob-vit-b-16": {"dim": 512, "license": "Apache-2.0"},
@@ -158,14 +157,14 @@ EMBEDDER_SCRIPT = textwrap.dedent(
         from torchvision.transforms import InterpolationMode
 
     MODEL_ID = os.environ.get("CLIP_MODEL_ID", "rinna/japanese-clip-vit-b-16")
-    MODEL_REVISION = os.environ.get("CLIP_MODEL_REVISION", "main")
+    MODEL_REVISION = os.environ.get("CLIP_MODEL_REVISION", "ce22bc39e6f5dcb449e082954211acfb00c2227b")
     INPUT_DIR = Path("/opt/ml/processing/input/figures")
     LEDGER_PATH = Path("/opt/ml/processing/input/ledger/ledger.json")
     OUTPUT_DIR = Path("/opt/ml/processing/output/embeddings")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = AutoModel.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True).to(device).eval()
+    model = AutoModel.from_pretrained(MODEL_ID, revision=MODEL_REVISION).to(device).eval()
     preprocess = transforms.Compose(
         [
             transforms.Resize(224, interpolation=InterpolationMode.BICUBIC),
@@ -246,6 +245,17 @@ EMBEDDER_SCRIPT = textwrap.dedent(
 ).strip()
 
 
+def _immutable_hf_revision(value: str) -> str:
+    """Accept only immutable Hugging Face commit SHAs for live jobs."""
+    revision = value.strip()
+    is_hex_sha = len(revision) == 40 and all(ch in "0123456789abcdef" for ch in revision)
+    if not is_hex_sha:
+        raise argparse.ArgumentTypeError(
+            "model revision must be a 40-character lowercase commit SHA"
+        )
+    return revision
+
+
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     """Parse CLI flags."""
     p = argparse.ArgumentParser(description=__doc__)
@@ -268,7 +278,12 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     p.add_argument("--manifest-out", default="out/aws_credit_jobs/clip_figure_submit_manifest.json")
     p.add_argument("--commit", action="store_true", help="Lift DRY_RUN guard")
     p.add_argument("--verbose", action="store_true")
-    return p.parse_args(argv)
+    args = p.parse_args(argv)
+    try:
+        args.model_revision = _immutable_hf_revision(args.model_revision)
+    except argparse.ArgumentTypeError as exc:
+        p.error(str(exc))
+    return args
 
 
 def _stamp_job_name() -> str:
@@ -382,10 +397,11 @@ def _check_cost_preflight(profile: str, region: str, budget_usd: float) -> dict[
         return {"skipped": True, "reason": "boto3 unavailable", "mtd_usd": 0.0}
     session = boto3.Session(profile_name=profile)
     ce = session.client("ce", region_name="us-east-1")  # CE only in us-east-1
-    today = datetime.now(UTC).strftime("%Y-%m-%d")
-    month_start = datetime.now(UTC).strftime("%Y-%m-01")
+    today = datetime.now(UTC).date()
+    month_start = today.replace(day=1).isoformat()
+    tomorrow = (today + timedelta(days=1)).isoformat()
     resp = ce.get_cost_and_usage(
-        TimePeriod={"Start": month_start, "End": today},
+        TimePeriod={"Start": month_start, "End": tomorrow},
         Granularity="MONTHLY",
         Metrics=["UnblendedCost"],
     )
