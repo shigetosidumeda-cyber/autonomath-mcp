@@ -410,3 +410,85 @@
 # boot. NO LLM SDK/API; cache is populated by deterministic SQLite
 # projection and preserves live REST/MCP compose billing behavior.
 289_audit_workpaper_v2.sql
+
+# 2026-05-17 Niche Moat Lane N9 — D1 audit fix. Creates
+# am_placeholder_mapping (~207 canonical placeholder rows, mapping each
+# {{TOKEN}} to the deterministic MCP tool + args_template + output_path
+# that resolves it). Backs jpintel_mcp.mcp.moat_lane_tools
+# .moat_n9_placeholder.resolve_placeholder. Idempotent CREATE * IF NOT
+# EXISTS with value_kind / license / is_sensitive CHECKs, 3 indexes, and
+# 1 aggregate view. Pure additive; boot-time safe. NO LLM SDK/API.
+wave24_206_am_placeholder_mapping.sql
+
+# 2026-05-17 Wave 24 schema sync (D2 audit fix) — autonomath-target
+# migrations enrolling moat substrate tables/views/indexes for boot-time
+# self-heal. Every file uses CREATE * IF NOT EXISTS (idempotent design),
+# matching the entrypoint.sh §4 contract. Some files (110/152/153/163/180
+# /195/202/203) optionally create vec0 virtual tables and degrade safely
+# when vec0.so is absent on the runtime. Rollback companions are tracked
+# under wave24_*_rollback.sql and are excluded from the boot loop by the
+# *_rollback.sql suffix rule.
+wave24_106_am_amendment_snapshot_rebuild.sql
+wave24_107_am_compat_matrix_visibility.sql
+wave24_109_am_amount_condition_is_authoritative.sql
+wave24_110_am_entities_vec_v2.sql
+wave24_111_am_entity_monthly_snapshot.sql
+wave24_112_am_region_extension.sql
+wave24_113b_jpi_programs_jsic.sql
+wave24_113c_autonomath_houjin_master_jsic.sql
+wave24_126_am_recommended_programs.sql
+wave24_127_am_program_combinations.sql
+wave24_128_am_program_calendar_12mo.sql
+wave24_129_am_enforcement_industry_risk.sql
+wave24_130_am_case_study_similarity.sql
+wave24_131_am_houjin_360_snapshot.sql
+wave24_132_am_tax_amendment_history.sql
+wave24_133_am_invoice_buyer_seller_graph.sql
+wave24_134_am_capital_band_program_match.sql
+wave24_135_am_program_adoption_stats.sql
+wave24_136_am_program_narrative.sql
+wave24_137_am_program_eligibility_predicate.sql
+wave24_138_am_program_documents.sql
+wave24_139_am_region_program_density.sql
+wave24_140_am_narrative_extracted_entities.sql
+wave24_141_am_narrative_quarantine.sql
+wave24_142_am_narrative_customer_reports.sql
+wave24_144_narrative_quality_kpi_view.sql
+wave24_145_am_data_quality_snapshot.sql
+wave24_148_am_credit_pack_purchase.sql
+wave24_149_am_program_narrative_full.sql
+wave24_152_am_5hop_graph.sql
+wave24_153_am_entity_appearance_count.sql
+wave24_155_am_geo_industry_density.sql
+wave24_157_am_adopted_company_features.sql
+wave24_163_am_citation_network.sql
+wave24_164_gbiz_v2_mirror_tables.sql
+wave24_168_entity_resolution_bridge_v2.sql
+wave24_170_source_catalog.sql
+wave24_171_source_freshness_ledger.sql
+wave24_172_cross_source_signal_layer.sql
+wave24_173_invoice_status_history.sql
+wave24_174_enforcement_permit_event_layer.sql
+wave24_175_public_funding_ledger.sql
+wave24_176_edinet_filing_signal_layer.sql
+wave24_177_regulatory_citation_graph.sql
+wave24_178_document_requirement_layer.sql
+wave24_180_time_machine_index.sql
+wave24_181_verify_log.sql
+wave24_182_contributor_trust.sql
+wave24_183_citation_log.sql
+wave24_184_contribution_queue.sql
+wave24_185_kokkai_utterance.sql
+wave24_186_industry_journal_mention.sql
+wave24_187_brand_mention.sql
+wave24_189_citation_sample.sql
+wave24_192_pubcomment_announcement.sql
+wave24_193_fix_am_region_fk.sql
+wave24_195_am_case_extracted_facts.sql
+wave24_198_am_relation_predicted.sql
+wave24_200_am_artifact_templates.sql
+wave24_201_am_houjin_program_portfolio.sql
+wave24_202_am_legal_reasoning_chain.sql
+wave24_203_am_window_directory.sql
+wave24_204_am_amendment_alert_impact.sql
+wave24_205_am_segment_view.sql
