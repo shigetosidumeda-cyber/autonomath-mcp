@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<title>中小経営者 補助金 companion — A5 — jpcite</title>
+<meta name="description" content="中小経営者向け jpcite A5. 業種 × 地域 × 規模 × ライフサイクル 段階で利用可能な補助金 / 融資 / 税制 / 認定 を 1 packet。同業同地域の採択事例 + 排他ルール + 申請 期限カレンダーを併載。最終判断は税理士 / 行政書士 confirm . 月次 100 req = ¥300 (¥3/req).">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:title" content="中小経営者 補助金 companion — A5 — jpcite">
+<meta property="og:description" content="中小経営者向け jpcite A5. 業種 × 地域 × 規模 × ライフサイクル 段階で利用可能な補助金 / 融資 / 税制 / 認定 を 1 packet。同業同地域の採択事例 + 排他ルール + 申請 期限カレンダーを併載。最終判断は税理士 / 行政書士 confirm . 月次 100 req = ¥300 (¥3/req).">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/products/A5_sme_subsidy_companion.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jpcite.com/products/A5_sme_subsidy_companion.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/products/A5_sme_subsidy_companion.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/products/A5_sme_subsidy_companion.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css?v=20260517a">
+<script defer src="/analytics.js?v=20260503a"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Product", "name": "中小経営者 補助金 companion", "alternateName": "SME Subsidy Companion", "sku": "A5_sme_subsidy_companion", "description": "業種 × 地域 × 規模 × ライフサイクル 段階で利用可能な補助金 / 融資 / 税制 / 認定 を 1 packet。同業同地域の採択事例 + 排他ルール + 申請 期限カレンダーを併載。最終判断は税理士 / 行政書士 confirm 経路。", "brand": {"@type": "Brand", "name": "jpcite"}, "offers": {"@type": "Offer", "priceCurrency": "JPY", "price": "3.30", "priceSpecification": {"@type": "UnitPriceSpecification", "price": "3.30", "priceCurrency": "JPY", "unitText": "billable_request_tax_included", "referenceQuantity": {"@type": "QuantitativeValue", "value": 1, "unitText": "request"}}, "availability": "https://schema.org/InStock", "seller": {"@type": "Organization", "name": "Bookyou株式会社"}}, "audience": {"@type": "Audience", "audienceType": "中小経営者"}}</script>
+</head>
+<body>
+<header class="site-header"><a href="/">jpcite</a> &middot; <a href="/products">成果物カタログ</a> &middot; <a href="/docs/">API / MCP docs</a></header>
+<main>
+
+<article class="product-landing">
+  <nav class="breadcrumb"><a href="/">Home</a> &raquo; <a href="/products">成果物カタログ</a> &raquo; A5</nav>
+  <h1>中小経営者 補助金 companion <small>(A5)</small></h1>
+  <p class="lede">業種 × 地域 × 規模 × ライフサイクル 段階で利用可能な補助金 / 融資 / 税制 / 認定 を 1 packet。同業同地域の採択事例 + 排他ルール + 申請 期限カレンダーを併載。最終判断は税理士 / 行政書士 confirm 経路。</p>
+
+  <h2>誰のためか</h2>
+  <p>中小経営者 (SME-Owner) cohort. 月次 100 req 想定 (¥3/req)。</p>
+
+  <h2>1 query で返るもの (package_kind)</h2>
+  <p>evidence_packet, artifact_pack, watch_digest</p>
+
+  <h2>呼び出される heavy / composed endpoint</h2>
+  <ul><li><code>POST /v1/jpcite/route</code></li><li><code>POST /v1/jpcite/preview_cost</code></li><li><code>POST /v1/cases/cohort_match</code></li><li><code>POST /v1/programs/full_context</code></li><li><code>POST /v1/evidence/packets/query</code></li></ul>
+
+  <h2>SDK example — Python (jpcite-mcp / autonomath-mcp PyPI)</h2>
+  <pre><code class="language-python"># A5 SME Subsidy Companion — Python (jpcite-mcp)
+import os
+import httpx
+
+JPCITE_API = "https://api.jpcite.com"
+API_KEY = os.environ["JPCITE_API_KEY"]  # see https://jpcite.com/dashboard
+
+def fetch_sme_packet(houjin_bangou: str) -&gt; dict:
+    # 1. Free preflight — no charge until accepted_artifact delivery.
+    preview = httpx.post(
+        f"{JPCITE_API}/v1/jpcite/preview_cost",
+        headers={"X-API-Key": API_KEY, "X-Client-Tag": "sme-001"},
+        json={"outcome_contract_id": "A5_sme_subsidy_companion",
+               "input": {"houjin_bangou": houjin_bangou}}
+    ).raise_for_status().json()
+    assert preview["cap_passed"], "outcome exceeds cap — adjust max_price_jpy"
+
+    # 2. Execute packet — charges 27 billable units (=¥27).
+    packet = httpx.post(
+        f"{JPCITE_API}/v1/jpcite/execute_packet",
+        headers={"X-API-Key": API_KEY,
+                  "X-Client-Tag": "sme-001",
+                  "X-Jpcite-Scoped-Cap-Token": preview["scoped_cap_token"],
+                  "Idempotency-Key": f"sme-{houjin_bangou}-2026-05"},
+        json={"outcome_contract_id": "A5_sme_subsidy_companion",
+               "input": {"houjin_bangou": houjin_bangou},
+               "max_price_jpy": 900}
+    ).raise_for_status().json()
+    return packet  # contains source_url[], fetched_at, known_gaps[], evidence[]
+</code></pre>
+
+  <h2>SDK example — TypeScript (Bedrock MCP / OpenAI tool-use)</h2>
+  <pre><code class="language-typescript">// A5 SME Subsidy Companion — TypeScript (Bedrock / OpenAI tool-use)
+import { JpciteClient } from "@jpcite/sdk";  // wraps OpenAPI 219 paths
+
+const client = new JpciteClient({
+  baseUrl: "https://api.jpcite.com",
+  apiKey: process.env.JPCITE_API_KEY!,
+  clientTag: "sme-001",  // 顧問先 fan-out attribution
+});
+
+export async function fetchSMEOwnerPacket(houjinBangou: string) {
+  const preview = await client.previewCost({
+    outcome_contract_id: "A5_sme_subsidy_companion",
+    input: { houjin_bangou: houjinBangou },
+  });
+  if (!preview.cap_passed) throw new Error("over cap");
+
+  const packet = await client.executePacket({
+    outcome_contract_id: "A5_sme_subsidy_companion",
+    input: { houjin_bangou: houjinBangou },
+    max_price_jpy: 900,
+    scopedCapToken: preview.scoped_cap_token,
+    idempotencyKey: `sme-${houjinBangou}-2026-05`,
+  });
+  return packet;  // { source_url[], fetched_at, known_gaps[], evidence[] }
+}
+</code></pre>
+
+  <h2>Claude Code <code>.mcp.json</code> snippet</h2>
+  <pre><code class="language-json">{
+  "mcpServers": {
+    "jpcite": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "autonomath-mcp"
+      ],
+      "env": {
+        "JPCITE_API_KEY": "${env:JPCITE_API_KEY}",
+        "JPCITE_DEFAULT_OUTCOME": "A5_sme_subsidy_companion",
+        "JPCITE_CLIENT_TAG": "sme-001"
+      }
+    }
+  }
+}</code></pre>
+
+  <h2>jpcite ¥300 / 月 vs LLM API replacement</h2>
+  <table class="comparison">
+    <thead><tr><th>路線</th><th>1 packet</th><th>100 packet / 月</th></tr></thead>
+    <tbody>
+      <tr><td>jpcite (A5)</td><td>¥3 (税抜) / ¥3.30 (税込)</td><td>¥300</td></tr>
+      <tr><td>LLM Opus 4.7 only</td><td>¥28.12</td><td>¥2,812</td></tr>
+      <tr><td>LLM Sonnet 4.6 only</td><td>¥5.62</td><td>¥562</td></tr>
+      <tr><td>LLM Haiku 4.5 only</td><td>¥1.5</td><td>¥150</td></tr>
+    </tbody>
+  </table>
+  <p>cheapest LLM tier (Haiku 4.5) でも jpcite の <strong>0.5x</strong> コスト。
+     さらに LLM 単独は出典 URL を hallucinate するため、
+     一次資料 URL + fetched_at + known_gaps は <strong>jpcite でしか得られない</strong>。</p>
+  <p><a href="/compare/sme.html">cohort 別コスト比較表を見る &rarr;</a></p>
+
+  <h2>1 call ≈ 人手 ¥900 相当</h2>
+  <p>30-90 分の一次資料調査 + 名寄せ + 出典確認を 1 query で代替。
+     代替時給 ¥3,000 換算で 1 packet ≒ ¥900。
+     jpcite ¥3 / packet との差分が ROI。</p>
+
+  <section class="disclaimer" aria-label="sensitive surface disclaimer"><h2>免責 / 越権越えゼロの境界</h2><ul><li><strong>§52</strong>: 税理士法 §52 — 個別具体的な税務代理 / 税務書類作成 / 税務相談は税理士の独占業務。jpcite は候補列挙 + 一次資料 URL only。最終判断は税理士確認境界を越えない。</li><li><strong>§1</strong>: 行政書士法 §1 — 官公署提出書類作成は行政書士の独占業務。jpcite は申請書面の scaffold + 一次資料 URL only。完成版作成は行政書士確認境界を越えない。</li></ul></section>
+
+  <h2>使い始める</h2>
+  <ol>
+    <li><a href="/dashboard">/dashboard</a> で API キー発行 (匿名 3 req/日無料)</li>
+    <li>Python: <code>pip install autonomath-mcp</code></li>
+    <li>Claude Code: <code>.mcp.json</code> 上記 snippet を貼り付け</li>
+    <li><a href="/docs/getting-started/">getting-started</a> 経由で 1 packet を取得</li>
+  </ol>
+
+  <h2>関連リソース</h2>
+  <ul>
+    <li><a href="/docs/api-reference/">API reference (219 path)</a></li>
+    <li><a href="/docs/mcp-tools/">MCP tools (146 default-gate)</a></li>
+    <li><a href="/cookbook/">cookbook (15 recipes)</a></li>
+    <li><a href="/for/sme.html">中小経営者 向け cohort landing</a></li>
+    <li><a href="/.well-known/jpcite-outcome-catalog.json">outcome catalog (450 outcome)</a></li>
+  </ul>
+</article>
+
+</main>
+<footer class="site-footer">
+<p>Operator: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708) / info@bookyou.net</p>
+<p>Brand: jpcite (https://jpcite.com / https://api.jpcite.com) — 100% organic acquisition · ¥3/req fully metered · anonymous 3 req/day/IP</p>
+<p>NO LLM API calls inside jpcite tools. Source URLs are first-party (government ministry / prefecture / 公庫 / e-Gov / NTA) — aggregators are banned.</p>
+</footer>
+</body>
+</html>

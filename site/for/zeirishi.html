@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#ffffff">
+<title>税理士事務所向け jpcite — 税理士 月次レビュー &amp; 制度棚卸し pack</title>
+<meta name="description" content="税理士事務所向け jpcite 活用ガイド。月次仕訳・年末調整・法人税申告に必要な制度改正・行政処分・取引先公開情報を一次資料 URL + 取得時刻 + known_gaps つきで 1 query 返却. 月次 500 req = ¥1,500。">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:title" content="税理士事務所向け jpcite — 税理士 月次レビュー &amp; 制度棚卸し pack">
+<meta property="og:description" content="税理士事務所向け jpcite 活用ガイド。月次仕訳・年末調整・法人税申告に必要な制度改正・行政処分・取引先公開情報を一次資料 URL + 取得時刻 + known_gaps つきで 1 query 返却. 月次 500 req = ¥1,500。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jpcite.com/for/zeirishi.html">
+<meta property="og:image" content="https://jpcite.com/assets/og.png">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://jpcite.com/for/zeirishi.html">
+<link rel="alternate" hreflang="ja" href="https://jpcite.com/for/zeirishi.html">
+<link rel="alternate" hreflang="x-default" href="https://jpcite.com/for/zeirishi.html">
+<link rel="icon" href="/assets/favicon-v2.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles.css?v=20260517a">
+<script defer src="/analytics.js?v=20260503a"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "税理士事務所向け jpcite — 税理士 月次レビュー & 制度棚卸し pack", "audience": {"@type": "Audience", "audienceType": "税理士"}, "url": "https://jpcite.com/for/zeirishi.html"}</script>
+</head>
+<body>
+<header class="site-header"><a href="/">jpcite</a> &middot; <a href="/products">成果物カタログ</a> &middot; <a href="/docs/">API / MCP docs</a></header>
+<main>
+
+<article class="cohort-landing">
+  <nav class="breadcrumb"><a href="/">Home</a> &raquo; <a href="/products">成果物カタログ</a> &raquo; 税理士</nav>
+  <h1>税理士事務所向け jpcite</h1>
+  <p class="lede">月次仕訳・年末調整・法人税申告に必要な制度改正・行政処分・取引先公開情報を一次資料 URL + 取得時刻 + known_gaps つきで 1 query 返却。顧問先 fan-out は X-Client-Tag header で 1 cron 集約。</p>
+
+  <h2>主な業務 × jpcite endpoint</h2>
+  <ul>
+<li><code>POST /v1/cases/cohort_match</code></li><li><code>GET /v1/tax_rules/{rule_id}/full_chain</code></li><li><code>POST /v1/jpcite/route</code></li><li><code>POST /v1/jpcite/preview_cost</code></li><li><code>POST /v1/evidence/packets/query</code></li>
+  </ul>
+
+  <h2>¥3/req 経済性</h2>
+  <p>月次 500 req × ¥3 = <strong>¥1,500</strong>。
+     LLM API 単独 (Haiku 4.5 換算) では <strong>¥750</strong> 相当で、
+     さらに出典 URL を hallucinate しないという quality 差は jpcite が提供。</p>
+
+  <h2>推奨 product</h2>
+  <p><a href="/products/A1_zeirishi_monthly_pack.html">A1 税理士 月次レビュー &amp; 制度棚卸し pack &rarr;</a></p>
+
+  <section class="disclaimer" aria-label="sensitive surface disclaimer"><h2>免責 / 越権越えゼロの境界</h2><ul><li><strong>§52</strong>: 税理士法 §52 — 個別具体的な税務代理 / 税務書類作成 / 税務相談は税理士の独占業務。jpcite は候補列挙 + 一次資料 URL only。最終判断は税理士確認境界を越えない。</li><li><strong>§47条の2</strong>: 弁護士法 §47条の2 — 法律事務の取扱は弁護士の独占業務。jpcite は法令 + 採択事例 + 行政処分のメタデータ surface only。法的助言は弁護士確認境界を越えない。</li></ul></section>
+
+  <h2>使い始める</h2>
+  <ul>
+    <li>API キー: <a href="/dashboard">/dashboard</a></li>
+    <li>SDK: <code>pip install autonomath-mcp</code> / <code>npm install @jpcite/sdk</code></li>
+    <li>Claude Desktop: <a href="/docs/getting-started/">getting-started</a></li>
+  </ul>
+</article>
+
+</main>
+<footer class="site-footer">
+<p>Operator: Bookyou株式会社 (適格請求書発行事業者番号 T8010001213708) / info@bookyou.net</p>
+<p>Brand: jpcite (https://jpcite.com / https://api.jpcite.com) — 100% organic acquisition · ¥3/req fully metered · anonymous 3 req/day/IP</p>
+<p>NO LLM API calls inside jpcite tools. Source URLs are first-party (government ministry / prefecture / 公庫 / e-Gov / NTA) — aggregators are banned.</p>
+</footer>
+</body>
+</html>
