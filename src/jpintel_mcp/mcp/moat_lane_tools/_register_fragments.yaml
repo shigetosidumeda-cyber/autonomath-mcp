@@ -1,0 +1,33 @@
+# Moat lane fragment registry — non-invasive submodule extension point.
+#
+# Background
+# ----------
+# The canonical _SUBMODULES tuple in __init__.py is the registry for the
+# original M*/N*/HE* moat surface. Adding a new MCP tool by editing
+# that tuple is high-conflict because every parallel agent reaching
+# moat_lane_tools touches the same line range. To keep new GG / FF / SS
+# lanes additive we instead list their submodule names here.
+#
+# Loader
+# ------
+# scripts/.../_fragments.py reads this file at import time and lazy-imports
+# every entry under ``submodules:``. Each entry is a submodule name in
+# this package; module-not-found is silenced (partial checkout safe);
+# real ImportError is logged but never raised.
+#
+# Hard constraints
+# ----------------
+# * NO LLM. Every submodule listed here must satisfy ``uses_llm = 0``.
+# * Every module declares its own pydantic-validated MCP tool via
+#   ``@mcp.tool`` and returns a moat-lane canonical envelope (lane_id,
+#   schema_version, primary_result, citations, provenance, _disclaimer).
+# * Lane id naming convention: ``GG<n>`` = green-greens (Wave 60-94
+#   outcome catalog leverage), ``FF<n>`` = fast-finish narratives,
+#   ``SS<n>`` = sustained-search.
+
+# GG4 — Pre-mapped outcome → top-100 chunk retrieval (TTFB -50% at ¥3/req).
+#   Backed by am_outcome_chunk_map (migration wave24_220).
+#   Saves Opus 4.7 reasoning + FAISS 50ms × 5 calls.
+#   ¥3/req vs ~¥250 Opus chain. Tier A (¥3, 1 unit).
+submodules:
+  - get_outcome_with_chunks

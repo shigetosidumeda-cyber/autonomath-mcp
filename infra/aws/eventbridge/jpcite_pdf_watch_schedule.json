@@ -1,0 +1,105 @@
+{
+  "rule": {
+    "name": "jpcite-pdf-watch-hourly",
+    "description": "CC4 — fires the hourly pdf_watch_detect cron Lambda to scan 54 public-sector PDF sources (NTA + FSA + MHLW + METI + MLIT + MOJ + 47 prefectures + e-Gov 法令). Detected new PDFs are enqueued to jpcite-pdf-textract-queue for downstream Textract OCR + spaCy KG extract. DISABLED by default; enable explicitly after one DRY_RUN tick.",
+    "region": "ap-northeast-1",
+    "account_id": "993693061769",
+    "schedule_expression": "rate(1 hour)",
+    "state": "DISABLED",
+    "event_bus_name": "default",
+    "tags": [
+      {"Key": "Project", "Value": "jpcite"},
+      {"Key": "Wave", "Value": "CC4"},
+      {"Key": "Workload", "Value": "pdf_watch"}
+    ]
+  },
+  "target": {
+    "id": "jpcite-pdf-watch-target",
+    "arn": "arn:aws:lambda:ap-northeast-1:993693061769:function:jpcite-pdf-watch-detect",
+    "role_arn": "arn:aws:iam::993693061769:role/jpcite-pdf-watch-schedule-role",
+    "input": "{\"trigger\":\"eventbridge-schedule\",\"source\":\"jpcite-pdf-watch-hourly\"}"
+  },
+  "lambda_runner": {
+    "name": "jpcite-pdf-watch-detect",
+    "description": "Hourly PDF detector. Wraps scripts/cron/pdf_watch_detect_2026_05_17.py for Lambda runtime; same scanning logic, same idempotency, same SQS enqueue path.",
+    "handler": "jpcite_pdf_watch_detect.lambda_handler",
+    "runtime": "python3.12",
+    "timeout_seconds": 600,
+    "memory_mb": 1024,
+    "tags": [
+      {"Key": "Project", "Value": "jpcite"},
+      {"Key": "Wave", "Value": "CC4"}
+    ],
+    "env": {
+      "AWS_REGION": "ap-northeast-1",
+      "JPCITE_PDF_WATCH_ENABLED": "false",
+      "JPCITE_PDF_WATCH_STAGE_BUCKET": "jpcite-credit-textract-apse1-202605",
+      "JPCITE_TEXTRACT_REGION": "ap-southeast-1",
+      "JPCITE_AUTONOMATH_DB": "/mnt/efs/autonomath.db",
+      "JPCITE_PDF_WATCH_SQS_URL": "https://sqs.ap-northeast-1.amazonaws.com/993693061769/jpcite-pdf-textract-queue"
+    }
+  },
+  "sqs_queue": {
+    "name": "jpcite-pdf-textract-queue",
+    "region": "ap-northeast-1",
+    "visibility_timeout_seconds": 900,
+    "message_retention_seconds": 345600,
+    "dead_letter_queue": {
+      "name": "jpcite-pdf-textract-dlq",
+      "max_receive_count": 3
+    },
+    "tags": [
+      {"Key": "Project", "Value": "jpcite"},
+      {"Key": "Wave", "Value": "CC4"}
+    ]
+  },
+  "sns_topic": {
+    "name": "jpcite-pdf-textract-completion",
+    "region": "ap-southeast-1",
+    "purpose": "Textract → SNS completion notification → kg_extract Lambda",
+    "tags": [
+      {"Key": "Project", "Value": "jpcite"},
+      {"Key": "Wave", "Value": "CC4"}
+    ]
+  },
+  "lambda_textract_submit": {
+    "name": "jpcite-pdf-watch-textract-submit",
+    "description": "SQS-triggered. Drains jpcite-pdf-textract-queue, downloads PDF from source_url, stages to S3, calls Textract StartDocumentAnalysis (TABLES + FORMS).",
+    "handler": "jpcite_pdf_watch_textract_submit.lambda_handler",
+    "runtime": "python3.12",
+    "timeout_seconds": 300,
+    "memory_mb": 1024,
+    "event_source_mapping": {
+      "queue_arn": "arn:aws:sqs:ap-northeast-1:993693061769:jpcite-pdf-textract-queue",
+      "batch_size": 5,
+      "maximum_batching_window_seconds": 30
+    }
+  },
+  "lambda_kg_extract": {
+    "name": "jpcite-pdf-watch-kg-extract",
+    "description": "SNS-triggered. Receives Textract completion notifications, fetches blocks, runs spaCy ja_core_news_lg NER + relation extract, writes am_entity_facts + am_relation rows, flips kg_extract_status.",
+    "handler": "jpcite_pdf_watch_kg_extract.lambda_handler",
+    "runtime": "python3.12",
+    "timeout_seconds": 600,
+    "memory_mb": 2048,
+    "sns_subscription": "arn:aws:sns:ap-southeast-1:993693061769:jpcite-pdf-textract-completion"
+  },
+  "cadence_economics": {
+    "default_rate_minutes": 60,
+    "executions_per_day": 24,
+    "watch_sources": 54,
+    "expected_new_pdfs_per_day": 100,
+    "per_pdf_textract_usd_estimate": 1.5,
+    "sustained_burn_usd_per_day": 150,
+    "burn_window_days": 100,
+    "never_reach_ceiling_usd": 19490,
+    "notes": "100 PDF/day × $1.50 = $150/day sustained moat update. Hourly detector ~$0.001/tick × 24/day. spaCy NER on CPU is free. Total $150/day × 100 days = $15,000 well under $19,490 never-reach."
+  },
+  "operator_notes": {
+    "enable_command": "aws scheduler update-schedule --name jpcite-pdf-watch-hourly --state ENABLED ...",
+    "disable_command": "aws scheduler update-schedule --name jpcite-pdf-watch-hourly --state DISABLED ...",
+    "manual_tick_command": "python scripts/cron/pdf_watch_detect_2026_05_17.py --dry-run",
+    "deploy_script": "infra/aws/lambda/pdf_watch_pipeline_deploy.py",
+    "default_mode": "DRY_RUN (JPCITE_PDF_WATCH_ENABLED defaults to false)"
+  }
+}
