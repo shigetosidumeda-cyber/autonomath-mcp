@@ -146,6 +146,10 @@ def test_crawler_allowlist_accepts_metro_tokyo() -> None:
     assert crawler._is_primary_host("https://www.metro.tokyo.lg.jp/tosei/hodohappyo/index.html")
 
 
+def test_crawler_allowlist_accepts_pref_lg_jp() -> None:
+    assert crawler._is_primary_host("https://www.pref.hokkaido.lg.jp/sm/zim/index.html")
+
+
 # ---------------------------------------------------------------------------
 # 4. Ingest JSONL parsing + INSERT OR IGNORE (5 tests)
 # ---------------------------------------------------------------------------
@@ -279,10 +283,10 @@ def test_crawler_select_gaps_all() -> None:
 def test_crawler_select_gaps_by_id() -> None:
     manifest = crawler._load_manifest(MANIFEST_PATH)
     plans = crawler._enumerate_gaps(manifest)
-    selected = crawler._select_gaps(plans, "g1_shitsugi_hojin,g6_saiketsu_vol_1_to_120")
+    selected = crawler._select_gaps(plans, "g1_shitsugi_hojin,g6_saiketsu_vol_43_to_140")
     selected_ids = {p.gap_id for p in selected}
     assert "g1_shitsugi_hojin" in selected_ids
-    assert "g6_saiketsu_vol_1_to_120" in selected_ids
+    assert "g6_saiketsu_vol_43_to_140" in selected_ids
     assert len(selected) == 2
 
 
@@ -317,3 +321,18 @@ def test_chihouzei_ingest_rejects_aggregator_host(tmp_path: Path) -> None:
     p.write_text(json.dumps(record) + "\n", encoding="utf-8")
     records = list(chihouzei_ingest._load_jsonl(p))
     assert records == []  # rejected by primary-host regex
+
+
+def test_chihouzei_ingest_accepts_pref_lg_jp_from_g10_crawler(tmp_path: Path) -> None:
+    record = {
+        "prefecture_code": "01",
+        "tax_kind": "kojin_juminzei",
+        "title": "個人道民税の取扱い",
+        "source_url": "https://www.pref.hokkaido.lg.jp/sm/zim/kojin.html",
+    }
+    p = tmp_path / "in.jsonl"
+    p.write_text(json.dumps(record) + "\n", encoding="utf-8")
+    records = list(chihouzei_ingest._load_jsonl(p))
+    assert len(records) == 1
+    assert records[0].prefecture_code == "01"
+    assert records[0].source_url == record["source_url"]
