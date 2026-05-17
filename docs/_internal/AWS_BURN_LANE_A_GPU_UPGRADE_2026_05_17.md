@@ -173,6 +173,26 @@ maxvCpus past the approved quota.
 | Compute env update | `update-compute-environment` | VALID |
 | Job def register | `register-job-definition` | `jpcite-gpu-burn-g5-12xlarge:1` |
 | 3 jobs terminated | `terminate-job × 3` | FAILED (lane marker) |
+| 2 stale RUNNABLE terminated | `terminate-job × 2` | FAILED (lane marker) |
 | New job submitted | `submit-job` | JobId `10ee11c2-…` |
+| Spot placement score | `get-spot-placement-scores g5.12xlarge` | **1/10** (severe constraint) |
+| Spot placement score | `get-spot-placement-scores g4dn.12xlarge` | 3/10 (apne1-az2: 3) |
+| Compute env update 2 | added g4dn.12xlarge to instanceTypes | VALID |
+| Job transition | RUNNABLE → STARTING (~12 min after submit) | g4dn.12xlarge picked |
+| Provisioned instance | `i-0cbd4b465e7793232` g4dn.12xlarge ap-northeast-1d | running 2026-05-17T01:16:58Z |
+
+## 8. Outcome (final state at landing)
+
+- **Submitted target:** g5.12xlarge (Spot score 1 → unfulfilled)
+- **Provisioned instance:** **g4dn.12xlarge** `i-0cbd4b465e7793232` (Spot score 3, ap-northeast-1d, Spot ~$2.52/hr)
+- **Job status:** **STARTING** with task ARN
+  `arn:aws:ecs:ap-northeast-1:…/task/…/00b1e5944baa497fa3454328678b8671`
+- **Same job def `jpcite-gpu-burn-g5-12xlarge:1`** (VCPU=48 / MEM=180GB / GPU=4)
+  satisfied by g4dn.12xlarge (48 vCPU / 192 GB / 4 × T4 GPUs) — no job def rewrite needed.
+- **Updated burn-rate delta:** 1 g4dn.4xlarge ($0.534/hr) + 1 g4dn.12xlarge ($2.52/hr)
+  ≈ **$3.05/hr ≈ $73/day** on this GPU lane (vs $51/day pre-upgrade) = **+$22/day, +43%**.
+- **Naming note:** Job/job-def carry "g5-12xlarge" in the name as the original target;
+  the actual provisioned class is g4dn.12xlarge. Future Lane A re-submissions should
+  use a generic name like `jpcite-gpu-burn-large` to avoid this confusion.
 
 last_updated: 2026-05-17 [lane:solo]
