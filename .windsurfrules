@@ -1,106 +1,22 @@
-# jpcite — Windsurf IDE auto-setup rules
+# jpcite — Windsurf IDE auto-injection shim
 
-> Auto-injected by Windsurf when this repository is opened.
-> Last sync: 2026-05-11 (Wave 17 AX role-specific deep-dive).
-> Mirrors `.cursorrules` — kept verbatim in spirit so the two IDEs surface identical constraints.
+> **Source of truth: `AGENTS.md`** at the repo root. Read it first.
+> This file exists only so Windsurf's auto-inject picks up a pointer.
+> Last canonical edit: 2026-05-17 (Harness H3 — Agent Entry SOT shim).
 
-## Project identity
+## See `AGENTS.md`
 
-- **Product**: jpcite — Japanese public-program database (補助金 / 融資 / 税制 / 認定 / 法令 / 法人 / 行政処分).
-- **Operator**: Bookyou株式会社 (適格請求書発行事業者 T8010001213708), info@bookyou.net.
-- **Interfaces**: REST API (FastAPI, 219 paths) + MCP server (139 default-gate tools, protocol 2025-06-18) + 21,000+ static SEO pages on Cloudflare Pages.
-- **Package names**:
-  - PyPI: `autonomath-mcp` (LIVE on Anthropic registry). Do not rename the source dir.
-  - npm: `@bookyou/jpcite` (current) / `@autonomath/sdk` (legacy, republish workflow staged).
-- **Business model**: ¥3/req fully metered + anonymous 3 req/day free per IP. Organic-only, solo + zero-touch.
+All project identity, hard constraints, architecture, key commands, quality gates, and "what NOT to do" rules live in `AGENTS.md`. Do not duplicate or override them here.
 
-## Hard constraints
+For live counts (MCP tools / REST routes / OpenAPI paths / program counts) read `scripts/distribution_manifest.yml` or run `python scripts/probe_runtime_distribution.py`.
 
-| # | Rule | Enforcement |
-|---|------|-------------|
-| 1 | No tier UI / Free tier label / Pro plan / seat counter | grep CI + visual review |
-| 2 | No paid ads / cold outreach / sales calls | manifest-level taboo |
-| 3 | No LLM API imports under `src/`, `scripts/cron/`, `scripts/etl/`, `tests/` | `tests/test_no_llm_in_production.py` |
-| 4 | No LLM-API env vars on real code lines | same guard |
-| 5 | No mocked DB in integration tests | review |
-| 6 | No silent `source_url` refetch (must update `source_fetched_at` only after real fetch) | review |
-| 7 | No aggregators in `source_url` (noukaweb / hojyokin-portal / biz.stayway ban) | data quality CI |
-| 8 | No "jpintel" brand in user-facing strings | brand grep |
-| 9 | Never rename `src/jpintel_mcp/` → `src/autonomath_mcp/` | structural |
-| 10 | No `--no-verify` / `--no-gpg-sign` push | pre-commit hooks |
+## Windsurf-specific quirks
 
-## Quick commands
+- Windsurf's Cascade may attempt to "fix" the `Optional[...]` / Pydantic v1+v2 boundary — leave it alone unless you can prove the change keeps `mypy --strict src/` at 0 errors.
+- Default to MCP-first patterns. jpcite value flows via API / MCP / static docs / `.md` companions, not UI.
+- For payment plumbing, do **not** bypass the `consent_collection` Stripe footgun — use `custom_text.submit.message` for the ToS link (see `CLAUDE.md` gotchas).
+- For search refactor, account for FTS5 trigram single-kanji false-positive overlaps.
 
-```bash
-# Dev install
-pip install -e ".[dev,site]"
-playwright install chromium
+## Companion shims
 
-# Run API
-.venv/bin/uvicorn jpintel_mcp.api.main:app --reload --port 8080
-
-# Run MCP server (stdio)
-.venv/bin/autonomath-mcp
-
-# Regenerate static pages
-.venv/bin/python scripts/generate_program_pages.py
-.venv/bin/python scripts/generate_case_pages.py
-.venv/bin/python scripts/generate_law_pages.py
-
-# OpenAPI regen
-.venv/bin/python scripts/export_openapi.py --out docs/openapi/v1.json
-
-# Tests
-.venv/bin/pytest                     # full
-.venv/bin/pytest tests/e2e/          # playwright
-
-# DB quick check
-sqlite3 data/jpintel.db "SELECT tier, COUNT(*) FROM programs WHERE excluded=0 GROUP BY tier;"
-```
-
-## Architecture map
-
-```
-src/jpintel_mcp/
-  api/      FastAPI REST → /v1/*
-  mcp/      FastMCP server (stdio + Streamable HTTP)
-  ingest/   Data ingestion + tier scoring
-  db/       SQLite migrations + helpers
-  billing/  Stripe metered
-  email/    Transactional email
-
-data/jpintel.db        ~352 MB primary jpintel-side DB (FTS5 trigram)
-autonomath.db (root)   ~9.4 GB unified primary DB (post migration 032)
-
-site/                  Static HTML deployed to Cloudflare Pages
-docs/                  mkdocs sources
-sdk/                   TypeScript, Python, Chrome, VS Code, Agents extras
-scripts/               Generators, migrations, cron, etl, ops
-.github/workflows/     CI + deploy + scheduled jobs
-fly.toml               Fly.io Tokyo deployment
-```
-
-## Windsurf-specific behavior
-
-- Default to MCP-first patterns; jpcite value flows via API/MCP/static docs, not UI.
-- When asked to scaffold a new feature, lean on the existing `scripts/generate_*_pages.py` family rather than inventing a new template runner.
-- When refactoring search, account for the FTS5 trigram false-positive on single-kanji overlaps (`税` matching `税額控除` and `ふるさと納税`).
-- When proposing observability, route to `monitoring/` + `analytics/` + `site/assets/rum.js` rather than a new vendor.
-- When proposing payment plumbing, do not bypass `consent_collection` Stripe footgun — use `custom_text.submit.message` for the ToS link.
-
-## Pre-deploy gate
-
-- `.venv/bin/ruff check` targets sync with `scripts/distribution_manifest.yml`
-- `.venv/bin/pytest` full
-- `mypy src/`
-- `mkdocs build --strict`
-- OpenAPI regen + `scripts/check_distribution_manifest_drift.py`
-- Smoke test post-deploy: sleep ≥60s, `curl --max-time ≥30s` (Fly p99 swap latency)
-
-## See also
-
-- `CLAUDE.md`
-- `.cursorrules` (twin of this file)
-- `.agent.md` (vendor-neutral)
-- `docs/quickstart/dev_5min.md`
-- `docs/agents.md`
+- `AGENTS.md` (root SOT) / `CLAUDE.md` (Claude shim) / `.agent.md` (vendor-neutral shim) / `.cursorrules` (Cursor shim) / `.mcp.json` (MCP client root config).

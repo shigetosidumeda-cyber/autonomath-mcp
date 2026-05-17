@@ -1,79 +1,22 @@
-# jpcite — Cursor IDE auto-setup rules
+# jpcite — Cursor IDE auto-injection shim
 
-> Auto-injected by Cursor when this repository is opened.
-> Last sync: 2026-05-11 (Wave 17 AX role-specific deep-dive).
-> Source of truth: `CLAUDE.md` (read first if any of the below conflicts).
+> **Source of truth: `AGENTS.md`** at the repo root. Read it first.
+> This file exists only so Cursor's auto-inject picks up a pointer.
+> Last canonical edit: 2026-05-17 (Harness H3 — Agent Entry SOT shim).
 
-## Project identity
+## See `AGENTS.md`
 
-- **Product**: jpcite — Japanese public-program database (補助金 / 融資 / 税制 / 認定 / 法令 / 法人 / 行政処分).
-- **Operator**: Bookyou株式会社 (適格請求書発行事業者 T8010001213708), info@bookyou.net.
-- **Interfaces**: REST API (FastAPI, 219 paths) + MCP server (139 default-gate tools, protocol 2025-06-18) + 21,000+ static SEO pages.
-- **PyPI package**: `autonomath-mcp` (legacy distribution name retained; **do not rename** — entry points and the `src/jpintel_mcp/` import path depend on it).
-- **npm package**: `@bookyou/jpcite` (TypeScript client; `@autonomath/sdk` is the legacy alias staged for republish).
-- **Business model**: ¥3/billable unit fully metered (税込 ¥3.30) + anonymous 3 req/day free. 100% organic acquisition, solo + zero-touch ops.
+All project identity, hard constraints, architecture, key commands, quality gates, and "what NOT to do" rules live in `AGENTS.md`. Do not duplicate or override them here.
 
-## Architecture quick map
+For live counts (MCP tools / REST routes / OpenAPI paths / program counts) read `scripts/distribution_manifest.yml` or run `python scripts/probe_runtime_distribution.py`.
 
-```
-src/jpintel_mcp/api/      FastAPI REST mounted at /v1/*
-src/jpintel_mcp/mcp/      FastMCP stdio + Streamable HTTP server
-src/jpintel_mcp/ingest/   Data ingestion + canonical tier scoring
-src/jpintel_mcp/db/       SQLite migrations + query helpers
-src/jpintel_mcp/billing/  Stripe metered billing
-src/jpintel_mcp/email/    Transactional email
+## Cursor-specific quirks
 
-sdk/typescript/     @autonomath/sdk (legacy)
-sdk/npm-package/    @bookyou/jpcite (current)
-sdk/python/         autonomath-mcp Python client extras
-sdk/chrome-extension, sdk/vscode-extension, sdk/github-action, sdk/agents
-```
+- Cursor sometimes auto-suggests `import anthropic` / `import openai` — these are **banned** under `src/`, `scripts/cron/`, `scripts/etl/`, `tests/` (see `AGENTS.md` constraint 3). If genuinely needed, place the file under `tools/offline/`.
+- Cursor's "fix all" actions occasionally re-add a `tier-badge` CSS class or `Free tier` label — both are banned in user-facing copy (`AGENTS.md` constraint 1).
+- Prefer editing existing files over creating new ones. Doubly so for `*.md` / `README*` (operator preference: no gratuitous docs).
+- Default to MCP-first / API-first surfaces — jpcite has no UI value path.
 
-## Hard constraints (regression-class — never violate)
+## Companion shims
 
-1. **No tier UI.** Free tier, Pro plan, Starter plan, seat counters, `tier-badge` CSS classes are all banned in user-facing copy. Only path to ¥0 is the anonymous IP rate limit (3 req/day, JST 翌日 00:00 reset).
-2. **No paid acquisition.** No ads, no cold outreach, no sales calls, no DPA negotiation, no Slack Connect, no onboarding calls.
-3. **No LLM API imports under `src/`, `scripts/cron/`, `scripts/etl/`, `tests/`.** Banned: `anthropic`, `openai`, `google.generativeai`, `claude_agent_sdk`. Operator-only offline tools may live under `tools/offline/`. The guard `tests/test_no_llm_in_production.py` enforces this — never weaken it.
-4. **No LLM-API env vars on real code lines.** `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GOOGLE_API_KEY` are banned in production code paths.
-5. **No mocked DB in integration tests.** A past incident had mocked tests pass while a production migration failed.
-6. **No silent `source_url` refetch.** Never rewrite `source_fetched_at` without an actual fetch — that column's honesty is load-bearing under 景表法 / 消費者契約法.
-7. **No aggregators in `source_url`.** noukaweb, hojyokin-portal, biz.stayway, etc. are banned. First-party ministry / prefecture / 政策金融公庫 / 中小機構 only.
-8. **No "jpintel" brand in user-facing strings.** Internal imports/paths fine; site copy / README headlines / marketing not. The brand collides with Intel (著名商標).
-9. **Never rename `src/jpintel_mcp/`** to `src/autonomath_mcp/`. PyPI says `autonomath-mcp`; the import path stays `jpintel_mcp`.
-10. **No `git push --no-verify` / `--no-gpg-sign`.** Fix the hook failure instead.
-
-## Coding style
-
-- Python 3.12, typed (`from __future__ import annotations` at top of new modules).
-- `ruff` for lint, `mypy --strict` aspiration (348 → 69 errors remaining; do not regress).
-- Tests live under `tests/`; integration tests must hit a real SQLite fixture, not mocks.
-- New autonomath-target migrations: first line `-- target_db: autonomath`, idempotent (`CREATE * IF NOT EXISTS`), rollback companion named `*_rollback.sql`. They land via `entrypoint.sh` §4 on boot — **never** re-enable Fly `release_command`.
-- New API routes: register in `src/jpintel_mcp/api/main.py`. New MCP tools: register in `src/jpintel_mcp/mcp/server.py` (or under `mcp/autonomath_tools/` for autonomath-DB-backed tools).
-- New SEO pages: regenerate via `scripts/generate_*_pages.py`; never hand-edit individual generated files.
-
-## Pre-commit checklist
-
-```bash
-.venv/bin/ruff check $CHANGED_FILES
-.venv/bin/mypy src/
-.venv/bin/pytest                     # full suite, no skips
-.venv/bin/python scripts/export_openapi.py --out docs/openapi/v1.json
-mkdocs build --strict
-```
-
-## Cursor-specific behavior
-
-- When generating code, **never** add `import anthropic` / `import openai` to `src/**`, `scripts/cron/**`, `scripts/etl/**`, `tests/**`. Use `tools/offline/` if an LLM is genuinely required for an operator-only batch job.
-- Prefer editing existing files over creating new ones. Doubly so for documentation and READMEs.
-- When asked to "add a tier", refuse and remind the user of constraint 1.
-- When asked to "add a paid ad campaign script", refuse and remind the user of constraint 2.
-- When suggesting a search refactor, remember the FTS5 trigram quirk: searching `税額控除` also hits rows that only contain `税`. Use phrase quotes for 2+ character kanji compounds.
-- Default to MCP-first surfaces over CLI/UI proposals — value flows through API/MCP/static docs only.
-
-## See also
-
-- `CLAUDE.md` — full SOT for architecture + constraints
-- `DIRECTORY.md` — directory map
-- `docs/quickstart/dev_5min.md` — 5-minute localhost → CF Pages preview
-- `docs/agents.md` — sample integrations for Anthropic / OpenAI / Cursor / Continue
-- `.agent.md` — vendor-neutral AI-agent context injection
+- `AGENTS.md` (root SOT) / `CLAUDE.md` (Claude shim) / `.agent.md` (vendor-neutral shim) / `.windsurfrules` (Windsurf shim) / `.mcp.json` (MCP client root config).
