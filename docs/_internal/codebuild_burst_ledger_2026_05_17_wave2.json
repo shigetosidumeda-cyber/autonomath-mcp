@@ -1,0 +1,167 @@
+{
+  "lane": "H_codebuild_burst_2026_05_17",
+  "project": "jpcite-crawler-build",
+  "region": "ap-northeast-1",
+  "compute_type": "BUILD_GENERAL1_LARGE",
+  "total_builds_planned": 25,
+  "total_builds_launched": 25,
+  "total_dry_run": 0,
+  "interval_sec": 3.0,
+  "est_cost_per_build_usd": 0.0434,
+  "est_total_cost_usd": 1.085,
+  "started_at_utc": "2026-05-17T01:12:08Z",
+  "finished_at_utc": "2026-05-17T01:13:45Z",
+  "dry_run": false,
+  "builds": [
+    {
+      "idx": 1,
+      "buildId": "jpcite-crawler-build:f9c4f7ef-f000-4ec2-8e62-0de346c15a1e",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:f9c4f7ef-f000-4ec2-8e62-0de346c15a1e"
+    },
+    {
+      "idx": 2,
+      "buildId": "jpcite-crawler-build:5bea1565-bb8f-43b9-b4ce-3d516f2a0b4a",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:5bea1565-bb8f-43b9-b4ce-3d516f2a0b4a"
+    },
+    {
+      "idx": 3,
+      "buildId": "jpcite-crawler-build:b16ce113-0229-45cb-89b2-7d2463ce8fc7",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:b16ce113-0229-45cb-89b2-7d2463ce8fc7"
+    },
+    {
+      "idx": 4,
+      "buildId": "jpcite-crawler-build:57922831-0f98-4700-9234-a21d095682ba",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:57922831-0f98-4700-9234-a21d095682ba"
+    },
+    {
+      "idx": 5,
+      "buildId": "jpcite-crawler-build:497c22e8-5918-4418-a675-61b2a128b770",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:497c22e8-5918-4418-a675-61b2a128b770"
+    },
+    {
+      "idx": 6,
+      "buildId": "jpcite-crawler-build:89fd1571-62a9-49bc-ae85-b271a043c3cf",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:89fd1571-62a9-49bc-ae85-b271a043c3cf"
+    },
+    {
+      "idx": 7,
+      "buildId": "jpcite-crawler-build:2aac4617-50fa-4156-b507-3ee0bfdae728",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:2aac4617-50fa-4156-b507-3ee0bfdae728"
+    },
+    {
+      "idx": 8,
+      "buildId": "jpcite-crawler-build:13453891-5ad4-4fdd-912b-c306cd5f7bbd",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:13453891-5ad4-4fdd-912b-c306cd5f7bbd"
+    },
+    {
+      "idx": 9,
+      "buildId": "jpcite-crawler-build:6804229d-b669-409d-b885-a1c31de42136",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:6804229d-b669-409d-b885-a1c31de42136"
+    },
+    {
+      "idx": 10,
+      "buildId": "jpcite-crawler-build:cb501a32-0773-4822-b8d5-4992cd7ca775",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:cb501a32-0773-4822-b8d5-4992cd7ca775"
+    },
+    {
+      "idx": 11,
+      "buildId": "jpcite-crawler-build:969b7be0-e2fc-4fbb-9ff1-e22b1c7833a8",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:969b7be0-e2fc-4fbb-9ff1-e22b1c7833a8"
+    },
+    {
+      "idx": 12,
+      "buildId": "jpcite-crawler-build:1c90af69-efa5-43c4-add4-2d21047e67c0",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:1c90af69-efa5-43c4-add4-2d21047e67c0"
+    },
+    {
+      "idx": 13,
+      "buildId": "jpcite-crawler-build:85c62950-4881-4e58-ae0e-b640c9ed4662",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:85c62950-4881-4e58-ae0e-b640c9ed4662"
+    },
+    {
+      "idx": 14,
+      "buildId": "jpcite-crawler-build:ba246ddf-c825-4678-9bb5-12bc21d341de",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:ba246ddf-c825-4678-9bb5-12bc21d341de"
+    },
+    {
+      "idx": 15,
+      "buildId": "jpcite-crawler-build:5544fffa-dcef-4ef0-b8a7-2d27c2cf8744",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:5544fffa-dcef-4ef0-b8a7-2d27c2cf8744"
+    },
+    {
+      "idx": 16,
+      "buildId": "jpcite-crawler-build:34c67ed2-83cf-4708-9ec9-00a0e626509b",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:34c67ed2-83cf-4708-9ec9-00a0e626509b"
+    },
+    {
+      "idx": 17,
+      "buildId": "jpcite-crawler-build:7275d89d-1fba-439b-96be-3e74d2934feb",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:7275d89d-1fba-439b-96be-3e74d2934feb"
+    },
+    {
+      "idx": 18,
+      "buildId": "jpcite-crawler-build:0a49bee5-18d2-49b7-a6e2-f9515f641aef",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:0a49bee5-18d2-49b7-a6e2-f9515f641aef"
+    },
+    {
+      "idx": 19,
+      "buildId": "jpcite-crawler-build:1f9a77a8-d0c5-474a-99fe-480036ba6d05",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:1f9a77a8-d0c5-474a-99fe-480036ba6d05"
+    },
+    {
+      "idx": 20,
+      "buildId": "jpcite-crawler-build:e790611a-a883-4ee3-8ea5-031676ff7717",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:e790611a-a883-4ee3-8ea5-031676ff7717"
+    },
+    {
+      "idx": 21,
+      "buildId": "jpcite-crawler-build:a92326a7-449d-4a56-a31d-e9ea0ce7e47f",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:a92326a7-449d-4a56-a31d-e9ea0ce7e47f"
+    },
+    {
+      "idx": 22,
+      "buildId": "jpcite-crawler-build:1f56e417-5fb8-4073-a3f9-0c2158b0be14",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:1f56e417-5fb8-4073-a3f9-0c2158b0be14"
+    },
+    {
+      "idx": 23,
+      "buildId": "jpcite-crawler-build:f01a1278-e190-4107-8d7a-2b400d2c2911",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:f01a1278-e190-4107-8d7a-2b400d2c2911"
+    },
+    {
+      "idx": 24,
+      "buildId": "jpcite-crawler-build:d9685ab8-4d85-4db0-b468-d7abedb1b380",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:d9685ab8-4d85-4db0-b468-d7abedb1b380"
+    },
+    {
+      "idx": 25,
+      "buildId": "jpcite-crawler-build:e3a2f55a-7f2a-40b7-856f-4c2d4e83b832",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:e3a2f55a-7f2a-40b7-856f-4c2d4e83b832"
+    }
+  ]
+}

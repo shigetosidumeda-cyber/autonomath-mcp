@@ -1,0 +1,47 @@
+{
+  "lane": "H_codebuild_burst_2026_05_17",
+  "project": "jpcite-crawler-build",
+  "region": "ap-northeast-1",
+  "compute_type": "BUILD_GENERAL1_LARGE",
+  "total_builds_planned": 5,
+  "total_builds_launched": 5,
+  "total_dry_run": 0,
+  "interval_sec": 2.0,
+  "est_cost_per_build_usd": 0.0434,
+  "est_total_cost_usd": 0.217,
+  "started_at_utc": "2026-05-17T01:11:46Z",
+  "finished_at_utc": "2026-05-17T01:11:58Z",
+  "dry_run": false,
+  "builds": [
+    {
+      "idx": 1,
+      "buildId": "jpcite-crawler-build:d45ffc6d-b2f5-4f61-8e95-e3de37a57d64",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:d45ffc6d-b2f5-4f61-8e95-e3de37a57d64"
+    },
+    {
+      "idx": 2,
+      "buildId": "jpcite-crawler-build:4c042f8e-ea8f-44bc-92f6-8e8f17718c18",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:4c042f8e-ea8f-44bc-92f6-8e8f17718c18"
+    },
+    {
+      "idx": 3,
+      "buildId": "jpcite-crawler-build:6cacded2-c1e6-4654-8a6b-9df269baeeb9",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:6cacded2-c1e6-4654-8a6b-9df269baeeb9"
+    },
+    {
+      "idx": 4,
+      "buildId": "jpcite-crawler-build:49304f71-6602-40ae-a8c0-9f1c71698f6c",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:49304f71-6602-40ae-a8c0-9f1c71698f6c"
+    },
+    {
+      "idx": 5,
+      "buildId": "jpcite-crawler-build:faf3cf20-1084-4b82-82d5-d4584fece00c",
+      "computeType": "BUILD_GENERAL1_LARGE",
+      "arn": "arn:aws:codebuild:ap-northeast-1:993693061769:build/jpcite-crawler-build:faf3cf20-1084-4b82-82d5-d4584fece00c"
+    }
+  ]
+}
