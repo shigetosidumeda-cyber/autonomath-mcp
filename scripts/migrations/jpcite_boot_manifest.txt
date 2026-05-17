@@ -492,3 +492,9 @@ wave24_202_am_legal_reasoning_chain.sql
 wave24_203_am_window_directory.sql
 wave24_204_am_amendment_alert_impact.sql
 wave24_205_am_segment_view.sql
+wave24_212_am_nta_qa.sql
+wave24_213_am_chihouzei_tsutatsu.sql
+wave24_216_am_pdf_watch_log.sql
+wave24_217_am_municipality_subsidy.sql
+wave24_220_am_outcome_chunk_map.sql
+wave24_221_am_outcome_cohort_variant.sql
