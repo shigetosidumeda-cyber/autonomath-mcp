@@ -1,0 +1,203 @@
+{
+  "run_id": "20260517T011049Z",
+  "predecessor_run_id": "20260516T160602Z",
+  "predecessor_wave": "PM10",
+  "budget_actual_usd": 2.086e-07,
+  "quotas": {
+    "ml.c5.2xlarge for transform job usage": 8.0,
+    "ml.c5.xlarge for transform job usage": 16.0,
+    "ml.m5.xlarge for transform job usage": 8.0,
+    "ml.g4dn.xlarge for transform job usage": 4.0
+  },
+  "instance_distribution": {
+    "ml.c5.2xlarge": 8,
+    "ml.c5.xlarge": 6,
+    "ml.m5.xlarge": 4,
+    "ml.g4dn.xlarge": 2
+  },
+  "lane": "B",
+  "target_jobs": 20,
+  "submitted_count": 20,
+  "submitted": [
+    {
+      "tag": "amlaw42cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw42cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0001.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-42-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw42cpu"
+    },
+    {
+      "tag": "amlaw43cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw43cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0002.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-43-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw43cpu"
+    },
+    {
+      "tag": "amlaw44cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw44cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0003.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-44-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw44cpu"
+    },
+    {
+      "tag": "amlaw45cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw45cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0004.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-45-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw45cpu"
+    },
+    {
+      "tag": "amlaw46cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw46cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0005.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-46-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw46cpu"
+    },
+    {
+      "tag": "amlaw47cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw47cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0006.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-47-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw47cpu"
+    },
+    {
+      "tag": "amlaw48cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw48cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0010.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-48-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw48cpu"
+    },
+    {
+      "tag": "amlaw49cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw49cpu",
+      "instance_type": "ml.c5.2xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0011.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-49-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw49cpu"
+    },
+    {
+      "tag": "amlaw50cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw50cpu",
+      "instance_type": "ml.c5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0012.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-50-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw50cpu"
+    },
+    {
+      "tag": "amlaw51cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw51cpu",
+      "instance_type": "ml.c5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0013.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-51-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw51cpu"
+    },
+    {
+      "tag": "court52cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-court52cpu",
+      "instance_type": "ml.c5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/court_decisions/part-0000.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/court-pm11-52-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-court52cpu"
+    },
+    {
+      "tag": "invoice53cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-invoice53cpu",
+      "instance_type": "ml.c5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/invoice_registrants/part-0000.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/invoice-pm11-53-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-invoice53cpu"
+    },
+    {
+      "tag": "saiketsu54cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-saiketsu54cpu",
+      "instance_type": "ml.c5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/nta_saiketsu/part-0000.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/saiketsu-pm11-54-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-saiketsu54cpu"
+    },
+    {
+      "tag": "tsutatsu55cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-tsutatsu55cpu",
+      "instance_type": "ml.c5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/nta_tsutatsu_index/part-0000.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/tsutatsu-pm11-55-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-tsutatsu55cpu"
+    },
+    {
+      "tag": "programs56cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-programs56cpu",
+      "instance_type": "ml.m5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/programs/part-0000.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/programs-pm11-56-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-programs56cpu"
+    },
+    {
+      "tag": "adoption57cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-adoption57cpu",
+      "instance_type": "ml.m5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/adoption_records/part-0001.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/adoption-pm11-57-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-adoption57cpu"
+    },
+    {
+      "tag": "amlaw58cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw58cpu",
+      "instance_type": "ml.m5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0007.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-58-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw58cpu"
+    },
+    {
+      "tag": "amlaw59cpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw59cpu",
+      "instance_type": "ml.m5.xlarge",
+      "model": "jpcite-embed-allminilm-cpu-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0008.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-59-cpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw59cpu"
+    },
+    {
+      "tag": "amlaw60gpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw60gpu",
+      "instance_type": "ml.g4dn.xlarge",
+      "model": "jpcite-embed-allminilm-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0001.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-60-gpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw60gpu"
+    },
+    {
+      "tag": "amlaw61gpu",
+      "job_name": "jpcite-embed-20260517T011049Z-amlaw61gpu",
+      "instance_type": "ml.g4dn.xlarge",
+      "model": "jpcite-embed-allminilm-v1",
+      "input": "s3://jpcite-credit-993693061769-202605-derived/corpus_export_trunc/am_law_article/part-0012.jsonl",
+      "output": "s3://jpcite-credit-993693061769-202605-derived/embeddings_burn/amlaw-pm11-61-gpu/",
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:transform-job/jpcite-embed-20260517T011049Z-amlaw61gpu"
+    }
+  ]
+}
