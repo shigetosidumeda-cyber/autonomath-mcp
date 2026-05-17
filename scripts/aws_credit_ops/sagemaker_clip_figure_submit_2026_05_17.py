@@ -147,7 +147,7 @@ EMBEDDER_SCRIPT = textwrap.dedent(
     try:
         from transformers import AutoImageProcessor, AutoModel
     except ImportError:
-        os.system(f"{sys.executable} -m pip install --quiet transformers pillow")
+        os.system(f"{sys.executable} -m pip install --quiet 'transformers==4.36.2' 'torchvision==0.15.2' pillow")
         from transformers import AutoImageProcessor, AutoModel
 
     MODEL_ID = os.environ.get("CLIP_MODEL_ID", "rinna/japanese-clip-vit-b-16")
@@ -246,7 +246,7 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
 def _stamp_job_name() -> str:
     """Return a deterministic-ish job name with a UTC stamp."""
     today = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    return f"jpcite-figure-clip-{today}-{uuid.uuid4().hex[:6]}"
+    return f"jpcite-figure-clip-jp-{today}-{uuid.uuid4().hex[:6]}"
 
 
 def _cost_estimate(args: argparse.Namespace) -> dict[str, Any]:
@@ -266,7 +266,9 @@ def _cost_estimate(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
-def _build_processing_inputs(args: argparse.Namespace, ledger_uri: str) -> list[dict[str, Any]]:
+def _build_processing_inputs(
+    args: argparse.Namespace, ledger_uri: str, code_s3_prefix: str
+) -> list[dict[str, Any]]:
     """Render the Processing Job ProcessingInputs list."""
     base = f"s3://{args.derived_bucket}/"
     return [
@@ -298,7 +300,7 @@ def _build_processing_inputs(args: argparse.Namespace, ledger_uri: str) -> list[
             "InputName": "code",
             "AppManaged": False,
             "S3Input": {
-                "S3Uri": f"{base}{args.code_prefix}",
+                "S3Uri": f"{base}{code_s3_prefix}",
                 "LocalPath": "/opt/ml/processing/input/code",
                 "S3DataType": "S3Prefix",
                 "S3InputMode": "File",
@@ -377,8 +379,9 @@ def _upload_code_channel(
     *,
     commit: bool,
 ) -> tuple[str, dict[str, Any]]:
-    """Upload the inline embedder script as the ``code/`` S3 channel."""
-    code_key = f"{args.code_prefix.rstrip('/')}/{job_name}/embed.py"
+    """Upload the inline embedder script to a per-job ``code/`` S3 prefix."""
+    job_code_prefix = f"{args.code_prefix.rstrip('/')}/{job_name}/"
+    code_key = f"{job_code_prefix}embed.py"
     if commit:
         import boto3
 
@@ -393,6 +396,7 @@ def _upload_code_channel(
     return code_key, {
         "code_bucket": args.derived_bucket,
         "code_key": code_key,
+        "code_s3_prefix": job_code_prefix,
         "size_bytes": len(EMBEDDER_SCRIPT),
     }
 
@@ -421,6 +425,7 @@ def _build_processing_request(
     *,
     job_name: str,
     code_key: str,
+    code_s3_prefix: str,
     ledger_uri: str,
 ) -> dict[str, Any]:
     """Construct the create_processing_job request body."""
@@ -437,7 +442,9 @@ def _build_processing_request(
         "Environment": _build_environment(args),
         "RoleArn": args.execution_role,
         "ProcessingInputs": _build_processing_inputs(
-            args, ledger_uri or f"s3://{args.derived_bucket}/{args.code_prefix.rstrip('/')}/ledger/"
+            args,
+            ledger_uri or f"s3://{args.derived_bucket}/{args.code_prefix.rstrip('/')}/ledger/",
+            code_s3_prefix,
         ),
         "ProcessingOutputConfig": {"Outputs": _build_processing_outputs(args)},
         "StoppingCondition": {"MaxRuntimeInSeconds": int(args.max_hours * 3600)},
@@ -479,9 +486,14 @@ def main(argv: list[str] | None = None) -> int:
 
     job_name = args.job_name or _stamp_job_name()
     code_key, code_meta = _upload_code_channel(args, job_name, commit=args.commit)
+    code_s3_prefix = str(code_meta["code_s3_prefix"])
     ledger_uri, ledger_meta = _ensure_ledger_in_s3(args, commit=args.commit)
     req = _build_processing_request(
-        args, job_name=job_name, code_key=code_key, ledger_uri=ledger_uri
+        args,
+        job_name=job_name,
+        code_key=code_key,
+        code_s3_prefix=code_s3_prefix,
+        ledger_uri=ledger_uri,
     )
     manifest = {
         "manifest_id": "clip_figure_submit_2026_05_17",
