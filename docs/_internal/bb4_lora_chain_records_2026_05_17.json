@@ -52,6 +52,22 @@
       "rc": 0,
       "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:training-job/jpcite-bert-lora-shihoshoshi-20260517T105928Z",
       "at": "2026-05-17T10:59:31.191940+00:00"
+    },
+    {
+      "wait_phase": true,
+      "predecessor_job": "jpcite-bert-lora-shihoshoshi-20260517T105928Z",
+      "next_cohort": "chusho_keieisha",
+      "predecessor_terminal_status": "Completed",
+      "waited_seconds": 2400,
+      "at": "2026-05-17T11:39:32.451794+00:00"
+    },
+    {
+      "submit_phase": true,
+      "cohort": "chusho_keieisha",
+      "rc": 0,
+      "arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:training-job/jpcite-bert-lora-chusho-keieisha-20260517T113932Z",
+      "at": "2026-05-17T11:39:34.425316+00:00"
     }
-  ]
+  ],
+  "completed_at": "2026-05-17T11:39:34.425615+00:00"
 }
