@@ -544,7 +544,11 @@ def test_scenario_1_zeirishi_houjinzei_shinkoku_deep(mod: Any) -> None:
     assert out["filing_window"]["kind"] == "tax_office"
     assert any(m["name"] == "麹町税務署" for m in out["filing_window"]["matches"])
     assert out["deadline"] is not None
-    assert out["billing"] == {"unit": 1, "yen": 3, "auto_fill_level": "deep"}
+    assert out["billing"]["unit"] == 4
+    assert out["billing"]["yen"] == 12
+    assert out["billing"]["tier"] == "C"
+    assert out["billing"]["pricing_version"] == "v3"
+    assert out["billing"]["auto_fill_level"] == "deep"
 
 
 def test_scenario_2_zeirishi_shouhizei_shinkoku_deep(mod: Any) -> None:
@@ -751,8 +755,8 @@ def test_scenario_15_disclaimer_billing_provenance_shape(mod: Any) -> None:
     assert "行政書士法 §1" in d
     assert "司法書士法 §3" in d
     # provenance / billing contract
-    assert out["_billing_unit"] == 1
-    assert out["billing"]["yen"] == 3
+    assert out["_billing_unit"] == 4
+    assert out["billing"]["yen"] == 12
     assert out["_provenance"]["lane_id"] == "HE-2"
     assert out["_provenance"]["composed_lanes"] == ["N1", "N2", "N3", "N4", "N6", "N9"]
     assert out["_citation_envelope"]["law_articles"] >= 1

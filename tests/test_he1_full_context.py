@@ -174,7 +174,11 @@ def test_envelope_canonical_fields_present() -> None:
     assert res["tool_name"] == "agent_full_context"
     assert res["schema_version"] == "moat.he1.v1"
     assert res["lane_id"] == "HE1"
-    assert res["billing"] == {"unit": 1, "yen": 3, "depth_level": 3}
+    assert res["billing"]["unit"] == 4
+    assert res["billing"]["yen"] == 12
+    assert res["billing"]["tier"] == "C"
+    assert res["billing"]["pricing_version"] == "v3"
+    assert res["billing"]["depth_level"] == 3
     assert "scaffold-only" in res["_disclaimer"].lower() or "士業" in res["_disclaimer"]
     assert res["_provenance"]["no_llm"] is True
 
@@ -261,7 +265,11 @@ def test_invalid_query_returns_error_envelope() -> None:
     res = asyncio.run(run_empty())
     assert "error" in res
     assert res["error"]["code"] == "invalid_input"
-    assert res["billing"] == {"unit": 1, "yen": 3, "depth_level": 3}
+    assert res["billing"]["unit"] == 4
+    assert res["billing"]["yen"] == 12
+    assert res["billing"]["tier"] == "C"
+    assert res["billing"]["pricing_version"] == "v3"
+    assert res["billing"]["depth_level"] == 3
 
 
 def test_next_call_hints_present_for_anonymous_query() -> None:
@@ -297,5 +305,9 @@ def test_provenance_lists_composition_chain() -> None:
 def test_depth_levels_all_emit_billing_envelope(depth: int) -> None:
     """billing envelope is stable across depths (1 unit per call)."""
     res = _run("ものづくり補助金", depth_level=depth)
-    assert res["billing"] == {"unit": 1, "yen": 3, "depth_level": depth}
-    assert res["_billing_unit"] == 1
+    assert res["billing"]["unit"] == 4
+    assert res["billing"]["yen"] == 12
+    assert res["billing"]["tier"] == "C"
+    assert res["billing"]["pricing_version"] == "v3"
+    assert res["billing"]["depth_level"] == depth
+    assert res["_billing_unit"] == 4

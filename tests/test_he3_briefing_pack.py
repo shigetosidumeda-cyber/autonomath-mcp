@@ -186,8 +186,8 @@ def test_fde_disclaimer_mentions_sow() -> None:
 
 def test_billing_and_provenance_envelope() -> None:
     out = _call(topic="役員報酬", target_segment="税理士")
-    assert out["_billing_unit"] == 1
-    assert out["billing"]["billable_units"] == 1
+    assert out["_billing_unit"] == 4
+    assert out["billing"]["billable_units"] == 4
     assert out["billing"]["unit_price_jpy"] == 3
     assert out["billing"]["unit_price_jpy_taxed"] == pytest.approx(3.30)
     prov = out["_provenance"]

@@ -83,16 +83,17 @@ def test_a1_pricing_envelope_tier_d_and_value_proxy_band() -> None:
     billing = out["billing"]
     assert billing["tier"] == "D"
     assert billing["product_id"] == "A1"
-    assert billing["price_per_req_jpy"] == 1000
-    assert billing["price_per_houjin_monthly_jpy"] == 100
+    assert billing["price_per_req_jpy"] == 30
+    assert billing["price_per_houjin_monthly_jpy"] == 0
     assert billing["no_llm"] is True
     assert billing["scaffold_only"] is True
     vp = billing["value_proxy"]
     assert vp["model"] == "claude-opus-4-7"
-    assert vp["llm_equivalent_low_jpy"] == 3000
-    assert vp["llm_equivalent_high_jpy"] == 15000
-    assert 60.0 <= vp["saving_low_pct"] <= 100.0
-    assert 60.0 <= vp["saving_high_pct"] <= 100.0
+    assert vp["llm_equivalent_low_jpy"] == 30
+    assert vp["llm_equivalent_high_jpy"] == 75
+    # V3: jpcite ¥30 vs Sonnet 8-turn ¥30 = parity, vs Opus ¥75 = 60% save.
+    assert -10.0 <= vp["saving_low_pct"] <= 100.0
+    assert -10.0 <= vp["saving_high_pct"] <= 100.0
 
 
 def test_a1_disclaimer_references_section52_and_primary_source() -> None:
@@ -209,15 +210,16 @@ def test_a2_pricing_envelope_tier_d_and_value_proxy_band() -> None:
     billing = out["billing"]
     assert billing["tier"] == "D"
     assert billing["product_id"] == "A2"
-    assert billing["price_per_req_jpy"] == 200
+    assert billing["price_per_req_jpy"] == 30
     assert billing["no_llm"] is True
     assert billing["scaffold_only"] is True
     vp = billing["value_proxy"]
     assert vp["model"] == "claude-opus-4-7"
-    assert vp["llm_equivalent_low_jpy"] == 5000
-    assert vp["llm_equivalent_high_jpy"] == 15000
-    assert 90.0 <= vp["saving_low_pct"] <= 100.0
-    assert 90.0 <= vp["saving_high_pct"] <= 100.0
+    assert vp["llm_equivalent_low_jpy"] == 30
+    assert vp["llm_equivalent_high_jpy"] == 75
+    # V3: jpcite ¥30 vs Sonnet 8-turn ¥30 = parity, vs Opus ¥75 = 60% save.
+    assert -10.0 <= vp["saving_low_pct"] <= 100.0
+    assert -10.0 <= vp["saving_high_pct"] <= 100.0
 
 
 def test_a2_disclaimer_references_section47_2_and_audit_standards() -> None:

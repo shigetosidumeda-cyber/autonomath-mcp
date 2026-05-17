@@ -9,7 +9,7 @@ Covered scenarios (≥10):
   A3-2  scope_year=6 narrower window.
   A3-3  no portfolio rows → status=no_portfolio.
   A3-4  amendment alerts filtered to roadmap programs only.
-  A3-5  billing envelope = 167 units = ¥501.
+  A3-5  billing envelope = 10 units = ¥30 (Pricing V3 Tier D Deep).
   A3-6  agent_next_actions deterministic 3-step.
   A3-7  required_documents per program (IT 導入補助金 specific docs).
   A3-8  disclaimer envelope (§52 / §47条の2 / §72).
@@ -17,7 +17,7 @@ Covered scenarios (≥10):
   A4-2  industry explicit override.
   A4-3  small band (1-4) surfaces obligation_label=kisoku_optional.
   A4-4  invalid employee_count_band → invalid_argument envelope.
-  A4-5  billing envelope = 100 units = ¥300.
+  A4-5  billing envelope = 10 units = ¥30 (Pricing V3 Tier D).
   A4-6  bundle returns 4 artifacts with proper artifact_type slugs.
   A4-7  disclaimer includes 社労士法.
   A4-8  agent_next_actions three-step + aggregate summary shape.
@@ -598,8 +598,12 @@ def test_a3_amendment_alerts_filtered(a3_mod: Any) -> None:
 def test_a3_billing_envelope_167_units(a3_mod: Any) -> None:
     fn = _impl(a3_mod.product_subsidy_roadmap_12month)
     out = fn(houjin_bangou=HOUJIN, scope_year=12)
-    assert out["_billing_unit"] == 167
-    assert out["billing"] == {"unit": 167, "yen": 501, "product_id": "A3"}
+    assert out["_billing_unit"] == 10
+    assert out["billing"]["unit"] == 10
+    assert out["billing"]["yen"] == 30
+    assert out["billing"]["product_id"] == "A3"
+    assert out["billing"]["tier"] == "D"
+    assert out["billing"]["pricing_version"] == "v3"
 
 
 def test_a3_agent_next_actions_three_steps(a3_mod: Any) -> None:
@@ -680,8 +684,12 @@ def test_a4_invalid_band(a4_mod: Any) -> None:
 def test_a4_billing_envelope_100_units(a4_mod: Any) -> None:
     fn = _impl(a4_mod.product_shuugyou_kisoku_pack)
     out = _run(fn(houjin_bangou=HOUJIN, employee_count_band="10-29"))
-    assert out["_billing_unit"] == 100
-    assert out["billing"] == {"unit": 100, "yen": 300, "product_id": "A4"}
+    assert out["_billing_unit"] == 10
+    assert out["billing"]["unit"] == 10
+    assert out["billing"]["yen"] == 30
+    assert out["billing"]["product_id"] == "A4"
+    assert out["billing"]["tier"] == "D"
+    assert out["billing"]["pricing_version"] == "v3"
 
 
 def test_a4_bundle_artifact_types(a4_mod: Any) -> None:
