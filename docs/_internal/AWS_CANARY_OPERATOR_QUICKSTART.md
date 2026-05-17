@@ -3,8 +3,8 @@
 > operator が AWS canary を回す 7 step 実行台本。詳細・rollback・trigger 表は back-link 540 行 runbook 参照。version: 2026-05-16 final / back-link: `docs/_internal/AWS_CANARY_EXECUTION_RUNBOOK.md` / companion: `docs/_internal/aws_canary_execution_checklist.yaml` / memory: `project_jpcite_rc1_2026_05_16` + `feedback_loop_promote_concern_separation`
 
 ## 前提 (READY 条件)
-- `site/releases/rc1-p0-bootstrap/preflight_scorecard.json`: `.state == "AWS_CANARY_READY"` (Stream Y 達成済) + `.live_aws_commands_allowed == false` (絶対、step 2 直前維持) + `.cash_bill_guard_enabled == true`
-- teardown 30/30 + CF rollback 11/11 + production gate 7/7 全 PASS / `~/.aws/credentials` の `jpcite-canary` profile 設定 / Ed25519 公開鍵 `keys/operator_unlock_pubkey.pem` commit 済 / 推定 **70-100 分** (うち step 5 で 60 分 observe)
+- Live SOT = [`site/releases/rc1-p0-bootstrap/preflight_scorecard.json`](../../site/releases/rc1-p0-bootstrap/preflight_scorecard.json) (canonical): `.state == "AWS_CANARY_READY"` + `.live_aws_commands_allowed` 値は必ず scorecard を直接 jq で確認 (step 2 で false → true へ flip するため、step 1 入口での値は scorecard が SOT) + `.cash_bill_guard_enabled == true`
+- teardown 30/30 + CF rollback 11/11 + production gate 7/7 全 PASS / `~/.aws/credentials` に **`bookyou-recovery` profile** (account `993693061769`、region us-east-1 for CW/Lambda/SNS + ap-northeast-1 for Batch/CE/queues、dual region by design) を設定済 / Ed25519 公開鍵 `keys/operator_unlock_pubkey.pem` commit 済 / 推定 **70-100 分** (うち step 5 で 60 分 observe)
 
 ## 7 step (copy-paste 用)
 

@@ -1,6 +1,14 @@
+---
+historical: true
+superseded_by: site/releases/rc1-p0-bootstrap/preflight_scorecard.json (as of 2026-05-17T03:11:48Z)
+canonical_live_state: site/releases/rc1-p0-bootstrap/preflight_scorecard.json
+---
+
 # AWS Canary Run Closeout (2026-05-16 PM, Phase 1-7 LANDED + Phase 8 IN_PROGRESS)
 
-> **Status: Phase 1-7 LANDED / Phase 8 ramp IN_PROGRESS.**
+> **Historical snapshot — 2026-05-16 PM cut.** Live phase/state values drift; **always read**
+> `site/releases/rc1-p0-bootstrap/preflight_scorecard.json` for the canonical SOT.
+> Status at this snapshot: Phase 1-7 LANDED / Phase 8 ramp IN_PROGRESS.
 > Phase 3 smoke: 7/7 J0X SUCCEEDED, 82 artifacts (4.3 MB), **$0 actual cost**
 > (Fargate Spot tiny job below billing threshold).
 > Phase 4 (deep + ultradeep, 2026-05-16 13:30 JST): 7 deep J0X (2,726 URL) +

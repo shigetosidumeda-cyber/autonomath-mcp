@@ -1,6 +1,16 @@
+---
+historical: true
+superseded_by: site/releases/rc1-p0-bootstrap/preflight_scorecard.json (as of 2026-05-17T03:11:48Z)
+canonical_live_state: site/releases/rc1-p0-bootstrap/preflight_scorecard.json
+---
+
 # AWS Canary Recovery Procedure — $19,490 Boundary Scenario (2026-05-16)
 
-> **Status: teardown chain verified end-to-end DRY_RUN, Budget Action confirmed STANDBY @ $18.9K.**
+> **Historical snapshot — 2026-05-16 cut.** Live Budget Action / IAM attachment / deny-policy
+> state drifts; **always read** `site/releases/rc1-p0-bootstrap/preflight_scorecard.json`
+> + `aws budgets describe-budget-actions-for-account` + `aws iam list-attached-user-policies`
+> for canonical live verification. Status at this snapshot: teardown chain verified end-to-end
+> DRY_RUN, Budget Action confirmed STANDBY @ $18.9K.
 > Each layer of the 5-line defense (`AWS_CANARY_HARD_STOP_5_LINE_DEFENSE_2026_05_16.md`) is independently armed.
 > This doc covers **how to recover** if any line fires — Budget Action attaches deny IAM,
 > CW alarm @ $18.7K invokes auto-stop Lambda, or operator runs `stop_drill.sh` / `teardown_credit_run.sh`.

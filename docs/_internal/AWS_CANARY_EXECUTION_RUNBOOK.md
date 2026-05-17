@@ -1,11 +1,14 @@
 # AWS Canary 実行手順書 (Stream I)
 
-> **本書は明文化された runbook であり、実行指示ではない。** 2026-05-16 時点で
-> `site/releases/rc1-p0-bootstrap/preflight_scorecard.json.state =
-> AWS_BLOCKED_PRE_FLIGHT` のため、本書 step 1 以降の **live 実行は禁止**。
-> operator 承認 + state 遷移 (`AWS_CANARY_READY`) 後に 1 step ずつ呼び出すこと。
+> **本書は明文化された runbook であり、実行指示ではない。** Live state SOT =
+> [`site/releases/rc1-p0-bootstrap/preflight_scorecard.json`](../../site/releases/rc1-p0-bootstrap/preflight_scorecard.json)
+> (canonical authority — `.state` と `.live_aws_commands_allowed` を本書実行前に必ず参照)。
+> scorecard.state が `AWS_CANARY_READY` で `.live_aws_commands_allowed=true` の **両方** が
+> 揃った状態でのみ本書 step 1 以降の live 実行が許可される。どちらかが満たされない場合は
+> live 実行を禁止し、Stream W (`--unlock-live-aws-commands`) operation で正しい state に
+> 揃えてから再開すること。
 
-last_updated: 2026-05-16
+last_updated: 2026-05-17 (live SOT = preflight_scorecard.json — see canonical_live_state in docs)
 companion: `docs/_internal/aws_canary_execution_checklist.yaml`
 companion (kill switch): `docs/_internal/launch_kill_switch.md`
 companion (teardown): `scripts/teardown/run_all.sh`

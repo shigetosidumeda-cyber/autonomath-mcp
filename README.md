@@ -344,7 +344,7 @@ Additive to the 2026-05-07 hardening / 2026-05-12 v0.4.0 LIVE / above Wave 50 st
 - **coverage**: **76+%** (tick 7 73.52% → tick 8 75%+ → tick 9 76-77%)
 - **preflight**: **5/5 READY** (Stream A 5 preflight artifact 全件 READY 達成、tick 9 で Stream A → completed)
 - **preflight_scorecard.state**: **AWS_CANARY_READY** (tick 9 Stream Y で AWS_BLOCKED → AWS_CANARY_READY 進行)
-- **live_aws_commands_allowed**: **false** (絶対条件堅守、operator token gate `--unlock-live-aws-commands` 経由でのみ flip 可)
+- **live_aws_commands_allowed**: **see [`site/releases/rc1-p0-bootstrap/preflight_scorecard.json`](./site/releases/rc1-p0-bootstrap/preflight_scorecard.json) for the canonical live value** — hard-coded copies in markdown are intentionally avoided (single SOT, operator token gate `--unlock-live-aws-commands` 経由でのみ flip 可、scorecard runner authority のみが書き換え可能)
 - **22+ Stream landed in 10 tick** (Stream A/B/C/D/E/F/G/H/I/K/L/M/N/O/P/Q/R/S/T/U/V/W/X/Y/Z 累計 24/26 completed)
 - **RC1 contract layer**: 19 Pydantic models + 20 JSON Schema、`scripts/check_schema_contract_parity.py` で双方向 round-trip 0 drift
 - **Release Capsule**: 21 artifacts in manifest + 14 outcome contracts (¥300-¥900 band 実値 fill 完了) + 3 inline packets

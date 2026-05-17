@@ -1,6 +1,15 @@
+---
+historical: true
+superseded_by: site/releases/rc1-p0-bootstrap/preflight_scorecard.json (as of 2026-05-17T03:11:48Z)
+canonical_live_state: site/releases/rc1-p0-bootstrap/preflight_scorecard.json
+---
+
 # AWS Canary Hard-Stop — $19,490 5-Line Defense Closeout (2026-05-16 PM)
 
-> **Status: 5 line defense ARMED + teardown scripts available.**
+> **Historical snapshot — 2026-05-16 PM cut.** Live armed/standby state of CW alarms and
+> Budget Actions drifts over time; **always read** `site/releases/rc1-p0-bootstrap/preflight_scorecard.json`
+> + `scripts/aws_credit_ops/verify_armed_state.sh` (if present) for canonical live
+> verification. Status at this snapshot: 5 line defense ARMED + teardown scripts available.
 > Lambda `jpcite-credit-auto-stop` runs with `JPCITE_AUTO_STOP_ENABLED=true`.
 > Budget Action attached at $18.9K threshold (deny IAM auto-applies).
 > CW alarm @ $18.7K bypasses SNS email-confirm and direct-invokes Lambda.

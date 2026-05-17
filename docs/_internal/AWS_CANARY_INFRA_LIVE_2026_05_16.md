@@ -1,12 +1,20 @@
+---
+historical: true
+superseded_by: site/releases/rc1-p0-bootstrap/preflight_scorecard.json (as of 2026-05-17T03:11:48Z)
+canonical_live_state: site/releases/rc1-p0-bootstrap/preflight_scorecard.json
+---
+
 # AWS Canary Infrastructure — LIVE State Closeout (2026-05-16 PM)
 
-> **Status: Phase 1+2 DONE / Phase 3 IN_PROGRESS / Phase 4-7 pending.**
-> `live_aws_commands_allowed` was flipped to **true** for the first time today
-> via Stream W concern-separation flag `--unlock-live-aws-commands`. The
-> preflight scorecard runner is the single authority for the flip; no other
-> code path may set this flag.
+> **Historical snapshot — 2026-05-16 PM cut.** Live values (e.g. `live_aws_commands_allowed`,
+> `state`) drift over time; **always read** `site/releases/rc1-p0-bootstrap/preflight_scorecard.json`
+> for the canonical SOT. Status at this snapshot: Phase 1+2 DONE / Phase 3 IN_PROGRESS /
+> Phase 4-7 pending. `live_aws_commands_allowed` was flipped to **true** for the first time
+> on 2026-05-16 via Stream W concern-separation flag `--unlock-live-aws-commands`. The
+> preflight scorecard runner is the single authority for the flip; no other code path may
+> set this flag.
 
-last_updated: 2026-05-16
+last_updated: 2026-05-16 (historical — see preflight_scorecard.json for live state)
 
 companion runbook: `docs/_internal/AWS_CANARY_EXECUTION_RUNBOOK.md`
 companion checklist: `docs/_internal/aws_canary_execution_checklist.yaml`
@@ -145,8 +153,10 @@ Supporting artifacts:
 | `teardown_credit_run.sh` | DRY_RUN default; `--commit` to teardown |
 | `aggregate_run_ledger.sh` | Phase 5 (not yet landed) — drain-time ledger aggregator |
 
-All scripts require `--profile jpcite-canary` (NOT `bookyou-recovery`; the
-two profiles target different accounts).
+Historical note (2026-05-16 cut): this doc originally instructed `--profile jpcite-canary`.
+**Canonical operator profile = `bookyou-recovery` (account `993693061769`)** as enforced by
+`tests/test_agent_runtime_contracts.py:134` + every live `scripts/aws_credit_ops/*.sh`. The
+`jpcite-canary` references in this section are retained as a historical snapshot only.
 
 ---
 
