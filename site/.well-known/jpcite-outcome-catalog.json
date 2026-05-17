@@ -6,6 +6,11 @@
   "total_outcomes": 452,
   "price_bands": {
     "free": 0,
+    "tier_a_atomic": 3,
+    "tier_b_composed": 6,
+    "tier_c_heavy_endpoint": 12,
+    "tier_d_workflow": 30,
+    "tier_d_multipack_ceil": 120,
     "light": 300,
     "mid": 600,
     "heavy": 900
@@ -9565,5 +9570,13 @@
       "社労士法",
       "行政書士法"
     ]
+  },
+  "pricing_version": "v3",
+  "pricing_doc": "docs/_internal/JPCITE_PRICING_V3_2026_05_17.md",
+  "tier_billable_units": {
+    "A": 1,
+    "B": 2,
+    "C": 4,
+    "D": 10
   }
 }
