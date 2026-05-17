@@ -19,6 +19,7 @@ generated dicts, and tar archive metadata.
 
 from __future__ import annotations
 
+import datetime as dt
 import importlib.util
 import pathlib
 import sys
@@ -83,6 +84,33 @@ def test_m3_default_model_is_japanese_clip(m3_module: types.ModuleType) -> None:
     assert m3_module.ALLOW_MODELS["rinna/japanese-clip-vit-b-16"]["dim"] == 512
 
 
+def test_m3_default_model_revision_is_immutable_sha(m3_module: types.ModuleType) -> None:
+    """Live CLIP jobs must not trust mutable HF ``main``."""
+    revision = m3_module.DEFAULT_MODEL_REVISION
+    assert revision != "main"
+    assert len(revision) == 40
+    assert all(ch in "0123456789abcdef" for ch in revision)
+    assert f'CLIP_MODEL_REVISION", "{revision}"' in m3_module.EMBEDDER_SCRIPT
+
+
+def test_m3_parser_rejects_mutable_model_revision(m3_module: types.ModuleType) -> None:
+    """Operator overrides must not reintroduce mutable HF refs."""
+    with pytest.raises(SystemExit):
+        m3_module._parse_args(["--model-revision", "main"])
+    with pytest.raises(SystemExit):
+        m3_module._parse_args(["--model-revision", "ce22bc39"])
+
+
+def test_m3_build_environment_never_emits_main_revision(
+    m3_module: types.ModuleType,
+) -> None:
+    """The Processing container must receive the pinned immutable revision."""
+    args = m3_module._parse_args([])
+    env = m3_module._build_environment(args)
+    assert env["CLIP_MODEL_REVISION"] == m3_module.DEFAULT_MODEL_REVISION
+    assert env["CLIP_MODEL_REVISION"] != "main"
+
+
 def test_m3_upload_code_channel_returns_per_job_prefix(m3_module: types.ModuleType) -> None:
     """The upload helper must surface the per-job S3 sub-prefix in meta."""
     args = types.SimpleNamespace(
@@ -143,8 +171,47 @@ def test_m3_embedder_uses_manual_torchvision_pixel_values(m3_module: types.Modul
     assert "from torchvision import transforms" in m3_module.EMBEDDER_SCRIPT
     assert "pixel_values=pixel_values" in m3_module.EMBEDDER_SCRIPT
     assert "AutoImageProcessor" not in m3_module.EMBEDDER_SCRIPT
+    assert "trust_remote_code" not in m3_module.EMBEDDER_SCRIPT
     assert "japanese_clip" not in m3_module.EMBEDDER_SCRIPT
     assert "git+https://github.com" not in m3_module.EMBEDDER_SCRIPT
+
+
+def test_m3_cost_preflight_includes_current_day(
+    m3_module: types.ModuleType,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Cost Explorer End is exclusive, so MTD checks must use tomorrow."""
+    captured: dict[str, Any] = {}
+
+    class FakeDateTime:
+        @staticmethod
+        def now(_tz: dt.tzinfo) -> dt.datetime:
+            return dt.datetime(2026, 5, 17, 12, 0, tzinfo=dt.UTC)
+
+    class FakeCE:
+        def get_cost_and_usage(self, **kwargs: Any) -> dict[str, Any]:
+            captured.update(kwargs)
+            return {
+                "ResultsByTime": [
+                    {"Total": {"UnblendedCost": {"Amount": "123.45"}}},
+                ]
+            }
+
+    class FakeSession:
+        def __init__(self, *, profile_name: str) -> None:
+            assert profile_name == "bookyou-recovery"
+
+        def client(self, service: str, *, region_name: str) -> FakeCE:
+            assert service == "ce"
+            assert region_name == "us-east-1"
+            return FakeCE()
+
+    monkeypatch.setattr(m3_module, "datetime", FakeDateTime)
+    monkeypatch.setitem(sys.modules, "boto3", types.SimpleNamespace(Session=FakeSession))
+    out = m3_module._check_cost_preflight("bookyou-recovery", "ap-northeast-1", 100.0)
+
+    assert out["mtd_usd"] == 123.45
+    assert captured["TimePeriod"] == {"Start": "2026-05-01", "End": "2026-05-18"}
 
 
 def test_m3_embedder_passes_ledger_metadata_required_by_ingest(
