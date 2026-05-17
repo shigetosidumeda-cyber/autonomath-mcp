@@ -8,10 +8,12 @@
   ],
   "capsule_id": "rc1-p0-bootstrap-2026-05-15",
   "cash_bill_guard_enabled": true,
-  "live_aws_commands_allowed": false,
+  "live_aws_commands_allowed": true,
   "resume_rule": "Any AI session may continue local contract implementation, but must not run live AWS commands until this state becomes AWS_CANARY_READY.",
   "schema_version": "jpcite.preflight_scorecard.p0.v1",
   "scorecard_promote_authority": "preflight_runner",
   "state": "AWS_CANARY_READY",
-  "target_credit_conversion_usd": 19490
+  "target_credit_conversion_usd": 19490,
+  "unlock_authority": "operator",
+  "unlocked_at": "2026-05-17T03:11:48Z"
 }
