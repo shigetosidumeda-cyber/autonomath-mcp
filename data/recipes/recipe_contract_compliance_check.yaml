@@ -1,0 +1,91 @@
+recipe_name: recipe_contract_compliance_check
+segment: gyousei
+title: 契約 compliance check jpcite call sequence (行政書士)
+disclaimer: §72 (弁護士法) / §1 (行政書士法) — 紛争性ある契約は弁護士業務。
+preconditions:
+  - client_id
+  - contract_type
+  - parties_houjin_bangou (array)
+  - jurisdiction
+expected_duration_seconds: 60
+parallel_calls_supported: true
+cost_estimate_jpy: 33
+billable_units: 11
+output_artifact:
+  type: compliance_check_packet
+  format: json
+  fields:
+    - applicable_laws
+    - forbidden_clauses_alerts
+    - similar_court_decisions
+    - enforcement_history_panel
+    - cross_jurisdiction_warnings
+steps:
+  - step: 1
+    tool_name: enum_values_am
+    purpose: contract_type closed-set
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: search_by_law
+    purpose: 該当 law surface
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: get_law_article_am
+    purpose: 条文
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: search_acceptance_stats_am
+    purpose: 類似事例
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: track_amendment_lineage_am
+    purpose: 法改正
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: check_enforcement_am
+    purpose: 履歴 chip
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: search_invoice_registrants
+    purpose: 適格 status
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: cross_check_jurisdiction
+    purpose: jurisdiction
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: rule_engine_check
+    purpose: 禁止条項 detect
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: get_provenance
+    purpose: 出典
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

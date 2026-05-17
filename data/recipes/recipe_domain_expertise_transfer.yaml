@@ -1,0 +1,84 @@
+recipe_name: recipe_domain_expertise_transfer
+segment: ax_fde
+title: Domain expertise transfer to client agent (AX / FDE)
+disclaimer: ¥3/req metered。jpcite Evidence/Recipe を client agent に転送。
+preconditions:
+  - client_agent_runtime
+  - target_segment
+  - desired_skills (array)
+expected_duration_seconds: 75
+parallel_calls_supported: true
+cost_estimate_jpy: 30
+billable_units: 10
+output_artifact:
+  type: skill_transfer_handoff
+  format: json
+  fields:
+    - configured_recipes
+    - composable_tool_recommendations
+    - llms_txt_subset_export
+    - openapi_agent_subset
+    - federated_mcp_recommendations
+steps:
+  - step: 1
+    tool_name: list_recipes
+    purpose: segment 全 recipe
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: get_recipe
+    purpose: 各 skill ごと recipe
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: list_static_resources_am
+    purpose: 静的 taxonomy
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: list_example_profiles_am
+    purpose: example profile
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: deep_health_am
+    purpose: snapshot pin
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: get_provenance
+    purpose: 出典 chain
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: jpcite_route
+    purpose: route 推奨
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: jpcite_preview_cost
+    purpose: cost preview
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: resolve_placeholder
+    purpose: テンプレート placeholder 解決
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: get_artifact_template
+    purpose: scaffold 取得
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

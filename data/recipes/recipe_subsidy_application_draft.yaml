@@ -1,0 +1,103 @@
+recipe_name: recipe_subsidy_application_draft
+segment: gyousei
+title: 補助金申請書 draft jpcite call sequence (行政書士)
+disclaimer: §1 (行政書士法) — 申請書面作成は行政書士の独占業務。本レシピは scaffold + 一次 URL のみ。
+preconditions:
+  - client_id
+  - houjin_bangou
+  - target_program_id (or keyword)
+  - applicant_profile
+expected_duration_seconds: 75
+parallel_calls_supported: true
+cost_estimate_jpy: 39
+billable_units: 13
+output_artifact:
+  type: application_kit_scaffold
+  format: json
+  fields:
+    - program_metadata
+    - cover_letter_scaffold
+    - required_documents_checklist
+    - similar_accepted_cases
+    - exclusion_warnings
+steps:
+  - step: 1
+    tool_name: enum_values_am
+    purpose: closed-set
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: search_programs
+    purpose: 候補 FTS5
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: program_full_context
+    purpose: 詳細 + 法令 + 通達
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: program_lifecycle
+    purpose: active period
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: prerequisite_chain
+    purpose: 前提 chain
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: similar_cases
+    purpose: 採択事例
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: rule_engine_check
+    purpose: eligibility
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: check_exclusions
+    purpose: 併給
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: bundle_application_kit
+    purpose: scaffold + checklist
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: check_enforcement_am
+    purpose: 履歴 chip
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: deadline_calendar
+    purpose: 申請期限
+    args:
+    expected_output_schema:
+      results: array
+  - step: 12
+    tool_name: get_provenance
+    purpose: 出典
+    args:
+    expected_output_schema:
+      results: array
+  - step: 13
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

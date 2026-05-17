@@ -1,0 +1,91 @@
+recipe_name: recipe_client_onboarding
+segment: ax_fde
+title: Client onboarding 統合 (AX エンジニア / FDE)
+disclaimer: ¥3/req metered。AX エンジニアは 5 分で integration 完了。
+preconditions:
+  - client_org_id
+  - target_segment
+  - desired_outcome_slugs (array)
+  - mcp_client_runtime
+expected_duration_seconds: 60
+parallel_calls_supported: true
+cost_estimate_jpy: 27
+billable_units: 9
+output_artifact:
+  type: onboarding_handoff_packet
+  format: json
+  fields:
+    - configured_mcp_endpoint_url
+    - api_key_parent_child_pair
+    - recommended_recipes_subset
+    - billing_wallet_initial_state
+    - smoke_test_evidence
+steps:
+  - step: 1
+    tool_name: deep_health_am
+    purpose: pre-flight
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: list_recipes
+    purpose: segment 別 recipe
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: get_recipe
+    purpose: 各 outcome の recipe
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: jpcite_preview_cost
+    purpose: 予算試算
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: get_usage_status
+    purpose: 親 quota
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: provision_child_api_key
+    purpose: 顧客 sub-key
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: create_credit_wallet
+    purpose: 前払い wallet
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: list_static_resources_am
+    purpose: 静的 taxonomy
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: list_example_profiles_am
+    purpose: example profile
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: jpcite_route
+    purpose: outcome ごと route
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: deep_health_am
+    purpose: post-wire smoke
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

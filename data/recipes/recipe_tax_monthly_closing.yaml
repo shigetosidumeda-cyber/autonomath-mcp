@@ -1,0 +1,105 @@
+recipe_name: recipe_tax_monthly_closing
+segment: tax
+title: 月次決算 jpcite call sequence (税理士)
+disclaimer: §52 (税理士法) — 候補リスト/参考資料のみ提供。最終的な月次決算判定は税理士が責任を負う。
+preconditions:
+  - client_id
+  - houjin_bangou
+  - fiscal_year_month (YYYY-MM)
+  - target_ruleset_ids (optional)
+  - business_profile
+expected_duration_seconds: 60
+parallel_calls_supported: true
+cost_estimate_jpy: 39
+billable_units: 13
+output_artifact:
+  type: monthly_closing_packet
+  format: json
+  fields:
+    - applied_tax_rules
+    - amendment_diff_in_window
+    - exclusion_warnings
+    - cross_check_jurisdiction
+    - audit_seal_pack_id
+    - evidence_packet
+steps:
+  - step: 1
+    tool_name: enum_values_am
+    purpose: vocabulary canonicalize
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: search_tax_incentives
+    purpose: 適用候補 surface
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: evaluate_tax_applicability
+    purpose: rule x profile bulk 判定
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: track_amendment_lineage_am
+    purpose: 当月までの改正/通達 diff
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: prepare_kessan_briefing
+    purpose: 月次 briefing
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: check_exclusions
+    purpose: 排他 / 併給
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: cross_check_jurisdiction
+    purpose: 登記/適格/採択 整合性
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: search_invoice_registrants
+    purpose: 適格事業者 status
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: list_tax_sunset_alerts
+    purpose: sunset alerts
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: compose_audit_workpaper
+    purpose: workpaper PDF + audit_seal
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+  - step: 12
+    tool_name: get_provenance
+    purpose: 出典 + license
+    args:
+    expected_output_schema:
+      results: array
+  - step: 13
+    tool_name: deep_health_am
+    purpose: snapshot pin
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

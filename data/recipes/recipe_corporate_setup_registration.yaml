@@ -1,0 +1,104 @@
+recipe_name: recipe_corporate_setup_registration
+segment: shihoshoshi
+title: 会社設立登記一式 jpcite call sequence (司法書士)
+disclaimer: §3 (司法書士法) — 登記申請書面 独占業務。
+preconditions:
+  - founder_profile
+  - new_company_name
+  - business_purpose (array)
+  - prefecture
+  - capital_yen
+expected_duration_seconds: 90
+parallel_calls_supported: true
+cost_estimate_jpy: 39
+billable_units: 13
+output_artifact:
+  type: corporate_setup_kit
+  format: json
+  fields:
+    - applicable_laws
+    - required_documents
+    - similar_company_names_check
+    - applicable_subsidies_post_setup
+    - tax_registration_calendar
+steps:
+  - step: 1
+    tool_name: enum_values_am
+    purpose: target_type
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: get_law_article_am
+    purpose: 会社法 §25-§103
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: get_law_article_am
+    purpose: 商業登記法 §17-§24
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: search_certifications
+    purpose: 設立後 補助金
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: similar_cases
+    purpose: 設立後 採択事例
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: search_invoice_registrants
+    purpose: 同名 chip
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: check_enforcement_am
+    purpose: 代表者 履歴
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: prerequisite_chain
+    purpose: 設立 前提 chain
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: bundle_application_kit
+    purpose: scaffold
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: deadline_calendar
+    purpose: 設立後 calendar
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: track_amendment_lineage_am
+    purpose: 会社法 改正
+    args:
+    expected_output_schema:
+      results: array
+  - step: 12
+    tool_name: get_provenance
+    purpose: 出典
+    args:
+    expected_output_schema:
+      results: array
+  - step: 13
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

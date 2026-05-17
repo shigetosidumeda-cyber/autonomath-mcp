@@ -1,0 +1,133 @@
+recipe_name: recipe_tax_corporate_filing
+segment: tax
+title: 法人税申告書作成 jpcite call sequence (税理士)
+disclaimer: §52 (税理士法) — 申告書作成は税理士の独占業務。本レシピは参考資料のみ。
+preconditions:
+  - client_id
+  - houjin_bangou
+  - fiscal_year_end (YYYY-MM-DD)
+  - business_profile
+expected_duration_seconds: 120
+parallel_calls_supported: true
+cost_estimate_jpy: 54
+billable_units: 18
+output_artifact:
+  type: corporate_filing_evidence_packet
+  format: json
+  fields:
+    - applied_tax_rules
+    - rd_credit_eligibility
+    - loss_carryforward_window
+    - exclusion_matrix
+    - workpaper_pdf_url
+steps:
+  - step: 1
+    tool_name: enum_values_am
+    purpose: closed-set
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: search_tax_incentives
+    purpose: 適用候補
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: get_am_tax_rule
+    purpose: rule 詳細
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: evaluate_tax_applicability
+    purpose: bulk 判定
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: search_acceptance_stats_am
+    purpose: 同業種 採択率
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: track_amendment_lineage_am
+    purpose: YoY 改正
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: list_tax_sunset_alerts
+    purpose: FY 内 sunset
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: search_loans_am
+    purpose: 融資/特例
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: check_enforcement_am
+    purpose: 行政処分 履歴
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: cross_check_jurisdiction
+    purpose: 整合性
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: check_exclusions
+    purpose: 排他
+    args:
+    expected_output_schema:
+      results: array
+  - step: 12
+    tool_name: prepare_kessan_briefing
+    purpose: 確定申告 briefing
+    args:
+    expected_output_schema:
+      results: array
+  - step: 13
+    tool_name: compose_audit_workpaper
+    purpose: workpaper PDF
+    args:
+    expected_output_schema:
+      results: array
+  - step: 14
+    tool_name: bundle_application_kit
+    purpose: 添付 scaffold
+    args:
+    expected_output_schema:
+      results: array
+  - step: 15
+    tool_name: get_provenance
+    purpose: 出典
+    args:
+    expected_output_schema:
+      results: array
+  - step: 16
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+  - step: 17
+    tool_name: deep_health_am
+    purpose: snapshot pin
+    args:
+    expected_output_schema:
+      results: array
+  - step: 18
+    tool_name: jpcite_execute_packet
+    purpose: route 実行
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

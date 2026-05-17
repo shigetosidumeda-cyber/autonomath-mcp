@@ -1,0 +1,97 @@
+recipe_name: recipe_audit_internal_control
+segment: audit
+title: 内部統制評価 jpcite call sequence (公認会計士)
+disclaimer: §47条の2 (公認会計士法) + 金商法 J-SOX — IT/業務 統制評価補助のみ。
+preconditions:
+  - audit_firm_id
+  - client_id
+  - houjin_bangou
+  - audit_period
+expected_duration_seconds: 90
+parallel_calls_supported: true
+cost_estimate_jpy: 36
+billable_units: 12
+output_artifact:
+  type: internal_control_evaluation_packet
+  format: json
+  fields:
+    - control_deficiencies
+    - dd_question_deck
+    - enforcement_history
+    - jurisdiction_discrepancies
+    - workpaper_pdf_url
+steps:
+  - step: 1
+    tool_name: deep_health_am
+    purpose: snapshot pin
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: match_due_diligence_questions
+    purpose: DD 統制軸
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: check_enforcement_am
+    purpose: 履歴
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: cross_check_jurisdiction
+    purpose: 整合性
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: search_invoice_registrants
+    purpose: 適格 status
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: search_acceptance_stats_am
+    purpose: ベンチマーク
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: track_amendment_lineage_am
+    purpose: 金商法/会社法 改正
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: forecast_program_renewal
+    purpose: renewal cadence
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: get_provenance
+    purpose: 出典
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: compose_audit_workpaper
+    purpose: 統制評価 workpaper
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: dispatch_audit_seal_webhook
+    purpose: audit_seal 配信
+    args:
+    expected_output_schema:
+      results: array
+  - step: 12
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

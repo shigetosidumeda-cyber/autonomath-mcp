@@ -1,0 +1,99 @@
+recipe_name: recipe_compliance_dashboard
+segment: ax_fde
+title: Compliance dashboard 統合 (AX エンジニア / FDE)
+disclaimer: ¥3/req metered。多顧客 compliance kpi を 1 dashboard に集約。
+preconditions:
+  - client_org_id
+  - tracked_houjin_bangou_list
+  - kpi_axes
+  - refresh_cadence
+expected_duration_seconds: 90
+parallel_calls_supported: true
+cost_estimate_jpy: 60
+billable_units: 20
+output_artifact:
+  type: compliance_dashboard_packet
+  format: json
+  fields:
+    - enforcement_panel
+    - invoice_compliance_panel
+    - amendment_diff_panel
+    - sunset_alerts_panel
+    - cross_jurisdiction_warnings
+    - houjin_360_summary
+    - corpus_snapshot_id
+steps:
+  - step: 1
+    tool_name: deep_health_am
+    purpose: snapshot pin
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: check_enforcement_am
+    purpose: 全顧問先 行政処分
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: search_invoice_registrants
+    purpose: 適格 status batch
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: track_amendment_lineage_am
+    purpose: 直近 改正
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: list_tax_sunset_alerts
+    purpose: sunset / cliff
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: cross_check_jurisdiction
+    purpose: 整合性
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: get_houjin_360_am
+    purpose: 法人 360 batch
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: forecast_program_renewal
+    purpose: renewal cadence
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: dispatch_audit_seal_webhook
+    purpose: webhook 配信
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: get_provenance
+    purpose: 出典 chain
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: jpcite_preview_cost
+    purpose: cost preview
+    args:
+    expected_output_schema:
+      results: array
+  - step: 12
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

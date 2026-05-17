@@ -1,0 +1,108 @@
+recipe_name: recipe_tax_year_end_adjustment
+segment: tax
+title: 年末調整一括処理 jpcite call sequence (税理士)
+disclaimer: §52 (税理士法) — 年末調整事務の補助のみ。最終判定は税理士。
+preconditions:
+  - client_id
+  - tax_year (YYYY)
+  - profile_ids (顧問先 client_profiles 配列)
+expected_duration_seconds: 90
+parallel_calls_supported: true
+cost_estimate_jpy: 42
+billable_units: 14
+output_artifact:
+  type: year_end_adjustment_packet
+  format: json
+  fields:
+    - applicable_tax_rules
+    - amendment_diff_yoy
+    - sunset_alerts
+    - fan_out_saved_searches
+    - workpaper_pdf_url
+steps:
+  - step: 1
+    tool_name: enum_values_am
+    purpose: tax_rule_kind closed-set
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: list_tax_sunset_alerts
+    purpose: 当年末 cliff
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: search_tax_incentives
+    purpose: 年末調整 候補
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: get_am_tax_rule
+    purpose: rule 詳細
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: track_amendment_lineage_am
+    purpose: YoY 改正
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: bundle_application_kit
+    purpose: 扶養控除等 scaffold
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: prepare_kessan_briefing
+    purpose: 確定申告 briefing
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: compose_audit_workpaper
+    purpose: 顧問先別 PDF
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: dispatch_audit_seal_webhook
+    purpose: audit_seal 配信
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: get_provenance
+    purpose: 出典
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: check_exclusions
+    purpose: 控除併用可否
+    args:
+    expected_output_schema:
+      results: array
+  - step: 12
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+  - step: 13
+    tool_name: deep_health_am
+    purpose: snapshot pin
+    args:
+    expected_output_schema:
+      results: array
+  - step: 14
+    tool_name: jpcite_preview_cost
+    purpose: 予算試算
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true

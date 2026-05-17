@@ -1,0 +1,109 @@
+recipe_name: recipe_audit_workpaper_compile
+segment: audit
+title: 監査調書編纂 jpcite call sequence (公認会計士)
+disclaimer: §47条の2 (公認会計士法) — 監査意見表明は会計士の独占業務。本レシピは調書補助のみ。
+preconditions:
+  - audit_firm_id
+  - client_id
+  - houjin_bangou
+  - audit_period (YYYY or YYYY-Q1..Q4)
+expected_duration_seconds: 90
+parallel_calls_supported: true
+cost_estimate_jpy: 42
+billable_units: 14
+output_artifact:
+  type: audit_workpaper_pdf
+  format: pdf+json
+  fields:
+    - workpaper_pdf_url
+    - audit_seal_pack_id
+    - corpus_snapshot_id
+    - corpus_checksum
+    - provenance_chain
+steps:
+  - step: 1
+    tool_name: deep_health_am
+    purpose: snapshot pin
+    args:
+    expected_output_schema:
+      results: array
+  - step: 2
+    tool_name: enum_values_am
+    purpose: vocab
+    args:
+    expected_output_schema:
+      results: array
+  - step: 3
+    tool_name: search_tax_incentives
+    purpose: 適用候補
+    args:
+    expected_output_schema:
+      results: array
+  - step: 4
+    tool_name: get_am_tax_rule
+    purpose: rule 詳細
+    args:
+    expected_output_schema:
+      results: array
+  - step: 5
+    tool_name: evaluate_tax_applicability
+    purpose: profile x rule
+    args:
+    expected_output_schema:
+      results: array
+  - step: 6
+    tool_name: track_amendment_lineage_am
+    purpose: 期間中 改正
+    args:
+    expected_output_schema:
+      results: array
+  - step: 7
+    tool_name: cross_check_jurisdiction
+    purpose: 整合性
+    args:
+    expected_output_schema:
+      results: array
+  - step: 8
+    tool_name: check_enforcement_am
+    purpose: 履歴
+    args:
+    expected_output_schema:
+      results: array
+  - step: 9
+    tool_name: match_due_diligence_questions
+    purpose: DD 質問 deck
+    args:
+    expected_output_schema:
+      results: array
+  - step: 10
+    tool_name: get_provenance
+    purpose: 出典
+    args:
+    expected_output_schema:
+      results: array
+  - step: 11
+    tool_name: check_exclusions
+    purpose: 排他
+    args:
+    expected_output_schema:
+      results: array
+  - step: 12
+    tool_name: compose_audit_workpaper
+    purpose: 調書 PDF
+    args:
+    expected_output_schema:
+      results: array
+  - step: 13
+    tool_name: dispatch_audit_seal_webhook
+    purpose: audit_seal 配信
+    args:
+    expected_output_schema:
+      results: array
+  - step: 14
+    tool_name: jpcite_route
+    purpose: outcome route
+    args:
+    expected_output_schema:
+      results: array
+no_llm_required: true
+mypy_strict_safe: true
