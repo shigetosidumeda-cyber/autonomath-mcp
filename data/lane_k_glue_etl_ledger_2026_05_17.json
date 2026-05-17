@@ -1,0 +1,635 @@
+{
+  "ledger_id": "lane_k_glue_etl_2026_05_17",
+  "generated_at_utc": "2026-05-17T01:39:25Z",
+  "profile": "bookyou-recovery",
+  "region": "ap-northeast-1",
+  "job_name": "jpcite-packet-to-parquet-2026-05-17",
+  "role_arn": "arn:aws:iam::993693061769:role/jpcite-glue-crawler-role",
+  "script_s3_uri": "s3://jpcite-credit-993693061769-202605-derived/glue/scripts/lane_k_phase2/jpcite_packet_to_parquet_etl.py",
+  "dpu": 50,
+  "worker_type": "G.1X",
+  "timeout_min": 10,
+  "max_concurrent_runs": 30,
+  "tables_file": "/tmp/lane_k/glue_etl_tables.txt",
+  "table_pool_size": 100,
+  "total_runs_submitted": 68,
+  "state_summary": {
+    "RUNNING": 7,
+    "FAILED": 34,
+    "SUCCEEDED": 27
+  },
+  "runs": [
+    {
+      "job_run_id": "jr_9475de966f2f03b83a384602030bad9353313aa1bb132a534a0d1e07d99fed8a",
+      "source_table": "packet_conflict_mineral_disclosure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_conflict_mineral_disclosure_v1",
+      "state": "RUNNING",
+      "started_at": "2026-05-17T10:38:52.200000+09:00",
+      "execution_time_sec": 28,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_161eebedc447d10ce161c6e4ffd772eb230b0ab31eb4311c1aaacadb366cff55",
+      "source_table": "packet_competitor_subsidy_uptake_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_competitor_subsidy_uptake_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:38:51.076000+09:00",
+      "execution_time_sec": 0,
+      "error": "AccountId:993693061769 and JobName:jpcite-packet-to-parquet-2026-05-17 and JobRunId:jr_161eebedc447d10ce161c6e4ffd772eb230b0ab31eb4311c1aaacadb366cff55 failed to execute with exception Exceeded maximu"
+    },
+    {
+      "job_run_id": "jr_58074cc2666b4bd07b6cf5d268cb3fdb1b737ed3d676480eb1ef8d80151b7a23",
+      "source_table": "packet_community_forum_engagement_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_community_forum_engagement_v1",
+      "state": "RUNNING",
+      "started_at": "2026-05-17T10:38:49.955000+09:00",
+      "execution_time_sec": 32,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_d865d28c1a4c25f036f00cc44f2d67566cba1c23240c4995ce26310e8dced833",
+      "source_table": "packet_community_engagement_intensity_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_community_engagement_intensity_v1",
+      "state": "RUNNING",
+      "started_at": "2026-05-17T10:38:48.810000+09:00",
+      "execution_time_sec": 30,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_5e1bc1f197b71f1a5bf5d98dbb79365487d473b5473d47d677414c0f3bfe70a2",
+      "source_table": "packet_commodity_price_exposure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_commodity_price_exposure_v1",
+      "state": "RUNNING",
+      "started_at": "2026-05-17T10:38:47.656000+09:00",
+      "execution_time_sec": 34,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_2fb0dddb06011431b694ef37f33ad6183fc669fb4c4743d32e3ad2fa0ce22748",
+      "source_table": "packet_commodity_concentration_risk_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_commodity_concentration_risk_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:38:46.505000+09:00",
+      "execution_time_sec": 0,
+      "error": "AccountId:993693061769 and JobName:jpcite-packet-to-parquet-2026-05-17 and JobRunId:jr_2fb0dddb06011431b694ef37f33ad6183fc669fb4c4743d32e3ad2fa0ce22748 failed to execute with exception Exceeded maximu"
+    },
+    {
+      "job_run_id": "jr_6ad8689e6f9b245a31078f01c90c3a7addf95cf07e1994de46b6dc725910c275",
+      "source_table": "packet_commercial_real_estate_footprint_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_commercial_real_estate_footprint_v1",
+      "state": "RUNNING",
+      "started_at": "2026-05-17T10:38:45.364000+09:00",
+      "execution_time_sec": 33,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_1750cec5eaf4bfa12a0cf9be5b153c93dab811ccb23036a799a73662b9b872ff",
+      "source_table": "packet_cohort_program_recommendation_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_cohort_program_recommendation_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:38:44.207000+09:00",
+      "execution_time_sec": 0,
+      "error": "AccountId:993693061769 and JobName:jpcite-packet-to-parquet-2026-05-17 and JobRunId:jr_1750cec5eaf4bfa12a0cf9be5b153c93dab811ccb23036a799a73662b9b872ff failed to execute with exception Exceeded maximu"
+    },
+    {
+      "job_run_id": "jr_c3f47cbe98864c697299b86211db544d4e258e078469bbb11c8e7bb3d33df3c5",
+      "source_table": "packet_coastal_inundation_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_coastal_inundation_signal_v1",
+      "state": "RUNNING",
+      "started_at": "2026-05-17T10:38:43.036000+09:00",
+      "execution_time_sec": 32,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_c668afefb28c946c27a469d88972e9afa9651eb144f1a5a19a8c6115eebb1252",
+      "source_table": "packet_cloud_misconfig_incident_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_cloud_misconfig_incident_v1",
+      "state": "RUNNING",
+      "started_at": "2026-05-17T10:38:41.884000+09:00",
+      "execution_time_sec": 33,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_e5bda9180c9bed5d1a65c4dfcf544f587120658b4391a206484fcf7073421bda",
+      "source_table": "packet_cloud_dependency_disclosure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_cloud_dependency_disclosure_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:38:10.660000+09:00",
+      "execution_time_sec": 0,
+      "error": "AccountId:993693061769 and JobName:jpcite-packet-to-parquet-2026-05-17 and JobRunId:jr_e5bda9180c9bed5d1a65c4dfcf544f587120658b4391a206484fcf7073421bda failed to execute with exception Exceeded maximu"
+    },
+    {
+      "job_run_id": "jr_3cd9085678d54ccd968a87d51989773c989d5726086ce7d424d6ae6eca278464",
+      "source_table": "packet_climate_transition_plan_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_climate_transition_plan_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:38:09.523000+09:00",
+      "execution_time_sec": 60,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_3966edc846b268e0ad3bf1a71eefd9c3e0e011b7111556c2477ccf636d24d17e",
+      "source_table": "packet_climate_alignment_target_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_climate_alignment_target_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:38:08.384000+09:00",
+      "execution_time_sec": 59,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_c311ca54170ef51d5abb12f5584e646475c79e8ce173323f57bd6dc801e3c975",
+      "source_table": "packet_city_size_subsidy_propensity_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_city_size_subsidy_propensity_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:38:07.233000+09:00",
+      "execution_time_sec": 61,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_b56e833b0fa120307983b8b65335fa33082ccc98c88ba252a09158ff0b0c8500",
+      "source_table": "packet_city_jct_density_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_city_jct_density_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:38:06.101000+09:00",
+      "execution_time_sec": 60,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_8525709cf05cd5031659ed88fea71baf5209fabeea7186dda9ddd960171eccc4",
+      "source_table": "packet_circular_economy_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_circular_economy_signal_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:38:04.911000+09:00",
+      "execution_time_sec": 58,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_93bbae5bd645168a1ed838bdbd1ae8e40c5da4fd886272ab932dc5cc965d2853",
+      "source_table": "packet_churn_risk_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_churn_risk_signal_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:38:03.728000+09:00",
+      "execution_time_sec": 40,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_1a3b802be51477fc41f35ee86d64e506033d0bc5aeee628ec120546a718ecd94",
+      "source_table": "packet_child_population_overlay_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_child_population_overlay_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:38:02.578000+09:00",
+      "execution_time_sec": 57,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_cc6bedabc6a2e6d70a1ba9d0d6aafc5163367932f3b7e06738d873e22c03249c",
+      "source_table": "packet_chemical_substance_disclosure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_chemical_substance_disclosure_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:38:01.435000+09:00",
+      "execution_time_sec": 55,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_9c836eaddd52320c6d47257b08823636831cf16842018bc9a18008b0e4af3cbf",
+      "source_table": "packet_certification_houjin_link_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_certification_houjin_link_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:38:00.281000+09:00",
+      "execution_time_sec": 54,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_6d39511846f373b38a57d5c39e552e6bf42945fb8e39b5b4ebeb9bf0707087d1",
+      "source_table": "packet_cash_runway_estimate_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_cash_runway_estimate_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:59.119000+09:00",
+      "execution_time_sec": 57,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_1d526c97003f496bb845dd4906fdf0dffb688109668b5537db991d3cbe545150",
+      "source_table": "packet_carve_out_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_carve_out_signal_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:57.979000+09:00",
+      "execution_time_sec": 66,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_524591b155f126a80bc563c0af86c6351fab805b4ae44551efa14a8a369680d5",
+      "source_table": "packet_carbon_reporting_compliance_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_carbon_reporting_compliance_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:56.839000+09:00",
+      "execution_time_sec": 53,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_ef157877a88e42a654b4395ceb52092730d772bf9b961a1caab4f384fd34871d",
+      "source_table": "packet_carbon_credit_inventory_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_carbon_credit_inventory_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:55.692000+09:00",
+      "execution_time_sec": 55,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_2c8c77293c54cbd6694d0d2ab51bc7c7ba1cf5b269140e2d2814a5e79772f2ef",
+      "source_table": "packet_captive_insurance_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_captive_insurance_signal_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:54.525000+09:00",
+      "execution_time_sec": 58,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_dd24af07c32144b1a56285148c9346159d266feceebf128dd3c7ddf1bd38e51f",
+      "source_table": "packet_capital_raising_history_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_capital_raising_history_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:53.385000+09:00",
+      "execution_time_sec": 59,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_3d9a4e6d2a63e4ec0f83ae026b29160c2905af663afd47049f7809d7595d5749",
+      "source_table": "packet_business_transfer_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_business_transfer_signal_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:37:52.243000+09:00",
+      "execution_time_sec": 39,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_8422d0c648c2d53172db3b9b168d6da131ec4b21dfb848df80a9ab754408efc7",
+      "source_table": "packet_business_partner_360_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_business_partner_360_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:51.073000+09:00",
+      "execution_time_sec": 55,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_735a07245e5723c33867c4c7945776d7b2e40dc00f88425e2f0db96bc6383b8e",
+      "source_table": "packet_business_lifecycle_stage_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_business_lifecycle_stage_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:49.926000+09:00",
+      "execution_time_sec": 57,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_d3fc5d9c4bce7717ffe5e56c0d99b865b74b7f806c589302e3c0f00ed0a807eb",
+      "source_table": "packet_business_interruption_coverage_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_business_interruption_coverage_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:37:48.766000+09:00",
+      "execution_time_sec": 57,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_fc268467fbffdf02072c5ead18c69608c16a506c8187a69235a652143c261ae8",
+      "source_table": "packet_bsa_aml_violation_history_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_bsa_aml_violation_history_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:37:00.537000+09:00",
+      "execution_time_sec": 40,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_9c189fbb22d6e9705359163ce6881f616bd7fbaa4d04488b3415fc692f7d9d90",
+      "source_table": "packet_brand_sentiment_proxy_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_brand_sentiment_proxy_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:36:58.302000+09:00",
+      "execution_time_sec": 73,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_fc10d217641b7db8aa4396402db7e2c36466b317fd8a9b5e54b36e74f92381b3",
+      "source_table": "packet_brand_recognition_proxy_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_brand_recognition_proxy_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:36:56.164000+09:00",
+      "execution_time_sec": 63,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_ae1b597b66ae95a121010d3584517009837683ac4ba96f90375d64fe3833173b",
+      "source_table": "packet_bond_issuance_pattern_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_bond_issuance_pattern_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:36:54.007000+09:00",
+      "execution_time_sec": 66,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_b9e6b1a0e274be309af0237acbe9036aba4a6d6cf845eb94f133fbf701aaefa3",
+      "source_table": "packet_board_member_overlap_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_board_member_overlap_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:36:51.855000+09:00",
+      "execution_time_sec": 64,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_09a5636b2d99e2ee93843f532fbd3426843fd34c9f2da02e90e1f2a066a8dd9e",
+      "source_table": "packet_board_diversity_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_board_diversity_signal_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:36:49.716000+09:00",
+      "execution_time_sec": 67,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_610dde8cd034b960748e48b64da445d92687fe8af8d46830da456ebc6c5498e8",
+      "source_table": "packet_biodiversity_disclosure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_biodiversity_disclosure_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:36:47.561000+09:00",
+      "execution_time_sec": 64,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_f4eb52159971370a834c5070f004553e37d9a14d157bb74b7a30724774e1404e",
+      "source_table": "packet_bilateral_trade_program_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_bilateral_trade_program_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:36:45.411000+09:00",
+      "execution_time_sec": 75,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_341f3ddb7d3398baa87edf02262f6537a911a33659d614f0c2f203c335db38e6",
+      "source_table": "packet_bid_opportunity_matching_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_bid_opportunity_matching_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:36:43.177000+09:00",
+      "execution_time_sec": 64,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_00fd71b5b14071f46013523f1e03137c12349687f5241815891aa6903c49ad0b",
+      "source_table": "packet_bid_announcement_seasonality_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_bid_announcement_seasonality_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:36:41.026000+09:00",
+      "execution_time_sec": 63,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_152c646491f88e8d10b678cf84c85a64297fd75f2a6d7f033ca9a6b24832bdf9",
+      "source_table": "packet_acquisition_event_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_acquisition_event_signal_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:34:22.923000+09:00",
+      "execution_time_sec": 59,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_a6284805e073a3611cb987dde7dd1b695bd337f691d7d63f72714a86c9b31edd",
+      "source_table": "packet_accessibility_compliance_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_accessibility_compliance_signal_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:34:20.772000+09:00",
+      "execution_time_sec": 41,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_3bca2b6d7651a1473a8e7e1feff5f63f93761f9083ba782a729e0214cd13861e",
+      "source_table": "packet_academic_collaboration_intensity_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_academic_collaboration_intensity_v1",
+      "state": "SUCCEEDED",
+      "started_at": "2026-05-17T10:34:18.620000+09:00",
+      "execution_time_sec": 57,
+      "error": null
+    },
+    {
+      "job_run_id": "jr_1bcd4749060fb03ed4c21c2243a7516cedd78166f97330ab0a06ed6f086b611d",
+      "source_table": "packet_bias_audit_disclosure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_bias_audit_disclosure_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:33:07.512000+09:00",
+      "execution_time_sec": 50,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_104697dfe2fb0d96039f4a78b85715ee1a864e45019dfa806fc0aa604316aa5e",
+      "source_table": "packet_bankruptcy_risk_proxy_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_bankruptcy_risk_proxy_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:32:37.364000+09:00",
+      "execution_time_sec": 40,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_e6046e5c92f27c7661433cf7479c4d09e70028e8b26c8e058044b57cdba1df28",
+      "source_table": "packet_automation_intensity_index_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_automation_intensity_index_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:32:07.165000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_00db4665b8d001c0196ba126ba3b52b9d1fb592fedf19851cc1e1ef4a73115a8",
+      "source_table": "packet_automated_decision_dispute_rate_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_automated_decision_dispute_rate_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:31:37.019000+09:00",
+      "execution_time_sec": 50,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_91aef267644ca72cf80154e3386e42da770b4e0f1e69c3e83d2485109dc7bd1b",
+      "source_table": "packet_audit_firm_rotation_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_audit_firm_rotation_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:31:06.860000+09:00",
+      "execution_time_sec": 48,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_44d589f8db1cad1679a8aecdab70c854a01fcaeb740060fe20e23f7c396a7fa3",
+      "source_table": "packet_api_uptime_sla_obligation_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_api_uptime_sla_obligation_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:30:36.681000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_8e0a7156c41e7a5aa110e0ed4fd41b4a98d8539178ab795c0f7bad6610793069",
+      "source_table": "packet_api_banking_compliance_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_api_banking_compliance_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:30:06.523000+09:00",
+      "execution_time_sec": 39,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_d9470219563e1c2da84563e45f70678e9be1f983cedd2671a50197697d775c71",
+      "source_table": "packet_antimonopoly_violation_intensity_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_antimonopoly_violation_intensity_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:29:36.343000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<void> data type."
+    },
+    {
+      "job_run_id": "jr_8f255784a26eac36db648775b301454d48f1435be0f0e5170085e7b76dca650f",
+      "source_table": "packet_anti_trust_settlement_history_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_anti_trust_settlement_history_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:29:06.180000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_84f6daaa62eb85911a9c8d619999306308da1dfeeb01cf3767de3fa27eb62bbf",
+      "source_table": "packet_anonymization_method_disclosure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_anonymization_method_disclosure_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:28:36.027000+09:00",
+      "execution_time_sec": 51,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_d7346efe27470202e232488716601a0c847fef8123c44e6d39f4e0a0ab35f522",
+      "source_table": "packet_animal_welfare_disclosure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_animal_welfare_disclosure_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:28:05.873000+09:00",
+      "execution_time_sec": 51,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_38ffcbcb806516c7a059ff858c597783b3829d965625a098e26f5eabcacfa904",
+      "source_table": "packet_angel_tax_uptake_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_angel_tax_uptake_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:27:35.699000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_1a6ff47c4035c96f6c9ad689aec8dbcff6ec109ae6e2415c72771e2914447050",
+      "source_table": "packet_angel_investor_overlap_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_angel_investor_overlap_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:27:05.557000+09:00",
+      "execution_time_sec": 42,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_5306801dc6aa0f3e7d6889e2187e15725d1d4be5c3e7485e90ad5896e8c6da57",
+      "source_table": "packet_algorithmic_decision_transparency_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_algorithmic_decision_transparency_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:26:35.398000+09:00",
+      "execution_time_sec": 48,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_7b249198f97c446894aee20f143e51d93c8dda24694e8c9d560d5cd3261609cc",
+      "source_table": "packet_alcohol_retail_license_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_alcohol_retail_license_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:26:05.256000+09:00",
+      "execution_time_sec": 39,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_9ee0974ce457c3f4f33d59aa6bc3369093b48eef63c827b98b51bb08a521895b",
+      "source_table": "packet_ai_safety_certification_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_ai_safety_certification_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:25:35.079000+09:00",
+      "execution_time_sec": 51,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_20350c4ef038f077ed263293c95701bab79f1748ea11d98c00532d0118b2f6e9",
+      "source_table": "packet_ai_regulatory_horizon_scan_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_ai_regulatory_horizon_scan_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:25:04.918000+09:00",
+      "execution_time_sec": 51,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_e52c443d3211a80b587f96f344fdfa4cf433050b23ceace2f317b395118aa7ba",
+      "source_table": "packet_ai_model_lineage_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_ai_model_lineage_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:24:34.729000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_1b94733475ac4ee63ded59fe32ff0525a52c42eaef8119aa941f7ef0290c4613",
+      "source_table": "packet_ai_governance_disclosure_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_ai_governance_disclosure_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:24:04.545000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_49b56fbc47a3d048266ad3f24013ab6247b5f2cf616825241abf126abe6739fa",
+      "source_table": "packet_agriculture_program_intensity_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_agriculture_program_intensity_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:23:34.374000+09:00",
+      "execution_time_sec": 48,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_98bf6c03a246a3d8b8f61ee0c60049a21eb11b602aa197d85f1d0dec95f4ac85",
+      "source_table": "packet_aging_population_proxy_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_aging_population_proxy_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:23:04.215000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_9481abc1360f3ff5688acbf4659175d4628e38392582388952d72331959c34e2",
+      "source_table": "packet_adoption_fiscal_cycle_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_adoption_fiscal_cycle_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:22:34.031000+09:00",
+      "execution_time_sec": 49,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_87be5f8ac3d3b89a6468688f110e82f62608185b2d05008ff4e6b1217addbf21",
+      "source_table": "packet_acquisition_event_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_acquisition_event_signal_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:22:03.859000+09:00",
+      "execution_time_sec": 50,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    },
+    {
+      "job_run_id": "jr_915c81bf8d4430c59b6ac957435345889470ade30c1f731e99ed7c19aac5dcf0",
+      "source_table": "packet_accessibility_compliance_signal_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_accessibility_compliance_signal_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:21:33.692000+09:00",
+      "execution_time_sec": 48,
+      "error": "AnalysisException: "
+    },
+    {
+      "job_run_id": "jr_e3851f24c9e5e678ee33f804cead3da2a4728b557ffb946f2635cccd4af1c8c4",
+      "source_table": "packet_academic_collaboration_intensity_v1",
+      "target_prefix": "parquet_zstd_2026_05_17/packet_academic_collaboration_intensity_v1",
+      "state": "FAILED",
+      "started_at": "2026-05-17T10:21:03.538000+09:00",
+      "execution_time_sec": 61,
+      "error": "AnalysisException: Parquet data source does not support array<struct<source_url:string,source_fetched_at:void,publisher:string,license:string>> data type."
+    }
+  ]
+}

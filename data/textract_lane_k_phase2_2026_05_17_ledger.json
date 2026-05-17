@@ -1,0 +1,909 @@
+{
+  "ledger_id": "textract_lane_k_phase2_2026_05_17_ledger",
+  "manifest_id": "textract_lane_k_phase2_2026_05_17",
+  "manifest_pdf_count": 1804,
+  "run_started_at_utc": "2026-05-17T01:35:21.601951+00:00",
+  "args": {
+    "manifest": "data/textract_lane_k_phase2_2026_05_17_manifest.json",
+    "profile": "bookyou-recovery",
+    "textract_region": "ap-southeast-1",
+    "stage_bucket": "jpcite-credit-textract-apse1-202605",
+    "max_pdfs": 100,
+    "parallel": 8,
+    "per_page_usd": 0.05,
+    "budget_usd": 500.0,
+    "commit": true
+  },
+  "records_count": 100,
+  "submitted_count": 86,
+  "failed_count": 14,
+  "dry_run_count": 0,
+  "records": [
+    {
+      "sha256": "dd63c0b25f7fa3c38261c1b922b497da9ce4d8bc39ef84f52b9ea84719f03210",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14896.pdf",
+      "s3_in_key": "in/dd/dd63c0b25f7fa3c38261c1b922b497da9ce4d8bc39ef84f52b9ea84719f03210.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 124758,
+      "s3_staged": true,
+      "job_id": "bf8d0237b404511e856ae744b2136d4d64da3ef968a2612c2327b4eeb7e21066"
+    },
+    {
+      "sha256": "4ba110112108b71784e343ace1b5868178326d8396873b73c94a9f96aa727db1",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14890.pdf",
+      "s3_in_key": "in/4b/4ba110112108b71784e343ace1b5868178326d8396873b73c94a9f96aa727db1.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 214646,
+      "s3_staged": true,
+      "job_id": "09af803208e574a3ab5484ff56877fd9338bee0efcd572ddbeeb5e96fceebe6d"
+    },
+    {
+      "sha256": "0c19969424b3835c97b1631531b63fc1d45cf544f087174351752d99d949ef4e",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14870.pdf",
+      "s3_in_key": "in/0c/0c19969424b3835c97b1631531b63fc1d45cf544f087174351752d99d949ef4e.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 151086,
+      "s3_staged": true,
+      "job_id": "6ea03e7ea15b6d94f4b219f774c34c698ac395a2627ef3e5c8fa2b755913c7e6"
+    },
+    {
+      "sha256": "2e754be9ec57fc51a780e1aa851f945f48e42c6f217f8da2da872ee6375fcd17",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14822.pdf",
+      "s3_in_key": "in/2e/2e754be9ec57fc51a780e1aa851f945f48e42c6f217f8da2da872ee6375fcd17.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 191558,
+      "s3_staged": true,
+      "job_id": "3d7249ebd057dce3fab688f82f853e82a701d223cc76d1921a063ce26d3c3dbf"
+    },
+    {
+      "sha256": "6007ff9450e51b3f13637c4fcc9d0ab2979b8b19b9fa23588849c74fb4c1ac30",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14928.pdf",
+      "s3_in_key": "in/60/6007ff9450e51b3f13637c4fcc9d0ab2979b8b19b9fa23588849c74fb4c1ac30.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 193274,
+      "s3_staged": true,
+      "job_id": "02150ada58e2419cda9d5d2b3282ed5d9257da666b0acbbabca152e50e9323ad"
+    },
+    {
+      "sha256": "acf3fecc4875617e8e15889b690f59bb453936d8a3a898afd4e27f7f68aeae59",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14816.pdf",
+      "s3_in_key": "in/ac/acf3fecc4875617e8e15889b690f59bb453936d8a3a898afd4e27f7f68aeae59.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 203518,
+      "s3_staged": true,
+      "job_id": "01e43fac047ededd2776a10f7fcb451a23e5062523cce34b51f89b4d76fce1b6"
+    },
+    {
+      "sha256": "732680f4acba2cc500a90c39c64421c8c8a4783d04adf8dfa2bb0165b710f419",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-11.pdf",
+      "s3_in_key": "in/73/732680f4acba2cc500a90c39c64421c8c8a4783d04adf8dfa2bb0165b710f419.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 233643,
+      "s3_staged": true,
+      "job_id": "d579bfdae9263127827ef8c756f7779ee7b438f0c5634143e65bc85ac03b6751"
+    },
+    {
+      "sha256": "ca6b96d86b9da4f8de6c4b702d428225f87a400f73801a7884689997c6ac3479",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15015.pdf",
+      "s3_in_key": "in/ca/ca6b96d86b9da4f8de6c4b702d428225f87a400f73801a7884689997c6ac3479.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 167906,
+      "s3_staged": true,
+      "job_id": "32c0a6e0af42246d103b7073dc4e53ead669d32fe71ddc8f682b75898b34dffd"
+    },
+    {
+      "sha256": "c7fadda4b6aa94e3056ff1d450b7512e0f3a57004c61f71bb325ee6f8a2be2de",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14946.pdf",
+      "s3_in_key": "in/c7/c7fadda4b6aa94e3056ff1d450b7512e0f3a57004c61f71bb325ee6f8a2be2de.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 144260,
+      "s3_staged": true,
+      "job_id": "921172455c7f9c35d97cab2cf9e3332109cc9ceb9049c23a46c497c52d46d586"
+    },
+    {
+      "sha256": "5a76a42f291d27b14e20c794f0bccfbd2085ded4e184bcab293aa3a789863ea8",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14994.pdf",
+      "s3_in_key": "in/5a/5a76a42f291d27b14e20c794f0bccfbd2085ded4e184bcab293aa3a789863ea8.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 201885,
+      "s3_staged": true,
+      "job_id": "aebb5e20ecd3d6084e85c153535505c60987ffd7aa513272ca5ab5a308489e2f"
+    },
+    {
+      "sha256": "1b3a0c94e14f790ab806c2c55f6dc00be65fa8d06da1c368416f10da8e089e3b",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15005.pdf",
+      "s3_in_key": "in/1b/1b3a0c94e14f790ab806c2c55f6dc00be65fa8d06da1c368416f10da8e089e3b.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 165732,
+      "s3_staged": true,
+      "job_id": "ddfe2de14228dcdac20c16475157d114695c8d3c5539baa019e4f5fca515fd8d"
+    },
+    {
+      "sha256": "4a0fda9d94383a6d46c778dda477ddcf4e78bca03bee36a750f7564baf691354",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15024.pdf",
+      "s3_in_key": "in/4a/4a0fda9d94383a6d46c778dda477ddcf4e78bca03bee36a750f7564baf691354.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 206883,
+      "s3_staged": true,
+      "job_id": "015d95373b6f1876fa3e8d3842ad981b7354277feeb040e271ef2462487a99e5"
+    },
+    {
+      "sha256": "d4c7a544a933db41a7f98180d3206969091e642d013c8e32b9d942f858e4d322",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15028.pdf",
+      "s3_in_key": "in/d4/d4c7a544a933db41a7f98180d3206969091e642d013c8e32b9d942f858e4d322.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 183971,
+      "s3_staged": true,
+      "job_id": "75a2b329e7ecf6b52f239adbaed2d8b671739bd2b28a42cd0c223ba1fd56e468"
+    },
+    {
+      "sha256": "bf189e246148fb54abb85f14bd10d3a42483f7d1a376d98a583ecd944128ada5",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15045.pdf",
+      "s3_in_key": "in/bf/bf189e246148fb54abb85f14bd10d3a42483f7d1a376d98a583ecd944128ada5.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 221026,
+      "s3_staged": true,
+      "job_id": "1617fbf3bd6eee4553517b6486ec0672907054602c1477f294706c7dc45fa3dd"
+    },
+    {
+      "sha256": "7bad2411cd87ad1638b1268e71302ba75a41b66181856fb8435c64f3d4fe838f",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14961.pdf",
+      "s3_in_key": "in/7b/7bad2411cd87ad1638b1268e71302ba75a41b66181856fb8435c64f3d4fe838f.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 363592,
+      "s3_staged": true
+    },
+    {
+      "sha256": "a81ac57072035da90022bb468fece998886ec74a57660d1913dbed0c7e92b537",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14968.pdf",
+      "s3_in_key": "in/a8/a81ac57072035da90022bb468fece998886ec74a57660d1913dbed0c7e92b537.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 311505,
+      "s3_staged": true,
+      "job_id": "b1836673cdfbef7645efaab33bbb398017e9ad28c92231c867d08cc1b22f26cc"
+    },
+    {
+      "sha256": "9acc70a8fd293df788d7fd5cf7342a796f7f44f95d801d3c6a1308dff68f51fc",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15079.pdf",
+      "s3_in_key": "in/9a/9acc70a8fd293df788d7fd5cf7342a796f7f44f95d801d3c6a1308dff68f51fc.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 443961,
+      "s3_staged": true,
+      "job_id": "d88f600896acddfa5d48e90ce43add0af877d8a92554f106c00834a2b241c7a1"
+    },
+    {
+      "sha256": "744fc514e7b9d73258530565bb3be5dc9eb07c42d914f0f902ec48fa72aa41fd",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15127.pdf",
+      "s3_in_key": "in/74/744fc514e7b9d73258530565bb3be5dc9eb07c42d914f0f902ec48fa72aa41fd.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 332732,
+      "s3_staged": true,
+      "job_id": "ba7fbb2159089c7aba044b173e541f92f119fc0f66113907b1ded40d6a447a88"
+    },
+    {
+      "sha256": "b2c8f72ce7501a6a47f0295eb410cf200cf5e5c2bd91c2d0b6aeb16468507337",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14978.pdf",
+      "s3_in_key": "in/b2/b2c8f72ce7501a6a47f0295eb410cf200cf5e5c2bd91c2d0b6aeb16468507337.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 209525,
+      "s3_staged": true
+    },
+    {
+      "sha256": "2856bf7a999a0b97a8ed7827e7df24b81a8bf20948c60eb3353a88aa910c630a",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15056.pdf",
+      "s3_in_key": "in/28/2856bf7a999a0b97a8ed7827e7df24b81a8bf20948c60eb3353a88aa910c630a.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 194890,
+      "s3_staged": true,
+      "job_id": "556e9d807d6eee7b866ac37f33e040df16a03903d35d1f979420b76b9bc5a70e"
+    },
+    {
+      "sha256": "bf4b21ddcdcabeb77c0978ed7483c805e321d175776fb47dc371effe5edcac6f",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15048.pdf",
+      "s3_in_key": "in/bf/bf4b21ddcdcabeb77c0978ed7483c805e321d175776fb47dc371effe5edcac6f.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 140153,
+      "s3_staged": true,
+      "job_id": "2ab5f4232f259c9876914f8c56c0f6cc5a52911e96ea5ec03d6f96522e2072ca"
+    },
+    {
+      "sha256": "1aefbb4233e95de61052de856b66287a1b6411038bc9c7b5f89917a32963e03e",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15136.pdf",
+      "s3_in_key": "in/1a/1aefbb4233e95de61052de856b66287a1b6411038bc9c7b5f89917a32963e03e.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 200229,
+      "s3_staged": true,
+      "job_id": "6f610e5ee012e1a5c1950c3b5ca365f8bb9b0b66a7abd7bf1ce55787fe4cb377"
+    },
+    {
+      "sha256": "c77435e8a6b371d00b20ff4f3bf31461fa1a171b96ef705ea852ab25031b9be3",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15133.pdf",
+      "s3_in_key": "in/c7/c77435e8a6b371d00b20ff4f3bf31461fa1a171b96ef705ea852ab25031b9be3.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 238789,
+      "s3_staged": true,
+      "job_id": "1f839615bba8d53b76a9422add66eeb1ae663424ae491681ac1e7cf818905d34"
+    },
+    {
+      "sha256": "35045382501e42cca8e08732038359cb70b6061adee0653c934f61d37c119172",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15211.pdf",
+      "s3_in_key": "in/35/35045382501e42cca8e08732038359cb70b6061adee0653c934f61d37c119172.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 96737,
+      "s3_staged": true,
+      "job_id": "534a457f9e4eba7e2bfc75cc1f6107a2358063b69798eef4ec810f53f95d9fff"
+    },
+    {
+      "sha256": "2bf8ac3e3566902e1115e28bf098d60abe47efa6253c66e357ad76808bdd5062",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15234.pdf",
+      "s3_in_key": "in/2b/2bf8ac3e3566902e1115e28bf098d60abe47efa6253c66e357ad76808bdd5062.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 123250,
+      "s3_staged": true,
+      "job_id": "3f5ed8698645f39404b369db5ec1fe7033f4957ba3368ff472e03071f0336180"
+    },
+    {
+      "sha256": "48899708a73d6cdad4802b3c1afd0e914677b46922bb2375c9d9a07f3fd34432",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15227.pdf",
+      "s3_in_key": "in/48/48899708a73d6cdad4802b3c1afd0e914677b46922bb2375c9d9a07f3fd34432.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 91824,
+      "s3_staged": true,
+      "job_id": "b264dc6c45e35e5c48a4371445c10328927346249e08e792d65f74cb2807b392"
+    },
+    {
+      "sha256": "4cffa9cd9575869b591ee7a02ce362fcf50725a649d99f7b32bd2a6bcc4ab798",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15249.pdf",
+      "s3_in_key": "in/4c/4cffa9cd9575869b591ee7a02ce362fcf50725a649d99f7b32bd2a6bcc4ab798.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 234917,
+      "s3_staged": true,
+      "job_id": "abd2dedfe6ceead7d68b1c15bad623dfb9cc70a7cf892d300c996e5a3b7428f1"
+    },
+    {
+      "sha256": "9959348f4c1625519d7a90ca0b12589bd1369a7030f1308373f4727b06d0d5bd",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15243.pdf",
+      "s3_in_key": "in/99/9959348f4c1625519d7a90ca0b12589bd1369a7030f1308373f4727b06d0d5bd.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 120541,
+      "s3_staged": true,
+      "job_id": "bafe42a4e35513b4d6534a1702cb6426a853ecedd554074ed4c9c58e7d0e298f"
+    },
+    {
+      "sha256": "e0296e9f69ecc871867f137a257179320937549665e4759a3f21eacc6d7096b6",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15207.pdf",
+      "s3_in_key": "in/e0/e0296e9f69ecc871867f137a257179320937549665e4759a3f21eacc6d7096b6.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 179582,
+      "s3_staged": true,
+      "job_id": "5cb0fec703643230a00afd476df3116573fe960b9d8eb676c525ab4a809ea3b7"
+    },
+    {
+      "sha256": "728aab5c89fc12c91830867cc79954bac5c5f214938ab7872d6eef01d0cd184c",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-14868.pdf",
+      "s3_in_key": "in/72/728aab5c89fc12c91830867cc79954bac5c5f214938ab7872d6eef01d0cd184c.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 325630,
+      "s3_staged": true,
+      "job_id": "44b450df4e8bf274f229c03653f904a4922d6d98dcd6780260843cf1c66e0584"
+    },
+    {
+      "sha256": "1695ef538420d606f295c855a7d9b98d828bcaea56820eb4f881213a3c2cc99c",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15289.pdf",
+      "s3_in_key": "in/16/1695ef538420d606f295c855a7d9b98d828bcaea56820eb4f881213a3c2cc99c.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 184987,
+      "s3_staged": true,
+      "job_id": "658cc9c8b485d0de601797dec61e5fbd8d992acda04fd7155e23c0edbd50b0cc"
+    },
+    {
+      "sha256": "eed70de06f087862d9a182919a2e9b03e5e66c131476baea1ab77d121ec0f3ca",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15328.pdf",
+      "s3_in_key": "in/ee/eed70de06f087862d9a182919a2e9b03e5e66c131476baea1ab77d121ec0f3ca.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 160847,
+      "s3_staged": true,
+      "job_id": "fb8cea71a743411f10dca006a106084904142eb5585db96a6c06e6a9a95e0746"
+    },
+    {
+      "sha256": "b319edae75cf33c3a1ec399c946631ca90b0a54e534ec53258289c54be780139",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15311.pdf",
+      "s3_in_key": "in/b3/b319edae75cf33c3a1ec399c946631ca90b0a54e534ec53258289c54be780139.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 122815,
+      "s3_staged": true,
+      "job_id": "948999f1d7bf1143cd4a5894f48d6245496c57b94b3f2240c09e78c9eeb5e823"
+    },
+    {
+      "sha256": "ddfcf387ec7081a9d573c0cb2ed0030f480b9e7af0693aa73dd22ce263dec43d",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15287.pdf",
+      "s3_in_key": "in/dd/ddfcf387ec7081a9d573c0cb2ed0030f480b9e7af0693aa73dd22ce263dec43d.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 160995,
+      "s3_staged": true,
+      "job_id": "2a883ae1204a22b607ae059f65cfbb490d1e1cf5eb708522959029ae34a33ac5"
+    },
+    {
+      "sha256": "360e7a18bca062715432a26f1998fa159e4a33175c66918e382ddfb5a063620b",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15080.pdf",
+      "s3_in_key": "in/36/360e7a18bca062715432a26f1998fa159e4a33175c66918e382ddfb5a063620b.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 226811,
+      "s3_staged": true,
+      "job_id": "1391c2aaab914c8b84deb5d3a18983cfcf7b4cc286fdf253d6496f203d76347d"
+    },
+    {
+      "sha256": "ec4ec1397e5e378a7f94c5501654d2c3d8ae806e738fa0450e5fee781ff2ee39",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15416.pdf",
+      "s3_in_key": "in/ec/ec4ec1397e5e378a7f94c5501654d2c3d8ae806e738fa0450e5fee781ff2ee39.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 799957,
+      "s3_staged": true,
+      "job_id": "0eb666140aa24c7d8e97b64d89812f114ae42c21b68116fc5ee34609e0ad2df5"
+    },
+    {
+      "sha256": "cba24ea86f46ca9060d63cb9affad84572ab72e4198654b71298cbf2e8606d58",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15425.pdf",
+      "s3_in_key": "in/cb/cba24ea86f46ca9060d63cb9affad84572ab72e4198654b71298cbf2e8606d58.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 208772,
+      "s3_staged": true,
+      "job_id": "e2d5bbbcb9ada733c5e829fb0be20085255367b408fae93b4cb5de7e15304078"
+    },
+    {
+      "sha256": "1057391aa0acea7c6af1a641746589f82aebd2704bc274a852cc61600f7a6cbe",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15149.pdf",
+      "s3_in_key": "in/10/1057391aa0acea7c6af1a641746589f82aebd2704bc274a852cc61600f7a6cbe.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 357338,
+      "s3_staged": true
+    },
+    {
+      "sha256": "6374f551408714bff9748cdba1ad06dc4c611aa7cc7053361731c18490cc702d",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15433.pdf",
+      "s3_in_key": "in/63/6374f551408714bff9748cdba1ad06dc4c611aa7cc7053361731c18490cc702d.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 126204,
+      "s3_staged": true,
+      "job_id": "d7e8dd5855baaa2d467dafb4ca3098192b8facf55e4511148d5618381bbab259"
+    },
+    {
+      "sha256": "bc68a6afa4a6e1b432e307ef1ac65a08e6fa718e6a5d889ca6f8def7c813845f",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15459.pdf",
+      "s3_in_key": "in/bc/bc68a6afa4a6e1b432e307ef1ac65a08e6fa718e6a5d889ca6f8def7c813845f.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 182634,
+      "s3_staged": true,
+      "job_id": "e1d79ec6da6ce370a0c111b203227b32c52ff595f844b80dd75821d0221e0f92"
+    },
+    {
+      "sha256": "7fa85b887434e1a71648c34a4a5704695bbcd3b39ce1e765ec2407f8259eb96e",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15419.pdf",
+      "s3_in_key": "in/7f/7fa85b887434e1a71648c34a4a5704695bbcd3b39ce1e765ec2407f8259eb96e.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 222174,
+      "s3_staged": true,
+      "job_id": "876b8aede5d6572be9ecade98853921efc8a32acd4c5ddac837bb10a4555aba1"
+    },
+    {
+      "sha256": "2b7e4a9bf25c2e8c718f1a3de5038ba175417ff316e13cf51860b68c8a4912b2",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15463.pdf",
+      "s3_in_key": "in/2b/2b7e4a9bf25c2e8c718f1a3de5038ba175417ff316e13cf51860b68c8a4912b2.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 209059,
+      "s3_staged": true,
+      "job_id": "d2da99b093ee748d3daba0fcbd66d0efbb1c271eb91b34d316481da91c6bef7c"
+    },
+    {
+      "sha256": "1a7867797d16c093b68a869fd765721d1c4e41ee6865d4135818df865d6e14af",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15461.pdf",
+      "s3_in_key": "in/1a/1a7867797d16c093b68a869fd765721d1c4e41ee6865d4135818df865d6e14af.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 201332,
+      "s3_staged": true,
+      "job_id": "2fccffce1c81c1f903db266defa073695182c4ea54aba889b6fc816e7fcfe233"
+    },
+    {
+      "sha256": "c4cb9a309bfd0dcfb049eb4de219e1c22c90e38014f993add7e86073b17a92ac",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15172.pdf",
+      "s3_in_key": "in/c4/c4cb9a309bfd0dcfb049eb4de219e1c22c90e38014f993add7e86073b17a92ac.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 155090,
+      "s3_staged": true
+    },
+    {
+      "sha256": "0ba2ceab80a370957731744a077689490b4a54289c5b1445ca5b6736167bd2e2",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15219.pdf",
+      "s3_in_key": "in/0b/0ba2ceab80a370957731744a077689490b4a54289c5b1445ca5b6736167bd2e2.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 194542,
+      "s3_staged": true
+    },
+    {
+      "sha256": "88f4339ce51fec6a5ec9895c3b43d785b270780ce3cf7debed1486a5baea1818",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15536.pdf",
+      "s3_in_key": "in/88/88f4339ce51fec6a5ec9895c3b43d785b270780ce3cf7debed1486a5baea1818.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 147466,
+      "s3_staged": true,
+      "job_id": "7290b7c5eb9fdd5c102a04973ec15d27546b47c6524ba1eb3238e6541dcac6f3"
+    },
+    {
+      "sha256": "df9c948176b80705e8a2351b7a40ced77bda44c3fd9cc5f44d17d72d029d08c7",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15567.pdf",
+      "s3_in_key": "in/df/df9c948176b80705e8a2351b7a40ced77bda44c3fd9cc5f44d17d72d029d08c7.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 131747,
+      "s3_staged": true,
+      "job_id": "ba0904fc9dc2bb70b2fbe417332cd6c2023f3d500f8686521d12b3457bd1ec00"
+    },
+    {
+      "sha256": "3a707223928d1d1fd2fe5d2f2f7437bab35e33e6a325665955e920453a23f6e2",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15474.pdf",
+      "s3_in_key": "in/3a/3a707223928d1d1fd2fe5d2f2f7437bab35e33e6a325665955e920453a23f6e2.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 215765,
+      "s3_staged": true,
+      "job_id": "397c81735d5e44789ab9dfc754d0065b3bb61b3a21d61fc904328609d66a5b1f"
+    },
+    {
+      "sha256": "e1b049734e29773362968b8083a290c7f3e88811eeeaabf92c4a913ceab8f3a8",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15478.pdf",
+      "s3_in_key": "in/e1/e1b049734e29773362968b8083a290c7f3e88811eeeaabf92c4a913ceab8f3a8.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 147676,
+      "s3_staged": true,
+      "job_id": "f62fb691f2b2e21adfd0de34cfada079774976d24e2a333b7b921d85443fccf4"
+    },
+    {
+      "sha256": "8715d5569866fc56b7864e5a586f5f212d2348de567dd397c10dff1b9d7525a1",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15293.pdf",
+      "s3_in_key": "in/87/8715d5569866fc56b7864e5a586f5f212d2348de567dd397c10dff1b9d7525a1.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 226900,
+      "s3_staged": true
+    },
+    {
+      "sha256": "ca37d9f9e649b6aae9ddaf570a90a2bee1b4fdf690b0c2a620f3e685949462e2",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15646.pdf",
+      "s3_in_key": "in/ca/ca37d9f9e649b6aae9ddaf570a90a2bee1b4fdf690b0c2a620f3e685949462e2.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 392291,
+      "s3_staged": true,
+      "job_id": "3c08ec0b11fa5186957c4799f19d7fe7923940c111d044c1f7633a06d2cbff6a"
+    },
+    {
+      "sha256": "44f2eb8b3edc79282d8f627754d9867dc767dc420720e335a790e558bd344312",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15563.pdf",
+      "s3_in_key": "in/44/44f2eb8b3edc79282d8f627754d9867dc767dc420720e335a790e558bd344312.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 139529,
+      "s3_staged": true,
+      "job_id": "253b871a17346b5f3ba958836a980bd48ab2880d9da283b359d624f61902bb28"
+    },
+    {
+      "sha256": "69322bbb486b207a22db8ed6534f359bdf22e4d68635c1468c15f1c416cdc970",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15423.pdf",
+      "s3_in_key": "in/69/69322bbb486b207a22db8ed6534f359bdf22e4d68635c1468c15f1c416cdc970.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 163522,
+      "s3_staged": true,
+      "job_id": "d906146926bde039a7cda4b7a0025990264014770ec05b86f5e0d3ee169e9939"
+    },
+    {
+      "sha256": "8954e1e7cd4d4d44ee7204ca0521b31372bfc251d1573ed70468078a114e2892",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15863.pdf",
+      "s3_in_key": "in/89/8954e1e7cd4d4d44ee7204ca0521b31372bfc251d1573ed70468078a114e2892.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 167348,
+      "s3_staged": true,
+      "job_id": "21f4bb3390d56cb8b9c374450297a2b16e4e3ba98c7f5e1fb844c3481df1b8e0"
+    },
+    {
+      "sha256": "4861fd520edd813c2e26fd04836ef7c4a8c321ec01b7dc0ccbf09e6849946ab7",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15882.pdf",
+      "s3_in_key": "in/48/4861fd520edd813c2e26fd04836ef7c4a8c321ec01b7dc0ccbf09e6849946ab7.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 204781,
+      "s3_staged": true,
+      "job_id": "403817b44ba63354cfe3bb09e392cfb7ad57d5ee39cac198d06e962f17c41d0e"
+    },
+    {
+      "sha256": "172cbfd20b84314ae1c412977d49736a6dd1648bdf3abb0023a946754e237ec0",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15800.pdf",
+      "s3_in_key": "in/17/172cbfd20b84314ae1c412977d49736a6dd1648bdf3abb0023a946754e237ec0.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 136097,
+      "s3_staged": true,
+      "job_id": "ee1fe5b9b9f6c2f2f0e66f10336da7d44f658e6436731eb2cda4f6ef5a00a26e"
+    },
+    {
+      "sha256": "e1f49c7437a184d681d014f0549b5538e9db6cefc9ece62b9d8cc6ce3362fdda",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15965.pdf",
+      "s3_in_key": "in/e1/e1f49c7437a184d681d014f0549b5538e9db6cefc9ece62b9d8cc6ce3362fdda.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 168773,
+      "s3_staged": true,
+      "job_id": "33d6ae16663f713ae38728bb252b9bec662d447f4d2dbd7b5c7cfec9c7a02ddd"
+    },
+    {
+      "sha256": "f951d3d010bbf2dd95c8e06f31d3fb99439cde7939c659f8a8fa9dbbf303a4e1",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15974.pdf",
+      "s3_in_key": "in/f9/f951d3d010bbf2dd95c8e06f31d3fb99439cde7939c659f8a8fa9dbbf303a4e1.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 207585,
+      "s3_staged": true,
+      "job_id": "a75015691ade3d556901c7487f3bb7b9da8313e689654afcc8a55cec54fa604d"
+    },
+    {
+      "sha256": "c4f20bfc9b74586a5401372eab7fe52c14679414f9258bfc97c09c7e66ee42a3",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15626.pdf",
+      "s3_in_key": "in/c4/c4f20bfc9b74586a5401372eab7fe52c14679414f9258bfc97c09c7e66ee42a3.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 108091,
+      "s3_staged": true,
+      "job_id": "6a7d4737c08cfac5eccfb93eab23fb196e7cc2391128aed5488ee7ac11d309c7"
+    },
+    {
+      "sha256": "a6c15ab2293b7edbe4652fcf2f6989e227a9a6687926614c18f132f085ef3e2c",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15956.pdf",
+      "s3_in_key": "in/a6/a6c15ab2293b7edbe4652fcf2f6989e227a9a6687926614c18f132f085ef3e2c.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 219616,
+      "s3_staged": true,
+      "job_id": "40d41b1316b9bce9aff94b14e3f7068f14c596a99a49f8810bb5366c05409f7c"
+    },
+    {
+      "sha256": "3f67d62f28e900c69c570b5e59c8c24ee50b5d77c0bfedd263492a7d8abe3e90",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15975.pdf",
+      "s3_in_key": "in/3f/3f67d62f28e900c69c570b5e59c8c24ee50b5d77c0bfedd263492a7d8abe3e90.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 199994,
+      "s3_staged": true,
+      "job_id": "4e5a2de670e9b68e39cdfd2444a8da9b033d522d7b942fde0f9793ccc6de3499"
+    },
+    {
+      "sha256": "082511a5e5ba1e870e85e527bc19353043385b9490f74a64c8028441340a7998",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15984.pdf",
+      "s3_in_key": "in/08/082511a5e5ba1e870e85e527bc19353043385b9490f74a64c8028441340a7998.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 147972,
+      "s3_staged": true,
+      "job_id": "8efd0fa0c03632a3039e71a682d9e591b0da4b39062dc9c1893093434da3bdc0"
+    },
+    {
+      "sha256": "b026162d2c1dfc2c40be9d66d4570eae92cac9e9d143efa26ba5038870c0f0f7",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15904.pdf",
+      "s3_in_key": "in/b0/b026162d2c1dfc2c40be9d66d4570eae92cac9e9d143efa26ba5038870c0f0f7.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 182669,
+      "s3_staged": true,
+      "job_id": "5d0a779cc165d227b8a074fb1c017c48941184cfe88d9259df9cc11792c4ecd0"
+    },
+    {
+      "sha256": "4dd5534b259b36a72bee6848104566ffd6f478496eba475a92ad155b0e9f74ca",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16023.pdf",
+      "s3_in_key": "in/4d/4dd5534b259b36a72bee6848104566ffd6f478496eba475a92ad155b0e9f74ca.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 228603,
+      "s3_staged": true,
+      "job_id": "d590f04c935c62ce2206ad4d74ea8a6c843836440b144e90e776385a755aaee6"
+    },
+    {
+      "sha256": "a43cbedec4e2525e48d1e64d034c62058127882753257bbe65f64570c4824d3e",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16083.pdf",
+      "s3_in_key": "in/a4/a43cbedec4e2525e48d1e64d034c62058127882753257bbe65f64570c4824d3e.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 513326,
+      "s3_staged": true,
+      "job_id": "d14bc0e774ed28185e991ee8489336fd4f9f63f8c67c53bb548288a5dbb1de6a"
+    },
+    {
+      "sha256": "c12f394fc5223c48f4e8253f59db2c592c03719cbe35325b50ead02bd6083cb6",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16076.pdf",
+      "s3_in_key": "in/c1/c12f394fc5223c48f4e8253f59db2c592c03719cbe35325b50ead02bd6083cb6.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 173788,
+      "s3_staged": true,
+      "job_id": "ee3e89ca0f31f44f74870aa93bcf348da3cfc1486ca6081d3c9fa46f4f0fc2d1"
+    },
+    {
+      "sha256": "f14b715a49713a6b816d0312d01383c3d65d87e3a0f2a313b8d49e797c98d7bc",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16073.pdf",
+      "s3_in_key": "in/f1/f14b715a49713a6b816d0312d01383c3d65d87e3a0f2a313b8d49e797c98d7bc.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 208746,
+      "s3_staged": true,
+      "job_id": "b2ded738ab1abb0c91860bcb26184b977bbc1b6b9bfa8dd800650b3be9046fcb"
+    },
+    {
+      "sha256": "8da2b0bb44aa47b72f994205b083c1c998548298850ca2e376c6d76e8dd73e96",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15505.pdf",
+      "s3_in_key": "in/8d/8da2b0bb44aa47b72f994205b083c1c998548298850ca2e376c6d76e8dd73e96.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 93087,
+      "s3_staged": true
+    },
+    {
+      "sha256": "2c10d9036a101b9762c750c5611414fae14b5ea8c14508a48117a538c127a54c",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15636.pdf",
+      "s3_in_key": "in/2c/2c10d9036a101b9762c750c5611414fae14b5ea8c14508a48117a538c127a54c.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 113565,
+      "s3_staged": true
+    },
+    {
+      "sha256": "6b18050d3cd29049fd6ed82232cf5d8679454b1308bf529a768db9f7af53230a",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16114.pdf",
+      "s3_in_key": "in/6b/6b18050d3cd29049fd6ed82232cf5d8679454b1308bf529a768db9f7af53230a.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 189616,
+      "s3_staged": true,
+      "job_id": "52b20dd2b8bf1a96c0fe9bfa60994108b5e2c4aaa1d1c523f6c005568e304835"
+    },
+    {
+      "sha256": "9baf298f1a4deb4f332d78f3f0c040470c16e87efbd2e764073f88f16e2913cc",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16113.pdf",
+      "s3_in_key": "in/9b/9baf298f1a4deb4f332d78f3f0c040470c16e87efbd2e764073f88f16e2913cc.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 198421,
+      "s3_staged": true,
+      "job_id": "82a920f66e9bc7abe8b373bf3d83984aa7a17cbd1a88839bb243c75738724cd8"
+    },
+    {
+      "sha256": "d54d5c36c79d8c9a0fcf42c67a89bce3359bd2131407c7f7d2acb84089dae7d2",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16176.pdf",
+      "s3_in_key": "in/d5/d54d5c36c79d8c9a0fcf42c67a89bce3359bd2131407c7f7d2acb84089dae7d2.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 196615,
+      "s3_staged": true,
+      "job_id": "caf272da1237358272362896dbf9d3d6d1292f518ae0cc9cb8a75f8b374b440b"
+    },
+    {
+      "sha256": "b342fef5fe64be06cbd02216eddc9ee929109688a0e29f7445558938ed072164",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16541.pdf",
+      "s3_in_key": "in/b3/b342fef5fe64be06cbd02216eddc9ee929109688a0e29f7445558938ed072164.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 159329,
+      "s3_staged": true,
+      "job_id": "5e870f741536d0e1cfc87204b70f20f2345f55f97613e4605fe27981b9a4a9c8"
+    },
+    {
+      "sha256": "37eb10397da4163c1ece756bd57537d1b844aea58a42025ac235322ae958dce7",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15816.pdf",
+      "s3_in_key": "in/37/37eb10397da4163c1ece756bd57537d1b844aea58a42025ac235322ae958dce7.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 159629,
+      "s3_staged": true,
+      "job_id": "efbba3f1d76c624d93564855a4f1a28ac74715b84a2f70d66658548e0e53d268"
+    },
+    {
+      "sha256": "ca201ba0d5ffa31712e70740eb28c7f3b0db527656adbcb884418fb62ca984f6",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16106.pdf",
+      "s3_in_key": "in/ca/ca201ba0d5ffa31712e70740eb28c7f3b0db527656adbcb884418fb62ca984f6.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 136616,
+      "s3_staged": true,
+      "job_id": "799d0d4c0579673afb7018118bc4985c4c5a2fe2d39d2a17e7aa2c6f7d833f21"
+    },
+    {
+      "sha256": "c52e00d0d847cab0b38bd1b1b7fdc2f4483ae72ea96116f516fb45e18ad85015",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16230.pdf",
+      "s3_in_key": "in/c5/c52e00d0d847cab0b38bd1b1b7fdc2f4483ae72ea96116f516fb45e18ad85015.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 120685,
+      "s3_staged": true,
+      "job_id": "f62705684d2c6a0d34d3304841d72e5b1940782380b6138ade8820591a408b78"
+    },
+    {
+      "sha256": "1dd5f76365b5fcf4996b798e5b351268a259712a5e730882e89f7b11bc37cceb",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16630.pdf",
+      "s3_in_key": "in/1d/1dd5f76365b5fcf4996b798e5b351268a259712a5e730882e89f7b11bc37cceb.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 207853,
+      "s3_staged": true,
+      "job_id": "0436499b25b2ce9448b48dbe7a93f4b3c623d0ee02f2d778b0e05fbf1fe94b35"
+    },
+    {
+      "sha256": "8f96b4120671df7f355ddec730262c0ec9bbc2399c4314e12d163d7b39038007",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16890.pdf",
+      "s3_in_key": "in/8f/8f96b4120671df7f355ddec730262c0ec9bbc2399c4314e12d163d7b39038007.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 186319,
+      "s3_staged": true,
+      "job_id": "f5a0ab16b062d929caa0899d710e872be7504bdb820b643f920902251109d20c"
+    },
+    {
+      "sha256": "5c92165c22433101b37d30b44242fe23562290e336605eb6db638564a5d0c06e",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16908.pdf",
+      "s3_in_key": "in/5c/5c92165c22433101b37d30b44242fe23562290e336605eb6db638564a5d0c06e.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 145417,
+      "s3_staged": true,
+      "job_id": "4f2e17850c7219b6eff3c84fda3ed88206b31464b442986498badfd79e045608"
+    },
+    {
+      "sha256": "92415177eba6d415207c7782ae93dd163c980469fdd25d735f9dc799b1910149",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16863.pdf",
+      "s3_in_key": "in/92/92415177eba6d415207c7782ae93dd163c980469fdd25d735f9dc799b1910149.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 192334,
+      "s3_staged": true,
+      "job_id": "77bf16c3fb978e89ad039d91bc39b9a8c2ad36381f9bd4c6569832ab05627430"
+    },
+    {
+      "sha256": "c504c12ac14b4294d6cd0f205ad0cfeb62dc62ab42f74c3566e3789bbe20eb03",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16933.pdf",
+      "s3_in_key": "in/c5/c504c12ac14b4294d6cd0f205ad0cfeb62dc62ab42f74c3566e3789bbe20eb03.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 133757,
+      "s3_staged": true,
+      "job_id": "c532dea084252af55b5cc4ebaa87d411e949d77a8bc343c9e8f502d5d7314189"
+    },
+    {
+      "sha256": "293e68f43515b6906a8d18abdc6c41e6e196472a6cad5022ca81df2d567000f8",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16172.pdf",
+      "s3_in_key": "in/29/293e68f43515b6906a8d18abdc6c41e6e196472a6cad5022ca81df2d567000f8.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 164614,
+      "s3_staged": true,
+      "job_id": "c5ab1ec3f08cc287f7dfc6c9b6b1232c307eec190eae1c0f711a964dc80a3948"
+    },
+    {
+      "sha256": "909a3f94f5b2b1641d5d75ca805841422e5d2aa39f7ef09ab3aab40e34e9c33d",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16727.pdf",
+      "s3_in_key": "in/90/909a3f94f5b2b1641d5d75ca805841422e5d2aa39f7ef09ab3aab40e34e9c33d.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 217178,
+      "s3_staged": true,
+      "job_id": "86ff17e18cddf636e431319bbc458101a5dfd59e8972a1fa2da2a8fba25d3762"
+    },
+    {
+      "sha256": "85accfb9e3e8aa12b31fee4cb4fcb6b3f0b195d9838f7b1878a9dca76bb1bd74",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-17258.pdf",
+      "s3_in_key": "in/85/85accfb9e3e8aa12b31fee4cb4fcb6b3f0b195d9838f7b1878a9dca76bb1bd74.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 380572,
+      "s3_staged": true,
+      "job_id": "bc450311cd66fd1accd74c89dc1e5e283192a8c6127390f43cc416ae825a101b"
+    },
+    {
+      "sha256": "d6126c1ee1eb4817e54e015bc4f19ee284c6f8929f99890409536abbc4ea4476",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-17179.pdf",
+      "s3_in_key": "in/d6/d6126c1ee1eb4817e54e015bc4f19ee284c6f8929f99890409536abbc4ea4476.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 158746,
+      "s3_staged": true,
+      "job_id": "38163d23729beaa6ec6243f2ce78a456d8638391ea0b902b3c21748d88b64c32"
+    },
+    {
+      "sha256": "593234f0846d973d9898ed243261592b2e62bc8ddf3f5e1ad25c79cc82e94779",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-17303.pdf",
+      "s3_in_key": "in/59/593234f0846d973d9898ed243261592b2e62bc8ddf3f5e1ad25c79cc82e94779.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 138887,
+      "s3_staged": true,
+      "job_id": "57f70cd0b77143002671a92cb7305d8097a3b46b99fdf21a701e1aaf80fe64f6"
+    },
+    {
+      "sha256": "d0b827dcb908c28d2ca86379c4cea3389a462005ab84bee5d97383d9abe3fc6d",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-17756.pdf",
+      "s3_in_key": "in/d0/d0b827dcb908c28d2ca86379c4cea3389a462005ab84bee5d97383d9abe3fc6d.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 195149,
+      "s3_staged": true,
+      "job_id": "434d127808f3fb0de77446d67384361829d638f22747227dd51872b5c3fa5571"
+    },
+    {
+      "sha256": "e0af721c284656c10c57cb463b86908461af231eb2a765229887a6805bc86246",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16198.pdf",
+      "s3_in_key": "in/e0/e0af721c284656c10c57cb463b86908461af231eb2a765229887a6805bc86246.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 204976,
+      "s3_staged": true
+    },
+    {
+      "sha256": "1a6d832bba9ce50009294094e21e1eb6d0da9de51bdcd40736c9981d54ce169f",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-15815.pdf",
+      "s3_in_key": "in/1a/1a6d832bba9ce50009294094e21e1eb6d0da9de51bdcd40736c9981d54ce169f.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 118308,
+      "s3_staged": true
+    },
+    {
+      "sha256": "86a309114eb6c57c3dc7898d44a03c73126bc00395861c3c586e1109fb862421",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-20102.pdf",
+      "s3_in_key": "in/86/86a309114eb6c57c3dc7898d44a03c73126bc00395861c3c586e1109fb862421.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 171057,
+      "s3_staged": true,
+      "job_id": "3d5ef588a557075152db3b6a2e6156d22e2e96652e0f0523c56e528c4478fb25"
+    },
+    {
+      "sha256": "ed497130fca17443b1ae3dfdd5de884eb8a4e6bda3ee1adc67d0f67e5413b9a0",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-20097.pdf",
+      "s3_in_key": "in/ed/ed497130fca17443b1ae3dfdd5de884eb8a4e6bda3ee1adc67d0f67e5413b9a0.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 93992,
+      "s3_staged": true,
+      "job_id": "eb1c4f89656691781c69a8291cbf66a891fe5c0ea3ef26fb7215a62431f590f2"
+    },
+    {
+      "sha256": "ed330c36da54662717c001b0ada6462d57a2bfe0b1dbf665e14e1a03c720c780",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-17789.pdf",
+      "s3_in_key": "in/ed/ed330c36da54662717c001b0ada6462d57a2bfe0b1dbf665e14e1a03c720c780.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 129527,
+      "s3_staged": true,
+      "job_id": "f6921684e5ff38ff84bc540ca19ad05f9fad000e20d89ca13d4eb302952da207"
+    },
+    {
+      "sha256": "7975947385452cb60c631e4314d31adea9e3eb54f04ec5447c16040f87f46695",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-16941.pdf",
+      "s3_in_key": "in/79/7975947385452cb60c631e4314d31adea9e3eb54f04ec5447c16040f87f46695.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 196473,
+      "s3_staged": true
+    },
+    {
+      "sha256": "4eed569873949a5685b4d1c6cd2f77f95703cddd4899c672730fd358d51f4485",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-17044.pdf",
+      "s3_in_key": "in/4e/4eed569873949a5685b4d1c6cd2f77f95703cddd4899c672730fd358d51f4485.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 228018,
+      "s3_staged": true
+    },
+    {
+      "sha256": "9f6cf73f36f2fb8a936977aaa9526411fe401ff359fef539953606cb6d22946f",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-17014.pdf",
+      "s3_in_key": "in/9f/9f6cf73f36f2fb8a936977aaa9526411fe401ff359fef539953606cb6d22946f.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 100741,
+      "s3_staged": true
+    },
+    {
+      "sha256": "02ba0c32f534338952d159606b62ceb28b5feb54d7a14104fb14569d842dde24",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-20108.pdf",
+      "s3_in_key": "in/02/02ba0c32f534338952d159606b62ceb28b5feb54d7a14104fb14569d842dde24.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 114886,
+      "s3_staged": true,
+      "job_id": "cf8c9481df685e578424c7659eb3abfd5509bdc5d5a247db298d5cbebf6da042"
+    },
+    {
+      "sha256": "d7170954c1310974c747203d3fc5726362f3f0c53159b8aa8f437218d12cc6ae",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-20109.pdf",
+      "s3_in_key": "in/d7/d7170954c1310974c747203d3fc5726362f3f0c53159b8aa8f437218d12cc6ae.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 128424,
+      "s3_staged": true,
+      "job_id": "bf0265b9f4f7d5ef2d31304379459ab2c642f46139511ce0d5f6c0517419db8e"
+    },
+    {
+      "sha256": "6d819e9fb300830613aa824c909aa249ac39919b9ed19e213a3fc3835f4f486e",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-20113.pdf",
+      "s3_in_key": "in/6d/6d819e9fb300830613aa824c909aa249ac39919b9ed19e213a3fc3835f4f486e.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 134749,
+      "s3_staged": true,
+      "job_id": "a75f77542f7884552ad5e2de5514f101f65ef86f35621d6e459a15406b45e910"
+    },
+    {
+      "sha256": "36dba36a98d1d25e58cedff37f7a52f5fc20b81475745258a311173a2710f054",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-17137.pdf",
+      "s3_in_key": "in/36/36dba36a98d1d25e58cedff37f7a52f5fc20b81475745258a311173a2710f054.pdf",
+      "status": "textract_submit_failed",
+      "bytes_downloaded": 107348,
+      "s3_staged": true
+    },
+    {
+      "sha256": "c4d59bf1f6577ec70cea85e7e692ecd39e8f951e34f2f2a9fda7f8c25efdba34",
+      "source_url": "https://www.courts.go.jp/assets/hanrei/hanrei-pdf-20100.pdf",
+      "s3_in_key": "in/c4/c4d59bf1f6577ec70cea85e7e692ecd39e8f951e34f2f2a9fda7f8c25efdba34.pdf",
+      "status": "submitted",
+      "bytes_downloaded": 217315,
+      "s3_staged": true,
+      "job_id": "f32bf756ea1e0e745a24c2cd01b17b1d21308def646510b74248096be83c82d0"
+    }
+  ]
+}
