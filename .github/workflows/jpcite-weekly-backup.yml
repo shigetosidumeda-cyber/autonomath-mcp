@@ -1,0 +1,44 @@
+name: jpcite-weekly-backup (alias of weekly-backup-autonomath)
+
+# Wave 46 tick7#7 (2026-05-12) — jpcite-brand alias of
+# `weekly-backup-autonomath.yml`.
+#
+# Per `project_jpcite_internal_autonomath_rename` and
+# `feedback_destruction_free_organization`:
+#   * The legacy `weekly-backup-autonomath.yml` retains its cron schedule
+#     (SOT). This alias is dispatch-only — no `cron`, no `push`, no
+#     `workflow_run`. Cron-trigger duplication is therefore impossible.
+#   * Body is a trampoline: it re-invokes the parent workflow via the
+#     GitHub API (workflow_dispatch). No backup logic is duplicated here.
+#   * Brand: operators searching for `jpcite-*` workflows find this entry
+#     in the GHA UI. Internally, work still runs under the autonomath name
+#     until the deeper rename lands.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to run the parent workflow on (default: main)."
+        required: false
+        default: "main"
+
+concurrency:
+  group: jpcite-weekly-backup
+  cancel-in-progress: false
+
+jobs:
+  trampoline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Re-invoke parent (weekly-backup-autonomath)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          REF="${{ inputs.ref || 'main' }}"
+          echo "alias=jpcite-weekly-backup parent=weekly-backup-autonomath ref=$REF"
+          gh workflow run weekly-backup-autonomath.yml --ref "$REF" \
+            -R "${GITHUB_REPOSITORY}"
