@@ -13,7 +13,7 @@ Cost preflight
 
 Constraints
 -----------
-- DRY_RUN default; pass ``--commit`` to actually create the job.
+- DRY_RUN default; live submit requires both ``--commit`` and ``DRY_RUN=0``.
 - ``[lane:solo]`` marker. NO LLM API.
 """
 
@@ -242,9 +242,14 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return p.parse_args(argv)
 
 
+def _resolve_dry_run(args: argparse.Namespace) -> bool:
+    """Live submit requires an explicit CLI flag and an explicit env unlock."""
+    return not (args.commit and os.environ.get("DRY_RUN", "1") == "0")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
-    dry_run = not args.commit and os.environ.get("DRY_RUN", "1") != "0"
+    dry_run = _resolve_dry_run(args)
     mtd = preflight_cost(args.region, args.profile)
     print(f"[preflight] mtd_usd={mtd:.4f} < {HARD_STOP_USD}", file=sys.stderr)
 

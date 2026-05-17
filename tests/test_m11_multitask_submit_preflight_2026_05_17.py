@@ -109,6 +109,23 @@ def test_preflight_training_inputs_rejects_missing_val(
     ]
 
 
+def test_m11_live_gate_requires_commit_and_dry_run_zero(
+    m11_submit_module: types.ModuleType,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    no_commit = m11_submit_module._parse_args([])
+    monkeypatch.setenv("DRY_RUN", "0")
+    assert m11_submit_module._resolve_dry_run(no_commit) is True
+
+    with_commit = m11_submit_module._parse_args(["--commit"])
+    monkeypatch.delenv("DRY_RUN", raising=False)
+    assert m11_submit_module._resolve_dry_run(with_commit) is True
+    monkeypatch.setenv("DRY_RUN", "1")
+    assert m11_submit_module._resolve_dry_run(with_commit) is True
+    monkeypatch.setenv("DRY_RUN", "0")
+    assert m11_submit_module._resolve_dry_run(with_commit) is False
+
+
 def test_main_commit_checks_s3_before_source_upload(
     m11_submit_module: types.ModuleType,
     monkeypatch: pytest.MonkeyPatch,
@@ -154,6 +171,7 @@ def test_main_commit_checks_s3_before_source_upload(
     monkeypatch.setattr(m11_submit_module, "_boto3", fake_boto3)
     monkeypatch.setattr(m11_submit_module, "upload_source_tar", fake_upload_source_tar)
     monkeypatch.setattr(m11_submit_module, "submit", fake_submit)
+    monkeypatch.setenv("DRY_RUN", "0")
 
     rc = m11_submit_module.main(
         [
@@ -192,6 +210,7 @@ def test_main_commit_aborts_before_upload_when_val_missing(
 
     monkeypatch.setattr(m11_submit_module, "preflight_cost", lambda *_args: 0.0)
     monkeypatch.setattr(m11_submit_module, "_boto3", lambda *_args: s3)
+    monkeypatch.setenv("DRY_RUN", "0")
 
     def fail_upload_source_tar(*_args: Any, **_kwargs: Any) -> str:
         events.append("upload")

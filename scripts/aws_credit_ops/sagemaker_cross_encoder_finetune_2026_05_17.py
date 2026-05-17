@@ -34,7 +34,7 @@ Cost
 
 Constraints
 -----------
-- DRY_RUN default; ``--commit`` for actual create.
+- DRY_RUN default; live submit requires both ``--commit`` and ``DRY_RUN=0``.
 - ``[lane:solo]``.
 - mypy --strict friendly.
 """
@@ -246,10 +246,15 @@ def _resolve_defaults(args: argparse.Namespace) -> None:
         args.source_prefix = source
 
 
+def _resolve_dry_run(args: argparse.Namespace) -> bool:
+    """Live submit requires an explicit CLI flag and an explicit env unlock."""
+    return not (args.commit and os.environ.get("DRY_RUN", "1") == "0")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
     _resolve_defaults(args)
-    dry_run = not args.commit and os.environ.get("DRY_RUN", "1") != "0"
+    dry_run = _resolve_dry_run(args)
 
     mtd = preflight_cost(args.region, args.profile)
     print(f"[preflight] mtd_usd={mtd:.4f} < {HARD_STOP_USD}", file=sys.stderr)

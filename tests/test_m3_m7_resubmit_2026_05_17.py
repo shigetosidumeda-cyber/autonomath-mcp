@@ -111,6 +111,25 @@ def test_m3_build_environment_never_emits_main_revision(
     assert env["CLIP_MODEL_REVISION"] != "main"
 
 
+def test_m3_live_gate_requires_commit_unlock_and_dry_run_zero(
+    m3_module: types.ModuleType,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("DRY_RUN", "0")
+    no_commit = m3_module._parse_args(["--unlock-live-aws-commands"])
+    assert m3_module._resolve_live_commit(no_commit) is False
+    no_unlock = m3_module._parse_args(["--commit"])
+    assert m3_module._resolve_live_commit(no_unlock) is False
+
+    full_cli = m3_module._parse_args(["--commit", "--unlock-live-aws-commands"])
+    monkeypatch.delenv("DRY_RUN", raising=False)
+    assert m3_module._resolve_live_commit(full_cli) is False
+    monkeypatch.setenv("DRY_RUN", "1")
+    assert m3_module._resolve_live_commit(full_cli) is False
+    monkeypatch.setenv("DRY_RUN", "0")
+    assert m3_module._resolve_live_commit(full_cli) is True
+
+
 def test_m3_upload_code_channel_returns_per_job_prefix(m3_module: types.ModuleType) -> None:
     """The upload helper must surface the per-job S3 sub-prefix in meta."""
     args = types.SimpleNamespace(

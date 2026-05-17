@@ -50,7 +50,8 @@ Cost preflight (5-line hard-stop alignment): we sample
 ``ce.get_cost_and_usage`` MTD; ≥ $18,000 aborts before
 ``create_processing_job``.
 
-DRY_RUN default. ``--commit`` triggers the actual SageMaker API call.
+DRY_RUN default. Live submit requires ``--commit``,
+``--unlock-live-aws-commands``, and ``DRY_RUN=0``.
 
 Constraints honoured
 --------------------
@@ -68,6 +69,7 @@ Usage
 
     .venv/bin/python scripts/aws_credit_ops/sagemaker_clip_figure_submit_2026_05_17.py \\
         --ledger data/figure_extract_ledger_2026_05_17.json \\
+        --unlock-live-aws-commands \\
         --commit
 """
 
@@ -276,7 +278,8 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     p.add_argument("--model-revision", default=DEFAULT_MODEL_REVISION)
     p.add_argument("--job-name", default=None)
     p.add_argument("--manifest-out", default="out/aws_credit_jobs/clip_figure_submit_manifest.json")
-    p.add_argument("--commit", action="store_true", help="Lift DRY_RUN guard")
+    p.add_argument("--commit", action="store_true", help="Lift the CLI half of the live guard")
+    p.add_argument("--unlock-live-aws-commands", action="store_true")
     p.add_argument("--verbose", action="store_true")
     args = p.parse_args(argv)
     try:
@@ -284,6 +287,13 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     except argparse.ArgumentTypeError as exc:
         p.error(str(exc))
     return args
+
+
+def _resolve_live_commit(args: argparse.Namespace) -> bool:
+    """Live submit requires CLI intent, operator unlock, and DRY_RUN=0."""
+    return bool(
+        args.commit and args.unlock_live_aws_commands and os.environ.get("DRY_RUN", "1") == "0"
+    )
 
 
 def _stamp_job_name() -> str:
@@ -529,9 +539,10 @@ def main(argv: list[str] | None = None) -> int:
         return 3
 
     job_name = args.job_name or _stamp_job_name()
-    code_key, code_meta = _upload_code_channel(args, job_name, commit=args.commit)
+    live_commit = _resolve_live_commit(args)
+    code_key, code_meta = _upload_code_channel(args, job_name, commit=live_commit)
     code_s3_prefix = str(code_meta["code_s3_prefix"])
-    ledger_uri, ledger_meta = _ensure_ledger_in_s3(args, commit=args.commit)
+    ledger_uri, ledger_meta = _ensure_ledger_in_s3(args, commit=live_commit)
     req = _build_processing_request(
         args,
         job_name=job_name,
@@ -554,13 +565,16 @@ def main(argv: list[str] | None = None) -> int:
         "model_dim": ALLOW_MODELS[args.model_id]["dim"],
         "model_license": ALLOW_MODELS[args.model_id]["license"],
         "create_processing_job_request": req,
-        "committed": bool(args.commit),
+        "committed": live_commit,
+        "requested_commit": bool(args.commit),
+        "unlock_live_aws_commands": bool(args.unlock_live_aws_commands),
+        "dry_run_env": os.environ.get("DRY_RUN", "1"),
     }
-    if args.commit:
+    if live_commit:
         try:
             import boto3
         except ImportError as exc:  # pragma: no cover
-            raise SystemExit(f"boto3 required for --commit: {exc}") from exc
+            raise SystemExit(f"boto3 required for live commit: {exc}") from exc
         session = boto3.Session(profile_name=args.profile)
         sm = session.client("sagemaker", region_name=args.region)
         resp = sm.create_processing_job(**req)
@@ -569,7 +583,10 @@ def main(argv: list[str] | None = None) -> int:
         }
         logger.info("submitted: %s", resp.get("ProcessingJobArn"))
     else:
-        logger.info("DRY_RUN — pass --commit to submit job %s", job_name)
+        logger.info(
+            "DRY_RUN — live submit requires --commit, --unlock-live-aws-commands, and DRY_RUN=0 for %s",
+            job_name,
+        )
 
     Path(args.manifest_out).parent.mkdir(parents=True, exist_ok=True)
     with open(args.manifest_out, "w", encoding="utf-8") as fh:
