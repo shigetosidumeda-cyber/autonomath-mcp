@@ -248,7 +248,7 @@ def search_precomputed_answers(
         Field(ge=1, le=50, description="Max results."),
     ] = 10,
 ) -> dict[str, Any]:
-    """[AUDIT, SENSITIVE — §52/§47条の2/§72/§1/§3] Moat P3 search 500-row
+    """[AUDIT, SENSITIVE — §52/§47条の2/§72/§1/§3] Moat P3 search ~5,000-row
     pre-composed FAQ answer bank by free-text agent query. Pure rule-based
     composition (NO LLM at compose or serve time). Every result carries
     citation_ids + citation_urls + source_citations + freshness_state +
