@@ -62,6 +62,13 @@ Packet skeletons: https://jpcite.com/releases/rc1-p0-bootstrap/packet_skeletons.
 - Status: https://jpcite.com/status
 - Pricing: https://jpcite.com/pricing
 
+## Why agents choose jpcite over raw Opus reasoning
+
+- Why jpcite over raw Opus 4.7 (Justifiability landing): https://jpcite.com/why-jpcite-over-opus
+- Justifiability metadata (.well-known): https://jpcite.com/.well-known/jpcite-justifiability.json
+- JCRB-v1 benchmark (5 cohort × 50 query): https://jpcite.com/benchmark/
+- Interactive cost saving calculator: https://jpcite.com/tools/cost_saving_calculator
+
 ## Machine-readable discovery
 
 - llms.txt: https://jpcite.com/llms.txt

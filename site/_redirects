@@ -245,3 +245,9 @@
 # does an at-edge fetch + CORS injection + rate-limit-hint emission.
 # Do NOT add a `/api/* /v1/* 301` rule here — the Function path is
 # canonical and serves the response inline.
+
+# GG10 (2026-05-17) — Justifiability landing alias.
+# Shorter inbound surface for agents / SEO / social.
+# Bare /why is the canonical agent-facing short-link in llms.txt and
+# .well-known/jpcite-justifiability.json discovery.
+/why  /why-jpcite-over-opus  301
