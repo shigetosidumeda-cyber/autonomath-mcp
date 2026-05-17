@@ -134,7 +134,7 @@ def test_m3_embedder_pins_transformers_compatible_with_torch_2_0(
 ) -> None:
     """The inline embedder must pin transformers to a torch-2.0-compatible release."""
     assert "transformers==4.36.2" in m3_module.EMBEDDER_SCRIPT
-    assert "torchvision==0.15.2" in m3_module.EMBEDDER_SCRIPT
+    assert "torchvision==0.15.1" in m3_module.EMBEDDER_SCRIPT
 
 
 def test_m3_embedder_uses_manual_torchvision_pixel_values(m3_module: types.ModuleType) -> None:
@@ -145,6 +145,24 @@ def test_m3_embedder_uses_manual_torchvision_pixel_values(m3_module: types.Modul
     assert "AutoImageProcessor" not in m3_module.EMBEDDER_SCRIPT
     assert "japanese_clip" not in m3_module.EMBEDDER_SCRIPT
     assert "git+https://github.com" not in m3_module.EMBEDDER_SCRIPT
+
+
+def test_m3_embedder_passes_ledger_metadata_required_by_ingest(
+    m3_module: types.ModuleType,
+) -> None:
+    """Embedding rows must remain ingestable without a second ledger join."""
+    required_keys = {
+        '"s3_key"',
+        '"bbox_x"',
+        '"bbox_y"',
+        '"bbox_w"',
+        '"bbox_h"',
+        '"caption_quote_span"',
+        '"figure_kind"',
+    }
+    for key in required_keys:
+        assert key in m3_module.EMBEDDER_SCRIPT
+    assert "missing ledger metadata" in m3_module.EMBEDDER_SCRIPT
 
 
 # ---------- M7 fix gating ---------------------------------------------------
@@ -233,6 +251,17 @@ def test_m7_live_gate_requires_flags_and_dry_run_zero(
     assert m7_module._resolve_dry_run(no_unlock) is True
     no_commit = m7_module._parse_args(["--unlock-live-aws-commands"])
     assert m7_module._resolve_dry_run(no_commit) is True
+
+
+def test_m7_docs_name_dry_run_zero_live_gate(m7_module: types.ModuleType) -> None:
+    """The runbook must not imply flags alone submit live KG jobs."""
+    script_doc = m7_module.__doc__ or ""
+    runbook = (REPO_ROOT / "docs/_internal/AWS_SEVEN_DAY_BURN_RAMP_2026_05_17.md").read_text()
+    assert "DRY_RUN=0" in script_doc
+    assert (
+        "DRY_RUN=0 .venv/bin/python -m scripts.aws_credit_ops.sagemaker_kg_completion_submit_2026_05_17"
+        in runbook
+    )
 
 
 def test_m7_training_entry_accepts_dash_and_underscore_hyperparameters(

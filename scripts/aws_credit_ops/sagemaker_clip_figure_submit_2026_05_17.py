@@ -18,8 +18,8 @@ script submits a SageMaker **Processing Job** that:
      * pairs each embedding with its sidecar caption (read from the
        ledger JSON, also mounted as a /opt/ml/processing/input/ledger/
        channel),
-     * writes a JSONL stream of
-       ``{figure_id, embedding: [512 floats], caption}`` records to
+     * writes a JSONL stream of ledger-compatible
+       ``{figure_id, s3_key, bbox_*, embedding: [512 floats], caption}`` records to
        ``figure_embeddings/part-####.jsonl`` in the derived bucket.
 
 The Processing Job is preferred over a Batch Transform here because:
@@ -151,7 +151,7 @@ EMBEDDER_SCRIPT = textwrap.dedent(
     except ImportError:
         os.system(
             f"{sys.executable} -m pip install --quiet "
-            "'transformers==4.36.2' 'torchvision==0.15.2' pillow"
+            "'transformers==4.36.2' 'torchvision==0.15.1' pillow"
         )
         from transformers import AutoModel
         from torchvision import transforms
@@ -214,14 +214,24 @@ EMBEDDER_SCRIPT = textwrap.dedent(
             rel_key = png_path.relative_to(INPUT_DIR).as_posix()
             ledger_key = f"figures_raw/{rel_key}"
             meta = captions.get(ledger_key, {})
+            if not meta:
+                print(f"skip {png_path}: missing ledger metadata for {ledger_key}")
+                continue
             buffer.append({
                 "figure_id": meta.get("figure_id") or f"fig_{rel_key.replace('/', '_')}",
+                "s3_key": meta.get("s3_key") or ledger_key,
                 "embedding": vec,
                 "caption": meta.get("caption", ""),
+                "caption_quote_span": meta.get("caption_quote_span"),
                 "pdf_sha256": meta.get("pdf_sha256"),
                 "source_url": meta.get("source_url"),
                 "page_no": meta.get("page_no"),
                 "figure_idx": meta.get("figure_idx"),
+                "bbox_x": meta.get("bbox_x"),
+                "bbox_y": meta.get("bbox_y"),
+                "bbox_w": meta.get("bbox_w"),
+                "bbox_h": meta.get("bbox_h"),
+                "figure_kind": meta.get("figure_kind", "unknown"),
                 "embedding_model": MODEL_ID,
                 "embedding_dim": len(vec),
             })

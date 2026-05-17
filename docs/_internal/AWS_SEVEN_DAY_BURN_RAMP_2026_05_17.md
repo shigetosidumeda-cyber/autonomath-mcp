@@ -113,9 +113,12 @@ Per memory `feedback_aws_canary_hard_stop_5_line_defense`:
   --commit --unlock-live-aws-commands
 .venv/bin/python -m scripts.aws_credit_ops.sagemaker_multitask_finetune_2026_05_17 \
   --commit --unlock-live-aws-commands
-.venv/bin/python -m scripts.aws_credit_ops.sagemaker_kg_completion_submit_2026_05_17 \
+DRY_RUN=0 .venv/bin/python -m scripts.aws_credit_ops.sagemaker_kg_completion_submit_2026_05_17 \
   --commit --unlock-live-aws-commands
 ```
+
+M7 KG completion intentionally requires the additional `DRY_RUN=0`
+environment gate; without it, the submitter emits a dry-run ledger only.
 
 ### Step 3: Deploy cron orchestrator (follow-on)
 
