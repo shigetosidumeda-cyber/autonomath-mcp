@@ -9685,6 +9685,7 @@ if settings.autonomath_enabled:
         from jpintel_mcp.mcp import (
             autonomath_tools,  # noqa: E402, F401
             moat_lane_tools,  # noqa: E402, F401
+            products,  # noqa: E402, F401
         )
     finally:
         mcp.tool = _orig_mcp_tool  # type: ignore[method-assign]
