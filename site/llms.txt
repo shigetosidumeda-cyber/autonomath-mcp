@@ -108,3 +108,16 @@ Cost comparison rule of thumb: long-document AI cost is driven by raw document t
 
 - Japanese canonical index: https://jpcite.com/llms.txt
 - English index: https://jpcite.com/llms.en.txt
+
+<!-- A7-products-start -->
+
+## A7 products (5 cohort packs)
+- A1 Tax-Firm Monthly Review & Program Audit Pack (Tax-Firm) — https://jpcite.com/products/A1_zeirishi_monthly_pack.html · persona https://jpcite.com/for/zeirishi.html · compare https://jpcite.com/compare/zeirishi.html
+- A2 CPA Audit Workpaper Scaffold Pack (CPA-Firm) — https://jpcite.com/products/A2_cpa_audit_workpaper_pack.html · persona https://jpcite.com/for/kaikei.html · compare https://jpcite.com/compare/kaikei.html
+- A3 Administrative-Scrivener Licensing Eligibility Pack (Administrative-Scrivener) — https://jpcite.com/products/A3_gyosei_licensing_eligibility_pack.html · persona https://jpcite.com/for/gyoseishoshi.html · compare https://jpcite.com/compare/gyoseishoshi.html
+- A4 Judicial-Scrivener Registry Watch Pack (Judicial-Scrivener) — https://jpcite.com/products/A4_shihoshoshi_registry_watch.html · persona https://jpcite.com/for/shihoshoshi.html · compare https://jpcite.com/compare/shihoshoshi.html
+- A5 SME Subsidy Companion (SME-Owner) — https://jpcite.com/products/A5_sme_subsidy_companion.html · persona https://jpcite.com/for/sme.html · compare https://jpcite.com/compare/sme.html
+
+Pricing reminder: each packet is one billable unit (¥3 ex-tax, ¥3.30 tax-included). No tier SKUs. Anonymous 3 req/day per IP free.
+
+<!-- A7-products-end -->

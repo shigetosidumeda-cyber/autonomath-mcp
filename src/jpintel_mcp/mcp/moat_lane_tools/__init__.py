@@ -42,6 +42,7 @@ _SUBMODULES: tuple[str, ...] = (
     "moat_n7_segment",
     "moat_n8_recipe",
     "moat_n9_placeholder",
+    "he1_full_context",
     "he2_workpaper",
     "he3_briefing_pack",
     "he4_orchestrate",
