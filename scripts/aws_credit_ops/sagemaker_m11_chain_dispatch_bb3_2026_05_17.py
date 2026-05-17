@@ -12,8 +12,9 @@ Incremental BB3 burn vs the 5-iter chain: 15 iters × $16 = $240 plus
 distill v2 (~$47) = **~$287** — comfortably inside the Never-Reach
 $19,490 envelope.
 
-Sequence (each row fires only after the prior one ends Completed /
-Failed; ``--start-iter`` lets you resume from a partially-burned chain):
+Sequence (each row fires only after the prior one ends Completed.
+Failed / Stopped prior jobs halt the chain; ``--start-iter`` lets you
+resume from a partially-burned chain after the failure is fixed):
 
     1..N. al_iter_{S..N}    (S = ``--start-iter``, N = ``--max-iter``)
     N+1.  distill            (after final AL iter)
@@ -108,6 +109,11 @@ def fire_one(stage: str, *, commit: bool, iter_n: int = 0) -> str:
     return ""
 
 
+def _write_ledger(path: str, ledger: list[dict[str, Any]]) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_text(json.dumps(ledger, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Lane M11 BB3 sequential chain dispatcher.")
     p.add_argument(
@@ -172,6 +178,34 @@ def main(argv: list[str] | None = None) -> int:
     cur_job = args.first_job
     for stage, n in chain:
         status = wait_for_terminal(cur_job, profile=args.profile, region=args.region)
+        if status != "Completed":
+            ledger.append(
+                {
+                    "stage": stage,
+                    "iter": n,
+                    "prior_job": cur_job,
+                    "prior_status": status,
+                    "new_job": "",
+                    "halted": True,
+                    "reason": "prior job did not complete; refusing to fire next M11 stage",
+                    "fired_at": dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z"),
+                }
+            )
+            _write_ledger(args.ledger, ledger)
+            print(
+                json.dumps(
+                    {
+                        "ok": False,
+                        "halted": True,
+                        "ledger": args.ledger,
+                        "prior_job": cur_job,
+                        "prior_status": status,
+                    },
+                    ensure_ascii=False,
+                    indent=2,
+                )
+            )
+            return 2
         print(f"[chain] prior {cur_job} -> {status}; firing {stage} iter={n}", flush=True)
         new_job = fire_one(stage, commit=args.commit, iter_n=n)
         ledger.append(
@@ -184,14 +218,11 @@ def main(argv: list[str] | None = None) -> int:
                 "fired_at": dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z"),
             }
         )
-        Path(args.ledger).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.ledger).write_text(
-            json.dumps(ledger, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
+        _write_ledger(args.ledger, ledger)
         cur_job = new_job or cur_job
     final_status = wait_for_terminal(cur_job, profile=args.profile, region=args.region)
     ledger.append({"final_job": cur_job, "final_status": final_status})
-    Path(args.ledger).write_text(json.dumps(ledger, ensure_ascii=False, indent=2), encoding="utf-8")
+    _write_ledger(args.ledger, ledger)
     print(
         json.dumps(
             {"ok": True, "ledger": args.ledger, "final_status": final_status},

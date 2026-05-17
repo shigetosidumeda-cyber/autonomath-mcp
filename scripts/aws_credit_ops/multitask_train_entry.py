@@ -36,7 +36,7 @@ import random
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 logger = logging.getLogger("multitask_train")
 
@@ -178,7 +178,7 @@ def main(argv: list[str] | None = None) -> int:
             max_length=args.max_length,
             return_tensors="pt",
         )
-        out: dict[str, Any] = {"task": task, "encoding": {k: v.to(device) for k, v in enc.items()}}
+        out: dict[str, Any] = {"task": task, "encoding": enc}
         if task == "ner":
             # NER labels per-token; aligned to the same max_length.
             ner_labels = []
@@ -188,14 +188,14 @@ def main(argv: list[str] | None = None) -> int:
                 seq_len = out["encoding"]["input_ids"].shape[1]
                 lbl = (lbl[:seq_len] + [-100] * max(0, seq_len - len(lbl)))[:seq_len]
                 ner_labels.append(lbl)
-            out["labels"] = torch.tensor(ner_labels, dtype=torch.long, device=device)
+            out["labels"] = torch.tensor(ner_labels, dtype=torch.long)
         elif task == "rel":
             out["labels"] = torch.tensor(
-                [int(b.get("rel_label", 0)) for b in batch], dtype=torch.long, device=device
+                [int(b.get("rel_label", 0)) for b in batch], dtype=torch.long
             )
         elif task == "rank":
             out["labels"] = torch.tensor(
-                [float(b.get("rank_score", 0.0)) for b in batch], dtype=torch.float, device=device
+                [float(b.get("rank_score", 0.0)) for b in batch], dtype=torch.float
             )
         # mlm: handled by DataCollatorForLanguageModeling below.
         return out
@@ -210,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
         batch_size=args.batch_size,
         shuffle=True,
         collate_fn=collate,
-        num_workers=2,
+        num_workers=0,
         pin_memory=False,
     )
     val_loader = DataLoader(
@@ -218,7 +218,7 @@ def main(argv: list[str] | None = None) -> int:
         batch_size=args.batch_size,
         shuffle=False,
         collate_fn=collate,
-        num_workers=2,
+        num_workers=0,
         pin_memory=False,
     )
 
@@ -231,7 +231,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     optimizer = torch.optim.AdamW(params, lr=args.lr, weight_decay=0.01)
     total_steps = max(1, len(train_loader)) * max(1, args.epochs)
-    scheduler = get_linear_schedule_with_warmup(
+    scheduler = cast("Any", get_linear_schedule_with_warmup)(
         optimizer,
         num_warmup_steps=int(0.06 * total_steps),
         num_training_steps=total_steps,
@@ -263,19 +263,25 @@ def main(argv: list[str] | None = None) -> int:
                     mlm_inputs["labels"].view(-1),
                 )
             elif task == "ner":
+                enc = {k: v.to(device) for k, v in enc.items()}
+                labels = batch["labels"].to(device)
                 outputs = encoder(**enc)
                 logits = ner_head(outputs.last_hidden_state)
-                loss = ce(logits.view(-1, args.num_ner_labels), batch["labels"].view(-1))
+                loss = ce(logits.view(-1, args.num_ner_labels), labels.view(-1))
             elif task == "rel":
+                enc = {k: v.to(device) for k, v in enc.items()}
+                labels = batch["labels"].to(device)
                 outputs = encoder(**enc)
                 cls = outputs.last_hidden_state[:, 0, :]
                 logits = rel_head(cls)
-                loss = ce(logits, batch["labels"])
+                loss = ce(logits, labels)
             elif task == "rank":
+                enc = {k: v.to(device) for k, v in enc.items()}
+                labels = batch["labels"].to(device)
                 outputs = encoder(**enc)
                 cls = outputs.last_hidden_state[:, 0, :]
                 score = rank_head(cls).squeeze(-1)
-                loss = mse(score, batch["labels"])
+                loss = mse(score, labels)
             else:
                 continue
 
