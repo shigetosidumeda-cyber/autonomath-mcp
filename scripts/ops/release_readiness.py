@@ -391,6 +391,62 @@ def check_preflight_script_exists(repo_root: Path) -> Check:
     )
 
 
+def check_workflow_targets_full_drift(repo_root: Path) -> Check:
+    """HARNESS-H4: row-level drift between declared workflow targets and the
+    git-tracked test/script tree.
+
+    The existing ``check_workflow_targets_git_tracked`` check verifies that
+    every path declared inside ``test.yml`` / ``release.yml`` env blocks is
+    currently tracked by git. It does NOT detect the inverse drift — newly
+    added test files that have not yet been wired into the workflow env
+    lists. That second drift class is what ``sync_workflow_targets_verify.py``
+    reports as ``[FAIL] N drift row(s) detected.`` and is the gap caught
+    during the 2026-05-17 harness audit (release_readiness 9/9 PASS while
+    target-sync reported 120 missing entries).
+
+    This check shells out to the existing verify script in ``--check`` mode
+    and treats any drift row as a failure. The script is read-only (stdlib
+    + ``git ls-files`` only) so the check honours the script-wide "no
+    network, no mutation" contract.
+    """
+    verifier = repo_root / "scripts" / "ops" / "sync_workflow_targets_verify.py"
+    if not verifier.exists():
+        # The verify script ships as part of DEEP-57. When running against a
+        # synthetic seed repo (release-readiness unit tests) the verifier is
+        # not present — degrade to PASS rather than forcing every test fixture
+        # to bundle it. The git-tracked check above already covers the
+        # forward-direction drift class.
+        return _pass(
+            "workflow_targets_full_drift",
+            "sync_workflow_targets_verify.py not present in this tree; skipping full drift probe.",
+            [str(verifier.relative_to(repo_root))],
+        )
+    result = subprocess.run(
+        ["python3", str(verifier), "--check"],
+        cwd=str(repo_root),
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        return _pass(
+            "workflow_targets_full_drift",
+            "sync_workflow_targets_verify.py --check reports zero drift rows.",
+            ["scripts/ops/sync_workflow_targets_verify.py --check"],
+        )
+    tail_lines = [line for line in result.stdout.splitlines() if line.strip()][-3:]
+    evidence = ["scripts/ops/sync_workflow_targets_verify.py --check"] + tail_lines
+    return _fail(
+        "workflow_targets_full_drift",
+        (
+            "Declared workflow targets do not match the git-tracked tree. "
+            "Run scripts/ops/sync_workflow_targets.py --apply locally and "
+            "commit the result before deploy."
+        ),
+        evidence,
+    )
+
+
 def check_release_readiness_tests_exist(repo_root: Path) -> Check:
     if not _exists(repo_root, RELEASE_READINESS_TEST):
         return _fail(
@@ -427,6 +483,7 @@ def run_checks(repo_root: Path) -> list[Check]:
         check_pytest_targets_synced(repo_root),
         check_ruff_targets_synced(repo_root),
         check_workflow_targets_git_tracked(repo_root),
+        check_workflow_targets_full_drift(repo_root),
         check_release_format_gate_present(repo_root),
         check_deploy_seed_gate_matches_entrypoint(repo_root),
         check_deploy_preflight_gate_present(repo_root),

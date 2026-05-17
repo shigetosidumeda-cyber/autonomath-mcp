@@ -144,7 +144,7 @@ def test_build_report_passes_for_release_ready_repo(tmp_path):
     report = module.build_report(tmp_path)
 
     assert report["ok"] is True
-    assert report["summary"] == {"pass": 9, "fail": 0, "total": 9}
+    assert report["summary"] == {"pass": 10, "fail": 0, "total": 10}
     assert report["issues"] == []
 
 
@@ -258,6 +258,21 @@ def test_build_report_flags_untracked_workflow_targets(tmp_path):
         ".github/workflows/test.yml env.PYTEST_TARGETS, "
         ".github/workflows/release.yml env.PYTEST_TARGETS"
     ]
+
+
+def test_workflow_targets_full_drift_skips_when_verifier_missing(tmp_path):
+    """HARNESS-H4 (Wave 51, 2026-05-17): the new full-drift check must not
+    explode when the verify script is absent — that is the synthetic seed
+    case. It must degrade to PASS and leave the existing forward-direction
+    check (workflow_targets_git_tracked) to catch the inverse drift."""
+
+    module = _load_module()
+    _seed_ready_repo(tmp_path)
+
+    check = module.check_workflow_targets_full_drift(tmp_path)
+
+    assert check.status == "PASS"
+    assert "sync_workflow_targets_verify.py" in check.evidence[0]
 
 
 def test_main_warn_only_exits_zero_on_failure(tmp_path, capsys):
