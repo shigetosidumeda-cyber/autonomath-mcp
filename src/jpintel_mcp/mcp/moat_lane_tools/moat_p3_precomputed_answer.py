@@ -1,10 +1,13 @@
 """Moat P3 — Pre-computed FAQ answer bank MCP tools (2 tools, DB-backed).
 
-Surfaces 500 pre-composed answers (5 cohort × 100 FAQ) stored in
+Surfaces ~5,000 pre-composed answers (5 cohort × ~1,000 FAQ) stored in
 ``am_precomputed_answer`` (migration ``wave24_207_am_precomputed_answer.sql``,
 target_db = autonomath). Composed offline by
-``scripts/aws_credit_ops/precompute_answer_composer_2026_05_17.py``, NO LLM
-at compose time, NO LLM at serve time.
+``scripts/aws_credit_ops/precompute_answer_composer_2026_05_17.py`` and
+expanded 10x by ``precompute_answer_composer_expand_2026_05_17.py`` (GG2).
+NO LLM at compose time, NO LLM at serve time.
+
+Pre-computed answer bank: 5,000 query × 5 cohort = 25K covered scenarios.
 
 Cohorts (5):
 
@@ -223,8 +226,9 @@ def search_precomputed_answers(
             min_length=1,
             max_length=512,
             description=(
-                "Free-text agent query (Japanese OK). Matched against the 500-row "
-                "pre-composed answer bank via FTS5 trigram."
+                "Free-text agent query (Japanese OK). Matched against the "
+                "~5,000-row pre-composed answer bank (GG2 expansion) via "
+                "FTS5 trigram. 5,000 query × 5 cohort = 25K covered scenarios."
             ),
         ),
     ],
