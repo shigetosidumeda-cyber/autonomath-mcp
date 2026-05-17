@@ -1,0 +1,17 @@
+# HE-5 / HE-6 cohort-specific MCP tool fragment manifest.
+#
+# Discovered by `_he_cohort_bootstrap.py` on package import. Each entry
+# names a Python package whose import side-effect registers MCP tools
+# via the `@mcp.tool` decorator. New cohort tool families: single-line
+# edit here.
+fragments:
+  - package: he5_cohort_deep
+    description: "HE-5 cohort-specific deep (D-tier ¥30 × 5 cohort = 5 tools)"
+    units_per_call: 10
+    yen_per_call: 30
+    tier: D
+  - package: he6_cohort_ultra
+    description: "HE-6 cohort ultra-deep + hand-off (D+-tier ¥100 × 5 cohort = 5 tools)"
+    units_per_call: 33
+    yen_per_call: 100
+    tier: D+

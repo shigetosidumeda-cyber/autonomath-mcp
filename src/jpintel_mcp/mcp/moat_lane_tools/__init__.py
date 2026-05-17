@@ -47,6 +47,9 @@ _SUBMODULES: tuple[str, ...] = (
     "he3_briefing_pack",
     "he4_orchestrate",
     "cohort_lora_router",
+    # _he_cohort_bootstrap reads ``he_cohort_fragment.yaml`` and discovers
+    # HE-5 / HE-6 cohort-specific packages. [GG1 2026-05-17]
+    "_he_cohort_bootstrap",
 )
 
 for _name in _SUBMODULES:

@@ -1,6 +1,6 @@
 # GG1 — Heavy Endpoint HE-5 + HE-6 cohort-differentiated (2026-05-17)
 
-**[lane:solo]** — spec only, FF5 で実装.
+**[lane:solo]** — LANDED 2026-05-17. 10 MCP endpoints + fragment-file loader + 53 tests.
 
 ## 1. Goal
 
