@@ -274,58 +274,152 @@ def _http_get(url: str) -> bytes:
 
 
 class _MofLinkParser(HTMLParser):
-    """Walks <a href="..."> on the MOF list page.
+    """Walks the MOF list page.
 
-    The MOF page is a plain table — every per-country entry is an <a>
-    pointing at a /tax_convention/<country>/... PDF or per-country .htm.
-    We capture (link_text, href) pairs and downstream code resolves them
-    to ISO codes via COUNTRY_LOOKUP.
+    The MOF 租税条約一覧 page evolved: country names now live in <th>
+    headings inside table rows, while the per-row <a> elements contain
+    only generic labels like "和文" / "英文" / "概要". To bridge the two we
+    track the most recent <th> heading and emit (heading_text, href)
+    pairs for every subsequent <a> inside the same row.
+
+    We still also keep the legacy (link_text, href) pairs so the
+    downstream country-resolver can fall back to anchor-text matching
+    (used by older MOF layouts and by the offline smoke fixture).
     """
+
+    _ROW_BOUNDARY_TAGS = {"tr", "table"}
 
     def __init__(self) -> None:
         super().__init__()
         self.pairs: list[tuple[str, str]] = []
         self._current_href: str | None = None
         self._current_text: list[str] = []
+        # Track current <th> text and the most recent <th> seen in the row
+        self._in_th: bool = False
+        self._th_text: list[str] = []
+        self._row_heading: str | None = None
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        if tag.lower() == "a":
+        t = tag.lower()
+        if t in self._ROW_BOUNDARY_TAGS:
+            # New row → reset the row heading scope
+            self._row_heading = None
+        if t == "th":
+            self._in_th = True
+            self._th_text = []
+        if t == "a":
             attrs_d = dict(attrs)
             self._current_href = attrs_d.get("href")
             self._current_text = []
 
     def handle_data(self, data: str) -> None:
+        if self._in_th:
+            self._th_text.append(data)
         if self._current_href is not None:
             self._current_text.append(data)
 
     def handle_endtag(self, tag: str) -> None:
-        if tag.lower() == "a" and self._current_href is not None:
-            text = "".join(self._current_text).strip()
-            if text and self._current_href:
-                self.pairs.append((text, self._current_href))
+        t = tag.lower()
+        if t == "th" and self._in_th:
+            th_text = "".join(self._th_text).strip()
+            if th_text:
+                self._row_heading = th_text
+            self._in_th = False
+            self._th_text = []
+        if t == "a" and self._current_href is not None:
+            anchor_text = "".join(self._current_text).strip()
+            href = self._current_href
+            # Emit anchor-text pair (legacy)
+            if anchor_text and href:
+                self.pairs.append((anchor_text, href))
+            # Emit row-heading pair (new MOF layout)
+            if self._row_heading and href:
+                self.pairs.append((self._row_heading, href))
             self._current_href = None
             self._current_text = []
 
 
 def discover_country_pdfs(index_url: str = MOF_INDEX_URL) -> dict[str, str]:
-    """Return dict[country_iso → pdf_url] discovered from the MOF index."""
+    """Return dict[country_iso → pdf_url] discovered from the MOF index.
+
+    Resolution strategy (most-precise → fallback):
+    1. PDF filename English keyword match (e.g. ``SynthesizedTextforJapan_Italy_JP.pdf``)
+       — modern MOF layout (2024+) embeds the country name in the URL path.
+    2. Anchor text Japanese name match (legacy MOF layout).
+    3. Row-heading Japanese name match (emitted by ``_MofLinkParser`` for
+       table-structured pages).
+    """
     body = _http_get(index_url).decode("utf-8", errors="replace")
     parser = _MofLinkParser()
     parser.feed(body)
 
+    # Build reverse lookup: english_canonical → iso, e.g. "italy" → "IT".
+    # Strip non-alnum, lowercase, also keep first-word (e.g. "United_States" → "united")
+    en_to_iso: dict[str, str] = {}
+    for _ja, (iso, en) in COUNTRY_LOOKUP.items():
+        en_key = re.sub(r"[^a-z0-9]", "", en.lower())
+        en_to_iso[en_key] = iso
+        # First-word key (so "UnitedStates" matches "United States" lookup target,
+        # and "Korea" matches "Republic of Korea")
+        first_word = re.sub(r"[^a-z0-9]", "", en.lower().split()[0])
+        en_to_iso.setdefault(first_word, iso)
+    # Hand-curated PDF-filename aliases (single-word EN identifiers used by MOF
+    # that don't collide with the long-form ISO name).
+    en_to_iso.setdefault("uk", "GB")
+    en_to_iso.setdefault("us", "US")
+    en_to_iso.setdefault("usa", "US")
+    en_to_iso.setdefault("korea", "KR")
+    en_to_iso.setdefault("hongkong", "HK")
+    en_to_iso.setdefault("uae", "AE")
+    en_to_iso.setdefault("czech", "CZ")
+    en_to_iso.setdefault("czechrepublic", "CZ")
+    en_to_iso.setdefault("china", "CN")
+    en_to_iso.setdefault("netherlands", "NL")
+
     out: dict[str, str] = {}
+    seen_pairs: set[tuple[str, str]] = set()
     for text, href in parser.pairs:
-        # Normalise whitespace
-        norm = re.sub(r"\s+", "", text)
-        # Try to match country name (longest first to avoid 韓国/北朝鮮 collisions)
-        for ja_name in sorted(COUNTRY_LOOKUP, key=len, reverse=True):
-            if ja_name in norm:
-                iso, _ = COUNTRY_LOOKUP[ja_name]
-                # Prefer PDF; otherwise keep the .htm as a fallback
-                full_url = urljoin(index_url, href)
-                if iso not in out or full_url.lower().endswith(".pdf"):
-                    out[iso] = full_url
-                break
+        # Pairs may contain leading/trailing whitespace inside the href attribute
+        href_clean = href.strip()
+        if (text, href_clean) in seen_pairs:
+            continue
+        seen_pairs.add((text, href_clean))
+        full_url = urljoin(index_url, href_clean)
+
+        # Strategy 1: match by PDF filename English keyword
+        iso_match: str | None = None
+        url_lower = full_url.lower()
+        if "tax_convention/" in url_lower and (
+            url_lower.endswith(".pdf") or url_lower.endswith(".htm")
+        ):
+            # Extract the basename keyword (between last slash and underscore/extension)
+            tail = url_lower.rsplit("/", 1)[-1]
+            # Strip leading digits/date prefix and the extension; keep alpha tokens
+            tokens = re.findall(r"[a-z]{3,}", tail)
+            for tok in tokens:
+                if tok in en_to_iso:
+                    iso_match = en_to_iso[tok]
+                    break
+
+        # Strategy 2 + 3: anchor text / row heading match (legacy + table layout)
+        if iso_match is None:
+            norm = re.sub(r"\s+", "", text)
+            for ja_name in sorted(COUNTRY_LOOKUP, key=len, reverse=True):
+                if ja_name in norm:
+                    iso_match, _ = COUNTRY_LOOKUP[ja_name]
+                    break
+
+        if iso_match is None:
+            continue
+        # Prefer PDF; otherwise keep .htm fallback. Don't overwrite a PDF with
+        # an .htm summary page.
+        existing = out.get(iso_match)
+        if (
+            existing is None
+            or full_url.lower().endswith(".pdf")
+            and not existing.lower().endswith(".pdf")
+        ):
+            out[iso_match] = full_url
     return out
 
 
