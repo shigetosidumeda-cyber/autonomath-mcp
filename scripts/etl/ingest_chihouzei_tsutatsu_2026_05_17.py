@@ -44,7 +44,8 @@ DEFAULT_CRAWL_RUN_ID: Final = "etl_g1_nta_manifest_2026_05_17"
 
 PRIMARY_HOST_REGEX: Final = re.compile(
     r"^https?://(?:[a-z0-9-]+\.)*"
-    r"(?:pref\.[a-z-]+\.jp|"
+    r"(?:pref\.[a-z-]+\.lg\.jp|"
+    r"pref\.[a-z-]+\.jp|"
     r"city\.[a-z-]+\.[a-z-]+\.jp|"
     r"city\.[a-z-]+\.jp|"
     r"town\.[a-z-]+\.[a-z-]+\.jp|"
