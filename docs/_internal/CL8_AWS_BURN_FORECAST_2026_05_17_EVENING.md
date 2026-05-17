@@ -231,3 +231,11 @@ No PUT / POST / DELETE / modify calls were made.
 - Top ROI: **CL7 migration apply 5** (zero-cost unlocks 6 MCP tools).
 
 Filed by `lane:solo` audit. Apply lanes for AA1+AA2 Textract, M5 rescue, and migration apply are separate decisions and out of scope for this snapshot.
+
+---
+
+## 14. Provenance correction (commit ledger)
+
+The first write of this file at 21:56 JST was bundled into commit `222d931dd6` ("docs(brief): operator full-state SOT 2026-05-17 evening") by a `pre-commit` stash race with a parallel `lane:solo` agent working on `OPERATOR_BRIEF_2026_05_17_EVENING.md`. The bundled content was byte-identical to the planned CL8 output, but the commit subject did not reflect CL8 authorship. This section is appended in a follow-up commit to establish the canonical CL8 record under the correct subject `docs(aws): burn forecast + state snapshot 2026-05-17 evening`.
+
+No content above §13 was altered between the two commits.
