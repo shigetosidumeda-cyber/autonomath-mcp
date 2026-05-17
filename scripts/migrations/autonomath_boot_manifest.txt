@@ -410,3 +410,12 @@
 # boot. NO LLM SDK/API; cache is populated by deterministic SQLite
 # projection and preserves live REST/MCP compose billing behavior.
 289_audit_workpaper_v2.sql
+
+# 2026-05-17 Niche Moat Lane N9 — D1 audit fix. Creates
+# am_placeholder_mapping (~207 canonical placeholder rows, mapping each
+# {{TOKEN}} to the deterministic MCP tool + args_template + output_path
+# that resolves it). Backs jpintel_mcp.mcp.moat_lane_tools
+# .moat_n9_placeholder.resolve_placeholder. Idempotent CREATE * IF NOT
+# EXISTS with value_kind / license / is_sensitive CHECKs, 3 indexes, and
+# 1 aggregate view. Pure additive; boot-time safe. NO LLM SDK/API.
+wave24_206_am_placeholder_mapping.sql
