@@ -9711,11 +9711,13 @@ if settings.autonomath_enabled:
     # mismatch. See docs/_internal/HARNESS_H7_H8_2026_05_17.md.
     try:
         from jpintel_mcp.mcp.jpcite_resources import register_jpcite_resources
+
         register_jpcite_resources(mcp)
     except Exception as _jpcite_res_exc:  # pragma: no cover — non-fatal
         logger.warning("jpcite_resources registration skipped: %r", _jpcite_res_exc)
     try:
         from jpintel_mcp.mcp.jpcite_prompts import register_jpcite_prompts
+
         register_jpcite_prompts(mcp)
     except Exception as _jpcite_pro_exc:  # pragma: no cover — non-fatal
         logger.warning("jpcite_prompts registration skipped: %r", _jpcite_pro_exc)

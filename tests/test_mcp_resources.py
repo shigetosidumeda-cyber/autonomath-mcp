@@ -327,6 +327,7 @@ def test_legacy_static_tools_still_registered(fresh_mcp):
     ):
         assert legacy in tool_names, f"legacy tool {legacy} accidentally removed"
 
+
 # ---------------------------------------------------------------------------
 # Harness H8 P1.2 — mcp://jpcite/* resources + prompts.
 # ---------------------------------------------------------------------------

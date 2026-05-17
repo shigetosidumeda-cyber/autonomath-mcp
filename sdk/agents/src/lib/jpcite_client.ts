@@ -78,13 +78,16 @@ class Jpcite {
     return this.fetch<Law>("GET", `/v1/laws/${encodeURIComponent(id)}`);
   }
   getLawArticle(lawId: string, art: string): Promise<LawArticle> {
-    return this.fetch<LawArticle>("GET", `/v1/laws/${encodeURIComponent(lawId)}/articles/${encodeURIComponent(art)}`);
+    // Harness H6 (2026-05-17): canonical article route is under /v1/en/laws (e-Gov 英訳 / migration 090).
+    return this.fetch<LawArticle>("GET", `/v1/en/laws/${encodeURIComponent(lawId)}/articles/${encodeURIComponent(art)}`);
   }
   searchEnforcement(p: EnforcementSearchParams = {}): Promise<EnforcementSearchResponse> {
-    return this.fetch<EnforcementSearchResponse>("GET", `/v1/enforcements/search?${new URLSearchParams(p as any).toString()}`);
+    // Harness H6 (2026-05-17): canonical route uses hyphenated /v1/enforcement-cases.
+    return this.fetch<EnforcementSearchResponse>("GET", `/v1/enforcement-cases/search?${new URLSearchParams(p as any).toString()}`);
   }
   getEnforcement(id: string): Promise<Enforcement> {
-    return this.fetch<Enforcement>("GET", `/v1/enforcements/${encodeURIComponent(id)}`);
+    // Harness H6 (2026-05-17): canonical route uses hyphenated /v1/enforcement-cases.
+    return this.fetch<Enforcement>("GET", `/v1/enforcement-cases/${encodeURIComponent(id)}`);
   }
   checkExclusions(houjinBangou: string, programId: string): Promise<ExclusionCheckResponse> {
     // Harness H6 (2026-05-17): canonical route is POST /v1/exclusions/check.
@@ -95,7 +98,8 @@ class Jpcite {
     );
   }
   searchTaxIncentives(p: TaxIncentiveSearchParams = {}): Promise<TaxIncentiveSearchResponse> {
-    return this.fetch<TaxIncentiveSearchResponse>("GET", `/v1/tax-incentives/search?${new URLSearchParams(p as any).toString()}`);
+    // Harness H6 (2026-05-17): canonical autonomath surface; legacy /v1/tax-incentives/search did not exist.
+    return this.fetch<TaxIncentiveSearchResponse>("GET", `/v1/am/tax_incentives?${new URLSearchParams(p as any).toString()}`);
   }
 }
 export { Jpcite };
