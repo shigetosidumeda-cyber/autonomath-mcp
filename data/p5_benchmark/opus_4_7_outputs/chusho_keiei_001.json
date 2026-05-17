@@ -1,0 +1,28 @@
+{
+  "query_id": "chusho_keiei_001",
+  "cohort": "chusho_keiei",
+  "query": "当社 (製造業・従業員 20 名) に合う補助金トップ5を教えて",
+  "engine": "opus-4-7",
+  "tool_calls": [
+    {"step": 1, "verb": "think_through", "endpoint": null, "args": {}},
+    {"step": 2, "verb": "outline", "endpoint": null, "args": {}},
+    {"step": 3, "verb": "fetch_programs", "endpoint": "programs_batch", "args": {"industry": "製造業", "size": 20}},
+    {"step": 4, "verb": "match_cases", "endpoint": "case_cohort_match", "args": {}},
+    {"step": 5, "verb": "exclusions_check", "endpoint": "exclusions_check", "args": {}},
+    {"step": 6, "verb": "review", "endpoint": null, "args": {}},
+    {"step": 7, "verb": "render", "endpoint": null, "args": {}}
+  ],
+  "output_text": "製造業・従業員20名の中小企業向け補助金トップ5: (1) ものづくり補助金 (省力化・グリーン枠) — 設備投資が高い ROI、採択率 ~50%。(2) IT 導入補助金 (デジタル化基盤) — クラウド会計/受発注 SaaS。(3) 事業再構築補助金 (成長枠) — 新分野展開時に検討。(4) 小規模事業者持続化補助金 — 販路開拓。(5) 省力化投資補助金 (カタログ型) — 人手不足対応機械の即時導入。排他併用ルールに注意 (持続化 ↔ ものづくり 重複 NG)。",
+  "checklist_must_have": ["ものづくり補助金", "IT導入補助金", "事業再構築", "持続化", "省力化"],
+  "referenced_endpoints": ["programs_batch", "case_cohort_match", "exclusions_check"],
+  "citations": [
+    {
+      "source_url": "https://www.chusho.meti.go.jp/",
+      "source_fetched_at": "2026-05-17T00:00:00+09:00",
+      "label": "中小企業庁"
+    }
+  ],
+  "self_reported_score": 76.0,
+  "cost_jpy_estimate": 90,
+  "tier": "D"
+}

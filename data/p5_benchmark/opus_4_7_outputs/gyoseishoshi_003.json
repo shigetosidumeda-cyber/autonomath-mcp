@@ -1,0 +1,28 @@
+{
+  "query_id": "gyoseishoshi_003",
+  "cohort": "gyoseishoshi",
+  "query": "ものづくり補助金 (令和 7 年度第 1 次) の公募要領と必要書類を出して",
+  "engine": "opus-4-7",
+  "tool_calls": [
+    {"step": 1, "verb": "think_through", "endpoint": null, "args": {}},
+    {"step": 2, "verb": "outline", "endpoint": null, "args": {}},
+    {"step": 3, "verb": "fetch_programs", "endpoint": "programs_batch", "args": {"keyword": "ものづくり補助金"}},
+    {"step": 4, "verb": "match_cases", "endpoint": "case_cohort_match", "args": {}},
+    {"step": 5, "verb": "bundle_kit", "endpoint": "bundle_application_kit", "args": {}},
+    {"step": 6, "verb": "review", "endpoint": null, "args": {}},
+    {"step": 7, "verb": "render", "endpoint": null, "args": {}}
+  ],
+  "output_text": "ものづくり補助金 (令和7年度第1次) の公募要領は中小企業庁・全国中央会から公表されます。必要書類は事業計画書・gBizID プライム・決算書 (直近2期分)・賃上げ表明書・(該当時) 加点要素エビデンスです。bundle_application_kit で checklist + cover letter scaffold + 採択事例を 1 call で取得できます。行政書士法 §1 boundary により申請書面の代理作成は scaffold + 一次 URL のみで対応。",
+  "checklist_must_have": ["ものづくり補助金", "gBizID", "事業計画書", "中小企業庁"],
+  "referenced_endpoints": ["programs_batch", "case_cohort_match", "bundle_application_kit"],
+  "citations": [
+    {
+      "source_url": "https://portal.monodukuri-hojo.jp/",
+      "source_fetched_at": "2026-05-17T00:00:00+09:00",
+      "label": "ものづくり補助金 公式ポータル"
+    }
+  ],
+  "self_reported_score": 78.0,
+  "cost_jpy_estimate": 90,
+  "tier": "D"
+}

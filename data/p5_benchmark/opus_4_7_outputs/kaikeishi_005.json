@@ -1,0 +1,28 @@
+{
+  "query_id": "kaikeishi_005",
+  "cohort": "kaikeishi",
+  "query": "法人 360 で関連当事者を抽出したい (法人番号 = 8010001213708)",
+  "engine": "opus-4-7",
+  "tool_calls": [
+    {"step": 1, "verb": "think_through", "endpoint": null, "args": {}},
+    {"step": 2, "verb": "outline", "endpoint": null, "args": {}},
+    {"step": 3, "verb": "fetch_houjin", "endpoint": "houjin_360", "args": {"houjin_id": "8010001213708"}},
+    {"step": 4, "verb": "expand_entity", "endpoint": "entity_id_map", "args": {}},
+    {"step": 5, "verb": "cite", "endpoint": "evidence_packets_query", "args": {}},
+    {"step": 6, "verb": "review", "endpoint": null, "args": {}},
+    {"step": 7, "verb": "render", "endpoint": null, "args": {}}
+  ],
+  "output_text": "法人番号 8010001213708 (Bookyou株式会社) の関連当事者を抽出するには、houjin_360 で法人基本情報 + 役員一覧 + 旧商号履歴を取得し、entity_id_map で同代表者・同住所・同電話番号の cross-domain 関係を引き出します。連結範囲の判定は会計士法・会社法第2条に従い、議決権所有比率・支配力基準・影響力基準の3軸で評価。同名法人の identity 突合は法人番号 (13桁) を一次キーにしてください。",
+  "checklist_must_have": ["法人360", "関連当事者", "8010001213708", "連結範囲"],
+  "referenced_endpoints": ["houjin_360", "entity_id_map"],
+  "citations": [
+    {
+      "source_url": "https://www.houjin-bangou.nta.go.jp/",
+      "source_fetched_at": "2026-05-17T00:00:00+09:00",
+      "label": "国税庁 法人番号公表サイト"
+    }
+  ],
+  "self_reported_score": 75.0,
+  "cost_jpy_estimate": 75,
+  "tier": "B"
+}

@@ -1,0 +1,33 @@
+{
+  "query_id": "zeirishi_001",
+  "cohort": "zeirishi",
+  "query": "法人税の損金不算入となる役員給与の判定基準を教えて",
+  "engine": "opus-4-7",
+  "tool_calls": [
+    {"step": 1, "verb": "think_through", "endpoint": null, "args": {}},
+    {"step": 2, "verb": "outline", "endpoint": null, "args": {}},
+    {"step": 3, "verb": "fetch_rule", "endpoint": "tax_rule_full_chain", "args": {"target": "法人税法第34条"}},
+    {"step": 4, "verb": "synthesize", "endpoint": null, "args": {}},
+    {"step": 5, "verb": "cite", "endpoint": "evidence_packets_query", "args": {}},
+    {"step": 6, "verb": "review", "endpoint": null, "args": {}},
+    {"step": 7, "verb": "render", "endpoint": null, "args": {}}
+  ],
+  "output_text": "法人税法第34条に基づく役員給与の損金不算入判定は、定期同額給与・事前確定届出給与・業績連動給与の3類型を満たすか否かが基準。定期同額給与は会計期間を通じて毎月同額が要件で、改定可能事由は職制上の地位変更・経営状況悪化・通常改定のみ。事前確定届出給与は所轄税務署への届出期限 (株主総会から1ヶ月以内など) を遵守する必要があり、業績連動給与は同族会社以外の業務執行役員に限定される。役員退職給与の過大支給判定は功績倍率法により在任年数・最終報酬月額・功績倍率の3要素で行う。出典: e-Gov 法令検索、国税庁 タックスアンサー No.5202。",
+  "checklist_must_have": ["役員給与", "定期同額", "事前確定届出", "業績連動", "法人税法第34条"],
+  "referenced_endpoints": ["tax_rule_full_chain", "am_by_law"],
+  "citations": [
+    {
+      "source_url": "https://elaws.e-gov.go.jp/document?lawid=340AC0000000034",
+      "source_fetched_at": "2026-05-17T00:00:00+09:00",
+      "label": "e-Gov 法令検索: 法人税法第34条"
+    },
+    {
+      "source_url": "https://www.nta.go.jp/taxes/shiraberu/taxanswer/hojin/5202.htm",
+      "source_fetched_at": "2026-05-17T00:00:00+09:00",
+      "label": "国税庁 タックスアンサー No.5202"
+    }
+  ],
+  "self_reported_score": 78.0,
+  "cost_jpy_estimate": 75,
+  "tier": "C"
+}

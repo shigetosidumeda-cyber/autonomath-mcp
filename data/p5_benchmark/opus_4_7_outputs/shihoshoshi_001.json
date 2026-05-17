@@ -1,0 +1,28 @@
+{
+  "query_id": "shihoshoshi_001",
+  "cohort": "shihoshoshi",
+  "query": "商業登記の役員変更登記の登記期限と必要書類を教えて",
+  "engine": "opus-4-7",
+  "tool_calls": [
+    {"step": 1, "verb": "think_through", "endpoint": null, "args": {}},
+    {"step": 2, "verb": "outline", "endpoint": null, "args": {}},
+    {"step": 3, "verb": "fetch_houjin", "endpoint": "houjin_360", "args": {}},
+    {"step": 4, "verb": "cross_check", "endpoint": "cross_check_jurisdiction", "args": {}},
+    {"step": 5, "verb": "cite", "endpoint": "evidence_packets_query", "args": {}},
+    {"step": 6, "verb": "review", "endpoint": null, "args": {}},
+    {"step": 7, "verb": "render", "endpoint": null, "args": {}}
+  ],
+  "output_text": "商業登記法第54条により、役員変更登記の登記期限は変更事実発生日から本店所在地で2週間以内です。必要書類は株主総会議事録 (取締役選任時) または取締役会議事録 (代表取締役選定時)、就任承諾書、印鑑証明書、本人確認証明書 (住民票等)、登記申請書、登録免許税の納付 (資本金1億円以下=1万円)。電子定款認証 + オンライン申請で印紙代節約可能。",
+  "checklist_must_have": ["役員変更登記", "2週間", "株主総会議事録", "登録免許税", "商業登記法"],
+  "referenced_endpoints": ["houjin_360", "cross_check_jurisdiction"],
+  "citations": [
+    {
+      "source_url": "https://elaws.e-gov.go.jp/document?lawid=417AC0000000125",
+      "source_fetched_at": "2026-05-17T00:00:00+09:00",
+      "label": "e-Gov 法令検索: 商業登記法第54条"
+    }
+  ],
+  "self_reported_score": 76.0,
+  "cost_jpy_estimate": 60,
+  "tier": "B"
+}
