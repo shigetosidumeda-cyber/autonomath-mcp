@@ -11,10 +11,15 @@ One MCP call returns a complete 月次決算 draft composing five moat lanes:
 * N8 ``monthly_closing`` recipe — call-sequence YAML loaded read-only
   from ``data/recipes/recipe_tax_monthly_closing.yaml``.
 
-Tier-D pricing band (Stage 3 F4 design):
+Tier-D pricing band (Pricing V3 — Agent-Economy First, 2026-05-17):
 
-* Per-call: ¥1,000 (= 333x ¥3/req baseline).
-* Per-houjin subscription: ¥100 / 法人 / 月 (unlimited reruns within month).
+* Per-call: **¥30** (10 billable_units × ¥3, Tier D = workflow).
+* Per-houjin subscription: deprecated under V3 (¥0 in envelope for backwards
+  compatibility, no longer billed).
+
+V3 replaces F4 / V2's ¥1,000 single-shot price because the agent-economy
+skip-threshold sits at Sonnet 8-turn self-compose ≒ ¥30. V3 ¥30 is at
+parity with Sonnet 8-turn but cheaper than Opus 8-turn (¥75 → save 60%).
 
 NO LLM. Pure SQLite + dict composition. §52 (税理士法) sensitive surface.
 Output is a scaffold; 税理士 confirmation is statutory before submission.
@@ -47,12 +52,25 @@ _UPSTREAM_MODULE = "jpintel_mcp.products.a1_tax_monthly"
 _ARTIFACT_TYPE = "gessji_shiwake"
 _SEGMENT_JA = "税理士"
 
-# Tier-D pricing (F4 design).
-_PRICE_PER_REQ_JPY = 1000
-_PRICE_PER_HOUJIN_MONTHLY_JPY = 100
+# Tier-D pricing (Pricing V3 — Agent-Economy First, 2026-05-17).
+# V2 (F4) used 333 units / ¥1,000; V3 collapses to 10 units / ¥30 so the
+# agent-economy skip-threshold (Sonnet 8-turn ¥30) flips to parity-or-win.
+_PRICING_VERSION = "v3"
+_TIER_LETTER = "D"
+_BILLABLE_UNITS = 10
+_PRICE_PER_REQ_JPY = _BILLABLE_UNITS * 3  # ¥30
+# Per-houjin subscription deprecated under V3 (¥0 retained for envelope shape).
+_PRICE_PER_HOUJIN_MONTHLY_JPY = 0
 
-_VALUE_PROXY_LLM_LOW_JPY = 3000
-_VALUE_PROXY_LLM_HIGH_JPY = 15000
+# value_proxy vs 3 model baseline (Opus 4.7 / Sonnet 4.6 / Haiku 4.5).
+# Sonnet 8-turn ≒ ¥30 (parity), Opus 8-turn ≒ ¥75 (save 60%), Haiku 8-turn
+# ≒ ¥12 (jpcite +¥18 vs Haiku — but Haiku quality unfit for §52).
+_VALUE_PROXY_OPUS_JPY = 75
+_VALUE_PROXY_SONNET_JPY = 30
+_VALUE_PROXY_HAIKU_JPY = 12
+# Legacy fields retained for backwards-compatible test assertions.
+_VALUE_PROXY_LLM_LOW_JPY = _VALUE_PROXY_SONNET_JPY
+_VALUE_PROXY_LLM_HIGH_JPY = _VALUE_PROXY_OPUS_JPY
 
 _A1_DISCLAIMER = (
     DISCLAIMER + " 月次決算 draft は 税理士法 §52 のもと、最終署名は税理士の独占業務 "
@@ -488,11 +506,20 @@ def _next_actions(
 
 def _billing_envelope() -> dict[str, Any]:
     return {
-        "tier": "D",
+        "pricing_version": _PRICING_VERSION,
+        "tier": _TIER_LETTER,
         "product_id": _PRODUCT_ID,
+        "billable_units": _BILLABLE_UNITS,
+        "unit": _BILLABLE_UNITS,
+        "yen": _PRICE_PER_REQ_JPY,
         "price_per_req_jpy": _PRICE_PER_REQ_JPY,
         "price_per_houjin_monthly_jpy": _PRICE_PER_HOUJIN_MONTHLY_JPY,
         "value_proxy": {
+            "models": {
+                "opus_4_7": _VALUE_PROXY_OPUS_JPY,
+                "sonnet_4_6": _VALUE_PROXY_SONNET_JPY,
+                "haiku_4_5": _VALUE_PROXY_HAIKU_JPY,
+            },
             "model": "claude-opus-4-7",
             "llm_equivalent_low_jpy": _VALUE_PROXY_LLM_LOW_JPY,
             "llm_equivalent_high_jpy": _VALUE_PROXY_LLM_HIGH_JPY,
@@ -502,11 +529,16 @@ def _billing_envelope() -> dict[str, Any]:
             "saving_high_pct": round(
                 100.0 * (1 - _PRICE_PER_REQ_JPY / _VALUE_PROXY_LLM_LOW_JPY), 1
             ),
+            "vs_sonnet_4_6_saving_pct": round(
+                100.0 * (1 - _PRICE_PER_REQ_JPY / _VALUE_PROXY_SONNET_JPY), 1
+            ),
+            "vs_opus_4_7_saving_pct": round(
+                100.0 * (1 - _PRICE_PER_REQ_JPY / _VALUE_PROXY_OPUS_JPY), 1
+            ),
             "note": (
-                "Opus 4.7 で同等成果物 (損益計算書 + 仕訳 + 課税仕入計算 + "
-                "改正対応指示 + warning) を生成する場合 ≒ ¥3,000-15,000 LLM cost "
-                f"(token + 3-pass review)。jpcite ¥{_PRICE_PER_REQ_JPY} は同等 "
-                "scaffold を deterministic 計算で出力するため 67-93% 節約。"
+                "Sonnet 8-turn self-compose ≒ ¥30 (parity)、Opus 8-turn ≒ ¥75 "
+                f"(save 60%)。jpcite ¥{_PRICE_PER_REQ_JPY} (Tier D = 10 units × ¥3) "
+                "は scaffold を deterministic 計算で出力。"
             ),
         },
         "no_llm": True,
