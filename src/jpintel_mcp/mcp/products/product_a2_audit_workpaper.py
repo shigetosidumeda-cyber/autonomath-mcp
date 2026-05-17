@@ -8,9 +8,13 @@ period (年次 / 四半期 / レビュー), composing:
 * N3 ``walk_reasoning_chain`` — corporate_tax + commerce + labor chains.
 * N7 ``get_segment_view`` — industry × size × prefecture risk benchmark.
 
-Tier-D pricing band (Stage 3 F4 design):
+Tier-D pricing band (Pricing V3 — Agent-Economy First, 2026-05-17):
 
-* Per-call: ¥200 (= 66x ¥3/req baseline).
+* Per-call: **¥30** (10 billable_units × ¥3, Tier D = workflow).
+
+V3 replaces F4 / V2's ¥200 single-shot price because the agent-economy
+skip-threshold sits at Sonnet 8-turn self-compose ≒ ¥30. V3 ¥30 stays at
+the same composition density but at Sonnet-parity / Opus-save-60%.
 
 NO LLM. Pure SQLite + dict composition. §47条の2 (公認会計士法) sensitive
 surface. 監査意見表明は会計士の独占業務、本 product は調書補助のみ。
@@ -40,9 +44,18 @@ _SCHEMA_VERSION = "product.a2.v1"
 _UPSTREAM_MODULE = "jpintel_mcp.products.a2_audit_workpaper"
 _SEGMENT_JA = "会計士"
 
-_PRICE_PER_REQ_JPY = 200
-_VALUE_PROXY_LLM_LOW_JPY = 5000
-_VALUE_PROXY_LLM_HIGH_JPY = 15000
+# Tier-D pricing (Pricing V3 — Agent-Economy First, 2026-05-17).
+# V2 (F4) used ¥200 / 67 units; V3 collapses to ¥30 / 10 units.
+_PRICING_VERSION = "v3"
+_TIER_LETTER = "D"
+_BILLABLE_UNITS = 10
+_PRICE_PER_REQ_JPY = _BILLABLE_UNITS * 3  # ¥30
+# value_proxy vs 3 model baseline.
+_VALUE_PROXY_OPUS_JPY = 75
+_VALUE_PROXY_SONNET_JPY = 30
+_VALUE_PROXY_HAIKU_JPY = 12
+_VALUE_PROXY_LLM_LOW_JPY = _VALUE_PROXY_SONNET_JPY
+_VALUE_PROXY_LLM_HIGH_JPY = _VALUE_PROXY_OPUS_JPY
 
 _AUDIT_TYPES: tuple[str, ...] = ("年次", "四半期", "レビュー")
 _AUDIT_TYPE_TO_ARTIFACT: dict[str, str] = {
@@ -549,10 +562,19 @@ def _fetch_segment_view_sync(houjin_bangou: str) -> dict[str, Any]:
 
 def _billing_envelope() -> dict[str, Any]:
     return {
-        "tier": "D",
+        "pricing_version": _PRICING_VERSION,
+        "tier": _TIER_LETTER,
         "product_id": _PRODUCT_ID,
+        "billable_units": _BILLABLE_UNITS,
+        "unit": _BILLABLE_UNITS,
+        "yen": _PRICE_PER_REQ_JPY,
         "price_per_req_jpy": _PRICE_PER_REQ_JPY,
         "value_proxy": {
+            "models": {
+                "opus_4_7": _VALUE_PROXY_OPUS_JPY,
+                "sonnet_4_6": _VALUE_PROXY_SONNET_JPY,
+                "haiku_4_5": _VALUE_PROXY_HAIKU_JPY,
+            },
             "model": "claude-opus-4-7",
             "llm_equivalent_low_jpy": _VALUE_PROXY_LLM_LOW_JPY,
             "llm_equivalent_high_jpy": _VALUE_PROXY_LLM_HIGH_JPY,
@@ -562,11 +584,16 @@ def _billing_envelope() -> dict[str, Any]:
             "saving_high_pct": round(
                 100.0 * (1 - _PRICE_PER_REQ_JPY / _VALUE_PROXY_LLM_LOW_JPY), 1
             ),
+            "vs_sonnet_4_6_saving_pct": round(
+                100.0 * (1 - _PRICE_PER_REQ_JPY / _VALUE_PROXY_SONNET_JPY), 1
+            ),
+            "vs_opus_4_7_saving_pct": round(
+                100.0 * (1 - _PRICE_PER_REQ_JPY / _VALUE_PROXY_OPUS_JPY), 1
+            ),
             "note": (
-                "Opus 4.7 で同等成果物 (監査調書 skeleton + 内部統制評価 + "
-                "重要事項 + サンプリング + 意見 draft + リスク評価) を "
-                f"生成する場合 ≒ ¥5,000-15,000 LLM cost。jpcite ¥{_PRICE_PER_REQ_JPY} "
-                "は deterministic 計算で 96-99% 節約。"
+                "Sonnet 8-turn self-compose ≒ ¥30 (parity)、Opus 8-turn ≒ ¥75 "
+                f"(save 60%)。jpcite ¥{_PRICE_PER_REQ_JPY} (Tier D = 10 units × ¥3) "
+                "は deterministic 計算で 監査調書 skeleton を出力。"
             ),
         },
         "no_llm": True,
