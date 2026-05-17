@@ -149,9 +149,14 @@ def _load_mcp_resources() -> list[dict[str, Any]]:
         resources.extend(list_cohort_resources())
     except Exception:  # pragma: no cover - registry import optional
         pass
+    # H9 P1.3 — REST meta fail-closed: rebind canonical export
+    # `list_resources` as `list_autonomath_resources`. Pre-fix code
+    # imported a hallucinated bare name; wrapping `except Exception`
+    # silently swallowed ImportError and REST /v1/meta/resources
+    # returned 0 autonomath entries indefinitely.
     try:
-        from jpintel_mcp.mcp.autonomath_tools.resources import (  # type: ignore[attr-defined]
-            list_autonomath_resources,
+        from jpintel_mcp.mcp.autonomath_tools.resources import (
+            list_resources as list_autonomath_resources,
         )
 
         resources.extend(list_autonomath_resources())
@@ -172,8 +177,12 @@ def _load_mcp_prompts() -> list[dict[str, Any]]:
         prompts.extend(list_jpcite_prompts())
     except Exception:  # pragma: no cover
         pass
+    # H9 P1.3 — REST meta fail-closed: rebind canonical `list_prompts`
+    # as `list_autonomath_prompts`. Mirror of resources rationale above.
     try:
-        from jpintel_mcp.mcp.autonomath_tools.prompts import list_autonomath_prompts  # type: ignore[attr-defined]  # noqa: E501, I001
+        from jpintel_mcp.mcp.autonomath_tools.prompts import (
+            list_prompts as list_autonomath_prompts,
+        )
 
         prompts.extend(list_autonomath_prompts())
     except Exception:  # pragma: no cover

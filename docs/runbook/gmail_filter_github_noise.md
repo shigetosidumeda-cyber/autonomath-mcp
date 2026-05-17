@@ -1,3 +1,10 @@
+---
+title: Gmail Filter for GitHub Actions Noise
+updated: 2026-05-12
+operator_only: true
+category: monitoring
+---
+
 # Runbook: Gmail Filter for GitHub Actions Noise
 
 **Status**: active
