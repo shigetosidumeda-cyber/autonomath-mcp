@@ -11,6 +11,7 @@ Tier-D pricing band (vs the canonical ¥3/req):
 * A2 (``product_audit_workpaper_pack``) — ¥200 / req (会計士 監査調書 pack).
 * A3 (``product_subsidy_roadmap_12month``) — ¥500 / req (補助金活用ロードマップ).
 * A4 (``product_shuugyou_kisoku_pack``) — ¥300 / req (就業規則生成 pack).
+* A5 (``product_kaisha_setsuritsu_pack``) — ¥800 / req (司法書士 会社設立一式).
 
 Hard constraints (CLAUDE.md / memory anchors):
 
