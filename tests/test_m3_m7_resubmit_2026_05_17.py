@@ -9,8 +9,9 @@ Gates the two regression fixes landed in
 * M7: HyperParameter dict keys use dashes (``batch-size``,
   ``embedding-dim``, ``negative-samples``, ``learning-rate``) so
   SageMaker passes them to the PyKEEN argparse entrypoint as
-  ``--batch-size 512`` rather than the rejected
-  ``--batch_size 512``.
+  ``--batch-size 512``. The entrypoint also accepts underscore aliases
+  to tolerate SageMaker / retry-ledger variants, and ConvE uses a
+  conservative memory profile before re-submit.
 
 NO live AWS — every assertion runs against in-process module imports,
 generated dicts, and tar archive metadata.
@@ -54,6 +55,14 @@ def m7_module() -> types.ModuleType:
     return _load_script_module(
         "scripts/aws_credit_ops/sagemaker_kg_completion_submit_2026_05_17.py",
         "m7_resubmit_fix_test",
+    )
+
+
+@pytest.fixture(scope="module")
+def m7_entry_module() -> types.ModuleType:
+    return _load_script_module(
+        "scripts/aws_credit_ops/kg_completion_train_entry.py",
+        "m7_entry_alias_test",
     )
 
 
@@ -128,6 +137,13 @@ def test_m3_embedder_pins_transformers_compatible_with_torch_2_0(
     assert "torchvision==0.15.2" in m3_module.EMBEDDER_SCRIPT
 
 
+def test_m3_embedder_uses_rinna_japanese_clip_loader(m3_module: types.ModuleType) -> None:
+    """The live embedder must avoid the failed AutoImageProcessor path."""
+    assert "import japanese_clip as ja_clip" in m3_module.EMBEDDER_SCRIPT
+    assert "ja_clip.load(" in m3_module.EMBEDDER_SCRIPT
+    assert "AutoImageProcessor" not in m3_module.EMBEDDER_SCRIPT
+
+
 # ---------- M7 fix gating ---------------------------------------------------
 
 
@@ -196,3 +212,107 @@ def test_m7_hardstop_under_never_reach(m7_module: types.ModuleType) -> None:
     """The 5-line preflight hard-stop must sit under the $19,490 Never-Reach."""
     assert m7_module.HARD_STOP_USD == 18000.0
     assert m7_module.HARD_STOP_USD < 19490.0
+
+
+def test_m7_training_entry_accepts_dash_and_underscore_hyperparameters(
+    m7_entry_module: types.ModuleType,
+) -> None:
+    """SageMaker retry ledgers may carry either CLI spelling; both stay valid."""
+    assert (
+        m7_entry_module._hp_value({"embedding-dim": "384"}, "embedding-dim", "embedding_dim", 500)
+        == "384"
+    )
+    assert (
+        m7_entry_module._hp_value({"embedding_dim": "256"}, "embedding-dim", "embedding_dim", 500)
+        == "256"
+    )
+    source = (REPO_ROOT / "scripts/aws_credit_ops/kg_completion_train_entry.py").read_text()
+    assert '"--embedding-dim",\n        "--embedding_dim"' in source
+    assert '"--batch-size",\n        "--batch_size"' in source
+    assert '"--negative-samples",\n        "--negative_samples"' in source
+    assert '"--learning-rate",\n        "--learning_rate"' in source
+
+
+def test_m7_submit_parser_accepts_dash_and_underscore_aliases(
+    m7_module: types.ModuleType,
+) -> None:
+    """The submit wrapper should accept both retry-ledger spellings too."""
+    args = m7_module._parse_args(
+        [
+            "--embedding_dim",
+            "256",
+            "--batch_size",
+            "64",
+            "--negative_samples",
+            "32",
+            "--learning_rate",
+            "0.0001",
+        ]
+    )
+    assert args.embedding_dim == 256
+    assert args.batch_size == 64
+    assert args.negative_samples == 32
+    assert args.learning_rate == 0.0001
+
+
+def test_m7_conve_profile_caps_memory_heavy_defaults(m7_module: types.ModuleType) -> None:
+    """ConvE previously hit MemoryError at batch_size=512; profile caps it."""
+    profiled = m7_module._profiled_hyperparameters(
+        model="ConvE",
+        embedding_dim=500,
+        epochs=200,
+        batch_size=512,
+        negative_samples=256,
+        learning_rate=1e-3,
+    )
+    assert profiled == {
+        "embedding_dim": 200,
+        "epochs": 200,
+        "batch_size": 256,
+        "negative_samples": 128,
+        "learning_rate": 1e-3,
+    }
+
+
+def test_m7_profiles_do_not_increase_operator_smaller_values(m7_module: types.ModuleType) -> None:
+    """Manual lower caps remain lower than the per-model profile."""
+    profiled = m7_module._profiled_hyperparameters(
+        model="ConvE",
+        embedding_dim=128,
+        epochs=100,
+        batch_size=64,
+        negative_samples=32,
+        learning_rate=1e-4,
+    )
+    assert profiled == {
+        "embedding_dim": 128,
+        "epochs": 100,
+        "batch_size": 64,
+        "negative_samples": 32,
+        "learning_rate": 1e-4,
+    }
+
+
+def test_m7_conve_profile_flows_into_dashed_spec_keys(m7_module: types.ModuleType) -> None:
+    """The post-profile spec should carry ConvE's lower memory footprint."""
+    profiled = m7_module._profiled_hyperparameters(
+        model="ConvE",
+        embedding_dim=500,
+        epochs=200,
+        batch_size=512,
+        negative_samples=256,
+        learning_rate=1e-3,
+    )
+    kwargs = {
+        **_M7_SPEC_KWARGS,
+        "model": "ConvE",
+        "embedding_dim": int(profiled["embedding_dim"]),
+        "epochs": int(profiled["epochs"]),
+        "batch_size": int(profiled["batch_size"]),
+        "negative_samples": int(profiled["negative_samples"]),
+        "learning_rate": float(profiled["learning_rate"]),
+    }
+    hp = m7_module._spec(**kwargs)["HyperParameters"]
+    assert hp["embedding-dim"] == "200"
+    assert hp["batch-size"] == "256"
+    assert hp["negative-samples"] == "128"

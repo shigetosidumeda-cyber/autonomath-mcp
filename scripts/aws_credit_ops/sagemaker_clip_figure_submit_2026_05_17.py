@@ -128,8 +128,8 @@ PYTORCH_IMAGE = (
 )
 
 #: Inline embedder script that the Processing Job downloads via the
-#: ``code/`` S3 channel and executes. Kept simple — pure transformers +
-#: PIL + boto3 walk; no CLI args, fully data-driven from
+#: ``code/`` S3 channel and executes. Kept simple — rinna's Japanese CLIP
+#: package + PIL walk; no CLI args, fully data-driven from
 #: ``/opt/ml/processing/input/...`` mounts.
 EMBEDDER_SCRIPT = textwrap.dedent(
     '''
@@ -145,10 +145,14 @@ EMBEDDER_SCRIPT = textwrap.dedent(
     from PIL import Image
 
     try:
-        from transformers import AutoImageProcessor, AutoModel
+        import japanese_clip as ja_clip
     except ImportError:
-        os.system(f"{sys.executable} -m pip install --quiet 'transformers==4.36.2' 'torchvision==0.15.2' pillow")
-        from transformers import AutoImageProcessor, AutoModel
+        os.system(
+            f"{sys.executable} -m pip install --quiet "
+            "'transformers==4.36.2' 'torchvision==0.15.2' pillow "
+            "'git+https://github.com/rinnakk/japanese-clip.git'"
+        )
+        import japanese_clip as ja_clip
 
     MODEL_ID = os.environ.get("CLIP_MODEL_ID", "rinna/japanese-clip-vit-b-16")
     MODEL_REVISION = os.environ.get("CLIP_MODEL_REVISION", "main")
@@ -158,8 +162,12 @@ EMBEDDER_SCRIPT = textwrap.dedent(
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    processor = AutoImageProcessor.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True)
-    model = AutoModel.from_pretrained(MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True).to(device).eval()
+    model, preprocess = ja_clip.load(
+        MODEL_ID,
+        cache_dir="/tmp/japanese_clip",
+        device=device,
+    )
+    model = model.to(device).eval()
 
     captions: dict[str, dict] = {}
     if LEDGER_PATH.exists():
@@ -187,8 +195,9 @@ EMBEDDER_SCRIPT = textwrap.dedent(
         for png_path in png_paths:
             try:
                 img = Image.open(png_path).convert("RGB")
-                inputs = processor(images=img, return_tensors="pt").to(device)
-                feats = model.get_image_features(**inputs)
+                image = preprocess(img).unsqueeze(0).to(device)
+                feats = model.get_image_features(image)
+                feats = feats / feats.norm(dim=-1, keepdim=True).clamp_min(1e-12)
                 vec = feats[0].float().cpu().tolist()
             except Exception as exc:  # noqa: BLE001
                 print(f"skip {png_path}: {exc}")
