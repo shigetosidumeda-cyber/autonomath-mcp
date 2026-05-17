@@ -1,0 +1,10 @@
+[
+  {
+    "stage": "al",
+    "iter": 1,
+    "prior_job": "jpcite-multitask-large-20260517T040000Z",
+    "prior_status": "Completed",
+    "new_job": "jpcite-multitask-al-iter1-20260517T080401Z",
+    "fired_at": "2026-05-17T08:04:02.876565Z"
+  }
+]

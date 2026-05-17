@@ -100,7 +100,9 @@ export class KessanBriefAgent {
     // Step 1 — houjin snapshot for header + enforcement filter.
     const houjin = await this.jpcite.getHoujin360(input.houjin_bangou);
 
-    // Step 2 — Wave 22 server tool. Single round-trip; backend does the join.
+    // Step 2 — audit workpaper composition (Harness H6, 2026-05-17).
+    // Legacy POST /v1/am/kessan/prepare_briefing had no FastAPI counterpart;
+    // the 月次/四半期 program-eligibility-delta surface is now POST /v1/audit/workpaper.
     type BriefingResponse = {
       program_changes: KessanBriefOutput["program_changes"];
       _disclaimer?: string;
@@ -108,9 +110,9 @@ export class KessanBriefAgent {
     };
     const briefing = await this.jpcite.rest.fetch<BriefingResponse>(
       "POST",
-      "/v1/am/kessan/prepare_briefing",
+      "/v1/audit/workpaper",
       {
-        houjin_bangou: input.houjin_bangou,
+        client_houjin_bangou: input.houjin_bangou,
         fy_start: input.fy_start,
         fy_end: input.fy_end,
       },

@@ -113,22 +113,19 @@ export class DueDiligenceAgent {
     // Step 1 — houjin snapshot for header + enforcement context.
     const houjin = await this.jpcite.getHoujin360(input.houjin_bangou);
 
-    // Step 2 — jurisdiction cross-check (Wave 22).
-    type CrossCheck = {
-      registered_prefecture: string | null;
-      invoice_prefecture: string | null;
-      operational_prefecture: string | null;
-      mismatch: boolean;
-      _disclaimer?: string;
-    };
-    const cross = await this.jpcite.rest.fetch<CrossCheck>(
-      "GET",
-      `/v1/am/houjin/${encodeURIComponent(input.houjin_bangou)}/jurisdiction_check`,
-    );
-
-    // Step 3 — DD question matcher (Wave 22 server-side join).
-    type MatchResp = {
-      results: Array<{
+    // Step 2 + 3 — DD batch composition (Harness H6, 2026-05-17).
+    // Legacy GET /v1/am/houjin/{id}/jurisdiction_check + POST
+    // /v1/am/dd/match_questions had no FastAPI counterpart; both rolled
+    // into POST /v1/am/dd_batch (ma_dd.py) which composes 5 atomic tools.
+    type DdBatchProfile = {
+      houjin_bangou: string;
+      jurisdiction_check?: {
+        registered_prefecture?: string | null;
+        invoice_prefecture?: string | null;
+        operational_prefecture?: string | null;
+        mismatch?: boolean;
+      };
+      dd_questions?: Array<{
         template_id: string;
         category: DdCategory;
         severity: number;
@@ -137,19 +134,39 @@ export class DueDiligenceAgent {
         request_documents: string[];
         source_urls: string[];
       }>;
-      total_templates_considered: number;
+      total_templates_considered?: number;
       _disclaimer?: string;
     };
-    const matched = await this.jpcite.rest.fetch<MatchResp>(
+    type DdBatchResp = {
+      batch_size: number;
+      profiles: DdBatchProfile[];
+      _disclaimer?: string;
+    };
+    const batch = await this.jpcite.rest.fetch<DdBatchResp>(
       "POST",
-      "/v1/am/dd/match_questions",
+      "/v1/am/dd_batch",
       {
-        houjin_bangou: input.houjin_bangou,
+        houjin_bangou_list: [input.houjin_bangou],
         severity_min,
         categories: input.categories,
         limit,
       },
     );
+    const profile: DdBatchProfile = batch.profiles[0] ?? {
+      houjin_bangou: input.houjin_bangou,
+    };
+    const cross = {
+      registered_prefecture: profile.jurisdiction_check?.registered_prefecture ?? null,
+      invoice_prefecture: profile.jurisdiction_check?.invoice_prefecture ?? null,
+      operational_prefecture: profile.jurisdiction_check?.operational_prefecture ?? null,
+      mismatch: profile.jurisdiction_check?.mismatch ?? false,
+      _disclaimer: profile._disclaimer,
+    };
+    const matched = {
+      results: profile.dd_questions ?? [],
+      total_templates_considered: profile.total_templates_considered ?? 0,
+      _disclaimer: batch._disclaimer ?? profile._disclaimer,
+    };
 
     let questions: DueDiligenceQuestion[] = matched.results;
 

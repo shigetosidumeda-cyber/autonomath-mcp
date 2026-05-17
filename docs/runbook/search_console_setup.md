@@ -1,3 +1,10 @@
+---
+title: Search Console + Bing Webmaster + Yandex Setup
+updated: 2026-04-29
+operator_only: true
+category: monitoring
+---
+
 # Search Console + Bing Webmaster + Yandex Setup Runbook -- jpcite
 
 **Owner**: 梅田茂利 (info@bookyou.net) -- solo zero-touch

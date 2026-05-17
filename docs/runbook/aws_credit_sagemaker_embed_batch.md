@@ -1,3 +1,10 @@
+---
+title: SageMaker batch transform — open-weight embedding burn ramp
+updated: 2026-05-16
+operator_only: true
+category: ETL
+---
+
 # SageMaker batch transform — open-weight embedding burn ramp
 
 > Status: 2026-05-16 — first smoke landed on J04 e-Gov law cohort.

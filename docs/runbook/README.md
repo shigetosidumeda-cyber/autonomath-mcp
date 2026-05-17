@@ -1,6 +1,6 @@
 ---
 title: jpcite runbook index
-updated: 2026-05-04
+updated: 2026-05-17
 operator_only: true
 category: index
 ---
@@ -57,11 +57,62 @@ walk `docs/runbook/*.md` and group by `category`.
 | [disaster_recovery.md](disaster_recovery.md) | 5 recovery scenarios (volume crash / total infra loss / R2 compromise / human error / drill failure) + R2 bucket setup. | operator (incidents) + 自動 cron `backup_jpintel.py` hourly / `backup_jpcite.py` daily | 2026-05-04 |
 | [litestream_setup.md](litestream_setup.md) | Wire continuous WAL replication to R2 for sub-second RPO + point-in-time restore. **DRAFT — sidecar not yet deployed.** | operator (one-time cutover) + 自動 sidecar | 2026-05-04 |
 
-### ETL — none currently
+### incident — incident response (post-mortem playbooks)
 
-ETL runbooks live under `tools/offline/` (see `tools/offline/README.md`)
-and `scripts/etl/` (no per-script runbook; each script is self-documenting
-via `--help`). No file in `docs/runbook/` is ETL-categorised.
+| Runbook | 1-line description | Last updated |
+|---|---|---|
+| [incident_response_db_boot_hang.md](incident_response_db_boot_hang.md) | Original DB boot hang playbook. | 2026-05-12 |
+| [incident_response_db_boot_hang_v2.md](incident_response_db_boot_hang_v2.md) | 4-RC refresh (post Wave 13 §2 + Wave 18 §4 fix). | 2026-05-12 |
+| [incident_response_v3_multi_root_cause.md](incident_response_v3_multi_root_cause.md) | v3 multi-RC deploy incident response. | 2026-05-12 |
+| [fly_machine_oom.md](fly_machine_oom.md) | Diagnose Fly machine OOM + remediation. | 2026-05-07 |
+| [cloudflare_abuse_mitigation.md](cloudflare_abuse_mitigation.md) | DDoS / abuse mitigation procedure. | 2026-05-07 |
+| [db_corruption_recovery.md](db_corruption_recovery.md) | SQLite WAL / page-checksum corruption recovery. | 2026-05-07 |
+
+### ETL — data ingest / batch transform
+
+| Runbook | 1-line description | Last updated |
+|---|---|---|
+| [aws_credit_run_workflows.md](aws_credit_run_workflows.md) | 4 GHA workflows for the AWS-credit-burn run. | 2026-05-16 |
+| [aws_credit_sagemaker_embed_batch.md](aws_credit_sagemaker_embed_batch.md) | SageMaker batch transform recipe (NO LLM). | 2026-05-16 |
+| [playwright_fallback.md](playwright_fallback.md) | Wave 36 horizontal data-collection fallback wire. | 2026-05-12 |
+
+Additional ETL artefacts live under `tools/offline/` (see `tools/offline/README.md`)
+and `scripts/etl/` (no per-script runbook; each script is self-documenting via `--help`).
+
+### billing — Stripe / refund / dispute
+
+| Runbook | 1-line description | Last updated |
+|---|---|---|
+| [stripe_chargeback_response.md](stripe_chargeback_response.md) | Stripe chargeback response procedure. | 2026-05-07 |
+
+### monitoring — additions (Wave 37–Wave 50)
+
+| Runbook | 1-line description | Last updated |
+|---|---|---|
+| [sentry_alert_escalation.md](sentry_alert_escalation.md) | Sentry alert escalation matrix + first-response checklist. | 2026-05-07 |
+| [cron_schedule_master.md](cron_schedule_master.md) | Wave 37 SOT for every scheduled GHA workflow. | 2026-05-16 |
+| [gmail_filter_github_noise.md](gmail_filter_github_noise.md) | Gmail filter rules for GitHub Actions notifications. | 2026-05-12 |
+| [privacy_router_activation.md](privacy_router_activation.md) | Flip APPI §31 + §33 routers from gated-off to live. | 2026-05-12 |
+
+### secret — additions (Wave 36–Wave 50)
+
+| Runbook | 1-line description | Last updated |
+|---|---|---|
+| [r2_token_rotation_post_chat_share.md](r2_token_rotation_post_chat_share.md) | R2 token rotation after chat-share leak. | 2026-05-07 |
+| [customer_webhook_signature.md](customer_webhook_signature.md) | Outbound webhook signature format. | 2026-05-16 |
+
+### deploy — additions (Wave 36–Wave 50)
+
+| Runbook | 1-line description | Last updated |
+|---|---|---|
+| [oauth_clients_setup.md](oauth_clients_setup.md) | Provision Google + GitHub OAuth client IDs. | 2026-05-07 |
+| [stripe_live_activation.md](stripe_live_activation.md) | Flip Stripe from test to live mode. | 2026-05-07 |
+
+### brand — additions (Wave 36–Wave 50)
+
+| Runbook | 1-line description | Last updated |
+|---|---|---|
+| [cloudflare_redirect.md](cloudflare_redirect.md) | CF Rules to 301-redirect legacy domains → jpcite.com. | 2026-05-13 |
 
 ---
 

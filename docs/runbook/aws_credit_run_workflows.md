@@ -1,3 +1,10 @@
+---
+title: AWS credit run — GHA workflows
+updated: 2026-05-16
+operator_only: true
+category: ETL
+---
+
 # AWS credit run — GHA workflows
 
 Operator runbook for the 4 GitHub Actions workflows that orchestrate the

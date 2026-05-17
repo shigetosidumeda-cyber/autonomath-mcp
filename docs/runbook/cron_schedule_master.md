@@ -1,3 +1,10 @@
+---
+title: Cron Schedule Master Plan (Wave 37 SOT)
+updated: 2026-05-16
+operator_only: true
+category: monitoring
+---
+
 # Cron Schedule Master Plan (Wave 37 SOT)
 
 > **Status**: Authoritative single-source-of-truth for every scheduled GitHub

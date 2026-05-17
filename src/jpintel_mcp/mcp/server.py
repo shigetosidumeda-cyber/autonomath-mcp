@@ -9705,6 +9705,22 @@ if settings.autonomath_enabled:
         logger.warning("cohort_resources registration skipped: %r", _cohort_exc)
     # === END DEEP-34 cohort persona kit ====================================
 
+    # === Harness H8 P1.2 — jpcite-namespaced MCP resources + prompts ======
+    # Wires the 5 mcp://jpcite/* resources and 3 jpcite prompts into the
+    # FastMCP server singleton. Idempotent + non-fatal on FastMCP version
+    # mismatch. See docs/_internal/HARNESS_H7_H8_2026_05_17.md.
+    try:
+        from jpintel_mcp.mcp.jpcite_resources import register_jpcite_resources
+        register_jpcite_resources(mcp)
+    except Exception as _jpcite_res_exc:  # pragma: no cover — non-fatal
+        logger.warning("jpcite_resources registration skipped: %r", _jpcite_res_exc)
+    try:
+        from jpintel_mcp.mcp.jpcite_prompts import register_jpcite_prompts
+        register_jpcite_prompts(mcp)
+    except Exception as _jpcite_pro_exc:  # pragma: no cover — non-fatal
+        logger.warning("jpcite_prompts registration skipped: %r", _jpcite_pro_exc)
+    # === END Harness H8 P1.2 jpcite resources + prompts ===================
+
     # Re-export the registered _am tool under its short name so callers
     # can `from jpintel_mcp.mcp.server import search_acceptance_stats`.
     # `prefecture` is accepted as an alias for the underlying `region`

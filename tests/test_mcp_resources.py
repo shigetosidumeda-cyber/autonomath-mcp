@@ -61,6 +61,20 @@ EXPECTED_COHORT_RESOURCES = {
     "autonomath://cohort/tax_advisor.yaml",
 }
 
+# Harness H8 P1.2 — 5 jpcite-namespaced resources wired at boot.
+EXPECTED_JPCITE_RESOURCES = {
+    "mcp://jpcite/facts_registry.json",
+    "mcp://jpcite/legal/fence.md",
+    "mcp://jpcite/glossary.json",
+    "mcp://jpcite/license_matrix.json",
+    "mcp://jpcite/sources_catalog.json",
+}
+EXPECTED_JPCITE_PROMPTS = {
+    "company_folder_intake",
+    "monthly_client_review",
+    "counterparty_dd",
+}
+
 
 def _purge_modules() -> None:
     """Drop cached modules so each test re-imports under fresh env."""
@@ -111,6 +125,18 @@ def _list_resources(mcp) -> list:
 
 def _autonomath_uris(resources) -> set[str]:
     return {str(r.uri) for r in resources if str(r.uri).startswith("autonomath://")}
+
+
+def _jpcite_uris(resources) -> set[str]:
+    """Return jpcite-namespaced resource URIs (Harness H8 P1.2)."""
+    out: set[str] = set()
+    for r in resources:
+        u = str(r.uri)
+        if u.startswith("mcp://jpcite/"):
+            out.add(u)
+        elif u.startswith("jpcite/"):
+            out.add("mcp://" + u)
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -300,3 +326,40 @@ def test_legacy_static_tools_still_registered(fresh_mcp):
         "get_example_profile_am",
     ):
         assert legacy in tool_names, f"legacy tool {legacy} accidentally removed"
+
+# ---------------------------------------------------------------------------
+# Harness H8 P1.2 — mcp://jpcite/* resources + prompts.
+# ---------------------------------------------------------------------------
+
+
+def test_jpcite_resources_registered_at_boot(fresh_mcp):
+    """All 5 mcp://jpcite/* resources must surface in list_resources()."""
+    res = _list_resources(fresh_mcp)
+    jpcite = _jpcite_uris(res)
+    missing = EXPECTED_JPCITE_RESOURCES - jpcite
+    assert not missing, f"missing jpcite resources: {missing} (got: {jpcite})"
+
+
+def test_jpcite_resources_read_via_registry(fresh_mcp):
+    from jpintel_mcp.mcp.jpcite_resources import read_jpcite_resource
+
+    for uri in EXPECTED_JPCITE_RESOURCES:
+        payload = read_jpcite_resource(uri)
+        assert "contents" in payload
+        text = payload["contents"][0]["text"]
+        assert isinstance(text, str) and len(text) > 0
+
+
+def test_jpcite_prompts_registered_at_boot(fresh_mcp):
+    from jpintel_mcp.mcp.jpcite_prompts import list_jpcite_prompts
+
+    catalogue = {p["name"] for p in list_jpcite_prompts()}
+    missing = EXPECTED_JPCITE_PROMPTS - catalogue
+    assert not missing
+
+
+def test_jpcite_resource_unknown_uri_raises(fresh_mcp):
+    from jpintel_mcp.mcp.jpcite_resources import read_jpcite_resource
+
+    with pytest.raises(KeyError):
+        read_jpcite_resource("mcp://jpcite/does_not_exist.json")

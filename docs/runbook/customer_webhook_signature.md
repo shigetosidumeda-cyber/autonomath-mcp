@@ -1,3 +1,10 @@
+---
+title: Customer webhook signature format
+updated: 2026-05-16
+operator_only: true
+category: secret
+---
+
 # Customer webhook signature format
 
 Reference for customers integrating jpcite outbound webhooks

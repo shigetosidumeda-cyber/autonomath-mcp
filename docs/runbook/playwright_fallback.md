@@ -1,3 +1,10 @@
+---
+title: Playwright fallback wire
+updated: 2026-05-12
+operator_only: true
+category: ETL
+---
+
 # Playwright fallback wire — runbook
 
 Wave 36 horizontal data-collection hardening. Every ETL / cron ingest

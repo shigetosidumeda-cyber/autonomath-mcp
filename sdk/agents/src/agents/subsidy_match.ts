@@ -5,11 +5,11 @@
 //         source URLs + jpcite corpus snapshot id + sensitive-surface
 //         disclaimers).
 //
-// Pipeline:
-//   1. /v1/am/houjin/{法人番号}/snapshot                   → 法人 360
-//   2. /v1/am/recommend/{法人番号}                          → top-N programs
-//   3. /v1/programs/check_exclusions                        → drop combo-banned hits
-//   4. /v1/am/program/{unified_id}/adoption_stats (top 3)   → success rate context
+// Pipeline (routes migrated under Harness H6, 2026-05-17):
+//   1. GET  /v1/houjin/{法人番号}/360                            -> 法人 360
+//   2. POST /v1/am/recommend                                     -> top-N programs
+//   3. POST /v1/exclusions/check                                 -> drop combo-banned hits
+//   4. GET  /v1/am/programs/{program_id}/adoption_stats (top 3)  -> success rate context
 //
 // Customer-side LLM: optional `llm` callable can be passed to ask Claude to
 // rerank, summarize, or filter the recommendation set. The jpcite operator

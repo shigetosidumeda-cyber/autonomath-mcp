@@ -1,3 +1,10 @@
+---
+title: Privacy router activation (APPI §31 / §33)
+updated: 2026-05-12
+operator_only: true
+category: monitoring
+---
+
 # Privacy router activation runbook (APPI §31 / §33)
 
 `/v1/privacy/disclosure_request` (APPI §31 個人情報開示請求) and

@@ -7,9 +7,11 @@
 Companion docs:
 
 - `docs/_internal/operators_playbook.md` — full incident / refund / abuse procedures
-- `docs/solo_ops_handoff.md` — Scenario-10 successor handoff (NOT for daily use)
+- `docs/_internal/CURRENT_SOT_2026-05-17.md` — current SOT pointer
+- `docs/runbook/README.md` — 33-runbook index
 - `docs/operator_dashboard_walkthrough.md` — dashboard / stats / testimonials / alerts UI walk
-- `docs/hiring_decision_gate.md` — D1 references for the monthly hire-decision self-eval
+- `docs/hallucination_guard_methodology.md` — guard methodology
+- `docs/invariant_runbook.md` — weekly invariant cadence
 
 ---
 
@@ -188,7 +190,7 @@ ls -la analysis_wave18/invariant_runs/$(date -u +%Y-%m-%d).json
 
 ### 5.1 hire decision gate self-eval (60 min)
 
-`docs/hiring_decision_gate.md` の D1 references を順に評価:
+`docs/_internal/CURRENT_SOT_2026-05-17.md` + `research/hire_decision_*.md` の過去結論を起点に評価:
 
 1. trigger 1-4 のうち発火しているか (測定値ベース)
 2. 当月の operator hours actual (`research/ops_log_*.md` 集計)
@@ -197,7 +199,7 @@ ls -la analysis_wave18/invariant_runs/$(date -u +%Y-%m-%d).json
 
 ### 5.2 DR drill 1 件 (60 min)
 
-`docs/disaster_recovery.md` の Scenario 1-9 から 1 つ選択 (毎月 rotation、9 ヶ月で 1 周):
+`docs/runbook/disaster_recovery.md` + `docs/runbook/db_corruption_recovery.md` + `docs/runbook/litestream_setup.md` + `docs/runbook/incident_response_v3_multi_root_cause.md` から 1 つ選択 (毎月 rotation):
 
 1. staging 環境で scenario を再現
 2. RTO/RPO 実測
@@ -240,6 +242,7 @@ ls -la analysis_wave18/invariant_runs/$(date -u +%Y-%m-%d).json
 - 朝 stats: `scripts/ops_quick_stats.py` (read-only)
 - refund 助言: `scripts/ops_refund_helper.py` (read-only, advisory のみ)
 - 旧 weekly stats: `scripts/support_stats.py` (Monday ritual で併用可)
-- 詳細 incident: `docs/_internal/incident_runbook.md`
-- DR scenarios: `docs/disaster_recovery.md`
-- 後継 hand-off: `docs/solo_ops_handoff.md`
+- 詳細 incident: `docs/_internal/incident_runbook.md` + `docs/runbook/incident_response_v3_multi_root_cause.md`
+- DR scenarios: `docs/runbook/disaster_recovery.md` + `docs/runbook/db_corruption_recovery.md` + `docs/runbook/litestream_setup.md`
+- 全 runbook index: `docs/runbook/README.md` (33 件)
+- 当日 SOT: `docs/_internal/CURRENT_SOT_2026-05-17.md`

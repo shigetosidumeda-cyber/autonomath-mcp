@@ -87,7 +87,12 @@ class Jpcite {
     return this.fetch<Enforcement>("GET", `/v1/enforcements/${encodeURIComponent(id)}`);
   }
   checkExclusions(houjinBangou: string, programId: string): Promise<ExclusionCheckResponse> {
-    return this.fetch<ExclusionCheckResponse>("GET", `/v1/exclusion/check?houjin_bangou=${encodeURIComponent(houjinBangou)}&program_id=${encodeURIComponent(programId)}`);
+    // Harness H6 (2026-05-17): canonical route is POST /v1/exclusions/check.
+    return this.fetch<ExclusionCheckResponse>(
+      "POST",
+      `/v1/exclusions/check`,
+      { program_ids: [programId], houjin_bangou: houjinBangou || undefined },
+    );
   }
   searchTaxIncentives(p: TaxIncentiveSearchParams = {}): Promise<TaxIncentiveSearchResponse> {
     return this.fetch<TaxIncentiveSearchResponse>("GET", `/v1/tax-incentives/search?${new URLSearchParams(p as any).toString()}`);
@@ -696,7 +701,8 @@ export class JpciteClient {
    */
   async getHoujin360(houjinBangou: string): Promise<Houjin360Snapshot> {
     if (!houjinBangou) throw new TypeError("houjinBangou is required");
-    const path = `/v1/am/houjin/${encodeURIComponent(houjinBangou)}/snapshot`;
+    // Harness H6 (2026-05-17): legacy /v1/am/houjin/{id}/snapshot -> /v1/houjin/{bangou}/360.
+    const path = `/v1/houjin/${encodeURIComponent(houjinBangou)}/360`;
     return this.rest.fetch<Houjin360Snapshot>("GET", path);
   }
 
@@ -713,14 +719,16 @@ export class JpciteClient {
     options: { limit?: number; tier?: Array<"S" | "A" | "B" | "C"> } = {},
   ): Promise<{ results: ProgramRecommendation[]; _disclaimer?: string }> {
     if (!houjinBangou) throw new TypeError("houjinBangou is required");
-    const qs = new URLSearchParams();
-    qs.append("limit", String(options.limit ?? 10));
-    for (const t of options.tier ?? []) qs.append("tier", t);
-    const path = `/v1/am/recommend/${encodeURIComponent(houjinBangou)}?${qs.toString()}`;
+    // Harness H6 (2026-05-17): legacy GET /v1/am/recommend/{id} -> POST /v1/am/recommend.
+    const body: Record<string, unknown> = {
+      houjin_bangou: houjinBangou,
+      limit: options.limit ?? 10,
+    };
+    if (options.tier && options.tier.length > 0) body.tier = options.tier;
     return this.rest.fetch<{
       results: ProgramRecommendation[];
       _disclaimer?: string;
-    }>("GET", path);
+    }>("POST", "/v1/am/recommend", body);
   }
 
   /**
@@ -729,7 +737,8 @@ export class JpciteClient {
    */
   async getProgramAdoptionStats(unifiedId: string): Promise<ProgramAdoptionStats> {
     if (!unifiedId) throw new TypeError("unifiedId is required");
-    const path = `/v1/am/program/${encodeURIComponent(unifiedId)}/adoption_stats`;
+    // Harness H6 (2026-05-17): singular "program" -> plural "programs".
+    const path = `/v1/am/programs/${encodeURIComponent(unifiedId)}/adoption_stats`;
     return this.rest.fetch<ProgramAdoptionStats>("GET", path);
   }
 
@@ -753,7 +762,8 @@ export class JpciteClient {
     qs.append("since", sinceIso);
     qs.append("limit", String(options.limit ?? 50));
     qs.append("offset", String(options.offset ?? 0));
-    const path = `/v1/am/amendments/recent?${qs.toString()}`;
+    // Harness H6 (2026-05-17): legacy /v1/am/amendments/recent -> /v1/me/amendment_alerts/feed.
+    const path = `/v1/me/amendment_alerts/feed?${qs.toString()}`;
     return this.rest.fetch<{
       total: number;
       limit: number;
@@ -779,7 +789,8 @@ export class JpciteClient {
     source_fetched_at: string | null;
   }> {
     if (!houjinBangou) throw new TypeError("houjinBangou is required");
-    const path = `/v1/am/invoice_registrants/${encodeURIComponent(houjinBangou)}`;
+    // Harness H6 (2026-05-17): canonical lookup-by-houjin-bangou route.
+    const path = `/v1/houjin/${encodeURIComponent(houjinBangou)}/invoice_status`;
     return this.rest.fetch("GET", path);
   }
 
