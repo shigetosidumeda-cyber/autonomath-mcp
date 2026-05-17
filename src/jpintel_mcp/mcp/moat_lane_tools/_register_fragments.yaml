@@ -29,5 +29,10 @@
 #   Backed by am_outcome_chunk_map (migration wave24_220).
 #   Saves Opus 4.7 reasoning + FAISS 50ms × 5 calls.
 #   ¥3/req vs ~¥250 Opus chain. Tier A (¥3, 1 unit).
+# GG7 — 432 outcome × 5 cohort variant fan-out (2,160 rows).
+#   Backed by am_outcome_cohort_variant (migration wave24_221).
+#   Pre-computed cohort-specific gloss + next_step + cohort saving.
+#   ¥3/req vs ~¥300 Opus chain. Tier A (¥3, 1 unit).
 submodules:
   - get_outcome_with_chunks
+  - get_outcome_for_cohort
