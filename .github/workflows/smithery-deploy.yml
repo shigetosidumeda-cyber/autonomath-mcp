@@ -44,7 +44,7 @@ jobs:
       REPOSITORY_URL: "https://github.com/shigetosidumeda-cyber/autonomath-mcp"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Validate smithery.yaml id pin
         run: |

@@ -37,7 +37,7 @@ jobs:
       DEEP58_OUT_DIR: analytics
     steps:
       - name: Checkout (full history for fingerprint)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
