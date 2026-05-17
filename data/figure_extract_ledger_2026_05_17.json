@@ -1,0 +1,2462 @@
+{
+  "ledger_id": "figure_extract_2026_05_17",
+  "generated_at_utc": "2026-05-17T02:27:38.839473Z",
+  "profile": "bookyou-recovery",
+  "stage_bucket": "jpcite-credit-textract-apse1-202605",
+  "derived_bucket": "jpcite-credit-993693061769-202605-derived",
+  "derived_prefix": "figures_raw",
+  "manifest": "data/textract_bulk_2026_05_17_manifest.json",
+  "metrics": {
+    "pdfs_seen": 30,
+    "pdfs_with_figures": 10,
+    "figures_extracted": 135,
+    "figures_skipped_tiny": 90,
+    "s3_puts": 135,
+    "bytes_uploaded": 6843363,
+    "errors": [
+      "27f1c1e86cb3474336eec71f341d150caf84d58095f94c25d64f50d909130938: An error occurred (404) when calling the HeadObject operation: Not Found",
+      "326dca577b03d2d078fc811666cf8e9178feb0439db27a3993453a57b9195540: An error occurred (404) when calling the HeadObject operation: Not Found",
+      "30cbe28b08fc9621106995259ca611f1f3ae7930145158e4ded519bc7cc14afe: An error occurred (404) when calling the HeadObject operation: Not Found"
+    ],
+    "error_count": 3
+  },
+  "estimate": {
+    "pdfs_considered": 30,
+    "estimated_figures": 240,
+    "estimated_put_cost_usd": 0.0012,
+    "budget_usd": 5.0,
+    "fits_budget": true
+  },
+  "records": [
+    {
+      "figure_id": "fig_e15435586c52_0004_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 4,
+      "figure_idx": 0,
+      "bbox_x": 85.0749740600586,
+      "bbox_y": 162.05010986328125,
+      "bbox_w": 422.81653594970703,
+      "bbox_h": 306.38336181640625,
+      "caption": "2 \n \n表島や石垣島の周辺に発達した湾や裾礁などを含むように設定（右図の黄色い線で囲まれ\nた区域）。 \n \n \n \n自然再生に関連する活動を行う区域 \n上記（1）および（2）の海域、並びにその海域に囲まれる陸域。",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 109
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0004_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0006_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 6,
+      "figure_idx": 0,
+      "bbox_x": 86.55007934570312,
+      "bbox_y": 375.24993896484375,
+      "bbox_w": 424.9499816894531,
+      "bbox_h": 294.3499755859375,
+      "caption": "4 \n \n3．石西礁湖の現状 \nサンゴ群集の分布 \n 石西礁湖自然再生協議会では、1983 年から実施してきた環境省の調査データ等を用いて、\n石西礁湖を中心としたサンゴ群集の現況をわかりやすく視覚化した「現況把握マップ」を作\n成しました。生きたサンゴがこれまでで最も多かった状態と比較すると、近年（2018～2020\n年）は石西礁湖の多くの地点でサンゴ被度が低下していることがわかります。 \n「モニタ",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0006_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0007_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 7,
+      "figure_idx": 0,
+      "bbox_x": 85.09999084472656,
+      "bbox_y": 104.49996948242188,
+      "bbox_w": 425.1499481201172,
+      "bbox_h": 133.29177856445312,
+      "caption": "5 \n \n \n※石西礁湖モニタリングサイト1000 調査結果より作成、ただし1973 年については沖縄県土地利用基本計\n画（Ⅱ）付属資料 沖縄の自然環境（1974 年2 月15 日 政策科学研究所）より作成 \n \nサンゴ礁を取り巻く状況 \nサンゴ礁生態系は白化現象やオニヒトデの食害の影響を受けますが、他にも農地や開発\n地からの赤土の流出、生活排水、サンゴ礁海域でのマリンレジャーなどサンゴ礁をとりま",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "table_image",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0007_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0009_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 9,
+      "figure_idx": 0,
+      "bbox_x": 85.0500717163086,
+      "bbox_y": 405.6999816894531,
+      "bbox_w": 424.58475494384766,
+      "bbox_h": 323.1000671386719,
+      "caption": "7 \n \n4．石西礁湖自然再生全体構想の概要 \n石西礁湖自然再生の目標 \n 石西礁湖自然再生全体構想では、2007 年に長期目標（達成期間30 年：2037 年）と短期\n目標（達成期間10 年：2017 年）を次のとおり定めました。 \n \n【長期目標】人と自然の健全な関わりを実現し、1972 年の国立公園指定当時の豊かなサン\nゴ礁の姿を取り戻す。 \n【短期目標】サンゴ礁生態系の回復のきざしが見られ",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0009_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0010_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 10,
+      "figure_idx": 0,
+      "bbox_x": 85.07495880126953,
+      "bbox_y": 302.49993896484375,
+      "bbox_w": 424.5607223510742,
+      "bbox_h": 150.83477783203125,
+      "caption": "8 \n \n なお、短期目標については、現状ではサンゴ礁生態系に明確な回復のきざしは見られてい\nないことから、2017 年以降も継続した目標としています。 \n \n石西礁湖自然再生の原則 \n 石西礁湖における自然再生では、マングローブ林、藻場、干潟を含むサンゴ礁域の自然再\n生を目指し、サンゴ群集の修復だけではなく、サンゴ礁域に関連する生態系についても、必\n要な取り組みを進めています。 \n そして、サン",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0010_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0011_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 11,
+      "figure_idx": 0,
+      "bbox_x": 85.05007934570312,
+      "bbox_y": 177.6251220703125,
+      "bbox_w": 428.8020324707031,
+      "bbox_h": 293.23028564453125,
+      "caption": "9 \n \n展開すべき取組 \n 石西礁湖自然再生の目標を達成するために展開すべき取り組みは、大きく６つあります。",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 67
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0011_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0017_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 17,
+      "figure_idx": 0,
+      "bbox_x": 108.8499984741211,
+      "bbox_y": 249.5999755859375,
+      "bbox_w": 377.66468048095703,
+      "bbox_h": 419.33905029296875,
+      "caption": "15 \n \n6．2024―2028 の取組 \n『行動計画2024-2028』の取組方針 \n 石西礁湖自然再生全体構想の長期目標（2037 年）である「人と自然の健全な関わりを実\n現し、1972 年の国立公園指定当時の豊かなサンゴ礁の姿を取り戻す」の達成に向けて、私\nたちは2028 年までの5 年間、次の3 つの取組分野、15 の取組方針に基づき、取り組みを\n実施します。",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 198
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0017_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0018_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 18,
+      "figure_idx": 0,
+      "bbox_x": 85.09999084472656,
+      "bbox_y": 99.5999755859375,
+      "bbox_w": 425.1499481201172,
+      "bbox_h": 557.2706298828125,
+      "caption": "16",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 16
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0018_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0019_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 19,
+      "figure_idx": 0,
+      "bbox_x": 85.09999084472656,
+      "bbox_y": 102.95001220703125,
+      "bbox_w": 425.1499481201172,
+      "bbox_h": 550.4369506835938,
+      "caption": "17",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 10
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0019_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0020_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 20,
+      "figure_idx": 0,
+      "bbox_x": 85.09999084472656,
+      "bbox_y": 104.29998779296875,
+      "bbox_w": 425.1499481201172,
+      "bbox_h": 547.8646240234375,
+      "caption": "18",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 14
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0020_000.png"
+    },
+    {
+      "figure_id": "fig_e15435586c52_0028_000",
+      "pdf_sha256": "e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c",
+      "source_url": "http://sekiseisyouko.com/szn/pdf/conf/kyougikai33/shiryo07.pdf",
+      "page_no": 28,
+      "figure_idx": 0,
+      "bbox_x": 85.07496643066406,
+      "bbox_y": 209.25,
+      "bbox_w": 424.50999450683594,
+      "bbox_h": 320.0089111328125,
+      "caption": "26 \n \n8．フォローアップと見直し \n取組の実施状況については、協議会・各部会を毎年度開催し、進捗状況や課題を共有して\nいきます。３つの取組分野は概ね３つの部会に対応していますので、各部会で取組の実施状\n況を共有するとともに、取組数の少ない取組方針の展開や課題などの意見交換を行います。 \n \n \n  \n 各部会の結果は協議会で報告することとし、部会間の情報共有および協議会全体での意\n見交換を行",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/e15435586c52bf2ffbf18b8212b08a47cc5e71f3c30f815fe37a81757d0da39c/0028_000.png"
+    },
+    {
+      "figure_id": "fig_67691b2ff632_0001_000",
+      "pdf_sha256": "67691b2ff6323974d2ab462cf1a6c831808b5f8fd38fb5f96ee43015a8783493",
+      "source_url": "http://www.qsr.mlit.go.jp/n-park/construction/pdf/kyokahiyou.pdf",
+      "page_no": 1,
+      "figure_idx": 0,
+      "bbox_x": 365.46002197265625,
+      "bbox_y": 30.989501953125,
+      "bbox_w": 165.239990234375,
+      "bbox_h": 344.6399841308594,
+      "caption": "１０万円の許可手数料\n５万円の許可手数料\n更\n新\n１０万円の許可手数料\n５万円の許可手数料\n業種追加\n１５万円の登録免許税\n般・特新規\n３０万円の登録免許税\n１５万円の登録免許税\n許可換え新規\n３０万円の登録免許税\n１５万円の登録免許税\n新\n規\n一般建設業許可及び特定建設業許可の\n両方を同時に申請する場合\n一般建設業許可又は特定建設業許可の\nいずれか一方のみを申請する場合\n国土交通大臣許可に係る費",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/67691b2ff6323974d2ab462cf1a6c831808b5f8fd38fb5f96ee43015a8783493/0001_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0001_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 1,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0001_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0002_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 2,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0002_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0003_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 3,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0003_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0004_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 4,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0004_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0005_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 5,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0005_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0006_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 6,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0006_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0007_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 7,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0007_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0008_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 8,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0008_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0009_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 9,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 841.6799926757812,
+      "bbox_h": 595.2000122070312,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0009_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0010_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 10,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 595.2000122070312,
+      "bbox_h": 841.6799926757812,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0010_000.png"
+    },
+    {
+      "figure_id": "fig_a14bbcf916f7_0011_000",
+      "pdf_sha256": "a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b",
+      "source_url": "https://anka-kashi.com/images/statistics/r06.pdf",
+      "page_no": 11,
+      "figure_idx": 0,
+      "bbox_x": 0.0,
+      "bbox_y": 0.0,
+      "bbox_w": 595.2000122070312,
+      "bbox_h": 841.6799926757812,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 0
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/a14bbcf916f76907acec4a51d017602239773f604006364fc44f493ea16b290b/0011_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0001_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 1,
+      "figure_idx": 0,
+      "bbox_x": 792.780029296875,
+      "bbox_y": 16.560012817382812,
+      "bbox_w": 141.9000244140625,
+      "bbox_h": 68.81999206542969,
+      "caption": "ドラッグ・ロスに対するPMDAの取り組み\n2024/02/17\n第\n回抗悪性腫瘍薬開発フォーラム\n35\n独立行政法人医薬品医療機器総合機構（PMDA）\n理事長\n藤原康弘\n1\nCOI開示：開示すべきCOI関係にある企業などはありません",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 117
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0001_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0015_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 15,
+      "figure_idx": 0,
+      "bbox_x": 132.83999633789062,
+      "bbox_y": 141.89999389648438,
+      "bbox_w": 323.56890869140625,
+      "bbox_h": 330.3056945800781,
+      "caption": "国際誕生日を与えた新医薬品の\n審査報告書の要約\nOncologist 28(8):664-670, 2023 (Aug) \ndoi: 10.1093/oncolo/oyad041\nOncologist 26(7):e1250-e1255, 2021(July) \ndoi: 10.1002/onco.13805\n欧米の専門一流学術誌に審査結果欄を。まずがん領域で。\nIF 5.8\nIF 5.8\n15",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0015_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0015_001",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 15,
+      "figure_idx": 1,
+      "bbox_x": 480.71990966796875,
+      "bbox_y": 142.38009643554688,
+      "bbox_w": 330.64312744140625,
+      "bbox_h": 330.3153076171875,
+      "caption": "国際誕生日を与えた新医薬品の\n審査報告書の要約\nOncologist 28(8):664-670, 2023 (Aug) \ndoi: 10.1093/oncolo/oyad041\nOncologist 26(7):e1250-e1255, 2021(July) \ndoi: 10.1002/onco.13805\n欧米の専門一流学術誌に審査結果欄を。まずがん領域で。\nIF 5.8\nIF 5.8\n15",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0015_001.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0016_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 16,
+      "figure_idx": 0,
+      "bbox_x": 139.01998901367188,
+      "bbox_y": 101.94000244140625,
+      "bbox_w": 305.5506286621094,
+      "bbox_h": 347.74224853515625,
+      "caption": "学会等との協働でガイドライン作成\nCancer Sci 112(7):2563-2577, 2021 (July) \ndoi: 10.1111/cas.14967\nIF 5.7\nClin Pharmacol Ther Aug 3 2023 epub\ndoi: 10.1002/cpt.3006.\nIF 6.7\n16",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 158
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0016_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0016_001",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 16,
+      "figure_idx": 1,
+      "bbox_x": 466.25994873046875,
+      "bbox_y": 101.94003295898438,
+      "bbox_w": 344.1605224609375,
+      "bbox_h": 347.7463684082031,
+      "caption": "学会等との協働でガイドライン作成\nCancer Sci 112(7):2563-2577, 2021 (July) \ndoi: 10.1111/cas.14967\nIF 5.7\nClin Pharmacol Ther Aug 3 2023 epub\ndoi: 10.1002/cpt.3006.\nIF 6.7\n16",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 158
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0016_001.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 0,
+      "bbox_x": 105.18000793457031,
+      "bbox_y": 249.23997497558594,
+      "bbox_w": 49.91999816894531,
+      "bbox_h": 34.02000427246094,
+      "caption": "個別品目の審査における規制当局間の連携\n○PMDAは、外国の規制当局との意見交換・コミュニケーションをとりつつ、審査を進めている。\n抗悪性腫瘍薬クラスター\nProject Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANV",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_001",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 1,
+      "bbox_x": 37.07999801635742,
+      "bbox_y": 249.239990234375,
+      "bbox_w": 54.71999740600586,
+      "bbox_h": 34.019989013671875,
+      "caption": "個別品目の審査における規制当局間の連携\n○PMDAは、外国の規制当局との意見交換・コミュニケーションをとりつつ、審査を進めている。\n抗悪性腫瘍薬クラスター\nProject Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_001.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_005",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 5,
+      "bbox_x": 811.2000122070312,
+      "bbox_y": 248.0999755859375,
+      "bbox_w": 33.0,
+      "bbox_h": 32.279998779296875,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_005.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_006",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 6,
+      "bbox_x": 855.780029296875,
+      "bbox_y": 245.82000732421875,
+      "bbox_w": 36.84002685546875,
+      "bbox_h": 36.839996337890625,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_006.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_007",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 7,
+      "bbox_x": 901.199951171875,
+      "bbox_y": 244.49996948242188,
+      "bbox_w": 39.9000244140625,
+      "bbox_h": 39.660003662109375,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_007.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_008",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 8,
+      "bbox_x": 168.47999572753906,
+      "bbox_y": 249.23997497558594,
+      "bbox_w": 49.25999450683594,
+      "bbox_h": 34.02000427246094,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_008.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_009",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 9,
+      "bbox_x": 231.11997985839844,
+      "bbox_y": 249.239990234375,
+      "bbox_w": 51.36000061035156,
+      "bbox_h": 34.019989013671875,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_009.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_010",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 10,
+      "bbox_x": 359.5799560546875,
+      "bbox_y": 249.239990234375,
+      "bbox_w": 51.779998779296875,
+      "bbox_h": 34.019989013671875,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_010.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_011",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 11,
+      "bbox_x": 295.8600158691406,
+      "bbox_y": 249.2399444580078,
+      "bbox_w": 50.339996337890625,
+      "bbox_h": 34.02000427246094,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_011.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_012",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 12,
+      "bbox_x": 493.01995849609375,
+      "bbox_y": 248.0999755859375,
+      "bbox_w": 33.72003173828125,
+      "bbox_h": 32.279998779296875,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_012.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0018_015",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 18,
+      "figure_idx": 15,
+      "bbox_x": 623.7000122070312,
+      "bbox_y": 248.0999755859375,
+      "bbox_w": 34.5,
+      "bbox_h": 32.279998779296875,
+      "caption": "Project Orbis\n抗悪性腫瘍薬の審査に関する\n規制当局間の意見交換と情報共有\nテレカンファレンスを毎月開催\nPMDA\nFDA\nEMA\nSMC\nTGA\nHC\nPMDA\nFDA\nHSA\nSMC\nTGA\nHC\nMHRA IMOH\nANVISA\n米国FDAが主導する、抗悪性腫瘍薬の\n共同審査/審査情報共有のプロジェクト\n日本もオブザーバーとして参画\nEMA\n(observers)\n18",
+      "caption_quote_span": {
+        "start_char": 77,
+        "end_char": 278
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0018_015.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 0,
+      "bbox_x": 138.36000061035156,
+      "bbox_y": 149.57998657226562,
+      "bbox_w": 155.5096893310547,
+      "bbox_h": 98.4736328125,
+      "caption": "PIC/S事務局（ジュネーブ）への職員の派遣\nGMPの国際調和活動に従事\nWHOと情報共有・議論\nWHOの協力を得ながら、\nアジア当局との連携強化\nアジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築の",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_001",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 1,
+      "bbox_x": 535.7058715820312,
+      "bbox_y": 86.83444213867188,
+      "bbox_w": 109.138916015625,
+      "bbox_h": 102.68475341796875,
+      "caption": "PIC/S事務局（ジュネーブ）への職員の派遣\nGMPの国際調和活動に従事\nWHOと情報共有・議論\nWHOの協力を得ながら、\nアジア当局との連携強化\nアジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_001.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_002",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 2,
+      "bbox_x": 262.1979675292969,
+      "bbox_y": 264.8675537109375,
+      "bbox_w": 128.3414306640625,
+      "bbox_h": 141.41192626953125,
+      "caption": "PIC/S事務局（ジュネーブ）への職員の派遣\nGMPの国際調和活動に従事\nWHOと情報共有・議論\nWHOの協力を得ながら、\nアジア当局との連携強化\nアジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_002.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_003",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 3,
+      "bbox_x": 683.5199584960938,
+      "bbox_y": 345.53997802734375,
+      "bbox_w": 105.41552734375,
+      "bbox_h": 88.27713012695312,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_003.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_004",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 4,
+      "bbox_x": 644.8800659179688,
+      "bbox_y": 148.07989501953125,
+      "bbox_w": 182.0679931640625,
+      "bbox_h": 64.4615478515625,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_004.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_005",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 5,
+      "bbox_x": 288.5343017578125,
+      "bbox_y": 107.32946014404297,
+      "bbox_w": 112.6690673828125,
+      "bbox_h": 123.8281478881836,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_005.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_006",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 6,
+      "bbox_x": 713.9783935546875,
+      "bbox_y": 216.0352325439453,
+      "bbox_w": 127.306396484375,
+      "bbox_h": 130.9407501220703,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_006.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_007",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 7,
+      "bbox_x": 516.6048583984375,
+      "bbox_y": 325.7513427734375,
+      "bbox_w": 146.4578857421875,
+      "bbox_h": 144.87286376953125,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_007.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_008",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 8,
+      "bbox_x": 262.1979675292969,
+      "bbox_y": 264.8675537109375,
+      "bbox_w": 128.3414306640625,
+      "bbox_h": 141.41192626953125,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_008.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_009",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 9,
+      "bbox_x": 409.3800048828125,
+      "bbox_y": 88.5,
+      "bbox_w": 114.41998291015625,
+      "bbox_h": 73.896240234375,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_009.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_010",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 10,
+      "bbox_x": 396.719970703125,
+      "bbox_y": 346.32000732421875,
+      "bbox_w": 112.13998413085938,
+      "bbox_h": 55.8599853515625,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_010.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0019_011",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 19,
+      "figure_idx": 11,
+      "bbox_x": 262.1979675292969,
+      "bbox_y": 264.8675537109375,
+      "bbox_w": 128.3414306640625,
+      "bbox_h": 141.41192626953125,
+      "caption": "ジア当局とのリライ\nアンス向上\n【強力なアドバンテージ】\n\nGMP分野の最新の国際動向を入手\n\nアジア地域の医薬品製造所に対するGMP調査を日本が主導的に実施するための調査体制の確保\n\n海外規制当局との協働的取組の強化及びリライアンス体制構築のための戦略的取組の実施\n職員を派遣\nPMDAの調査\n能力向上\nPMDAの調査\n能力向上\nPIC/S査察チーム員として、加盟\n申請国への査察に参加\n19",
+      "caption_quote_span": {
+        "start_char": 75,
+        "end_char": 276
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0019_011.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0021_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 21,
+      "figure_idx": 0,
+      "bbox_x": 177.6599578857422,
+      "bbox_y": 262.4400329589844,
+      "bbox_w": 193.9734649658203,
+      "bbox_h": 274.7323303222656,
+      "caption": "21\n我が国の薬事制度に関する海外への情報発信について\n○厚生労働省及びPMDAウェブサイトにおいて、英語で、業務の概要、主要な行政通知、審査報告書、市販後安全性情報等\nのほか、ICH等の主要な国際会議でとりまとめられたガイドライン等の情報も体系的に発信\n○他方、海外ベンチャー等による日本での薬事開発・申請を促す観点から薬事手続等に関して系統立てた継続的な情報発信\nは行われておらず、部分的に英語の",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0021_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0021_001",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 21,
+      "figure_idx": 1,
+      "bbox_x": 559.3200073242188,
+      "bbox_y": 273.0,
+      "bbox_w": 336.1199951171875,
+      "bbox_h": 220.13998413085938,
+      "caption": "21\n我が国の薬事制度に関する海外への情報発信について\n○厚生労働省及びPMDAウェブサイトにおいて、英語で、業務の概要、主要な行政通知、審査報告書、市販後安全性情報等\nのほか、ICH等の主要な国際会議でとりまとめられたガイドライン等の情報も体系的に発信\n○他方、海外ベンチャー等による日本での薬事開発・申請を促す観点から薬事手続等に関して系統立てた継続的な情報発信\nは行われておらず、部分的に英語の資料が作成・公表されているにとどまる。\n○近時、ドラッグ・ロス等の課題に対応する観点から、海外ベンチャー等に対する情報発信の重要性が指摘され、今年度新\nたに以下の資料を作成して情報発信を行っている。",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0021_001.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0023_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 23,
+      "figure_idx": 0,
+      "bbox_x": 127.37999725341797,
+      "bbox_y": 1.6199798583984375,
+      "bbox_w": 34.019996643066406,
+      "bbox_h": 43.19999694824219,
+      "caption": "３実施主体等\n２事業の概要・スキーム\n１事業の目的\n医薬品国内開発伴走事業（バイオテック・コンシェルジュ事業の拡充）\n令和６年度当初予算案66百万円（９百万円）※（）内は前年度当初予算額\n○\n近年、欧米では承認されている医薬品が日本で開発が行われ\nない、いわゆる「ドラッグ・ロス」の拡大が指摘されている。\nこの背景には、日本の創薬力や市場性の低下のほか、革新的新\n薬のシーズを海外ベンチャーに依存する",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0023_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0023_001",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 23,
+      "figure_idx": 1,
+      "bbox_x": 366.6000061035156,
+      "bbox_y": 391.1999816894531,
+      "bbox_w": 137.93997192382812,
+      "bbox_h": 87.1199951171875,
+      "caption": "３実施主体等\n２事業の概要・スキーム\n１事業の目的\n医薬品国内開発伴走事業（バイオテック・コンシェルジュ事業の拡充）\n令和６年度当初予算案66百万円（９百万円）※（）内は前年度当初予算額\n○\n近年、欧米では承認されている医薬品が日本で開発が行われ\nない、いわゆる「ドラッグ・ロス」の拡大が指摘されている。\nこの背景には、日本の創薬力や市場性の低下のほか、革新的新\n薬のシーズを海外ベンチャーに依存するビジネスモデルへの転\n換等の創薬環境の構造変化がある。\n○\nこのため、国内での中小企業への支援に留まらず、新たに、\n海外の中小バイオ企業による日本での開発・薬事申請を促すた\nめ、米国等において、英語で",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0023_001.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0023_002",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 23,
+      "figure_idx": 2,
+      "bbox_x": 181.3199920654297,
+      "bbox_y": 410.2200012207031,
+      "bbox_w": 73.91999816894531,
+      "bbox_h": 40.55999755859375,
+      "caption": "３実施主体等\n２事業の概要・スキーム\n１事業の目的\n医薬品国内開発伴走事業（バイオテック・コンシェルジュ事業の拡充）\n令和６年度当初予算案66百万円（９百万円）※（）内は前年度当初予算額\n○\n近年、欧米では承認されている医薬品が日本で開発が行われ\nない、いわゆる「ドラッグ・ロス」の拡大が指摘されている。\nこの背景には、日本の創薬力や市場性の低下のほか、革新的新\n薬のシーズを海外ベンチャーに依存するビジネスモデルへの転\n換等の創薬環境の構造変化がある。\n○\nこのため、国内での中小企業への支援に留まらず、新たに、\n海外の中小バイオ企業による日本での開発・薬事申請を促すた\nめ、米国等において、英語で、日本の薬事制度の情報発信、薬\n事の相談対応を無料で行う。特に、「未承認薬・適応外薬検討\n会議」で開発公募された品目を重点的に対象とし、日本での治\n験実施を含めた薬事相談に応じる\n実施主体：PMDA",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 400
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0023_002.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0023_004",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 23,
+      "figure_idx": 4,
+      "bbox_x": 125.15999603271484,
+      "bbox_y": 408.3599853515625,
+      "bbox_w": 77.45999908447266,
+      "bbox_h": 81.77999877929688,
+      "caption": "ビジネスモデルへの転\n換等の創薬環境の構造変化がある。\n○\nこのため、国内での中小企業への支援に留まらず、新たに、\n海外の中小バイオ企業による日本での開発・薬事申請を促すた\nめ、米国等において、英語で、日本の薬事制度の情報発信、薬\n事の相談対応を無料で行う。特に、「未承認薬・適応外薬検討\n会議」で開発公募された品目を重点的に対象とし、日本での治\n験実施を含めた薬事相談に応じる\n実施主体：PMDA\n費用内訳：\n（運営費交付金）\n・人件費（伴走支援・広報）：補助率100／\n100\n・旅費・滞在費（米国、欧州）\n・翻訳・通訳費、相談ブース借料、広報費等\n（補助金）\n・PMDA米国事務所経費（家賃、人件費（現\n地採用職員）等）：補助率50／100\nベンチャー発\nオーファン\n小児\n56\n47\n37\n日本国内未着手の86品目内訳（2023年3月）\n（48品目）\n（40品目）\n（32品目）\n％\n％\n％",
+      "caption_quote_span": {
+        "start_char": 200,
+        "end_char": 600
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0023_004.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0023_005",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 23,
+      "figure_idx": 5,
+      "bbox_x": 439.97998046875,
+      "bbox_y": 416.7599792480469,
+      "bbox_w": 43.5,
+      "bbox_h": 36.0,
+      "caption": "、日本の薬事制度の情報発信、薬\n事の相談対応を無料で行う。特に、「未承認薬・適応外薬検討\n会議」で開発公募された品目を重点的に対象とし、日本での治\n験実施を含めた薬事相談に応じる\n実施主体：PMDA\n費用内訳：\n（運営費交付金）\n・人件費（伴走支援・広報）：補助率100／\n100\n・旅費・滞在費（米国、欧州）\n・翻訳・通訳費、相談ブース借料、広報費等\n（補助金）\n・PMDA米国事務所経費（家賃、人件費（現\n地採用職員）等）：補助率50／100\nベンチャー発\nオーファン\n小児\n56\n47\n37\n日本国内未着手の86品目内訳（2023年3月）\n（48品目）\n（40品目）\n（32品目）\n％\n％\n％\n※86品目のうち、ベンチャー、オーファン、小児のいずれでもない品目は14品目（16％）\n米国ベンチャー企業\n日本で開発・承認\nを目指したい\n日本で開発・薬事申請\n現地（商談会、学会等）にて\n日本の薬",
+      "caption_quote_span": {
+        "start_char": 300,
+        "end_char": 700
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0023_005.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0023_007",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 23,
+      "figure_idx": 7,
+      "bbox_x": 380.3399963378906,
+      "bbox_y": 380.8800048828125,
+      "bbox_w": 60.899993896484375,
+      "bbox_h": 35.6400146484375,
+      "caption": "件費（現\n地採用職員）等）：補助率50／100\nベンチャー発\nオーファン\n小児\n56\n47\n37\n日本国内未着手の86品目内訳（2023年3月）\n（48品目）\n（40品目）\n（32品目）\n％\n％\n％\n※86品目のうち、ベンチャー、オーファン、小児のいずれでもない品目は14品目（16％）\n米国ベンチャー企業\n日本で開発・承認\nを目指したい\n日本で開発・薬事申請\n現地（商談会、学会等）にて\n日本の薬事制度の発信\n日本での開発について無料相談\n英語資料のまま相談可能\n（日本語への翻訳不要）\n「未承認薬・適応外\n薬検討会議」で開発\n公募された品目等\n○\nまた、相談・支援の窓口となる拠点としてPMDA米国事務所を設置する（国際共同治験等で米国FDAとも連携）。\n米国事務所\n厚生労働省令和6年度「予算案の主要事項」より\nR6年度の国費予算案\n23",
+      "caption_quote_span": {
+        "start_char": 500,
+        "end_char": 875
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0023_007.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0023_009",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 23,
+      "figure_idx": 9,
+      "bbox_x": 606.0000610351562,
+      "bbox_y": 37.0200080871582,
+      "bbox_w": 237.3599853515625,
+      "bbox_h": 50.52000045776367,
+      "caption": "発・薬事申請\n現地（商談会、学会等）にて\n日本の薬事制度の発信\n日本での開発について無料相談\n英語資料のまま相談可能\n（日本語への翻訳不要）\n「未承認薬・適応外\n薬検討会議」で開発\n公募された品目等\n○\nまた、相談・支援の窓口となる拠点としてPMDA米国事務所を設置する（国際共同治験等で米国FDAとも連携）。\n米国事務所\n厚生労働省令和6年度「予算案の主要事項」より\nR6年度の国費予算案\n23",
+      "caption_quote_span": {
+        "start_char": 674,
+        "end_char": 875
+      },
+      "figure_kind": "table_image",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0023_009.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0024_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 24,
+      "figure_idx": 0,
+      "bbox_x": 176.2200164794922,
+      "bbox_y": 292.6199951171875,
+      "bbox_w": 184.9199981689453,
+      "bbox_h": 171.65997314453125,
+      "caption": "２事業の概要・スキーム\n１事業の目的\nアジア医薬品・医療機器トレーニングセンター事業\n令和６年度当初予算案2.３億円（2.2億円）※（）内は前年度当初予算額\n※令和５年度補正予算額\n２1百万円\nアジア諸国\nアジア諸国に対する\n日本の薬事規制の研修等\n→アジア諸国における\n理解・信頼の向上\nアジア医薬品・医療機器\nトレーニングセンター\n既存\nPMDAアジア事務所の設置（タイ・バンコク(P)）\n現地",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0024_000.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0024_001",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 24,
+      "figure_idx": 1,
+      "bbox_x": 125.2199935913086,
+      "bbox_y": -7.260021209716797,
+      "bbox_w": 36.840003967285156,
+      "bbox_h": 44.57999801635742,
+      "caption": "２事業の概要・スキーム\n１事業の目的\nアジア医薬品・医療機器トレーニングセンター事業\n令和６年度当初予算案2.３億円（2.2億円）※（）内は前年度当初予算額\n※令和５年度補正予算額\n２1百万円\nアジア諸国\nアジア諸国に対する\n日本の薬事規制の研修等\n→アジア諸国における\n理解・信頼の向上\nアジア医薬品・医療機器\nトレーニングセンター\n既存\nPMDAアジア事務所の設置（タイ・バンコク(P)）\n現地セミナー・トレーニング内容の充実\n※アジア諸国でのWHO-CRP活用の浸透にも寄与\nPMDA\nアジア\n事務所\n拡充\n令和5年度補正予算により措置\nPMDA\n・PMDAアジア事務所\nの設置のための所",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0024_001.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0024_002",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 24,
+      "figure_idx": 2,
+      "bbox_x": 328.6799621582031,
+      "bbox_y": 312.2999572753906,
+      "bbox_w": 63.29998779296875,
+      "bbox_h": 36.540008544921875,
+      "caption": "２事業の概要・スキーム\n１事業の目的\nアジア医薬品・医療機器トレーニングセンター事業\n令和６年度当初予算案2.３億円（2.2億円）※（）内は前年度当初予算額\n※令和５年度補正予算額\n２1百万円\nアジア諸国\nアジア諸国に対する\n日本の薬事規制の研修等\n→アジア諸国における\n理解・信頼の向上\nアジア医薬品・医療機器\nトレーニングセンター\n既存\nPMDAアジア事務所の設置（タイ・バンコク(P)）\n現地セミナー・トレーニング内容の充実\n※アジア諸国でのWHO-CRP活用の浸透にも寄与\nPMDA\nアジア\n事務所\n拡充\n令和5年度補正予算により措置\nPMDA\n・PMDAアジア事務所\nの設置のための所\n要経費（事務所家\n賃、人件費（常\n勤・現地採用職\n員）等）\n（国：PMDA＝１：\n１で負担）\n３実施主体等\n日本とアジア諸国とのリライアンスの\n加速化\n日本の審査結果を参照した簡略審査\n件数の増加（",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 400
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0024_002.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0024_009",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 24,
+      "figure_idx": 9,
+      "bbox_x": 651.2999877929688,
+      "bbox_y": 2.1000518798828125,
+      "bbox_w": 192.17999267578125,
+      "bbox_h": 46.13999938964844,
+      "caption": "２年７月14日健康・医療戦略推進本部決定）等に基づき、ア\nジア諸国との間で、薬事規制の調和、及びリライアンス（日本の審査結果を参照した相手国での簡略審査）の推進が求められている。これま\nで、PMDAアジア医薬品・医療機器トレーニングセンターにおいて、アジア規制当局担当者に対する薬事規制制度に関するセミナー・研\n修を積極的に実施してきた（2016～2022年度に合計85回のセミナーを開催、67の国/地域及びWHOからのべ2,570人（うちアジア諸国\nから2,210人）の規制当局担当者が参加）。これにより日本の薬事規制に対する理解・信頼が向上し、日本の審査結果を参照する制度\n（簡略審査制度）を導入するアジア諸国が年毎に拡大している。\nWHOでは、世界的にリライアンスを推進するため、途上国が先進国の審査結果を参照して簡略審査を行えるよう、個別製品毎にWHOが\nコーディネートするプログラム（WH",
+      "caption_quote_span": {
+        "start_char": 700,
+        "end_char": 1100
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0024_009.png"
+    },
+    {
+      "figure_id": "fig_80928ff956e2_0025_000",
+      "pdf_sha256": "80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b",
+      "source_url": "https://atdd-frm.umin.jp/slide/35/fujiwara.pdf",
+      "page_no": 25,
+      "figure_idx": 0,
+      "bbox_x": 81.77999877929688,
+      "bbox_y": 4.440006256103516,
+      "bbox_w": 121.5,
+      "bbox_h": 60.71999740600586,
+      "caption": "第5期の目指す方向性\n○科学的エビデンスの充実・強化などレギュラトリーサイエンスの推進による業務の質の向上\n○パンデミック等の緊急時対応体制の整備\n○患者会との連携による情報提供等の充実などリスクコミュニケーションの強化\n○IT化やBPR＊の推進\nレギュラトリーサイエンスの観点からの実用化推進に対する積極的貢献\n○革新的な医薬品や医療機器等のテクノロジーの発展への適切な対応（相談・助言等の充実など",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/80928ff956e2dda013c73af7ba09d1a7d00b51023e2c27006aaa24861424c46b/0025_000.png"
+    },
+    {
+      "figure_id": "fig_973e8fdf7080_0002_000",
+      "pdf_sha256": "973e8fdf70806c9fef26536bb29106e40562c4e427a079b285b5ba5aeea2ad65",
+      "source_url": "https://business.kuronekoyamato.co.jp/service/lineup/business_members/update/pdf/YBM_2023122001.pdf",
+      "page_no": 2,
+      "figure_idx": 0,
+      "bbox_x": 106.05000305175781,
+      "bbox_y": 100.54998779296875,
+      "bbox_w": 404.73997497558594,
+      "bbox_h": 303.3999938964844,
+      "caption": "２．送り状の注文について \n「クロネコゆうメール」用シール台紙および「クロネコゆうメール」用出荷票は、2024\n年1 月24 日（水）よりヤマトビジネスメンバーズ内「送り状・荷扱いシール・資材の\nご注文」からご注文いただけます。 \nなお、「送り状・荷扱いシール・資材のご注文」ページ内「履歴・再注文」欄にクロネ\nコDM 便用シール台紙およびクロネコDM 便用出荷票の注文履歴がある場合は、20",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/973e8fdf70806c9fef26536bb29106e40562c4e427a079b285b5ba5aeea2ad65/0002_000.png"
+    },
+    {
+      "figure_id": "fig_973e8fdf7080_0003_000",
+      "pdf_sha256": "973e8fdf70806c9fef26536bb29106e40562c4e427a079b285b5ba5aeea2ad65",
+      "source_url": "https://business.kuronekoyamato.co.jp/service/lineup/business_members/update/pdf/YBM_2023122001.pdf",
+      "page_no": 3,
+      "figure_idx": 0,
+      "bbox_x": 127.05000305175781,
+      "bbox_y": 190.75,
+      "bbox_w": 381.4399871826172,
+      "bbox_h": 176.89999389648438,
+      "caption": "４．「送り状発行システムB2 クラウド」を利用した送り状ラベルの発行方法について \n(1) 1 件ずつ発行 かんたん発行 \n新たに「クロネコゆうメール」が表示されますので、選択いただくことでラベル発\n行ができます。なお、2024 年2 月1 日（木）AM7:00 から「クロネコDM 便」は\n表示されなくなります。 \n \n(2) 外部データから発行 \n送り状種類で「3」を選択いただくとクロネコゆうメ",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/973e8fdf70806c9fef26536bb29106e40562c4e427a079b285b5ba5aeea2ad65/0003_000.png"
+    },
+    {
+      "figure_id": "fig_973e8fdf7080_0003_001",
+      "pdf_sha256": "973e8fdf70806c9fef26536bb29106e40562c4e427a079b285b5ba5aeea2ad65",
+      "source_url": "https://business.kuronekoyamato.co.jp/service/lineup/business_members/update/pdf/YBM_2023122001.pdf",
+      "page_no": 3,
+      "figure_idx": 1,
+      "bbox_x": 127.05000305175781,
+      "bbox_y": 413.39996337890625,
+      "bbox_w": 329.49998474121094,
+      "bbox_h": 163.69000244140625,
+      "caption": "４．「送り状発行システムB2 クラウド」を利用した送り状ラベルの発行方法について \n(1) 1 件ずつ発行 かんたん発行 \n新たに「クロネコゆうメール」が表示されますので、選択いただくことでラベル発\n行ができます。なお、2024 年2 月1 日（木）AM7:00 から「クロネコDM 便」は\n表示されなくなります。 \n \n(2) 外部データから発行 \n送り状種類で「3」を選択いただくとクロネコゆうメールのラベルが印刷できます。",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 236
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/973e8fdf70806c9fef26536bb29106e40562c4e427a079b285b5ba5aeea2ad65/0003_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0001_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 1,
+      "figure_idx": 0,
+      "bbox_x": 28.350000381469727,
+      "bbox_y": 368.6039733886719,
+      "bbox_w": 538.5999507904053,
+      "bbox_h": 446.8399963378906,
+      "caption": "気候予測データセット2022 解説書 \n令和４年12 月 \n（令和６年３月改訂） \n文部科学省 気象庁",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 61
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0001_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0001_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 1,
+      "figure_idx": 1,
+      "bbox_x": 364.3500061035156,
+      "bbox_y": 22.499961853027344,
+      "bbox_w": 208.07003784179688,
+      "bbox_h": 52.150001525878906,
+      "caption": "気候予測データセット2022 解説書 \n令和４年12 月 \n（令和６年３月改訂） \n文部科学省 気象庁",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 61
+      },
+      "figure_kind": "table_image",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0001_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0015_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 15,
+      "figure_idx": 0,
+      "bbox_x": 107.5999984741211,
+      "bbox_y": 240.81997680664062,
+      "bbox_w": 390.57999420166016,
+      "bbox_h": 396.3500061035156,
+      "caption": "1-9 \n \nさに起因する予測の不確実性が出力に十分に反映されていないことに注意が必要である。例えば、\n国内の日最高気温が将来最大何℃まで上昇するかを知るためにデータセットから直接値を読み取る\n場合、過去気候における同地域での気温が適切に再現されているかや、将来の海洋変化は適切かな\nどについての検討が必要である。 \nd4PDF は、大気変動や気候変動メカニズム解明等の学術的研究はもとより、気候変動",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0015_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0017_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 17,
+      "figure_idx": 0,
+      "bbox_x": 126.75,
+      "bbox_y": 73.74996948242188,
+      "bbox_w": 353.45001220703125,
+      "bbox_h": 179.39999389648438,
+      "caption": "1-11 \n \n \n図3.2  150 年連続実験における、日本の陸上で平均した地上気温10 年移動平均の1950-1979\n年平均からの偏差（Mizuta et al., 2022）。単位は℃。細線が60km モデル、太線が20km モデ\nル。緑線は都市化の影響を取り除いた15 地点の測候所データ。 \n \n③ 統計的ダウンスケーリング（統計的DS） \n 統計的DS とは、過去の観測データから求め",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0017_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0018_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 18,
+      "figure_idx": 0,
+      "bbox_x": 107.18000030517578,
+      "bbox_y": 392.8499755859375,
+      "bbox_w": 391.9500045776367,
+      "bbox_h": 220.739990234375,
+      "caption": "1-12 \n \n（４）モデル解像度とデータセットの利活用の関係 \nデータセット2022 には、2km 解像度の雲解像モデル（CPM）によるデータセットがある（①\n「全球及び日本域気候予測データ」（解像度2km 版）、②「日本域気候予測データ」（解像度\n2km 版））。世界的に見ても先進的なこの解像度のモデルの利得と利用上の注意について、以下で\n解説する。まず、豪雨災害をもたらす降水システムの再現に",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0018_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0019_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 19,
+      "figure_idx": 0,
+      "bbox_x": 65.84999084472656,
+      "bbox_y": 220.815185546875,
+      "bbox_w": 424.9916229248047,
+      "bbox_h": 289.5626220703125,
+      "caption": "1-13 \n \nルも大きい。このため、図4.1 で分かるように空間解像度の高いモデルほど、短時間降水の再現性\nが高くなる。また、モデルに搭載される様々な物理スキーム3は空間解像度によって降水現象の表\n現の仕方が変わってくる。通常、解像度（格子間隔）が5km 程度より低い場合は個別の対流を解\n像できないために、対流パラメタリゼーション（カイン・フリッツ手法4など）が使われる。解像\n度5km あたりか",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0019_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0020_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 20,
+      "figure_idx": 0,
+      "bbox_x": 65.84999084472656,
+      "bbox_y": 78.59478759765625,
+      "bbox_w": 424.0339813232422,
+      "bbox_h": 241.1552734375,
+      "caption": "1-14 \n \n \n図4.3  250m 解像度モデルによるメソスケール対流系（MCS）の主要な構成要素。上下方向に \n10 倍拡大してある（Prein et al.（2021）より、CC-BY 4.0 ライセンス（https://creativecommon\ns. \norg/licenses/by/4.0/）に基づき転載）。水平スケールはおおよそ100km 程度（Houze, 2014）",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0020_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0021_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 21,
+      "figure_idx": 0,
+      "bbox_x": 65.84999084472656,
+      "bbox_y": 74.6109619140625,
+      "bbox_w": 424.0382537841797,
+      "bbox_h": 391.7615051269531,
+      "caption": "1-15 \n \n \n図4.4  MCS の1 例における (a-g) 様々な格子モデルにおける時間降水量パターンと、MCS の\n(h) 軌道、(i) 最大降水量、(j) 移動速度、(k) 対流性降水量平均値、(l) 層状性降水量平均値、(m) 2\n50m 版との形状の差異。（Prein et al.（2021）より、CC-BY 4.0 ライセンス（https://creativeco\nmmons.",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0021_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0022_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 22,
+      "figure_idx": 0,
+      "bbox_x": 65.84999084472656,
+      "bbox_y": 75.81201171875,
+      "bbox_w": 424.42564392089844,
+      "bbox_h": 347.2222900390625,
+      "caption": "1-16 \n \n \n図4.5  MCS の1 例の、水平解像度 (a) 12km、(b) 4km、(c) 250m のモデルによりシミュレー\nトされた姿。（Prein et al. （2021）より、CC-BY 4.0 ライセンス（https://creativecommons.org/\nlicenses/by/4.0/）に基づき転載） \n \nそれでは、日本の梅雨期の降水の様子はどうであろうか？図",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0022_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0023_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 23,
+      "figure_idx": 0,
+      "bbox_x": 65.84999084472656,
+      "bbox_y": 79.47012329101562,
+      "bbox_w": 425.1942596435547,
+      "bbox_h": 334.94879150390625,
+      "caption": "1-17 \n \n \n図4.6  2020 年の梅雨前線上の強雨の再現実験結果の解像度依存性。期間は2020 年6 月28 日\nの00UTC から、7 月8 日の00UTC まで。上段左は解析雨量、上段右図が積雲対流スキームとして\nKF スキームを用いた5km NHRCM。上段中図が積雲対流スキームをoff した5km NHRCM、下段\nは左から順に、2km、1km、500m NHRCM で、いずれ",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0023_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0024_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 24,
+      "figure_idx": 0,
+      "bbox_x": 65.84999084472656,
+      "bbox_y": 73.09962463378906,
+      "bbox_w": 424.0382537841797,
+      "bbox_h": 188.0999298095703,
+      "caption": "1-18 \n \n \n図4.7  積雲対流スキームを用いないNHRCM により再現された積雲対流の平均的な構造。(a) \n5km NHRCM、(b) 2km NHRCM、(c) 1km NHRCM、(d) 0.5km NHRCM（統合的気候モデル高度化\n研究プログラム 領域テーマC 統合的気候変動予測  令和3 年度研究成果報告書（文部科学省研究\n開発局, 2022）より転載, Fukui and",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0024_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0024_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 24,
+      "figure_idx": 1,
+      "bbox_x": 65.84999084472656,
+      "bbox_y": 311.399658203125,
+      "bbox_w": 424.62107849121094,
+      "bbox_h": 181.80035400390625,
+      "caption": "1-18 \n \n \n図4.7  積雲対流スキームを用いないNHRCM により再現された積雲対流の平均的な構造。(a) \n5km NHRCM、(b) 2km NHRCM、(c) 1km NHRCM、(d) 0.5km NHRCM（統合的気候モデル高度化\n研究プログラム 領域テーマC 統合的気候変動予測  令和3 年度研究成果報告書（文部科学省研究\n開発局, 2022）より転載, Fukui and Miura（2021）からの引用） \n \n \n図4.8  NHRCM の（左）5km モデルと（右）2km モデルの時間降水量のsnap shot（森元, \n2018） \n \nこのように、データセット",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0024_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0036_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 36,
+      "figure_idx": 0,
+      "bbox_x": 91.2750015258789,
+      "bbox_y": 443.8000183105469,
+      "bbox_w": 423.6100082397461,
+      "bbox_h": 118.85000610351562,
+      "caption": "1-30 \n \nした基礎資料に活用されている。まずは、河川の治水計画に関わる降雨の将来変化予測情報として\nの利用から始まり、その後、砂防や沿岸域の保全についての利用に拡大している。中央省庁だけで\nなく、地方自治体での利用も進みつつある。 \n例えば、大阪府河川構造物等審議会では、影響評価からさらに適応策として、現在更新の検討が\n進んでいる大阪の津波・高潮対策水門（三大水門）の新規設計条件策定に実際に",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "table_image",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0036_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0037_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 37,
+      "figure_idx": 0,
+      "bbox_x": 146.39999389648438,
+      "bbox_y": 73.25001525878906,
+      "bbox_w": 313.29998779296875,
+      "bbox_h": 217.6999969482422,
+      "caption": "1-31 \n \n \n図7.2  淀川氾濫の経済的被害の超過確率（青：過去実験，赤：+4℃実験）（Tanaka et al., \n2018） \n \n \n図7.3  台風による極端な波の高さの将来変化（単位：％）（Shimura et al., 2017）",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 130
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0037_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0037_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 37,
+      "figure_idx": 1,
+      "bbox_x": 147.1499786376953,
+      "bbox_y": 316.51788330078125,
+      "bbox_w": 310.63719177246094,
+      "bbox_h": 261.86224365234375,
+      "caption": "1-31 \n \n \n図7.2  淀川氾濫の経済的被害の超過確率（青：過去実験，赤：+4℃実験）（Tanaka et al., \n2018） \n \n \n図7.3  台風による極端な波の高さの将来変化（単位：％）（Shimura et al., 2017）",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 130
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0037_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0038_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 38,
+      "figure_idx": 0,
+      "bbox_x": 88.32499694824219,
+      "bbox_y": 76.16998291015625,
+      "bbox_w": 429.6499786376953,
+      "bbox_h": 285.239990234375,
+      "caption": "1-32 \n \n \n図7.4  平均波高の将来予測の不確実性：気候モデル、温暖化シナリオ、波浪モデルの違いが将\n来変化に与える割合（RCP4.5 及びRCP8.5 の分析）。左：将来変化に対する寄与率の空間分布\n（4 要因を加えると1）、右：将来変化に対する寄与率の年平均、3～5 月、6～8 月、9～11 月、\n12～2 月の全球平均値。右のバーの色は、気候モデルの違いによる要因（GCM）、波浪モ",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0038_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0038_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 38,
+      "figure_idx": 1,
+      "bbox_x": 129.69998168945312,
+      "bbox_y": 495.5740966796875,
+      "bbox_w": 346.4298095703125,
+      "bbox_h": 234.74591064453125,
+      "caption": "1-32 \n \n \n図7.4  平均波高の将来予測の不確実性：気候モデル、温暖化シナリオ、波浪モデルの違いが将\n来変化に与える割合（RCP4.5 及びRCP8.5 の分析）。左：将来変化に対する寄与率の空間分布\n（4 要因を加えると1）、右：将来変化に対する寄与率の年平均、3～5 月、6～8 月、9～11 月、\n12～2 月の全球平均値。右のバーの色は、気候モデルの違いによる要因（GCM）、波浪モデルの\n違いによる要因（WMM）、温暖化シナリオによる要因（RCP）及びこれらの相互作用を示して\nいる（Morim et al., 2019） \n \n \n(a) \n想定台風上陸時の中心気圧の将来変化",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0038_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0039_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 39,
+      "figure_idx": 0,
+      "bbox_x": 174.1499786376953,
+      "bbox_y": 73.76799011230469,
+      "bbox_w": 256.94139099121094,
+      "bbox_h": 106.55207824707031,
+      "caption": "1-33 \n \n \n(b) \n将来気候における水門天端高の変化 \n図7.5  d4PDF 等をもとにした水門設計条件（大阪府河川構造物等審議会資料, 2020） \n \n（８）モデル実験の比較 \nデータセット2022 の大気予測データ（力学的ダウンスケーリング）のうち、力学的DS 手法を用\nいて行われた全球モデル実験のデータセット（①、③～⑤に含まれる全球のデータ。以下、力学的\nDS データセット）",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0039_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0040_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 40,
+      "figure_idx": 0,
+      "bbox_x": 149.14999389648438,
+      "bbox_y": 72.99995422363281,
+      "bbox_w": 296.95001220703125,
+      "bbox_h": 181.38999938964844,
+      "caption": "1-34 \n \n \n図8.1  全球モデルMRI-AGCM3.2 とCMIP5/6 マルチモデルアンサンブルとの比較対象とした領域 \n青色部分は日本付近（JPN）の領域（海上を含む）で、高解像度実験（5km 解像度。①「全球及び日\n本域気候予測データ」、②「日本域気候予測データ」）と同じ範囲である。赤の矩形領域は、IPCC\nで使用されている「東アジア地域（EAS。IPCC（2012）図3-1 より",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0040_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0041_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 41,
+      "figure_idx": 0,
+      "bbox_x": 83.82499694824219,
+      "bbox_y": 78.76995849609375,
+      "bbox_w": 427.59999084472656,
+      "bbox_h": 261.70001220703125,
+      "caption": "1-35 \n \n \n図8.2  異なる将来予測実験間の年平均気温の比較。(a) RCP2.6、(b) RCP4.5、(c) RCP6.0、(d) RCP8.5\nに基づく予測。各パネルの左側は力学的DS データセットの将来予測を、右側はCMIP5、CMIP6 の\n将来予測を表している。左側パネルの横軸において、d4PDF は⑤「全球及び日本域確率的気候予測\nデータ（d4PDF シリーズ）」、Mult",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0041_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0042_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 42,
+      "figure_idx": 0,
+      "bbox_x": 77.1500015258789,
+      "bbox_y": 147.24996948242188,
+      "bbox_w": 440.64998626708984,
+      "bbox_h": 271.5500183105469,
+      "caption": "1-36 \n \n5-75%を、マルチシナリオ・マルチ物理実験では10-60%、高解像度実験ではおよそ15-50%を表現\nしている。RCP2.6 でも不確実性の幅はRCP8.5 と同様である。d4PDF とマルチシナリオ・マルチ\n物理実験では、若干平均値より小さい増加を多く含むが、平均値を含んだ不確実性の幅となってい\nる一方、高解像度実験では、平均値以下の範囲での不確実性の幅を表現している。",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0042_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0046_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 46,
+      "figure_idx": 0,
+      "bbox_x": 53.849998474121094,
+      "bbox_y": 134.26998901367188,
+      "bbox_w": 481.85001373291016,
+      "bbox_h": 224.10000610351562,
+      "caption": "1-40 \n \n（資料1） \n気候予測データセット社会実装の全体像（概要）",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 47
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0046_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0053_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 53,
+      "figure_idx": 0,
+      "bbox_x": 153.60000610351562,
+      "bbox_y": 225.3699951171875,
+      "bbox_w": 274.79998779296875,
+      "bbox_h": 204.0,
+      "caption": "1-47 \n \n（資料3 付録） \n気候予測データセット2022 カタログ（計算範囲） \n \n \n大気予測（力学的ダウンスケーリング） \n \n① 全球及び日本域気候予測データ \n \n気象研究所全球大気モデル（MRI-AGCM3.2）を用いた全球及び気象研究所非静力学地域気候モ\nデル（NHRCM）を用いた5km/2km の格子間隔の日本域の計算範囲を示す \n② 日本域気候予測データ \n黄色と青色の領",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0053_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0053_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 53,
+      "figure_idx": 1,
+      "bbox_x": 140.4499969482422,
+      "bbox_y": 517.969970703125,
+      "bbox_w": 226.25001525878906,
+      "bbox_h": 159.8800048828125,
+      "caption": "1-47 \n \n（資料3 付録） \n気候予測データセット2022 カタログ（計算範囲） \n \n \n大気予測（力学的ダウンスケーリング） \n \n① 全球及び日本域気候予測データ \n \n気象研究所全球大気モデル（MRI-AGCM3.2）を用いた全球及び気象研究所非静力学地域気候モ\nデル（NHRCM）を用いた5km/2km の格子間隔の日本域の計算範囲を示す \n② 日本域気候予測データ \n黄色と青色の領域が予測結果の掲載範囲を示す \n解析に用いた「① 全球及び日本域気候予測データ」のうち、NHRCM05/02 の計算結果から、「5km 版」では東西南\n北30 格子、「2km 版」では東西南北20 格",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0053_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0053_003",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 53,
+      "figure_idx": 3,
+      "bbox_x": 295.8500061035156,
+      "bbox_y": 517.969970703125,
+      "bbox_w": 226.24996948242188,
+      "bbox_h": 159.8800048828125,
+      "caption": "モデル（MRI-AGCM3.2）を用いた全球及び気象研究所非静力学地域気候モ\nデル（NHRCM）を用いた5km/2km の格子間隔の日本域の計算範囲を示す \n② 日本域気候予測データ \n黄色と青色の領域が予測結果の掲載範囲を示す \n解析に用いた「① 全球及び日本域気候予測データ」のうち、NHRCM05/02 の計算結果から、「5km 版」では東西南\n北30 格子、「2km 版」では東西南北20 格子を、額縁領域としてそれぞれ設定しており、その領域については日本域\n予測データセットでは除外している。ここで示しているのは、その額縁領域を除いた範囲 \n5km 版 \n2km 版",
+      "caption_quote_span": {
+        "start_char": 100,
+        "end_char": 390
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0053_003.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0054_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 54,
+      "figure_idx": 0,
+      "bbox_x": 190.0,
+      "bbox_y": 117.74996948242188,
+      "bbox_w": 240.14999389648438,
+      "bbox_h": 139.35000610351562,
+      "caption": "1-48 \n \n③ マルチシナリオ・マルチ物理予測データ／④ 全球及び日本域150 年連続実験データ／ \n⑤ 全球及び日本域確率的気候予測データ（d4PDF シリーズ） \n気象研究所全球大気モデル（MRI-AGCM3.2）を用いた全球及び気象研究所非静力学地域気候モ\nデル（NHRCM）を用いた20km の格子間隔の日本域の計算範囲を示す \n⑥ 北海道域d4PDF ダウンスケーリングデータ \n右の図",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0054_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0054_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 54,
+      "figure_idx": 1,
+      "bbox_x": 170.35000610351562,
+      "bbox_y": 345.7499694824219,
+      "bbox_w": 274.6000061035156,
+      "bbox_h": 136.60000610351562,
+      "caption": "1-48 \n \n③ マルチシナリオ・マルチ物理予測データ／④ 全球及び日本域150 年連続実験データ／ \n⑤ 全球及び日本域確率的気候予測データ（d4PDF シリーズ） \n気象研究所全球大気モデル（MRI-AGCM3.2）を用いた全球及び気象研究所非静力学地域気候モ\nデル（NHRCM）を用いた20km の格子間隔の日本域の計算範囲を示す \n⑥ 北海道域d4PDF ダウンスケーリングデータ \n右の図の着色領域がデータの計算範囲を示す \n左：外側の実線がd4PDF 領域実験（20km）の計算対象領域（「⑤全球及び日本域確率的気候予測データ」の日本\n域と同じ）、内側の実線が5km へのダウンスケーリ",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0054_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0054_002",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 54,
+      "figure_idx": 2,
+      "bbox_x": 171.1999969482422,
+      "bbox_y": 582.1699829101562,
+      "bbox_w": 272.3000030517578,
+      "bbox_h": 131.0,
+      "caption": "1-48 \n \n③ マルチシナリオ・マルチ物理予測データ／④ 全球及び日本域150 年連続実験データ／ \n⑤ 全球及び日本域確率的気候予測データ（d4PDF シリーズ） \n気象研究所全球大気モデル（MRI-AGCM3.2）を用いた全球及び気象研究所非静力学地域気候モ\nデル（NHRCM）を用いた20km の格子間隔の日本域の計算範囲を示す \n⑥ 北海道域d4PDF ダウンスケーリングデータ \n右の図の着色領域がデータの計算範囲を示す \n左：外側の実線がd4PDF 領域実験（20km）の計算対象領域（「⑤全球及び日本域確率的気候予測データ」の日本\n域と同じ）、内側の実線が5km へのダウンスケーリングの対象領域 \n右：着色範囲は5km へのダウンスケーリングの対象領域、太実線は十勝川帯広基準地点流域 \n⑦ 本州域d4PDF ダウンスケーリングデータ \n内枠の領域がデータの計算範囲を示す \n外枠",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 400
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0054_002.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0055_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 55,
+      "figure_idx": 0,
+      "bbox_x": 198.60000610351562,
+      "bbox_y": 128.83998107910156,
+      "bbox_w": 197.64999389648438,
+      "bbox_h": 182.9499969482422,
+      "caption": "1-49 \n \n⑧ 日本域台風予測データ \n水平解像度4km 相当（CReSS04）及び2km 相当（CReSS02）のデータの計算範囲を示す \n破線：CReSS04（日本付近を北上する台風） \n太実線：CReSS02（日本へ北上する台風） \n⑨ 全球d4PDF 台風トラックデータ \n地球温暖化対策に資するアンサンブル気候予測データベース（「⑤全球及び日本域確率的気候\n予測データ（d4PDF シリ",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0055_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0055_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 55,
+      "figure_idx": 1,
+      "bbox_x": 145.19998168945312,
+      "bbox_y": 402.674072265625,
+      "bbox_w": 303.3288879394531,
+      "bbox_h": 220.805908203125,
+      "caption": "1-49 \n \n⑧ 日本域台風予測データ \n水平解像度4km 相当（CReSS04）及び2km 相当（CReSS02）のデータの計算範囲を示す \n破線：CReSS04（日本付近を北上する台風） \n太実線：CReSS02（日本へ北上する台風） \n⑨ 全球d4PDF 台風トラックデータ \n地球温暖化対策に資するアンサンブル気候予測データベース（「⑤全球及び日本域確率的気候\n予測データ（d4PDF シリーズ）」の全球モデル実験）から台風トラッキングアルゴリズムを用\nいて抽出した全世界の熱帯低気圧情報 \n計算範囲：全球の熱帯低気圧をカバー",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 274
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0055_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0056_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 56,
+      "figure_idx": 0,
+      "bbox_x": 203.1999969482422,
+      "bbox_y": 403.38995361328125,
+      "bbox_w": 214.59999084472656,
+      "bbox_h": 196.70001220703125,
+      "caption": "1-50 \n \n⑩ 日本域d4PDF 低気圧データ \n \n \n \n \n地球温暖化対策に資するアンサンブル気候予測データベース（「⑤全球及び日本域確率的気候\n予測データ（d4PDF シリーズ）」の領域モデル実験）から客観的低気圧トラッキングアルゴリ\nズムを用いて抽出した爆弾低気圧情報 \n計算範囲：おおよそ東経115 度から155 度、北緯20 度から50 度 \n⑯ 全国版d4PDF ダウンスケーリン",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0056_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0056_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 56,
+      "figure_idx": 1,
+      "bbox_x": 164.3999786376953,
+      "bbox_y": 108.18672180175781,
+      "bbox_w": 265.9468231201172,
+      "bbox_h": 193.18785095214844,
+      "caption": "1-50 \n \n⑩ 日本域d4PDF 低気圧データ \n \n \n \n \n地球温暖化対策に資するアンサンブル気候予測データベース（「⑤全球及び日本域確率的気候\n予測データ（d4PDF シリーズ）」の領域モデル実験）から客観的低気圧トラッキングアルゴリ\nズムを用いて抽出した爆弾低気圧情報 \n計算範囲：おおよそ東経115 度から155 度、北緯20 度から50 度 \n⑯ 全国版d4PDF ダウンスケーリングデータ （※令和6 年3 月に追加） \n内枠の領域がデータの計算範囲を示す \n外枠（太線）：d4PDF 領域実験（20km）の計算対象領域（「⑤全球及び日本域確率的気候予測データ」の日本域と異\nなる",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0056_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0057_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 57,
+      "figure_idx": 0,
+      "bbox_x": 199.8000030517578,
+      "bbox_y": 447.3699645996094,
+      "bbox_w": 194.90000915527344,
+      "bbox_h": 208.35000610351562,
+      "caption": "1-51 \n \n大気予測（統計的ダウンスケーリング） \n \n⑪ 日本域農研機構データ（NARO2017） \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n灰色で示した領域が、日本域農研機構データ（NARO2017）の計算範囲（「農研機構メッシュ\n農業気象データ」と同一）を示す \n⑫ 日本域CMIP5 データ（NIES2019）／⑬日本域CMIP6 データ（NIES2020） \n灰色で",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0057_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0057_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 57,
+      "figure_idx": 1,
+      "bbox_x": 197.0500030517578,
+      "bbox_y": 154.19998168945312,
+      "bbox_w": 194.90000915527344,
+      "bbox_h": 208.25,
+      "caption": "1-51 \n \n大気予測（統計的ダウンスケーリング） \n \n⑪ 日本域農研機構データ（NARO2017） \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n \n灰色で示した領域が、日本域農研機構データ（NARO2017）の計算範囲（「農研機構メッシュ\n農業気象データ」と同一）を示す \n⑫ 日本域CMIP5 データ（NIES2019）／⑬日本域CMIP6 データ（NIES2020） \n灰色で示した領域が、日本域CMIP5 データ（NIES2019）及び日本域CMIP6 データ\n（NIES2020）の計算範囲を示す",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 270
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0057_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0058_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 58,
+      "figure_idx": 0,
+      "bbox_x": 68.4000015258789,
+      "bbox_y": 147.5500030517578,
+      "bbox_w": 457.0999984741211,
+      "bbox_h": 170.6999969482422,
+      "caption": "1-52 \n \n海洋予測（力学的ダウンスケーリング） \n \n⑭ 日本域海洋予測データ \n(a)の黒破線が解像度10km のデータ、(b)の黒破線が解像度2km のデータの計算範囲を示す \n(a) パネルで示す領域はNP モデルの領域を示す。シェードは海底の深さ（単位は m）。赤線はJPN モデルの領域\nを示し、黒破線はFOPR-NP10 ver4 の日平均データの領域を示す \n(b) パネルで示す",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0058_000.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0058_001",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 58,
+      "figure_idx": 1,
+      "bbox_x": 157.25,
+      "bbox_y": 446.510009765625,
+      "bbox_w": 281.1000061035156,
+      "bbox_h": 177.75,
+      "caption": "1-52 \n \n海洋予測（力学的ダウンスケーリング） \n \n⑭ 日本域海洋予測データ \n(a)の黒破線が解像度10km のデータ、(b)の黒破線が解像度2km のデータの計算範囲を示す \n(a) パネルで示す領域はNP モデルの領域を示す。シェードは海底の深さ（単位は m）。赤線はJPN モデルの領域\nを示し、黒破線はFOPR-NP10 ver4 の日平均データの領域を示す \n(b) パネルで示す領域はJPN モデルの領域を示す。シェードは海底の深さ（単位は m）。黒破線はFOPR-JPN02 ver4\nの1 時間平均データの領域を示す \n⑮ 全球及び日本域波浪予測データ \n気候変動に伴う全球",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0058_001.png"
+    },
+    {
+      "figure_id": "fig_516a051d9851_0068_000",
+      "pdf_sha256": "516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba",
+      "source_url": "https://diasjp.net/ds2022/manual_chapter1.pdf",
+      "page_no": 68,
+      "figure_idx": 0,
+      "bbox_x": 29.0,
+      "bbox_y": 371.3499755859375,
+      "bbox_w": 539.25,
+      "bbox_h": 446.70001220703125,
+      "caption": "",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 4
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/516a051d98519e1c951696ff212cc8294540aa10bae1175d862b0bd45df13bba/0068_000.png"
+    },
+    {
+      "figure_id": "fig_db84264a2043_0055_000",
+      "pdf_sha256": "db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40",
+      "source_url": "https://diecasting.or.jp/guideline/pdf/0812sokeizai.pdf",
+      "page_no": 55,
+      "figure_idx": 0,
+      "bbox_x": 97.0999984741211,
+      "bbox_y": 442.89996337890625,
+      "bbox_w": 424.9999771118164,
+      "bbox_h": 160.70001220703125,
+      "caption": "52\n \n第３章 本ガイドラインの今後の展開 \n \n取引慣行が改善されるインセンティブが働かない第１のステップとして、実\n際の取引において何が問題なのか、発注側企業・受注側企業ともに既存の法令\nを十分に理解していないことが挙げられる。このため、発注側・受注側双方の\n企業経営者・調達担当者にとってわかりやすい具体例を含めた本ガイドライン\nを策定し、自らの取引の現状について認識し、各種法令",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40/0055_000.png"
+    },
+    {
+      "figure_id": "fig_db84264a2043_0057_000",
+      "pdf_sha256": "db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40",
+      "source_url": "https://diecasting.or.jp/guideline/pdf/0812sokeizai.pdf",
+      "page_no": 57,
+      "figure_idx": 0,
+      "bbox_x": 97.16000366210938,
+      "bbox_y": 141.7625732421875,
+      "bbox_w": 425.0043029785156,
+      "bbox_h": 599.4910278320312,
+      "caption": "54\n \n \n \n＜参考１＞",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 22
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40/0057_000.png"
+    },
+    {
+      "figure_id": "fig_db84264a2043_0058_000",
+      "pdf_sha256": "db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40",
+      "source_url": "https://diecasting.or.jp/guideline/pdf/0812sokeizai.pdf",
+      "page_no": 58,
+      "figure_idx": 0,
+      "bbox_x": 97.16000366210938,
+      "bbox_y": 142.35797119140625,
+      "bbox_w": 424.5047302246094,
+      "bbox_h": 598.4531860351562,
+      "caption": "55",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 15
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40/0058_000.png"
+    },
+    {
+      "figure_id": "fig_db84264a2043_0059_000",
+      "pdf_sha256": "db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40",
+      "source_url": "https://diecasting.or.jp/guideline/pdf/0812sokeizai.pdf",
+      "page_no": 59,
+      "figure_idx": 0,
+      "bbox_x": 31.049999237060547,
+      "bbox_y": 27.70001220703125,
+      "bbox_w": 537.7499885559082,
+      "bbox_h": 60.0,
+      "caption": "56\n平成２０年８月２９日 \n \n \n原油・原材料価格高騰に係る下請中小企業対策の実施について \n \n  \n原油・原材料価格が高騰する中、中小企業は価格転嫁をすることが困難であ \nり、収益が圧迫されている状況を踏まえ、「原油・原材料価格高騰に係る下請 \n中小企業向け追加対策」(20.8.5)及び「安心実現のための総合対策」(20.8.29) \nに則って、以下の項目を本日より実施します。",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "table_image",
+      "s3_key": "figures_raw/db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40/0059_000.png"
+    },
+    {
+      "figure_id": "fig_db84264a2043_0059_001",
+      "pdf_sha256": "db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40",
+      "source_url": "https://diecasting.or.jp/guideline/pdf/0812sokeizai.pdf",
+      "page_no": 59,
+      "figure_idx": 1,
+      "bbox_x": 408.6099853515625,
+      "bbox_y": 119.00858306884766,
+      "bbox_w": 104.4693603515625,
+      "bbox_h": 62.42975616455078,
+      "caption": "56\n平成２０年８月２９日 \n \n \n原油・原材料価格高騰に係る下請中小企業対策の実施について \n \n  \n原油・原材料価格が高騰する中、中小企業は価格転嫁をすることが困難であ \nり、収益が圧迫されている状況を踏まえ、「原油・原材料価格高騰に係る下請 \n中小企業向け追加対策」(20.8.5)及び「安心実現のための総合対策」(20.8.29) \nに則って、以下の項目を本日より実施します。 \n \n \n１．買いたたきの具体的内容の明示 \n原油・原材料価格高騰時における買いたたきの具体的内容を明示した大臣\n通達文書を、事業者団体等（約600 の親事業者及び下請事業者団体）に発出\nし、親事業",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/db84264a2043df7a8f8924374e10f21caa8075982f4a0d6c7c7166ee57c1aa40/0059_001.png"
+    },
+    {
+      "figure_id": "fig_702c14be53d4_0004_000",
+      "pdf_sha256": "702c14be53d4afd0053a1f4b54915894f0b0a864988375ca2a471f99eac44ea7",
+      "source_url": "https://growth-100-oku.smrj.go.jp/documents/subsidy/2nd_kobo.pdf",
+      "page_no": 4,
+      "figure_idx": 0,
+      "bbox_x": 70.9000015258789,
+      "bbox_y": 342.79998779296875,
+      "bbox_w": 460.5999984741211,
+      "bbox_h": 37.350006103515625,
+      "caption": "2 \n \n【賃上げ要件について】 \n 補助事業が完了した日を含む事業年度（基準年度）の「従業員（非常勤含む。以下同じ。）の\n１人当たり給与支給総額（※１）」と比較した、基準年度の３事業年度後（最終年度）の「従業\n員の１人当たり給与支給総額」の年平均上昇率（※２）が、全国における直近５年間（2020 年\n度を基準とし、2021 年度～2025 年度の５年間を指す。）の最低賃金の年平均上昇率（",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/702c14be53d4afd0053a1f4b54915894f0b0a864988375ca2a471f99eac44ea7/0004_000.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0001_001",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 1,
+      "figure_idx": 1,
+      "bbox_x": 29.92799949645996,
+      "bbox_y": 31.916000366210938,
+      "bbox_w": 316.3500156402588,
+      "bbox_h": 46.08399963378906,
+      "caption": "2021年4月1日\n厚生労働省医政局医薬産業振興・医療情報企画課\n資料２：供給確保医薬品の選定について\n（安定確保医薬品の見直しについて）\n第２回\n医療用医薬品迅速・安定供給部会\n資料２\n令和７年10月27日",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 105
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0001_001.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0011_004",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 11,
+      "figure_idx": 4,
+      "bbox_x": 4.079999923706055,
+      "bbox_y": 350.40399169921875,
+      "bbox_w": 36.10800361633301,
+      "bbox_h": 34.7860107421875,
+      "caption": "抗剤（免疫抑制作用）\nアセトアミノフェン（坐剤）：外用薬\n★\n・解熱鎮痛消炎剤（小児用）\n最も優先して取組を行う安定確保医薬品\n(21成分)\n例\n日本医学会傘下の主たる学会の各専門領域から、汎用され安定確保に特に配慮が必要な医薬品として提案された\n品目（成分）に基づき、次の要素を勘案して、『医療用医薬品の安定確保策に関する関係者会議』で決定。\nイ）対象疾患の重篤性\n※致死的な疾病や障害につながる疾病の治療に用いるもの／指定難病の治療に用いる\nなど\nロ）代替薬・代替療法の有無\n※代替薬が存在しないか利用が困難／同種同効薬が存在するが代替が困難（副作用等）\nなど\nハ）多くの患者が服用（使用）していること\n※推定使用患者数が多い／同一薬効の医薬品の中でのシェアが高い\nなど\nニ）製造の状況・サプライチェーン\n※原薬・原料の供給企業数が世界的に限られている／製剤化に特別の技術が必要とされる\nなど\nB",
+      "caption_quote_span": {
+        "start_char": 200,
+        "end_char": 600
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0011_004.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0011_005",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 11,
+      "figure_idx": 5,
+      "bbox_x": 269.5199890136719,
+      "bbox_y": 348.3550109863281,
+      "bbox_w": 36.108001708984375,
+      "bbox_h": 34.904998779296875,
+      "caption": "定確保に特に配慮が必要な医薬品として提案された\n品目（成分）に基づき、次の要素を勘案して、『医療用医薬品の安定確保策に関する関係者会議』で決定。\nイ）対象疾患の重篤性\n※致死的な疾病や障害につながる疾病の治療に用いるもの／指定難病の治療に用いる\nなど\nロ）代替薬・代替療法の有無\n※代替薬が存在しないか利用が困難／同種同効薬が存在するが代替が困難（副作用等）\nなど\nハ）多くの患者が服用（使用）していること\n※推定使用患者数が多い／同一薬効の医薬品の中でのシェアが高い\nなど\nニ）製造の状況・サプライチェーン\n※原薬・原料の供給企業数が世界的に限られている／製剤化に特別の技術が必要とされる\nなど\nB\n優先して取組を行う安定確保医薬品\n(29成分)\n例\nC\n安定確保医薬品\n(456成分)\nヒドロキシカルバミド：内用薬\n・代謝拮抗剤（骨髄増殖性腫瘍の治療等）\nL-アスパラギナーゼ：内用薬\n・腫瘍用薬",
+      "caption_quote_span": {
+        "start_char": 300,
+        "end_char": 700
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0011_005.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0011_007",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 11,
+      "figure_idx": 7,
+      "bbox_x": 536.1599731445312,
+      "bbox_y": 349.7950134277344,
+      "bbox_w": 36.10797119140625,
+      "bbox_h": 34.904998779296875,
+      "caption": "ること\n※推定使用患者数が多い／同一薬効の医薬品の中でのシェアが高い\nなど\nニ）製造の状況・サプライチェーン\n※原薬・原料の供給企業数が世界的に限られている／製剤化に特別の技術が必要とされる\nなど\nB\n優先して取組を行う安定確保医薬品\n(29成分)\n例\nC\n安定確保医薬品\n(456成分)\nヒドロキシカルバミド：内用薬\n・代謝拮抗剤（骨髄増殖性腫瘍の治療等）\nL-アスパラギナーゼ：内用薬\n・腫瘍用薬（急性白血病、悪性リンパ腫の治療等）\nセフトリアキソンナトリウム：注射薬\n★\n・抗菌薬\nジアゼパム（坐剤）：外用薬\n・催眠鎮静剤、抗不安剤\n（小児の熱性けいれん、てんかんのけいれん発作の治療）\n例\n注）★は、感染症対策物資として、平時からのモニタリング対象となっている医薬品。\nロキソプロフェンナトリウム：内用薬★\n・解熱鎮痛消炎剤\nセファクロル：内用薬\n・抗菌薬\nメサラジン：内用薬\n・消化器官用薬",
+      "caption_quote_span": {
+        "start_char": 500,
+        "end_char": 900
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0011_007.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_001",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 1,
+      "bbox_x": 85.08000183105469,
+      "bbox_y": 126.59799194335938,
+      "bbox_w": 32.02299499511719,
+      "bbox_h": 32.86199951171875,
+      "caption": "安定確保医薬品に対する主な措置について\n安定確保医薬品\nＡ\nＢ\nＣ\n安定供給\n※主なものを例示\n●医薬品安定供給体制緊急整備補助金事業\n・現下で発生している大規模な供給不安に対して医療上の必要性が高い医薬品の増産等の強化を図るもの。\n・対象医薬品：安定確保医薬品又は感染症等の拡大に伴い供給不安を引き起こしている医薬品。\n●医薬品安定供給支援事業（第６次公募）\n・安定確保医薬品の原薬等について国内での安定供給を確保するため、製薬企業等に対して代替供給源の探索を支援。\n●抗菌薬原薬国産化事業（特定重要物資）\n・海外依存度の高い原薬等について、国内製造体\n制構築を支援。安定供給体制を強化。\nー\nー",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 300
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_001.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_002",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 2,
+      "bbox_x": 95.87999725341797,
+      "bbox_y": 126.59799194335938,
+      "bbox_w": 228.69998931884766,
+      "bbox_h": 32.86199951171875,
+      "caption": "安定確保医薬品に対する主な措置について\n安定確保医薬品\nＡ\nＢ\nＣ\n安定供給\n※主なものを例示\n●医薬品安定供給体制緊急整備補助金事業\n・現下で発生している大規模な供給不安に対して医療上の必要性が高い医薬品の増産等の強化を図るもの。\n・対象医薬品：安定確保医薬品又は感染症等の拡大に伴い供給不安を引き起こしている医薬品。\n●医薬品安定供給支援事業（第６次公募）\n・安定確保医薬品の原薬等について国内での安定供給を確保するため、製薬企業等に対して代替供給源の探索を支援。\n●抗菌薬原薬国産化事業（特定重要物資）\n・海外依存度の高い原薬等について、国内製造体\n制構築を支援。安定供給体制を強化。\nー\nー\n(マッピング)\n●経済安全保障法の特定重要物質の候補として、\n同法に基づくサプライチェーンの調査を実施。\n●医薬品・医療機器サプライチェーン実態把握のための調査事業\n・サプライチェーンにおける潜在的な",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 400
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_002.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_003",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 3,
+      "bbox_x": 303.3599853515625,
+      "bbox_y": 126.59799194335938,
+      "bbox_w": 47.14300537109375,
+      "bbox_h": 32.86199951171875,
+      "caption": "医薬品の増産等の強化を図るもの。\n・対象医薬品：安定確保医薬品又は感染症等の拡大に伴い供給不安を引き起こしている医薬品。\n●医薬品安定供給支援事業（第６次公募）\n・安定確保医薬品の原薬等について国内での安定供給を確保するため、製薬企業等に対して代替供給源の探索を支援。\n●抗菌薬原薬国産化事業（特定重要物資）\n・海外依存度の高い原薬等について、国内製造体\n制構築を支援。安定供給体制を強化。\nー\nー\n(マッピング)\n●経済安全保障法の特定重要物質の候補として、\n同法に基づくサプライチェーンの調査を実施。\n●医薬品・医療機器サプライチェーン実態把握のための調査事業\n・サプライチェーンにおける潜在的な供給リスクを調査。\n薬価\n●一定の要件を満たす品目について基礎的医薬品\nとして改定前薬価を維持。\nー\nー\n●後発企業評価において、製造販売する安定確保医薬品の余剰製造能力や品目数等を指標の一部としてい",
+      "caption_quote_span": {
+        "start_char": 100,
+        "end_char": 500
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_003.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_004",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 4,
+      "bbox_x": 95.87999725341797,
+      "bbox_y": 179.39801025390625,
+      "bbox_w": 163.78998565673828,
+      "bbox_h": 32.86199951171875,
+      "caption": "の安定供給を確保するため、製薬企業等に対して代替供給源の探索を支援。\n●抗菌薬原薬国産化事業（特定重要物資）\n・海外依存度の高い原薬等について、国内製造体\n制構築を支援。安定供給体制を強化。\nー\nー\n(マッピング)\n●経済安全保障法の特定重要物質の候補として、\n同法に基づくサプライチェーンの調査を実施。\n●医薬品・医療機器サプライチェーン実態把握のための調査事業\n・サプライチェーンにおける潜在的な供給リスクを調査。\n薬価\n●一定の要件を満たす品目について基礎的医薬品\nとして改定前薬価を維持。\nー\nー\n●後発企業評価において、製造販売する安定確保医薬品の余剰製造能力や品目数等を指標の一部としている。\n⇒評価がA区分とされた企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高",
+      "caption_quote_span": {
+        "start_char": 200,
+        "end_char": 600
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_004.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_005",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 5,
+      "bbox_x": 238.44000244140625,
+      "bbox_y": 179.39801025390625,
+      "bbox_w": 99.10601806640625,
+      "bbox_h": 32.86199951171875,
+      "caption": "(マッピング)\n●経済安全保障法の特定重要物質の候補として、\n同法に基づくサプライチェーンの調査を実施。\n●医薬品・医療機器サプライチェーン実態把握のための調査事業\n・サプライチェーンにおける潜在的な供給リスクを調査。\n薬価\n●一定の要件を満たす品目について基礎的医薬品\nとして改定前薬価を維持。\nー\nー\n●後発企業評価において、製造販売する安定確保医薬品の余剰製造能力や品目数等を指標の一部としている。\n⇒評価がA区分とされた企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、とし",
+      "caption_quote_span": {
+        "start_char": 300,
+        "end_char": 700
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_005.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_006",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 6,
+      "bbox_x": 85.08000183105469,
+      "bbox_y": 221.2790069580078,
+      "bbox_w": 265.4199981689453,
+      "bbox_h": 32.98100280761719,
+      "caption": "供給リスクを調査。\n薬価\n●一定の要件を満たす品目について基礎的医薬品\nとして改定前薬価を維持。\nー\nー\n●後発企業評価において、製造販売する安定確保医薬品の余剰製造能力や品目数等を指標の一部としている。\n⇒評価がA区分とされた企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 400,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_006.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_007",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 7,
+      "bbox_x": 95.87999725341797,
+      "bbox_y": 278.27801513671875,
+      "bbox_w": 111.94998931884766,
+      "bbox_h": 32.86199951171875,
+      "caption": "る。\n⇒評価がA区分とされた企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 500,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_007.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_008",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 8,
+      "bbox_x": 174.72000122070312,
+      "bbox_y": 294.3580017089844,
+      "bbox_w": 163.89999389648438,
+      "bbox_h": 32.86199951171875,
+      "caption": "された企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 511,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_008.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_009",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 9,
+      "bbox_x": 404.0400085449219,
+      "bbox_y": 278.75799560546875,
+      "bbox_w": 370.6700134277344,
+      "bbox_h": 32.86199951171875,
+      "caption": "された企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 511,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_009.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_010",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 10,
+      "bbox_x": 290.3999938964844,
+      "bbox_y": 319.7980041503906,
+      "bbox_w": 99.10598754882812,
+      "bbox_h": 32.86199951171875,
+      "caption": "された企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 511,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_010.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_011",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 11,
+      "bbox_x": 95.87999725341797,
+      "bbox_y": 361.5589904785156,
+      "bbox_w": 98.98400115966797,
+      "bbox_h": 32.980987548828125,
+      "caption": "された企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 511,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_011.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_012",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 12,
+      "bbox_x": 95.87999725341797,
+      "bbox_y": 432.4800109863281,
+      "bbox_w": 111.94998931884766,
+      "bbox_h": 32.86199951171875,
+      "caption": "された企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 511,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_012.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_013",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 13,
+      "bbox_x": 95.87999725341797,
+      "bbox_y": 474.239990234375,
+      "bbox_w": 150.82999420166016,
+      "bbox_h": 32.86199951171875,
+      "caption": "された企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 511,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_013.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_014",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 14,
+      "bbox_x": 251.39999389648438,
+      "bbox_y": 474.239990234375,
+      "bbox_w": 125.13998413085938,
+      "bbox_h": 32.86199951171875,
+      "caption": "された企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 511,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_014.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0012_015",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 12,
+      "figure_idx": 15,
+      "bbox_x": 96.95999908447266,
+      "bbox_y": 505.92022705078125,
+      "bbox_w": 98.98400115966797,
+      "bbox_h": 32.86199951171875,
+      "caption": "された企業の後発品について、改定時、一定の条件の下、\n 該当品目のみを別途価格帯集約する（基礎的医薬品を除く）。\nー\n●不採算品再算定の要件として「安定供給の確保の必要性が特に高いと考えられる品目」があり、その一つとして\n安定確保医薬品があげられている。\n流通\n●流通改善ガイドラインで、安定確保医薬品Ａ等\nについては、個々の医薬品の価値を踏まえた\n単品単価交渉とすること、としている。\nー\nー\n12",
+      "caption_quote_span": {
+        "start_char": 511,
+        "end_char": 712
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0012_015.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0013_005",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 13,
+      "figure_idx": 5,
+      "bbox_x": 165.36000061035156,
+      "bbox_y": 162.84400939941406,
+      "bbox_w": 163.3000030517578,
+      "bbox_h": 35.50599670410156,
+      "caption": "制整備、取組の推進\n・安定供給に関する法令遵守等\n＜手順書の記載事項＞（注１）\n・安定供給のための社内各部門\nの連絡調整体制の整備\n・原薬の確保、在庫管理、生産\n管理等に関する手順\n等\n厚生労働大臣による供給不安の迅速な把握／報告徴収／協力要請\n●供給状況報告の届出\n●供給不安時の報告徴収\n●安定供給の協力要請\n限定出荷・供給停止\nを行う場合の大臣へ\nの届出義務\n供給不足のおそれがある\n場合、代替薬の製造販売\n業者等の供給状況の把握\n製造販売業者：増産\n卸売販売業者：適正な流通\n医療機関：長期処方抑制等\n厚生労働大臣による安定確保医薬品の指定、安定供給確保措置の指示\n●安定確保医薬品の指定\n●平時モニタリング（報告徴収）\n●大臣による安定供給確保措置の指示\n安定確保医薬品の平時の供給把握\n注２）安定確保医薬品のうち特に重要なものを対象。\n注１）現段階での想定。詳細は、今後、有識者\n検討会等",
+      "caption_quote_span": {
+        "start_char": 300,
+        "end_char": 700
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0013_005.png"
+    },
+    {
+      "figure_id": "fig_2ffc4e064c7a_0013_006",
+      "pdf_sha256": "2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4",
+      "source_url": "https://h-crisis.niph.go.jp/wp-content/uploads/2025/10/001586773.pdf",
+      "page_no": 13,
+      "figure_idx": 6,
+      "bbox_x": 542.8800048828125,
+      "bbox_y": 162.36399841308594,
+      "bbox_w": 163.29998779296875,
+      "bbox_h": 35.50599670410156,
+      "caption": "よる供給不安の迅速な把握／報告徴収／協力要請\n●供給状況報告の届出\n●供給不安時の報告徴収\n●安定供給の協力要請\n限定出荷・供給停止\nを行う場合の大臣へ\nの届出義務\n供給不足のおそれがある\n場合、代替薬の製造販売\n業者等の供給状況の把握\n製造販売業者：増産\n卸売販売業者：適正な流通\n医療機関：長期処方抑制等\n厚生労働大臣による安定確保医薬品の指定、安定供給確保措置の指示\n●安定確保医薬品の指定\n●平時モニタリング（報告徴収）\n●大臣による安定供給確保措置の指示\n安定確保医薬品の平時の供給把握\n注２）安定確保医薬品のうち特に重要なものを対象。\n注１）現段階での想定。詳細は、今後、有識者\n検討会等で検討。\n疾患の重篤性や、代替薬の有無等から\n特に安定確保が求められる医薬品を\n専門家の意見を聴いた上で指定\n電子処方箋管理サービスの調剤データ等を活用した需給モニタリング\n平時：供給不安発生前\n有事",
+      "caption_quote_span": {
+        "start_char": 400,
+        "end_char": 800
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/2ffc4e064c7aaedb04e542550f9ec765395a4f307762b9dbe455a44f8e22e6f4/0013_006.png"
+    },
+    {
+      "figure_id": "fig_4ffc4b5c9bce_0001_000",
+      "pdf_sha256": "4ffc4b5c9bce0dc5e4e6d524865cc2513f5efbb3b3efdd0ef398c5b8bbe6eaec",
+      "source_url": "https://iot-robot.jp/cms/wp-content/uploads/2025/10/07_2_dxsubsidy_bosyuyoukou.pdf",
+      "page_no": 1,
+      "figure_idx": 0,
+      "bbox_x": 78.5999984741211,
+      "bbox_y": 607.6500244140625,
+      "bbox_w": 303.75000762939453,
+      "bbox_h": 40.0999755859375,
+      "caption": "令和７年度第２回DX推進助成金 \n（生産性向上コース／DX戦略策定支援コース） \n【 募 集 要 項 】 \n \n \n \n \n◆ 申請方法（事前予約と本申請の両方が必要です） \n① \n事前予約（必須） \n事前予約期間：令和７年10 月15 日（水）～11 月18 日（火） \n事前予約URL：（事前予約期間になりましたらHP でお知らせいたします） \n※申請をお考えの方は、お早めに必ず事前予約をお願い",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "unknown",
+      "s3_key": "figures_raw/4ffc4b5c9bce0dc5e4e6d524865cc2513f5efbb3b3efdd0ef398c5b8bbe6eaec/0001_000.png"
+    },
+    {
+      "figure_id": "fig_4ffc4b5c9bce_0011_000",
+      "pdf_sha256": "4ffc4b5c9bce0dc5e4e6d524865cc2513f5efbb3b3efdd0ef398c5b8bbe6eaec",
+      "source_url": "https://iot-robot.jp/cms/wp-content/uploads/2025/10/07_2_dxsubsidy_bosyuyoukou.pdf",
+      "page_no": 11,
+      "figure_idx": 0,
+      "bbox_x": 56.70000076293945,
+      "bbox_y": 337.1499938964844,
+      "bbox_w": 481.89997482299805,
+      "bbox_h": 66.0,
+      "caption": "9 \n \n \n \n \n⑨ 本事業に賃金引上げ計画を掲げ申請しようとする者は以下の要件を全て満たす１年間\nの事業計画を策定し、実行すること。この１年間の期間を「賃金引上げ計画期間」とす\nる。「賃金引上げ計画」とは、下記ア・イの要件をすべて満たす計画をさす。 \nア 賃金引上げ計画期間において支払う給与支給総額を、基準日（募集開始日）が属す\nる月の前月から遡る１２か月間で全従業員（役員は除き、非常勤を含",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "table_image",
+      "s3_key": "figures_raw/4ffc4b5c9bce0dc5e4e6d524865cc2513f5efbb3b3efdd0ef398c5b8bbe6eaec/0011_000.png"
+    },
+    {
+      "figure_id": "fig_4ffc4b5c9bce_0013_000",
+      "pdf_sha256": "4ffc4b5c9bce0dc5e4e6d524865cc2513f5efbb3b3efdd0ef398c5b8bbe6eaec",
+      "source_url": "https://iot-robot.jp/cms/wp-content/uploads/2025/10/07_2_dxsubsidy_bosyuyoukou.pdf",
+      "page_no": 13,
+      "figure_idx": 0,
+      "bbox_x": 65.9000015258789,
+      "bbox_y": 535.6499633789062,
+      "bbox_w": 463.5000228881836,
+      "bbox_h": 156.5,
+      "caption": "11 \n \n \n５ 助成対象にならない事業（助成対象外事業） \n （１）「４ 助成対象事業」に掲げる事業以外 \n （２）事業計画を伴わず、単に設備等の更新を目的とするもの \n（３）研究開発（試作品及び新たなサービスの開発等を含む）を目的とし、量産及び販売等\nの目途が立っていないもの \n   ※生産性向上を目的とした業務改善に取り組む場合は除く \n（４）助成事業完了後、導入したものの一定期間継続使用",
+      "caption_quote_span": {
+        "start_char": 0,
+        "end_char": 200
+      },
+      "figure_kind": "raster",
+      "s3_key": "figures_raw/4ffc4b5c9bce0dc5e4e6d524865cc2513f5efbb3b3efdd0ef398c5b8bbe6eaec/0013_000.png"
+    }
+  ]
+}

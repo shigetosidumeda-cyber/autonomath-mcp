@@ -71,6 +71,12 @@ from jpintel_mcp.composable_tools.base import (
     ComposedEnvelope,
     ComposedToolError,
 )
+from jpintel_mcp.composable_tools.figure_search import (
+    M3_TOOL_NAMES,
+    SEARCH_FIGURES_BY_TOPIC_NAME,
+    SearchFiguresByTopic,
+    register_m3_tools,
+)
 from jpintel_mcp.composable_tools.registry import (
     DEFAULT_COMPOSED_TOOLS,
     register_default_tools,
@@ -92,6 +98,8 @@ from jpintel_mcp.composable_tools.wave51_chains import (
 
 __all__ = [
     "DEFAULT_COMPOSED_TOOLS",
+    "M3_TOOL_NAMES",
+    "SEARCH_FIGURES_BY_TOPIC_NAME",
     "WAVE51_CHAIN_TOOLS",
     "AtomicCallResult",
     "AtomicRegistry",
@@ -103,9 +111,11 @@ __all__ = [
     "FederatedHandoffWithAudit",
     "InvoiceCompatibilityCheck",
     "MaDueDiligencePack",
+    "SearchFiguresByTopic",
     "SessionAwareEligibilityCheck",
     "SubsidyEligibilityFull",
     "TemporalComplianceAudit",
     "register_default_tools",
+    "register_m3_tools",
     "register_wave51_chains",
 ]
