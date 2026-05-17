@@ -1,0 +1,1429 @@
+# shihoshoshi_top100.yaml — jpcite Pre-computed Answer Bank P1
+# Cohort: 司法書士 — 100 FAQ enumeration
+# Generated: 2026-05-17 (P3 lane / pre-condition P1 follow-up)
+# Purpose: Opus 4.7 baseline question bank; P2 composer feeds am_precomputed_answer
+# Disclaimer: §3 generic-legal-disclaimer applies to every entry
+# Constraint: READ-ONLY enumeration. NO LLM API. Question wording only.
+# ---
+meta:
+  cohort: 司法書士
+  total_questions: 100
+  language: ja
+  schema_version: 1
+  legal_disclaimer_default: §3
+  notes:
+    - 法的に正確な士業 vocabulary を使用
+    - opus_baseline_cost_estimate_jpy = Opus 4.7 agent が full chain-of-thought + 検索 + 引用照合で組み立てた場合の推定コスト
+    - jpcite_target_cost_jpy = ¥3/req fixed (本体プロダクト料金)
+    - required_data_sources は am_/jc_ canonical テーブルを参照 (rename project_jpcite_internal_autonomath_rename 準拠)
+questions:
+  # ========= 商業登記 (q001-q010) =========
+  - id: shihoshoshi_q001
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記における基本的な実務手順は何ですか？"
+    question_variants:
+      - "商業登記 の基本"
+      - "商業登記 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q002
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "商業登記 のトラブル例"
+      - "商業登記 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q003
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "商業登記 の根拠条文"
+      - "商業登記 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q004
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "商業登記 の費用感"
+      - "商業登記 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q005
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "商業登記 の必要書類"
+      - "商業登記 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q006
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "商業登記 のヒアリング"
+      - "商業登記 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q007
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "商業登記 の運用ガイドライン"
+      - "商業登記 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q008
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "商業登記 の業際"
+      - "商業登記 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q009
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "商業登記 のデジタル化"
+      - "商業登記 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q010
+    cohort: 司法書士
+    category: 商業登記
+    question: "商業登記に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "商業登記 の最新動向"
+      - "商業登記 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 不動産登記 (q011-q020) =========
+  - id: shihoshoshi_q011
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記における基本的な実務手順は何ですか？"
+    question_variants:
+      - "不動産登記 の基本"
+      - "不動産登記 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q012
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "不動産登記 のトラブル例"
+      - "不動産登記 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q013
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "不動産登記 の根拠条文"
+      - "不動産登記 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q014
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "不動産登記 の費用感"
+      - "不動産登記 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q015
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "不動産登記 の必要書類"
+      - "不動産登記 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q016
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "不動産登記 のヒアリング"
+      - "不動産登記 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q017
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "不動産登記 の運用ガイドライン"
+      - "不動産登記 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q018
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "不動産登記 の業際"
+      - "不動産登記 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q019
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "不動産登記 のデジタル化"
+      - "不動産登記 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q020
+    cohort: 司法書士
+    category: 不動産登記
+    question: "不動産登記に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "不動産登記 の最新動向"
+      - "不動産登記 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 会社設立 (q021-q030) =========
+  - id: shihoshoshi_q021
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立における基本的な実務手順は何ですか？"
+    question_variants:
+      - "会社設立 の基本"
+      - "会社設立 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q022
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "会社設立 のトラブル例"
+      - "会社設立 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q023
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "会社設立 の根拠条文"
+      - "会社設立 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q024
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "会社設立 の費用感"
+      - "会社設立 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q025
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "会社設立 の必要書類"
+      - "会社設立 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q026
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "会社設立 のヒアリング"
+      - "会社設立 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q027
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "会社設立 の運用ガイドライン"
+      - "会社設立 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q028
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "会社設立 の業際"
+      - "会社設立 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q029
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "会社設立 のデジタル化"
+      - "会社設立 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q030
+    cohort: 司法書士
+    category: 会社設立
+    question: "会社設立に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "会社設立 の最新動向"
+      - "会社設立 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 組織再編 (q031-q040) =========
+  - id: shihoshoshi_q031
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編における基本的な実務手順は何ですか？"
+    question_variants:
+      - "組織再編 の基本"
+      - "組織再編 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q032
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "組織再編 のトラブル例"
+      - "組織再編 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q033
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "組織再編 の根拠条文"
+      - "組織再編 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q034
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "組織再編 の費用感"
+      - "組織再編 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q035
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "組織再編 の必要書類"
+      - "組織再編 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q036
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "組織再編 のヒアリング"
+      - "組織再編 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q037
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "組織再編 の運用ガイドライン"
+      - "組織再編 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q038
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "組織再編 の業際"
+      - "組織再編 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q039
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "組織再編 のデジタル化"
+      - "組織再編 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q040
+    cohort: 司法書士
+    category: 組織再編
+    question: "組織再編に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "組織再編 の最新動向"
+      - "組織再編 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 相続登記 (q041-q050) =========
+  - id: shihoshoshi_q041
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記における基本的な実務手順は何ですか？"
+    question_variants:
+      - "相続登記 の基本"
+      - "相続登記 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q042
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "相続登記 のトラブル例"
+      - "相続登記 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q043
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "相続登記 の根拠条文"
+      - "相続登記 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q044
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "相続登記 の費用感"
+      - "相続登記 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q045
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "相続登記 の必要書類"
+      - "相続登記 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q046
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "相続登記 のヒアリング"
+      - "相続登記 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q047
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "相続登記 の運用ガイドライン"
+      - "相続登記 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q048
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "相続登記 の業際"
+      - "相続登記 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q049
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "相続登記 のデジタル化"
+      - "相続登記 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q050
+    cohort: 司法書士
+    category: 相続登記
+    question: "相続登記に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "相続登記 の最新動向"
+      - "相続登記 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 成年後見 (q051-q060) =========
+  - id: shihoshoshi_q051
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見における基本的な実務手順は何ですか？"
+    question_variants:
+      - "成年後見 の基本"
+      - "成年後見 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q052
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "成年後見 のトラブル例"
+      - "成年後見 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q053
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "成年後見 の根拠条文"
+      - "成年後見 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q054
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "成年後見 の費用感"
+      - "成年後見 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q055
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "成年後見 の必要書類"
+      - "成年後見 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q056
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "成年後見 のヒアリング"
+      - "成年後見 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q057
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "成年後見 の運用ガイドライン"
+      - "成年後見 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q058
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "成年後見 の業際"
+      - "成年後見 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q059
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "成年後見 のデジタル化"
+      - "成年後見 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q060
+    cohort: 司法書士
+    category: 成年後見
+    question: "成年後見に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "成年後見 の最新動向"
+      - "成年後見 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 供託 (q061-q070) =========
+  - id: shihoshoshi_q061
+    cohort: 司法書士
+    category: 供託
+    question: "供託における基本的な実務手順は何ですか？"
+    question_variants:
+      - "供託 の基本"
+      - "供託 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q062
+    cohort: 司法書士
+    category: 供託
+    question: "供託で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "供託 のトラブル例"
+      - "供託 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q063
+    cohort: 司法書士
+    category: 供託
+    question: "供託における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "供託 の根拠条文"
+      - "供託 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q064
+    cohort: 司法書士
+    category: 供託
+    question: "供託の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "供託 の費用感"
+      - "供託 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q065
+    cohort: 司法書士
+    category: 供託
+    question: "供託で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "供託 の必要書類"
+      - "供託 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q066
+    cohort: 司法書士
+    category: 供託
+    question: "供託の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "供託 のヒアリング"
+      - "供託 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q067
+    cohort: 司法書士
+    category: 供託
+    question: "供託における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "供託 の運用ガイドライン"
+      - "供託 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q068
+    cohort: 司法書士
+    category: 供託
+    question: "供託と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "供託 の業際"
+      - "供託 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q069
+    cohort: 司法書士
+    category: 供託
+    question: "供託でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "供託 のデジタル化"
+      - "供託 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q070
+    cohort: 司法書士
+    category: 供託
+    question: "供託に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "供託 の最新動向"
+      - "供託 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 簡裁訴訟代理 (q071-q080) =========
+  - id: shihoshoshi_q071
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理における基本的な実務手順は何ですか？"
+    question_variants:
+      - "簡裁訴訟代理 の基本"
+      - "簡裁訴訟代理 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q072
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "簡裁訴訟代理 のトラブル例"
+      - "簡裁訴訟代理 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q073
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "簡裁訴訟代理 の根拠条文"
+      - "簡裁訴訟代理 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q074
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "簡裁訴訟代理 の費用感"
+      - "簡裁訴訟代理 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q075
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "簡裁訴訟代理 の必要書類"
+      - "簡裁訴訟代理 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q076
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "簡裁訴訟代理 のヒアリング"
+      - "簡裁訴訟代理 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q077
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "簡裁訴訟代理 の運用ガイドライン"
+      - "簡裁訴訟代理 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q078
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "簡裁訴訟代理 の業際"
+      - "簡裁訴訟代理 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q079
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "簡裁訴訟代理 のデジタル化"
+      - "簡裁訴訟代理 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q080
+    cohort: 司法書士
+    category: 簡裁訴訟代理
+    question: "簡裁訴訟代理に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "簡裁訴訟代理 の最新動向"
+      - "簡裁訴訟代理 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 不動産競売 (q081-q090) =========
+  - id: shihoshoshi_q081
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売における基本的な実務手順は何ですか？"
+    question_variants:
+      - "不動産競売 の基本"
+      - "不動産競売 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q082
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "不動産競売 のトラブル例"
+      - "不動産競売 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q083
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "不動産競売 の根拠条文"
+      - "不動産競売 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q084
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "不動産競売 の費用感"
+      - "不動産競売 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q085
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "不動産競売 の必要書類"
+      - "不動産競売 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q086
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "不動産競売 のヒアリング"
+      - "不動産競売 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q087
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "不動産競売 の運用ガイドライン"
+      - "不動産競売 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q088
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "不動産競売 の業際"
+      - "不動産競売 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q089
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "不動産競売 のデジタル化"
+      - "不動産競売 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q090
+    cohort: 司法書士
+    category: 不動産競売
+    question: "不動産競売に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "不動産競売 の最新動向"
+      - "不動産競売 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  # ========= 家族法務 (q091-q100) =========
+  - id: shihoshoshi_q091
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務における基本的な実務手順は何ですか？"
+    question_variants:
+      - "家族法務 の基本"
+      - "家族法務 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q092
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "家族法務 のトラブル例"
+      - "家族法務 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q093
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "家族法務 の根拠条文"
+      - "家族法務 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q094
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "家族法務 の費用感"
+      - "家族法務 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q095
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "家族法務 の必要書類"
+      - "家族法務 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q096
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "家族法務 のヒアリング"
+      - "家族法務 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q097
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "家族法務 の運用ガイドライン"
+      - "家族法務 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q098
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "家族法務 の業際"
+      - "家族法務 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q099
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "家族法務 のデジタル化"
+      - "家族法務 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3
+  - id: shihoshoshi_q100
+    cohort: 司法書士
+    category: 家族法務
+    question: "家族法務に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "家族法務 の最新動向"
+      - "家族法務 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §3

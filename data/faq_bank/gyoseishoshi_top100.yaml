@@ -1,0 +1,1421 @@
+# gyoseishoshi_top100.yaml — jpcite Pre-computed Answer Bank P1
+# Cohort: 行政書士 (Administrative Procedures Specialist) — 100 FAQ enumeration
+# Generated: 2026-05-17 (Wave 95 / Pre-computed Moat P1)
+# Disclaimer: §52
+# Constraint: READ-ONLY enumeration. NO LLM API.
+# ---
+meta:
+  cohort: 行政書士
+  total_questions: 100
+  language: ja
+  schema_version: 1
+  legal_disclaimer_default: §52
+questions:
+  # ========= 補助金 / 助成金 (q001-q015) =========
+  - id: gyoseishoshi_q001
+    cohort: 行政書士
+    category: 補助金
+    question: "事業再構築補助金の申請要件（売上減少要件・事業類型）は？"
+    question_variants:
+      - "事業再構築補助金要件"
+      - "売上減少要件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_subsidy_program(jigyou_saikouchiku), maff_data, jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q002
+    cohort: 行政書士
+    category: 補助金
+    question: "ものづくり補助金の革新性要件と認定支援機関の役割は？"
+    question_variants:
+      - "ものづくり補助金革新性"
+      - "認定支援機関"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_subsidy_program(monodukuri), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q003
+    cohort: 行政書士
+    category: 補助金
+    question: "小規模事業者持続化補助金の枠（一般・賃金引上げ・卒業）の区分は？"
+    question_variants:
+      - "持続化補助金枠"
+      - "賃金引上げ枠"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_subsidy_program(jizokuka), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q004
+    cohort: 行政書士
+    category: 補助金
+    question: "IT導入補助金の通常枠・セキュリティ対策推進枠・デジタル化基盤導入枠の違いは？"
+    question_variants:
+      - "IT導入補助金枠"
+      - "デジタル化基盤"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_subsidy_program(itdounyu), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q005
+    cohort: 行政書士
+    category: 補助金
+    question: "事業承継・引継ぎ補助金（経営革新・専門家活用・廃業再チャレンジ）の使い分けは？"
+    question_variants:
+      - "事業承継引継ぎ補助金"
+      - "廃業再チャレンジ枠"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_subsidy_program(jigyou_shoukei_hikitsugi), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q006
+    cohort: 行政書士
+    category: 補助金
+    question: "省エネ補助金（経済産業省）の補助対象設備と省エネ率要件は？"
+    question_variants:
+      - "省エネ補助金"
+      - "省エネ率要件"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_subsidy_program(shoeneji), meti_data, jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q007
+    cohort: 行政書士
+    category: 補助金
+    question: "GX投資補助金・グリーン成長枠の対象事業は？"
+    question_variants:
+      - "GX投資補助金"
+      - "グリーン成長枠"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_subsidy_program(gx_toushi), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q008
+    cohort: 行政書士
+    category: 補助金
+    question: "補助金交付決定後の事業計画変更（軽微 vs 重要）の手続は？"
+    question_variants:
+      - "補助金事業計画変更"
+      - "軽微重要変更"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(補助金等に係る予算の執行の適正化に関する法律10), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q009
+    cohort: 行政書士
+    category: 補助金
+    question: "補助金実績報告書の作成・添付書類（証憑類）の整備は？"
+    question_variants:
+      - "補助金実績報告書"
+      - "実績報告証憑"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(補助金適正化法14), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q010
+    cohort: 行政書士
+    category: 補助金
+    question: "補助金の受給後の財産処分制限（処分制限期間）は？"
+    question_variants:
+      - "補助金財産処分制限"
+      - "処分制限期間"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(補助金適正化法22), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q011
+    cohort: 行政書士
+    category: 助成金
+    question: "雇用関係助成金（キャリアアップ助成金等）の支給要件と申請フローは？"
+    question_variants:
+      - "キャリアアップ助成金"
+      - "雇用関係助成金"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_subsidy_program(career_up), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q012
+    cohort: 行政書士
+    category: 助成金
+    question: "両立支援等助成金（出生時両立支援・育児休業等）の支給要件は？"
+    question_variants:
+      - "両立支援助成金"
+      - "育児休業助成金"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_subsidy_program(ryouritsu_shien), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q013
+    cohort: 行政書士
+    category: 助成金
+    question: "業務改善助成金の賃金引上げ要件と設備投資範囲は？"
+    question_variants:
+      - "業務改善助成金"
+      - "賃金引上げ要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_subsidy_program(gyoumu_kaizen), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q014
+    cohort: 行政書士
+    category: 補助金
+    question: "自治体独自の補助金（東京都・大阪府等）の検索方法と典型カテゴリは？"
+    question_variants:
+      - "自治体補助金検索"
+      - "都道府県補助金"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_subsidy_program(local_subsidies), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q015
+    cohort: 行政書士
+    category: 補助金
+    question: "補助金不正受給時のペナルティ（返還・加算金・公表）は？"
+    question_variants:
+      - "補助金不正受給"
+      - "返還加算金"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(補助金適正化法17), am_law_article(補助金適正化法29), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 建設業許可 (q016-q025) =========
+  - id: gyoseishoshi_q016
+    cohort: 行政書士
+    category: 建設業許可
+    question: "建設業許可の一般 vs 特定の区分（下請契約金額基準）は？"
+    question_variants:
+      - "建設業許可一般特定"
+      - "下請契約4500万"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(建設業法3), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q017
+    cohort: 行政書士
+    category: 建設業許可
+    question: "経営業務管理責任者の要件（経常的業務経験5年以上等）と証明書類は？"
+    question_variants:
+      - "経営業務管理責任者要件"
+      - "経管証明"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(建設業法7), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q018
+    cohort: 行政書士
+    category: 建設業許可
+    question: "専任技術者の要件（資格 or 実務経験10年）と業種ごとの要件は？"
+    question_variants:
+      - "専任技術者要件"
+      - "実務経験10年"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(建設業法7), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q019
+    cohort: 行政書士
+    category: 建設業許可
+    question: "建設業の29業種区分と複数業種取得時の留意点は？"
+    question_variants:
+      - "建設業29業種"
+      - "複数業種取得"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(建設業法2), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q020
+    cohort: 行政書士
+    category: 建設業許可
+    question: "財産的基礎要件（500万円以上の自己資本等）の証明方法は？"
+    question_variants:
+      - "財産的基礎要件"
+      - "500万円自己資本"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(建設業法7), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q021
+    cohort: 行政書士
+    category: 建設業許可
+    question: "建設業許可の知事許可と国土交通大臣許可の区分は？"
+    question_variants:
+      - "知事許可大臣許可"
+      - "2以上都道府県営業所"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(建設業法3)]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q022
+    cohort: 行政書士
+    category: 建設業許可
+    question: "建設業許可の更新手続（5年ごと）の準備書類は？"
+    question_variants:
+      - "建設業許可更新"
+      - "5年更新書類"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(建設業法3), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q023
+    cohort: 行政書士
+    category: 建設業許可
+    question: "経営事項審査（経審）の評点項目（X1-X2-Z-W）の構造は？"
+    question_variants:
+      - "経営事項審査"
+      - "経審評点X1X2"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(建設業法27の23), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q024
+    cohort: 行政書士
+    category: 建設業許可
+    question: "建設業の業種追加・変更手続と必要書類は？"
+    question_variants:
+      - "建設業業種追加"
+      - "業種変更手続"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(建設業法3), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q025
+    cohort: 行政書士
+    category: 建設業許可
+    question: "電子申請（JCIP 建設業許可・経審電子申請システム）の利用手順は？"
+    question_variants:
+      - "JCIP電子申請"
+      - "建設業電子申請"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [jc_software_integration_guide, jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 在留資格 / 入管 (q026-q035) =========
+  - id: gyoseishoshi_q026
+    cohort: 行政書士
+    category: 在留資格
+    question: "在留資格「技術・人文知識・国際業務」の該当性判断と立証書類は？"
+    question_variants:
+      - "技人国在留資格"
+      - "在留資格立証書類"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(出入国管理及び難民認定法別表第一), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q027
+    cohort: 行政書士
+    category: 在留資格
+    question: "特定技能1号・2号の対象分野と要件の違いは？"
+    question_variants:
+      - "特定技能1号2号"
+      - "対象分野要件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(出入国管理及び難民認定法別表第一), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q028
+    cohort: 行政書士
+    category: 在留資格
+    question: "経営・管理ビザの取得要件（500万円出資・事業所要件）は？"
+    question_variants:
+      - "経営管理ビザ"
+      - "500万円出資要件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(出入国管理及び難民認定法別表第一), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q029
+    cohort: 行政書士
+    category: 在留資格
+    question: "高度専門職（1号イ・ロ・ハ・2号）のポイント制と優遇措置は？"
+    question_variants:
+      - "高度専門職ポイント制"
+      - "高度人材優遇"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(出入国管理及び難民認定法別表第一), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q030
+    cohort: 行政書士
+    category: 在留資格
+    question: "在留資格認定証明書交付申請の標準処理期間と必要書類は？"
+    question_variants:
+      - "在留資格認定証明書"
+      - "COE申請"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(出入国管理及び難民認定法7の2), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q031
+    cohort: 行政書士
+    category: 在留資格
+    question: "永住許可申請の要件（10年居住・素行善良・独立生計）と例外は？"
+    question_variants:
+      - "永住許可要件"
+      - "10年居住要件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(出入国管理及び難民認定法22), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q032
+    cohort: 行政書士
+    category: 在留資格
+    question: "帰化申請の要件と永住権との違いは？"
+    question_variants:
+      - "帰化申請要件"
+      - "永住帰化違い"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(国籍法5), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q033
+    cohort: 行政書士
+    category: 在留資格
+    question: "資格外活動許可（包括許可・個別許可）の範囲は？"
+    question_variants:
+      - "資格外活動許可"
+      - "包括許可個別許可"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(出入国管理及び難民認定法19), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q034
+    cohort: 行政書士
+    category: 在留資格
+    question: "技能実習生から特定技能1号への在留資格変更の手続は？"
+    question_variants:
+      - "技能実習特定技能変更"
+      - "在留資格変更"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(出入国管理及び難民認定法20), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q035
+    cohort: 行政書士
+    category: 在留資格
+    question: "在留資格更新申請の不許可事由と再申請のポイントは？"
+    question_variants:
+      - "在留資格更新不許可"
+      - "再申請ポイント"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(出入国管理及び難民認定法21), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 風営法 / 飲食店 (q036-q045) =========
+  - id: gyoseishoshi_q036
+    cohort: 行政書士
+    category: 風営法
+    question: "風俗営業許可（1号〜10号）の業態区分と必要要件は？"
+    question_variants:
+      - "風俗営業1号10号"
+      - "業態区分"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(風俗営業等の規制及び業務の適正化等に関する法律2), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q037
+    cohort: 行政書士
+    category: 風営法
+    question: "深夜酒類提供飲食店営業の届出要件と人的・場所的要件は？"
+    question_variants:
+      - "深夜酒類提供"
+      - "深夜営業届出"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(風営法2), am_law_article(風営法施行令), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q038
+    cohort: 行政書士
+    category: 風営法
+    question: "保全対象施設（学校・病院等）からの距離制限と用途地域は？"
+    question_variants:
+      - "保全対象施設距離"
+      - "用途地域制限"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(風営法施行令), am_law_article(風営法施行条例), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q039
+    cohort: 行政書士
+    category: 飲食店
+    question: "飲食店営業許可の取得手順（食品衛生責任者選任・施設要件・申請）は？"
+    question_variants:
+      - "飲食店営業許可"
+      - "食品衛生責任者"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(食品衛生法55), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q040
+    cohort: 行政書士
+    category: 飲食店
+    question: "HACCP に沿った衛生管理の中小事業者要件は？"
+    question_variants:
+      - "HACCP中小要件"
+      - "HACCP沿った衛生管理"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(食品衛生法51), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q041
+    cohort: 行政書士
+    category: 飲食店
+    question: "酒類販売業免許（一般酒類小売・通信販売・卸売）の取得要件は？"
+    question_variants:
+      - "酒類販売免許"
+      - "通信販売酒類免許"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(酒税法9), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q042
+    cohort: 行政書士
+    category: 飲食店
+    question: "民泊事業（住宅宿泊事業法）の届出要件と180日制限は？"
+    question_variants:
+      - "民泊住宅宿泊事業法"
+      - "180日制限"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(住宅宿泊事業法3), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q043
+    cohort: 行政書士
+    category: 飲食店
+    question: "旅館業法の3区分（旅館・ホテル・簡易宿所・下宿）と要件は？"
+    question_variants:
+      - "旅館業法3区分"
+      - "簡易宿所要件"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(旅館業法2), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q044
+    cohort: 行政書士
+    category: 飲食店
+    question: "食品輸入届出と輸入食品監視指導計画の関係は？"
+    question_variants:
+      - "食品輸入届出"
+      - "輸入食品監視"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(食品衛生法27), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q045
+    cohort: 行政書士
+    category: 飲食店
+    question: "テイクアウト・デリバリー開始時の許可・届出の追加要件は？"
+    question_variants:
+      - "テイクアウト追加許可"
+      - "デリバリー要件"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(食品衛生法), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 産廃 / 古物商 / 警備 (q046-q055) =========
+  - id: gyoseishoshi_q046
+    cohort: 行政書士
+    category: 産廃業
+    question: "産業廃棄物収集運搬業許可の取得要件と講習会修了証は？"
+    question_variants:
+      - "産廃収集運搬"
+      - "産廃許可要件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(廃棄物の処理及び清掃に関する法律14), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q047
+    cohort: 行政書士
+    category: 産廃業
+    question: "産業廃棄物処分業許可（中間処理・最終処分）の施設要件は？"
+    question_variants:
+      - "産廃処分業"
+      - "中間処理最終処分"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(廃棄物処理法14), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q048
+    cohort: 行政書士
+    category: 産廃業
+    question: "マニフェスト（産業廃棄物管理票）の運用と電子マニフェストへの移行は？"
+    question_variants:
+      - "マニフェスト電子"
+      - "産廃管理票"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(廃棄物処理法12の3), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q049
+    cohort: 行政書士
+    category: 古物商
+    question: "古物商許可の取得要件（営業所要件・取扱品目13区分）は？"
+    question_variants:
+      - "古物商許可"
+      - "13区分品目"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(古物営業法3), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q050
+    cohort: 行政書士
+    category: 古物商
+    question: "ネット古物営業のURL届出と取引相手確認義務は？"
+    question_variants:
+      - "ネット古物営業"
+      - "URL届出"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(古物営業法5), am_law_article(古物営業法施行規則15の3), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q051
+    cohort: 行政書士
+    category: 警備業
+    question: "警備業認定の4区分（1号〜4号）と取得要件は？"
+    question_variants:
+      - "警備業4区分"
+      - "警備業認定"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(警備業法2), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q052
+    cohort: 行政書士
+    category: 警備業
+    question: "警備員指導教育責任者の選任要件と業務範囲は？"
+    question_variants:
+      - "警備員指導教育責任者"
+      - "選任要件"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(警備業法22), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q053
+    cohort: 行政書士
+    category: 運送業
+    question: "一般貨物自動車運送事業の許可要件（5台保有・営業所・車庫）は？"
+    question_variants:
+      - "一般貨物運送事業"
+      - "5台保有要件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(貨物自動車運送事業法6), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q054
+    cohort: 行政書士
+    category: 運送業
+    question: "貨物軽自動車運送事業の届出と一般貨物との違いは？"
+    question_variants:
+      - "貨物軽自動車運送"
+      - "軽トラ運送"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(貨物自動車運送事業法36), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q055
+    cohort: 行政書士
+    category: 運送業
+    question: "旅客自動車運送事業（タクシー・代行・ライドシェア）の許認可整理は？"
+    question_variants:
+      - "旅客運送許認可"
+      - "ライドシェア"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(道路運送法4), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 不動産業 / 介護 / 医療 (q056-q070) =========
+  - id: gyoseishoshi_q056
+    cohort: 行政書士
+    category: 不動産業
+    question: "宅地建物取引業免許の取得要件（事務所要件・専任宅建士・供託）は？"
+    question_variants:
+      - "宅建業免許"
+      - "専任宅建士"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(宅地建物取引業法3), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q057
+    cohort: 行政書士
+    category: 不動産業
+    question: "宅建業の知事免許 vs 大臣免許の判定基準は？"
+    question_variants:
+      - "宅建業知事免許"
+      - "大臣免許"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(宅建業法3)]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q058
+    cohort: 行政書士
+    category: 不動産業
+    question: "賃貸住宅管理業者登録（200戸以上義務化）の要件は？"
+    question_variants:
+      - "賃貸住宅管理業登録"
+      - "200戸登録義務"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(賃貸住宅の管理業務等の適正化に関する法律3), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q059
+    cohort: 行政書士
+    category: 不動産業
+    question: "サブリース業者の重要事項説明義務（住宅サブリース法）は？"
+    question_variants:
+      - "サブリース重要事項説明"
+      - "サブリース業者"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(賃貸住宅管理適正化法30)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q060
+    cohort: 行政書士
+    category: 介護
+    question: "介護事業所指定申請（訪問介護・通所介護等）の人員基準は？"
+    question_variants:
+      - "介護事業所指定"
+      - "人員基準"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(介護保険法70), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q061
+    cohort: 行政書士
+    category: 介護
+    question: "介護報酬請求の流れ（国保連請求・返戻処理）は？"
+    question_variants:
+      - "介護報酬請求"
+      - "国保連返戻"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(介護保険法41), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q062
+    cohort: 行政書士
+    category: 介護
+    question: "介護事業所開設にあたっての法人形態（NPO・株式会社・社福）の比較は？"
+    question_variants:
+      - "介護法人形態"
+      - "社福株式会社"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(介護保険法), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q063
+    cohort: 行政書士
+    category: 介護
+    question: "障害福祉サービス事業所指定の対象サービスと人員基準は？"
+    question_variants:
+      - "障害福祉指定"
+      - "障害福祉サービス"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(障害者総合支援法36), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q064
+    cohort: 行政書士
+    category: 医療
+    question: "医療法人設立認可（社団・財団・特定医療法人）の手続は？"
+    question_variants:
+      - "医療法人設立"
+      - "特定医療法人"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(医療法39), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q065
+    cohort: 行政書士
+    category: 医療
+    question: "病院・診療所の開設許可と管理者要件は？"
+    question_variants:
+      - "病院開設許可"
+      - "管理者要件"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(医療法7), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q066
+    cohort: 行政書士
+    category: NPO
+    question: "NPO法人（特定非営利活動法人）設立認証の手続は？"
+    question_variants:
+      - "NPO法人設立"
+      - "認証手続"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(特定非営利活動促進法9), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q067
+    cohort: 行政書士
+    category: NPO
+    question: "認定NPO法人の認定要件（パブリックサポートテスト）は？"
+    question_variants:
+      - "認定NPO要件"
+      - "PSTテスト"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(NPO法44), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q068
+    cohort: 行政書士
+    category: 一般社団
+    question: "一般社団法人設立と公益社団法人認定の比較は？"
+    question_variants:
+      - "一般社団公益社団"
+      - "公益認定"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(一般社団法人及び一般財団法人に関する法律10), am_law_article(公益認定法), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q069
+    cohort: 行政書士
+    category: 学校
+    question: "私立学校設置認可と各種学校・専修学校との区分は？"
+    question_variants:
+      - "私立学校認可"
+      - "各種学校専修学校"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(私立学校法30), am_law_article(学校教育法124), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q070
+    cohort: 行政書士
+    category: 教習所
+    question: "自動車教習所指定（指定自動車教習所）の要件は？"
+    question_variants:
+      - "指定自動車教習所"
+      - "教習所指定"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(道路交通法98), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 業務委託契約 / 内容証明 / その他 (q071-q090) =========
+  - id: gyoseishoshi_q071
+    cohort: 行政書士
+    category: 契約書
+    question: "業務委託契約（請負・準委任）の区分と契約書記載事項は？"
+    question_variants:
+      - "業務委託契約区分"
+      - "請負準委任"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(民法632), am_law_article(民法643), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q072
+    cohort: 行政書士
+    category: 契約書
+    question: "下請法（下請代金支払遅延等防止法）の親事業者の義務は？"
+    question_variants:
+      - "下請法義務"
+      - "親事業者4義務"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(下請代金支払遅延等防止法3), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q073
+    cohort: 行政書士
+    category: 契約書
+    question: "フリーランス保護新法（特定受託事業者法）の適用範囲と義務は？"
+    question_variants:
+      - "フリーランス新法"
+      - "特定受託事業者法"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(特定受託事業者に係る取引の適正化等に関する法律3), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q074
+    cohort: 行政書士
+    category: 契約書
+    question: "秘密保持契約（NDA）作成時の頻出論点（範囲・期間・例外）は？"
+    question_variants:
+      - "NDA頻出論点"
+      - "秘密保持契約"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q075
+    cohort: 行政書士
+    category: 契約書
+    question: "業務委託の指揮命令性と偽装請負の判定基準は？"
+    question_variants:
+      - "偽装請負判定"
+      - "指揮命令性"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(労働者派遣法), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q076
+    cohort: 行政書士
+    category: 内容証明
+    question: "内容証明郵便の作成要件（字数制限・冊数）と配達証明併用は？"
+    question_variants:
+      - "内容証明郵便要件"
+      - "配達証明併用"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(郵便法), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q077
+    cohort: 行政書士
+    category: 内容証明
+    question: "債権回収の催告書・督促状の文面と時効中断効果は？"
+    question_variants:
+      - "債権回収催告書"
+      - "時効中断効果"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(民法150), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q078
+    cohort: 行政書士
+    category: 内容証明
+    question: "クーリング・オフ通知の作成と適用対象取引の整理は？"
+    question_variants:
+      - "クーリングオフ通知"
+      - "クーリングオフ取引"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(特定商取引法9), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q079
+    cohort: 行政書士
+    category: 内容証明
+    question: "賃料未払い時の解除通知の手順と滞納期間の目安は？"
+    question_variants:
+      - "賃料未払い解除"
+      - "賃貸解除通知"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(民法541), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q080
+    cohort: 行政書士
+    category: 知的財産
+    question: "著作権譲渡契約と利用許諾契約の違いと記載必須事項は？"
+    question_variants:
+      - "著作権譲渡許諾"
+      - "著作権契約"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(著作権法61), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q081
+    cohort: 行政書士
+    category: 個人情報
+    question: "個人情報保護法の事業者義務（取得・利用・第三者提供）は？"
+    question_variants:
+      - "個情法事業者義務"
+      - "個人情報保護"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(個人情報の保護に関する法律17), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q082
+    cohort: 行政書士
+    category: 個人情報
+    question: "プライバシーポリシーの記載必須事項と Cookie 同意の最新動向は？"
+    question_variants:
+      - "プライバシーポリシー"
+      - "Cookie同意"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(個人情報保護法32), am_law_article(電気通信事業法27の12), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q083
+    cohort: 行政書士
+    category: 個人情報
+    question: "漏えい等報告（個人情報保護委員会への報告義務）の閾値と手続は？"
+    question_variants:
+      - "漏えい等報告"
+      - "個情委報告"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(個人情報保護法26), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q084
+    cohort: 行政書士
+    category: 景品表示法
+    question: "景品表示法の不当表示（優良誤認・有利誤認）の判定基準は？"
+    question_variants:
+      - "景表法不当表示"
+      - "優良誤認有利誤認"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(不当景品類及び不当表示防止法5), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q085
+    cohort: 行政書士
+    category: 景品表示法
+    question: "ステマ規制（令和5年10月施行）の遵守と広告表示の基準は？"
+    question_variants:
+      - "ステマ規制"
+      - "広告表示令和5年"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(景表法5), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q086
+    cohort: 行政書士
+    category: 電通法
+    question: "特定電子メール法（迷惑メール対策）のオプトイン要件は？"
+    question_variants:
+      - "特電法オプトイン"
+      - "メールマガジン"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(特定電子メールの送信の適正化等に関する法律3), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q087
+    cohort: 行政書士
+    category: 電子契約
+    question: "電子契約法・電子署名法に基づく署名の真正性確認は？"
+    question_variants:
+      - "電子契約真正性"
+      - "電子署名法"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(電子署名及び認証業務に関する法律3), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q088
+    cohort: 行政書士
+    category: 著作権
+    question: "AI生成物の著作権帰属と利用許諾契約の論点は？"
+    question_variants:
+      - "AI生成物著作権"
+      - "生成AI利用"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(著作権法2), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q089
+    cohort: 行政書士
+    category: 著作権
+    question: "著作権の引用（公正引用4要件）と転載の境界は？"
+    question_variants:
+      - "公正引用4要件"
+      - "著作権引用"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(著作権法32), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q090
+    cohort: 行政書士
+    category: 行政手続
+    question: "行政手続法に基づく聴聞・弁明機会の付与の手続は？"
+    question_variants:
+      - "聴聞手続"
+      - "弁明機会付与"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(行政手続法13), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 自動車登録 / 車庫証明 / その他 (q091-q100) =========
+  - id: gyoseishoshi_q091
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録（新規・移転・抹消）の代行手続と必要書類は？"
+    question_variants:
+      - "自動車登録代行"
+      - "新規移転抹消"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(道路運送車両法6), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q092
+    cohort: 行政書士
+    category: 車庫証明
+    question: "車庫証明（自動車保管場所証明）の取得要件と保管場所の基準は？"
+    question_variants:
+      - "車庫証明"
+      - "保管場所要件"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(自動車の保管場所の確保等に関する法律3), jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q093
+    cohort: 行政書士
+    category: 帰化
+    question: "外国人の永住・帰化のメリット・デメリット比較表は？"
+    question_variants:
+      - "永住帰化比較"
+      - "メリットデメリット"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(国籍法5), am_law_article(出入国管理及び難民認定法22), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q094
+    cohort: 行政書士
+    category: 開業
+    question: "個人事業主の開業届と青色申告承認申請の提出期限は？"
+    question_variants:
+      - "開業届提出期限"
+      - "青色申告承認申請"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法229), am_law_article(所得税法144), nta_tsutatsu]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q095
+    cohort: 行政書士
+    category: 開業
+    question: "法人成りのメリット・デメリットと最適タイミングは？"
+    question_variants:
+      - "法人成り"
+      - "個人事業から法人"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法), nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q096
+    cohort: 行政書士
+    category: 開業
+    question: "株式会社 vs 合同会社（LLC）の設立費用・運営コスト比較は？"
+    question_variants:
+      - "株式会社合同会社"
+      - "LLC比較"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(会社法), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q097
+    cohort: 行政書士
+    category: 廃業
+    question: "個人事業・法人の廃業手続と清算結了登記は？"
+    question_variants:
+      - "個人事業廃業"
+      - "法人清算結了"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法229), am_law_article(会社法476), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q098
+    cohort: 行政書士
+    category: 国際業務
+    question: "国際結婚届・国際養子縁組の手続は？"
+    question_variants:
+      - "国際結婚届"
+      - "国際養子縁組"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(戸籍法), am_law_article(法の適用に関する通則法24), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q099
+    cohort: 行政書士
+    category: 行政書士業務
+    question: "行政書士の業務範囲（独占業務 vs 弁護士法72条との境界）は？"
+    question_variants:
+      - "行政書士独占業務"
+      - "弁護士法72条"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(行政書士法1の2), am_law_article(弁護士法72), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: gyoseishoshi_q100
+    cohort: 行政書士
+    category: 行政書士業務
+    question: "特定行政書士の業務範囲（不服申立て代理）と一般行政書士との違いは？"
+    question_variants:
+      - "特定行政書士"
+      - "不服申立て代理"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(行政書士法1の3), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52

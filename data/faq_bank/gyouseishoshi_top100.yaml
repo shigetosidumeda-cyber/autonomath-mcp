@@ -1,0 +1,1429 @@
+# gyouseishoshi_top100.yaml — jpcite Pre-computed Answer Bank P1
+# Cohort: 行政書士 — 100 FAQ enumeration
+# Generated: 2026-05-17 (P3 lane / pre-condition P1 follow-up)
+# Purpose: Opus 4.7 baseline question bank; P2 composer feeds am_precomputed_answer
+# Disclaimer: §1 generic-legal-disclaimer applies to every entry
+# Constraint: READ-ONLY enumeration. NO LLM API. Question wording only.
+# ---
+meta:
+  cohort: 行政書士
+  total_questions: 100
+  language: ja
+  schema_version: 1
+  legal_disclaimer_default: §1
+  notes:
+    - 法的に正確な士業 vocabulary を使用
+    - opus_baseline_cost_estimate_jpy = Opus 4.7 agent が full chain-of-thought + 検索 + 引用照合で組み立てた場合の推定コスト
+    - jpcite_target_cost_jpy = ¥3/req fixed (本体プロダクト料金)
+    - required_data_sources は am_/jc_ canonical テーブルを参照 (rename project_jpcite_internal_autonomath_rename 準拠)
+questions:
+  # ========= 補助金申請 (q001-q010) =========
+  - id: gyouseishoshi_q001
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請における基本的な実務手順は何ですか？"
+    question_variants:
+      - "補助金申請 の基本"
+      - "補助金申請 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q002
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "補助金申請 のトラブル例"
+      - "補助金申請 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q003
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "補助金申請 の根拠条文"
+      - "補助金申請 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q004
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "補助金申請 の費用感"
+      - "補助金申請 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q005
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "補助金申請 の必要書類"
+      - "補助金申請 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q006
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "補助金申請 のヒアリング"
+      - "補助金申請 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q007
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "補助金申請 の運用ガイドライン"
+      - "補助金申請 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q008
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "補助金申請 の業際"
+      - "補助金申請 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q009
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "補助金申請 のデジタル化"
+      - "補助金申請 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q010
+    cohort: 行政書士
+    category: 補助金申請
+    question: "補助金申請に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "補助金申請 の最新動向"
+      - "補助金申請 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 許認可申請 (q011-q020) =========
+  - id: gyouseishoshi_q011
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請における基本的な実務手順は何ですか？"
+    question_variants:
+      - "許認可申請 の基本"
+      - "許認可申請 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q012
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "許認可申請 のトラブル例"
+      - "許認可申請 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q013
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "許認可申請 の根拠条文"
+      - "許認可申請 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q014
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "許認可申請 の費用感"
+      - "許認可申請 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q015
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "許認可申請 の必要書類"
+      - "許認可申請 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q016
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "許認可申請 のヒアリング"
+      - "許認可申請 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q017
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "許認可申請 の運用ガイドライン"
+      - "許認可申請 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q018
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "許認可申請 の業際"
+      - "許認可申請 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q019
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "許認可申請 のデジタル化"
+      - "許認可申請 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q020
+    cohort: 行政書士
+    category: 許認可申請
+    question: "許認可申請に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "許認可申請 の最新動向"
+      - "許認可申請 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 外国人在留 (q021-q030) =========
+  - id: gyouseishoshi_q021
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留における基本的な実務手順は何ですか？"
+    question_variants:
+      - "外国人在留 の基本"
+      - "外国人在留 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q022
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "外国人在留 のトラブル例"
+      - "外国人在留 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q023
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "外国人在留 の根拠条文"
+      - "外国人在留 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q024
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "外国人在留 の費用感"
+      - "外国人在留 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q025
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "外国人在留 の必要書類"
+      - "外国人在留 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q026
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "外国人在留 のヒアリング"
+      - "外国人在留 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q027
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "外国人在留 の運用ガイドライン"
+      - "外国人在留 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q028
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "外国人在留 の業際"
+      - "外国人在留 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q029
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "外国人在留 のデジタル化"
+      - "外国人在留 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q030
+    cohort: 行政書士
+    category: 外国人在留
+    question: "外国人在留に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "外国人在留 の最新動向"
+      - "外国人在留 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 法人設立 (q031-q040) =========
+  - id: gyouseishoshi_q031
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立における基本的な実務手順は何ですか？"
+    question_variants:
+      - "法人設立 の基本"
+      - "法人設立 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q032
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "法人設立 のトラブル例"
+      - "法人設立 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q033
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "法人設立 の根拠条文"
+      - "法人設立 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q034
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "法人設立 の費用感"
+      - "法人設立 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q035
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "法人設立 の必要書類"
+      - "法人設立 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q036
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "法人設立 のヒアリング"
+      - "法人設立 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q037
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "法人設立 の運用ガイドライン"
+      - "法人設立 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q038
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "法人設立 の業際"
+      - "法人設立 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q039
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "法人設立 のデジタル化"
+      - "法人設立 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q040
+    cohort: 行政書士
+    category: 法人設立
+    question: "法人設立に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "法人設立 の最新動向"
+      - "法人設立 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 契約書作成 (q041-q050) =========
+  - id: gyouseishoshi_q041
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成における基本的な実務手順は何ですか？"
+    question_variants:
+      - "契約書作成 の基本"
+      - "契約書作成 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q042
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "契約書作成 のトラブル例"
+      - "契約書作成 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q043
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "契約書作成 の根拠条文"
+      - "契約書作成 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q044
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "契約書作成 の費用感"
+      - "契約書作成 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q045
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "契約書作成 の必要書類"
+      - "契約書作成 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q046
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "契約書作成 のヒアリング"
+      - "契約書作成 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q047
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "契約書作成 の運用ガイドライン"
+      - "契約書作成 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q048
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "契約書作成 の業際"
+      - "契約書作成 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q049
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "契約書作成 のデジタル化"
+      - "契約書作成 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q050
+    cohort: 行政書士
+    category: 契約書作成
+    question: "契約書作成に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "契約書作成 の最新動向"
+      - "契約書作成 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 遺言相続 (q051-q060) =========
+  - id: gyouseishoshi_q051
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続における基本的な実務手順は何ですか？"
+    question_variants:
+      - "遺言相続 の基本"
+      - "遺言相続 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q052
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "遺言相続 のトラブル例"
+      - "遺言相続 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q053
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "遺言相続 の根拠条文"
+      - "遺言相続 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q054
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "遺言相続 の費用感"
+      - "遺言相続 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q055
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "遺言相続 の必要書類"
+      - "遺言相続 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q056
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "遺言相続 のヒアリング"
+      - "遺言相続 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q057
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "遺言相続 の運用ガイドライン"
+      - "遺言相続 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q058
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "遺言相続 の業際"
+      - "遺言相続 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q059
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "遺言相続 のデジタル化"
+      - "遺言相続 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q060
+    cohort: 行政書士
+    category: 遺言相続
+    question: "遺言相続に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "遺言相続 の最新動向"
+      - "遺言相続 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 自動車登録 (q061-q070) =========
+  - id: gyouseishoshi_q061
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録における基本的な実務手順は何ですか？"
+    question_variants:
+      - "自動車登録 の基本"
+      - "自動車登録 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q062
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "自動車登録 のトラブル例"
+      - "自動車登録 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q063
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "自動車登録 の根拠条文"
+      - "自動車登録 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q064
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "自動車登録 の費用感"
+      - "自動車登録 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q065
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "自動車登録 の必要書類"
+      - "自動車登録 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q066
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "自動車登録 のヒアリング"
+      - "自動車登録 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q067
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "自動車登録 の運用ガイドライン"
+      - "自動車登録 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q068
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "自動車登録 の業際"
+      - "自動車登録 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q069
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "自動車登録 のデジタル化"
+      - "自動車登録 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q070
+    cohort: 行政書士
+    category: 自動車登録
+    question: "自動車登録に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "自動車登録 の最新動向"
+      - "自動車登録 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 風営法 (q071-q080) =========
+  - id: gyouseishoshi_q071
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法における基本的な実務手順は何ですか？"
+    question_variants:
+      - "風営法 の基本"
+      - "風営法 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q072
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "風営法 のトラブル例"
+      - "風営法 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q073
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "風営法 の根拠条文"
+      - "風営法 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q074
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "風営法 の費用感"
+      - "風営法 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q075
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "風営法 の必要書類"
+      - "風営法 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q076
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "風営法 のヒアリング"
+      - "風営法 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q077
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "風営法 の運用ガイドライン"
+      - "風営法 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q078
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "風営法 の業際"
+      - "風営法 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q079
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "風営法 のデジタル化"
+      - "風営法 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q080
+    cohort: 行政書士
+    category: 風営法
+    question: "風営法に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "風営法 の最新動向"
+      - "風営法 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 飲食店営業 (q081-q090) =========
+  - id: gyouseishoshi_q081
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業における基本的な実務手順は何ですか？"
+    question_variants:
+      - "飲食店営業 の基本"
+      - "飲食店営業 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q082
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "飲食店営業 のトラブル例"
+      - "飲食店営業 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q083
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "飲食店営業 の根拠条文"
+      - "飲食店営業 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q084
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "飲食店営業 の費用感"
+      - "飲食店営業 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q085
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "飲食店営業 の必要書類"
+      - "飲食店営業 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q086
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "飲食店営業 のヒアリング"
+      - "飲食店営業 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q087
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "飲食店営業 の運用ガイドライン"
+      - "飲食店営業 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q088
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "飲食店営業 の業際"
+      - "飲食店営業 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q089
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "飲食店営業 のデジタル化"
+      - "飲食店営業 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q090
+    cohort: 行政書士
+    category: 飲食店営業
+    question: "飲食店営業に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "飲食店営業 の最新動向"
+      - "飲食店営業 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  # ========= 業種別書類 (q091-q100) =========
+  - id: gyouseishoshi_q091
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類における基本的な実務手順は何ですか？"
+    question_variants:
+      - "業種別書類 の基本"
+      - "業種別書類 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q092
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "業種別書類 のトラブル例"
+      - "業種別書類 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q093
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "業種別書類 の根拠条文"
+      - "業種別書類 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q094
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "業種別書類 の費用感"
+      - "業種別書類 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q095
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "業種別書類 の必要書類"
+      - "業種別書類 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q096
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "業種別書類 のヒアリング"
+      - "業種別書類 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q097
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "業種別書類 の運用ガイドライン"
+      - "業種別書類 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q098
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "業種別書類 の業際"
+      - "業種別書類 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q099
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "業種別書類 のデジタル化"
+      - "業種別書類 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1
+  - id: gyouseishoshi_q100
+    cohort: 行政書士
+    category: 業種別書類
+    question: "業種別書類に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "業種別書類 の最新動向"
+      - "業種別書類 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §1

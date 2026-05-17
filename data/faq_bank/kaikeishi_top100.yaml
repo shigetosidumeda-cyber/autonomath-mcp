@@ -1,0 +1,1421 @@
+# kaikeishi_top100.yaml — jpcite Pre-computed Answer Bank P1
+# Cohort: 公認会計士 (CPA / Auditor) — 100 FAQ enumeration
+# Generated: 2026-05-17 (Wave 95 / Pre-computed Moat P1)
+# Disclaimer: §52
+# Constraint: READ-ONLY enumeration. NO LLM API. Question wording only.
+# ---
+meta:
+  cohort: 会計士
+  total_questions: 100
+  language: ja
+  schema_version: 1
+  legal_disclaimer_default: §52
+questions:
+  # ========= 監査計画 / リスク評価 (q001-q015) =========
+  - id: kaikeishi_q001
+    cohort: 会計士
+    category: 監査計画
+    question: "監査基本方針と監査計画の作成における重要な判断事項は？"
+    question_variants:
+      - "監査基本方針作成"
+      - "監査計画策定要点"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準), am_law_article(監査基準委員会報告書300), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q002
+    cohort: 会計士
+    category: 監査計画
+    question: "監査チームの構成（業務執行社員・現場主任・スタッフ）と専門家活用の判断基準は？"
+    question_variants:
+      - "監査チーム構成"
+      - "専門家活用判断"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書220), am_law_article(監査基準委員会報告書620)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q003
+    cohort: 会計士
+    category: リスク評価
+    question: "重要な虚偽表示リスク（固有リスク・統制リスク）の評価手続は？"
+    question_variants:
+      - "重要な虚偽表示リスク"
+      - "固有統制リスク評価"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書315), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q004
+    cohort: 会計士
+    category: リスク評価
+    question: "アサーション・レベルでのリスク評価（実在性・網羅性・正確性等）の整理方法は？"
+    question_variants:
+      - "アサーション別リスク"
+      - "実在性網羅性正確性"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書315), jc_practical_guide]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q005
+    cohort: 会計士
+    category: リスク評価
+    question: "事業上のリスクと監査上のリスクの関連付け（ビジネス・リスク・アプローチ）は？"
+    question_variants:
+      - "ビジネスリスクアプローチ"
+      - "事業上のリスク監査"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書315), jc_practical_guide]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q006
+    cohort: 会計士
+    category: 重要性
+    question: "全体重要性・特定重要性・手続実施上の重要性の算定基準は？"
+    question_variants:
+      - "重要性基準値"
+      - "PMT 算定"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書320), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q007
+    cohort: 会計士
+    category: 重要性
+    question: "明らかに僅少な虚偽表示の閾値（クリアリーリビアル）の決定方法は？"
+    question_variants:
+      - "明らかに僅少"
+      - "クリアリーリビアル"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書450)]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q008
+    cohort: 会計士
+    category: 不正リスク
+    question: "不正リスク要因（動機・機会・正当化）の評価と不正対応手続は？"
+    question_variants:
+      - "不正リスク要因"
+      - "不正トライアングル"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書240), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q009
+    cohort: 会計士
+    category: 不正リスク
+    question: "経営者による内部統制の無効化リスクへの対応手続は？"
+    question_variants:
+      - "経営者統制無効化"
+      - "ジャーナル・エントリー・テスト"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書240)]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q010
+    cohort: 会計士
+    category: 監査計画
+    question: "予備的なリスク評価から最終的な実証手続立案までの反復プロセスは？"
+    question_variants:
+      - "リスク評価反復"
+      - "監査計画見直し"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書300), am_law_article(監査基準委員会報告書330)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q011
+    cohort: 会計士
+    category: 監査計画
+    question: "初年度監査における特別な手続と前期繰越残高の検証は？"
+    question_variants:
+      - "初年度監査"
+      - "前期繰越残高検証"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書510)]
+    expected_answer_length_tokens: 1400
+    opus_baseline_cost_estimate_jpy: 27
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q012
+    cohort: 会計士
+    category: リスク評価
+    question: "情報技術の利用に関連するリスク（IT 統制）の評価方法は？"
+    question_variants:
+      - "IT統制リスク評価"
+      - "ITGC 整備"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書315), jc_practical_guide]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q013
+    cohort: 会計士
+    category: リスク評価
+    question: "見積項目（公正価値・引当金等）のリスク評価と監査手続は？"
+    question_variants:
+      - "見積項目リスク"
+      - "公正価値監査"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書540), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q014
+    cohort: 会計士
+    category: リスク評価
+    question: "前任監査人とのコミュニケーションで確認すべき事項は？"
+    question_variants:
+      - "前任監査人引継"
+      - "監査人交代"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書510), am_law_article(倫理規則)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q015
+    cohort: 会計士
+    category: 監査計画
+    question: "監査計画のグループ監査における構成単位の重要性決定は？"
+    question_variants:
+      - "グループ監査計画"
+      - "構成単位重要性"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書600)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 監査調書 / 証憑 (q016-q025) =========
+  - id: kaikeishi_q016
+    cohort: 会計士
+    category: 監査調書
+    question: "監査調書の作成基準（経験ある実務家が理解できる十分性）と必須記載事項は？"
+    question_variants:
+      - "監査調書基準"
+      - "経験ある実務家"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書230)]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q017
+    cohort: 会計士
+    category: 監査調書
+    question: "監査調書のファイナライズ期限（60日以内）と変更制限は？"
+    question_variants:
+      - "監査調書60日ファイナライズ"
+      - "監査調書変更制限"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書230)]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q018
+    cohort: 会計士
+    category: 監査調書
+    question: "電子調書（eAudit Trail）の証跡保存とアクセス権限管理は？"
+    question_variants:
+      - "電子調書証跡"
+      - "eAudit Trail"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide, jc_software_integration_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q019
+    cohort: 会計士
+    category: 監査証拠
+    question: "監査証拠の証明力（外部証拠 vs 内部証拠、書面 vs 口頭）の階層は？"
+    question_variants:
+      - "監査証拠証明力"
+      - "外部内部証拠"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書500)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q020
+    cohort: 会計士
+    category: 監査証拠
+    question: "確認状（残高確認）の発送・回収・差異調整の留意点は？"
+    question_variants:
+      - "残高確認状"
+      - "確認差異調整"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書505)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q021
+    cohort: 会計士
+    category: 監査証拠
+    question: "サンプリングの設計（属性サンプリング vs 金額単位サンプリング）と母集団完全性は？"
+    question_variants:
+      - "監査サンプリング"
+      - "MUS 金額単位サンプリング"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書530)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q022
+    cohort: 会計士
+    category: 監査証拠
+    question: "経営者による書面確認（マネジメント・レップ）の必須記載事項は？"
+    question_variants:
+      - "経営者書面確認"
+      - "マネジメントレップ"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書580)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q023
+    cohort: 会計士
+    category: 監査証拠
+    question: "他の監査人の利用（コンポーネント監査人）への指示と評価は？"
+    question_variants:
+      - "コンポーネント監査人指示"
+      - "他監査人利用"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書600)]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q024
+    cohort: 会計士
+    category: 監査証拠
+    question: "内部監査人の作業の利用と内部監査機能の評価基準は？"
+    question_variants:
+      - "内部監査人利用"
+      - "内部監査機能評価"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書610)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q025
+    cohort: 会計士
+    category: 監査証拠
+    question: "専門家の業務の利用（公正価値評価専門家・アクチュアリー等）の評価は？"
+    question_variants:
+      - "監査人専門家利用"
+      - "公正価値評価専門家"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書620)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 棚卸 / 実証手続 (q026-q040) =========
+  - id: kaikeishi_q026
+    cohort: 会計士
+    category: 棚卸
+    question: "実地棚卸の立会監査の手順（事前計画・立会観察・サンプル数）は？"
+    question_variants:
+      - "実地棚卸立会"
+      - "立会監査手順"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書501)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q027
+    cohort: 会計士
+    category: 棚卸
+    question: "期末日と異なる時点での実地棚卸（ロールフォワード手続）の有効性は？"
+    question_variants:
+      - "棚卸ロールフォワード"
+      - "期末異日棚卸"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書501)]
+    expected_answer_length_tokens: 1400
+    opus_baseline_cost_estimate_jpy: 27
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q028
+    cohort: 会計士
+    category: 棚卸
+    question: "棚卸資産の評価（低価法・正味売却価額）の検証手続は？"
+    question_variants:
+      - "棚卸資産評価検証"
+      - "低価法監査"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第9号), am_law_article(監査基準委員会報告書500)]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q029
+    cohort: 会計士
+    category: 売上
+    question: "売上の期間帰属（カットオフ）の検証手続と頻出誤謬は？"
+    question_variants:
+      - "売上カットオフ"
+      - "期間帰属誤謬"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第29号), am_law_article(監査基準委員会報告書500)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q030
+    cohort: 会計士
+    category: 売上
+    question: "収益認識会計基準（5ステップモデル）の監査ポイントは？"
+    question_variants:
+      - "収益認識5ステップ"
+      - "新収益基準監査"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第29号), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q031
+    cohort: 会計士
+    category: 売掛金
+    question: "売掛金の年齢調べと回収可能性の検証手続は？"
+    question_variants:
+      - "売掛金年齢調べ"
+      - "回収可能性検証"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書500), jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q032
+    cohort: 会計士
+    category: 固定資産
+    question: "固定資産の実査・台帳照合・減価償却計算の検証手続は？"
+    question_variants:
+      - "固定資産実査"
+      - "固定資産台帳照合"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書500)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q033
+    cohort: 会計士
+    category: 固定資産
+    question: "減損の兆候判定と将来キャッシュ・フロー見積りの監査手続は？"
+    question_variants:
+      - "減損兆候判定"
+      - "将来CF見積監査"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第15号), am_law_article(監査基準委員会報告書540)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q034
+    cohort: 会計士
+    category: 引当金
+    question: "賞与引当金・退職給付引当金・貸倒引当金の見積妥当性検証は？"
+    question_variants:
+      - "引当金見積妥当性"
+      - "退職給付引当金監査"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書540)]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q035
+    cohort: 会計士
+    category: 仕入買掛
+    question: "未払計上の網羅性検証（カットオフ・サーチ・フォー・アンレコーディッド）は？"
+    question_variants:
+      - "未払網羅性検証"
+      - "サーチフォーアンレコーディッド"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書500)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q036
+    cohort: 会計士
+    category: 借入金
+    question: "借入金・社債のコベナンツ条項の遵守状況の検証は？"
+    question_variants:
+      - "借入金コベナンツ"
+      - "コベナンツ違反"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書500)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q037
+    cohort: 会計士
+    category: 純資産
+    question: "資本取引（増資・減資・自己株式取得）の手続検証ポイントは？"
+    question_variants:
+      - "資本取引検証"
+      - "自己株式取得監査"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(会社法199), am_law_article(監査基準委員会報告書500)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q038
+    cohort: 会計士
+    category: 純資産
+    question: "新株予約権・ストック・オプションの公正価値評価の監査手続は？"
+    question_variants:
+      - "ストックオプション監査"
+      - "新株予約権公正価値"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第8号), am_law_article(監査基準委員会報告書540)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q039
+    cohort: 会計士
+    category: 税効果
+    question: "繰延税金資産の回収可能性（分類1〜5）の検証は？"
+    question_variants:
+      - "繰延税金資産回収可能性"
+      - "回収可能性分類"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準適用指針第26号), am_law_article(監査基準委員会報告書540)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q040
+    cohort: 会計士
+    category: 税効果
+    question: "スケジューリング不能な一時差異の評価と監査手続は？"
+    question_variants:
+      - "スケジューリング不能"
+      - "一時差異評価"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(企業会計基準適用指針第26号)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= J-SOX / 内部統制 (q041-q055) =========
+  - id: kaikeishi_q041
+    cohort: 会計士
+    category: J-SOX
+    question: "全社的な内部統制（42 項目）の評価手順と典型的不備は？"
+    question_variants:
+      - "全社的内部統制42項目"
+      - "ELC 評価"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q042
+    cohort: 会計士
+    category: J-SOX
+    question: "業務プロセス統制（PLC）の評価で文書化すべき3点セットは？"
+    question_variants:
+      - "業務プロセス統制3点セット"
+      - "PLC 評価"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q043
+    cohort: 会計士
+    category: J-SOX
+    question: "IT全般統制（ITGC）と業務処理統制（ITAC）の関係と評価範囲は？"
+    question_variants:
+      - "ITGC ITAC 関係"
+      - "IT統制評価範囲"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q044
+    cohort: 会計士
+    category: J-SOX
+    question: "重要な不備・開示すべき重要な不備の判定基準は？"
+    question_variants:
+      - "重要な不備判定"
+      - "開示すべき重要な不備"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q045
+    cohort: 会計士
+    category: J-SOX
+    question: "ロールバック・ベース・サンプリングと運用テストのサンプル数決定は？"
+    question_variants:
+      - "運用テストサンプル"
+      - "テスト件数"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q046
+    cohort: 会計士
+    category: 内部統制
+    question: "決算財務報告プロセス（FCRP）の評価範囲と特殊性は？"
+    question_variants:
+      - "決算財務報告プロセス"
+      - "FCRP 評価"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q047
+    cohort: 会計士
+    category: 内部統制
+    question: "ロールフォワード（中間評価から期末評価への延長）の論拠は？"
+    question_variants:
+      - "ロールフォワード論拠"
+      - "中間期末評価延長"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q048
+    cohort: 会計士
+    category: 内部統制
+    question: "委託業務の内部統制（SOC1報告書）の利用と評価は？"
+    question_variants:
+      - "SOC1報告書"
+      - "委託業務統制"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書402)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q049
+    cohort: 会計士
+    category: 内部統制
+    question: "経営者評価と監査人評価の役割分担と統合方法は？"
+    question_variants:
+      - "経営者評価監査人評価"
+      - "役割分担"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q050
+    cohort: 会計士
+    category: 内部統制
+    question: "ダイレクト・レポーティング採用論（米国 SOX との比較）は？"
+    question_variants:
+      - "ダイレクトレポーティング"
+      - "米国SOX比較"
+    priority: LOW
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q051
+    cohort: 会計士
+    category: 内部統制
+    question: "サイバーセキュリティ統制のJ-SOX上の位置付けと評価ポイントは？"
+    question_variants:
+      - "サイバーセキュリティ統制"
+      - "セキュリティJ-SOX"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide, am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q052
+    cohort: 会計士
+    category: 内部統制
+    question: "RPA・ChatGPT 等の自動化・生成AI 利用統制の評価は？"
+    question_variants:
+      - "RPA統制"
+      - "生成AI統制"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [jc_practical_guide, am_internal_control_framework]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q053
+    cohort: 会計士
+    category: 内部統制
+    question: "クラウドサービス（SaaS）利用時の内部統制論点は？"
+    question_variants:
+      - "クラウド内部統制"
+      - "SaaS統制"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide, am_law_article(監査基準委員会報告書402)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q054
+    cohort: 会計士
+    category: 内部統制
+    question: "システム導入・更改時の内部統制対応（PMO参画含む）は？"
+    question_variants:
+      - "システム更改統制"
+      - "PMO参画"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q055
+    cohort: 会計士
+    category: 内部統制
+    question: "内部統制報告書における意見表明区分と無限定意見の典型例は？"
+    question_variants:
+      - "内部統制報告書意見"
+      - "無限定意見典型"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(財務報告に係る内部統制の評価及び監査の基準)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 関連当事者 / 後発事象 / GC (q056-q070) =========
+  - id: kaikeishi_q056
+    cohort: 会計士
+    category: 関連当事者
+    question: "関連当事者の範囲（役員・主要株主・関連会社等）の特定方法は？"
+    question_variants:
+      - "関連当事者範囲"
+      - "関連当事者特定"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第11号), am_law_article(監査基準委員会報告書550)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q057
+    cohort: 会計士
+    category: 関連当事者
+    question: "関連当事者取引の開示閾値と独立企業間取引性の検証は？"
+    question_variants:
+      - "関連当事者取引開示"
+      - "独立企業間性検証"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第11号), am_law_article(監査基準委員会報告書550)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q058
+    cohort: 会計士
+    category: 後発事象
+    question: "修正後発事象と開示後発事象の区分基準は？"
+    question_variants:
+      - "後発事象区分"
+      - "修正開示後発事象"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計原則注解1の3), am_law_article(監査基準委員会報告書560)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q059
+    cohort: 会計士
+    category: 後発事象
+    question: "監査報告書日後の後発事象発見時の対応手続（再発行）は？"
+    question_variants:
+      - "監査報告書日後後発事象"
+      - "監査報告書再発行"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書560)]
+    expected_answer_length_tokens: 1400
+    opus_baseline_cost_estimate_jpy: 27
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q060
+    cohort: 会計士
+    category: 継続企業
+    question: "継続企業の前提（GC）の重要な不確実性の評価手続は？"
+    question_variants:
+      - "継続企業前提GC"
+      - "重要な不確実性"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書570), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q061
+    cohort: 会計士
+    category: 継続企業
+    question: "経営者の対応策の評価（資金繰り計画・資本調達計画等）は？"
+    question_variants:
+      - "経営者対応策評価"
+      - "資金繰り計画検証"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書570)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q062
+    cohort: 会計士
+    category: 継続企業
+    question: "GC 注記から監査意見への影響（無限定・限定・不適正）の判定は？"
+    question_variants:
+      - "GC意見区分"
+      - "限定意見判定"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書570), am_law_article(監査基準委員会報告書705)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q063
+    cohort: 会計士
+    category: 訴訟債務
+    question: "訴訟・賠償等の偶発債務の弁護士確認状とその有効性は？"
+    question_variants:
+      - "弁護士確認状"
+      - "偶発債務監査"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書501)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q064
+    cohort: 会計士
+    category: 訴訟債務
+    question: "重要な訴訟の引当金計上要件（蓋然性・合理的見積可能性）は？"
+    question_variants:
+      - "訴訟引当金計上"
+      - "蓋然性合理的見積"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計原則注解18), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q065
+    cohort: 会計士
+    category: コミット
+    question: "コミット（保証・債務保証等）の網羅性検証手続は？"
+    question_variants:
+      - "保証債務網羅性"
+      - "オフバランス検証"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書500)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q066
+    cohort: 会計士
+    category: 開示
+    question: "セグメント情報の開示要件と監査ポイントは？"
+    question_variants:
+      - "セグメント情報監査"
+      - "セグメント開示"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(企業会計基準第17号)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q067
+    cohort: 会計士
+    category: 開示
+    question: "1株当たり情報（EPS・潜在株式調整後EPS）の検証は？"
+    question_variants:
+      - "EPS監査"
+      - "潜在株式調整"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(企業会計基準第2号)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q068
+    cohort: 会計士
+    category: 比較情報
+    question: "比較情報（前期・前期実績）の検証手続と監査責任範囲は？"
+    question_variants:
+      - "比較情報検証"
+      - "前期実績監査"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書710)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q069
+    cohort: 会計士
+    category: 比較情報
+    question: "会計方針変更・誤謬訂正の遡及適用と監査人の手続は？"
+    question_variants:
+      - "会計方針変更遡及"
+      - "誤謬訂正"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第24号)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q070
+    cohort: 会計士
+    category: 比較情報
+    question: "前期監査人と当期監査人が異なる場合の比較情報の取扱いは？"
+    question_variants:
+      - "前期他監査人"
+      - "比較情報注記"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書710)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 監査意見 / 報告書 (q071-q080) =========
+  - id: kaikeishi_q071
+    cohort: 会計士
+    category: 監査意見
+    question: "無限定意見・限定意見・不適正意見・意見不表明の判定フローは？"
+    question_variants:
+      - "監査意見区分フロー"
+      - "限定意見判断"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書705), am_law_article(監査基準委員会報告書700)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q072
+    cohort: 会計士
+    category: 監査意見
+    question: "監査上の主要な検討事項（KAM）の選定と記載要領は？"
+    question_variants:
+      - "KAM 選定"
+      - "監査上の主要な検討事項"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書701)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q073
+    cohort: 会計士
+    category: 監査意見
+    question: "強調事項区分・その他の事項区分の使い分けは？"
+    question_variants:
+      - "強調事項区分"
+      - "その他の事項区分"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書706)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q074
+    cohort: 会計士
+    category: 監査意見
+    question: "監査範囲制限による限定意見と意見不表明の境界は？"
+    question_variants:
+      - "監査範囲制限"
+      - "意見不表明境界"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(監査基準委員会報告書705)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q075
+    cohort: 会計士
+    category: 監査意見
+    question: "監査人交代時の引継ぎと意見表明への影響は？"
+    question_variants:
+      - "監査人交代意見"
+      - "引継ぎ影響"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書510)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q076
+    cohort: 会計士
+    category: 監査報告
+    question: "監査報告書日と取締役会日との関係（同日 or 後日）は？"
+    question_variants:
+      - "監査報告書日"
+      - "取締役会日関係"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書700)]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q077
+    cohort: 会計士
+    category: 監査報告
+    question: "監査役等とのコミュニケーション（監査基準委員会報告書260）の記載事項は？"
+    question_variants:
+      - "監査役等コミュニケーション"
+      - "260項目"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書260)]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q078
+    cohort: 会計士
+    category: 監査報告
+    question: "内部統制の不備に関する監査人からの伝達（265）の要件は？"
+    question_variants:
+      - "内部統制不備伝達"
+      - "265コミュニケーション"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(監査基準委員会報告書265)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q079
+    cohort: 会計士
+    category: 監査報告
+    question: "信頼性の保証業務（保証業務基準）と監査業務の違いは？"
+    question_variants:
+      - "保証業務基準"
+      - "監査と保証"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(保証業務に関する実務指針)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q080
+    cohort: 会計士
+    category: 監査報告
+    question: "サステナビリティ情報（気候関連等）の保証業務の論点は？"
+    question_variants:
+      - "サステナ保証"
+      - "気候関連開示"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(国際保証業務基準3000), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 四半期 / レビュー / DD (q081-q095) =========
+  - id: kaikeishi_q081
+    cohort: 会計士
+    category: 四半期レビュー
+    question: "四半期レビュー業務における質問・分析的手続の範囲は？"
+    question_variants:
+      - "四半期レビュー手続"
+      - "質問分析的"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(四半期レビュー基準), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q082
+    cohort: 会計士
+    category: 四半期レビュー
+    question: "四半期レビューと年度監査の整合性（年度監査計画への反映）は？"
+    question_variants:
+      - "四半期年度整合"
+      - "監査計画反映"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(四半期レビュー基準)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q083
+    cohort: 会計士
+    category: 四半期レビュー
+    question: "四半期レビュー結論の区分（無限定 vs 限定 vs 否定的結論）は？"
+    question_variants:
+      - "四半期レビュー結論"
+      - "否定的結論"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(四半期レビュー基準)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q084
+    cohort: 会計士
+    category: DD
+    question: "財務デューデリジェンス（M&A時）の典型的手続と監査との違いは？"
+    question_variants:
+      - "財務DD"
+      - "M&A財務DD"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q085
+    cohort: 会計士
+    category: DD
+    question: "DD 報告書における正規化EBITDA算定の留意点は？"
+    question_variants:
+      - "正規化EBITDA"
+      - "DD報告書EBITDA"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q086
+    cohort: 会計士
+    category: DD
+    question: "ネットデット（純有利子負債）の定義と典型的論点は？"
+    question_variants:
+      - "ネットデット定義"
+      - "純有利子負債算定"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q087
+    cohort: 会計士
+    category: DD
+    question: "運転資本（ワーキングキャピタル）の正規化と季節調整は？"
+    question_variants:
+      - "運転資本正規化"
+      - "季節調整WC"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q088
+    cohort: 会計士
+    category: 価値算定
+    question: "事業価値算定（DCF / マルチプル / 純資産）の各手法の使い分けは？"
+    question_variants:
+      - "DCFマルチプル比較"
+      - "企業価値算定"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q089
+    cohort: 会計士
+    category: 価値算定
+    question: "WACC（加重平均資本コスト）の算定パラメータと典型的論点は？"
+    question_variants:
+      - "WACC算定"
+      - "資本コスト"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q090
+    cohort: 会計士
+    category: 価値算定
+    question: "事業計画の合理性検証（過去実績との整合性・成長率分析）は？"
+    question_variants:
+      - "事業計画合理性"
+      - "成長率分析"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q091
+    cohort: 会計士
+    category: 価値算定
+    question: "PPA（取得原価配分）における無形資産識別と公正価値評価は？"
+    question_variants:
+      - "PPA無形資産"
+      - "取得原価配分"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第21号), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q092
+    cohort: 会計士
+    category: 価値算定
+    question: "のれんの償却 vs 減損テスト（日本基準とIFRS）の比較は？"
+    question_variants:
+      - "のれん償却減損"
+      - "日本基準IFRS比較"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(企業会計基準第21号), am_law_article(IFRS3)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q093
+    cohort: 会計士
+    category: IFRS
+    question: "IFRSへの初度適用（IFRS1）における会計方針選択は？"
+    question_variants:
+      - "IFRS初度適用"
+      - "IFRS1選択"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(IFRS1), jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q094
+    cohort: 会計士
+    category: IFRS
+    question: "IFRS9（金融商品）における予想信用損失（ECL）モデルは？"
+    question_variants:
+      - "IFRS9 ECL"
+      - "予想信用損失"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(IFRS9)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q095
+    cohort: 会計士
+    category: IFRS
+    question: "IFRS16（リース）の使用権資産と日本基準改正リース会計の比較は？"
+    question_variants:
+      - "IFRS16リース"
+      - "日本リース改正"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(IFRS16), am_law_article(企業会計基準第34号)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 倫理 / 独立性 / 品質管理 (q096-q100) =========
+  - id: kaikeishi_q096
+    cohort: 会計士
+    category: 倫理
+    question: "監査人の独立性（精神的・外観的）の維持と非保証業務の制限は？"
+    question_variants:
+      - "監査人独立性"
+      - "非保証業務制限"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(倫理規則), am_law_article(独立性に関する指針)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q097
+    cohort: 会計士
+    category: 倫理
+    question: "ローテーション制（業務執行社員・現場主任）の年限と例外は？"
+    question_variants:
+      - "ローテーション年限"
+      - "業務執行社員交代"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(独立性に関する指針)]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q098
+    cohort: 会計士
+    category: 倫理
+    question: "違法行為への対応（NOCLAR）と外部報告の判断基準は？"
+    question_variants:
+      - "NOCLAR対応"
+      - "違法行為外部報告"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(倫理規則), am_law_article(監査基準委員会報告書250)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q099
+    cohort: 会計士
+    category: 品質管理
+    question: "監査事務所の品質管理システム（QC1）と業務レベル品質管理（QC2）の構成は？"
+    question_variants:
+      - "監査品質管理QC1"
+      - "業務レベル品質"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(品質管理基準), am_law_article(品質管理基準委員会報告書第1号)]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: kaikeishi_q100
+    cohort: 会計士
+    category: 品質管理
+    question: "EQR（業務に係る審査）の実施範囲・独立性要件・記録方法は？"
+    question_variants:
+      - "EQR審査"
+      - "業務に係る審査"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(品質管理基準), am_law_article(監査基準委員会報告書220)]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52

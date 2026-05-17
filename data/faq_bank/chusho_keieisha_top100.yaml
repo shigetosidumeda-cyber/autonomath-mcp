@@ -1,0 +1,1429 @@
+# chusho_keieisha_top100.yaml — jpcite Pre-computed Answer Bank P1
+# Cohort: 中小経営者 — 100 FAQ enumeration
+# Generated: 2026-05-17 (P3 lane / pre-condition P1 follow-up)
+# Purpose: Opus 4.7 baseline question bank; P2 composer feeds am_precomputed_answer
+# Disclaimer: 中小企業政策 generic-legal-disclaimer applies to every entry
+# Constraint: READ-ONLY enumeration. NO LLM API. Question wording only.
+# ---
+meta:
+  cohort: 中小経営者
+  total_questions: 100
+  language: ja
+  schema_version: 1
+  legal_disclaimer_default: 中小企業政策
+  notes:
+    - 法的に正確な士業 vocabulary を使用
+    - opus_baseline_cost_estimate_jpy = Opus 4.7 agent が full chain-of-thought + 検索 + 引用照合で組み立てた場合の推定コスト
+    - jpcite_target_cost_jpy = ¥3/req fixed (本体プロダクト料金)
+    - required_data_sources は am_/jc_ canonical テーブルを参照 (rename project_jpcite_internal_autonomath_rename 準拠)
+questions:
+  # ========= 補助金活用 (q001-q010) =========
+  - id: chusho_keieisha_q001
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用における基本的な実務手順は何ですか？"
+    question_variants:
+      - "補助金活用 の基本"
+      - "補助金活用 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q002
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "補助金活用 のトラブル例"
+      - "補助金活用 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q003
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "補助金活用 の根拠条文"
+      - "補助金活用 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q004
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "補助金活用 の費用感"
+      - "補助金活用 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q005
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "補助金活用 の必要書類"
+      - "補助金活用 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q006
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "補助金活用 のヒアリング"
+      - "補助金活用 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q007
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "補助金活用 の運用ガイドライン"
+      - "補助金活用 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q008
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "補助金活用 の業際"
+      - "補助金活用 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q009
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "補助金活用 のデジタル化"
+      - "補助金活用 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q010
+    cohort: 中小経営者
+    category: 補助金活用
+    question: "補助金活用に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "補助金活用 の最新動向"
+      - "補助金活用 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= 融資調達 (q011-q020) =========
+  - id: chusho_keieisha_q011
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達における基本的な実務手順は何ですか？"
+    question_variants:
+      - "融資調達 の基本"
+      - "融資調達 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q012
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "融資調達 のトラブル例"
+      - "融資調達 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q013
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "融資調達 の根拠条文"
+      - "融資調達 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q014
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "融資調達 の費用感"
+      - "融資調達 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q015
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "融資調達 の必要書類"
+      - "融資調達 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q016
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "融資調達 のヒアリング"
+      - "融資調達 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q017
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "融資調達 の運用ガイドライン"
+      - "融資調達 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q018
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "融資調達 の業際"
+      - "融資調達 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q019
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "融資調達 のデジタル化"
+      - "融資調達 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q020
+    cohort: 中小経営者
+    category: 融資調達
+    question: "融資調達に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "融資調達 の最新動向"
+      - "融資調達 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= 税制優遇 (q021-q030) =========
+  - id: chusho_keieisha_q021
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇における基本的な実務手順は何ですか？"
+    question_variants:
+      - "税制優遇 の基本"
+      - "税制優遇 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q022
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "税制優遇 のトラブル例"
+      - "税制優遇 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q023
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "税制優遇 の根拠条文"
+      - "税制優遇 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q024
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "税制優遇 の費用感"
+      - "税制優遇 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q025
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "税制優遇 の必要書類"
+      - "税制優遇 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q026
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "税制優遇 のヒアリング"
+      - "税制優遇 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q027
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "税制優遇 の運用ガイドライン"
+      - "税制優遇 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q028
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "税制優遇 の業際"
+      - "税制優遇 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q029
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "税制優遇 のデジタル化"
+      - "税制優遇 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q030
+    cohort: 中小経営者
+    category: 税制優遇
+    question: "税制優遇に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "税制優遇 の最新動向"
+      - "税制優遇 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= 事業承継 (q031-q040) =========
+  - id: chusho_keieisha_q031
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継における基本的な実務手順は何ですか？"
+    question_variants:
+      - "事業承継 の基本"
+      - "事業承継 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q032
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "事業承継 のトラブル例"
+      - "事業承継 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q033
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "事業承継 の根拠条文"
+      - "事業承継 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q034
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "事業承継 の費用感"
+      - "事業承継 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q035
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "事業承継 の必要書類"
+      - "事業承継 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q036
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "事業承継 のヒアリング"
+      - "事業承継 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q037
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "事業承継 の運用ガイドライン"
+      - "事業承継 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q038
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "事業承継 の業際"
+      - "事業承継 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q039
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "事業承継 のデジタル化"
+      - "事業承継 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q040
+    cohort: 中小経営者
+    category: 事業承継
+    question: "事業承継に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "事業承継 の最新動向"
+      - "事業承継 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= 人材確保 (q041-q050) =========
+  - id: chusho_keieisha_q041
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保における基本的な実務手順は何ですか？"
+    question_variants:
+      - "人材確保 の基本"
+      - "人材確保 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q042
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "人材確保 のトラブル例"
+      - "人材確保 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q043
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "人材確保 の根拠条文"
+      - "人材確保 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q044
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "人材確保 の費用感"
+      - "人材確保 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q045
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "人材確保 の必要書類"
+      - "人材確保 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q046
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "人材確保 のヒアリング"
+      - "人材確保 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q047
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "人材確保 の運用ガイドライン"
+      - "人材確保 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q048
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "人材確保 の業際"
+      - "人材確保 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q049
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "人材確保 のデジタル化"
+      - "人材確保 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q050
+    cohort: 中小経営者
+    category: 人材確保
+    question: "人材確保に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "人材確保 の最新動向"
+      - "人材確保 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= DX 推進 (q051-q060) =========
+  - id: chusho_keieisha_q051
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進における基本的な実務手順は何ですか？"
+    question_variants:
+      - "DX 推進 の基本"
+      - "DX 推進 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q052
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "DX 推進 のトラブル例"
+      - "DX 推進 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q053
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "DX 推進 の根拠条文"
+      - "DX 推進 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q054
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "DX 推進 の費用感"
+      - "DX 推進 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q055
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "DX 推進 の必要書類"
+      - "DX 推進 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q056
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "DX 推進 のヒアリング"
+      - "DX 推進 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q057
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "DX 推進 の運用ガイドライン"
+      - "DX 推進 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q058
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "DX 推進 の業際"
+      - "DX 推進 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q059
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "DX 推進 のデジタル化"
+      - "DX 推進 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q060
+    cohort: 中小経営者
+    category: DX 推進
+    question: "DX 推進に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "DX 推進 の最新動向"
+      - "DX 推進 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= 輸出販路 (q061-q070) =========
+  - id: chusho_keieisha_q061
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路における基本的な実務手順は何ですか？"
+    question_variants:
+      - "輸出販路 の基本"
+      - "輸出販路 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q062
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "輸出販路 のトラブル例"
+      - "輸出販路 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q063
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "輸出販路 の根拠条文"
+      - "輸出販路 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q064
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "輸出販路 の費用感"
+      - "輸出販路 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q065
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "輸出販路 の必要書類"
+      - "輸出販路 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q066
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "輸出販路 のヒアリング"
+      - "輸出販路 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q067
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "輸出販路 の運用ガイドライン"
+      - "輸出販路 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q068
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "輸出販路 の業際"
+      - "輸出販路 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q069
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "輸出販路 のデジタル化"
+      - "輸出販路 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q070
+    cohort: 中小経営者
+    category: 輸出販路
+    question: "輸出販路に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "輸出販路 の最新動向"
+      - "輸出販路 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= 脱炭素 GX (q071-q080) =========
+  - id: chusho_keieisha_q071
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXにおける基本的な実務手順は何ですか？"
+    question_variants:
+      - "脱炭素 GX の基本"
+      - "脱炭素 GX 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q072
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXで典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "脱炭素 GX のトラブル例"
+      - "脱炭素 GX 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q073
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXにおける法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "脱炭素 GX の根拠条文"
+      - "脱炭素 GX 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q074
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXの標準的な所要期間と費用相場は？"
+    question_variants:
+      - "脱炭素 GX の費用感"
+      - "脱炭素 GX 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q075
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXで必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "脱炭素 GX の必要書類"
+      - "脱炭素 GX 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q076
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXの依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "脱炭素 GX のヒアリング"
+      - "脱炭素 GX の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q077
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXにおける監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "脱炭素 GX の運用ガイドライン"
+      - "脱炭素 GX 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q078
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXと隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "脱炭素 GX の業際"
+      - "脱炭素 GX の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q079
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXでデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "脱炭素 GX のデジタル化"
+      - "脱炭素 GX の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q080
+    cohort: 中小経営者
+    category: 脱炭素 GX
+    question: "脱炭素 GXに関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "脱炭素 GX の最新動向"
+      - "脱炭素 GX の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= BCP 災害 (q081-q090) =========
+  - id: chusho_keieisha_q081
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害における基本的な実務手順は何ですか？"
+    question_variants:
+      - "BCP 災害 の基本"
+      - "BCP 災害 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q082
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "BCP 災害 のトラブル例"
+      - "BCP 災害 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q083
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "BCP 災害 の根拠条文"
+      - "BCP 災害 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q084
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "BCP 災害 の費用感"
+      - "BCP 災害 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q085
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "BCP 災害 の必要書類"
+      - "BCP 災害 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q086
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "BCP 災害 のヒアリング"
+      - "BCP 災害 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q087
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "BCP 災害 の運用ガイドライン"
+      - "BCP 災害 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q088
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "BCP 災害 の業際"
+      - "BCP 災害 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q089
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "BCP 災害 のデジタル化"
+      - "BCP 災害 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q090
+    cohort: 中小経営者
+    category: BCP 災害
+    question: "BCP 災害に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "BCP 災害 の最新動向"
+      - "BCP 災害 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  # ========= 経営計画 (q091-q100) =========
+  - id: chusho_keieisha_q091
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画における基本的な実務手順は何ですか？"
+    question_variants:
+      - "経営計画 の基本"
+      - "経営計画 実務概要"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q092
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画で典型的に発生するトラブルとその予防策は？"
+    question_variants:
+      - "経営計画 のトラブル例"
+      - "経営計画 予防策"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q093
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画における法令上の根拠条文と最新改正は？"
+    question_variants:
+      - "経営計画 の根拠条文"
+      - "経営計画 改正動向"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q094
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画の標準的な所要期間と費用相場は？"
+    question_variants:
+      - "経営計画 の費用感"
+      - "経営計画 所要期間"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 700
+    opus_baseline_cost_estimate_jpy: 16
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q095
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画で必要となる主要な書類とその記載要件は？"
+    question_variants:
+      - "経営計画 の必要書類"
+      - "経営計画 記載要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q096
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画の依頼者ヒアリングで最初に確認すべき事項は？"
+    question_variants:
+      - "経営計画 のヒアリング"
+      - "経営計画 の依頼者対応"
+    priority: MED
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q097
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画における監督官庁・所管団体の運用ガイドラインは？"
+    question_variants:
+      - "経営計画 の運用ガイドライン"
+      - "経営計画 監督官庁"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q098
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画と隣接業務との業際線はどう判断すべきですか？"
+    question_variants:
+      - "経営計画 の業際"
+      - "経営計画 の他資格との関係"
+    priority: LOW
+    answer_depth_target: 3
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q099
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画でデジタル化・電子化が進む領域はどこですか？"
+    question_variants:
+      - "経営計画 のデジタル化"
+      - "経営計画 の電子化動向"
+    priority: LOW
+    answer_depth_target: 2
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 17
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策
+  - id: chusho_keieisha_q100
+    cohort: 中小経営者
+    category: 経営計画
+    question: "経営計画に関する最近の改正・通達・裁判例の動向は？"
+    question_variants:
+      - "経営計画 の最新動向"
+      - "経営計画 の裁判例"
+    priority: HIGH
+    answer_depth_target: 4
+    required_data_sources: [am_entities, am_law_reference, am_source, am_authority, jc_practical_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: 中小企業政策

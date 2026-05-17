@@ -1,0 +1,1433 @@
+# zeirishi_top100.yaml — jpcite Pre-computed Answer Bank P1
+# Cohort: 税理士 (Tax Accountant) — 100 FAQ enumeration
+# Generated: 2026-05-17 (Wave 95 / Pre-computed Moat P1)
+# Purpose: Opus 4.7 baseline question bank; P2 will precompute answers
+# Disclaimer: §52 generic-legal-disclaimer applies to every entry
+# Constraint: READ-ONLY enumeration. NO LLM API. Question wording only.
+# ---
+meta:
+  cohort: 税理士
+  total_questions: 100
+  language: ja
+  schema_version: 1
+  legal_disclaimer_default: §52
+  notes:
+    - 法的に正確な士業 vocabulary を使用
+    - opus_baseline_cost_estimate_jpy = Opus 4.7 agent が full chain-of-thought + 検索 + 引用照合で組み立てた場合の推定コスト
+    - jpcite_target_cost_jpy = ¥3/req fixed (本体プロダクト料金)
+    - required_data_sources は am_/jc_ canonical テーブルを参照 (rename project_jpcite_internal_autonomath_rename 準拠)
+questions:
+  # ========= 月次決算 / 仕訳 (q001-q010) =========
+  - id: zeirishi_q001
+    cohort: 税理士
+    category: 月次決算
+    question: "月次決算で必ず計上すべき経過勘定はどれですか？"
+    question_variants:
+      - "月次の経過勘定の取扱い"
+      - "未払費用と未払金の月次計上"
+      - "月次決算で前払費用をどう扱うか"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法22), am_accounting_principle, jc_practical_guide]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q002
+    cohort: 税理士
+    category: 月次決算
+    question: "月次決算の早期化（5営業日以内）に必要な業務フロー整備の要点は？"
+    question_variants:
+      - "月次早期化"
+      - "5営業日決算の業務設計"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide, am_internal_control_framework]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q003
+    cohort: 税理士
+    category: 月次決算
+    question: "月次の在庫評価で実地棚卸をしない場合の代替手続きは？"
+    question_variants:
+      - "月次在庫評価方法"
+      - "実地棚卸代替"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_accounting_principle, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q004
+    cohort: 税理士
+    category: 月次決算
+    question: "翌期に支払う賞与の月次按分計上の根拠と仕訳は？"
+    question_variants:
+      - "賞与引当金月次計上"
+      - "賞与按分仕訳"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_accounting_principle, am_law_article(法人税法施行令72)]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q005
+    cohort: 税理士
+    category: 月次決算
+    question: "現預金残高が帳簿と一致しない場合の調査手順は？"
+    question_variants:
+      - "現預金不一致調査"
+      - "銀行勘定調整表作成"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide, am_internal_control_framework]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q006
+    cohort: 税理士
+    category: 月次決算
+    question: "減価償却費の月次計上方法（月割 vs 年額按分）の選択基準は？"
+    question_variants:
+      - "減価償却月次計上"
+      - "月割按分基準"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法31), am_accounting_principle]
+    expected_answer_length_tokens: 800
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q007
+    cohort: 税理士
+    category: 月次決算
+    question: "未払法人税等を月次で計上する場合の概算計算方法は？"
+    question_variants:
+      - "未払法人税月次概算"
+      - "予定納税月次按分"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法基本通達), jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q008
+    cohort: 税理士
+    category: 月次決算
+    question: "月次試算表を経営者にどう報告するか（KPI 抽出基準）"
+    question_variants:
+      - "試算表報告"
+      - "経営者向けKPI"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide, am_management_reporting]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q009
+    cohort: 税理士
+    category: 月次決算
+    question: "クラウド会計（freee/MF）からの月次連携で起こりがちな仕訳誤りと対策は？"
+    question_variants:
+      - "クラウド会計仕訳誤り"
+      - "freee 月次連携"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [jc_practical_guide, jc_software_integration_guide]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q010
+    cohort: 税理士
+    category: 月次決算
+    question: "月次決算で発見した過年度誤謬の取扱い（修正再表示 vs 当期修正）"
+    question_variants:
+      - "過年度誤謬修正"
+      - "修正再表示"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_accounting_standard(過年度遡及修正), jc_practical_guide]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 年末調整 (q011-q020) =========
+  - id: zeirishi_q011
+    cohort: 税理士
+    category: 年末調整
+    question: "年末調整で扶養控除を適用できる親族範囲は？"
+    question_variants:
+      - "扶養控除親族範囲"
+      - "扶養家族の所得要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法84), nta_tsutatsu]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 18
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q012
+    cohort: 税理士
+    category: 年末調整
+    question: "中途入社者の前職給与を含めた年末調整の手続きは？"
+    question_variants:
+      - "中途入社年調"
+      - "前職源泉徴収票統合"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法190), nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q013
+    cohort: 税理士
+    category: 年末調整
+    question: "生命保険料控除の新旧契約区分と控除限度額の計算は？"
+    question_variants:
+      - "生命保険料控除限度額"
+      - "新旧契約区分"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法76), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 21
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q014
+    cohort: 税理士
+    category: 年末調整
+    question: "住宅借入金等特別控除の年末調整適用条件は？"
+    question_variants:
+      - "住宅ローン控除年調適用"
+      - "住宅特別控除条件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法41), nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q015
+    cohort: 税理士
+    category: 年末調整
+    question: "ひとり親控除と寡婦控除の区分・選択基準は？"
+    question_variants:
+      - "ひとり親控除"
+      - "寡婦控除区分"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法81), nta_tsutatsu]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q016
+    cohort: 税理士
+    category: 年末調整
+    question: "年末調整後に扶養控除等の異動が発覚した場合の修正手続きは？"
+    question_variants:
+      - "年調後修正"
+      - "再年末調整"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法190), nta_tsutatsu]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q017
+    cohort: 税理士
+    category: 年末調整
+    question: "国外居住親族の扶養控除を適用する場合の追加書類は？"
+    question_variants:
+      - "国外扶養親族書類"
+      - "送金関係書類要件"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法施行令316の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q018
+    cohort: 税理士
+    category: 年末調整
+    question: "iDeCo（個人型確定拠出年金）掛金の小規模企業共済等掛金控除の処理は？"
+    question_variants:
+      - "iDeCo 年調処理"
+      - "小規模企業共済等掛金控除"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法75), nta_tsutatsu]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q019
+    cohort: 税理士
+    category: 年末調整
+    question: "電子年末調整（マイナポータル連携）の導入ステップは？"
+    question_variants:
+      - "電子年調"
+      - "マイナポータル連携手続"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [nta_tsutatsu, jc_practical_guide, jc_software_integration_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q020
+    cohort: 税理士
+    category: 年末調整
+    question: "源泉徴収票の電子交付（給与所得者本人への交付）の要件は？"
+    question_variants:
+      - "源泉徴収票電子交付"
+      - "電子源泉票要件"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(所得税法226), nta_tsutatsu]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 法人税 (q021-q030) =========
+  - id: zeirishi_q021
+    cohort: 税理士
+    category: 法人税
+    question: "役員報酬の損金算入条件（定期同額・事前確定届出・業績連動）は？"
+    question_variants:
+      - "役員報酬損金算入"
+      - "定期同額給与要件"
+      - "事前確定届出給与"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法34), nta_tsutatsu, am_legal_reasoning_chain]
+    expected_answer_length_tokens: 1800
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q022
+    cohort: 税理士
+    category: 法人税
+    question: "中小企業の交際費等の損金算入限度額（800万円定額 vs 接待飲食費50%）の選択は？"
+    question_variants:
+      - "交際費損金算入限度額"
+      - "接待飲食費50%特例"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法61の4), nta_tsutatsu]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q023
+    cohort: 税理士
+    category: 法人税
+    question: "貸倒引当金の繰入限度額（中小特例・実績率法）の計算は？"
+    question_variants:
+      - "貸倒引当金繰入限度額"
+      - "中小特例実績率"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法52), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q024
+    cohort: 税理士
+    category: 法人税
+    question: "別表四・別表五の連動誤りでよくあるパターンは？"
+    question_variants:
+      - "別表四五連動"
+      - "別表記載誤り頻出"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [nta_tsutatsu, jc_practical_guide, am_legal_reasoning_chain]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q025
+    cohort: 税理士
+    category: 法人税
+    question: "中小企業者等の少額減価償却資産の取得価額の損金算入特例（30万円基準）は？"
+    question_variants:
+      - "少額減価償却資産特例"
+      - "30万円損金算入"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法67の5), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q026
+    cohort: 税理士
+    category: 法人税
+    question: "繰越欠損金の控除限度額（中小法人 vs 大法人の50%制限）は？"
+    question_variants:
+      - "繰越欠損金控除限度"
+      - "50%控除制限"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法57), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q027
+    cohort: 税理士
+    category: 法人税
+    question: "資本金1億円超の法人になった場合に失う主な中小特例は？"
+    question_variants:
+      - "中小特例失効"
+      - "資本金1億円超影響"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法66), am_law_article(租税特別措置法42の4), nta_tsutatsu]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q028
+    cohort: 税理士
+    category: 法人税
+    question: "決算賞与の損金算入要件（事業年度末までの通知・1か月以内支給）は？"
+    question_variants:
+      - "決算賞与損金要件"
+      - "決算賞与通知"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法施行令72の3), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q029
+    cohort: 税理士
+    category: 法人税
+    question: "海外子会社からの配当に係る益金不算入（外国子会社配当益金不算入制度）は？"
+    question_variants:
+      - "外国子会社配当益金不算入"
+      - "海外配当課税"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法23の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q030
+    cohort: 税理士
+    category: 法人税
+    question: "中間申告（予定申告 vs 仮決算）の選択基準は？"
+    question_variants:
+      - "中間申告選択"
+      - "仮決算メリット"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法71), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 消費税 / インボイス (q031-q045) =========
+  - id: zeirishi_q031
+    cohort: 税理士
+    category: 消費税
+    question: "適格請求書発行事業者の登録要件と登録後の義務は？"
+    question_variants:
+      - "インボイス登録要件"
+      - "適格請求書発行事業者義務"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(消費税法57の2), nta_tsutatsu, am_legal_reasoning_chain]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q032
+    cohort: 税理士
+    category: 消費税
+    question: "免税事業者がインボイス登録した場合の2割特例の適用要件は？"
+    question_variants:
+      - "2割特例"
+      - "インボイス2割特例適用要件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(平成28年改正法附則51の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q033
+    cohort: 税理士
+    category: 消費税
+    question: "簡易課税制度の事業区分（第1種〜第6種）の判定基準は？"
+    question_variants:
+      - "簡易課税事業区分"
+      - "みなし仕入率"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(消費税法37), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q034
+    cohort: 税理士
+    category: 消費税
+    question: "免税事業者から仕入れた場合の経過措置（80% / 50% / 0%）の適用期間は？"
+    question_variants:
+      - "インボイス経過措置"
+      - "免税事業者仕入経過措置"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(平成28年改正法附則52), nta_tsutatsu]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q035
+    cohort: 税理士
+    category: 消費税
+    question: "1万円未満の少額取引のインボイス交付・保存義務の免除（少額特例）は？"
+    question_variants:
+      - "少額特例"
+      - "1万円未満免除"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(平成28年改正法附則53の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q036
+    cohort: 税理士
+    category: 消費税
+    question: "課税売上割合が95%以上の場合の全額控除と、未満の場合の個別対応方式・一括比例配分方式の選択は？"
+    question_variants:
+      - "課税売上割合95%"
+      - "個別対応方式 一括比例配分"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(消費税法30), nta_tsutatsu]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q037
+    cohort: 税理士
+    category: 消費税
+    question: "輸出免税の証明書類（輸出許可通知書等）の保存要件は？"
+    question_variants:
+      - "輸出免税書類"
+      - "輸出証明保存"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(消費税法7), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q038
+    cohort: 税理士
+    category: 消費税
+    question: "リバースチャージ方式（電気通信利用役務の提供）の課税仕組みは？"
+    question_variants:
+      - "リバースチャージ"
+      - "電気通信利用役務"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(消費税法4の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1400
+    opus_baseline_cost_estimate_jpy: 27
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q039
+    cohort: 税理士
+    category: 消費税
+    question: "高額特定資産の取得をした場合の3年縛り（事業者免税点制度の不適用）は？"
+    question_variants:
+      - "高額特定資産3年縛り"
+      - "簡易課税不適用"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(消費税法12の4), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q040
+    cohort: 税理士
+    category: 消費税
+    question: "電子帳簿保存法とインボイス保存の整合性（電子インボイス対応）は？"
+    question_variants:
+      - "電子インボイス保存"
+      - "電帳法とインボイス"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(電子帳簿保存法7), nta_tsutatsu, jc_software_integration_guide]
+    expected_answer_length_tokens: 1300
+    opus_baseline_cost_estimate_jpy: 25
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q041
+    cohort: 税理士
+    category: 消費税
+    question: "インボイス登録番号の不備・誤記載があった場合の仕入税額控除の取扱いは？"
+    question_variants:
+      - "インボイス登録番号誤記"
+      - "登録番号不備"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q042
+    cohort: 税理士
+    category: 消費税
+    question: "委託販売・代理店取引のインボイス交付（媒介者交付特例）は？"
+    question_variants:
+      - "媒介者交付特例"
+      - "委託販売インボイス"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(消費税法施行令70の12), nta_tsutatsu]
+    expected_answer_length_tokens: 1400
+    opus_baseline_cost_estimate_jpy: 27
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q043
+    cohort: 税理士
+    category: 消費税
+    question: "返品・値引き・割戻し時の適格返還請求書の発行義務は？"
+    question_variants:
+      - "適格返還請求書"
+      - "値引きインボイス"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(消費税法57の4), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q044
+    cohort: 税理士
+    category: 消費税
+    question: "立替金精算書（従業員立替経費等）のインボイス取扱いは？"
+    question_variants:
+      - "立替金インボイス"
+      - "経費立替仕入控除"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q045
+    cohort: 税理士
+    category: 消費税
+    question: "課税期間特例（短縮選択届出書）の選択メリット・デメリットは？"
+    question_variants:
+      - "課税期間短縮"
+      - "消費税課税期間特例"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(消費税法19), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 償却 / 資産 (q046-q055) =========
+  - id: zeirishi_q046
+    cohort: 税理士
+    category: 償却
+    question: "減価償却資産の耐用年数表の判定で迷う資産類型は？（区分困難ケース）"
+    question_variants:
+      - "耐用年数表判定"
+      - "資産区分判定困難"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(減価償却資産の耐用年数等に関する省令), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q047
+    cohort: 税理士
+    category: 償却
+    question: "中古資産の見積耐用年数の簡便法計算は？"
+    question_variants:
+      - "中古資産耐用年数"
+      - "簡便法計算"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(耐用年数省令3), nta_tsutatsu]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q048
+    cohort: 税理士
+    category: 償却
+    question: "資本的支出 vs 修繕費の区分基準（20万円・60万円基準）は？"
+    question_variants:
+      - "資本的支出修繕費区分"
+      - "20万円60万円基準"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法施行令132), nta_tsutatsu, am_legal_reasoning_chain]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q049
+    cohort: 税理士
+    category: 償却
+    question: "ソフトウェアの償却（自社開発・購入・クラウド）の取扱い区分は？"
+    question_variants:
+      - "ソフトウェア償却"
+      - "クラウドソフト経費"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(耐用年数省令別表第3), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q050
+    cohort: 税理士
+    category: 償却
+    question: "一括償却資産（20万円未満・3年均等償却）の選択メリットは？"
+    question_variants:
+      - "一括償却資産"
+      - "20万円3年均等"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法施行令133の2), nta_tsutatsu]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q051
+    cohort: 税理士
+    category: 償却
+    question: "減価償却方法の変更（定額法⇔定率法）の届出と影響は？"
+    question_variants:
+      - "減価償却方法変更"
+      - "定額法定率法変更"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法施行令52), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q052
+    cohort: 税理士
+    category: 償却
+    question: "リース取引（オペレーティング・ファイナンス・所有権移転外）の税務処理は？"
+    question_variants:
+      - "リース税務"
+      - "所有権移転外ファイナンスリース"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法64の2), nta_tsutatsu, am_accounting_principle]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q053
+    cohort: 税理士
+    category: 償却
+    question: "減損損失と税務上の評価損の処理の違いは？"
+    question_variants:
+      - "減損税務取扱"
+      - "評価損損金算入"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法33), am_accounting_standard(減損), nta_tsutatsu]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q054
+    cohort: 税理士
+    category: 償却
+    question: "除却・廃棄・滅失時の損失計上タイミングと証憑は？"
+    question_variants:
+      - "固定資産除却"
+      - "除却損計上"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法22), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q055
+    cohort: 税理士
+    category: 償却
+    question: "EV・ハイブリッド車の特別償却・税額控除（中小企業投資促進税制等）は？"
+    question_variants:
+      - "EV特別償却"
+      - "中小企業投資促進税制"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法42の6), nta_tsutatsu]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 寄附金 / 接待交際 (q056-q060) =========
+  - id: zeirishi_q056
+    cohort: 税理士
+    category: 寄附金
+    question: "寄附金の損金算入限度額（一般・特定公益増進法人・指定寄附金）の区分は？"
+    question_variants:
+      - "寄附金損金算入限度"
+      - "特定公益増進法人"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法37), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q057
+    cohort: 税理士
+    category: 寄附金
+    question: "完全支配関係子会社への寄附金（グループ法人税制）の取扱いは？"
+    question_variants:
+      - "グループ法人寄附金"
+      - "完全支配関係寄附"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法37の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1400
+    opus_baseline_cost_estimate_jpy: 27
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q058
+    cohort: 税理士
+    category: 接待交際
+    question: "接待飲食費と会議費・福利厚生費の区分基準（5,000円基準）は？"
+    question_variants:
+      - "接待飲食費5000円"
+      - "会議費福利厚生費"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法施行令37の5), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q059
+    cohort: 税理士
+    category: 接待交際
+    question: "ゴルフ・観劇等の接待費の課税仕入判定（仕入税額控除可否）は？"
+    question_variants:
+      - "ゴルフ接待税額控除"
+      - "観劇接待仕入控除"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q060
+    cohort: 税理士
+    category: 接待交際
+    question: "得意先への中元・歳暮の損金性と単価基準は？"
+    question_variants:
+      - "中元歳暮損金"
+      - "贈答品単価基準"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 900
+    opus_baseline_cost_estimate_jpy: 19
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 評価損 / 引当金 (q061-q065) =========
+  - id: zeirishi_q061
+    cohort: 税理士
+    category: 評価損
+    question: "棚卸資産の評価損計上要件（陳腐化・型崩れ・破損）は？"
+    question_variants:
+      - "棚卸資産評価損"
+      - "陳腐化評価損"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法33), am_law_article(法人税法施行令68), nta_tsutatsu]
+    expected_answer_length_tokens: 1400
+    opus_baseline_cost_estimate_jpy: 27
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q062
+    cohort: 税理士
+    category: 評価損
+    question: "上場有価証券・非上場有価証券の評価損計上要件は？"
+    question_variants:
+      - "有価証券評価損"
+      - "非上場株式評価損"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法施行令68), nta_tsutatsu]
+    expected_answer_length_tokens: 1400
+    opus_baseline_cost_estimate_jpy: 27
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q063
+    cohort: 税理士
+    category: 引当金
+    question: "賞与引当金の税務上の取扱い（損金不算入）と税効果会計の連動は？"
+    question_variants:
+      - "賞与引当金税務"
+      - "税効果会計連動"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法22), am_accounting_standard(税効果), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q064
+    cohort: 税理士
+    category: 引当金
+    question: "退職給付引当金・退職給付費用の税務調整は？"
+    question_variants:
+      - "退職給付引当金税務"
+      - "退職給付調整"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法22), am_accounting_standard(退職給付), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q065
+    cohort: 税理士
+    category: 引当金
+    question: "ポイント引当金（販売促進費）の損金算入時期は？"
+    question_variants:
+      - "ポイント引当金"
+      - "販促費損金"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 外形標準 / 地方税 (q066-q070) =========
+  - id: zeirishi_q066
+    cohort: 税理士
+    category: 外形標準
+    question: "資本金1億円超法人の外形標準課税（付加価値割・資本割）の計算は？"
+    question_variants:
+      - "外形標準課税"
+      - "付加価値割資本割"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(地方税法72の12), am_law_article(地方税法72の21), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q067
+    cohort: 税理士
+    category: 外形標準
+    question: "雇用安定控除の計算と適用要件は？"
+    question_variants:
+      - "雇用安定控除"
+      - "外形雇用控除"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(地方税法72の20), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q068
+    cohort: 税理士
+    category: 地方税
+    question: "事業税の分割基準（事務所・従業員・売上）の判定は？"
+    question_variants:
+      - "事業税分割基準"
+      - "事業所所在地"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(地方税法72の48), nta_tsutatsu]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q069
+    cohort: 税理士
+    category: 地方税
+    question: "住民税均等割の資本金区分と従業員数区分の判定基準は？"
+    question_variants:
+      - "住民税均等割"
+      - "均等割区分"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(地方税法52), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q070
+    cohort: 税理士
+    category: 地方税
+    question: "固定資産税の申告（償却資産申告書）の対象資産は？"
+    question_variants:
+      - "償却資産申告"
+      - "固定資産税対象"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(地方税法343), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= グループ通算 / 連結 (q071-q075) =========
+  - id: zeirishi_q071
+    cohort: 税理士
+    category: グループ通算
+    question: "グループ通算制度への移行手続きと届出書類は？"
+    question_variants:
+      - "グループ通算移行"
+      - "通算法人届出"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法64の9), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q072
+    cohort: 税理士
+    category: グループ通算
+    question: "通算法人の損益通算の仕組みと中小特例の調整は？"
+    question_variants:
+      - "通算損益通算"
+      - "中小特例調整"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法64の5), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q073
+    cohort: 税理士
+    category: グループ通算
+    question: "通算離脱時の課税（時価評価課税）の発生事由は？"
+    question_variants:
+      - "通算離脱時価評価"
+      - "離脱課税"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法64の13), nta_tsutatsu]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q074
+    cohort: 税理士
+    category: グループ通算
+    question: "グループ法人税制（100%支配関係）と通算制度の違いは？"
+    question_variants:
+      - "グループ法人税制比較"
+      - "100%支配関係"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法61の13), am_law_article(法人税法64の9), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q075
+    cohort: 税理士
+    category: グループ通算
+    question: "通算法人間の資産譲渡（譲渡損益調整資産）の取扱いは？"
+    question_variants:
+      - "譲渡損益調整資産"
+      - "通算法人資産譲渡"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(法人税法61の11), nta_tsutatsu]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 中小特例 / 研究開発 / IT (q076-q085) =========
+  - id: zeirishi_q076
+    cohort: 税理士
+    category: 中小特例
+    question: "中小企業者等の法人税率15%軽減税率の適用要件は？"
+    question_variants:
+      - "中小企業軽減税率"
+      - "15%軽減"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法66), am_law_article(租税特別措置法42の3の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q077
+    cohort: 税理士
+    category: 中小特例
+    question: "中小企業経営強化税制（A類型・B類型・C類型・D類型）の比較は？"
+    question_variants:
+      - "経営強化税制類型"
+      - "A類型B類型C類型D類型"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法42の12の4), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q078
+    cohort: 税理士
+    category: 中小特例
+    question: "中小企業投資促進税制の対象設備と特別償却・税額控除の選択は？"
+    question_variants:
+      - "中小企業投資促進"
+      - "特別償却税額控除選択"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法42の6), nta_tsutatsu]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q079
+    cohort: 税理士
+    category: 研究開発税制
+    question: "試験研究費の総額型・オープンイノベーション型の税額控除計算は？"
+    question_variants:
+      - "研究開発税制総額型"
+      - "オープンイノベーション型"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法42の4), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q080
+    cohort: 税理士
+    category: 研究開発税制
+    question: "試験研究費の範囲（人件費・原材料費・委託費）の判定基準は？"
+    question_variants:
+      - "試験研究費範囲"
+      - "人件費委託費判定"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法42の4), nta_tsutatsu, am_legal_reasoning_chain]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q081
+    cohort: 税理士
+    category: 研究開発税制
+    question: "中小企業技術基盤強化税制（中小研究開発税制）の適用要件は？"
+    question_variants:
+      - "中小研究開発税制"
+      - "技術基盤強化"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法42の4の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 23
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q082
+    cohort: 税理士
+    category: IT税制
+    question: "DX投資促進税制（情報技術事業適応設備）の認定要件と税額控除は？"
+    question_variants:
+      - "DX投資促進"
+      - "情報技術事業適応"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法42の12の7), jc_practical_guide]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q083
+    cohort: 税理士
+    category: IT税制
+    question: "賃上げ促進税制（中小企業向け）の控除率（最大45%）の段階要件は？"
+    question_variants:
+      - "賃上げ促進税制"
+      - "中小45%控除"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法42の12の5), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q084
+    cohort: 税理士
+    category: 中小特例
+    question: "中小企業の欠損金繰戻し還付（前年法人税の還付）の手続きは？"
+    question_variants:
+      - "欠損金繰戻し還付"
+      - "前年法人税還付"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(法人税法80), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q085
+    cohort: 税理士
+    category: 中小特例
+    question: "中小法人の交際費800万円特例と接待飲食費50%特例の併用可否は？"
+    question_variants:
+      - "中小交際費併用"
+      - "800万円50%併用"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法61の4), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 個人所得税 / 譲渡所得 / 相続贈与 (q086-q095) =========
+  - id: zeirishi_q086
+    cohort: 税理士
+    category: 個人所得税
+    question: "事業所得と雑所得の区分（最高裁令和4年判決後の取扱い）は？"
+    question_variants:
+      - "事業所得雑所得区分"
+      - "副業300万円判定"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(所得税法27), nta_tsutatsu, am_legal_reasoning_chain, jc_case_law_repository]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q087
+    cohort: 税理士
+    category: 個人所得税
+    question: "青色申告特別控除（65万円・55万円・10万円）の選択要件は？"
+    question_variants:
+      - "青色申告特別控除"
+      - "65万円控除要件"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法25の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1000
+    opus_baseline_cost_estimate_jpy: 20
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q088
+    cohort: 税理士
+    category: 譲渡所得
+    question: "土地建物の譲渡所得の長期・短期区分と税率は？"
+    question_variants:
+      - "譲渡所得長期短期"
+      - "5年保有判定"
+    priority: HIGH
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法31), am_law_article(租税特別措置法32), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q089
+    cohort: 税理士
+    category: 譲渡所得
+    question: "居住用財産の3,000万円特別控除の適用要件は？"
+    question_variants:
+      - "3000万円控除"
+      - "居住用財産特別控除"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法35), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q090
+    cohort: 税理士
+    category: 譲渡所得
+    question: "株式譲渡損失の繰越控除（3年間）の手続きと適用順序は？"
+    question_variants:
+      - "株式譲渡損失繰越"
+      - "3年繰越控除"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法37の12の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q091
+    cohort: 税理士
+    category: 相続贈与
+    question: "暦年贈与と相続時精算課税制度の選択基準（令和6年改正後）は？"
+    question_variants:
+      - "暦年贈与相続時精算課税"
+      - "令和6年改正贈与"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(相続税法21の9), am_law_article(相続税法21の11の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q092
+    cohort: 税理士
+    category: 相続贈与
+    question: "事業承継税制（特例措置・一般措置）の納税猶予の条件は？"
+    question_variants:
+      - "事業承継税制納税猶予"
+      - "特例措置一般措置"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法70の7の5), jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q093
+    cohort: 税理士
+    category: 相続贈与
+    question: "小規模宅地等の特例（特定居住用・特定事業用・貸付事業用）の限度面積と減額割合は？"
+    question_variants:
+      - "小規模宅地特例"
+      - "330平米80%減額"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法69の4), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q094
+    cohort: 税理士
+    category: 相続贈与
+    question: "相続税の取得費加算の特例（譲渡所得計算の取得費加算）の計算は？"
+    question_variants:
+      - "取得費加算特例"
+      - "相続後譲渡"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法39), nta_tsutatsu]
+    expected_answer_length_tokens: 1200
+    opus_baseline_cost_estimate_jpy: 24
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q095
+    cohort: 税理士
+    category: 相続贈与
+    question: "教育資金・結婚子育て資金の一括贈与非課税特例の継続適用は？"
+    question_variants:
+      - "教育資金一括贈与"
+      - "結婚子育て資金"
+    priority: MED
+    answer_depth_target: 3
+    required_data_sources: [am_law_article(租税特別措置法70の2の2), nta_tsutatsu]
+    expected_answer_length_tokens: 1100
+    opus_baseline_cost_estimate_jpy: 22
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  # ========= 国際税務 / 電帳法 / その他 (q096-q100) =========
+  - id: zeirishi_q096
+    cohort: 税理士
+    category: 国際税務
+    question: "移転価格税制（独立企業間価格）の文書化義務（マスターファイル・ローカルファイル）は？"
+    question_variants:
+      - "移転価格文書化"
+      - "マスターローカルファイル"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法66の4), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q097
+    cohort: 税理士
+    category: 国際税務
+    question: "タックスヘイブン対策税制（外国子会社合算税制）の適用基準は？"
+    question_variants:
+      - "タックスヘイブン対策税制"
+      - "外国子会社合算"
+    priority: MED
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(租税特別措置法66の6), nta_tsutatsu]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q098
+    cohort: 税理士
+    category: 電帳法
+    question: "電子帳簿保存法のスキャナ保存・電子取引保存の要件（タイムスタンプ等）は？"
+    question_variants:
+      - "電帳法スキャナ保存"
+      - "電子取引タイムスタンプ"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(電子帳簿保存法4), am_law_article(電子帳簿保存法7), nta_tsutatsu]
+    expected_answer_length_tokens: 1600
+    opus_baseline_cost_estimate_jpy: 30
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q099
+    cohort: 税理士
+    category: 税務調査
+    question: "税務調査の事前通知・実地調査・修正申告の流れと留意点は？"
+    question_variants:
+      - "税務調査対応"
+      - "事前通知実地調査"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(国税通則法74の9), nta_tsutatsu, jc_practical_guide]
+    expected_answer_length_tokens: 1700
+    opus_baseline_cost_estimate_jpy: 32
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
+  - id: zeirishi_q100
+    cohort: 税理士
+    category: 加算税
+    question: "過少申告加算税・無申告加算税・重加算税の課税要件と税率は？"
+    question_variants:
+      - "加算税税率"
+      - "重加算税要件"
+    priority: HIGH
+    answer_depth_target: 5
+    required_data_sources: [am_law_article(国税通則法65), am_law_article(国税通則法68), nta_tsutatsu]
+    expected_answer_length_tokens: 1500
+    opus_baseline_cost_estimate_jpy: 28
+    jpcite_target_cost_jpy: 3
+    legal_disclaimer: §52
