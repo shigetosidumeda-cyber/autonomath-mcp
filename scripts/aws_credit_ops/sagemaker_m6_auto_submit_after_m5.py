@@ -11,17 +11,16 @@ slot and has MaxRuntimeInSeconds=43200 (12h). Submitting M6 while M5
 is InProgress would fail synchronously with
 ``ResourceLimitExceeded``.
 
-This driver polls M5's status every ``--poll-interval`` seconds and,
-on the first observed terminal state (``Completed`` / ``Failed`` /
-``Stopped``), invokes the M6 submit script with ``--commit``.
+This driver polls M5's status every ``--poll-interval`` seconds and
+invokes the M6 submit script with ``--commit`` only after M5 reaches
+``Completed``.
 
 Behaviour
 ---------
 * On ``Completed`` — submit M6 (the M6 train pairs are already on
   S3 from ``cross_encoder_pair_gen_2026_05_17.py``).
-* On ``Failed`` / ``Stopped`` — still submit M6 (it has independent
-  inputs; M5 model is not a dependency since the M6 base is the
-  HuggingFace public reranker, not the M5 SimCSE checkpoint).
+* On ``Failed`` / ``Stopped`` — abort without submitting M6 so the
+  operator can inspect the failed upstream lane first.
 * On ``InProgress`` — sleep poll_interval and re-check.
 
 Cost preflight + hard-stop are inherited from the wrapped submit
@@ -164,12 +163,23 @@ def main(argv: list[str] | None = None) -> int:
                 "phase": "wait_done",
                 "m5_status": status,
                 "waited_seconds": waited,
-                "next": "submit_m6" if status != "Timeout" else "abort",
+                "next": "submit_m6" if status == "Completed" else "abort",
             }
         )
     )
     if status == "Timeout":
         return 3
+    if status != "Completed":
+        print(
+            json.dumps(
+                {
+                    "phase": "abort",
+                    "m5_terminal_status": status,
+                    "reason": "M5 did not complete; refusing to submit M6",
+                }
+            )
+        )
+        return 2
     rc = submit_m6(commit=commit, region=args.region, profile=args.profile)
     print(
         json.dumps(
