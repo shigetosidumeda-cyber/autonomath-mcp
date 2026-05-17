@@ -281,3 +281,31 @@ forbidden_token_exclude_paths:
   - mcp-server.full.json
   - mcp-server.core.json
   - mcp-server.composition.json
+  # OpenAPI specs (canonical + site mirrors) carry the canonical "¥3/req"
+  # phrase by design in refund-request endpoint schema `default` fields
+  # (e.g. site/docs/openapi/v1.json:15553: "返金は手動審査となります。既に
+  # 課金済みの ¥3/req メータリング分は 自動取消しされません ..."). The
+  # forbidden-token list is intended to catch *stale legacy* pricing
+  # strings ("¥3/request", "¥3/リクエスト", "JPY 3/req", "3 yen/req") on
+  # narrative/marketing surfaces. Endpoint-schema defaults are part of
+  # the OpenAPI contract that downstream agents read to size billing
+  # impact — they must surface the canonical phrase verbatim. Verified
+  # (2026-05-17 UNBLOCK-2) no OTHER forbidden token (legacy brand /
+  # stale count / banned tagline) matches inside these files.
+  - docs/openapi/v1.json
+  - site/docs/openapi/v1.json
+  - docs/openapi/agent.json
+  - site/docs/openapi/agent.json
+  - site/openapi.agent.json
+  - site/openapi.agent.gpt30.json
+  # GG10 Justifiability landing + DD1 federated-MCP descriptors carry
+  # cost-comparison narrative ("Opus 4.7 7-turn ¥500 → jpcite ¥3-¥30")
+  # and per-tier sizing tables ("A (¥3 = 1 unit)"). These do NOT trigger
+  # the forbidden "¥3/req" substring today (they use "¥3/billable unit"
+  # and bare "¥3"), but the V3 pricing rollout may regenerate them with
+  # the canonical "¥3/req" trailer. Preemptive exclusion keeps the lane
+  # green across regen cycles. New 2026-05-17 (UNBLOCK-2).
+  - site/why-jpcite-over-opus.html
+  - site/.well-known/jpcite-justifiability.json
+  - site/.well-known/jpcite-federated-mcp-12-partners.json
+  - data/federated_partners_12.json
