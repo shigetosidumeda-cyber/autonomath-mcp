@@ -9436,5 +9436,134 @@
   },
   "license": "PDL-v1.0",
   "notes": "outcomes derive from public sources only (NTA / e-Gov / J-Grants / gBizINFO / EDINET / e-Stat / kanpou / court_decisions etc). Each tool emits JPCIR envelope; sensitive surfaces carry _disclaimer field (§52 / §47条の2 / §72 / 行政書士法 §1 / 司法書士法 §3 / 社労士法 §36).",
-  "agent_discovery_hint": "AI agents should call /v1/cost/preview before /v1/outcome/* to learn estimated_price_jpy and source_count. cheapest_sufficient_route_required is true for all billable outcomes."
+  "agent_discovery_hint": "AI agents should call /v1/cost/preview before /v1/outcome/* to learn estimated_price_jpy and source_count. cheapest_sufficient_route_required is true for all billable outcomes.",
+  "a7_assets": {
+    "schema_version": "1",
+    "regenerated_at": "2026-05-17T04:04:24.461776+00:00",
+    "product_count": 5,
+    "products": [
+      {
+        "code": "A1",
+        "slug": "A1_zeirishi_monthly_pack",
+        "name_ja": "税理士 月次レビュー & 制度棚卸し pack",
+        "name_en": "Tax-Firm Monthly Review & Program Audit Pack",
+        "cohort": "税理士",
+        "cohort_slug": "zeirishi",
+        "package_kinds": [
+          "evidence_packet",
+          "watch_digest",
+          "artifact_pack"
+        ],
+        "monthly_req_estimate": 500,
+        "monthly_jpy_at_3_per_req": 1500,
+        "url_landing": "https://jpcite.com/products/A1_zeirishi_monthly_pack.html",
+        "url_persona": "https://jpcite.com/for/zeirishi.html",
+        "url_compare": "https://jpcite.com/compare/zeirishi.html"
+      },
+      {
+        "code": "A2",
+        "slug": "A2_cpa_audit_workpaper_pack",
+        "name_ja": "会計士 監査調書 scaffold pack",
+        "name_en": "CPA Audit Workpaper Scaffold Pack",
+        "cohort": "会計士",
+        "cohort_slug": "kaikei",
+        "package_kinds": [
+          "evidence_packet",
+          "artifact_pack"
+        ],
+        "monthly_req_estimate": 300,
+        "monthly_jpy_at_3_per_req": 900,
+        "url_landing": "https://jpcite.com/products/A2_cpa_audit_workpaper_pack.html",
+        "url_persona": "https://jpcite.com/for/kaikei.html",
+        "url_compare": "https://jpcite.com/compare/kaikei.html"
+      },
+      {
+        "code": "A3",
+        "slug": "A3_gyosei_licensing_eligibility_pack",
+        "name_ja": "行政書士 許認可 eligibility pack",
+        "name_en": "Administrative-Scrivener Licensing Eligibility Pack",
+        "cohort": "行政書士",
+        "cohort_slug": "gyoseishoshi",
+        "package_kinds": [
+          "evidence_packet",
+          "watch_digest"
+        ],
+        "monthly_req_estimate": 200,
+        "monthly_jpy_at_3_per_req": 600,
+        "url_landing": "https://jpcite.com/products/A3_gyosei_licensing_eligibility_pack.html",
+        "url_persona": "https://jpcite.com/for/gyoseishoshi.html",
+        "url_compare": "https://jpcite.com/compare/gyoseishoshi.html"
+      },
+      {
+        "code": "A4",
+        "slug": "A4_shihoshoshi_registry_watch",
+        "name_ja": "司法書士 登記 watch pack",
+        "name_en": "Judicial-Scrivener Registry Watch Pack",
+        "cohort": "司法書士",
+        "cohort_slug": "shihoshoshi",
+        "package_kinds": [
+          "watch_digest",
+          "evidence_packet"
+        ],
+        "monthly_req_estimate": 150,
+        "monthly_jpy_at_3_per_req": 450,
+        "url_landing": "https://jpcite.com/products/A4_shihoshoshi_registry_watch.html",
+        "url_persona": "https://jpcite.com/for/shihoshoshi.html",
+        "url_compare": "https://jpcite.com/compare/shihoshoshi.html"
+      },
+      {
+        "code": "A5",
+        "slug": "A5_sme_subsidy_companion",
+        "name_ja": "中小経営者 補助金 companion",
+        "name_en": "SME Subsidy Companion",
+        "cohort": "中小経営者",
+        "cohort_slug": "sme",
+        "package_kinds": [
+          "evidence_packet",
+          "artifact_pack",
+          "watch_digest"
+        ],
+        "monthly_req_estimate": 100,
+        "monthly_jpy_at_3_per_req": 300,
+        "url_landing": "https://jpcite.com/products/A5_sme_subsidy_companion.html",
+        "url_persona": "https://jpcite.com/for/sme.html",
+        "url_compare": "https://jpcite.com/compare/sme.html"
+      }
+    ],
+    "heavy_endpoint_count": 16,
+    "lane_count": 21,
+    "recipe_count": 15,
+    "llm_cost_reference": [
+      {
+        "name": "Opus 4.7",
+        "in_jpy_per_1k": 2.25,
+        "out_jpy_per_1k": 11.25
+      },
+      {
+        "name": "Sonnet 4.6",
+        "in_jpy_per_1k": 0.45,
+        "out_jpy_per_1k": 2.25
+      },
+      {
+        "name": "Haiku 4.5",
+        "in_jpy_per_1k": 0.12,
+        "out_jpy_per_1k": 0.6
+      }
+    ],
+    "operator": {
+      "name": "Bookyou株式会社",
+      "tax_invoice_id": "T8010001213708",
+      "email": "info@bookyou.net"
+    },
+    "brand": "jpcite",
+    "disclaimers_present": [
+      "§1",
+      "§3",
+      "§47条の2",
+      "§52",
+      "§72",
+      "社労士法",
+      "行政書士法"
+    ]
+  }
 }
