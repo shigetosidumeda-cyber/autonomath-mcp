@@ -31,6 +31,11 @@ venv/
 data/jpintel.db
 data/*.sqlite*
 data/workpapers/
+# GG2 / Wave 95 — large generated artifacts (FAISS binaries, expanded
+# precompute yaml). Reproducible via scripts/aws_credit_ops/*_5000_*.py.
+data/faiss/
+data/faq_bank/expanded_5000/
+data/precompute_5000_quality_*.json
 # Root-level graph + sqlite working files (analysis_wave18 KG scratch).
 # Side files (-wal/-shm) covered by *.db-wal / *.db-shm above don't apply
 # to .sqlite siblings — name them explicitly.
