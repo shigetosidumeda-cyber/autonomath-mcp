@@ -1,0 +1,158 @@
+{
+  "segment": "社労士",
+  "artifact_type": "sanroku_kyoutei",
+  "artifact_name_ja": "36協定書",
+  "version": "v1",
+  "authority": "労基法 §36",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "時間外労働・休日労働に関する協定届"
+      ]
+    },
+    {
+      "id": "parties",
+      "title": "当事者",
+      "paragraphs": [
+        "使用者 / 労働者代表"
+      ]
+    },
+    {
+      "id": "overtime",
+      "title": "時間外労働",
+      "paragraphs": [
+        "業務種類 / 労働者数 / 延長時間 (1日/月/年)"
+      ]
+    },
+    {
+      "id": "holiday_work",
+      "title": "休日労働",
+      "paragraphs": [
+        "業務種類 / 休日日数 / 始業終業時刻"
+      ]
+    },
+    {
+      "id": "special_clause",
+      "title": "特別条項",
+      "paragraphs": [
+        "臨時的な特別の事情 / 上限"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "REPRESENTATIVE",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "representative"
+        }
+      },
+      "description": "代表者氏名"
+    },
+    {
+      "key": "EMPLOYEE_REP_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "労働者代表氏名"
+    },
+    {
+      "key": "AGREEMENT_PERIOD_START",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "協定開始日"
+    },
+    {
+      "key": "AGREEMENT_PERIOD_END",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "協定終了日"
+    },
+    {
+      "key": "MAX_OVERTIME_MONTHLY",
+      "type": "decimal",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "月延長時間上限 (h)"
+    },
+    {
+      "key": "MAX_OVERTIME_ANNUAL",
+      "type": "decimal",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "年延長時間上限 (h)"
+    },
+    {
+      "key": "LEGAL_BASIS_LABOR_36",
+      "type": "law_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_law_article_am",
+        "args": {
+          "law_id": "労働基準法",
+          "article": "36"
+        }
+      },
+      "description": "労基法 §36 条文"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "REPRESENTATIVE": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "representative"
+      }
+    },
+    "LEGAL_BASIS_LABOR_36": {
+      "tool": "get_law_article_am",
+      "args": {
+        "law_id": "労働基準法",
+        "article": "36"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労基法 §36 に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

@@ -1,0 +1,86 @@
+{
+  "segment": "会計士",
+  "artifact_type": "renketsu_tetsuduki",
+  "artifact_name_ja": "連結手続書",
+  "version": "v1",
+  "authority": "連結財務諸表規則 + 企業会計基準第22号",
+  "sensitive_act": "公認会計士法 §47条の2",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} 連結手続書 ({{FISCAL_YEAR}})"
+      ]
+    },
+    {
+      "id": "scope",
+      "title": "連結範囲",
+      "paragraphs": [
+        "親会社 / 子会社 / 関連会社 (持分法)"
+      ]
+    },
+    {
+      "id": "elimination",
+      "title": "連結消去仕訳",
+      "paragraphs": [
+        "投資と資本の相殺 / 債権債務消去 / 内部利益消去"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "FISCAL_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "会計年度 (例: 2026-04-01〜2027-03-31)"
+    },
+    {
+      "key": "SUBSIDIARY_COUNT",
+      "type": "integer",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "連結子会社数"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。連結財務諸表規則 + 企業会計基準第22号 に基づく成果物として 公認会計士法 §47条の2 有資格者の確認・署名なく提出してはなりません。"
+}

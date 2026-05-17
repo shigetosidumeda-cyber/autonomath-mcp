@@ -1,0 +1,98 @@
+{
+  "segment": "社労士",
+  "artifact_type": "ikuji_kaigo_kyugyou",
+  "artifact_name_ja": "育児・介護休業規程",
+  "version": "v1",
+  "authority": "育児・介護休業法 §5-21 + 労基法 §65",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "childcare",
+      "title": "育児休業",
+      "paragraphs": [
+        "対象労働者 / 期間 / 申出"
+      ]
+    },
+    {
+      "id": "childcare_short",
+      "title": "育児短時間勤務",
+      "paragraphs": [
+        "3歳未満子 / 6時間勤務"
+      ]
+    },
+    {
+      "id": "nursing",
+      "title": "介護休業",
+      "paragraphs": [
+        "対象家族 / 通算93日 / 3回まで"
+      ]
+    },
+    {
+      "id": "nursing_short",
+      "title": "介護短時間勤務",
+      "paragraphs": [
+        ""
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "EFFECTIVE_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "施行日"
+    },
+    {
+      "key": "LEGAL_BASIS_CHILDCARE",
+      "type": "law_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_law_article_am",
+        "args": {
+          "law_id": "育児・介護休業法",
+          "article": "5"
+        }
+      },
+      "description": "育児・介護休業法 §5"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "LEGAL_BASIS_CHILDCARE": {
+      "tool": "get_law_article_am",
+      "args": {
+        "law_id": "育児・介護休業法",
+        "article": "5"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。育児・介護休業法 §5-21 + 労基法 §65 に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

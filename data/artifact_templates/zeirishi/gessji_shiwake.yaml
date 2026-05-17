@@ -1,0 +1,95 @@
+{
+  "segment": "税理士",
+  "artifact_type": "gessji_shiwake",
+  "artifact_name_ja": "月次仕訳",
+  "version": "v1",
+  "authority": "法人税法 §22 + 会社法 §432",
+  "sensitive_act": "税理士法 §52",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} 月次仕訳帳",
+        "対象月: {{TARGET_MONTH}}"
+      ]
+    },
+    {
+      "id": "journal",
+      "title": "仕訳明細",
+      "paragraphs": [
+        "勘定科目 / 借方 / 貸方 / 摘要"
+      ]
+    },
+    {
+      "id": "footer",
+      "title": "署名欄",
+      "paragraphs": [
+        "作成: {{PREPARER_NAME}} / 確認: 税理士 {{ZEIRISHI_NAME}}"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "TARGET_MONTH",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "対象月 (YYYY-MM)"
+    },
+    {
+      "key": "PREPARER_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "作成者氏名"
+    },
+    {
+      "key": "ZEIRISHI_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "担当税理士氏名"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。法人税法 §22 + 会社法 §432 に基づく成果物として 税理士法 §52 有資格者の確認・署名なく提出してはなりません。"
+}

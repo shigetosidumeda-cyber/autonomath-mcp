@@ -1,0 +1,96 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "naiyo_shoumei",
+  "artifact_name_ja": "内容証明",
+  "version": "v1",
+  "authority": "郵便法 §48 + 民法 §97 (意思表示の到達)",
+  "sensitive_act": "行政書士法 §1 (権利義務又は事実証明)",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "差出人・受取人",
+      "paragraphs": [
+        "差出人: {{SENDER_NAME}} / 受取人: {{RECIPIENT_NAME}}"
+      ]
+    },
+    {
+      "id": "body",
+      "title": "本文",
+      "paragraphs": [
+        "事実関係 / 請求内容 / 期限"
+      ]
+    },
+    {
+      "id": "demand",
+      "title": "請求事項",
+      "paragraphs": [
+        "支払額 / 履行内容 / 期日"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "SENDER_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "差出人氏名"
+    },
+    {
+      "key": "SENDER_ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "差出人住所"
+    },
+    {
+      "key": "RECIPIENT_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "受取人氏名"
+    },
+    {
+      "key": "RECIPIENT_ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "受取人住所"
+    },
+    {
+      "key": "CLAIM_DESCRIPTION",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "請求の概要"
+    },
+    {
+      "key": "CLAIM_AMOUNT",
+      "type": "money_yen",
+      "required": false,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "請求金額 (該当時)"
+    },
+    {
+      "key": "DEADLINE_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "履行期限"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。郵便法 §48 + 民法 §97 (意思表示の到達) に基づく成果物として 行政書士法 §1 (権利義務又は事実証明) 有資格者の確認・署名なく提出してはなりません。"
+}

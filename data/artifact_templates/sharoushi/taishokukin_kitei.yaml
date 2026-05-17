@@ -1,0 +1,85 @@
+{
+  "segment": "社労士",
+  "artifact_type": "taishokukin_kitei",
+  "artifact_name_ja": "退職金規程",
+  "version": "v1",
+  "authority": "労基法 §89 (相対的記載事項)",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "general",
+      "title": "総則",
+      "paragraphs": [
+        "目的 / 適用範囲"
+      ]
+    },
+    {
+      "id": "eligibility",
+      "title": "支給要件",
+      "paragraphs": [
+        "勤続年数 / 退職事由"
+      ]
+    },
+    {
+      "id": "calc",
+      "title": "算定方法",
+      "paragraphs": [
+        "基本給 × 支給率 × 退職事由係数"
+      ]
+    },
+    {
+      "id": "payment",
+      "title": "支給",
+      "paragraphs": [
+        "支給時期 / 方法"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "MIN_YEARS_OF_SERVICE",
+      "type": "integer",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "支給最低勤続年数"
+    },
+    {
+      "key": "CALC_FORMULA",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "算定式の記述"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労基法 §89 (相対的記載事項) に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

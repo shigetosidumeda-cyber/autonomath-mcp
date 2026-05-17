@@ -1,0 +1,109 @@
+{
+  "segment": "会計士",
+  "artifact_type": "kansa_iken",
+  "artifact_name_ja": "監査意見書",
+  "version": "v1",
+  "authority": "金商法 §193の2 + 監査基準",
+  "sensitive_act": "公認会計士法 §47条の2 + §1",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "独立監査人の監査報告書"
+      ]
+    },
+    {
+      "id": "opinion",
+      "title": "監査意見",
+      "paragraphs": [
+        "無限定適正 / 限定付適正 / 不適正 / 意見不表明"
+      ]
+    },
+    {
+      "id": "basis",
+      "title": "監査意見の根拠",
+      "paragraphs": [
+        "監査基準に準拠"
+      ]
+    },
+    {
+      "id": "responsibility",
+      "title": "経営者・監査役・監査人の責任",
+      "paragraphs": [
+        ""
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "FISCAL_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "会計年度 (例: 2026-04-01〜2027-03-31)"
+    },
+    {
+      "key": "OPINION_TYPE",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "無限定適正 / 限定付適正 / 不適正 / 意見不表明"
+    },
+    {
+      "key": "CPA_FIRM_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "監査法人名"
+    },
+    {
+      "key": "RESPONSIBLE_PARTNER",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "代表社員 公認会計士"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。金商法 §193の2 + 監査基準 に基づく成果物として 公認会計士法 §47条の2 + §1 有資格者の確認・署名なく提出してはなりません。"
+}

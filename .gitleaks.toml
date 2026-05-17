@@ -58,6 +58,17 @@ paths = [
   # Marketing site home page embeds a curl example with "Bearer ..."
   # placeholder. Kept tight to the single file.
   '''^site/index\.html$''',
+
+  # Lane N1 artifact-template scaffolds (50 YAML files, 5 士業 × 10 種類).
+  # Each template declares JSON-style placeholders like
+  # `"key": "LEGAL_BASIS_INCOME_TAX_190"` / `"key": "REQUESTED_AMOUNT"` —
+  # those are PLACEHOLDER IDENTIFIERS (literal placeholder names that an
+  # agent later fills via MCP tool calls), NOT API keys. They look like
+  # high-entropy uppercase tokens, which trips the generic-api-key rule.
+  # The scaffolds themselves contain no secrets (no sk_/whsec_/Bearer
+  # patterns) and live under a documented data/ subtree. Allowlisted
+  # 2026-05-17 with the lane N1 LIVE landing.
+  '''^data/artifact_templates/[a-z]+/[a-z_0-9]+\.yaml$''',
 ]
 
 # String-based allowlist — only well-known placeholder shapes.

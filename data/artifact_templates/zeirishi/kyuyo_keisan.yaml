@@ -1,0 +1,112 @@
+{
+  "segment": "税理士",
+  "artifact_type": "kyuyo_keisan",
+  "artifact_name_ja": "給与計算",
+  "version": "v1",
+  "authority": "労基法 §24 + 所得税法 §183",
+  "sensitive_act": "税理士法 §52 + 社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} {{PAY_PERIOD}} 給与明細"
+      ]
+    },
+    {
+      "id": "earnings",
+      "title": "支給",
+      "paragraphs": [
+        "基本給 / 残業手当 / 通勤費 / その他手当"
+      ]
+    },
+    {
+      "id": "deductions",
+      "title": "控除",
+      "paragraphs": [
+        "健康保険 / 厚生年金 / 雇用保険 / 所得税 / 住民税"
+      ]
+    },
+    {
+      "id": "net",
+      "title": "差引支給額",
+      "paragraphs": [
+        "総支給 - 総控除 = 差引支給"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "EMPLOYEE_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "従業員氏名"
+    },
+    {
+      "key": "PAY_PERIOD",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "給与計算期間 (YYYY-MM)"
+    },
+    {
+      "key": "GROSS_PAY",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "総支給額"
+    },
+    {
+      "key": "SHAKAI_HOKEN_RATE",
+      "type": "rule_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_am_tax_rule",
+        "args": {
+          "rule_id": "shakai_hoken_rates"
+        }
+      },
+      "description": "社会保険料率"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "SHAKAI_HOKEN_RATE": {
+      "tool": "get_am_tax_rule",
+      "args": {
+        "rule_id": "shakai_hoken_rates"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労基法 §24 + 所得税法 §183 に基づく成果物として 税理士法 §52 + 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

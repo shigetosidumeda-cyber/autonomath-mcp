@@ -1,0 +1,93 @@
+{
+  "segment": "会計士",
+  "artifact_type": "taishoku_kyufu_keisan",
+  "artifact_name_ja": "退職給付計算書",
+  "version": "v1",
+  "authority": "企業会計基準第26号 退職給付に関する会計基準",
+  "sensitive_act": "公認会計士法 §47条の2",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} 退職給付債務計算書 ({{FISCAL_YEAR}})"
+      ]
+    },
+    {
+      "id": "assumptions",
+      "title": "数理計算上の仮定",
+      "paragraphs": [
+        "割引率 / 退職率 / 昇給率"
+      ]
+    },
+    {
+      "id": "obligation",
+      "title": "退職給付債務",
+      "paragraphs": [
+        "期首 + 勤務費用 + 利息費用 - 給付支払額 = 期末"
+      ]
+    },
+    {
+      "id": "asset",
+      "title": "年金資産",
+      "paragraphs": [
+        "期首 + 期待運用収益 + 拠出 - 給付 = 期末"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "FISCAL_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "会計年度 (例: 2026-04-01〜2027-03-31)"
+    },
+    {
+      "key": "DISCOUNT_RATE",
+      "type": "decimal",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "割引率 (年率%)"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。企業会計基準第26号 退職給付に関する会計基準 に基づく成果物として 公認会計士法 §47条の2 有資格者の確認・署名なく提出してはなりません。"
+}

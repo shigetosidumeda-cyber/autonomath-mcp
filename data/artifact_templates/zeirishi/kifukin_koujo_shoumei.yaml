@@ -1,0 +1,94 @@
+{
+  "segment": "税理士",
+  "artifact_type": "kifukin_koujo_shoumei",
+  "artifact_name_ja": "寄附金控除証明書",
+  "version": "v1",
+  "authority": "所得税法 §78 + 措置法 §41の18の2",
+  "sensitive_act": "税理士法 §52",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "証明書ヘッダ",
+      "paragraphs": [
+        "{{ISSUER_NAME}} 寄附金受領証明書"
+      ]
+    },
+    {
+      "id": "donor_info",
+      "title": "寄附者情報",
+      "paragraphs": [
+        "氏名 / 住所"
+      ]
+    },
+    {
+      "id": "donation",
+      "title": "寄附内容",
+      "paragraphs": [
+        "寄附年月日 / 寄附金額 / 寄附目的"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "ISSUER_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "発行団体名"
+    },
+    {
+      "key": "DONOR_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "寄附者氏名"
+    },
+    {
+      "key": "DONATION_AMOUNT",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "寄附金額"
+    },
+    {
+      "key": "DONATION_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "寄附年月日"
+    },
+    {
+      "key": "LEGAL_BASIS_INCOME_TAX_78",
+      "type": "law_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_law_article_am",
+        "args": {
+          "law_id": "所得税法",
+          "article": "78"
+        }
+      },
+      "description": "所得税法 §78 条文"
+    }
+  ],
+  "mcp_query_bindings": {
+    "LEGAL_BASIS_INCOME_TAX_78": {
+      "tool": "get_law_article_am",
+      "args": {
+        "law_id": "所得税法",
+        "article": "78"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。所得税法 §78 + 措置法 §41の18の2 に基づく成果物として 税理士法 §52 有資格者の確認・署名なく提出してはなりません。"
+}

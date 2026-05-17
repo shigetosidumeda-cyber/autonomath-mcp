@@ -1,0 +1,79 @@
+{
+  "segment": "司法書士",
+  "artifact_type": "shougou_henko_touki",
+  "artifact_name_ja": "商号変更登記申請書",
+  "version": "v1",
+  "authority": "商業登記法 §54 + 会社法 §915",
+  "sensitive_act": "司法書士法 §3",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "商号変更登記申請書"
+      ]
+    },
+    {
+      "id": "old",
+      "title": "変更前商号",
+      "paragraphs": [
+        "{{OLD_NAME}}"
+      ]
+    },
+    {
+      "id": "new",
+      "title": "変更後商号",
+      "paragraphs": [
+        "{{NEW_NAME}}"
+      ]
+    },
+    {
+      "id": "resolution",
+      "title": "決議",
+      "paragraphs": [
+        "株主総会議事録 / 定款変更"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "OLD_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "変更前商号"
+    },
+    {
+      "key": "NEW_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "変更後商号"
+    },
+    {
+      "key": "RESOLUTION_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "株主総会決議日"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。商業登記法 §54 + 会社法 §915 に基づく成果物として 司法書士法 §3 有資格者の確認・署名なく提出してはなりません。"
+}

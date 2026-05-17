@@ -1,0 +1,94 @@
+{
+  "segment": "司法書士",
+  "artifact_type": "yakuin_henko_touki",
+  "artifact_name_ja": "役員変更登記申請書",
+  "version": "v1",
+  "authority": "商業登記法 §54 + 会社法 §915",
+  "sensitive_act": "司法書士法 §3",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "役員変更登記申請書"
+      ]
+    },
+    {
+      "id": "current",
+      "title": "変更前",
+      "paragraphs": [
+        "現役員"
+      ]
+    },
+    {
+      "id": "new",
+      "title": "変更後",
+      "paragraphs": [
+        "新役員 / 就任承諾書 / 印鑑証明"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "CHANGE_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "変更年月日"
+    },
+    {
+      "key": "RETIRING_OFFICER",
+      "type": "string",
+      "required": false,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "退任役員氏名"
+    },
+    {
+      "key": "APPOINTING_OFFICER",
+      "type": "string",
+      "required": false,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "就任役員氏名"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。商業登記法 §54 + 会社法 §915 に基づく成果物として 司法書士法 §3 有資格者の確認・署名なく提出してはなりません。"
+}

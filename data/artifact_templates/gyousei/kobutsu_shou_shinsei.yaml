@@ -1,0 +1,72 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "kobutsu_shou_shinsei",
+  "artifact_name_ja": "古物商許可申請書",
+  "version": "v1",
+  "authority": "古物営業法 §3",
+  "sensitive_act": "行政書士法 §1 + §19",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "applicant",
+      "title": "申請者情報",
+      "paragraphs": [
+        "氏名 / 住所 / 法人代表者"
+      ]
+    },
+    {
+      "id": "business",
+      "title": "営業内容",
+      "paragraphs": [
+        "取扱品目 / 営業所"
+      ]
+    },
+    {
+      "id": "manager",
+      "title": "管理者",
+      "paragraphs": [
+        "管理者氏名 / 住所"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "APPLICANT_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "申請者氏名 / 法人名"
+    },
+    {
+      "key": "OFFICE_ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "営業所所在地"
+    },
+    {
+      "key": "CATEGORIES",
+      "type": "array_string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "取扱品目 (13 区分から選択)"
+    },
+    {
+      "key": "POLICE_STATION",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "所轄警察署"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。古物営業法 §3 に基づく成果物として 行政書士法 §1 + §19 有資格者の確認・署名なく提出してはなりません。"
+}

@@ -1,0 +1,102 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "nyukan_zairyu_shikaku",
+  "artifact_name_ja": "入管・在留資格申請書",
+  "version": "v1",
+  "authority": "出入国管理及び難民認定法 §7 + §20",
+  "sensitive_act": "行政書士法 §1 + 申請取次資格",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "applicant",
+      "title": "申請者",
+      "paragraphs": [
+        "氏名 / 国籍 / 生年月日 / 性別 / パスポート"
+      ]
+    },
+    {
+      "id": "status",
+      "title": "在留資格",
+      "paragraphs": [
+        "申請区分 / 在留資格種別 / 期間"
+      ]
+    },
+    {
+      "id": "sponsor",
+      "title": "受入機関",
+      "paragraphs": [
+        "所属先 / 役職 / 業務内容"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "APPLICANT_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "申請者氏名 (ローマ字)"
+    },
+    {
+      "key": "NATIONALITY",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "国籍"
+    },
+    {
+      "key": "PASSPORT_NO",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "パスポート番号"
+    },
+    {
+      "key": "RESIDENCE_STATUS",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "在留資格 (技術・人文知識・国際業務 等)"
+    },
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。出入国管理及び難民認定法 §7 + §20 に基づく成果物として 行政書士法 §1 + 申請取次資格 有資格者の確認・署名なく提出してはなりません。"
+}

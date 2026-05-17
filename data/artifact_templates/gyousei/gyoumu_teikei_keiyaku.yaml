@@ -1,0 +1,86 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "gyoumu_teikei_keiyaku",
+  "artifact_name_ja": "業務提携契約書",
+  "version": "v1",
+  "authority": "民法 + 独禁法 §3 (不当な拘束条件付取引の禁止)",
+  "sensitive_act": "行政書士法 §1",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "preamble",
+      "title": "前文",
+      "paragraphs": [
+        "{{PARTY_A}} と {{PARTY_B}} の業務提携契約"
+      ]
+    },
+    {
+      "id": "purpose",
+      "title": "目的",
+      "paragraphs": [
+        "提携の目的・対象事業"
+      ]
+    },
+    {
+      "id": "roles",
+      "title": "役割分担",
+      "paragraphs": [
+        "甲の役割 / 乙の役割"
+      ]
+    },
+    {
+      "id": "revenue",
+      "title": "収益配分",
+      "paragraphs": [
+        "配分比率 / 計算方法"
+      ]
+    },
+    {
+      "id": "term",
+      "title": "期間 / 解約",
+      "paragraphs": [
+        "有効期間 / 解約予告"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "PARTY_A",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "甲 法人名"
+    },
+    {
+      "key": "PARTY_B",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "乙 法人名"
+    },
+    {
+      "key": "PARTNERSHIP_PURPOSE",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "提携目的"
+    },
+    {
+      "key": "REVENUE_SPLIT",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "収益配分 (例: 甲50/乙50)"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。民法 + 独禁法 §3 (不当な拘束条件付取引の禁止) に基づく成果物として 行政書士法 §1 有資格者の確認・署名なく提出してはなりません。"
+}

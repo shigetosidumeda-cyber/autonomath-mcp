@@ -1,0 +1,95 @@
+{
+  "segment": "司法書士",
+  "artifact_type": "fudosan_baibai_touki",
+  "artifact_name_ja": "不動産売買登記申請書",
+  "version": "v1",
+  "authority": "不動産登記法 §60 + 民法 §177",
+  "sensitive_act": "司法書士法 §3 + §73",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "申請書表紙",
+      "paragraphs": [
+        "所有権移転登記申請書"
+      ]
+    },
+    {
+      "id": "property",
+      "title": "不動産表示",
+      "paragraphs": [
+        "所在 / 地番 / 地目 / 地積"
+      ]
+    },
+    {
+      "id": "parties",
+      "title": "当事者",
+      "paragraphs": [
+        "売主 (登記義務者) / 買主 (登記権利者)"
+      ]
+    },
+    {
+      "id": "cause",
+      "title": "登記原因",
+      "paragraphs": [
+        "売買 / 年月日"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "SELLER_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "売主氏名 / 法人名"
+    },
+    {
+      "key": "BUYER_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "買主氏名 / 法人名"
+    },
+    {
+      "key": "PROPERTY_LOCATION",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "不動産所在"
+    },
+    {
+      "key": "LOT_NUMBER",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "地番 / 家屋番号"
+    },
+    {
+      "key": "SALE_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "売買年月日"
+    },
+    {
+      "key": "PURCHASE_PRICE",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "売買代金"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。不動産登記法 §60 + 民法 §177 に基づく成果物として 司法書士法 §3 + §73 有資格者の確認・署名なく提出してはなりません。"
+}

@@ -1,0 +1,94 @@
+{
+  "segment": "司法書士",
+  "artifact_type": "houjin_kaisan_touki",
+  "artifact_name_ja": "法人解散登記申請書",
+  "version": "v1",
+  "authority": "商業登記法 §71-77 + 会社法 §926",
+  "sensitive_act": "司法書士法 §3",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "解散及び清算人選任登記申請書"
+      ]
+    },
+    {
+      "id": "cause",
+      "title": "解散事由",
+      "paragraphs": [
+        "株主総会決議 / 存続期間満了 / 合併 / 破産"
+      ]
+    },
+    {
+      "id": "liquidator",
+      "title": "清算人",
+      "paragraphs": [
+        "氏名 / 住所"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "DISSOLUTION_CAUSE",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "解散事由"
+    },
+    {
+      "key": "DISSOLUTION_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "解散年月日"
+    },
+    {
+      "key": "LIQUIDATOR_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "清算人氏名"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。商業登記法 §71-77 + 会社法 §926 に基づく成果物として 司法書士法 §3 有資格者の確認・署名なく提出してはなりません。"
+}

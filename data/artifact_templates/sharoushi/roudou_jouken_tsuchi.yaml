@@ -1,0 +1,172 @@
+{
+  "segment": "社労士",
+  "artifact_type": "roudou_jouken_tsuchi",
+  "artifact_name_ja": "労働条件通知書",
+  "version": "v1",
+  "authority": "労基法 §15 + 同施行規則 §5",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "労働条件通知書"
+      ]
+    },
+    {
+      "id": "addressee",
+      "title": "宛名",
+      "paragraphs": [
+        "{{EMPLOYEE_NAME}} 殿"
+      ]
+    },
+    {
+      "id": "contract",
+      "title": "契約期間",
+      "paragraphs": [
+        "期間の定め有無 / 更新の有無"
+      ]
+    },
+    {
+      "id": "place",
+      "title": "就業場所・業務",
+      "paragraphs": [
+        ""
+      ]
+    },
+    {
+      "id": "hours",
+      "title": "始業終業時刻・休憩・休日",
+      "paragraphs": [
+        ""
+      ]
+    },
+    {
+      "id": "wages",
+      "title": "賃金",
+      "paragraphs": [
+        "基本給 / 諸手当 / 締切日 / 支払日"
+      ]
+    },
+    {
+      "id": "termination",
+      "title": "退職・解雇",
+      "paragraphs": [
+        ""
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "REPRESENTATIVE",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "representative"
+        }
+      },
+      "description": "代表者氏名"
+    },
+    {
+      "key": "EMPLOYEE_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "従業員氏名"
+    },
+    {
+      "key": "CONTRACT_START",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "雇用開始日"
+    },
+    {
+      "key": "WORK_LOCATION",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "就業場所"
+    },
+    {
+      "key": "WORK_DUTIES",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "従事する業務"
+    },
+    {
+      "key": "BASE_SALARY",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "基本給"
+    },
+    {
+      "key": "LEGAL_BASIS_LABOR_15",
+      "type": "law_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_law_article_am",
+        "args": {
+          "law_id": "労働基準法",
+          "article": "15"
+        }
+      },
+      "description": "労基法 §15 (労働条件明示)"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "REPRESENTATIVE": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "representative"
+      }
+    },
+    "LEGAL_BASIS_LABOR_15": {
+      "tool": "get_law_article_am",
+      "args": {
+        "law_id": "労働基準法",
+        "article": "15"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労基法 §15 + 同施行規則 §5 に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

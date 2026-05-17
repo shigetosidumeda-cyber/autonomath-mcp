@@ -1,0 +1,94 @@
+{
+  "segment": "司法書士",
+  "artifact_type": "shurui_kabushiki_touki",
+  "artifact_name_ja": "種類株式発行登記",
+  "version": "v1",
+  "authority": "商業登記法 §54 + 会社法 §108 + §911",
+  "sensitive_act": "司法書士法 §3",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "種類株式発行登記申請書"
+      ]
+    },
+    {
+      "id": "share_class",
+      "title": "種類",
+      "paragraphs": [
+        "普通株式 / 優先株式 / 劣後株式 / 議決権制限株式 等"
+      ]
+    },
+    {
+      "id": "terms",
+      "title": "内容",
+      "paragraphs": [
+        "配当優先 / 残余財産 / 議決権 / 譲渡制限"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "SHARE_CLASS_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "種類株式名"
+    },
+    {
+      "key": "PREFERENCE_TYPE",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "優先内容 (配当 / 残余 / 議決権制限 等)"
+    },
+    {
+      "key": "ISSUE_AMOUNT",
+      "type": "integer",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "発行株式数"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。商業登記法 §54 + 会社法 §108 + §911 に基づく成果物として 司法書士法 §3 有資格者の確認・署名なく提出してはなりません。"
+}

@@ -1,0 +1,86 @@
+{
+  "segment": "会計士",
+  "artifact_type": "lease_torihiki",
+  "artifact_name_ja": "リース取引",
+  "version": "v1",
+  "authority": "企業会計基準第13号 リース取引に関する会計基準",
+  "sensitive_act": "公認会計士法 §47条の2",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} リース資産・債務明細"
+      ]
+    },
+    {
+      "id": "classification",
+      "title": "分類",
+      "paragraphs": [
+        "ファイナンス / オペレーティング判定"
+      ]
+    },
+    {
+      "id": "schedule",
+      "title": "支払スケジュール",
+      "paragraphs": [
+        "期 / 元本 / 利息 / 残高"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "LEASE_SUBJECT",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "リース物件"
+    },
+    {
+      "key": "LEASE_TERM_MONTHS",
+      "type": "integer",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "リース期間 (月)"
+    },
+    {
+      "key": "MONTHLY_PAYMENT",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "月額リース料"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。企業会計基準第13号 リース取引に関する会計基準 に基づく成果物として 公認会計士法 §47条の2 有資格者の確認・署名なく提出してはなりません。"
+}

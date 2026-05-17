@@ -1,0 +1,201 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "hojokin_shinsei",
+  "artifact_name_ja": "補助金申請書",
+  "version": "v1",
+  "authority": "補助金等適正化法 §5 + 各補助金実施要領",
+  "sensitive_act": "行政書士法 §1 + §19",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "cover",
+      "title": "申請書表紙",
+      "paragraphs": [
+        "{{PROGRAM_NAME}} 補助金交付申請書"
+      ]
+    },
+    {
+      "id": "applicant",
+      "title": "申請者情報",
+      "paragraphs": [
+        "法人名 / 法人番号 / 代表者 / 住所"
+      ]
+    },
+    {
+      "id": "project",
+      "title": "事業計画",
+      "paragraphs": [
+        "目的 / 内容 / 期間 / 経費明細"
+      ]
+    },
+    {
+      "id": "budget",
+      "title": "経費明細",
+      "paragraphs": [
+        "費目 / 金額 / 補助対象有無"
+      ]
+    },
+    {
+      "id": "signoff",
+      "title": "誓約",
+      "paragraphs": [
+        "反社チェック / 二重申請なし"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "REPRESENTATIVE",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "representative"
+        }
+      },
+      "description": "代表者氏名"
+    },
+    {
+      "key": "ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "address"
+        }
+      },
+      "description": "本店所在地"
+    },
+    {
+      "key": "PROGRAM_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "search_programs",
+        "args": {
+          "q": "{{KEYWORD}}",
+          "limit": 1
+        }
+      },
+      "description": "補助金名"
+    },
+    {
+      "key": "PROGRAM_ID",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "search_programs",
+        "args": {
+          "q": "{{KEYWORD}}",
+          "limit": 1
+        }
+      },
+      "description": "補助金プログラム ID (jpcite)"
+    },
+    {
+      "key": "REQUESTED_AMOUNT",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "申請額"
+    },
+    {
+      "key": "FUNDING_STACK_CHECK",
+      "type": "validation",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "check_funding_stack_am",
+        "args": {
+          "program_ids": [
+            "{{PROGRAM_ID}}"
+          ],
+          "houjin_bangou": "{{HOUJIN_BANGOU}}"
+        }
+      },
+      "description": "二重申請 / 併用可否チェック"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "REPRESENTATIVE": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "representative"
+      }
+    },
+    "ADDRESS": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "address"
+      }
+    },
+    "PROGRAM_NAME": {
+      "tool": "search_programs",
+      "args": {
+        "q": "{{KEYWORD}}",
+        "limit": 1
+      }
+    },
+    "PROGRAM_ID": {
+      "tool": "search_programs",
+      "args": {
+        "q": "{{KEYWORD}}",
+        "limit": 1
+      }
+    },
+    "FUNDING_STACK_CHECK": {
+      "tool": "check_funding_stack_am",
+      "args": {
+        "program_ids": [
+          "{{PROGRAM_ID}}"
+        ],
+        "houjin_bangou": "{{HOUJIN_BANGOU}}"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。補助金等適正化法 §5 + 各補助金実施要領 に基づく成果物として 行政書士法 §1 + §19 有資格者の確認・署名なく提出してはなりません。"
+}

@@ -1,0 +1,94 @@
+{
+  "segment": "司法書士",
+  "artifact_type": "souzoku_touki",
+  "artifact_name_ja": "相続登記申請書",
+  "version": "v1",
+  "authority": "不動産登記法 §63 + 民法 §882-",
+  "sensitive_act": "司法書士法 §3 + §73",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "所有権移転登記申請書 (相続)"
+      ]
+    },
+    {
+      "id": "decedent",
+      "title": "被相続人",
+      "paragraphs": [
+        "氏名 / 死亡年月日 / 最後の住所"
+      ]
+    },
+    {
+      "id": "heirs",
+      "title": "相続人",
+      "paragraphs": [
+        "相続人氏名 / 持分"
+      ]
+    },
+    {
+      "id": "property",
+      "title": "不動産",
+      "paragraphs": [
+        ""
+      ]
+    },
+    {
+      "id": "attachments",
+      "title": "添付",
+      "paragraphs": [
+        "戸籍謄本 / 遺産分割協議書 / 印鑑証明"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "DECEDENT_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "被相続人氏名"
+    },
+    {
+      "key": "DEATH_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "死亡年月日"
+    },
+    {
+      "key": "HEIRS",
+      "type": "array_string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "相続人氏名一覧"
+    },
+    {
+      "key": "PROPERTY_LOCATION",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "相続不動産所在"
+    },
+    {
+      "key": "INHERITANCE_TYPE",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法定相続 / 遺産分割 / 遺言"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。不動産登記法 §63 + 民法 §882- に基づく成果物として 司法書士法 §3 + §73 有資格者の確認・署名なく提出してはなりません。"
+}

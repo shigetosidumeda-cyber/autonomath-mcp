@@ -1,0 +1,85 @@
+{
+  "segment": "社労士",
+  "artifact_type": "anzen_eisei_kitei",
+  "artifact_name_ja": "安全衛生規程",
+  "version": "v1",
+  "authority": "労働安全衛生法 §3 + §59 + §66",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "general",
+      "title": "総則",
+      "paragraphs": [
+        "目的 / 安全衛生管理体制"
+      ]
+    },
+    {
+      "id": "education",
+      "title": "安全衛生教育",
+      "paragraphs": [
+        "雇入れ時教育 / 危険有害業務教育"
+      ]
+    },
+    {
+      "id": "health_check",
+      "title": "健康診断",
+      "paragraphs": [
+        "雇入れ時 / 定期 / 特殊健診"
+      ]
+    },
+    {
+      "id": "harassment",
+      "title": "ハラスメント防止",
+      "paragraphs": [
+        "パワハラ / セクハラ / マタハラ"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "SAFETY_OFFICER_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "安全衛生推進者氏名"
+    },
+    {
+      "key": "EFFECTIVE_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "施行日"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労働安全衛生法 §3 + §59 + §66 に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

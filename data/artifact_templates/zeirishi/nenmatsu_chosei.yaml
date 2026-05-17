@@ -1,0 +1,107 @@
+{
+  "segment": "税理士",
+  "artifact_type": "nenmatsu_chosei",
+  "artifact_name_ja": "年末調整書",
+  "version": "v1",
+  "authority": "所得税法 §190 + 同 §194-198",
+  "sensitive_act": "税理士法 §52",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} 給与所得者の年末調整"
+      ]
+    },
+    {
+      "id": "employee_info",
+      "title": "従業員情報",
+      "paragraphs": [
+        "氏名 / マイナンバー / 扶養 / 保険料控除"
+      ]
+    },
+    {
+      "id": "tax_calc",
+      "title": "税額計算",
+      "paragraphs": [
+        "年税額 - 既徴収税額 = 差引調整額"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "EMPLOYEE_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "従業員氏名"
+    },
+    {
+      "key": "ANNUAL_INCOME",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "年間給与"
+    },
+    {
+      "key": "LEGAL_BASIS_INCOME_TAX_190",
+      "type": "law_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_law_article_am",
+        "args": {
+          "law_id": "所得税法",
+          "article": "190"
+        }
+      },
+      "description": "所得税法 §190 条文"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "LEGAL_BASIS_INCOME_TAX_190": {
+      "tool": "get_law_article_am",
+      "args": {
+        "law_id": "所得税法",
+        "article": "190"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。所得税法 §190 + 同 §194-198 に基づく成果物として 税理士法 §52 有資格者の確認・署名なく提出してはなりません。"
+}

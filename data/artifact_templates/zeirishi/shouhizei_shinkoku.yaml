@@ -1,0 +1,117 @@
+{
+  "segment": "税理士",
+  "artifact_type": "shouhizei_shinkoku",
+  "artifact_name_ja": "消費税申告書",
+  "version": "v1",
+  "authority": "消費税法 §45",
+  "sensitive_act": "税理士法 §52",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "cover",
+      "title": "申告書第一表",
+      "paragraphs": [
+        "{{COMPANY_NAME}} / {{FISCAL_YEAR}}"
+      ]
+    },
+    {
+      "id": "calc",
+      "title": "課税標準額計算",
+      "paragraphs": [
+        "課税売上 × 税率 - 仕入税額控除"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "FISCAL_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "会計年度 (例: 2026-04-01〜2027-03-31)"
+    },
+    {
+      "key": "TAXABLE_SALES",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "課税売上高"
+    },
+    {
+      "key": "INVOICE_REGISTRATION_NO",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "search_invoice_by_houjin_partial",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}"
+        }
+      },
+      "description": "適格請求書発行事業者登録番号"
+    },
+    {
+      "key": "TAX_RULE_SHOUHIZEI",
+      "type": "rule_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_am_tax_rule",
+        "args": {
+          "rule_id": "shouhizei_standard_rate"
+        }
+      },
+      "description": "消費税標準税率"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "INVOICE_REGISTRATION_NO": {
+      "tool": "search_invoice_by_houjin_partial",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}"
+      }
+    },
+    "TAX_RULE_SHOUHIZEI": {
+      "tool": "get_am_tax_rule",
+      "args": {
+        "rule_id": "shouhizei_standard_rate"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。消費税法 §45 に基づく成果物として 税理士法 §52 有資格者の確認・署名なく提出してはなりません。"
+}

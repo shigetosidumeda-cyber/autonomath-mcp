@@ -1,0 +1,86 @@
+{
+  "segment": "会計士",
+  "artifact_type": "tanaoroshi_hyouka",
+  "artifact_name_ja": "棚卸資産評価",
+  "version": "v1",
+  "authority": "企業会計基準第9号 棚卸資産の評価に関する会計基準",
+  "sensitive_act": "公認会計士法 §47条の2",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} 棚卸資産評価明細"
+      ]
+    },
+    {
+      "id": "method",
+      "title": "評価方法",
+      "paragraphs": [
+        "原価法 (個別法 / 先入先出 / 移動平均 / 売価還元) + 低価法"
+      ]
+    },
+    {
+      "id": "detail",
+      "title": "明細",
+      "paragraphs": [
+        "品目 / 数量 / 取得原価 / 正味売却価額 / 評価額"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "FISCAL_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "会計年度 (例: 2026-04-01〜2027-03-31)"
+    },
+    {
+      "key": "INVENTORY_METHOD",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "評価方法 (個別 / 先入先出 / 移動平均 / 売価還元)"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。企業会計基準第9号 棚卸資産の評価に関する会計基準 に基づく成果物として 公認会計士法 §47条の2 有資格者の確認・署名なく提出してはなりません。"
+}

@@ -1,0 +1,86 @@
+{
+  "segment": "税理士",
+  "artifact_type": "gensen_choushuubo",
+  "artifact_name_ja": "源泉徴収簿",
+  "version": "v1",
+  "authority": "所得税法 §183 + 同施行規則 §76",
+  "sensitive_act": "税理士法 §52",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} 給与所得・退職所得に対する源泉徴収簿"
+      ]
+    },
+    {
+      "id": "monthly",
+      "title": "月別明細",
+      "paragraphs": [
+        "支給日 / 総支給額 / 社保料 / 課税対象 / 源泉税額"
+      ]
+    },
+    {
+      "id": "annual",
+      "title": "年計",
+      "paragraphs": [
+        "年税額 / 還付・追徴額"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "EMPLOYEE_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "従業員氏名"
+    },
+    {
+      "key": "EMPLOYEE_MYNUMBER",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "マイナンバー (12桁、要保護)"
+    },
+    {
+      "key": "FISCAL_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "対象年"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。所得税法 §183 + 同施行規則 §76 に基づく成果物として 税理士法 §52 有資格者の確認・署名なく提出してはなりません。"
+}

@@ -9678,7 +9678,14 @@ if settings.autonomath_enabled:
         # Late import (E402): gated on settings.autonomath_enabled at module entry;
         # must run AFTER the envelope-wrapper assignment above. F401 side-effect-only
         # (registers tools via decorator on import).
-        from jpintel_mcp.mcp import autonomath_tools  # noqa: E402, F401
+        # Niche Moat Lane N10 (2026-05-17): 36 MCP wrappers exposing every moat
+        # lane (M1-M11 + N1-N9) so an agent that connects to the jpcite MCP
+        # server reaches the full moat surface through a single endpoint.
+        # Package guards itself with JPCITE_MOAT_LANES_ENABLED (default ON).
+        from jpintel_mcp.mcp import (
+            autonomath_tools,  # noqa: E402, F401
+            moat_lane_tools,  # noqa: E402, F401
+        )
     finally:
         mcp.tool = _orig_mcp_tool  # type: ignore[method-assign]
     # provenance_tools is auto-registered transitively via the package

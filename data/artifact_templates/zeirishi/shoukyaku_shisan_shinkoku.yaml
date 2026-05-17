@@ -1,0 +1,100 @@
+{
+  "segment": "税理士",
+  "artifact_type": "shoukyaku_shisan_shinkoku",
+  "artifact_name_ja": "償却資産申告書",
+  "version": "v1",
+  "authority": "地方税法 §383",
+  "sensitive_act": "税理士法 §52",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "cover",
+      "title": "申告書",
+      "paragraphs": [
+        "{{COMPANY_NAME}} / 法人番号 {{HOUJIN_BANGOU}} / 賦課期日 1/1"
+      ]
+    },
+    {
+      "id": "asset_list",
+      "title": "資産明細",
+      "paragraphs": [
+        "取得年月 / 取得価額 / 耐用年数 / 評価額"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "address"
+        }
+      },
+      "description": "本店所在地"
+    },
+    {
+      "key": "MUNICIPALITY",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "提出先 (市町村)"
+    },
+    {
+      "key": "ASSESSMENT_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "賦課年度 (YYYY)"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "ADDRESS": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "address"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。地方税法 §383 に基づく成果物として 税理士法 §52 有資格者の確認・署名なく提出してはなりません。"
+}

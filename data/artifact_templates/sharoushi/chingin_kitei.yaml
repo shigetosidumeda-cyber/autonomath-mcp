@@ -1,0 +1,121 @@
+{
+  "segment": "社労士",
+  "artifact_type": "chingin_kitei",
+  "artifact_name_ja": "賃金規程",
+  "version": "v1",
+  "authority": "労基法 §89",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "general",
+      "title": "総則",
+      "paragraphs": [
+        "目的 / 適用範囲"
+      ]
+    },
+    {
+      "id": "structure",
+      "title": "賃金体系",
+      "paragraphs": [
+        "基本給 / 諸手当 / 賞与"
+      ]
+    },
+    {
+      "id": "calc",
+      "title": "計算方法",
+      "paragraphs": [
+        "時間外 / 休日 / 深夜割増"
+      ]
+    },
+    {
+      "id": "payment",
+      "title": "支払",
+      "paragraphs": [
+        "締日 / 支払日 / 支払方法"
+      ]
+    },
+    {
+      "id": "deduction",
+      "title": "控除",
+      "paragraphs": [
+        "社保 / 税 / 労組費"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "EFFECTIVE_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "施行日"
+    },
+    {
+      "key": "WAGE_CALC_PERIOD",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "賃金計算期間"
+    },
+    {
+      "key": "PAYDAY",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "支払日 (例: 当月25日)"
+    },
+    {
+      "key": "OVERTIME_PREMIUM_RATE",
+      "type": "rule_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_law_article_am",
+        "args": {
+          "law_id": "労働基準法",
+          "article": "37"
+        }
+      },
+      "description": "労基法 §37 割増率"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "OVERTIME_PREMIUM_RATE": {
+      "tool": "get_law_article_am",
+      "args": {
+        "law_id": "労働基準法",
+        "article": "37"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労基法 §89 に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

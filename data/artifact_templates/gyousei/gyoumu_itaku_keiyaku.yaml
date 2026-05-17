@@ -1,0 +1,109 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "gyoumu_itaku_keiyaku",
+  "artifact_name_ja": "業務委託契約書",
+  "version": "v1",
+  "authority": "民法 §632 (請負) + §643 (委任)",
+  "sensitive_act": "行政書士法 §1 (権利義務に関する書類作成)",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "preamble",
+      "title": "前文",
+      "paragraphs": [
+        "{{PARTY_A}} (以下「甲」) と {{PARTY_B}} (以下「乙」)"
+      ]
+    },
+    {
+      "id": "scope",
+      "title": "業務内容",
+      "paragraphs": [
+        "委託業務の範囲 / 成果物"
+      ]
+    },
+    {
+      "id": "consideration",
+      "title": "報酬",
+      "paragraphs": [
+        "金額 / 支払方法 / 支払期日"
+      ]
+    },
+    {
+      "id": "term",
+      "title": "期間 / 解除",
+      "paragraphs": [
+        "契約期間 / 中途解約 / 損害賠償"
+      ]
+    },
+    {
+      "id": "confidentiality",
+      "title": "秘密保持",
+      "paragraphs": [
+        "秘密情報の範囲 / 存続期間"
+      ]
+    },
+    {
+      "id": "jurisdiction",
+      "title": "管轄",
+      "paragraphs": [
+        "合意管轄裁判所"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "PARTY_A",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "委託者 (甲) 名称"
+    },
+    {
+      "key": "PARTY_B",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "受託者 (乙) 名称"
+    },
+    {
+      "key": "SCOPE_OF_WORK",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "業務内容"
+    },
+    {
+      "key": "FEE_AMOUNT",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "委託料"
+    },
+    {
+      "key": "CONTRACT_START",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "契約開始日"
+    },
+    {
+      "key": "CONTRACT_END",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "契約終了日"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。民法 §632 (請負) + §643 (委任) に基づく成果物として 行政書士法 §1 (権利義務に関する書類作成) 有資格者の確認・署名なく提出してはなりません。"
+}

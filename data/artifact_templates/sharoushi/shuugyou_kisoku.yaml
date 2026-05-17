@@ -1,0 +1,163 @@
+{
+  "segment": "社労士",
+  "artifact_type": "shuugyou_kisoku",
+  "artifact_name_ja": "就業規則",
+  "version": "v1",
+  "authority": "労基法 §89",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "general",
+      "title": "総則",
+      "paragraphs": [
+        "目的 / 適用範囲"
+      ]
+    },
+    {
+      "id": "hiring",
+      "title": "採用・異動",
+      "paragraphs": [
+        "採用基準 / 試用期間 / 配転"
+      ]
+    },
+    {
+      "id": "work_hours",
+      "title": "労働時間・休憩・休日",
+      "paragraphs": [
+        "所定労働時間 / 休憩 / 休日"
+      ]
+    },
+    {
+      "id": "leave",
+      "title": "休暇",
+      "paragraphs": [
+        "年次有給休暇 / 特別休暇"
+      ]
+    },
+    {
+      "id": "wages",
+      "title": "賃金",
+      "paragraphs": [
+        "賃金規程に委任"
+      ]
+    },
+    {
+      "id": "retirement",
+      "title": "退職・解雇",
+      "paragraphs": [
+        "退職事由 / 解雇事由"
+      ]
+    },
+    {
+      "id": "safety",
+      "title": "安全衛生",
+      "paragraphs": [
+        "災害補償 / 安全衛生"
+      ]
+    },
+    {
+      "id": "discipline",
+      "title": "表彰・懲戒",
+      "paragraphs": [
+        "表彰 / 懲戒事由 / 種類"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "address"
+        }
+      },
+      "description": "本店所在地"
+    },
+    {
+      "key": "EFFECTIVE_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "施行日"
+    },
+    {
+      "key": "WORKING_HOURS_DAILY",
+      "type": "decimal",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "所定労働時間 (時間/日)"
+    },
+    {
+      "key": "ANNUAL_LEAVE_DAYS",
+      "type": "integer",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "年次有給休暇 (日数)"
+    },
+    {
+      "key": "LEGAL_BASIS_LABOR_89",
+      "type": "law_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_law_article_am",
+        "args": {
+          "law_id": "労働基準法",
+          "article": "89"
+        }
+      },
+      "description": "労基法 §89 (作成義務)"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "ADDRESS": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "address"
+      }
+    },
+    "LEGAL_BASIS_LABOR_89": {
+      "tool": "get_law_article_am",
+      "args": {
+        "law_id": "労働基準法",
+        "article": "89"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労基法 §89 に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

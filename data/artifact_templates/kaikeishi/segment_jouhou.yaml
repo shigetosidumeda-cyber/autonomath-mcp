@@ -1,0 +1,78 @@
+{
+  "segment": "会計士",
+  "artifact_type": "segment_jouhou",
+  "artifact_name_ja": "セグメント情報",
+  "version": "v1",
+  "authority": "企業会計基準第17号 セグメント情報等の開示",
+  "sensitive_act": "公認会計士法 §47条の2",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "{{COMPANY_NAME}} セグメント情報 ({{FISCAL_YEAR}})"
+      ]
+    },
+    {
+      "id": "segments",
+      "title": "報告セグメント",
+      "paragraphs": [
+        "セグメント名 / 売上高 / 利益 / 資産"
+      ]
+    },
+    {
+      "id": "reconciliation",
+      "title": "調整額",
+      "paragraphs": [
+        "セグメント合計 → 連結 P/L への調整"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "FISCAL_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "会計年度 (例: 2026-04-01〜2027-03-31)"
+    },
+    {
+      "key": "SEGMENT_NAMES",
+      "type": "array_string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "報告セグメント名一覧"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。企業会計基準第17号 セグメント情報等の開示 に基づく成果物として 公認会計士法 §47条の2 有資格者の確認・署名なく提出してはなりません。"
+}

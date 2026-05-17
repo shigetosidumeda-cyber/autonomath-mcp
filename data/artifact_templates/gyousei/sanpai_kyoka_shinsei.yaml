@@ -1,0 +1,86 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "sanpai_kyoka_shinsei",
+  "artifact_name_ja": "産廃業許可申請書",
+  "version": "v1",
+  "authority": "廃棄物処理法 §14",
+  "sensitive_act": "行政書士法 §1 + §19",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "applicant",
+      "title": "申請者",
+      "paragraphs": [
+        "法人 / 個人"
+      ]
+    },
+    {
+      "id": "scope",
+      "title": "事業範囲",
+      "paragraphs": [
+        "収集運搬 / 中間処理 / 最終処分"
+      ]
+    },
+    {
+      "id": "waste_types",
+      "title": "取扱廃棄物",
+      "paragraphs": [
+        "産業廃棄物 20 種類から選択"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "BUSINESS_SCOPE",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "収集運搬 / 中間処理 / 最終処分"
+    },
+    {
+      "key": "WASTE_TYPES",
+      "type": "array_string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "取扱産廃種類"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。廃棄物処理法 §14 に基づく成果物として 行政書士法 §1 + §19 有資格者の確認・署名なく提出してはなりません。"
+}

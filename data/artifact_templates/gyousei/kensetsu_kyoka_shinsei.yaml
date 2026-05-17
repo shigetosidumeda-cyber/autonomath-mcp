@@ -1,0 +1,115 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "kensetsu_kyoka_shinsei",
+  "artifact_name_ja": "建設業許可申請書",
+  "version": "v1",
+  "authority": "建設業法 §3 + 同施行規則 §2",
+  "sensitive_act": "行政書士法 §1 + §19",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "applicant",
+      "title": "申請者",
+      "paragraphs": [
+        "商号 / 主たる営業所"
+      ]
+    },
+    {
+      "id": "type",
+      "title": "許可業種",
+      "paragraphs": [
+        "29 業種から選択"
+      ]
+    },
+    {
+      "id": "requirements",
+      "title": "要件",
+      "paragraphs": [
+        "経営業務管理責任者 / 専任技術者 / 財産的基礎"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "REPRESENTATIVE",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "representative"
+        }
+      },
+      "description": "代表者氏名"
+    },
+    {
+      "key": "LICENSE_CATEGORY",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "許可業種 (土木一式 / 建築一式 等)"
+    },
+    {
+      "key": "LICENSE_LEVEL",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "一般 / 特定"
+    },
+    {
+      "key": "AUTHORITY_LEVEL",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "知事許可 / 大臣許可"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "REPRESENTATIVE": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "representative"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。建設業法 §3 + 同施行規則 §2 に基づく成果物として 行政書士法 §1 + §19 有資格者の確認・署名なく提出してはなりません。"
+}

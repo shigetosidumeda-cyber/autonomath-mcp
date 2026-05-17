@@ -1,0 +1,79 @@
+{
+  "segment": "行政書士",
+  "artifact_type": "eigyo_kyoka_shinsei",
+  "artifact_name_ja": "営業許可申請書",
+  "version": "v1",
+  "authority": "食品衛生法 §55 + 同施行規則",
+  "sensitive_act": "行政書士法 §1 + §19",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "applicant",
+      "title": "申請者情報",
+      "paragraphs": [
+        "申請者 / 営業所所在地"
+      ]
+    },
+    {
+      "id": "facility",
+      "title": "施設情報",
+      "paragraphs": [
+        "業種 / 構造設備 / 食品衛生責任者"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "BUSINESS_CATEGORY",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "営業種類 (飲食店営業 / 食肉販売業 等)"
+    },
+    {
+      "key": "FACILITY_ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "営業所所在地"
+    },
+    {
+      "key": "HEALTH_MANAGER_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "食品衛生責任者氏名"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。食品衛生法 §55 + 同施行規則 に基づく成果物として 行政書士法 §1 + §19 有資格者の確認・署名なく提出してはなりません。"
+}

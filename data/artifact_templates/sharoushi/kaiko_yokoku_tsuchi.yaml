@@ -1,0 +1,143 @@
+{
+  "segment": "社労士",
+  "artifact_type": "kaiko_yokoku_tsuchi",
+  "artifact_name_ja": "解雇予告通知書",
+  "version": "v1",
+  "authority": "労基法 §20",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "解雇予告通知書"
+      ]
+    },
+    {
+      "id": "addressee",
+      "title": "宛名",
+      "paragraphs": [
+        "{{EMPLOYEE_NAME}} 殿"
+      ]
+    },
+    {
+      "id": "notice",
+      "title": "予告",
+      "paragraphs": [
+        "解雇予定日 / 解雇事由"
+      ]
+    },
+    {
+      "id": "compensation",
+      "title": "予告手当",
+      "paragraphs": [
+        "30日に満たない期間の手当"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "REPRESENTATIVE",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "representative"
+        }
+      },
+      "description": "代表者氏名"
+    },
+    {
+      "key": "EMPLOYEE_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "従業員氏名"
+    },
+    {
+      "key": "NOTICE_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "通知日"
+    },
+    {
+      "key": "DISMISSAL_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "解雇予定日 (30日以上後)"
+    },
+    {
+      "key": "DISMISSAL_REASON",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "解雇事由"
+    },
+    {
+      "key": "LEGAL_BASIS_LABOR_20",
+      "type": "law_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_law_article_am",
+        "args": {
+          "law_id": "労働基準法",
+          "article": "20"
+        }
+      },
+      "description": "労基法 §20 (解雇予告)"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "REPRESENTATIVE": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "representative"
+      }
+    },
+    "LEGAL_BASIS_LABOR_20": {
+      "tool": "get_law_article_am",
+      "args": {
+        "law_id": "労働基準法",
+        "article": "20"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労基法 §20 に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}

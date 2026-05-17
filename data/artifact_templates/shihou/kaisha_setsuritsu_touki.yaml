@@ -1,0 +1,87 @@
+{
+  "segment": "司法書士",
+  "artifact_type": "kaisha_setsuritsu_touki",
+  "artifact_name_ja": "会社設立登記申請書",
+  "version": "v1",
+  "authority": "商業登記法 §47 + 会社法 §911",
+  "sensitive_act": "司法書士法 §3 + §73",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "申請書表紙",
+      "paragraphs": [
+        "株式会社設立登記申請書"
+      ]
+    },
+    {
+      "id": "company",
+      "title": "会社情報",
+      "paragraphs": [
+        "商号 / 本店 / 目的 / 資本金"
+      ]
+    },
+    {
+      "id": "officers",
+      "title": "役員",
+      "paragraphs": [
+        "取締役 / 代表取締役 / 監査役"
+      ]
+    },
+    {
+      "id": "attachments",
+      "title": "添付書類",
+      "paragraphs": [
+        "定款 / 出資払込証明 / 印鑑証明"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "商号"
+    },
+    {
+      "key": "HEADQUARTER_ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "本店所在地"
+    },
+    {
+      "key": "CAPITAL_AMOUNT",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "資本金"
+    },
+    {
+      "key": "PURPOSE_OF_BUSINESS",
+      "type": "array_string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "事業目的"
+    },
+    {
+      "key": "REPRESENTATIVE_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "代表取締役氏名"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。商業登記法 §47 + 会社法 §911 に基づく成果物として 司法書士法 §3 + §73 有資格者の確認・署名なく提出してはなりません。"
+}

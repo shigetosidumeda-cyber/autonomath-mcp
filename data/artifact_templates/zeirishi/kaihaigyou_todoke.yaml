@@ -1,0 +1,80 @@
+{
+  "segment": "税理士",
+  "artifact_type": "kaihaigyou_todoke",
+  "artifact_name_ja": "個人事業 開廃業届出書",
+  "version": "v1",
+  "authority": "所得税法 §229",
+  "sensitive_act": "税理士法 §52",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "個人事業の開業・廃業等届出書",
+      "paragraphs": [
+        "提出先: {{TAX_OFFICE}}"
+      ]
+    },
+    {
+      "id": "person",
+      "title": "届出者情報",
+      "paragraphs": [
+        "氏名 / 住所 / マイナンバー"
+      ]
+    },
+    {
+      "id": "business",
+      "title": "事業内容",
+      "paragraphs": [
+        "業種 / 屋号 / 開業日"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "PERSON_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "届出者氏名"
+    },
+    {
+      "key": "ADDRESS",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "住所"
+    },
+    {
+      "key": "TAX_OFFICE",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "所轄税務署名"
+    },
+    {
+      "key": "BUSINESS_TYPE",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "業種"
+    },
+    {
+      "key": "OPENING_DATE",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "開業 (or 廃業) 年月日"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。所得税法 §229 に基づく成果物として 税理士法 §52 有資格者の確認・署名なく提出してはなりません。"
+}

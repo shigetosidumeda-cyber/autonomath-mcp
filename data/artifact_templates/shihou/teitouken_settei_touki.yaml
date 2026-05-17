@@ -1,0 +1,95 @@
+{
+  "segment": "司法書士",
+  "artifact_type": "teitouken_settei_touki",
+  "artifact_name_ja": "抵当権設定登記申請書",
+  "version": "v1",
+  "authority": "不動産登記法 §60 + 民法 §369",
+  "sensitive_act": "司法書士法 §3 + §73",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "header",
+      "title": "ヘッダ",
+      "paragraphs": [
+        "抵当権設定登記申請書"
+      ]
+    },
+    {
+      "id": "property",
+      "title": "物件表示",
+      "paragraphs": [
+        ""
+      ]
+    },
+    {
+      "id": "obligation",
+      "title": "債権の内容",
+      "paragraphs": [
+        "債権額 / 利息 / 損害金 / 債務者"
+      ]
+    },
+    {
+      "id": "parties",
+      "title": "抵当権者・設定者",
+      "paragraphs": [
+        ""
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "MORTGAGEE",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "抵当権者 (金融機関等)"
+    },
+    {
+      "key": "MORTGAGOR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "抵当権設定者"
+    },
+    {
+      "key": "DEBTOR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "債務者"
+    },
+    {
+      "key": "PROPERTY_LOCATION",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "物件所在"
+    },
+    {
+      "key": "CLAIM_AMOUNT",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "債権額"
+    },
+    {
+      "key": "INTEREST_RATE",
+      "type": "decimal",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "利息 (年率%)"
+    }
+  ],
+  "mcp_query_bindings": {},
+  "disclaimer": "このテンプレートは scaffold です。不動産登記法 §60 + 民法 §369 に基づく成果物として 司法書士法 §3 + §73 有資格者の確認・署名なく提出してはなりません。"
+}

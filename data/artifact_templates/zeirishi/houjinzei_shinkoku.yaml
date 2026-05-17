@@ -1,0 +1,133 @@
+{
+  "segment": "税理士",
+  "artifact_type": "houjinzei_shinkoku",
+  "artifact_name_ja": "法人税申告書",
+  "version": "v1",
+  "authority": "法人税法 §74 + 別表",
+  "sensitive_act": "税理士法 §52",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "cover",
+      "title": "別表1",
+      "paragraphs": [
+        "{{COMPANY_NAME}} / 法人番号 {{HOUJIN_BANGOU}} / {{FISCAL_YEAR}}"
+      ]
+    },
+    {
+      "id": "betsu4",
+      "title": "別表4 (所得計算)",
+      "paragraphs": [
+        "当期純利益 + 加算 - 減算 = 課税所得"
+      ]
+    },
+    {
+      "id": "betsu5",
+      "title": "別表5 (利益積立金)",
+      "paragraphs": [
+        "期首 + 当期増 - 当期減 = 期末"
+      ]
+    },
+    {
+      "id": "tax_calc",
+      "title": "税額計算",
+      "paragraphs": [
+        "課税所得 × 税率 = 法人税額"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "HOUJIN_BANGOU",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "法人番号 (13 桁)"
+    },
+    {
+      "key": "REPRESENTATIVE",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "representative"
+        }
+      },
+      "description": "代表者氏名"
+    },
+    {
+      "key": "FISCAL_YEAR",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "会計年度 (例: 2026-04-01〜2027-03-31)"
+    },
+    {
+      "key": "TAXABLE_INCOME",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "課税所得金額"
+    },
+    {
+      "key": "TAX_RULE_HOJINZEI",
+      "type": "rule_ref",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_am_tax_rule",
+        "args": {
+          "rule_id": "houjinzei_main_rate"
+        }
+      },
+      "description": "法人税本則税率"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "REPRESENTATIVE": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "representative"
+      }
+    },
+    "TAX_RULE_HOJINZEI": {
+      "tool": "get_am_tax_rule",
+      "args": {
+        "rule_id": "houjinzei_main_rate"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。法人税法 §74 + 別表 に基づく成果物として 税理士法 §52 有資格者の確認・署名なく提出してはなりません。"
+}

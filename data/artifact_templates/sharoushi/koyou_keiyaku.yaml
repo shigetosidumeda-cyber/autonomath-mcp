@@ -1,0 +1,144 @@
+{
+  "segment": "社労士",
+  "artifact_type": "koyou_keiyaku",
+  "artifact_name_ja": "雇用契約書",
+  "version": "v1",
+  "authority": "労基法 §15 + 労働契約法 §4",
+  "sensitive_act": "社労士法 §27",
+  "is_scaffold_only": true,
+  "requires_professional_review": true,
+  "uses_llm": false,
+  "quality_grade": "draft",
+  "license": "jpcite-scaffold-cc0",
+  "sections": [
+    {
+      "id": "preamble",
+      "title": "前文",
+      "paragraphs": [
+        "{{COMPANY_NAME}} と {{EMPLOYEE_NAME}}"
+      ]
+    },
+    {
+      "id": "duties",
+      "title": "業務内容・就業場所",
+      "paragraphs": [
+        ""
+      ]
+    },
+    {
+      "id": "term",
+      "title": "契約期間",
+      "paragraphs": [
+        "期間の定め有無 / 更新基準"
+      ]
+    },
+    {
+      "id": "hours",
+      "title": "始業・終業・休憩",
+      "paragraphs": [
+        ""
+      ]
+    },
+    {
+      "id": "wages",
+      "title": "賃金",
+      "paragraphs": [
+        "基本給 / 諸手当 / 締日 / 支払日 / 方法"
+      ]
+    },
+    {
+      "id": "retirement",
+      "title": "退職",
+      "paragraphs": [
+        "定年 / 自己都合 / 解雇事由"
+      ]
+    }
+  ],
+  "placeholders": [
+    {
+      "key": "COMPANY_NAME",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "name"
+        }
+      },
+      "description": "法人名 (houjin_bangou から resolve)"
+    },
+    {
+      "key": "REPRESENTATIVE",
+      "type": "string",
+      "required": true,
+      "source": "mcp",
+      "mcp_query_spec": {
+        "tool": "get_houjin_360_am",
+        "args": {
+          "houjin_bangou": "{{HOUJIN_BANGOU}}",
+          "field": "representative"
+        }
+      },
+      "description": "代表者氏名"
+    },
+    {
+      "key": "EMPLOYEE_NAME",
+      "type": "string",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "従業員氏名"
+    },
+    {
+      "key": "EMPLOYMENT_TYPE",
+      "type": "enum",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "正社員 / 契約社員 / パート / アルバイト"
+    },
+    {
+      "key": "CONTRACT_START",
+      "type": "date",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "雇用開始日"
+    },
+    {
+      "key": "CONTRACT_END",
+      "type": "date",
+      "required": false,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "雇用終了日 (期間定有の場合)"
+    },
+    {
+      "key": "BASE_SALARY",
+      "type": "money_yen",
+      "required": true,
+      "source": "session",
+      "mcp_query_spec": null,
+      "description": "基本給"
+    }
+  ],
+  "mcp_query_bindings": {
+    "COMPANY_NAME": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "name"
+      }
+    },
+    "REPRESENTATIVE": {
+      "tool": "get_houjin_360_am",
+      "args": {
+        "houjin_bangou": "{{HOUJIN_BANGOU}}",
+        "field": "representative"
+      }
+    }
+  },
+  "disclaimer": "このテンプレートは scaffold です。労基法 §15 + 労働契約法 §4 に基づく成果物として 社労士法 §27 有資格者の確認・署名なく提出してはなりません。"
+}
