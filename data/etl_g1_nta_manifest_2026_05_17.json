@@ -1,0 +1,107 @@
+{
+  "manifest_id": "etl_g1_nta_manifest_2026_05_17",
+  "created_at_utc": "2026-05-17T00:00:00Z",
+  "task_id": "AA1-G1",
+  "purpose": "G1 税理士 cohort top-10 gap closure - NTA 質疑応答 + 裁決 + 地方税通達 ETL crawl manifest.",
+  "operator": {
+    "name": "Bookyou株式会社",
+    "invoice_id": "T8010001213708",
+    "contact": "info@bookyou.net"
+  },
+  "license": "All NTA + 国税不服審判所 PDL v1.0 / 都道府県通達 = 各自治体公開資料 gov_standard. source_url required on every row.",
+  "rate_limit": {
+    "delay_sec": 3.0,
+    "ua": "Bookyou-jpcite-g1-nta-etl/2026.05.17 (+https://jpcite.com; info@bookyou.net)",
+    "robots_txt": "respected"
+  },
+  "current_state_2026_05_17": {
+    "nta_shitsugi": {"rows": 286, "estimated_full": 2150, "gap_pct": 86.7},
+    "nta_bunsho_kaitou": {"rows": 278, "estimated_full": 600, "gap_pct": 53.7},
+    "nta_saiketsu": {"rows": 137, "estimated_full": 3300, "gap_pct": 95.8},
+    "am_chihouzei_tsutatsu": {"rows": 1200, "estimated_full": 6000, "gap_pct": 80.0},
+    "am_tax_amendment_history": {"rows": 0, "estimated_full": 720, "gap_pct": 100.0}
+  },
+  "gap_top_10": {
+    "g1_shitsugi_hojin": {"endpoint": "https://www.nta.go.jp/law/shitsugi/hojin/", "category": "hojin", "expected": 300, "table": "nta_shitsugi"},
+    "g2_shitsugi_shohi": {"endpoint": "https://www.nta.go.jp/law/shitsugi/shohi/", "category": "shohi", "expected": 350, "table": "nta_shitsugi"},
+    "g3_shitsugi_sozoku": {"endpoint": "https://www.nta.go.jp/law/shitsugi/sozoku/", "category": "sozoku", "expected": 250, "table": "nta_shitsugi"},
+    "g4_shitsugi_hyoka": {"endpoint": "https://www.nta.go.jp/law/shitsugi/hyoka/", "category": "hyoka", "expected": 350, "table": "nta_shitsugi"},
+    "g5_shitsugi_inshi_hotei_joto": {"endpoint": "https://www.nta.go.jp/law/shitsugi/{inshi,hotei,joto}/", "category": "inshi+hotei+joto", "expected": 900, "table": "nta_shitsugi"},
+    "g6_saiketsu_vol_1_to_120": {"endpoint": "https://www.kfs.go.jp/service/JP/idx/{vol_no}.html", "vol_range": "1-120", "expected": 3163, "table": "nta_saiketsu"},
+    "g7_saiketsu_incremental_cron": {"endpoint": "https://www.kfs.go.jp/service/JP/idx/", "cadence": "weekly Monday 03:00 JST", "table": "nta_saiketsu"},
+    "g8_tax_amendment_history": {"endpoint": "https://www.nta.go.jp/law/joho-zeikaishaku/", "expected": 720, "table": "am_tax_amendment_history"},
+    "g9_bunsho_backfill": {"endpoint": "https://www.nta.go.jp/law/bunshokaito/", "expected": 322, "table": "nta_bunsho_kaitou"},
+    "g10_chihouzei_47pref": {"endpoint": "https://www.pref.{kenmei}.lg.jp/zeimu/", "expected": 4800, "table": "am_chihouzei_tsutatsu"}
+  },
+  "estimated_volumes": {
+    "shitsugi_total": 2150,
+    "saiketsu_total": 3163,
+    "bunsho_total": 322,
+    "amendment_total": 720,
+    "chihouzei_total": 4800,
+    "grand_total": 10963
+  },
+  "s3_staging": {
+    "bucket": "jpcite-credit-993693061769-202605-derived",
+    "prefix": "nta_corpus_raw/2026-05-17/",
+    "region": "ap-northeast-1"
+  },
+  "textract_ocr": {
+    "region": "ap-southeast-1",
+    "bucket": "jpcite-credit-textract-apse1-202605",
+    "feature_types": ["TABLES", "FORMS"],
+    "per_page_usd": 0.05,
+    "estimated_pdf_count": 3000,
+    "estimated_pages_per_pdf": 30,
+    "estimated_pages_total": 90000,
+    "estimated_cost_usd_worst_case": 4500,
+    "estimated_cost_usd_realistic": 1500
+  },
+  "aws_canary_envelope": {
+    "hard_stop_usd": 19490,
+    "expected_burn_usd": 5000,
+    "headroom_usd": 14490
+  },
+  "banned_aggregators": [
+    "zeiken.jp",
+    "tabisland.ne.jp",
+    "kaikei-station.com",
+    "biz.stayway",
+    "freee.co.jp/articles",
+    "mfcloud.co.jp/articles"
+  ],
+  "primary_source_hosts_allowed": [
+    "nta.go.jp",
+    "kfs.go.jp",
+    "pref.*.lg.jp",
+    "metro.tokyo.lg.jp",
+    "city.*.lg.jp",
+    "soumu.go.jp"
+  ],
+  "ddl_migrations": [
+    "scripts/migrations/wave24_212_am_nta_qa.sql",
+    "scripts/migrations/wave24_213_am_chihouzei_tsutatsu.sql",
+    "scripts/migrations/wave24_214_am_tax_amendment_history.sql"
+  ],
+  "crawl_scripts": [
+    "scripts/etl/crawl_nta_corpus_2026_05_17.py",
+    "scripts/aws_credit_ops/textract_nta_bulk_2026_05_17.py"
+  ],
+  "ingest_scripts": [
+    "scripts/etl/ingest_nta_qa_to_db_2026_05_17.py",
+    "scripts/etl/ingest_chihouzei_tsutatsu_2026_05_17.py",
+    "scripts/etl/ingest_tax_amendment_history_2026_05_17.py"
+  ],
+  "cron_workflow": ".github/workflows/nta-saiketsu-weekly.yml",
+  "test_file": "tests/test_aa1_g1_nta.py",
+  "doc": "docs/_internal/AA1_G1_NTA_ETL_2026_05_17.md",
+  "constraints": {
+    "no_llm_api": true,
+    "mypy_strict": "0 errors required",
+    "ruff": "0 errors required",
+    "lane": "solo",
+    "safe_commit": true,
+    "aggregator_ban": "enforced via host allowlist"
+  },
+  "completion_criterion": "Manifest + 3 migrations + 3 ingest scripts + crawler + Textract submitter + weekly cron + 20+ tests committed via safe_commit.sh on main."
+}
