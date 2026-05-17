@@ -1,4 +1,4 @@
-"""A4 — 就業規則生成 Pack (¥300 / req).
+"""A4 — 就業規則生成 Pack (Pricing V3: ¥30 Tier D workflow).
 
 One MCP call assembles the canonical 4-artifact 社労士 bundle for a houjin
 by composing four artifact templates via the upstream HE-2 lane (which
@@ -23,8 +23,8 @@ Hard constraints
 * Scaffold-only — every artifact requires 社労士 supervision before
   submission. 労基法 §89 / §36 / §15 obligations remain unchanged.
 * Read-only SQLite (URI ``ro``).
-* ``_billing_unit = 100`` so the host MCP server bills ``100 × ¥3 =
-  ¥300`` (A4 product tier).
+* ``_BILLING_UNITS = 10`` so the host MCP server bills ``10 × ¥3 =
+  ¥30`` (A4 V3 Tier D = workflow; V2 was 100 units / ¥300).
 
 Tool
 ----
@@ -59,8 +59,16 @@ _SCHEMA_VERSION = "products.a4.v1"
 _UPSTREAM_MODULE = "jpintel_mcp.mcp.products.product_a4_shuugyou_kisoku"
 _SEGMENT = "社労士"
 
-# A4 sells at ¥300 / call; the ¥3 metered ledger maps that to 100 units.
-_BILLING_UNITS = 100
+# A4 Pricing V3 — Agent-Economy First (2026-05-17). V2 used 100 units / ¥300;
+# V3 collapses to 10 units / ¥30 (Tier D = workflow). Unit price stays ¥3.
+_PRICING_VERSION = "v3"
+_TIER_LETTER = "D"
+_BILLING_UNITS = 10
+_PRICE_PER_REQ_JPY = _BILLING_UNITS * 3
+# value_proxy vs 3 model baseline (Sonnet 8-turn ¥30 parity / Opus ¥75 save 60%).
+_VALUE_PROXY_OPUS_JPY = 75
+_VALUE_PROXY_SONNET_JPY = 30
+_VALUE_PROXY_HAIKU_JPY = 12
 
 _ARTIFACT_TYPES: tuple[str, ...] = (
     "shuugyou_kisoku",
@@ -337,7 +345,13 @@ def _empty_envelope(
         "industry": primary_input.get("industry"),
         "employee_count_band": primary_input.get("employee_count_band"),
         "agent_next_actions": [],
-        "billing": {"unit": _BILLING_UNITS, "yen": _BILLING_UNITS * 3, "product_id": _PRODUCT_ID},
+        "billing": {
+            "unit": _BILLING_UNITS,
+            "yen": _BILLING_UNITS * 3,
+            "product_id": _PRODUCT_ID,
+            "tier": _TIER_LETTER,
+            "pricing_version": _PRICING_VERSION,
+        },
         "results": [],
         "total": 0,
         "limit": 0,
@@ -414,7 +428,7 @@ async def product_shuugyou_kisoku_pack(
     scaffold-only form. Industry defaults to N7 segment view inference.
 
     Output is scaffold-only — 労基署 / 労働局 への提出 / 社労士 監修 are
-    out of scope; 1 billable call counts as 100 units (100 × ¥3 = ¥300).
+    out of scope; 1 billable call counts as 10 units (10 × ¥3 = ¥30, Tier D under Pricing V3).
     NO LLM inference — pure SQLite + dict composition.
     """
     primary_input = {
@@ -486,7 +500,13 @@ async def product_shuugyou_kisoku_pack(
         "industry": resolved_industry,
         "employee_count_band": employee_count_band,
         "agent_next_actions": next_actions,
-        "billing": {"unit": _BILLING_UNITS, "yen": _BILLING_UNITS * 3, "product_id": _PRODUCT_ID},
+        "billing": {
+            "unit": _BILLING_UNITS,
+            "yen": _BILLING_UNITS * 3,
+            "product_id": _PRODUCT_ID,
+            "tier": _TIER_LETTER,
+            "pricing_version": _PRICING_VERSION,
+        },
         "results": bundle,
         "total": len(bundle),
         "limit": len(bundle),
