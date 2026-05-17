@@ -370,6 +370,11 @@ ignore = ["E501"]
 "tests/smoke/smoke_pre_launch.py" = ["E402"]
 # boto3-shaped fake clients preserve PascalCase kwargs to mirror the real API.
 "tests/test_aggregate_run_ledger.py" = ["N803"]
+# Pricing v2 / A5 / freshness / quality benchmark tests re-bind module-level
+# UPPERCASE constants + Enum classes to fixture-scoped locals to keep each
+# test self-contained without import churn. N806 flags the convention; the
+# rebind is intentional (preserves canonical naming downstream).
+"tests/test_billing_pricing_v2.py" = ["N806"]
 # Stream BB (Wave 50 tick 9) — ruff hygiene sweep. Suppression-only (no logic change):
 # - E402: sys.path / dotenv / env-bootstrap before imports is canonical for these entrypoints.
 # - B904: HTTPException re-raise paths preserve existing user-facing semantics; "from err" rewrite would change envelopes.

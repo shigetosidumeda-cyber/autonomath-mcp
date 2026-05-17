@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>jpcite Pricing — 4-tier outcome band (A=¥3 / B=¥10 / C=¥30 / D=¥100..¥1000)</title>
+<meta name="description" content="jpcite outcome-band pricing v2: Tier A 原子呼出 ¥3, Tier B バンドル ¥10, Tier C 合成呼出 ¥30, Tier D 完成 pack ¥100..¥1000. すべて従量、subscription なし。">
+<link rel="canonical" href="https://jpcite.com/docs/pricing">
+<style>
+  body { font-family: -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif; max-width: 880px; margin: 2rem auto; padding: 0 1rem; color: #111; line-height: 1.6; }
+  h1 { font-size: 1.8rem; border-bottom: 2px solid #111; padding-bottom: 0.3rem; }
+  h2 { font-size: 1.3rem; margin-top: 2rem; border-left: 4px solid #111; padding-left: 0.5rem; }
+  table { border-collapse: collapse; margin: 1rem 0; width: 100%; }
+  th, td { border: 1px solid #ccc; padding: 0.5rem 0.75rem; text-align: left; }
+  th { background: #f4f4f4; }
+  code { background: #f4f4f4; padding: 0.1rem 0.3rem; border-radius: 3px; font-family: Menlo, monospace; }
+  .pricing-tier { font-weight: bold; }
+  .tier-a { color: #1a7e2a; }
+  .tier-b { color: #1556a3; }
+  .tier-c { color: #b3680c; }
+  .tier-d { color: #a02046; }
+  .disclaimer { background: #fffbe6; border: 1px solid #f0d000; padding: 0.75rem 1rem; border-radius: 4px; font-size: 0.92rem; margin-top: 2rem; }
+</style>
+</head>
+<body>
+
+<h1>jpcite Pricing — 4-tier outcome band</h1>
+
+<p>jpcite は <strong>完全従量・per-call metered</strong> です。subscription / seat / 年契約 / 最低額はありません。価格は呼出 1 回 (1 billable call) の「複雑度バンド」で決まります。</p>
+
+<h2>4 tier の価格表</h2>
+
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>名前</th>
+<th>1 call の価格 (税別)</th>
+<th>典型</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="pricing-tier tier-a">A</span></td>
+<td>Atomic</td>
+<td><strong>¥3</strong></td>
+<td>原子的な MCP / REST call (1 回 = 1 atomic)</td>
+<td><code>search_programs</code>, <code>get_law_article_am</code>, <code>get_provenance</code></td>
+</tr>
+<tr>
+<td><span class="pricing-tier tier-b">B</span></td>
+<td>Bundle</td>
+<td><strong>¥10</strong></td>
+<td>3–5 atomic を server-side で合成した bundle</td>
+<td><code>match_due_diligence_questions</code>, <code>cross_check_jurisdiction</code></td>
+</tr>
+<tr>
+<td><span class="pricing-tier tier-c">C</span></td>
+<td>Composed</td>
+<td><strong>¥30</strong></td>
+<td>7–13 atomic を rule_tree で合成 (1 recipe walk)</td>
+<td><code>recipe_corporate_setup_registration</code>, <code>recipe_tax_year_end_adjustment</code></td>
+</tr>
+<tr>
+<td><span class="pricing-tier tier-d">D</span></td>
+<td>Pack</td>
+<td><strong>¥100..¥1000</strong> (band)</td>
+<td>完成 pack (full deliverable)</td>
+<td>A1 月次決算 ¥1000 / A2 監査調書 ¥200 / A3 補助金 roadmap ¥500 / A4 就業規則 ¥300 / <a href="products/A5_kaisha_setsuritsu.html">A5 会社設立 ¥800</a></td>
+</tr>
+</tbody>
+</table>
+
+<h2>Tier A — Atomic (¥3 / call)</h2>
+<p>jpcite の baseline。1 atomic 呼出 = 1 billable unit = ¥3 (税込 ¥3.30)。匿名 IP には 3 req/日の Free quota が付き、JST 翌日 00:00 にリセットされます。</p>
+
+<h2>Tier B — Bundle (¥10 / call)</h2>
+<p>3–5 atomic 呼出を server-side で合成し、agent の往復回数を削減します。<code>feedback_composable_tools_pattern</code> 準拠。Stripe 換算 ¥3 × 4 units。</p>
+
+<h2>Tier C — Composed (¥30 / call)</h2>
+<p>7–13 atomic 呼出を rule_tree で合成。1 recipe walk = 1 composed call。<code>feedback_rule_tree_branching</code> 準拠。Stripe 換算 ¥3 × 10 units。</p>
+
+<h2>Tier D — Pack (¥100..¥1000 / call)</h2>
+<p>完成 pack (full deliverable)。複数 scaffold 文書 + filing windows + placeholders を 1 envelope で返却。価格は pack ごとに band 内で固定。</p>
+
+<table>
+<thead>
+<tr><th>Pack</th><th>価格</th><th>Stripe 換算 units</th><th>Segment</th></tr>
+</thead>
+<tbody>
+<tr><td>A1 税理士 月次決算</td><td>¥1,000</td><td>334 units</td><td>税理士</td></tr>
+<tr><td>A2 会計士 監査調書</td><td>¥200</td><td>67 units</td><td>会計士</td></tr>
+<tr><td>A3 補助金 12 ヶ月 roadmap</td><td>¥500</td><td>167 units</td><td>補助金 consultant</td></tr>
+<tr><td>A4 就業規則 + 36協定</td><td>¥300</td><td>100 units</td><td>社労士</td></tr>
+<tr><td><a href="products/A5_kaisha_setsuritsu.html">A5 会社設立一式</a></td><td>¥800</td><td>267 units</td><td>司法書士 (+ 税理士 + 社労士)</td></tr>
+</tbody>
+</table>
+
+<h2>Payment rails</h2>
+
+<ul>
+<li><strong>Stripe metered</strong> (default) — 月次自動課金、適格請求書発行事業者 T8010001213708 (Bookyou株式会社)。</li>
+<li><strong>x402 micropayment</strong> — HTTP 402 + USDC on Base / Polygon. agent 経由でカードレス。<code>price_yen</code> は tier から自動計算。</li>
+<li><strong>Credit Wallet</strong> — 前払い + auto-topup, 50/80/100% throttle alert.</li>
+</ul>
+
+<h2>整合性 (内部実装)</h2>
+
+<ul>
+<li>Canonical 実装: <code>src/jpintel_mcp/billing/pricing_v2.py</code></li>
+<li>Tier letter Enum: <code>PricingTier.A / B / C / D</code></li>
+<li>Stripe metering: <code>stripe_metering_quantity_for_tier(tier)</code> → ¥3 単価で units 換算</li>
+<li>x402 wire: <code>x402_price_yen_for_tier(tier)</code> → <code>X402Challenge.price_yen</code></li>
+<li>Legacy posture bridge: <code>tier_for_outcome_posture("accepted_artifact_*")</code> → Tier D</li>
+</ul>
+
+<div class="disclaimer">
+<strong>免責</strong> — jpcite の出力は corpus snapshot ベースの scaffold / reference であり、税理士法 §52 / 公認会計士法 §47条の2 / 弁護士法 §72 / 行政書士法 §1 / 司法書士法 §3 / 社労士法 の業務範囲を含みません。最終確定は士業 supervision の下で primary source を確認のうえ実施してください。
+</div>
+
+</body>
+</html>
