@@ -1,7 +1,7 @@
-"""GG2 — Tests for am_precomputed_answer 500 -> 5,000 expansion.
+"""GG2 — Tests for am_precomputed_answer 500 -> ~5,500 expansion.
 
 15+ tests covering:
-- Row counts (total ~5,000 +/- 100, per-cohort ~1,000 +/- 50).
+- Row counts (total 5,473 landed rows, per-cohort ~1,100).
 - Quality gate (pass rate >= 95%).
 - FAISS index dimensions + smoke recall.
 - Expanded yaml structural integrity.
@@ -41,7 +41,7 @@ def _require_db() -> sqlite3.Connection:
 
 
 # ---------------------------------------------------------------------------
-# Row count tests (5,000 +/- 100; per-cohort 1,000 +/- 50)
+# Row count tests (5,473 landed rows; per-cohort ~1,100)
 # ---------------------------------------------------------------------------
 
 
