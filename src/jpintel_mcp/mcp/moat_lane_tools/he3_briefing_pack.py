@@ -18,7 +18,7 @@ Hard constraints (CLAUDE.md)
 ----------------------------
 
 * NO LLM inference. Pure SQLite + filesystem + Python string composition.
-* 1 ¥3/billable unit per call.
+* 4 ¥3/billable units per call = ¥12, Pricing V3 Tier C heavy endpoint (2026-05-17).
 * Every response carries the canonical §52 / §47条の2 / §72 / §1 / §3 +
   社労士法 disclaimer envelope.
 * Read-only access to ``autonomath.db`` (URI ``mode=ro``).
@@ -643,7 +643,7 @@ def _agent_usage_recipe(target_segment: str, token_count_estimated: int) -> str:
         "再質問せず直接引用\n"
         "3. `next_step_recommendations` を agent の plan/act loop の初期 step として固定\n"
         "4. `disclaimer_envelope` を ユーザー応答 末尾に attach (士業独占範囲の自動回避)\n"
-        "5. 1 HE-3 call (¥3) で agent turn 数 を 3-5 → 1-2 に圧縮、"
+        "5. 1 HE-3 call (¥12, Tier C) で agent turn 数 を 3-5 → 1-2 に圧縮、"
         "   入出力 token は本 pack 約 "
         f"{token_count_estimated:,} tokens × 1 turn 注入のみ"
     )
@@ -787,9 +787,12 @@ def agent_briefing_pack(
         "structured_payload": structured_payload,
         "agent_usage_recipe": _agent_usage_recipe(target_segment, token_count_estimated),
         "billing": {
-            "billable_units": 1,
+            "billable_units": 4,
             "unit_price_jpy_taxed": 3.30,
             "unit_price_jpy": 3,
+            "tier": "C",
+            "pricing_version": "v3",
+            "total_jpy": 12,
             "model": "per_call",
         },
         "provenance": {
@@ -800,7 +803,7 @@ def agent_briefing_pack(
             "depth_level": depth,
             "output_format": output_format,
         },
-        "_billing_unit": 1,
+        "_billing_unit": 4,
         "_disclaimer": DISCLAIMER,
         "_provenance": {
             "source_module": _UPSTREAM_MODULE,

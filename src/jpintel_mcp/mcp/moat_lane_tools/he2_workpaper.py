@@ -15,7 +15,7 @@ Hard constraints
 * NO LLM inference — pure SQLite / dict composition.
 * §52 / §47条の2 / §72 / §1 / §3 disclaimer envelope on every response.
 * Auto-fill stays scaffold-only — the wrapper never claims a finished filing.
-* 1 ¥3 billable unit per call (host MCP server counts).
+* 4 ¥3 billable units per call = ¥12, Pricing V3 Tier C heavy endpoint (host MCP server counts).
 * Read-only SQLite connection (URI mode ``ro``) via the upstream lane DBs.
 
 Cost economics (vs. agent round-trip baseline)
@@ -23,9 +23,9 @@ Cost economics (vs. agent round-trip baseline)
 
 Agent baseline = 10-20 sequential MCP calls (template fetch → portfolio →
 reasoning chains × 5 → window lookup → alerts → placeholder resolution
-× 8 → manual merge). Each call carries the ¥3/req minimum plus the
+× 8 → manual merge). Each call carries the ¥12 Tier C heavy-endpoint price plus the
 agent's own LLM round-trip cost. HE-2 collapses the entire workflow into
-1 ¥3/req call, returning the merged draft plus an ``agent_next_actions``
+1 ¥12 Tier C heavy-endpoint call (Pricing V3, 2026-05-17), returning the merged draft plus an ``agent_next_actions``
 plan that the LLM can execute verbatim. Net savings: 90%+ on the API
 side, ~95% on the LLM side because no orchestration prose is round-tripped.
 
@@ -851,7 +851,13 @@ def _empty_envelope(
         "reasoning_chains": [],
         "amendment_alerts_relevant": [],
         "alternative_templates": [],
-        "billing": {"unit": 1, "yen": 3, "auto_fill_level": primary_input.get("auto_fill_level")},
+        "billing": {
+            "unit": 4,
+            "yen": 12,
+            "tier": "C",
+            "pricing_version": "v3",
+            "auto_fill_level": primary_input.get("auto_fill_level"),
+        },
         "results": [],
         "total": 0,
         "limit": 0,
@@ -863,7 +869,7 @@ def _empty_envelope(
             "wrap_kind": "moat_lane_he2_workpaper",
             "observed_at": today_iso_utc(),
         },
-        "_billing_unit": 1,
+        "_billing_unit": 4,
         "_disclaimer": DISCLAIMER,
         "_citation_envelope": {"law_articles": 0, "tsutatsu": 0, "judgment_examples": 0},
         "_provenance": {
@@ -950,7 +956,7 @@ async def prepare_implementation_workpaper(
     agent_next_actions / reasoning_chains / amendment_alerts_relevant /
     alternative_templates / billing / _disclaimer / _citation_envelope /
     _provenance). Always emits the §-aware disclaimer even on empty paths.
-    1 ¥3 billable unit per call.
+    4 ¥3 billable units per call (¥12, Tier C heavy_endpoint).
     """
     primary_input = {
         "artifact_type": artifact_type,
@@ -1121,7 +1127,13 @@ async def prepare_implementation_workpaper(
         "amendment_alerts_relevant": amendment_alerts,
         "alternative_templates": alt_templates,
         "portfolio_context": portfolio_payload,
-        "billing": {"unit": 1, "yen": 3, "auto_fill_level": auto_fill_level},
+        "billing": {
+            "unit": 4,
+            "yen": 12,
+            "tier": "C",
+            "pricing_version": "v3",
+            "auto_fill_level": auto_fill_level,
+        },
         "results": filled_sections,
         "total": len(filled_sections),
         "limit": len(filled_sections),
@@ -1136,7 +1148,7 @@ async def prepare_implementation_workpaper(
             "total_placeholders": total_placeholders,
             "resolved_placeholders": resolved_count,
         },
-        "_billing_unit": 1,
+        "_billing_unit": 4,
         "_disclaimer": DISCLAIMER,
         "_citation_envelope": citation_envelope,
         "_provenance": {

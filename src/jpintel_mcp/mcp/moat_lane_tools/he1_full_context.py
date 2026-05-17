@@ -35,7 +35,7 @@ Hard constraints
 * ``parallel asyncio.gather()`` is used to fan out the underlying
   calls; the synchronous tool functions are wrapped via
   ``asyncio.to_thread`` so they release the event loop on SQLite I/O.
-* Single ``_billing_unit = 1`` (¥3 / req). The agent saves N-1 calls
+* Heavy endpoint ``_billing_unit = 4`` (¥12 / req, Pricing V3 Tier C, 2026-05-17). The agent saves N-1 calls
   worth of round trips and the operator saves N-1 LLM compose roundtrips.
 * §52 / §47条の2 / §72 / §1 / §3 disclaimer envelope on every response.
 """
@@ -615,9 +615,15 @@ async def _agent_full_context_impl(
             "schema_version": _SCHEMA_VERSION,
             "lane_id": _LANE_ID,
             "error": {"code": "invalid_input", "message": "query must be a non-empty string."},
-            "_billing_unit": 1,
+            "_billing_unit": 4,
             "_disclaimer": DISCLAIMER,
-            "billing": {"unit": 1, "yen": 3, "depth_level": depth_level},
+            "billing": {
+                "unit": 4,
+                "yen": 12,
+                "tier": "C",
+                "pricing_version": "v3",
+                "depth_level": depth_level,
+            },
         }
     query = query.strip()
     profile = _depth_profile(depth_level)
@@ -694,9 +700,15 @@ async def _agent_full_context_impl(
         "related_recipes": recipes,
         "placeholder_mappings_preview": placeholder_preview,
         "next_call_hints": hints,
-        "billing": {"unit": 1, "yen": 3, "depth_level": depth_level},
+        "billing": {
+            "unit": 4,
+            "yen": 12,
+            "tier": "C",
+            "pricing_version": "v3",
+            "depth_level": depth_level,
+        },
         "_disclaimer": DISCLAIMER,
-        "_billing_unit": 1,
+        "_billing_unit": 4,
         "_citation_envelope": _build_citation_envelope(core_results),
         "_provenance": {
             "source_module": "jpintel_mcp.mcp.moat_lane_tools.he1_full_context",
