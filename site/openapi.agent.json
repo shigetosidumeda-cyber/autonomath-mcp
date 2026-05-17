@@ -912,17 +912,7 @@
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 1,
-        "x-jpcite-route-purpose": "compact_first_pass",
-        "x-cost-saving": {
-          "tier": "C",
-          "jpcite_yen": 12,
-          "opus_4_7_equivalent_turns": 7,
-          "opus_yen_estimate": 347,
-          "saving_pct": 96.5,
-          "saving_yen": 335,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        "x-jpcite-route-purpose": "compact_first_pass"
       }
     },
     "/v1/evidence/packets/query": {
@@ -1259,17 +1249,7 @@
           "non_public_user_context",
           "very_recent_changes_outside_corpus"
         ],
-        "x-jpcite-agent-output-guidance": "Use records and decision_insights as the evidence basis for the answer. Show source_url/source_fetched_at when making factual claims, carry known_gaps into caveats or follow-up questions, and do not describe the packet as legal, tax, audit, credit, or application judgment.",
-        "x-cost-saving": {
-          "tier": "C",
-          "jpcite_yen": 12,
-          "opus_4_7_equivalent_turns": 7,
-          "opus_yen_estimate": 347,
-          "saving_pct": 96.5,
-          "saving_yen": 335,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        "x-jpcite-agent-output-guidance": "Use records and decision_insights as the evidence basis for the answer. Show source_url/source_fetched_at when making factual claims, carry known_gaps into caveats or follow-up questions, and do not describe the packet as legal, tax, audit, credit, or application judgment."
       }
     },
     "/v1/programs/search": {
@@ -1772,16 +1752,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -1988,17 +1958,7 @@
           "known_or_visible_caveats",
           "non_public_context",
           "very_recent_program_changes_outside_corpus"
-        ],
-        "x-cost-saving": {
-          "tier": "B",
-          "jpcite_yen": 6,
-          "opus_4_7_equivalent_turns": 5,
-          "opus_yen_estimate": 170,
-          "saving_pct": 96.5,
-          "saving_yen": 164,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        ]
       }
     },
     "/v1/programs/{unified_id}": {
@@ -2291,16 +2251,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -2434,16 +2384,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -2537,16 +2477,6 @@
           "billing_units": 0,
           "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
           "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -2596,16 +2526,6 @@
           "billing_units": 0,
           "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
           "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -2655,16 +2575,6 @@
           "billing_units": 0,
           "plain_ja": "このエンドポイントは料金確認・透明性確認用で、通常の課金対象外です。",
           "plain_en": "This endpoint is for cost preview or transparency checks and is not normally metered."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -2808,17 +2718,7 @@
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
         },
         "x-jpcite-agent-priority": 3,
-        "x-jpcite-route-purpose": "optional_citation_check",
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        "x-jpcite-route-purpose": "optional_citation_check"
       }
     },
     "/v1/cost/preview": {
@@ -2919,17 +2819,7 @@
           "external_llm_cost_reduction_guaranteed",
           "tax_or_legal_disclaimer_not_required"
         ],
-        "x-jpcite-agent-output-guidance": "Explain previewCost as a free preflight estimate for jpcite units and yen, not as execution of the planned calls. If the response includes a disclaimer, carry it into downstream cost or tax-sensitive summaries.",
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        "x-jpcite-agent-output-guidance": "Explain previewCost as a free preflight estimate for jpcite units and yen, not as execution of the planned calls. If the response includes a disclaimer, carry it into downstream cost or tax-sensitive summaries."
       }
     },
     "/v1/usage": {
@@ -3050,17 +2940,7 @@
           "paid_volume_is_unlimited_without_customer_caps",
           "quota_reset_time_is_local_without_checking_reset_timezone"
         ],
-        "x-jpcite-agent-output-guidance": "Use this as a free quota/status preflight. Preserve reset_at and reset_timezone exactly, and explain remaining calls before running a larger jpcite plan.",
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        "x-jpcite-agent-output-guidance": "Use this as a free quota/status preflight. Preserve reset_at and reset_timezone exactly, and explain remaining calls before running a larger jpcite plan."
       }
     },
     "/v1/laws/search": {
@@ -3468,16 +3348,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -3719,16 +3589,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -3862,16 +3722,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -4190,16 +4040,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -4632,16 +4472,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -4904,16 +4734,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -5052,16 +4872,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -5187,16 +4997,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -5491,16 +5291,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -5813,16 +5603,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -6051,16 +5831,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -6237,17 +6007,7 @@
           "known_gaps",
           "non_public_context",
           "very_recent_news_outside_corpus"
-        ],
-        "x-cost-saving": {
-          "tier": "C",
-          "jpcite_yen": 12,
-          "opus_4_7_equivalent_turns": 7,
-          "opus_yen_estimate": 347,
-          "saving_pct": 96.5,
-          "saving_yen": 335,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        ]
       }
     },
     "/v1/artifacts/company_folder_brief": {
@@ -6416,17 +6176,7 @@
           "known_gaps",
           "non_public_context",
           "very_recent_news_outside_corpus"
-        ],
-        "x-cost-saving": {
-          "tier": "C",
-          "jpcite_yen": 12,
-          "opus_4_7_equivalent_turns": 7,
-          "opus_yen_estimate": 347,
-          "saving_pct": 96.5,
-          "saving_yen": 335,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        ]
       }
     },
     "/v1/artifacts/company_public_audit_pack": {
@@ -6621,17 +6371,7 @@
           "non_public_context",
           "very_recent_news_outside_corpus"
         ],
-        "x-jpcite-agent-output-guidance": "Use the pack as a public-source workpaper input: preserve source receipts, mismatch flags, risk/gap register, review controls, and human_review_required. Phrase conclusions as public-record evidence and open review items, not audit assurance.",
-        "x-cost-saving": {
-          "tier": "C",
-          "jpcite_yen": 12,
-          "opus_4_7_equivalent_turns": 7,
-          "opus_yen_estimate": 347,
-          "saving_pct": 96.5,
-          "saving_yen": 335,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        "x-jpcite-agent-output-guidance": "Use the pack as a public-source workpaper input: preserve source receipts, mismatch flags, risk/gap register, review controls, and human_review_required. Phrase conclusions as public-record evidence and open review items, not audit assurance."
       }
     },
     "/v1/court-decisions/{unified_id}": {
@@ -6770,16 +6510,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -6980,16 +6710,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -7129,16 +6849,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -7259,16 +6969,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -7670,16 +7370,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -7922,16 +7612,6 @@
             "X-Cost-Cap-JPY": "Use on billable POST fanout or batch calls to enforce caller budget."
           },
           "paid_continuation": "After anonymous quota is exhausted or repeated use is expected, retry the same endpoint with X-API-Key, and keep X-Client-Tag stable for the customer/project."
-        },
-        "x-cost-saving": {
-          "tier": "A",
-          "jpcite_yen": 3,
-          "opus_4_7_equivalent_turns": 3,
-          "opus_yen_estimate": 54,
-          "saving_pct": 94.4,
-          "saving_yen": 51,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
         }
       }
     },
@@ -8407,17 +8087,7 @@
           "non_public_user_context",
           "very_recent_changes_outside_corpus"
         ],
-        "x-jpcite-agent-output-guidance": "Use records and decision_insights as the evidence basis for the answer. Show source_url/source_fetched_at when making factual claims, carry known_gaps into caveats or follow-up questions, and do not describe the packet as legal, tax, audit, credit, or application judgment.",
-        "x-cost-saving": {
-          "tier": "C",
-          "jpcite_yen": 12,
-          "opus_4_7_equivalent_turns": 7,
-          "opus_yen_estimate": 347,
-          "saving_pct": 96.5,
-          "saving_yen": 335,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        "x-jpcite-agent-output-guidance": "Use records and decision_insights as the evidence basis for the answer. Show source_url/source_fetched_at when making factual claims, carry known_gaps into caveats or follow-up questions, and do not describe the packet as legal, tax, audit, credit, or application judgment."
       }
     },
     "/v1/advisors/match": {
@@ -8668,17 +8338,7 @@
           "non_public_client_context",
           "very_recent_status_changes_outside_corpus"
         ],
-        "x-jpcite-agent-output-guidance": "Present advisor matches as candidate reviewers for unresolved evidence gaps. Carry the source-linked evidence, caveats, and open questions into the handoff summary; disclose the ranking method; do not imply jpcite has completed professional review or made a referral.",
-        "x-cost-saving": {
-          "tier": "C",
-          "jpcite_yen": 12,
-          "opus_4_7_equivalent_turns": 7,
-          "opus_yen_estimate": 347,
-          "saving_pct": 96.5,
-          "saving_yen": 335,
-          "baseline": "Claude Opus 4.7 multi-turn evidence chain",
-          "verifiable_doc": "docs/_internal/JPCITE_COST_ROI_SOT_2026_05_17.md"
-        }
+        "x-jpcite-agent-output-guidance": "Present advisor matches as candidate reviewers for unresolved evidence gaps. Carry the source-linked evidence, caveats, and open questions into the handoff summary; disclose the ranking method; do not imply jpcite has completed professional review or made a referral."
       }
     }
   },
