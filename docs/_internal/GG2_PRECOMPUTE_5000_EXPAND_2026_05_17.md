@@ -53,7 +53,7 @@ data/faiss/am_precomputed_v5_2026_05_17.faiss + .meta.json
 | 行政書士 (gyousei) | 100 | 997 | 1,097 | 1,000 ± 50 |
 | 司法書士 (shihoshoshi) | 100 | 976 | 1,076 | 1,000 ± 50 |
 | 中小経営者 (chusho_keieisha) | 100 | 1,000 | 1,100 | 1,000 ± 50 |
-| **Total** | **500** | **4,973** | **5,473** | **5,000 ± 100** |
+| **Total** | **500** | **4,973** | **5,473** | **5,473 landed** |
 
 Within tolerance: tests `test_total_row_count_within_tolerance` +
 `test_cohort_count_*` PASS.
@@ -72,6 +72,8 @@ Per-row deterministic checks:
 - `freshness_state` in {fresh, stale, unknown}
 
 Result: `data/precompute_5000_quality_2026_05_17.json`.
+This is a generated local artifact and is intentionally ignored by git; rebuild
+it with the GG2 scripts before artifact-level verification in a clean checkout.
 
 ## 5. FAISS v5 lookup index
 
@@ -80,6 +82,9 @@ Result: `data/precompute_5000_quality_2026_05_17.json`.
 - IVF Flat, nlist auto-clipped to row/10, nprobe=8 (PERF-40 floor)
 - ntotal: 5,473
 - Smoke recall@1 (self-query): 100% (1/1 in test sample)
+
+The FAISS binary and metadata live under `data/faiss/` and are intentionally
+ignored because they are reproducible generated artifacts.
 
 ## 6. MCP tool retrofit
 
