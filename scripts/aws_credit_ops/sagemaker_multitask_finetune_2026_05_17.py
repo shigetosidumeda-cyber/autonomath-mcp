@@ -26,6 +26,7 @@ import json
 import os
 import sys
 import tarfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
 
@@ -39,6 +40,12 @@ TRAINING_IMAGE: Final[str] = (
     "763104351884.dkr.ecr.ap-northeast-1.amazonaws.com/"
     "huggingface-pytorch-training:2.1.0-transformers4.36.0-gpu-py310-cu121-ubuntu20.04"
 )
+
+
+@dataclass(frozen=True)
+class S3Uri:
+    bucket: str
+    key_prefix: str
 
 
 def _boto3(service: str, region: str, profile: str) -> Any:
@@ -77,6 +84,37 @@ def _build_source_tar(entry_file: Path, requirements: Path | None) -> bytes:
 def upload_source_tar(s3: Any, *, bucket: str, key: str, body: bytes) -> str:
     s3.put_object(Bucket=bucket, Key=key, Body=body, ContentType="application/x-tar")
     return f"s3://{bucket}/{key}"
+
+
+def parse_s3_uri(uri: str) -> S3Uri:
+    if not uri.startswith("s3://"):
+        raise ValueError(f"expected s3:// URI, got: {uri}")
+    bucket_and_key = uri.removeprefix("s3://")
+    bucket, sep, key_prefix = bucket_and_key.partition("/")
+    if not bucket or not sep or not key_prefix:
+        raise ValueError(f"expected s3://bucket/key URI, got: {uri}")
+    return S3Uri(bucket=bucket, key_prefix=key_prefix)
+
+
+def s3_prefix_has_objects(s3: Any, uri: str) -> bool:
+    parsed = parse_s3_uri(uri)
+    resp = s3.list_objects_v2(Bucket=parsed.bucket, Prefix=parsed.key_prefix, MaxKeys=1)
+    return bool(resp.get("Contents"))
+
+
+def preflight_training_inputs_exist(
+    s3: Any,
+    *,
+    train_uri: str,
+    val_uri: str,
+) -> None:
+    missing = [
+        name
+        for name, uri in (("train", train_uri), ("val", val_uri))
+        if not s3_prefix_has_objects(s3, uri)
+    ]
+    if missing:
+        raise RuntimeError(f"missing SageMaker input channel(s): {', '.join(missing)}")
 
 
 def submit(
@@ -223,6 +261,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[DRY_RUN] would upload source tar ({len(tar_body)} bytes) to {source_uri}")
     else:
         s3 = _boto3("s3", args.region, args.profile)
+        try:
+            preflight_training_inputs_exist(s3, train_uri=args.train_uri, val_uri=args.val_uri)
+        except (RuntimeError, ValueError) as exc:
+            print(f"[FAIL] {exc}", file=sys.stderr)
+            return 2
         source_uri = upload_source_tar(s3, bucket=args.bucket, key=source_key, body=tar_body)
         print(f"[OK] uploaded source tar to {source_uri}")
 
