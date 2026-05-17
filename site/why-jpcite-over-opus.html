@@ -74,7 +74,7 @@
 <!-- Section b: 数理 transparency -->
 <section class="card" id="math-transparency">
   <h2>b) 数理 transparency</h2>
-  <p>計算は <a href="/docs/canonical/cost_saving_examples">canonical cost saving examples</a> + <a href="/tools/cost_saving_calculator.html">v2 calculator</a> と全く同じ式。 SOT 数字は <code>tests/test_gg10_justifiability_landing.py</code> で 3-way (HTML / metadata / Python) verify されます。</p>
+  <p>計算は <a href="/tools/cost_saving_examples">canonical cost saving examples</a> + <a href="/tools/cost_saving_calculator.html">v2 calculator</a> と全く同じ式。 SOT 数字は <code>tests/test_gg10_justifiability_landing.py</code> で 3-way (HTML / metadata / Python) verify されます。</p>
   <table>
     <thead>
       <tr><th>変数</th><th>値</th><th>出典</th></tr>
@@ -182,7 +182,7 @@
 <section class="card" id="verifiable">
   <h2>g) Verifiable claim — repo 経由で再現する</h2>
   <p>「jpcite が同じ深さで安い」という claim は <strong>再現可能</strong>。下記コマンドで repo clone + JCRB-v1 baseline + Opus side-by-side を 1 コマンドで走らせます。</p>
-  <pre>git clone https://github.com/bookyou-jpcite/jpcite
+  <pre>git clone https://github.com/shigetosidumeda-cyber/autonomath-mcp.git jpcite
 cd jpcite
 python -m venv .venv &amp;&amp; source .venv/bin/activate
 pip install -r requirements.txt
@@ -194,8 +194,8 @@ python scripts/bench/run_jpcite_baseline_2026_05_17.py \
   --queries 50 \
   --output benchmarks/jcrb_v1_opus_4_7.json
 
-# Side-by-side delta (rubric 1-8 + 一次資料引用率)
-python scripts/bench/jcrb_delta_report.py benchmarks/jcrb_v1_opus_4_7.json</pre>
+# Side-by-side delta (rubric 1-8 + 一次資料引用率) は同 runner の出力 envelope
+# (data/p5_benchmark/jpcite_outputs/_manifest.json) を直接 diff する。</pre>
   <p class="muted">期待 output: <code>jpcite vs raw Opus 4.7 rubric mean delta +3.44 / +2.07x</code>。 公開された全 benchmark artifact: <a href="/benchmark/">/benchmark/</a></p>
 </section>
 

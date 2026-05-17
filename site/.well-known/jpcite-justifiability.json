@@ -70,7 +70,7 @@
     "agents_json": "https://jpcite.com/.well-known/agents.json"
   },
   "verifiable_claim": {
-    "method": "repo clone + scripts/bench/run_jpcite_baseline_2026_05_17.py + scripts/bench/jcrb_delta_report.py",
+    "method": "repo clone + scripts/bench/run_jpcite_baseline_2026_05_17.py (envelope manifest in data/p5_benchmark/jpcite_outputs/_manifest.json for side-by-side delta)",
     "expected_output": "jpcite vs raw Opus 4.7 rubric mean delta +3.44 / +2.07x",
     "license_to_redistribute": "CC-BY 4.0 (benchmark dataset only)",
     "disclaimer": "API fee delta is for stated baseline (USD/JPY=150, Opus 4.7 $5/$25 per MTok, Anthropic web search $10/1k). Not a guarantee of provider billing reduction. Excludes output tokens, reasoning tokens surcharge, cache, FX drift."
