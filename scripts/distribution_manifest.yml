@@ -268,3 +268,16 @@ forbidden_token_exclude_paths:
   # the canonical phrase so downstream agents see consistent pricing.
   - server.json
   - site/assets/webmcp_init.js
+  # MCP split manifests (full / core / composition) are direct siblings
+  # of server.json — same MCP registry SOT, just sliced by audience
+  # (full = exhaustive, core = lean, composition = paid Stage-3 tools).
+  # Each per-tool `description` carries the canonical "Cost-saving
+  # claim: ... ¥3/req (tier A)" trailer added in Wave 51 + V3 pricing
+  # rollout (2026-05-17). The substring exclude for `server.json`
+  # already covers `mcp-server.json` / `site/mcp-server.json`; the
+  # split derivatives need their own entries because their stems
+  # ("mcp-server.full.json" etc.) do not contain the bare "server.json"
+  # substring.
+  - mcp-server.full.json
+  - mcp-server.core.json
+  - mcp-server.composition.json
