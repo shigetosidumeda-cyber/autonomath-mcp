@@ -1,6 +1,7 @@
 {
   "manifest_id": "etl_g1_nta_manifest_2026_05_17",
   "created_at_utc": "2026-05-17T00:00:00Z",
+  "url_refresh_utc": "2026-05-17T08:45:00Z",
   "task_id": "AA1-G1",
   "purpose": "G1 税理士 cohort top-10 gap closure - NTA 質疑応答 + 裁決 + 地方税通達 ETL crawl manifest.",
   "operator": {
@@ -22,16 +23,131 @@
     "am_tax_amendment_history": {"rows": 0, "estimated_full": 720, "gap_pct": 100.0}
   },
   "gap_top_10": {
-    "g1_shitsugi_hojin": {"endpoint": "https://www.nta.go.jp/law/shitsugi/hojin/", "category": "hojin", "expected": 300, "table": "nta_shitsugi"},
-    "g2_shitsugi_shohi": {"endpoint": "https://www.nta.go.jp/law/shitsugi/shohi/", "category": "shohi", "expected": 350, "table": "nta_shitsugi"},
-    "g3_shitsugi_sozoku": {"endpoint": "https://www.nta.go.jp/law/shitsugi/sozoku/", "category": "sozoku", "expected": 250, "table": "nta_shitsugi"},
-    "g4_shitsugi_hyoka": {"endpoint": "https://www.nta.go.jp/law/shitsugi/hyoka/", "category": "hyoka", "expected": 350, "table": "nta_shitsugi"},
-    "g5_shitsugi_inshi_hotei_joto": {"endpoint": "https://www.nta.go.jp/law/shitsugi/{inshi,hotei,joto}/", "category": "inshi+hotei+joto", "expected": 900, "table": "nta_shitsugi"},
-    "g6_saiketsu_vol_1_to_120": {"endpoint": "https://www.kfs.go.jp/service/JP/idx/{vol_no}.html", "vol_range": "1-120", "expected": 3163, "table": "nta_saiketsu"},
-    "g7_saiketsu_incremental_cron": {"endpoint": "https://www.kfs.go.jp/service/JP/idx/", "cadence": "weekly Monday 03:00 JST", "table": "nta_saiketsu"},
-    "g8_tax_amendment_history": {"endpoint": "https://www.nta.go.jp/law/joho-zeikaishaku/", "expected": 720, "table": "am_tax_amendment_history"},
-    "g9_bunsho_backfill": {"endpoint": "https://www.nta.go.jp/law/bunshokaito/", "expected": 322, "table": "nta_bunsho_kaitou"},
-    "g10_chihouzei_47pref": {"endpoint": "https://www.pref.{kenmei}.lg.jp/zeimu/", "expected": 4800, "table": "am_chihouzei_tsutatsu"}
+    "g1_shitsugi_hojin": {
+      "endpoint": "https://www.nta.go.jp/law/shitsugi/hojin/01.htm",
+      "previous_url": "https://www.nta.go.jp/law/shitsugi/hojin/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "category": "hojin",
+      "expected": 300,
+      "table": "nta_shitsugi"
+    },
+    "g2_shitsugi_shohi": {
+      "endpoint": "https://www.nta.go.jp/law/shitsugi/shohi/01.htm",
+      "previous_url": "https://www.nta.go.jp/law/shitsugi/shohi/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "category": "shohi",
+      "expected": 350,
+      "table": "nta_shitsugi"
+    },
+    "g3_shitsugi_sozoku": {
+      "endpoint": "https://www.nta.go.jp/law/shitsugi/sozoku/01.htm",
+      "previous_url": "https://www.nta.go.jp/law/shitsugi/sozoku/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "category": "sozoku",
+      "expected": 250,
+      "table": "nta_shitsugi"
+    },
+    "g4_shitsugi_hyoka": {
+      "endpoint": "https://www.nta.go.jp/law/shitsugi/hyoka/01.htm",
+      "previous_url": "https://www.nta.go.jp/law/shitsugi/hyoka/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "category": "hyoka",
+      "expected": 350,
+      "table": "nta_shitsugi"
+    },
+    "g5_shitsugi_inshi_hotei_joto": {
+      "endpoint": "https://www.nta.go.jp/law/shitsugi/{inshi|hotei|joto}/01.htm",
+      "previous_url": "https://www.nta.go.jp/law/shitsugi/{inshi,hotei,joto}/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "probed_paths": [
+        "https://www.nta.go.jp/law/shitsugi/inshi/01.htm",
+        "https://www.nta.go.jp/law/shitsugi/hotei/01.htm",
+        "https://www.nta.go.jp/law/shitsugi/joto/01.htm"
+      ],
+      "category": "inshi+hotei+joto",
+      "expected": 900,
+      "table": "nta_shitsugi"
+    },
+    "g6_saiketsu_vol_43_to_140": {
+      "endpoint": "https://www.kfs.go.jp/service/JP/idx/{vol_no}.html",
+      "previous_url": "https://www.kfs.go.jp/service/JP/idx/{vol_no}.html",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "vol_range": "43-140",
+      "vol_range_note": "KFS retired vols 1-42 (off public site); current online range probed = 43..140. Old manifest claimed 1-120 but 1-42 return 404.",
+      "expected": 3163,
+      "table": "nta_saiketsu"
+    },
+    "g7_saiketsu_incremental_cron": {
+      "endpoint": "https://www.kfs.go.jp/service/JP/index.html",
+      "previous_url": "https://www.kfs.go.jp/service/JP/idx/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "probe_note": "Listing index page; idx/ directory itself returns 403 (Apache directory index disabled). Crawler must parse hyperlinks from JP/index.html.",
+      "cadence": "weekly Monday 03:00 JST",
+      "table": "nta_saiketsu"
+    },
+    "g8_tax_amendment_history": {
+      "endpoint": "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/sonota.htm",
+      "previous_url": "https://www.nta.go.jp/law/joho-zeikaishaku/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "sub_indices": [
+        "https://www.nta.go.jp/law/joho-zeikaishaku/hojin/houzin.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/shotoku/shinkoku/shinkoku.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/shohi/syouhi.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/sozoku/souzoku.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/hyoka/hyouka.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/inshi/inshi.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/shotoku/joto-sanrin/sanrin.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/shotoku/gensen/gensen.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/jidosha/jidosha.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/kihatsuyu/kihatsuyu.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/tabacco/tabacco.htm",
+        "https://www.nta.go.jp/law/joho-zeikaishaku/sonota/jirei/index.htm"
+      ],
+      "expected": 720,
+      "table": "am_tax_amendment_history"
+    },
+    "g9_bunsho_backfill": {
+      "endpoint": "https://www.nta.go.jp/law/bunshokaito/01.htm",
+      "previous_url": "https://www.nta.go.jp/law/bunshokaito/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "sub_categories": {
+        "shotoku": "https://www.nta.go.jp/law/bunshokaito/shotoku/02.htm",
+        "gensen": "https://www.nta.go.jp/law/bunshokaito/gensen/03.htm",
+        "joto-sanrin": "https://www.nta.go.jp/law/bunshokaito/joto-sanrin/04.htm",
+        "sozoku": "https://www.nta.go.jp/law/bunshokaito/sozoku/05.htm",
+        "zoyo": "https://www.nta.go.jp/law/bunshokaito/zoyo/06.htm",
+        "hyoka": "https://www.nta.go.jp/law/bunshokaito/hyoka/07.htm",
+        "hojin": "https://www.nta.go.jp/law/bunshokaito/hojin/08.htm",
+        "shohi": "https://www.nta.go.jp/law/bunshokaito/shohi/09.htm",
+        "shozei": "https://www.nta.go.jp/law/bunshokaito/shozei/10.htm",
+        "sonota": "https://www.nta.go.jp/law/bunshokaito/sonota/01.htm"
+      },
+      "expected": 322,
+      "table": "nta_bunsho_kaitou"
+    },
+    "g10_chihouzei_47pref": {
+      "endpoint": "https://www.pref.{kenmei}.lg.jp/",
+      "previous_url": "https://www.pref.{kenmei}.lg.jp/zeimu/",
+      "probed_at": "2026-05-17T08:45:00Z",
+      "http_status": 200,
+      "probe_note": "Mixed pattern: many use {pref}.lg.jp but some omit .lg. (e.g. aichi.jp, kanagawa.jp). Crawler should attempt both forms. Tokyo uses metro.tokyo.lg.jp (tax: tax.metro.tokyo.lg.jp).",
+      "pref_url_overrides": {
+        "tokyo": "https://www.tax.metro.tokyo.lg.jp/",
+        "aichi": "https://www.pref.aichi.jp/",
+        "kanagawa": "https://www.pref.kanagawa.jp/"
+      },
+      "expected": 4800,
+      "table": "am_chihouzei_tsutatsu"
+    }
   },
   "estimated_volumes": {
     "shitsugi_total": 2150,
@@ -74,7 +190,9 @@
     "nta.go.jp",
     "kfs.go.jp",
     "pref.*.lg.jp",
+    "pref.*.jp",
     "metro.tokyo.lg.jp",
+    "tax.metro.tokyo.lg.jp",
     "city.*.lg.jp",
     "soumu.go.jp"
   ],
@@ -95,6 +213,7 @@
   "cron_workflow": ".github/workflows/nta-saiketsu-weekly.yml",
   "test_file": "tests/test_aa1_g1_nta.py",
   "doc": "docs/_internal/AA1_G1_NTA_ETL_2026_05_17.md",
+  "url_repair_doc": "docs/_internal/AA1_AA2_URL_REPAIR_WALK_2026_05_17.md",
   "constraints": {
     "no_llm_api": true,
     "mypy_strict": "0 errors required",

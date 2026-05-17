@@ -3,7 +3,7 @@
 Drives the 10-gap closure crawl for the 税理士 cohort top-10 gap:
 
     * G1-G5  NTA 質疑応答 (shitsugi) 7 category : 0/~2,150
-    * G6     NTA 裁決 vol 1-120 (saiketsu)      : 137/~3,300 (96% gap)
+    * G6     NTA 裁決 vol 43-140 (saiketsu)     : 137/~3,300 (96% gap)
     * G7     NTA 裁決 incremental cadence       : weekly cron handoff
     * G8     am_tax_amendment_history            : 0/~720
     * G9     nta_bunsho_kaitou backfill          : 278/~600
@@ -15,7 +15,7 @@ Two staging targets:
       ``scripts/ingest/ingest_nta_corpus.py`` for shitsugi / bunsho /
       saiketsu (already battle-tested at 137 saiketsu + 286 shitsugi +
       278 bunsho live). This script orchestrates *new* prefix coverage
-      (vol 1-120 + 7 category enum + 47 pref) by sub-process invocation.
+      (vol 43-140 + 7 category enum + 47 pref) by operator-run invocation.
 
     * Local S3 staging mirror (``s3://jpcite-credit-993693061769-202605-derived/nta_corpus_raw/``)
       under operator AWS profile. Mirror is dry-run by default (the
@@ -37,7 +37,7 @@ Usage
 
     .venv/bin/python scripts/etl/crawl_nta_corpus_2026_05_17.py \\
         --manifest data/etl_g1_nta_manifest_2026_05_17.json \\
-        --gap g1_shitsugi_hojin,g6_saiketsu_vol_1_to_120 \\
+        --gap g1_shitsugi_hojin,g6_saiketsu_vol_43_to_140 \\
         --max-minutes 60 \\
         --dry-run
 
@@ -75,14 +75,20 @@ DEFAULT_USER_AGENT: Final = (
 )
 
 # Allowlist regex - reject anything not on a primary government host.
+# URL-REPAIR 2026-05-17: extended pref pattern to match BOTH `pref.{romaji}.lg.jp`
+# (the canonical lg.jp form, e.g. hokkaido / osaka / okinawa) AND the legacy
+# `pref.{romaji}.jp` form still in use by aichi / kanagawa. Also added
+# `tax.metro.tokyo.lg.jp` (current Tokyo metropolitan tax bureau).
 PRIMARY_HOST_REGEX: Final = re.compile(
     r"^https?://(?:[a-z0-9-]+\.)*"
     r"(?:nta\.go\.jp|kfs\.go\.jp|"
+    r"pref\.[a-z-]+\.lg\.jp|"
     r"pref\.[a-z-]+\.jp|"
     r"city\.[a-z-]+\.[a-z-]+\.jp|"
     r"town\.[a-z-]+\.[a-z-]+\.jp|"
     r"vill\.[a-z-]+\.[a-z-]+\.jp|"
     r"metro\.tokyo\.lg\.jp|"
+    r"tax\.metro\.tokyo\.lg\.jp|"
     r"soumu\.go\.jp|mof\.go\.jp)(?:/|$|\?|#)"
 )
 
@@ -346,14 +352,20 @@ def _crawl_chihouzei_pref(
         ("46", "kagoshima", "鹿児島県"),
         ("47", "okinawa", "沖縄県"),
     ]
+    # URL-REPAIR 2026-05-17: per-pref overrides for cases where the canonical
+    # pref.{romaji}.lg.jp form 404s or the prefecture uses an alternate tax
+    # bureau hostname. Probed live 2026-05-17.
+    pref_url_overrides: dict[str, str] = {
+        "tokyo": "https://www.tax.metro.tokyo.lg.jp/",
+        "aichi": "https://www.pref.aichi.jp/",
+        "kanagawa": "https://www.pref.kanagawa.jp/",
+    }
     deadline = time.monotonic() + max_minutes * 60.0
     for code, romaji, name_jp in pref_codes:
         if time.monotonic() > deadline:
             logger.info("wall-clock cap reached at pref %s (%s)", code, name_jp)
             break
-        url_pattern = f"https://www.pref.{romaji}.lg.jp/zeimu/"
-        if romaji == "tokyo":
-            url_pattern = "https://www.metro.tokyo.lg.jp/tosei/hodohappyo/index.html"
+        url_pattern = pref_url_overrides.get(romaji, f"https://www.pref.{romaji}.lg.jp/")
         if not _is_primary_host(url_pattern):
             stats.aggregator_rejected += 1
             continue
@@ -399,7 +411,7 @@ def _print_runbook(plans: list[GapPlan], *, manifest_path: Path) -> None:
         elif plan.gap_id.startswith("g6_") or plan.gap_id.startswith("g7_"):
             print(
                 "  .venv/bin/python scripts/etl/ingest_nta_kfs_saiketsu.py "
-                "--vol-from 1 --vol-to 120 --max-minutes 360"
+                "--vol-from 43 --vol-to 140 --max-minutes 360"
             )
         elif plan.gap_id.startswith("g8_"):
             print(
@@ -464,7 +476,7 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--commit",
         action="store_false",
         dest="dry_run",
-        help="Lift --dry-run; actually execute the crawl + insert.",
+        help="Lift --dry-run; emit operator-run ingest plan for execution.",
     )
     parser.add_argument(
         "--commit-s3",
