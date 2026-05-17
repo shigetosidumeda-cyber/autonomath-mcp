@@ -40,6 +40,12 @@ from typing import Any, cast
 
 logger = logging.getLogger("multitask_train")
 
+# CUDA is initialized before the DataLoaders are constructed in this SageMaker
+# entrypoint. Keep collation in-process and CPU-only; device transfer happens in
+# the train/validation loops below.
+_DATALOADER_NUM_WORKERS = 0
+_DATALOADER_PIN_MEMORY = False
+
 
 def _setup_logging() -> None:
     logging.basicConfig(
@@ -210,16 +216,16 @@ def main(argv: list[str] | None = None) -> int:
         batch_size=args.batch_size,
         shuffle=True,
         collate_fn=collate,
-        num_workers=0,
-        pin_memory=False,
+        num_workers=_DATALOADER_NUM_WORKERS,
+        pin_memory=_DATALOADER_PIN_MEMORY,
     )
     val_loader = DataLoader(
         val_ds,
         batch_size=args.batch_size,
         shuffle=False,
         collate_fn=collate,
-        num_workers=0,
-        pin_memory=False,
+        num_workers=_DATALOADER_NUM_WORKERS,
+        pin_memory=_DATALOADER_PIN_MEMORY,
     )
 
     params = (
