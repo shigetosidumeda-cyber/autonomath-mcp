@@ -32,7 +32,7 @@ P0_K = p0 or facade or outcome_routing or csv_intake or release_capsule or agent
 
 .DEFAULT_GOAL := help
 
-.PHONY: help test test-p0 lint format typecheck typecheck-fast mypy-fast mypy-file mypy-restart typecheck-fast-stop pre-commit-install pre-commit-run safe-commit site api mcp bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict ci-budget-check
+.PHONY: help test test-p0 lint format typecheck typecheck-fast mypy-fast mypy-file mypy-restart typecheck-fast-stop pre-commit-install pre-commit-run safe-commit site api mcp mcp-static mcp-runtime mcp-public-discovery public-discovery bootstrap gate validate sync-manifest-sha schema-docs e2e emergency-stop teardown docs docs-fast docs-strict ci-budget-check
 
 help:
 	@echo "jpcite Makefile targets:"
@@ -51,7 +51,10 @@ help:
 	@echo "  make safe-commit MSG='...'  Defensive git commit (detects silent pre-commit stash abort)"
 	@echo "  make site         Regenerate sitemap + llms metadata"
 	@echo "  make api          Re-export OpenAPI v1 spec"
-	@echo "  make mcp          Run server.json drift check"
+	@echo "  make mcp          Alias for mcp-static (static manifest drift, no boot)"
+	@echo "  make mcp-static   Static drift check across pyproject/server.json/dxt/smithery/mcp-server.json"
+	@echo "  make mcp-runtime  Boot MCP server + assert runtime tool count matches manifest floor"
+	@echo "  make mcp-public-discovery   Sync public MCP manifests + count consistency + sitemap freshness"
 	@echo "  make bootstrap    Run agent runtime bootstrap (--write)"
 	@echo "  make gate         Run production deploy readiness gate"
 	@echo "  make validate     Validate release capsule"
@@ -174,8 +177,60 @@ site:
 api:
 	$(PY) scripts/export_openapi.py
 
-mcp:
+# HARNESS-H4 (Wave 51, 2026-05-17): split the legacy `mcp` target into three
+# distinct gates so the make taxonomy mirrors the CI gate taxonomy documented
+# in docs/_internal/HARNESS_H4_CI_GATE_TAXONOMY_2026_05_17.md.
+#
+# - `mcp-static` runs the static manifest drift checker only — no FastMCP
+#   boot, no network, fast (<1s). Mirrors what `distribution-manifest-check.yml`
+#   asserts on every PR / push. Matches the legacy `make mcp` semantics.
+# - `mcp-runtime` boots the FastMCP server in-process and asserts the live
+#   `len(await mcp.list_tools())` matches the manifest floor + range bands
+#   declared in `data/facts_registry.json`. Catches stale-but-valid manifests
+#   that pass the static check but no longer reflect the runtime registry.
+# - `mcp-public-discovery` regenerates the public-facing manifest set
+#   (mcp-server.json / mcp-server.full.json / site/mcp-server*.json) AND
+#   re-runs the static drift check + sitemap freshness probe so that public
+#   discovery surfaces (Smithery / Glama / .well-known) stay aligned with
+#   the runtime registry without operator hand-edit.
+#
+# `make mcp` remains as a thin alias to `mcp-static` to preserve backward
+# compatibility with the existing `make e2e` recipe (which depends on the
+# pre-split static-only semantics).
+mcp: mcp-static
+
+mcp-static:
 	$(PY) scripts/check_distribution_manifest_drift.py
+
+mcp-runtime:
+	$(PY) scripts/check_mcp_drift.py
+
+mcp-public-discovery:
+	$(PY) scripts/sync_mcp_public_manifests.py
+	$(PY) scripts/check_distribution_manifest_drift.py
+	$(PY) scripts/check_sitemap_freshness.py
+
+# H9 P1.4 — Public Discovery generation command.
+# 6-step regen + drift-gate sequence; superset of `mcp-public-discovery`.
+# Step 6 is the strictest gate (exact-mode drift) so partial regenerations
+# cannot silently land. Re-run after: tool add/remove, manifest version
+# bump, llms.txt hand-edit, sitemap source change, runtime cohort flip.
+public-discovery:
+	@echo "[public-discovery] H9 P1.4 step 1/6 sync_mcp_public_manifests"
+	$(PY) scripts/sync_mcp_public_manifests.py
+	@echo "[public-discovery] step 2a/6 regen_llms_full (JA)"
+	$(PY) scripts/regen_llms_full.py
+	@echo "[public-discovery] step 2b/6 regen_llms_full_en (EN)"
+	$(PY) scripts/regen_llms_full_en.py
+	@echo "[public-discovery] step 3/6 regen_structured_sitemap_and_llms_meta"
+	$(PY) scripts/regen_structured_sitemap_and_llms_meta.py
+	@echo "[public-discovery] step 4/6 check_sitemap_freshness"
+	$(PY) scripts/check_sitemap_freshness.py
+	@echo "[public-discovery] step 5/6 check_tool_count_consistency"
+	$(PY) scripts/check_tool_count_consistency.py
+	@echo "[public-discovery] step 6/6 check_mcp_drift (exact + floor)"
+	$(PY) scripts/check_mcp_drift.py
+	@echo "[public-discovery] OK"
 
 bootstrap:
 	$(PY) scripts/agent_runtime_bootstrap.py --write
