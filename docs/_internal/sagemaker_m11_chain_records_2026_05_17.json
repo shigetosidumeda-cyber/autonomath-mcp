@@ -1,0 +1,19 @@
+[
+  {
+    "stage": "day1-multitask",
+    "iter": 0,
+    "prior_job": null,
+    "prior_status": null,
+    "new_job": "jpcite-multitask-large-20260517T025017Z",
+    "instance_type": "ml.g5.4xlarge",
+    "max_runtime_sec": 86400,
+    "epochs": 2,
+    "batch_size": 16,
+    "model_name": "cl-tohoku/bert-large-japanese-v2",
+    "train_uri": "s3://jpcite-credit-993693061769-202605-derived/finetune_corpus_multitask/train.jsonl",
+    "val_uri": "s3://jpcite-credit-993693061769-202605-derived/finetune_corpus_multitask/val.jsonl",
+    "output_prefix": "s3://jpcite-credit-993693061769-202605-derived/models/jpcite-multitask-large/",
+    "fired_at": "2026-05-17T02:50:17Z",
+    "training_job_arn": "arn:aws:sagemaker:ap-northeast-1:993693061769:training-job/jpcite-multitask-large-20260517T025017Z"
+  }
+]
